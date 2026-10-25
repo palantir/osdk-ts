@@ -1,0 +1,489 @@
+---
+title: Query objects
+description: Load, filter, sort, paginate, and stream lists of objects with useOsdkObjects, and load a single object with useOsdkObject.
+---
+
+{/* cspell:ignore refetches geopoints geoshapes */}
+
+`useOsdkObjects` loads a list of objects of one type, and `useOsdkObject` loads a single object. Both read from the shared cache that `OsdkProvider` sets up, so every component that shows the same object re-renders when it changes.
+
+## List objects
+
+Pass an object type from your generated SDK. The hook fetches the first page and returns it as `data`.
+
+```tsx title="src/EmployeeList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function EmployeeList() {
+  const { data, isLoading, error, refetch } = useOsdkObjects(Employee);
+
+  return (
+    <div>
+      {error && (
+        <p role="alert">
+          Could not load employees: {error.message}{" "}
+          <button onClick={() => void refetch()}>Retry</button>
+        </p>
+      )}
+      {isLoading && !data && <p>Loading employees…</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>
+            {employee.fullName}, {employee.jobTitle}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+`data` is `undefined` until the first page arrives. After that, `isLoading` can be `true` while `data` still holds the previous result, for example while the hook revalidates after an action. Keep rendering `data` during those refreshes instead of replacing the list with a spinner. [Loading and errors](../(docs)/concepts/loading-and-errors.mdx) covers the pattern in depth.
+
+`isOptimistic` is `true` when the order or membership of the list reflects an optimistic update that the server has not confirmed yet. It only describes the list of primary keys. To check whether one object's contents are optimistic, pass that object to [`useOsdkObject`](#load-one-object).
+
+## Filter with `where`
+
+`where` takes the same clause as `ObjectSet.where` in `@osdk/client`. A bare value on a property means equality:
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  where: { department: "Engineering" },
+});
+```
+
+For anything else, give the property an object with one operator:
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  where: {
+    department: { $in: ["Engineering", "Design"] },
+    salary: { $gte: 100000 },
+    jobTitle: { $isNull: false },
+  },
+});
+```
+
+Several properties in the same clause must all match. The operators each property accepts depend on its type:
+
+| Operator | Property types | Matches |
+| --- | --- | --- |
+| `$eq`, `$ne` | Strings, numbers, booleans, dates, timestamps | Equal to, or not equal to, the value. `{ department: "Sales" }` is shorthand for `$eq`. |
+| `$in` | Strings, numbers, booleans, dates, timestamps | Any of the listed values. |
+| `$isNull` | All | `true` for missing values, `false` for present ones. |
+| `$gt`, `$gte`, `$lt`, `$lte` | Numbers, dates, timestamps, strings | Greater or less than the value. Dates and timestamps take ISO 8601 strings. |
+| `$startsWith`, `$containsAnyTerm`, `$containsAllTerms`, `$containsAllTermsInOrder` | Strings | Text search. See [Search text](#search-text). |
+| `$matchesRegex` | Strings | A regular expression. Beta. |
+| `$contains` | Arrays | Arrays that contain the value. |
+| `$within`, `$intersects` | Geopoints, geoshapes | A distance, bounding box, or polygon. |
+
+You can also filter on `$primaryKey`, for example `{ $primaryKey: { $in: [101, 102] } }`, without knowing the name of the primary key property.
+
+<Callout type="warn">
+  `$in` with an empty array matches every object. If the list comes from user input, set `enabled: false` (see [Fetch conditionally](#fetch-conditionally)) or leave the filter out when the list is empty.
+</Callout>
+
+### Combine conditions
+
+Each property takes exactly one operator, so a range on one property needs `$and`:
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  where: {
+    $and: [{ salary: { $gte: 80000 } }, { salary: { $lt: 120000 } }],
+  },
+});
+```
+
+`$or` matches any of its clauses, and `$not` negates one clause. They nest:
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  where: {
+    $or: [
+      { department: "Sales" },
+      { $and: [{ department: "Engineering" }, { $not: { jobTitle: { $startsWith: "Intern" } } }] },
+    ],
+  },
+});
+```
+
+To intersect several independent filters, you can also pass `intersectWith`, an array of `{ where }` clauses. The result contains only objects that match `where` and every entry.
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  where: { department: "Engineering" },
+  intersectWith: [{ where: { salary: { $gte: 100000 } } }, { where: { startDate: { $lt: "2020-01-01" } } }],
+});
+```
+
+### Search text
+
+String properties support four search operators. `$containsAnyTerm` and `$containsAllTerms` also accept `{ term, fuzzySearch: true }` to tolerate small typos.
+
+| Operator | Matches | Fuzzy | Example value | Matches `"Senior Software Engineer"` |
+| --- | --- | --- | --- | --- |
+| `$startsWith` | Values that begin with the prefix | No | `"Senior"` | Yes |
+| `$containsAnyTerm` | Values that contain any of the space-separated terms | Yes | `"designer engineer"` | Yes |
+| `$containsAllTerms` | Values that contain every term, in any order | Yes | `"engineer senior"` | Yes |
+| `$containsAllTermsInOrder` | Values that contain every term, in this order | No | `"engineer senior"` | No |
+
+A search box that waits for two characters before it queries:
+
+```tsx title="src/EmployeeSearch.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+import { useState } from "react";
+
+export function EmployeeSearch() {
+  const [query, setQuery] = useState("");
+
+  const { data, isLoading } = useOsdkObjects(Employee, {
+    where: { fullName: { $containsAnyTerm: { term: query, fuzzySearch: true } } },
+    $select: ["fullName", "jobTitle"],
+    pageSize: 20,
+    enabled: query.length >= 2,
+  });
+
+  return (
+    <div>
+      <input
+        type="search"
+        placeholder="Search employees"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+      {isLoading && <p>Searching…</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>{employee.fullName}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+To send fewer requests while the user types, debounce the state update with `useDebouncedCallback` from `@osdk/react`.
+
+### Load specific objects by RID
+
+`rids` starts from a fixed set of objects instead of every object of the type. `where` and `orderBy` then filter and sort that set. Objects loaded this way have `$rid` set.
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  rids: ["ri.phonograph2-objects.main.object.1", "ri.phonograph2-objects.main.object.2"],
+  where: { department: "Engineering" },
+});
+```
+
+## Sort with `orderBy`
+
+`orderBy` maps property names to `"asc"` or `"desc"`. List several properties to break ties, in priority order:
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  orderBy: { department: "asc", salary: "desc" },
+});
+```
+
+`orderBy` accepts the object type's own properties. To sort by a value computed from linked objects, see [derived properties](./object-sets.mdx#add-derived-properties).
+
+## Select properties
+
+Without `$select`, the server returns its default property set for each object. Pass `$select` with only the properties the component reads; the primary key is always included.
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  $select: ["fullName", "jobTitle"],
+});
+```
+
+Loading unused properties costs bandwidth and slows down the query, and filtering them out after the fact does not get that cost back. Unlike `fetchPage` in `@osdk/client`, `useOsdkObjects` does not narrow the returned type to the selected properties. Reading a property you did not select still type-checks but is `undefined` at runtime, so keep `$select` in sync with what you render.
+
+### Query an interface
+
+When you pass an interface instead of an object type, each object only exposes the interface's properties. Two options change that:
+
+| Option | Effect |
+| --- | --- |
+| `$includeAllBaseObjectProperties: true` | The server also returns every property of the implementing object type. |
+| `resolveToObjectType: true` | The hook returns instances of the implementing object type instead of interface views, so properties such as `$title` and properties that are not on the interface are available. Only allowed for interfaces. |
+
+```tsx
+import { Worker } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function WorkerList() {
+  const { data } = useOsdkObjects(Worker, {
+    $includeAllBaseObjectProperties: true,
+    resolveToObjectType: true,
+  });
+
+  return (
+    <ul>
+      {data?.map((worker) => (
+        <li key={worker.$primaryKey}>
+          {worker.name} ({worker.$objectType})
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Paginate
+
+`pageSize` sets how many objects each request loads. It is not a limit on the total. Call `fetchMore` to load the next page; it is `undefined` once there are no more pages, and `hasMore` is `false`.
+
+```tsx title="src/EmployeeDirectory.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function EmployeeDirectory() {
+  const { data, isLoading, fetchMore, totalCount } = useOsdkObjects(Employee, {
+    orderBy: { fullName: "asc" },
+    pageSize: 50,
+  });
+
+  return (
+    <div>
+      {totalCount != null && <p>{Number(totalCount).toLocaleString()} employees</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>{employee.fullName}</li>
+        ))}
+      </ul>
+      {fetchMore && (
+        <button onClick={() => void fetchMore()} disabled={isLoading}>
+          {isLoading ? "Loading…" : "Load more"}
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+`totalCount` is a string because the count can exceed `Number.MAX_SAFE_INTEGER`. It is `undefined` when the server does not report it.
+
+To load more pages without a button, set `autoFetchMore`:
+
+| Value | Behavior |
+| --- | --- |
+| `undefined` (default) | Load the first page only. |
+| A number, such as `200` | Keep loading pages until the list has at least that many objects or runs out. |
+| `true` | Load every page. |
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  pageSize: 50,
+  autoFetchMore: 200,
+});
+```
+
+<Callout type="warn">
+  `autoFetchMore: true` on a large object type can take a long time and hold every object in memory. Prefer a number, or `fetchMore` on demand. For counts, sums, and group-bys, use [`useOsdkAggregation`](./aggregations.mdx) instead of loading objects.
+</Callout>
+
+<Callout type="info" title="Paging consistency">
+  Pages load without a snapshot. If objects are added, removed, or edited between page requests, later pages can repeat or skip objects. When you need every object from one consistent view, call `asyncIter()` on the client from [`useOsdkClient`](../(docs)/client.mdx) in an event handler or effect.
+</Callout>
+
+## Stream real-time updates
+
+Set `streamUpdates: true` to subscribe to changes over a WebSocket. The list then updates when matching objects are created, edited so that they start or stop matching `where`, or deleted, without waiting for a refetch.
+
+```tsx title="src/LiveHiresList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function LiveHiresList() {
+  const { data } = useOsdkObjects(Employee, {
+    where: { startDate: { $gte: "2026-01-01" } },
+    orderBy: { startDate: "desc" },
+    streamUpdates: true,
+  });
+
+  return (
+    <ul>
+      {data?.map((employee) => (
+        <li key={employee.$primaryKey}>
+          {employee.fullName} started {employee.startDate}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+<Callout type="warn" title="Streaming does not work with pivotTo or withProperties">
+  The server has no WebSocket subscriptions for link traversals or derived properties. TypeScript rejects `streamUpdates` together with `pivotTo`. With `withProperties`, the code compiles, but the hook ignores `streamUpdates` and logs a warning in development. Both kinds of query still load data normally; they refresh when the cache is invalidated instead of in real time. The same applies to `useObjectSet`.
+</Callout>
+
+## Fetch conditionally
+
+Hooks cannot be called inside a condition, so use `enabled` instead. While `enabled` is `false`, the hook makes no request and returns `data: undefined` and `isLoading: false`. Setting it back to `true` starts the query.
+
+```tsx title="src/DepartmentRoster.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function DepartmentRoster({ department }: { department: string | undefined }) {
+  const { data, isLoading } = useOsdkObjects(Employee, {
+    where: { department: department ?? "" },
+    enabled: department != null,
+  });
+
+  if (department == null) {
+    return <p>Pick a department.</p>;
+  }
+
+  return (
+    <ul>
+      {isLoading && !data && <li>Loading…</li>}
+      {data?.map((employee) => (
+        <li key={employee.$primaryKey}>{employee.fullName}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Load one object
+
+`useOsdkObject` takes an object type and a primary key, and returns `object`:
+
+```tsx title="src/EmployeeCard.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObject } from "@osdk/react";
+
+export function EmployeeCard({ employeeId }: { employeeId: number }) {
+  const { object: employee, isLoading, error } = useOsdkObject(Employee, employeeId);
+
+  return (
+    <section>
+      {isLoading && !employee && <p>Loading…</p>}
+      {error && <p role="alert">{error.message}</p>}
+      {employee && (
+        <>
+          <h2>{employee.fullName}</h2>
+          <p>
+            {employee.jobTitle}, {employee.department}
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
+```
+
+The third argument is either a boolean that enables or disables the query, or an options object:
+
+```tsx
+const disabled = useOsdkObject(Employee, employeeId, false);
+
+const withOptions = useOsdkObject(Employee, employeeId, {
+  $select: ["fullName", "jobTitle"],
+  $loadPropertySecurityMetadata: true,
+  enabled: employeeId > 0,
+});
+```
+
+### Track an instance you already have
+
+When a component receives an object from a list, pass the instance itself. The hook does not fetch; it subscribes to the cached copy, so the component re-renders when an action or optimistic update changes that object, and `isOptimistic` tells you whether the change is confirmed.
+
+```tsx title="src/EmployeeRow.tsx"
+import type { Employee } from "@my-app/sdk";
+import { useOsdkObject } from "@osdk/react";
+
+export function EmployeeRow({ employee }: { employee: Employee.OsdkInstance }) {
+  const { object, isOptimistic } = useOsdkObject(employee);
+  const current = object ?? employee;
+
+  return (
+    <li style={{ opacity: isOptimistic ? 0.6 : 1 }}>
+      {current.fullName}, {current.jobTitle}
+    </li>
+  );
+}
+```
+
+The instance form takes an optional boolean as its second argument to disable it.
+
+## Refresh data
+
+`refetch` on the `useOsdkObjects` result invalidates the whole object type: every cached object, list, and link query of that type refetches, not only this list. Actions already invalidate the types they modify, so you only need `refetch` for changes made outside the app.
+
+To refresh one object, invalidate it with the observable client:
+
+```tsx
+import type { Employee } from "@my-app/sdk";
+import { useObservableClient } from "@osdk/react";
+
+export function RefreshButton({ employee }: { employee: Employee.OsdkInstance }) {
+  const observableClient = useObservableClient();
+
+  return <button onClick={() => void observableClient.invalidateObjects(employee)}>Refresh</button>;
+}
+```
+
+`useOsdkObject` also returns a `forceUpdate` function, but it is not implemented and throws when called. [Cache invalidation](./cache-invalidation.mdx) covers the other invalidation methods.
+
+## Reference
+
+### `useOsdkObjects(type, options?)`
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `where` | `WhereClause<T>` | | Filter clause. Can reference properties defined in `withProperties`. |
+| `orderBy` | `{ [property]?: "asc" \| "desc" }` | | Sort order, in key order. |
+| `pageSize` | `number` | Server default | Objects per request. |
+| `autoFetchMore` | `boolean \| number` | | Load pages automatically: `true` for all, a number for at least that many. |
+| `$select` | `PropertyKeys<T>[]` | Server default set | Properties to load. Does not narrow the returned type. |
+| `rids` | `readonly string[]` | | Start from these objects instead of the whole type. Adds `$rid` to results. |
+| `intersectWith` | `Array<{ where: WhereClause<T> }>` | | Additional filters that every result must also match. |
+| `pivotTo` | Link name | | Return the objects linked from the matching objects instead. See [Follow links](./links.mdx#pivot-with-pivotto). |
+| `withProperties` | `DerivedProperty.Clause` | | Properties computed on the server. See [derived properties](./object-sets.mdx#add-derived-properties). |
+| `streamUpdates` | `boolean` | `false` | Subscribe to live changes. Not with `pivotTo` or `withProperties`. |
+| `enabled` | `boolean` | `true` | When `false`, no request is made and `data` is `undefined`. |
+| `dedupeIntervalMs` | `number` | `2000` | Two identical queries within this window share one request. |
+| `$loadPropertySecurityMetadata` | `boolean` | `false` | Populate `$propertySecurities` on each object with per-property marking requirements. |
+| `$includeAllBaseObjectProperties` | `boolean` | `false` | Interfaces only: also load the implementing type's properties. |
+| `resolveToObjectType` | `boolean` | `false` | Interfaces only: return implementing object type instances. |
+
+| Return | Type | Description |
+| --- | --- | --- |
+| `data` | `Osdk.Instance<T>[] \| undefined` | Loaded objects. `undefined` before the first page and while disabled. |
+| `isLoading` | `boolean` | `true` while a request is in flight, including revalidation with `data` present. |
+| `error` | `Error \| undefined` | The last error, if the query failed. |
+| `isOptimistic` | `boolean` | Whether the list order or membership includes unconfirmed optimistic changes. |
+| `fetchMore` | `(() => Promise<void>) \| undefined` | Load the next page. `undefined` when there are no more pages. |
+| `hasMore` | `boolean` | Whether more pages exist. |
+| `totalCount` | `string \| undefined` | Total matching objects, when the server reports it. |
+| `objectSet` | `ObjectSet<T> \| undefined` | The object set the hook queried, after `where`, `intersectWith`, and `pivotTo`. Pass it to [`useOsdkAggregation`](./aggregations.mdx#aggregate-an-object-set) or [`useObjectSet`](./object-sets.mdx). |
+| `refetch` | `() => Promise<void>` | Invalidate the object type and refetch. |
+
+### `useOsdkObject`
+
+| Signature | Description |
+| --- | --- |
+| `useOsdkObject(type, primaryKey, enabled?)` | Load by primary key. |
+| `useOsdkObject(type, primaryKey, options?)` | Load by primary key with options. |
+| `useOsdkObject(instance, enabled?)` | Subscribe to an instance you already have. Reads the cache without fetching. |
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `enabled` | `boolean` | `true` | When `false`, no request is made. |
+| `$select` | `PropertyKeys<T>[]` | Server default set | Properties to load. |
+| `$loadPropertySecurityMetadata` | `boolean` | `false` | Populate `$propertySecurities` with per-property marking requirements. |
+| `$includeAllBaseObjectProperties` | `boolean` | `false` | Interfaces only: also load the implementing type's properties. |
+
+| Return | Type | Description |
+| --- | --- | --- |
+| `object` | `Osdk.Instance<T> \| undefined` | The object. `undefined` while loading, while disabled, or if it was not found. |
+| `isLoading` | `boolean` | `true` while a request is in flight. `false` once there is an error. |
+| `error` | `Error \| undefined` | The last error, if the load failed. |
+| `isOptimistic` | `boolean` | Whether the object includes unconfirmed optimistic changes. |
+| `forceUpdate` | `() => void` | Not implemented; throws. Use `invalidateObjects` instead. |

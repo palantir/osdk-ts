@@ -1,6 +1,6 @@
 # ImageViewer
 
-A React component for rendering common image formats. Provides both an OSDK Media wrapper and a base component for direct use.
+`ImageViewer` renders an image from an OSDK `Media` object, and `BaseImageViewer` renders an image from a URL you provide.
 
 ## Import
 

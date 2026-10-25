@@ -1,0 +1,164 @@
+---
+title: Aggregations
+description: Count, sum, average, and find the min, max, or distinct values of object sets on the server, grouped by exact values, ranges, fixed widths, or durations.
+---
+
+`aggregate` computes counts and metrics over an object set on the server and returns only the numbers. It loads no objects, so it is the right tool for totals, averages, and breakdowns, however large the set.
+
+```ts title="src/headcount.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const stats = await client(Employee)
+  .where({ department: "Engineering" })
+  .aggregate({
+    $select: { $count: "unordered", "salary:avg": "unordered", "salary:max": "unordered" },
+  });
+
+console.log(stats.$count, stats.salary.avg, stats.salary.max);
+```
+
+`aggregate` takes `$select`, the metrics to compute, and an optional `$groupBy`. Filter first with [`where`](./filtering.mdx); every object set method that returns an object set, such as `pivotTo` or `intersect`, can come before it.
+
+## Metrics
+
+Each `$select` key is `$count` or `"<property>:<metric>"`. The value is a sort direction, described in [Sort groups](#sort-groups); use `"unordered"` when you do not need one.
+
+| Metric | Property types | Result type |
+| --- | --- | --- |
+| `$count` | Not applicable | `number` |
+| `sum`, `avg` | Numeric | `number \| undefined` |
+| `min`, `max` | Numeric, date, timestamp | The property's type, or `undefined` |
+| `approximateDistinct` | All | `number` |
+| `exactDistinct` | All | `number` |
+
+A metric that does not apply to the property's type, such as `"fullName:sum"`, does not typecheck. `approximateDistinct` is faster on large sets and can be off by a small amount; `exactDistinct` is exact.
+
+## Read the result
+
+Without `$groupBy`, the result is one object. `$count` is a number, and each property is an object keyed by metric name:
+
+```ts title="src/salaryRange.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const result = await client(Employee).aggregate({
+  $select: {
+    $count: "unordered",
+    "salary:min": "unordered",
+    "salary:max": "unordered",
+    "startDate:min": "unordered",
+    "department:exactDistinct": "unordered",
+  },
+});
+
+const { $count, salary, startDate, department } = result;
+console.log(`${$count} employees in ${department.exactDistinct} departments`);
+console.log(`Salaries ${salary.min} to ${salary.max}, earliest start ${startDate.min}`);
+```
+
+With `$groupBy`, the result is an array with one entry per group. Each entry has the group's values under `$group`, plus the same metric fields:
+
+```ts title="src/byDepartment.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const groups = await client(Employee).aggregate({
+  $select: { $count: "desc", "salary:avg": "unordered" },
+  $groupBy: { department: "exact" },
+});
+
+for (const group of groups) {
+  console.log(group.$group.department, group.$count, group.salary.avg);
+}
+```
+
+## Group by
+
+`$groupBy` maps each property to a grouping. Several properties group by every combination of their values.
+
+| Grouping | Property types | `$group` value | Description |
+| --- | --- | --- | --- |
+| `"exact"` | All | The property's value | One group per distinct value. |
+| `{ $exactWithLimit: n }` | All | The property's value | At most `n` groups. |
+| `{ $exact: { $limit?, $includeNullValue: true } }` | All | The value, or `null` | Adds a group for objects with no value. |
+| `{ $fixedWidth: n }` | Numeric | The bucket's lower bound | Buckets of width `n`. |
+| `{ $ranges: [[start, end], ...] }` | Numeric, date, timestamp | `{ startValue, endValue }` | One group per range. `start` is inclusive and `end` exclusive. |
+| `{ $duration: [n, unit] }` | Date, timestamp | The bucket's start | Buckets of `n` time units. |
+
+`$duration` units:
+
+| Property type | Units |
+| --- | --- |
+| Date | `"days"`, `"weeks"`, `"months"`, `"quarters"`, `"years"`, and singular or short forms such as `"day"`, `"wk"`, `"mos"`, `"yr"` |
+| Timestamp | The date units, plus `"seconds"`, `"minutes"`, and `"hours"` and their short forms such as `"sec"`, `"min"`, `"hr"` |
+
+For weeks, months, quarters, and years, `n` must be `1`.
+
+```ts title="src/breakdowns.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const bySalaryBand = await client(Employee).aggregate({
+  $select: { $count: "unordered" },
+  $groupBy: {
+    salary: { $ranges: [[0, 100_000], [100_000, 200_000], [200_000, 1_000_000]] },
+  },
+});
+for (const band of bySalaryBand) {
+  console.log(`${band.$group.salary.startValue} to ${band.$group.salary.endValue}: ${band.$count}`);
+}
+
+const hiresPerYear = await client(Employee).aggregate({
+  $select: { $count: "unordered" },
+  $groupBy: { startDate: { $duration: [1, "years"] } },
+});
+
+const byDepartmentAndTitle = await client(Employee).aggregate({
+  $select: { $count: "unordered", "salary:avg": "unordered" },
+  $groupBy: { department: "exact", jobTitle: { $exactWithLimit: 20 } },
+});
+
+const withUnassigned = await client(Employee).aggregate({
+  $select: { $count: "unordered" },
+  $groupBy: { department: { $exact: { $includeNullValue: true } } },
+});
+for (const group of withUnassigned) {
+  console.log(group.$group.department ?? "No department", group.$count);
+}
+```
+
+## Sort groups
+
+Set a metric's value in `$select` to `"asc"` or `"desc"` to order the groups by that metric. `$count: "desc"` lists the largest groups first.
+
+Sorting has two limits, both enforced by the types:
+
+- With more than one `$groupBy` property, every `$select` value must be `"unordered"`.
+- With `$exact: { $includeNullValue: true }`, every `$select` value must be `"unordered"`.
+
+## Aggregate over links and set operations
+
+Because `aggregate` runs on any object set, you can aggregate over linked objects or combined sets without loading them:
+
+```ts title="src/officeStats.ts"
+import { Employee, Office } from "@my-app/sdk";
+import { client } from "./client";
+
+const newYorkSalaries = await client(Office)
+  .where({ city: "New York" })
+  .pivotTo("occupants")
+  .aggregate({ $select: { "salary:sum": "unordered", $count: "unordered" } });
+
+const lead = await client(Employee).fetchOne(12345);
+const teamByTitle = await lead.$link.reports.aggregate({
+  $select: { $count: "desc" },
+  $groupBy: { jobTitle: "exact" },
+});
+```
+
+To attach a per-object aggregate, such as each employee's report count, as a property you can filter and sort on, use [derived properties](./derived-properties.mdx).
+
+## In React
+
+`useOsdkAggregation` from `@osdk/react` runs the same request, caches the result, and loads it again when objects of the type change. See [Aggregations in React](/react/aggregations).

@@ -2,7 +2,9 @@
 
 # EmailViewer
 
-A React component for rendering email (.eml) files. Parses email content using [postal-mime](https://github.com/nicktomlin/postal-mime) and displays headers and body with security sandboxing.
+`EmailViewer` renders the headers and body of an email (`.eml`) file, with HTML bodies shown in a sandboxed frame.
+
+It parses email content with [postal-mime](https://github.com/nicktomlin/postal-mime).
 
 ## Import
 

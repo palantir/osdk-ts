@@ -1,0 +1,296 @@
+---
+title: Work with object sets
+description: Observe composed object sets with useObjectSet, combine them with union, intersect, and subtract, and compute derived properties on the server.
+---
+
+An object set describes a group of objects as a query: a type, filters, set operations, and link traversals. `useObjectSet` observes any object set you build with the client, and `withProperties` adds values that the server computes for each object.
+
+## When to use `useObjectSet`
+
+Start with [`useOsdkObjects`](./objects.mdx). It covers filtering, sorting, pagination, pivots, derived properties, and streaming from an object type. Reach for `useObjectSet` when you already have an `ObjectSet`:
+
+- You combined sets with `union`, `intersect`, or `subtract`.
+- You pivoted across several links.
+- Another hook or component handed you one, such as `objectSet` from a `useOsdkObjects` result.
+
+## Build an object set
+
+Get the client with `useOsdkClient` inside the component, and call it with an object type. The result is an `ObjectSet` that you can refine with `where`, `pivotTo`, and the set operations. Building it does not send a request; the hook does.
+
+```tsx title="src/OpenRoles.tsx"
+import { Employee } from "@my-app/sdk";
+import { useObjectSet, useOsdkClient } from "@osdk/react";
+import { useMemo } from "react";
+
+export function OpenRoles() {
+  const client = useOsdkClient();
+  const engineers = useMemo(() => client(Employee).where({ department: "Engineering" }), [client]);
+
+  const { data, isLoading, error, fetchMore } = useObjectSet(engineers, {
+    where: { jobTitle: { $isNull: false } },
+    orderBy: { startDate: "desc" },
+    $select: ["fullName", "jobTitle", "startDate"],
+    pageSize: 25,
+  });
+
+  return (
+    <div>
+      {error && <p role="alert">{error.message}</p>}
+      {isLoading && !data && <p>Loading…</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>
+            {employee.fullName}, {employee.jobTitle}
+          </li>
+        ))}
+      </ul>
+      {fetchMore && <button onClick={() => void fetchMore()}>Load more</button>}
+    </div>
+  );
+}
+```
+
+Use the client from `useOsdkClient` rather than importing one from a module, so the object set runs against the same client and cache as `OsdkProvider`. `where`, `orderBy`, `pageSize`, `$select`, `autoFetchMore`, `enabled`, and `streamUpdates` behave as they do in [`useOsdkObjects`](./objects.mdx). `useObjectSet` also accepts `undefined`, which disables the query until you have a set.
+
+When the options change, `useObjectSet` keeps returning the previous `data` while the new query loads, with `isLoading` set to `true`. Changing to an object set of a different type clears it.
+
+## Combine object sets
+
+`union`, `intersect`, and `subtract` are methods on every object set. Each takes one or more sets of the same type and returns a new set:
+
+| Method | Result |
+| --- | --- |
+| `a.union(b, c)` | Objects in any of the sets. |
+| `a.intersect(b, c)` | Objects in every set. |
+| `a.subtract(b, c)` | Objects in `a` that are in none of the others. |
+
+```tsx title="src/RetentionWatchList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useObjectSet, useOsdkClient } from "@osdk/react";
+import { useMemo } from "react";
+
+export function RetentionWatchList() {
+  const client = useOsdkClient();
+  const watchList = useMemo(() => {
+    const highEarners = client(Employee).where({ salary: { $gte: 150000 } });
+    const recentHires = client(Employee).where({ startDate: { $gte: "2025-01-01" } });
+    const leadership = client(Employee).where({ jobTitle: { $containsAnyTerm: "director vp" } });
+    return highEarners.union(recentHires).subtract(leadership);
+  }, [client]);
+
+  const { data } = useObjectSet(watchList, { orderBy: { fullName: "asc" } });
+
+  return (
+    <ul>
+      {data?.map((employee) => (
+        <li key={employee.$primaryKey}>{employee.fullName}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+The same operations are available as `useObjectSet` options, each an array of object sets. `useObjectSet(highEarners, { union: [recentHires], subtract: [leadership] })` is equivalent to the set above.
+
+`useOsdkObjects` and `useOsdkAggregation` take an `intersectWith` option instead: an array of `{ where }` clauses on the same type. Use it when every set you would intersect is a filter on that type, and `useObjectSet` when the sets come from elsewhere, such as a pivot.
+
+## Keep object sets stable
+
+`useObjectSet` and `useOsdkAggregation` compare object sets by their definition, not by reference. An object set rebuilt on every render with the same filters does not trigger a new request.
+
+Your own code may still compare by reference: a `useMemo` or `useEffect` dependency array, or a memoized child component that takes the set as a prop, such as [`ObjectTable`](/components/object-table). `useStableObjectSet` returns the same `ObjectSet` instance until its definition changes, including any `where`, set operation, or pivot composed onto it:
+
+```tsx title="src/DepartmentPicker.tsx"
+import { Employee } from "@my-app/sdk";
+import { useObjectSet, useOsdkClient, useStableObjectSet } from "@osdk/react";
+import { useEffect, useState } from "react";
+
+export function DepartmentPicker({ department }: { department: string }) {
+  const client = useOsdkClient();
+  const employees = useStableObjectSet(client(Employee).where({ department }));
+  const [selected, setSelected] = useState<ReadonlySet<number>>(new Set());
+
+  useEffect(() => {
+    setSelected(new Set());
+  }, [employees]);
+
+  const { data } = useObjectSet(employees, { $select: ["fullName"] });
+
+  return (
+    <ul>
+      {data?.map((employee) => (
+        <li key={employee.$primaryKey}>
+          <label>
+            <input
+              type="checkbox"
+              checked={selected.has(employee.$primaryKey)}
+              onChange={() =>
+                setSelected((prev) => {
+                  const next = new Set(prev);
+                  if (!next.delete(employee.$primaryKey)) next.add(employee.$primaryKey);
+                  return next;
+                })
+              }
+            />
+            {employee.fullName}
+          </label>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+The effect clears the selection only when `department` changes. Without `useStableObjectSet`, `employees` would be a new instance on every render, and the effect would run on every render. It also saves you from listing every input to the set in a `useMemo` dependency array.
+
+## Add derived properties
+
+`withProperties` defines properties that the server computes for each object and returns alongside its regular properties. Pass it to `useOsdkObjects` or `useObjectSet`. Each entry is a function that receives a builder for the object and returns a definition:
+
+```tsx title="src/ManagerTable.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function ManagerTable() {
+  const { data } = useOsdkObjects(Employee, {
+    where: { department: "Engineering" },
+    withProperties: {
+      leadName: (employee) => employee.pivotTo("lead").selectProperty("fullName"),
+      officeCity: (employee) => employee.pivotTo("office").selectProperty("city"),
+      reportCount: (employee) => employee.pivotTo("reports").aggregate("$count"),
+      avgReportSalary: (employee) => employee.pivotTo("reports").aggregate("salary:avg"),
+    },
+  });
+
+  return (
+    <table>
+      <tbody>
+        {data?.map((employee) => (
+          <tr key={employee.$primaryKey}>
+            <td>{employee.fullName}</td>
+            <td>{employee.leadName ?? "None"}</td>
+            <td>{employee.officeCity}</td>
+            <td>{employee.reportCount}</td>
+            <td>{employee.avgReportSalary?.toFixed(0) ?? "No reports"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+Each derived property is typed on the returned objects. Define them in the hook's `withProperties` option: if you call `.withProperties()` on the object set you pass to `useObjectSet` instead, the server still computes them but the returned objects are not typed with them.
+
+### The builder
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `pivotTo(link)` | A builder for the linked type | Follow a link. After a link to many objects, you can only `aggregate`. |
+| `where(clause)` | The same builder, filtered | Narrow the objects before you select or aggregate. |
+| `selectProperty(property)` | A definition | The value of one property. Available on the starting object and after links to one object. |
+| `aggregate(specifier, opts?)` | A definition | A value computed over the objects. |
+
+`aggregate` takes `"$count"` or a `"property:metric"` string:
+
+| Metric | Property types | Value | `opts` |
+| --- | --- | --- | --- |
+| `$count` | | `number` | |
+| `sum`, `avg` | Numeric | `number \| undefined` | |
+| `min`, `max` | Numeric, date, timestamp | Same as the property, or `undefined` | |
+| `approximateDistinct`, `exactDistinct` | All | `number` | |
+| `approximatePercentile` | Numeric | `number \| undefined` | `{ percentile: number }` |
+| `collectList`, `collectSet` | Strings, numbers, dates, timestamps, booleans, geo, attachments | Array of the property's type, or `undefined` | `{ limit: number }` |
+
+`sum`, `avg`, `min`, and `max` over no objects have no value, so render a fallback for them. `$count` is `0`.
+
+Numeric definitions chain `add`, `subtract`, `multiply`, `divide`, `min`, `max`, `abs`, and `negate`, which take a number or another numeric definition. Date and timestamp definitions chain `min`, `max`, and `extractPart("DAYS" | "MONTHS" | "QUARTERS" | "YEARS")`.
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  withProperties: {
+    seniorReports: (employee) =>
+      employee
+        .pivotTo("reports")
+        .where({ jobTitle: { $startsWith: "Senior" } })
+        .aggregate("$count"),
+    reportPayroll: (employee) => employee.pivotTo("reports").aggregate("salary:sum"),
+    salaryAfterRaise: (employee) => employee.selectProperty("salary").multiply(1.05),
+    startYear: (employee) => employee.selectProperty("startDate").extractPart("YEARS"),
+    topReportTitles: (employee) =>
+      employee.pivotTo("reports").aggregate("jobTitle:collectSet", { limit: 5 }),
+  },
+});
+```
+
+### Filter on a derived property
+
+`where` can reference derived properties defined in the same options. For TypeScript to infer them, annotate the builder parameter with `DerivedProperty.Builder` from `@osdk/client`:
+
+```tsx title="src/ManagerList.tsx"
+import { Employee } from "@my-app/sdk";
+import type { DerivedProperty } from "@osdk/client";
+import { useOsdkObjects } from "@osdk/react";
+
+export function ManagerList() {
+  const { data } = useOsdkObjects(Employee, {
+    withProperties: {
+      reportCount: (employee: DerivedProperty.Builder<Employee, false>) =>
+        employee.pivotTo("reports").aggregate("$count"),
+    },
+    where: { reportCount: { $gt: 0 } },
+  });
+
+  return (
+    <ul>
+      {data?.map((manager) => (
+        <li key={manager.$primaryKey}>
+          {manager.fullName} ({manager.reportCount} reports)
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+The `false` type argument says that the builder has not yet followed a link to many objects. `orderBy` accepts only the type's own properties, so you cannot sort by a derived property.
+
+Queries with derived properties do not receive real-time updates. See [Stream real-time updates](./objects.mdx#stream-real-time-updates).
+
+## Reference
+
+### `useObjectSet(objectSet, options?)`
+
+`objectSet` is an `ObjectSet` or `undefined`. When it is `undefined`, the hook does not query.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `where` | `WhereClause<T>` | | Filter the set. Can reference properties defined in `withProperties`. |
+| `withProperties` | `DerivedProperty.Clause` | | Properties computed on the server, typed on the results. |
+| `union` | `ObjectSet<T>[]` | | Add the objects in these sets. |
+| `intersect` | `ObjectSet<T>[]` | | Keep only objects that are also in these sets. |
+| `subtract` | `ObjectSet<T>[]` | | Remove the objects in these sets. |
+| `pivotTo` | Link name | | Follow a link. Prefer calling `pivotTo` on the object set, which types the results as the linked type. |
+| `orderBy` | `{ [property]?: "asc" \| "desc" }` | | Sort order, in key order. |
+| `pageSize` | `number` | Server default | Objects per request. |
+| `autoFetchMore` | `boolean \| number` | | Load pages automatically: `true` for all, a number for at least that many. |
+| `$select` | `PropertyKeys<T>[]` | Server default set | Properties to load. Does not narrow the returned type. |
+| `streamUpdates` | `boolean` | `false` | Subscribe to live changes. Not with `pivotTo` or `withProperties`. |
+| `enabled` | `boolean` | `true` | When `false`, no request is made and `data` is `undefined`. |
+| `dedupeIntervalMs` | `number` | `2000` | Identical queries within this window share one request. |
+
+| Return | Type | Description |
+| --- | --- | --- |
+| `data` | `Osdk.Instance<T>[] \| undefined` | Loaded objects, with derived properties. Keeps the previous result while a changed query loads. |
+| `isLoading` | `boolean` | `true` until the current query has loaded or failed. |
+| `error` | `Error \| undefined` | The last error, if the query failed. |
+| `isOptimistic` | `boolean` | Whether the list includes unconfirmed optimistic changes. |
+| `fetchMore` | `(() => Promise<void>) \| undefined` | Load the next page. `undefined` when there are no more pages. |
+| `hasMore` | `boolean` | Whether more pages exist. |
+| `totalCount` | `string \| undefined` | Total matching objects, when the server reports it. |
+| `objectSet` | `ObjectSet<T> \| undefined` | The final object set after all options are applied. |
+| `refetch` | `() => Promise<void>` | Invalidate the object type and refetch. |
+
+### `useStableObjectSet(objectSet)`
+
+Returns `objectSet`, or the instance returned on an earlier render if the definition is unchanged. Accepts and returns `ObjectSet | undefined`.

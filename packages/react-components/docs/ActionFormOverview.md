@@ -3,16 +3,18 @@ title: ActionForm
 description: An OSDK-aware form for running ontology actions. Renders fields from an action definition, validates input client-side, and submits with the action's applyAction.
 ---
 
-> **Beta** — exported from `@osdk/react-components/action-form`.
+> [!NOTE]
+> This component is in beta. Import it from `@osdk/react-components/action-form`.
 
 ## Usage
 
 ActionForm fetches its own action metadata. Wrap your app in `OsdkProvider` and import the package styles once (see [Prerequisites](./Prerequisites.md) for the `@layer` order), then pass an action definition — fields, client-side validation, and submission are wired up out of the box. The form title is hidden by default; pass `showFormTitle` to show it.
 
-> **Note** — `@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
+> [!NOTE]
+> `@my-app/sdk` is a placeholder for your generated SDK package. Replace it with your package name.
 
 ```tsx
-import { updateEmployee } from "@my/osdk";
+import { updateEmployee } from "@my-app/sdk";
 import { ActionForm } from "@osdk/react-components/action-form";
 
 function UpdateEmployeeForm() {
@@ -48,6 +50,7 @@ Type parameters: `Q extends ActionDefinition<unknown>`
 
 `ActionForm` is built on `BaseForm`, so its appearance is driven entirely through `--osdk-form-*` and `--osdk-input-*` CSS variables — override them on the form's `className` (or any ancestor) to restyle without forking the component. `ActionForm` adds no outer padding by default; apply internal spacing via `--osdk-form-content-padding-*` and use margin/border/background on a wrapper for card-style framing.
 
+> [!NOTE]
 > **Class names are internal.** The form uses CSS Modules, so its class names are hashed at build time and are **not** part of the public API. Style it by overriding the CSS variables below — the only consumer-facing class name is the one you pass via the `className` prop. Token defaults live in `src/tokens/component-tokens/form.css` and `src/tokens/component-tokens/input.css`; the `--osdk-*` values they reference are defined in `src/tokens/base-tokens/base.css`.
 
 | Area                | CSS variables                                                                                                                                                                                                                                                                                                                                                                                                                                                         |

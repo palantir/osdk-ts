@@ -1,0 +1,74 @@
+---
+title: TypeScript SDK overview
+description: Query objects, apply actions, and run functions from any TypeScript runtime with @osdk/client, in Node.js scripts, servers, Vue, or any framework.
+foundryDocs:
+  - title: TypeScript OSDK
+    path: ontology-sdk/typescript-osdk
+---
+
+`@osdk/client` reads and edits your Ontology from any JavaScript runtime with `fetch`: Node.js scripts and servers, serverless functions, and browser apps in any framework. It has no UI dependency. Your generated SDK supplies typed definitions for your object types, interfaces, actions, and functions, and the client runs them.
+
+## Install
+
+Your generated SDK comes from your Foundry npm registry. Set up `.npmrc` as described in [Installation](../(docs)/installation.mdx), then:
+
+```npm
+npm install @osdk/client @osdk/api @osdk/oauth @my-app/sdk@latest
+```
+
+Create one client for your app with `createClient`, as described in [Create a client](../(docs)/client.mdx). [Authentication](../(docs)/authentication.mdx) covers the token provider. The samples in this section import that client from `./client`.
+
+## Example
+
+```ts title="src/index.ts"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .where({ department: "Engineering", jobTitle: { $isNull: true } })
+  .fetchPage({ $select: ["fullName"], $pageSize: 20 });
+
+for (const employee of page.data) {
+  await client(modifyEmployee).applyAction({ employee, jobTitle: "Engineer" });
+  console.log(`Set title for ${employee.fullName}`);
+}
+```
+
+The query runs on the server and returns typed objects. Each `applyAction` call validates and applies one edit. In real code, wrap it in `try`/`catch`, as shown in [Actions](./actions.mdx).
+
+## One entry point: `client(definition)`
+
+Call `client` with a definition from your SDK. What it returns depends on the definition:
+
+| You pass | You get | Main methods |
+| --- | --- | --- |
+| An object type, such as `Employee` | An object set of every object of that type | `fetchOne`, `fetchPage`, `asyncIter`, `where`, `aggregate`, `pivotTo`, `withProperties`, `subscribe` |
+| An interface, such as `Worker` | An object set over every type that implements it | The same, except `fetchOne` |
+| An action, such as `modifyEmployee` | An action invoker | `applyAction`, `batchApplyAction` |
+| A function (query) | A function invoker | `executeFunction` |
+
+Object sets are lazy descriptions. `where`, `pivotTo`, `union`, and `withProperties` return new object sets without sending a request. A request goes out when you call a method that loads data: `fetchOne`, `fetchPage`, `asyncIter`, `aggregate`, or `subscribe`.
+
+`client.fetchMetadata(definition)` loads the definition from Foundry at runtime, such as an object type's `displayName`, `description`, and `icon`, or an interface's `implementedBy`.
+
+## Relation to `@osdk/react`
+
+`@osdk/react` is built on this client. Its hooks accept the same `where` clauses, derived property definitions, and action parameters, and add a shared cache that keeps components current after actions and live updates. In a React app, use the hooks for data you render and call the client directly for one-off work, such as exports. See [Objects in React](/react/objects).
+
+Outside React, framework guides show how to wire the client in [Node.js](../(docs)/frameworks/node.mdx) and [Vue](../(docs)/frameworks/vue.mdx).
+
+## In this section
+
+<Cards>
+  <Card title="Load objects" href="/sdk/objects">fetchOne, fetchPage, asyncIter, $select, sorting, and the object shape.</Card>
+  <Card title="Filter objects" href="/sdk/filtering">Every where operator, with examples.</Card>
+  <Card title="Links and object sets" href="/sdk/links">Follow links, pivot sets, and combine them.</Card>
+  <Card title="Interfaces" href="/sdk/interfaces">Query across object types and convert between views.</Card>
+  <Card title="Aggregations" href="/sdk/aggregations">Counts, metrics, and group-bys on the server.</Card>
+  <Card title="Derived properties" href="/sdk/derived-properties">Compute properties at query time with withProperties.</Card>
+  <Card title="Actions" href="/sdk/actions">Apply, validate, and batch edits.</Card>
+  <Card title="Functions" href="/sdk/functions">Run Foundry functions and read their results.</Card>
+  <Card title="Attachments and media" href="/sdk/media">Download and upload files.</Card>
+  <Card title="Subscriptions" href="/sdk/subscriptions">Receive live updates for an object set.</Card>
+  <Card title="Errors" href="/sdk/errors">Error types, retries, and handling patterns.</Card>
+</Cards>

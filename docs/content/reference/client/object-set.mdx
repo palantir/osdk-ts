@@ -1,0 +1,90 @@
+---
+title: ObjectSet
+description: Methods of an OSDK ObjectSet for filtering, set operations, pivots, aggregation, paging, and subscriptions.
+---
+
+```ts
+import type { ObjectSet } from "@osdk/client";
+
+interface ObjectSet<
+  Q extends ObjectOrInterfaceDefinition = any,
+  RDPs extends Record<string, SimplePropertyDef> = never,
+> { /* methods below */ }
+```
+
+An `ObjectSet` describes a set of objects without loading them. `client(Employee)` returns the set of all employees; methods such as `where` and `pivotTo` return new sets, and methods such as `fetchPage` and `aggregate` send a request. `RDPs` holds the derived properties added with `withProperties`.
+
+## Methods
+
+`ObjectSet` is composed of many generic signatures that a generated table cannot render, so this table is written by hand.
+
+### Build a set
+
+These methods return a new set and do not send a request.
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `where(clause)` | `this` | Keeps objects that match a [`WhereClause`](./where-clause.mdx). Chained calls combine with AND. |
+| `union(...sets)` | `this` | Objects in this set or any of `sets`. |
+| `intersect(...sets)` | `this` | Objects in this set and every one of `sets`. |
+| `subtract(...sets)` | `this` | Objects in this set and in none of `sets`. |
+| `pivotTo(linkName)` | `ObjectSet<LinkedType<Q, L>>` | The objects linked from this set through `linkName`. |
+| `withProperties(definitions)` | `ObjectSet<Q, RDPs & NEW>` | Adds derived properties computed on the server. Each value is a function of a builder, such as `(base) => base.pivotTo("reports").aggregate("$count")`. |
+| `nearestNeighbors(query, numNeighbors, property)` | `this` | The `numNeighbors` objects (1 to 500) closest to `query`, a string or a vector, on a vector `property`. Order by `"relevance"` to get each object's `$score`. |
+| `narrowToType(type)` | `ObjectSet<T>` | Casts to an interface this type implements, or to an object type that implements this interface. Objects that do not match are dropped. |
+
+### Load objects
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `fetchPage(args?)` | `Promise<PageResult<Osdk.Instance<Q>>>` | One page of objects. Continue with `$nextPageToken`. |
+| `fetchPageWithErrors(args?)` | `Promise<Result<PageResult<Osdk.Instance<Q>>>>` | Like `fetchPage`, but returns `{ value }` or `{ error }` instead of throwing. |
+| `asyncIter(args?)` | `AsyncIterableIterator<Osdk.Instance<Q>>` | Every object, page by page, against a consistent snapshot. Takes the `fetchPage` arguments except `$pageSize`, `$nextPageToken`, `$snapshot`, and `$EXPERIMENTAL_defaultLoadLevel`. |
+| `fetchOne(primaryKey, options?)` | `Promise<Osdk.Instance<Q>>` | One object by primary key. Throws if it does not exist. Object types only. Takes `$select`, `$includeRid`, and `$loadPropertySecurityMetadata`. |
+| `fetchOneWithErrors(primaryKey, options?)` | `Promise<Result<Osdk.Instance<Q>>>` | Like `fetchOne`, but returns `{ value }` or `{ error }`. Object types only. |
+| `aggregate(request)` | `Promise<AggregationsResults<Q, A>>` | Runs `$select` metrics, optionally grouped by `$groupBy`. |
+
+`PageResult<T>` is `{ data: T[]; nextPageToken: string | undefined; totalCount: string }`.
+
+### Watch for changes
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `subscribe(listener, options?)` | `{ unsubscribe: () => void }` | Opens a WebSocket subscription. `listener` takes `onChange`, `onSuccessfulSubscription`, `onOutOfDate`, and `onError`; `options` takes `properties` and `includeRid`. |
+| `experimental_asyncIterLinks(linkNames)` | `AsyncIterableIterator<{ source, target, linkType }>` | Beta. Yields every link of the given types from objects in this set. `source` and `target` hold `$apiName` and `$primaryKey`. |
+
+## `fetchPage` arguments
+
+<auto-type-table path="../../../../packages/api/src/object/FetchPageArgs.ts" name="FetchPageArgs" />
+
+`$orderBy` takes `{ [property]: "asc" | "desc" }`, or `"relevance"` after `nearestNeighbors`. `$includeRid: true` adds `$rid` to each object. `$includeAllBaseObjectProperties: true` loads every property of the underlying object type for interface sets.
+
+## Example
+
+```ts title="src/topEarners.ts"
+import { Employee } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+
+export async function topEarners(client: Client, city: string) {
+  const inCity = client(Employee)
+    .where({ salary: { $gt: 100_000 } })
+    .intersect(client(Employee).pivotTo("office").where({ city }).pivotTo("occupants"));
+
+  const page = await inCity.fetchPage({
+    $select: ["fullName", "salary"],
+    $orderBy: { salary: "desc" },
+    $pageSize: 20,
+  });
+
+  return page.data.map((e) => `${e.fullName}: ${e.salary}`);
+}
+```
+
+## See also
+
+- [Load objects](/sdk/objects)
+- [Filtering](/sdk/filtering)
+- [Links](/sdk/links)
+- [Aggregations](/sdk/aggregations)
+- [Derived properties](/sdk/derived-properties)
+- [Subscriptions](/sdk/subscriptions)

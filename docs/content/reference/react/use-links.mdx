@@ -1,0 +1,53 @@
+---
+title: useLinks
+description: Load the objects linked from one or more source objects through a named link.
+---
+
+```ts
+import { useLinks } from "@osdk/react";
+
+function useLinks<T extends ObjectOrInterfaceDefinition, L extends LinkNames<T>>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: L,
+  options?: UseLinksOptions<LinkedType<T, L>>,
+): UseLinksResult<LinkedType<T, L>>;
+```
+
+Follows `linkName` from each source object and returns the linked objects as one list. Pass `undefined` while the source object is still loading; until it arrives, the hook returns `links: []` with `isLoading: false`.
+
+## Options
+
+<auto-type-table path="../../../../packages/react/src/new/useLinks.ts" name="UseLinksOptions" />
+
+## Returns
+
+<auto-type-table path="../../../../packages/react/src/new/useLinks.ts" name="UseLinksResult" />
+
+## Example
+
+```tsx title="src/DirectReports.tsx"
+import { Employee } from "@my-app/sdk";
+import { useLinks, useOsdkObject } from "@osdk/react";
+
+export function DirectReports({ employeeId }: { employeeId: number }) {
+  const { object: employee } = useOsdkObject(Employee, employeeId);
+  const { links: reports, isLoading, error } = useLinks(employee, "reports", {
+    orderBy: { fullName: "asc" },
+  });
+
+  return (
+    <section aria-busy={isLoading}>
+      {error && <p role="alert">{error.message}</p>}
+      <ul>
+        {reports?.map((report) => (
+          <li key={report.$primaryKey}>{report.fullName}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+## See also
+
+- [Load linked objects](/react/links)

@@ -3,13 +3,15 @@ title: DocumentViewer
 description: A viewer for OSDK Media objects that auto-selects the right renderer by MIME type — PDF, TIFF, images, video, markdown, spreadsheets, email, and XML — plus the individual media viewers it dispatches to.
 ---
 
-> **Beta** — exported from `@osdk/react-components/document-viewer`.
+> [!NOTE]
+> This component is in beta. Import it from `@osdk/react-components/document-viewer`.
 
 ## Usage
 
 DocumentViewer takes an OSDK `Media` object, detects its MIME type, and renders it with the matching viewer.
 
-> **Note** — `@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
+> [!NOTE]
+> `@my-app/sdk` is a placeholder for your generated SDK package. Replace it with your package name.
 
 ```tsx
 import { DocumentViewer } from "@osdk/react-components/document-viewer";
@@ -19,7 +21,7 @@ function TrainingMaterial({ employee }) {
 }
 ```
 
-PDF, image, video, and TIFF rendering accept their own options via a pass-through prop (`pdfViewerProps`, `imageViewerProps`, `videoViewerProps`, `tiffViewerProps`). Only the prop matching the resolved viewer is applied. The markdown, spreadsheet, email, and XML viewers render with their defaults — to configure those, use the [standalone viewer](#other-osdk-media-viewers) directly.
+PDF, image, video, and TIFF rendering accept their own options via a pass-through prop (`pdfViewerProps`, `imageViewerProps`, `videoViewerProps`, `tiffViewerProps`). Only the prop matching the resolved viewer is applied. The markdown, spreadsheet, email, and XML viewers render with their defaults — to configure those, use the [standalone viewer](#standalone-osdk-media-viewers) directly.
 
 ```tsx
 <DocumentViewer

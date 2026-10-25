@@ -494,4 +494,4 @@ The frontend handles **only UI concerns**: toggling selections (respecting conju
 - [CbacPickerDialog Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/CbacPickerDialog.tsx)
 - [Selection Logic](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/utils/selectionLogic.ts)
 - [Type Definitions](https://github.com/palantir/osdk-ts/blob/main/packages/cbac-components/src/cbac-picker/types.ts)
-- [@osdk/react Documentation](https://github.com/palantir/osdk-ts/blob/main/docs/react/getting-started.md)
+- [@osdk/react documentation](https://palantir.github.io/osdk-ts/react/objects)

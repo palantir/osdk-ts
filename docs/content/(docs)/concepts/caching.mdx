@@ -1,0 +1,213 @@
+---
+title: Caching and reactivity
+description: How @osdk/react stores objects once, shares them across hooks, deduplicates requests, and updates every view after an action.
+---
+
+{/* cspell:ignore refetched refetches */}
+
+`@osdk/react` keeps one normalized cache per `OsdkProvider`. This page explains what the cache stores, when hooks hit the network, and how data updates after actions, so you can predict what a component renders.
+
+## One cache per provider
+
+`OsdkProvider` wraps your `Client` in an `ObservableClient` from `@osdk/client/observable`. Every hook below that provider reads from and writes to the same cache:
+
+```tsx title="src/main.tsx"
+import { OsdkProvider } from "@osdk/react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { client } from "./client";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider client={client}>
+    <App />
+  </OsdkProvider>,
+);
+```
+
+Create the client once, outside any component. A new client creates a new, empty cache.
+
+## Objects are stored once
+
+The cache stores each object under its object type and primary key, such as `Employee:12345`. Lists, links, and object sets do not copy objects. They store references to those entries.
+
+| Hook | What the cache stores |
+| --- | --- |
+| `useOsdkObject` | One entry per object type and primary key. |
+| `useOsdkObjects`, `useObjectSet` | The ordered list of references, plus `totalCount` and paging state. |
+| `useLinks` | References to the linked objects, keyed by source object, link name, and filters. |
+| `useOsdkAggregation` | The aggregation result, keyed by object type, filter, and aggregate definition. |
+| `useOsdkFunction` | The function result, keyed by function and parameters. |
+
+Because objects are shared, a change to `Employee:12345` reaches every list, link, and detail view that contains it in the same render:
+
+```tsx title="src/EmployeeViews.tsx"
+import { Employee } from "@my-app/sdk";
+import { useLinks, useOsdkObject, useOsdkObjects } from "@osdk/react";
+
+function Directory() {
+  const { data } = useOsdkObjects(Employee);
+  return <ul>{data?.map(e => <li key={e.$primaryKey}>{e.fullName}</li>)}</ul>;
+}
+
+function Profile({ id }: { id: number }) {
+  const { object } = useOsdkObject(Employee, id);
+  return <h1>{object?.fullName}</h1>;
+}
+
+function Team({ manager }: { manager: Employee.OsdkInstance }) {
+  const { links } = useLinks(manager, "reports");
+  return <ul>{links?.map(e => <li key={e.$primaryKey}>{e.fullName}</li>)}</ul>;
+}
+```
+
+All three render the same `Employee` instance for `12345`.
+
+### Read an instance you already have
+
+`useOsdkObject(instance)` reads the object from the cache and does not send a request. Use it in a row component to get `isOptimistic` for an object a list already loaded:
+
+```tsx title="src/EmployeeRow.tsx"
+import type { Employee } from "@my-app/sdk";
+import { useOsdkObject } from "@osdk/react";
+
+function EmployeeRow({ employee }: { employee: Employee.OsdkInstance }) {
+  const { object, isOptimistic } = useOsdkObject(employee);
+  return (
+    <li style={{ opacity: isOptimistic ? 0.5 : 1 }}>
+      {object?.fullName ?? employee.fullName}
+    </li>
+  );
+}
+```
+
+`useOsdkObject(Employee, id)` with a type and primary key does fetch. Calls for the same object type made within 25 ms are batched into one request of up to 100 objects.
+
+## When two hooks share an entry
+
+Two hooks share a cache entry when they ask for the same data. The client canonicalizes options before building the key, so structurally equal options match even if you write them inline or list keys in a different order.
+
+| Part of the key | Not part of the key |
+| --- | --- |
+| Object type or interface | `pageSize` |
+| `where` | `enabled` |
+| `orderBy` | `dedupeIntervalMs` |
+| `withProperties` | `autoFetchMore` |
+| `$select`, `intersectWith`, `pivotTo`, `rids` | |
+
+For example, these share one entry, and each component sees its own page size:
+
+```tsx
+useOsdkObjects(Employee, { where: { department: "Sales" }, pageSize: 10 });
+useOsdkObjects(Employee, { where: { department: "Sales" }, pageSize: 50 });
+```
+
+These are separate entries, because the filters differ:
+
+```tsx
+useOsdkObjects(Employee, { where: { department: "Sales" } });
+useOsdkObjects(Employee, { where: { department: "Support" } });
+```
+
+Adding `withProperties` creates a separate variant of each object, so derived properties never leak into views that did not request them.
+
+## When hooks fetch
+
+The cache serves data immediately and refreshes it in the background. When a hook subscribes, it does three things:
+
+1. Returns any data already in the cache for its key.
+2. Starts a request to revalidate the entry, unless a request for that entry is already in flight or one started within `dedupeIntervalMs`.
+3. Updates when the response arrives.
+
+So a component that mounts onto cached data renders it at once, with `isLoading: true` while the refresh runs. See [Loading and errors](./loading-and-errors.mdx) for how to render that state.
+
+### Deduplication
+
+`dedupeIntervalMs` defaults to `2000` on `useOsdkObjects`, `useObjectSet`, `useLinks`, `useOsdkAggregation`, and `useOsdkFunction`. If two components mount the same query within that window, the second one reuses the first request.
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  where: { department: "Sales" },
+  dedupeIntervalMs: 30_000,
+});
+```
+
+When several mounted hooks share an entry, the smallest `dedupeIntervalMs` among them applies. In-flight requests are always shared, whatever the interval.
+
+### Retention
+
+An entry stays in the cache for about 60 seconds after its last hook unmounts. Navigating away and back within that window renders the cached data while it revalidates. After that, the entry is removed and the next mount starts empty.
+
+## Updates after actions
+
+When you apply an action with `useOsdkAction`, the client requests the action's edits from the server and updates the cache from them. You do not need to invalidate anything.
+
+| Edit | What happens |
+| --- | --- |
+| Object modified | The object is refetched. Every list, link, and detail view that references it re-renders. |
+| Object added | The object is fetched. Lists of that type whose `where` clause it matches add it. |
+| Object deleted | The object is removed from the cache and from every list that contained it. |
+| Any edit to a type | Aggregations over that type refetch. Links to that type re-evaluate. Functions with `dependsOn` that include the type refetch. |
+
+The action's promise resolves after the edited objects are refetched. Aggregation and other type-wide refreshes continue in the background.
+
+### How lists stay correct
+
+For a modified or added object, each list of that type checks the object against its `where` clause in the browser:
+
+- If the object matches, the list keeps it or inserts it.
+- If the object no longer matches, the list removes it.
+- If the clause uses a filter the browser cannot evaluate, such as full-text search, the list refetches from the server with `isLoading: true` and keeps its current data until the response arrives.
+
+Lists that follow a link (`pivotTo`) or return a different object type than they start from always refetch from the server when objects of their result type change.
+
+### Functions
+
+Function results are not tied to objects, so the cache cannot know which edits affect them. Declare the dependency with `dependsOn` or `dependsOnObjects`:
+
+```tsx
+import { type Employee, getEmployeeReport } from "@my-app/sdk";
+import { useOsdkFunction } from "@osdk/react";
+
+function EmployeeReport({ employee }: { employee: Employee.OsdkInstance }) {
+  const { data } = useOsdkFunction(getEmployeeReport, {
+    params: { employeeId: employee.$primaryKey },
+    dependsOnObjects: [employee],
+  });
+  return <pre>{data}</pre>;
+}
+```
+
+| Option | Refetches when |
+| --- | --- |
+| `dependsOn: [Employee]` | An action edits any `Employee`. |
+| `dependsOnObjects: [employee]` | An action edits that specific object. |
+| `dependsOnObjects: [objectSet]` | An action edits any object of the object set's type. |
+
+## Optimistic updates
+
+`useOsdkAction` accepts `$optimisticUpdate`, which writes your predicted change to a temporary layer above the server data. Every view shows the predicted change at once and reports `isOptimistic: true`. When the action finishes, the layer is removed and the server's data replaces it. If the action fails, the layer is removed and the views return to the previous data.
+
+In development, an action with an optimistic update is delayed by 1000 ms so you can see the optimistic state. Set `devMode={{ actionDelayMs: 0 }}` on `OsdkProvider` to turn the delay off. The delay never applies in production builds.
+
+See [Optimistic updates](/react/optimistic-updates) for the API.
+
+## Real-time updates
+
+Pass `streamUpdates: true` to `useOsdkObjects` to keep a list current over a WebSocket. Changes made outside your app, by other users or pipelines, arrive without polling. `streamUpdates` cannot be combined with `pivotTo`, because the server does not support subscriptions for link traversal.
+
+## When you need to invalidate
+
+Automatic updates cover changes that go through `useOsdkAction` in this app. Invalidate manually when data changes another way:
+
+- Another system or pipeline edits the data.
+- Your code edits data with `@osdk/client` directly, a REST call, or a background job.
+- A function reads data the cache cannot track.
+
+See [Cache invalidation](/react/cache-invalidation) for `invalidateObjects`, `invalidateObjectType`, `invalidateFunction`, and the other methods.
+
+## Practices
+
+- **Let actions drive updates.** Do not call `invalidate*` after `applyAction`. The cache already handles the edits.
+- **Keep one source of truth.** Do not copy OSDK data into Redux, TanStack Query, or component state. Copies miss optimistic updates and action edits.
+- **Declare function dependencies.** Prefer `dependsOn` and `dependsOnObjects` over invalidating functions by hand.
+- **Use the devtools.** The [Cache panel](/devtools/cache) shows entries, hits, and misses in a running app.

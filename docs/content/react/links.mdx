@@ -1,0 +1,263 @@
+---
+title: Follow links
+description: Load the objects linked to one or more source objects with useLinks, or pivot a whole query to a linked type with pivotTo.
+foundryDocs:
+  - title: Link types
+    path: object-link-types/link-types-overview
+---
+
+Links connect objects of one type to objects of another, such as an employee to their office or a manager to their reports. Use `useLinks` to load the linked objects of objects you already have, and `pivotTo` to turn a query for one type into a query for the linked type.
+
+The samples on this page use these links from the example SDK:
+
+| Link | From | To | Cardinality |
+| --- | --- | --- | --- |
+| `lead` | `Employee` | `Employee` | One |
+| `reports` | `Employee` | `Employee` | Many |
+| `office` | `Employee` | `Office` | One |
+| `occupants` | `Office` | `Employee` | Many |
+
+## Load linked objects
+
+Pass a source object and a link name. `links` holds the linked objects:
+
+```tsx title="src/DirectReports.tsx"
+import type { Employee } from "@my-app/sdk";
+import { useLinks } from "@osdk/react";
+
+export function DirectReports({ manager }: { manager: Employee.OsdkInstance }) {
+  const { links, isLoading, error } = useLinks(manager, "reports");
+
+  return (
+    <div>
+      <h3>Reports{links && ` (${links.length})`}</h3>
+      {isLoading && !links && <p>Loading…</p>}
+      {error && <p role="alert">{error.message}</p>}
+      <ul>
+        {links?.map((report) => (
+          <li key={report.$primaryKey}>{report.fullName}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+TypeScript checks the link name against the source type and types `links` as the linked object type.
+
+### Links to one object
+
+A link to a single object uses the same hook. `links` is an array with at most one element:
+
+```tsx title="src/OfficeLabel.tsx"
+import type { Employee } from "@my-app/sdk";
+import { useLinks } from "@osdk/react";
+
+export function OfficeLabel({ employee }: { employee: Employee.OsdkInstance }) {
+  const { links } = useLinks(employee, "office");
+  const office = links?.[0];
+
+  return <span>{office ? `${office.name}, ${office.city}` : "No office"}</span>;
+}
+```
+
+## Filter, sort, and paginate links
+
+`useLinks` accepts `where`, `orderBy`, `$select`, and `pageSize` for the linked type. They work as they do in [`useOsdkObjects`](./objects.mdx#filter-with-where). `fetchMore` loads the next page and is `undefined` when there are no more.
+
+```tsx title="src/SeniorReports.tsx"
+import type { Employee } from "@my-app/sdk";
+import { useLinks } from "@osdk/react";
+
+export function SeniorReports({ manager }: { manager: Employee.OsdkInstance }) {
+  const { links, isLoading, fetchMore } = useLinks(manager, "reports", {
+    where: { jobTitle: { $startsWith: "Senior" } },
+    orderBy: { fullName: "asc" },
+    $select: ["fullName", "jobTitle"],
+    pageSize: 25,
+  });
+
+  return (
+    <div>
+      <ul>
+        {links?.map((report) => (
+          <li key={report.$primaryKey}>
+            {report.fullName}, {report.jobTitle}
+          </li>
+        ))}
+      </ul>
+      {fetchMore && (
+        <button onClick={() => void fetchMore()} disabled={isLoading}>
+          Load more
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+## Wait for the source object
+
+The source can be `undefined`, which lets you chain `useLinks` after a hook that is still loading. Set `enabled` so it does not query until the source arrives:
+
+```tsx title="src/ManagerReports.tsx"
+import { Employee } from "@my-app/sdk";
+import { useLinks, useOsdkObject } from "@osdk/react";
+
+export function ManagerReports({ employeeId }: { employeeId: number }) {
+  const { object: manager } = useOsdkObject(Employee, employeeId);
+  const { links: reports, isLoading } = useLinks(manager, "reports", {
+    enabled: manager != null,
+  });
+
+  return (
+    <section>
+      <h2>{manager?.fullName ?? "Loading…"}</h2>
+      {isLoading && !reports && <p>Loading reports…</p>}
+      <ul>
+        {reports?.map((report) => (
+          <li key={report.$primaryKey}>{report.fullName}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+## Load links from many objects
+
+Pass an array of source objects to load their links in one hook. `links` is the combined list. `linkedObjectsBySourcePrimaryKey` maps each source's primary key to its own linked objects, so you can group them:
+
+```tsx title="src/TeamOffices.tsx"
+import type { Employee } from "@my-app/sdk";
+import { useLinks } from "@osdk/react";
+
+export function TeamOffices({ team }: { team: Employee.OsdkInstance[] }) {
+  const { linkedObjectsBySourcePrimaryKey } = useLinks(team, "office");
+
+  return (
+    <ul>
+      {team.map((employee) => {
+        const office = linkedObjectsBySourcePrimaryKey.get(employee.$primaryKey)?.[0];
+        return (
+          <li key={employee.$primaryKey}>
+            {employee.fullName}: {office?.name ?? "No office"}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+```
+
+## Control refetching
+
+Two `useLinks` calls with the same source and options share one request if the second starts within `dedupeIntervalMs` (2 seconds by default). Raise it to refetch less often on remount, or set it to `Infinity` to refetch only when the cache is invalidated, for example by an action:
+
+```tsx
+const { links } = useLinks(employee, "reports", { dedupeIntervalMs: Infinity });
+```
+
+`mode` overrides the cache policy for one call:
+
+| `mode` | Behavior |
+| --- | --- |
+| `undefined` (default) | Fetch unless a recent result is cached. |
+| `"force"` | Always fetch. |
+| `"offline"` | Read the cache only; never make a request. |
+
+## Pivot with `pivotTo`
+
+`useLinks` starts from objects you already hold. When you want the linked objects of every object that matches a filter, pivot the query instead. `useOsdkObjects` takes a `pivotTo` option: `where` filters the source objects, and `data` contains the linked objects.
+
+```tsx title="src/SalesOffices.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function SalesOffices() {
+  const { data: offices } = useOsdkObjects(Employee, {
+    where: { department: "Sales" },
+    pivotTo: "office",
+  });
+
+  return (
+    <ul>
+      {offices?.map((office) => (
+        <li key={office.$primaryKey}>
+          {office.name}, {office.city}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+The pivot runs on the server, so the result is one deduplicated list of offices, however many employees share one.
+
+With `useObjectSet`, call `pivotTo` on the object set you pass in. The result is then typed as the linked type, which the hook's own `pivotTo` option does not do:
+
+```tsx title="src/EngineeringReports.tsx"
+import { Employee } from "@my-app/sdk";
+import { useObjectSet, useOsdkClient } from "@osdk/react";
+import { useMemo } from "react";
+
+export function EngineeringReports() {
+  const client = useOsdkClient();
+  const reports = useMemo(
+    () => client(Employee).where({ department: "Engineering" }).pivotTo("reports"),
+    [client],
+  );
+  const { data } = useObjectSet(reports, { orderBy: { fullName: "asc" } });
+
+  return (
+    <ul>
+      {data?.map((report) => (
+        <li key={report.$primaryKey}>{report.fullName}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Pivoted queries do not receive real-time updates. See [Stream real-time updates](./objects.mdx#stream-real-time-updates).
+
+## Choose an approach
+
+| You have | You want | Use |
+| --- | --- | --- |
+| One object, or a few | Its linked objects | `useLinks(objects, link)` |
+| Several objects | Linked objects grouped by source | `useLinks(objects, link)` and `linkedObjectsBySourcePrimaryKey` |
+| A filter on the source type | All linked objects, deduplicated | `useOsdkObjects(type, { where, pivotTo })` |
+| An object set from set operations | All linked objects | `useObjectSet(objectSet.pivotTo(link))` |
+| A list of objects | One value from a linked object on each row, such as the lead's name | A [derived property](./object-sets.mdx#add-derived-properties) with `selectProperty` |
+| A list of objects | A count or sum over each row's links | A [derived property](./object-sets.mdx#add-derived-properties) with `aggregate` |
+
+Derived properties avoid one `useLinks` call per row: the server computes the value and returns it on each object.
+
+## Reference
+
+### `useLinks(objects, linkName, options?)`
+
+`objects` is one `Osdk.Instance`, an array of them, or `undefined`.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `where` | `WhereClause<L>` | | Filter the linked objects. |
+| `orderBy` | `{ [property]?: "asc" \| "desc" }` | | Sort the linked objects. |
+| `$select` | `PropertyKeys<L>[]` | Server default set | Properties to load for each linked object. |
+| `pageSize` | `number` | Server default | Linked objects per request. |
+| `enabled` | `boolean` | `true` | When `false`, no request is made and `links` is `undefined`. |
+| `mode` | `"force" \| "offline"` | | Cache policy override. See [Control refetching](#control-refetching). |
+| `dedupeIntervalMs` | `number` | `2000` | Identical calls within this window share one request. |
+| `$includeAllBaseObjectProperties` | `boolean` | `false` | When the link targets an interface, also load the implementing type's properties. |
+| `resolveToObjectType` | `boolean` | `false` | When the link targets an interface, return implementing object type instances. |
+
+| Return | Type | Description |
+| --- | --- | --- |
+| `links` | `Osdk.Instance<L>[] \| undefined` | Linked objects from all sources. |
+| `linkedObjectsBySourcePrimaryKey` | `ReadonlyMap<string \| number, readonly Osdk.Instance<L>[]>` | Linked objects keyed by source primary key. Empty until loaded. |
+| `isLoading` | `boolean` | `true` while a request is in flight. |
+| `error` | `Error \| undefined` | The last error, if the load failed. |
+| `isOptimistic` | `boolean` | Whether the links include unconfirmed optimistic changes. |
+| `fetchMore` | `(() => Promise<unknown>) \| undefined` | Load the next page. `undefined` when there are no more pages. |
+| `hasMore` | `boolean` | Whether more pages exist. |

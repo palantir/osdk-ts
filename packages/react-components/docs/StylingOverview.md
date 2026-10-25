@@ -1,7 +1,6 @@
 # Styling Overview
 
-`@osdk/react-components` uses a three-layer token architecture that makes
-theming predictable and composable.
+`@osdk/react-components` styles every component through three layers of CSS custom properties that you can override to theme your app.
 
 ## Token Architecture
 

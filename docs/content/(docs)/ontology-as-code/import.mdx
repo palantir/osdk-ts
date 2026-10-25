@@ -1,0 +1,133 @@
+---
+title: Import existing types
+description: Convert an existing Foundry ontology's metadata into TypeScript with @osdk/maker-import, and reference those types from your ontology-as-code definitions.
+---
+
+{/* cspell:ignore geospatial */}
+
+`@osdk/maker-import` turns the metadata of an ontology that already exists in Foundry into TypeScript modules. Import those modules into your `.ontology/ontology.mts` file to link to, implement, or reuse existing types without redefining them.
+
+Imported types are references, not definitions: maker writes them to the IR's `importedOntology` section, and your ontology does not create or change them.
+
+## Install
+
+```npm
+npm install --save-dev @osdk/maker-import @osdk/maker
+```
+
+## Get the ontology metadata
+
+`maker-import` reads an `OntologyFullMetadata` JSON file, the response of the Foundry endpoint `GET /api/v2/ontologies/{ontology}/fullMetadata`. Two ways to get it:
+
+- **From the OSDK CLI.** `osdk unstable typescript generate` with `--foundryUrl`, `--clientId`, and `--ontologyWritePath ontology-full-metadata.json` signs you in, fetches the metadata, and writes it to that path while it generates an SDK.
+- **From the API.** Call the endpoint with a token that can read the ontology, and save the response.
+
+## Generate the modules
+
+```sh
+npx maker-import -i ontology-full-metadata.json -o .ontology/imports
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `-i`, `--input` | `string` | | Required. The `OntologyFullMetadata` JSON file. |
+| `-o`, `--output` | `string` | `./generated-imports` | The output directory. |
+
+The output has one module per type and an `index.ts` that re-exports them all:
+
+<Files>
+  <Folder name="imports" defaultOpen>
+    <File name="index.ts" />
+    <Folder name="codegen" defaultOpen>
+      <Folder name="shared-property-types" />
+      <Folder name="interface-types" />
+      <Folder name="object-types" />
+      <Folder name="action-types" />
+    </Folder>
+  </Folder>
+</Files>
+
+Each export is named after the type's API name, without its namespace, in camelCase: `Employee` becomes `employee` and `modify-employee` becomes `modifyEmployee`. When two types share a short name, both use the full API name instead, such as `comExampleEmployee`, and any remaining clash gets a numeric suffix. Each run deletes and rewrites the four `codegen` folders.
+
+## Use imported types
+
+Each export is a proxy. The first time your ontology reads one of its properties, maker records the type as imported, along with the shared property types its properties use. Exports you never touch stay out of the IR.
+
+```ts title=".ontology/ontology.mts"
+import { defineLink, defineObject } from "@osdk/maker";
+
+import { employee } from "./imports/index.js";
+
+export const badge = defineObject({
+  apiName: "Badge",
+  displayName: "Badge",
+  pluralDisplayName: "Badges",
+  primaryKeyPropertyApiName: "badgeId",
+  titlePropertyApiName: "badgeId",
+  properties: {
+    badgeId: { type: "string" },
+    employeeId: { type: "integer" },
+  },
+});
+
+export const employeeBadges = defineLink({
+  apiName: "employee-badges",
+  one: { object: employee, metadata: { apiName: "badges" } },
+  toMany: { object: badge, metadata: { apiName: "employee" } },
+  manyForeignKeyProperty: "employeeId",
+});
+```
+
+The generated modules are TypeScript files that import each other with `.js` extensions, so Node cannot load them as they are. Compile the output directory with `tsc` as an ES module project before you run maker, or publish it as a compiled package. The example above imports the compiled `./imports/index.js`.
+
+<Callout type="info">
+  An interface link constraint or an interface action type constraint cannot start from an imported interface. Define them only on interfaces in your own ontology.
+</Callout>
+
+## What is converted
+
+| Metadata | Converted to | Notes |
+| --- | --- | --- |
+| Shared property types | `SharedPropertyType` | API name, display name, description, and type. |
+| Interfaces | `InterfaceType` | Properties, including interface-defined properties, links, and the interfaces they extend. Status is always active, and action type constraints are not included. |
+| Object types | `ObjectType` | Properties, primary key, title, description, visibility, and shared property types. Status is active or experimental. `pluralDisplayName` is the display name with `s` added. |
+| Action types | `ActionType` | Parameters only, with no logic rules. Status is active or experimental. |
+| Link types | Not converted | Define links to imported object types yourself, as above. |
+
+Marking properties are imported with the marking input name `not-applicable`, because the existing type already owns its marking configuration.
+
+`maker-import` throws on types it cannot represent, naming the type:
+
+- Property types other than the primitive, geospatial, media, attachment, marking, struct, array, vector, and geotime series types. A marking property must have a `markingType`.
+- Struct fields that are arrays or structs, and struct main values that are arrays.
+- Vector properties that support more than one search similarity function, or whose embedding model is missing settings.
+- Vector action parameters, and action parameter types with no maker equivalent.
+
+## Use it from code
+
+The package also exports the conversion functions:
+
+```ts title="scripts/import-ontology.ts"
+import * as fs from "node:fs";
+
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+import { convertOntologyFullMetadata, writeImportedOntology } from "@osdk/maker-import";
+
+const metadata = JSON.parse(
+  fs.readFileSync("ontology-full-metadata.json", "utf-8"),
+) as OntologyFullMetadata;
+
+const definition = convertOntologyFullMetadata(metadata);
+console.log(Object.keys(definition.OBJECT_TYPE));
+
+writeImportedOntology(metadata, ".ontology/imports");
+```
+
+| Function | Returns | Description |
+| --- | --- | --- |
+| `convertOntologyFullMetadata(metadata)` | `OntologyDefinition` | Converts the metadata to maker's in-memory form, keyed by entity kind and API name, without writing files. |
+| `writeImportedOntology(metadata, outputDir)` | `void` | Converts the metadata and writes the modules, as the CLI does. |
+
+## Share types between ontology-as-code projects
+
+To reuse types from another ontology-as-code project instead of from Foundry, compile that project with `maker --outputDir`. Maker writes the same module layout, plus `link-types` and `value-types` folders, and its `index.ts` records the package's namespace and version when it loads, so a consuming project can list it with `maker --dependencies <file>`. As with `maker-import` output, compile or publish the modules before you import them.
