@@ -207,3 +207,80 @@ describe("ObjectSetQuery cache reconciliation", () => {
     });
   });
 });
+
+describe("ObjectSetQuery websocket out of date", () => {
+  let client: Client;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+    ontologies.addEmployeeOntology(testSetup.fauxFoundry.getDefaultOntology());
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+  });
+
+  function getQuery() {
+    return store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
+      mode: "offline",
+    });
+  }
+
+  function fireOutOfDate(query: ReturnType<typeof getQuery>) {
+    (query as unknown as { onOswOutOfDate(): void }).onOswOutOfDate();
+  }
+
+  it("forces a revalidate when the subscription goes out of date", async () => {
+    const query = getQuery();
+    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+
+    fireOutOfDate(query);
+
+    await vitest.waitFor(() => expect(revalidate).toHaveBeenCalledWith(true));
+  });
+
+  it("waits for an in-flight fetch before revalidating", async () => {
+    const query = getQuery();
+    let resolvePending!: () => void;
+    query.pendingFetch = new Promise<void>((resolve) => {
+      resolvePending = resolve;
+    });
+    const revalidate = vitest
+      .spyOn(query, "revalidate")
+      .mockImplementation(() => {
+        expect(query.pendingFetch).toBeUndefined();
+        return Promise.resolve();
+      });
+
+    fireOutOfDate(query);
+    await Promise.resolve();
+    expect(revalidate).not.toHaveBeenCalled();
+
+    query.pendingFetch = undefined;
+    resolvePending();
+
+    await vitest.waitFor(() => expect(revalidate).toHaveBeenCalledWith(true));
+    expect(revalidate).toHaveBeenCalledTimes(1);
+  });
+
+  it("still revalidates if the in-flight fetch fails", async () => {
+    const query = getQuery();
+    query.pendingFetch = Promise.reject(new Error("boom"));
+    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+
+    fireOutOfDate(query);
+
+    await vitest.waitFor(() => expect(revalidate).toHaveBeenCalledWith(true));
+    query.pendingFetch = undefined;
+  });
+});
