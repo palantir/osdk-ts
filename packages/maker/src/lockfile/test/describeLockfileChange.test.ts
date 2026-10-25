@@ -16,23 +16,25 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { InterfaceSchemaMigrationInstruction } from "../../api/interface/InterfaceSchemaMigrations.js";
 import {
   describeBreakingChange,
   describeWarning,
 } from "../describeLockfileChange.js";
-import type { LockedProperty } from "../OntologySchemaLockfile.js";
+import type {
+  LockedInstruction,
+  LockedProperty,
+} from "../OntologySchemaLockfile.js";
 import type {
   LockfileBreakingChange,
-  TargetPropertyState,
+  TargetState,
 } from "../validateOntologySchemaLockfile.js";
 
 const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
 
 describe("describeBreakingChange", () => {
   function ambiguous(
-    instructions: InterfaceSchemaMigrationInstruction[],
-    targets: TargetPropertyState[],
+    instructions: LockedInstruction[],
+    targets: TargetState[],
   ): string {
     return describeBreakingChange({
       code: "ambiguousDisappearance",
@@ -322,6 +324,105 @@ describe("describeBreakingChange", () => {
     });
   });
 
+  describe("action type constraints", () => {
+    const SUGGESTED =
+      '{ id: "require-sendEmail", title: "Require sendEmail", ' +
+      'gracePeriod: { type: "afterInstall", days: 30 }, ' +
+      'instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "sendEmail" }] }';
+
+    it.each<LockfileBreakingChange>([
+      {
+        code: "actionTypeConstraintBecameRequired",
+        interfaceApiName: "Person",
+        actionTypeConstraint: "com.example.sendEmail",
+      },
+      {
+        code: "requiredActionTypeConstraintAdded",
+        interfaceApiName: "Person",
+        actionTypeConstraint: "com.example.sendEmail",
+      },
+    ])("suggests the transition to declare for $code", (breakingChange) => {
+      const message = describeBreakingChange(breakingChange);
+      expect(message).toContain(SUGGESTED);
+      expect(message).toContain("`requireImplementation: false`");
+      expect(message).not.toContain("com.example.sendEmail");
+    });
+
+    it("explains an ambiguous disappearance over the target constraint", () => {
+      const message = ambiguous(
+        [
+          {
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "com.example.sendEmail",
+          },
+        ],
+        [
+          {
+            actionTypeConstraintApiName: "com.example.sendEmail",
+            previous: { requireImplementation: false },
+            next: undefined,
+          },
+        ],
+      );
+      expect(message).toContain(
+        'Instead, action type constraint "sendEmail" was removed from the interface.',
+      );
+      expect(message).toContain(
+        'To finalize it, set "sendEmail" to `requireImplementation: true`.',
+      );
+      expect(message).toContain(
+        'To delete it, leave "sendEmail" exactly as the lockfile records it.',
+      );
+    });
+  });
+
+  describe("deprecation", () => {
+    it("tells the author to declare a deprecate transition", () => {
+      expect(
+        describeBreakingChange({
+          code: "newImplementationsDisallowed",
+          interfaceApiName: "Person",
+        }),
+      ).toContain(
+        "phase the deprecation in instead, so that implementing object types get a grace " +
+          'period to move off it, through a migration like:\n  { id: "deprecate", ' +
+          'title: "Deprecate", gracePeriod: { type: "afterInstall", days: 30 }, ' +
+          'instructions: [{ type: "deprecate" }] }',
+      );
+    });
+
+    it("says no transitions may follow a finalized deprecation", () => {
+      const message = describeBreakingChange({
+        code: "transitionAfterFinalizedDeprecation",
+        interfaceApiName: "Person",
+        transitionId: "requireLastName",
+      });
+      expect(message).toContain(
+        "No future transitions are allowed after a deprecation is finalized.",
+      );
+      expect(message).toContain('Remove "requireLastName"');
+    });
+
+    it("names the replacement of a changed deprecate instruction", () => {
+      expect(
+        describeBreakingChange({
+          code: "instructionsChanged",
+          interfaceApiName: "Person",
+          transitionId: "deprecate",
+          previousInstructions: [
+            {
+              type: "deprecate",
+              replacement: { interfaceType: "com.example.PersonV2" },
+            },
+          ],
+          nextInstructions: [{ type: "deprecate" }],
+        }),
+      ).toContain(
+        'from [deprecate(replacement: "com.example.PersonV2")] to [deprecate()]',
+      );
+    });
+  });
+
   describe("authored names", () => {
     // A shared property type publishes under a namespaced api name, which the lockfile records
     // verbatim, but the author keys it by the un-namespaced name.
@@ -455,6 +556,32 @@ describe("describeWarning", () => {
     previousConstraint: "MUST_BE_PK",
   });
 
+  const actionTypeConstraintRequirementRelaxed = describeWarning({
+    code: "actionTypeConstraintRequirementRelaxed",
+    interfaceApiName: "Person",
+    actionTypeConstraint: "com.example.sendEmail",
+  });
+
+  const actionTypeConstraintRemoved = describeWarning({
+    code: "actionTypeConstraintRemoved",
+    interfaceApiName: "Person",
+    actionTypeConstraint: "com.example.sendEmail",
+  });
+
+  const newImplementationsAllowed = describeWarning({
+    code: "newImplementationsAllowed",
+    interfaceApiName: "Person",
+  });
+
+  it("names the authored constraint that no longer requires implementation", () => {
+    expect(actionTypeConstraintRequirementRelaxed).toContain(
+      'action type constraint "sendEmail" no longer requires implementation',
+    );
+    expect(actionTypeConstraintRemoved).toContain(
+      'action type constraint "sendEmail" was removed',
+    );
+  });
+
   it("names the key the author wrote for a relaxed requirement", () => {
     expect(requirementRelaxed).toContain(
       'property "lastName" is no longer required',
@@ -518,6 +645,21 @@ describe("describeWarning", () => {
       name: "a dropped primary key constraint",
       message: primaryKeyConstraintRelaxed,
       affected: "free to map it either way",
+    },
+    {
+      name: "a constraint no longer required",
+      message: actionTypeConstraintRequirementRelaxed,
+      affected: "will start finding it missing",
+    },
+    {
+      name: "a removed constraint",
+      message: actionTypeConstraintRemoved,
+      affected: "will stop finding it",
+    },
+    {
+      name: "a walked-back deprecation",
+      message: newImplementationsAllowed,
+      affected: "may start implementing it again",
     },
   ])(
     "says who is affected by $name without demanding a fix",

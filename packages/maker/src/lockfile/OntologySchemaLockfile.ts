@@ -19,10 +19,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { TypeClass } from "../api/common/TypeClass.js";
 import { withoutNamespace } from "../api/defineOntology.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
-import type {
-  InterfaceSchemaGracePeriod,
-  InterfaceSchemaMigrationInstruction,
-} from "../api/interface/InterfaceSchemaMigrations.js";
+import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 
@@ -77,6 +74,29 @@ export interface LockedInterfaceSchema {
    * property it contributed.
    */
   extendsInterfaces?: string[];
+  /**
+   * The action type constraints the interface declares directly (i.e. non-inherited), keyed by
+   * fully-qualified api name. Absent when it declares none.
+   */
+  actionTypeConstraints?: Record<string, LockedActionTypeConstraint>;
+  /**
+   * Present only when the interface is deprecated and no longer accepts new implementations, i.e.
+   * a `deprecate` migration was finalized. Absent means new implementations are allowed.
+   *
+   * While a `deprecate` migration is in flight this is absent regardless of what the status says,
+   * since the lockfile records the lenient form.
+   */
+  allowNewImplementations?: false;
+}
+
+export interface LockedActionTypeConstraint {
+  /**
+   * Whether implementing object types must provide an action type for this constraint.
+   *
+   * Recorded explicitly, like `LockedProperty.required`, because it is the constraint's defining
+   * attribute rather than a departure from a default.
+   */
+  requireImplementation: boolean;
 }
 
 /** Where a property's definition comes from. */
@@ -111,7 +131,28 @@ export interface LockedProperty {
 export interface LockedTransition {
   id: string;
   gracePeriod: InterfaceSchemaGracePeriod;
-  instructions: InterfaceSchemaMigrationInstruction[];
+  instructions: LockedInstruction[];
+}
+
+/**
+ * An `InterfaceSchemaMigrationInstruction` in the form the lockfile records it: every entity it
+ * references is named by the fully-qualified api name it publishes under, and nothing is an object
+ * reference, so it survives a JSON round trip.
+ */
+export type LockedInstruction =
+  | { type: "addRequiredProperty"; property: string }
+  | { type: "addRequiredActionTypeConstraint"; actionTypeConstraint: string }
+  | { type: "deprecate"; replacement?: LockedInterfaceTypeReplacement };
+
+export interface LockedInterfaceTypeReplacement {
+  /** The replacement's fully-qualified api name. */
+  interfaceType: string;
+  /** Deprecated interface's property api name -> replacement's. Absent when empty. */
+  propertyMappings?: Record<string, string>;
+  /** Same as `propertyMappings`, for link type constraints. Absent when empty. */
+  linkTypeConstraintMappings?: Record<string, string>;
+  /** Same as `propertyMappings`, for action type constraints. Absent when empty. */
+  actionTypeConstraintMappings?: Record<string, string>;
 }
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
@@ -120,6 +161,18 @@ export function declarationOf(property: LockedProperty): PropertyDeclaration {
 
 export function extensionsOf(schema: LockedInterfaceSchema): readonly string[] {
   return schema.extendsInterfaces ?? [];
+}
+
+export function actionTypeConstraintsOf(
+  schema: LockedInterfaceSchema,
+): Record<string, LockedActionTypeConstraint> {
+  return schema.actionTypeConstraints ?? {};
+}
+
+export function allowNewImplementationsOf(
+  schema: LockedInterfaceSchema,
+): boolean {
+  return schema.allowNewImplementations ?? true;
 }
 
 export function primaryKeyConstraintOf(

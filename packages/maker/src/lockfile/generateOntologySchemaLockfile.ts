@@ -19,7 +19,7 @@ import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unst
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../api/common/TypeClass.js";
-import { mapPropertyNames } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
+import { namespace } from "../api/defineOntology.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
@@ -32,12 +32,24 @@ import {
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "../api/interface/InterfacePropertyType.js";
+import type {
+  InterfaceSchemaMigrationInstruction,
+  InterfaceTypeReplacement,
+} from "../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
+import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
 import type { Nullability } from "../api/properties/Nullability.js";
+import {
+  type ResolvedInterfaceMemberMapping,
+  resolveInterfaceTypeReplacementApiNames,
+} from "../conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedActionTypeConstraint,
+  LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
+  LockedInterfaceTypeReplacement,
   LockedProperty,
   LockedTransition,
   LockedValueType,
@@ -113,13 +125,54 @@ function lockInterfaceSchema(
     )
     .sort(([a], [b]) => compare(a, b));
   const extendsInterfaces = lockExtensions(interfaceType);
+  const actionTypeConstraints = lockActionTypeConstraints(interfaceType);
 
   return {
     properties: Object.fromEntries(locked),
     // NB: spread rather than assigned `undefined` so a lockfile read back from disk (where absents
     // have no key at all) still compare equal.
     ...(extendsInterfaces !== undefined && { extendsInterfaces }),
+    ...(actionTypeConstraints !== undefined && { actionTypeConstraints }),
+    ...(!allowsNewImplementations(interfaceType) && {
+      allowNewImplementations: false as const,
+    }),
   };
+}
+
+function lockActionTypeConstraints(
+  interfaceType: InterfaceType,
+): Record<string, LockedActionTypeConstraint> | undefined {
+  if (interfaceType.actionTypeConstraints.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    interfaceType.actionTypeConstraints
+      .map(
+        ({ metadata, requireImplementation }) =>
+          [metadata.apiName, { requireImplementation }] as const,
+      )
+      .sort(([a], [b]) => compare(a, b)),
+  );
+}
+
+/**
+ * Whether the lenient form of the interface accepts new implementations. An in-flight `deprecate`
+ * may already disallow them, but finalizing is what makes that binding, so until then the lockfile
+ * records the default.
+ */
+function allowsNewImplementations(interfaceType: InterfaceType): boolean {
+  const { status, schemaMigrations } = interfaceType;
+  const deprecating = (schemaMigrations?.transitions ?? []).some((transition) =>
+    transition.instructions.some(
+      (instruction) => instruction.type === "deprecate",
+    ),
+  );
+  return (
+    deprecating ||
+    status.type !== "deprecated" ||
+    status.deprecated.allowNewImplementations !== false
+  );
 }
 
 function lockExtensions(interfaceType: InterfaceType): string[] | undefined {
@@ -199,7 +252,7 @@ function lockTypeClasses(
 function lockInterfaceSchemaMigrationTransitions(
   interfaceType: InterfaceType,
 ): LockedTransition[] {
-  const { schemaMigrations, propertiesV3 } = interfaceType;
+  const { schemaMigrations } = interfaceType;
   if (schemaMigrations === undefined) {
     return [];
   }
@@ -209,15 +262,97 @@ function lockInterfaceSchemaMigrationTransitions(
       id: transition.id,
       gracePeriod: transition.gracePeriod,
       instructions: transition.instructions
-        .map((instruction) =>
-          mapPropertyNames(instruction, (propertyApiName) =>
-            wireApiNameOf(instruction.type, propertyApiName, propertiesV3),
-          ),
-        )
+        .map((instruction) => lockInstruction(instruction, interfaceType))
         // Instructions have no unique stable identifier, so JSON them instead for sort stability
         .sort((a, b) => compare(JSON.stringify(a), JSON.stringify(b))),
     }))
     .sort((a, b) => compare(a.id, b.id));
+}
+
+/** The instruction as the lockfile records it, naming everything by its published api name. */
+function lockInstruction(
+  instruction: InterfaceSchemaMigrationInstruction,
+  interfaceType: InterfaceType,
+): LockedInstruction {
+  switch (instruction.type) {
+    case "addRequiredProperty":
+      return {
+        type: "addRequiredProperty",
+        property: wireApiNameOf(
+          instruction.type,
+          instruction.property,
+          interfaceType.propertiesV3,
+        ),
+      };
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        actionTypeConstraint: combineApiNamespaceIfMissing(
+          namespace,
+          instruction.actionTypeConstraint,
+        ),
+      };
+    case "deprecate":
+      return instruction.replacement === undefined
+        ? { type: "deprecate" }
+        : {
+            type: "deprecate",
+            replacement: lockReplacement(
+              interfaceType,
+              instruction.replacement,
+            ),
+          };
+    default: {
+      const unhandled: never = instruction;
+      throw new Error(
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
+      );
+    }
+  }
+}
+
+/** The replacement under the same api names conversion publishes it with. */
+function lockReplacement(
+  interfaceType: InterfaceType,
+  replacement: InterfaceTypeReplacement,
+): LockedInterfaceTypeReplacement {
+  const resolved = resolveInterfaceTypeReplacementApiNames(
+    interfaceType,
+    replacement,
+  );
+  const propertyMappings = lockMappings(resolved.propertyMappings);
+  const linkTypeConstraintMappings = lockMappings(
+    resolved.linkTypeConstraintMappings,
+  );
+  const actionTypeConstraintMappings = lockMappings(
+    resolved.actionTypeConstraintMappings,
+  );
+  return {
+    interfaceType: resolved.interfaceTypeApiName,
+    ...(propertyMappings !== undefined && { propertyMappings }),
+    ...(linkTypeConstraintMappings !== undefined && {
+      linkTypeConstraintMappings,
+    }),
+    ...(actionTypeConstraintMappings !== undefined && {
+      actionTypeConstraintMappings,
+    }),
+  };
+}
+
+function lockMappings(
+  mappings: readonly ResolvedInterfaceMemberMapping[],
+): Record<string, string> | undefined {
+  if (mappings.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    mappings
+      .map(({ from, to }) => [from.apiName, to.apiName] as const)
+      .sort(([a], [b]) => compare(a, b)),
+  );
 }
 
 /**

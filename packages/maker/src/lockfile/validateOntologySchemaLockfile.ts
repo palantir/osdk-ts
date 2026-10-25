@@ -18,16 +18,19 @@ import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
-import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
   reproduces,
+  targetActionTypeConstraintsOf,
   targetPropertiesOf,
+  targetsOf,
 } from "./applyInterfaceSchemaTransition.js";
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedActionTypeConstraint,
+  LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
   LockedProperty,
@@ -37,6 +40,8 @@ import type {
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
 import {
+  actionTypeConstraintsOf,
+  allowNewImplementationsOf,
   authoredKeyOf,
   declarationOf,
   extensionsOf,
@@ -67,6 +72,15 @@ export interface TargetPropertyState {
   next: LockedProperty | undefined;
 }
 
+/** An action type constraint a transition targets, as the lockfile records it and as the source now declares it. */
+export interface TargetActionTypeConstraintState {
+  actionTypeConstraintApiName: string;
+  previous: LockedActionTypeConstraint | undefined;
+  next: LockedActionTypeConstraint | undefined;
+}
+
+export type TargetState = TargetPropertyState | TargetActionTypeConstraintState;
+
 /** A change that would be rejected at installation-time, in machine-readable form. */
 export type LockfileBreakingChange =
   /**
@@ -77,16 +91,37 @@ export type LockfileBreakingChange =
       code: "ambiguousDisappearance";
       interfaceApiName: string;
       transitionId: string;
-      targets: readonly TargetPropertyState[];
+      targets: readonly TargetState[];
       /** What the vanished transition instructed, as the lockfile recorded it. */
-      instructions: readonly InterfaceSchemaMigrationInstruction[];
+      instructions: readonly LockedInstruction[];
     }
   | {
       code: "instructionsChanged";
       interfaceApiName: string;
       transitionId: string;
-      previousInstructions: readonly InterfaceSchemaMigrationInstruction[];
-      nextInstructions: readonly InterfaceSchemaMigrationInstruction[];
+      previousInstructions: readonly LockedInstruction[];
+      nextInstructions: readonly LockedInstruction[];
+    }
+  /**
+   * The interface stopped accepting new implementations in an earlier release, so it is on its way
+   * out, and no migration can be phased in on it any more.
+   */
+  | {
+      code: "transitionAfterFinalizedDeprecation";
+      interfaceApiName: string;
+      transitionId: string;
+    }
+  /** The interface stopped accepting new implementations without finalizing a `deprecate`. */
+  | { code: "newImplementationsDisallowed"; interfaceApiName: string }
+  | {
+      code: "actionTypeConstraintBecameRequired";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  | {
+      code: "requiredActionTypeConstraintAdded";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
     }
   | {
       code: "interfaceExtensionAdded";
@@ -191,7 +226,20 @@ export type LockfileWarning =
       code: "interfaceExtensionRemoved";
       interfaceApiName: string;
       extendedInterfaceApiName: string;
-    };
+    }
+  /** An action type constraint implementing object types had to implement no longer has to be. */
+  | {
+      code: "actionTypeConstraintRequirementRelaxed";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  | {
+      code: "actionTypeConstraintRemoved";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  /** A finalized deprecation was walked back: the interface accepts new implementations again. */
+  | { code: "newImplementationsAllowed"; interfaceApiName: string };
 
 export interface LockfileValidationResult {
   /**
@@ -279,9 +327,13 @@ function validateInterface(
     nextInterface.transitions.map((transition) => [transition.id, transition]),
   );
 
-  // Authored keys whose change is already explained by a finalization or deletion, and so must be
-  // exempt from the general breaking-change checks below.
-  const propertiesAccountedFor = new Set<string>();
+  // Schema elements whose change is already explained by a finalization or deletion, and so must
+  // be exempt from the general breaking-change checks below.
+  const accountedFor: AccountedFor = {
+    properties: new Set(),
+    actionTypeConstraints: new Set(),
+    allowNewImplementations: false,
+  };
 
   for (const previousTransition of previousInterface.transitions) {
     const nextTransition = nextTransitions.get(previousTransition.id);
@@ -307,10 +359,26 @@ function validateInterface(
         });
       }
 
-      // Whether the disappearance was legal or not, its target properties have been reported on;
+      // Whether the disappearance was legal or not, its targets have been reported on;
       // re-reporting them as raw schema breaks would only add noise.
-      for (const property of targetPropertiesOf(previousTransition)) {
-        propertiesAccountedFor.add(authoredKeyOf(property));
+      for (const element of targetsOf(previousTransition)) {
+        switch (element.kind) {
+          case "property":
+            accountedFor.properties.add(authoredKeyOf(element.apiName));
+            break;
+          case "actionTypeConstraint":
+            accountedFor.actionTypeConstraints.add(element.apiName);
+            break;
+          case "allowNewImplementations":
+            accountedFor.allowNewImplementations = true;
+            break;
+          default: {
+            const unhandled: never = element;
+            throw new Error(
+              `Unknown schema element: ${JSON.stringify(unhandled)}`,
+            );
+          }
+        }
       }
       continue;
     }
@@ -323,6 +391,13 @@ function validateInterface(
     );
   }
 
+  validateNoTransitionsAfterFinalizedDeprecation(
+    interfaceApiName,
+    previousInterface,
+    nextInterface,
+    breakingChanges,
+  );
+
   validateExtensionsDiff(
     interfaceApiName,
     previousInterface.schema,
@@ -334,9 +409,155 @@ function validateInterface(
     interfaceApiName,
     previousInterface.schema,
     nextInterface.schema,
-    propertiesAccountedFor,
+    accountedFor.properties,
     result,
   );
+
+  validateActionTypeConstraintsDiff(
+    interfaceApiName,
+    previousInterface.schema,
+    nextInterface.schema,
+    accountedFor.actionTypeConstraints,
+    result,
+  );
+
+  if (!accountedFor.allowNewImplementations) {
+    validateAllowNewImplementationsDiff(
+      interfaceApiName,
+      previousInterface.schema,
+      nextInterface.schema,
+      result,
+    );
+  }
+}
+
+interface AccountedFor {
+  /** Authored keys. */
+  properties: Set<string>;
+  /** Fully-qualified api names. */
+  actionTypeConstraints: Set<string>;
+  allowNewImplementations: boolean;
+}
+
+/**
+ * Once a deprecation is finalized the interface only awaits removal. Per the interface schema
+ * migrations RFC it may not phase in anything further; OMS does not enforce this yet.
+ */
+function validateNoTransitionsAfterFinalizedDeprecation(
+  interfaceApiName: string,
+  previousInterface: LockedInterfaceType,
+  nextInterface: LockedInterfaceType,
+  breakingChanges: LockfileBreakingChange[],
+): void {
+  if (allowNewImplementationsOf(previousInterface.schema)) {
+    return;
+  }
+
+  const previousIds = new Set(
+    previousInterface.transitions.map((transition) => transition.id),
+  );
+  for (const transition of nextInterface.transitions) {
+    if (!previousIds.has(transition.id)) {
+      breakingChanges.push({
+        code: "transitionAfterFinalizedDeprecation",
+        interfaceApiName,
+        transitionId: transition.id,
+      });
+    }
+  }
+}
+
+/**
+ * Reports changes to the action type constraints the interface declares directly.
+ *
+ * OMS rejects an implementing object type that lacks an implementation of a constraint with
+ * `requireImplementation: true` (`InterfaceActionTypeConstraintImplementationValidator`), and
+ * re-runs that for every existing implementor when the interface changes
+ * (`ObjectTypeInterfaceImplementationModificationValidator.validateDeploy`), so requiring one
+ * breaks untouched object types. Nothing in OMS rejects removing a constraint
+ * (`InterfaceTypeModificationValidator` only guards property removal), so that is only a warning.
+ */
+function validateActionTypeConstraintsDiff(
+  interfaceApiName: string,
+  previousSchema: LockedInterfaceSchema,
+  nextSchema: LockedInterfaceSchema,
+  accountedFor: ReadonlySet<string>,
+  { breakingChanges, warnings }: LockfileValidationResult,
+): void {
+  const previousConstraints = actionTypeConstraintsOf(previousSchema);
+  const nextConstraints = actionTypeConstraintsOf(nextSchema);
+
+  for (const [actionTypeConstraint, previous] of Object.entries(
+    previousConstraints,
+  )) {
+    if (accountedFor.has(actionTypeConstraint)) {
+      continue;
+    }
+
+    const next = own(nextConstraints, actionTypeConstraint);
+    if (next === undefined) {
+      warnings.push({
+        code: "actionTypeConstraintRemoved",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+      continue;
+    }
+
+    if (!previous.requireImplementation && next.requireImplementation) {
+      breakingChanges.push({
+        code: "actionTypeConstraintBecameRequired",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    } else if (previous.requireImplementation && !next.requireImplementation) {
+      warnings.push({
+        code: "actionTypeConstraintRequirementRelaxed",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    }
+  }
+
+  for (const [actionTypeConstraint, next] of Object.entries(nextConstraints)) {
+    if (
+      accountedFor.has(actionTypeConstraint) ||
+      own(previousConstraints, actionTypeConstraint) !== undefined
+    ) {
+      continue;
+    }
+
+    if (next.requireImplementation) {
+      breakingChanges.push({
+        code: "requiredActionTypeConstraintAdded",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    }
+  }
+}
+
+/**
+ * Disallowing new implementations only binds object types that don't implement the interface yet,
+ * but it is how a `deprecate` migration is finalized, so doing it without one skips the grace
+ * period the RFC promises existing implementors. OMS does not enforce this yet.
+ */
+function validateAllowNewImplementationsDiff(
+  interfaceApiName: string,
+  previousSchema: LockedInterfaceSchema,
+  nextSchema: LockedInterfaceSchema,
+  { breakingChanges, warnings }: LockfileValidationResult,
+): void {
+  const previous = allowNewImplementationsOf(previousSchema);
+  const next = allowNewImplementationsOf(nextSchema);
+  if (previous && !next) {
+    breakingChanges.push({
+      code: "newImplementationsDisallowed",
+      interfaceApiName,
+    });
+  } else if (!previous && next) {
+    warnings.push({ code: "newImplementationsAllowed", interfaceApiName });
+  }
 }
 
 function validateExtensionsDiff(
@@ -373,7 +594,7 @@ function validateExtensionsDiff(
 type Disappearance =
   | { kind: "finalized" }
   | { kind: "deleted" }
-  | { kind: "ambiguous"; targets: readonly TargetPropertyState[] };
+  | { kind: "ambiguous"; targets: readonly TargetState[] };
 
 function classifyDisappearance(
   transition: LockedTransition,
@@ -392,11 +613,28 @@ function classifyDisappearance(
 
   return {
     kind: "ambiguous",
-    targets: targetPropertiesOf(transition).map((propertyApiName) => ({
-      propertyApiName,
-      previous: own(previousSchema.properties, propertyApiName),
-      next: own(nextSchema.properties, propertyApiName),
-    })),
+    targets: [
+      ...targetPropertiesOf(transition).map(
+        (propertyApiName): TargetPropertyState => ({
+          propertyApiName,
+          previous: own(previousSchema.properties, propertyApiName),
+          next: own(nextSchema.properties, propertyApiName),
+        }),
+      ),
+      ...targetActionTypeConstraintsOf(transition).map(
+        (actionTypeConstraintApiName): TargetActionTypeConstraintState => ({
+          actionTypeConstraintApiName,
+          previous: own(
+            actionTypeConstraintsOf(previousSchema),
+            actionTypeConstraintApiName,
+          ),
+          next: own(
+            actionTypeConstraintsOf(nextSchema),
+            actionTypeConstraintApiName,
+          ),
+        }),
+      ),
+    ],
   };
 }
 

@@ -18,11 +18,13 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import type { TypeClass } from "../../api/common/TypeClass.js";
 import { defineInterface } from "../../api/defineInterface.js";
+import { defineInterfaceActionTypeConstraint } from "../../api/defineInterfaceActionTypeConstraint.js";
 import {
   defineOntology,
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
 import { defineSharedPropertyType } from "../../api/defineSpt.js";
+import type { InterfaceSchemaTransition } from "../../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import { defaultTypeClasses } from "../../api/propertyConversionUtils.js";
 import {
@@ -522,6 +524,277 @@ describe("generateOntologySchemaLockfile", () => {
 
       expect(Object.keys(lockedSchema())).toEqual(["properties"]);
     });
+  });
+});
+
+describe("action type constraints", () => {
+  function constrain(
+    interfaceType: InterfaceType,
+    apiName: string,
+    requireImplementation: boolean,
+  ): void {
+    defineInterfaceActionTypeConstraint({
+      interfaceType,
+      apiName,
+      displayName: apiName,
+      description: apiName,
+      requireImplementation,
+      parameters: [],
+    });
+  }
+
+  it("records each directly-declared constraint by api name, sorted, with whether it is required", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(person, "sendEmail", false);
+    constrain(person, "archive", true);
+
+    expect(lockedSchema().actionTypeConstraints).toEqual({
+      "com.palantir.archive": { requireImplementation: true },
+      "com.palantir.sendEmail": { requireImplementation: false },
+    });
+    expect(
+      Object.keys(lockedSchema().actionTypeConstraints ?? {}),
+    ).toStrictEqual(["com.palantir.archive", "com.palantir.sendEmail"]);
+  });
+
+  it("does not record the constraints an extended interface declares", () => {
+    const named = defineInterface({
+      apiName: "Named",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(named, "rename", true);
+    defineInterface({
+      apiName: "Person",
+      extends: [named],
+      schemaMigrations: { transitions: [] },
+    });
+
+    expect(Object.keys(lockedSchema())).toEqual([
+      "properties",
+      "extendsInterfaces",
+    ]);
+  });
+
+  it("omits the key for an interface that declares none", () => {
+    defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+
+    expect(Object.keys(lockedSchema())).toEqual(["properties"]);
+  });
+
+  it("records an addRequiredActionTypeConstraint instruction by fully-qualified api name", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: {
+        transitions: [
+          {
+            id: "requireSendEmail",
+            title: "Require send email",
+            gracePeriod: { type: "afterInstall", days: 30 },
+            instructions: [
+              {
+                type: "addRequiredActionTypeConstraint",
+                actionTypeConstraint: "sendEmail",
+              },
+            ],
+          },
+        ],
+      },
+    });
+    constrain(person, "sendEmail", false);
+
+    expect(
+      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+        "com.palantir.Person"
+      ].transitions,
+    ).toEqual([
+      {
+        id: "requireSendEmail",
+        gracePeriod: { type: "afterInstall", days: 30 },
+        instructions: [
+          {
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "com.palantir.sendEmail",
+          },
+        ],
+      },
+    ]);
+  });
+});
+
+describe("deprecation", () => {
+  const DEPRECATED = {
+    type: "deprecated",
+    message: "Use PersonV2",
+    deadline: "2030-01-01T00:00:00Z",
+  } as const;
+
+  function deprecateTo(replacement?: InterfaceType): InterfaceSchemaTransition {
+    return {
+      id: "deprecate",
+      title: "Deprecate",
+      gracePeriod: { type: "afterInstall", days: 30 },
+      instructions: [
+        replacement === undefined
+          ? { type: "deprecate" }
+          : {
+              type: "deprecate",
+              replacement: {
+                interfaceType: replacement,
+                propertyMappings: { name: "fullName" },
+              },
+            },
+      ],
+    };
+  }
+
+  it("records a finalized deprecation as disallowing new implementations", () => {
+    defineInterface({
+      apiName: "Person",
+      status: { ...DEPRECATED, allowNewImplementations: false },
+      schemaMigrations: { transitions: [] },
+    });
+
+    expect(lockedSchema()).toStrictEqual({
+      properties: {},
+      allowNewImplementations: false,
+    });
+  });
+
+  it.each([true, undefined])(
+    "omits the key for a deprecated status with allowNewImplementations: %s",
+    (allowNewImplementations) => {
+      defineInterface({
+        apiName: "Person",
+        status: {
+          ...DEPRECATED,
+          ...(allowNewImplementations !== undefined && {
+            allowNewImplementations,
+          }),
+        },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedSchema())).toEqual(["properties"]);
+    },
+  );
+
+  it.each([true, false])(
+    "records the lenient form while a deprecate is in flight, whatever allowNewImplementations: %s says",
+    (allowNewImplementations) => {
+      defineInterface({
+        apiName: "Person",
+        status: { ...DEPRECATED, allowNewImplementations },
+        schemaMigrations: { transitions: [deprecateTo()] },
+      });
+
+      expect(Object.keys(lockedSchema())).toEqual(["properties"]);
+    },
+  );
+
+  it("records a deprecate instruction without a replacement as bare", () => {
+    defineInterface({
+      apiName: "Person",
+      status: DEPRECATED,
+      schemaMigrations: { transitions: [deprecateTo()] },
+    });
+
+    expect(
+      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+        "com.palantir.Person"
+      ].transitions[0].instructions,
+    ).toStrictEqual([{ type: "deprecate" }]);
+  });
+
+  it("records the replacement by api name, omitting empty mappings", () => {
+    const personV2 = defineInterface({
+      apiName: "PersonV2",
+      properties: { fullName: { type: "string" } },
+    });
+    defineInterface({
+      apiName: "Person",
+      status: DEPRECATED,
+      properties: { name: { type: "string" } },
+      schemaMigrations: { transitions: [deprecateTo(personV2)] },
+    });
+
+    expect(
+      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+        "com.palantir.Person"
+      ].transitions[0].instructions,
+    ).toStrictEqual([
+      {
+        type: "deprecate",
+        replacement: {
+          interfaceType: "com.palantir.PersonV2",
+          propertyMappings: { name: "fullName" },
+        },
+      },
+    ]);
+  });
+});
+
+describe("deprecation of an interface with inherited properties", () => {
+  it("records a mapping from an inherited property under its published api name", () => {
+    const email = defineSharedPropertyType({
+      apiName: "email",
+      type: "string",
+    });
+    const contactable = defineInterface({
+      apiName: "Contactable",
+      properties: { email: { sharedPropertyType: email, required: true } },
+      schemaMigrations: { transitions: [] },
+    });
+    const personV2 = defineInterface({
+      apiName: "PersonV2",
+      properties: { emailAddress: { type: "string" } },
+    });
+    defineInterface({
+      apiName: "Person",
+      extends: [contactable],
+      status: {
+        type: "deprecated",
+        message: "Use PersonV2",
+        deadline: "2030-01-01T00:00:00Z",
+      },
+      schemaMigrations: {
+        transitions: [
+          {
+            id: "deprecate",
+            title: "Deprecate",
+            gracePeriod: { type: "afterInstall", days: 30 },
+            instructions: [
+              {
+                type: "deprecate",
+                replacement: {
+                  interfaceType: personV2,
+                  propertyMappings: { email: "emailAddress" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    expect(
+      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+        "com.palantir.Person"
+      ].transitions[0].instructions,
+    ).toStrictEqual([
+      {
+        type: "deprecate",
+        replacement: {
+          interfaceType: "com.palantir.PersonV2",
+          propertyMappings: { "com.palantir.email": "emailAddress" },
+        },
+      },
+    ]);
   });
 });
 

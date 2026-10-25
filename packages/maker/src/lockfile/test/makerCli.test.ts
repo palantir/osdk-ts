@@ -19,10 +19,12 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { consola } from "consola";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import main from "../../cli/main.js";
 import type {
+  LockedInterfaceSchema,
   LockedProperty,
   OntologySchemaLockfile,
 } from "../OntologySchemaLockfile.js";
@@ -38,25 +40,36 @@ const FIXTURES = path.join(
 
 describe("maker CLI", () => {
   let workDir: string;
+  let inputCopies: string;
   let output: string;
   let lockfile: string;
+  let runs = 0;
 
   beforeEach(async () => {
     workDir = await fs.mkdtemp(path.join(os.tmpdir(), "maker-cli-"));
+    // Inputs have to live inside the package for their relative imports of maker's source to
+    // resolve, so this sits at the same depth as `fixtures`.
+    inputCopies = await fs.mkdtemp(path.join(path.dirname(FIXTURES), ".tmp-"));
     output = path.join(workDir, "ontology.json");
     lockfile = path.join(workDir, DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME);
   });
 
   afterEach(async () => {
+    vi.restoreAllMocks();
     await fs.rm(workDir, { recursive: true, force: true });
+    await fs.rm(inputCopies, { recursive: true, force: true });
   });
 
   async function runMaker(fixture: string, ...flags: string[]): Promise<void> {
+    // maker loads its input with `import()`, which never re-evaluates a module it has already
+    // loaded, so each run gets its own copy for a fixture to be usable more than once.
+    const input = path.join(inputCopies, `${fixture}-${runs++}.ts`);
+    await fs.copyFile(path.join(FIXTURES, `${fixture}.ts`), input);
     await main([
       "node",
       "maker",
       "-i",
-      path.join(FIXTURES, `${fixture}.ts`),
+      input,
       "-o",
       output,
       "--lockfile",
@@ -69,14 +82,21 @@ describe("maker CLI", () => {
   async function writeBaselineLockfile(
     apiName: string,
     properties: Record<string, LockedProperty>,
+    schema: Omit<LockedInterfaceSchema, "properties"> = {},
   ): Promise<void> {
     const baseline: OntologySchemaLockfile = {
       version: 1,
       interfaces: {
-        [apiName]: { schema: { properties }, transitions: [] },
+        [apiName]: { schema: { properties, ...schema }, transitions: [] },
       },
     };
     await fs.writeFile(lockfile, JSON.stringify(baseline, undefined, 2) + "\n");
+  }
+
+  /** Every warning maker logged, joined, so a test can look for the checkpoints it reported. */
+  function spyOnWarnings(): () => string {
+    const warn = vi.spyOn(consola, "warn").mockImplementation(() => {});
+    return () => warn.mock.calls.map((args) => args.join(" ")).join("\n");
   }
 
   async function readLockfileAt(file: string): Promise<OntologySchemaLockfile> {
@@ -202,5 +222,170 @@ describe("maker CLI", () => {
       },
     });
     expect(await exists(output)).toBe(true);
+  });
+
+  describe("an action type constraint phased in to required", () => {
+    const inFlightLockfile: OntologySchemaLockfile = {
+      version: 1,
+      interfaces: {
+        Person: {
+          schema: {
+            properties: { firstName: { type: "string", required: true } },
+            actionTypeConstraints: {
+              sendEmail: { requireImplementation: false },
+            },
+          },
+          transitions: [
+            {
+              id: "requireSendEmail",
+              gracePeriod: { type: "afterInstall", days: 30 },
+              instructions: [
+                {
+                  type: "addRequiredActionTypeConstraint",
+                  actionTypeConstraint: "sendEmail",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    it("records the migration in flight, then its finalization", async () => {
+      await runMaker("personSendEmailInFlight", "--write-locks");
+      expect(await readLockfile()).toStrictEqual(inFlightLockfile);
+
+      const warnings = spyOnWarnings();
+      await fs.rm(output);
+      await runMaker("personSendEmailRequired", "--write-locks", "--yes");
+
+      expect(warnings()).toContain("FINALIZE requireSendEmail");
+      expect(await readLockfile()).toStrictEqual({
+        version: 1,
+        interfaces: {
+          Person: {
+            schema: {
+              properties: { firstName: { type: "string", required: true } },
+              actionTypeConstraints: {
+                sendEmail: { requireImplementation: true },
+              },
+            },
+            transitions: [],
+          },
+        },
+      });
+      expect(await exists(output)).toBe(true);
+    });
+
+    it("does not write an ontology when the constraint is required without a migration", async () => {
+      await writeBaselineLockfile(
+        "Person",
+        { firstName: { type: "string", required: true } },
+        {
+          actionTypeConstraints: {
+            sendEmail: { requireImplementation: false },
+          },
+        },
+      );
+      const baseline = await fs.readFile(lockfile, "utf-8");
+
+      await expect(
+        runMaker("personSendEmailRequired", "--write-locks", "--yes"),
+      ).rejects.toThrowError(
+        /action type constraint "sendEmail" became required without a schema migration[\s\S]*type: "addRequiredActionTypeConstraint", actionTypeConstraint: "sendEmail"/u,
+      );
+      expect(await exists(output)).toBe(false);
+      expect(await fs.readFile(lockfile, "utf-8")).toBe(baseline);
+    });
+  });
+
+  describe("a deprecation", () => {
+    const PERSON_SCHEMA: LockedInterfaceSchema = {
+      properties: { name: { type: "string", required: true } },
+    };
+
+    /** Publishes the release that starts deprecating `Person`. */
+    async function publishDeprecationInFlight(): Promise<void> {
+      await runMaker("personDeprecationInFlight", "--write-locks");
+      await fs.rm(output);
+    }
+
+    it("records the deprecation in flight in its lenient form, naming the replacement by api name", async () => {
+      await publishDeprecationInFlight();
+
+      // `PersonV2` is not opted in, and the in-flight `allowNewImplementations: false` is not
+      // binding yet, so it is not recorded.
+      expect(await readLockfile()).toStrictEqual({
+        version: 1,
+        interfaces: {
+          Person: {
+            schema: PERSON_SCHEMA,
+            transitions: [
+              {
+                id: "replaceWithPersonV2",
+                gracePeriod: { type: "afterInstall", days: 30 },
+                instructions: [
+                  {
+                    type: "deprecate",
+                    replacement: {
+                      interfaceType: "PersonV2",
+                      propertyMappings: { name: "fullName" },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    it("accepts finalizing it by disallowing new implementations", async () => {
+      await publishDeprecationInFlight();
+
+      const warnings = spyOnWarnings();
+      await runMaker("personDeprecationFinalized", "--write-locks", "--yes");
+
+      expect(warnings()).toContain("FINALIZE replaceWithPersonV2");
+      expect(await readLockfile()).toStrictEqual({
+        version: 1,
+        interfaces: {
+          Person: {
+            schema: { ...PERSON_SCHEMA, allowNewImplementations: false },
+            transitions: [],
+          },
+        },
+      });
+      expect(await exists(output)).toBe(true);
+    });
+
+    it("accepts deleting it by still allowing new implementations", async () => {
+      await publishDeprecationInFlight();
+
+      const warnings = spyOnWarnings();
+      await runMaker("personDeprecationDeleted", "--write-locks", "--yes");
+
+      expect(warnings()).toContain("DELETE replaceWithPersonV2");
+      expect(await readLockfile()).toStrictEqual({
+        version: 1,
+        interfaces: { Person: { schema: PERSON_SCHEMA, transitions: [] } },
+      });
+      expect(await exists(output)).toBe(true);
+    });
+
+    it("does not write an ontology that declares a migration after the deprecation is finalized", async () => {
+      await publishDeprecationInFlight();
+      await runMaker("personDeprecationFinalized", "--write-locks", "--yes");
+      await fs.rm(output);
+      const finalized = await fs.readFile(lockfile, "utf-8");
+
+      await expect(
+        runMaker("personMigratedAfterDeprecation", "--write-locks", "--yes"),
+      ).rejects.toThrowError(
+        /declares schema migration "requireNickname", but a previous release finalized its deprecation[\s\S]*No future transitions are allowed after a deprecation is finalized/u,
+      );
+      expect(await exists(output)).toBe(false);
+      expect(await fs.readFile(lockfile, "utf-8")).toBe(finalized);
+    });
   });
 });

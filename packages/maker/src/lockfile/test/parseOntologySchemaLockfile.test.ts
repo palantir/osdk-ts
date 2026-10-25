@@ -309,6 +309,69 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("accepts an interface that records its action type constraints", () => {
+    const constrained = withInterface({
+      schema: {
+        properties: {},
+        actionTypeConstraints: {
+          "com.palantir.sendEmail": { requireImplementation: false },
+        },
+      },
+      transitions: [],
+    });
+    expect(parse(constrained)).toStrictEqual(constrained);
+  });
+
+  it("rejects an empty `actionTypeConstraints`", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: { properties: {}, actionTypeConstraints: {} },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(
+      /schema\.actionTypeConstraints: Expected at least one action type constraint/u,
+    );
+  });
+
+  it("rejects an action type constraint missing requireImplementation", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: {
+            properties: {},
+            actionTypeConstraints: { "com.palantir.sendEmail": {} },
+          },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(
+      /actionTypeConstraints\.com\.palantir\.sendEmail\.requireImplementation: Expected a boolean/u,
+    );
+  });
+
+  it("accepts an interface that disallows new implementations", () => {
+    const disallowed = withInterface({
+      schema: { properties: {}, allowNewImplementations: false },
+      transitions: [],
+    });
+    expect(parse(disallowed)).toStrictEqual(disallowed);
+  });
+
+  it("rejects an interface that spells out allowing new implementations", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: { properties: {}, allowNewImplementations: true },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(
+      /schema\.allowNewImplementations: Expected false, or no value at all/u,
+    );
+  });
+
   it("accepts a property that records a value type", () => {
     const valueType = { packageNamespace: "com.example", apiName: "Ssn" };
     const parsed = parse(withPropertyDefinition({ ...property, valueType }));
@@ -465,6 +528,82 @@ describe("parseLockfile", () => {
       ),
     ).toThrowError(
       /instructions\[0\]\.property: Expected the api name of the property to require/u,
+    );
+  });
+
+  it.each([
+    [
+      "an addRequiredActionTypeConstraint",
+      {
+        type: "addRequiredActionTypeConstraint",
+        actionTypeConstraint: "com.palantir.sendEmail",
+      },
+    ],
+    ["a bare deprecate", { type: "deprecate" }],
+    [
+      "a deprecate with a replacement",
+      {
+        type: "deprecate",
+        replacement: {
+          interfaceType: "com.palantir.PersonV2",
+          propertyMappings: { name: "fullName" },
+          actionTypeConstraintMappings: {
+            "com.palantir.sendEmail": "com.palantir.notify",
+          },
+        },
+      },
+    ],
+  ])("accepts %s instruction", (_name, instruction) => {
+    const lockfile = withTransition({ instructions: [instruction] });
+    expect(parse(lockfile)).toStrictEqual(lockfile);
+  });
+
+  it("rejects an `addRequiredActionTypeConstraint` instruction that names no constraint", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [{ type: "addRequiredActionTypeConstraint" }],
+        }),
+      ),
+    ).toThrowError(
+      /instructions\[0\]\.actionTypeConstraint: Expected the api name of the action type constraint to require/u,
+    );
+  });
+
+  it("rejects a replacement that records an empty mapping", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [
+            {
+              type: "deprecate",
+              replacement: {
+                interfaceType: "com.palantir.PersonV2",
+                propertyMappings: {},
+              },
+            },
+          ],
+        }),
+      ),
+    ).toThrowError(
+      /replacement\.propertyMappings: Expected at least one property mapping, or no value at all/u,
+    );
+  });
+
+  it("rejects a replacement that names its interface by object", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [
+            {
+              type: "deprecate",
+              replacement: { interfaceType: { apiName: "PersonV2" } },
+            },
+          ],
+        }),
+      ),
+    ).toThrowError(
+      /replacement\.interfaceType: Expected the api name of the replacement interface/u,
     );
   });
 

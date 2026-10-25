@@ -54,7 +54,7 @@ describe("applyTransition", () => {
   it("reports the properties it changed", () => {
     expect(
       applyTransition(requireLastName, previousSchema, "strict")?.touched,
-    ).toStrictEqual(["lastName"]);
+    ).toStrictEqual([{ kind: "property", apiName: "lastName" }]);
   });
 
   it("is inapplicable to a schema missing the target property", () => {
@@ -91,6 +91,123 @@ describe("applyTransition", () => {
       expect(
         applyTransition(requireLastName, previousSchema, "strict")?.schema,
       ).toStrictEqual(sourceSchema({ required: true }));
+    });
+  });
+
+  describe("addRequiredActionTypeConstraint", () => {
+    const requireSendEmail: LockedTransition = {
+      id: "requireSendEmail",
+      gracePeriod: { type: "afterInstall", days: 30 },
+      instructions: [
+        {
+          type: "addRequiredActionTypeConstraint",
+          actionTypeConstraint: "com.example.sendEmail",
+        },
+      ],
+    };
+
+    function withSendEmail(
+      requireImplementation: boolean,
+    ): LockedInterfaceSchema {
+      return {
+        ...previousSchema,
+        actionTypeConstraints: {
+          "com.example.archive": { requireImplementation: true },
+          "com.example.sendEmail": { requireImplementation },
+        },
+      };
+    }
+
+    it("leaves the target constraint optional when applied leniently", () => {
+      expect(
+        applyTransition(requireSendEmail, withSendEmail(false), "lenient"),
+      ).toStrictEqual({
+        schema: withSendEmail(false),
+        touched: [
+          { kind: "actionTypeConstraint", apiName: "com.example.sendEmail" },
+        ],
+      });
+    });
+
+    it("requires the target constraint when applied strictly", () => {
+      expect(
+        applyTransition(requireSendEmail, withSendEmail(false), "strict")
+          ?.schema,
+      ).toStrictEqual(withSendEmail(true));
+    });
+
+    it("is inapplicable to a schema missing the target constraint", () => {
+      expect(
+        applyTransition(requireSendEmail, previousSchema, "strict"),
+      ).toBeUndefined();
+      expect(
+        applyTransition(requireSendEmail, previousSchema, "lenient"),
+      ).toBeUndefined();
+    });
+
+    it("reproduces only the mode matching whether the constraint is required", () => {
+      const strict = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "strict",
+      );
+      const lenient = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "lenient",
+      );
+
+      expect(reproduces(strict, withSendEmail(true))).toBe(true);
+      expect(reproduces(strict, withSendEmail(false))).toBe(false);
+      expect(reproduces(lenient, withSendEmail(false))).toBe(true);
+      expect(reproduces(lenient, withSendEmail(true))).toBe(false);
+    });
+  });
+
+  describe("deprecate", () => {
+    const deprecate: LockedTransition = {
+      id: "deprecate",
+      gracePeriod: { type: "afterInstall", days: 30 },
+      instructions: [
+        {
+          type: "deprecate",
+          replacement: {
+            interfaceType: "com.example.PersonV2",
+            propertyMappings: { lastName: "surname" },
+          },
+        },
+      ],
+    };
+    const disallowed: LockedInterfaceSchema = {
+      ...previousSchema,
+      allowNewImplementations: false,
+    };
+
+    it("leaves new implementations allowed when applied leniently", () => {
+      const lenient = applyTransition(deprecate, previousSchema, "lenient");
+
+      expect(lenient).toStrictEqual({
+        schema: previousSchema,
+        touched: [{ kind: "allowNewImplementations" }],
+      });
+      // Absent rather than `true`, so it compares equal to a generated schema
+      expect(Object.keys(lenient?.schema ?? {})).toStrictEqual(["properties"]);
+    });
+
+    it("disallows new implementations when applied strictly", () => {
+      expect(
+        applyTransition(deprecate, previousSchema, "strict")?.schema,
+      ).toStrictEqual(disallowed);
+    });
+
+    it("reproduces a finalization only when new implementations are disallowed", () => {
+      const strict = applyTransition(deprecate, previousSchema, "strict");
+      const lenient = applyTransition(deprecate, previousSchema, "lenient");
+
+      expect(reproduces(strict, disallowed)).toBe(true);
+      expect(reproduces(strict, previousSchema)).toBe(false);
+      expect(reproduces(lenient, previousSchema)).toBe(true);
+      expect(reproduces(lenient, disallowed)).toBe(false);
     });
   });
 });

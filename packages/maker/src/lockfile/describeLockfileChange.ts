@@ -21,13 +21,13 @@ import {
   describeFinalization,
   describeInstruction,
   describeSuggestedTransition,
-  mapPropertyNames,
 } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import { describeType } from "./LockedPropertyType.js";
 import type {
+  LockedInstruction,
   LockedValueType,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
@@ -35,7 +35,7 @@ import { authoredKeyOf } from "./OntologySchemaLockfile.js";
 import type {
   LockfileBreakingChange,
   LockfileWarning,
-  TargetPropertyState,
+  TargetState,
 } from "./validateOntologySchemaLockfile.js";
 
 /** Renders a breaking change as the report an author reads. */
@@ -55,7 +55,7 @@ export function describeBreakingChange(
       }
 
       const targets = breakingChange.targets
-        .map(({ propertyApiName }) => `"${authoredKeyOf(propertyApiName)}"`)
+        .map((target) => `"${authoredKeyOf(targetApiNameOf(target))}"`)
         .join(", ");
       return (
         `${where}: schema migration "${breakingChange.transitionId}" is no longer declared, but ` +
@@ -74,6 +74,45 @@ export function describeBreakingChange(
         `may not be changed, since stacks may already be part-way through it. Delete this transition and ` +
         `declare a new one with a different id instead.`
       );
+
+    case "transitionAfterFinalizedDeprecation":
+      return (
+        `${where}: declares schema migration "${breakingChange.transitionId}", but a previous ` +
+        `release finalized its deprecation, so it no longer accepts new implementations and ` +
+        `only awaits removal. No future transitions are allowed after a deprecation is ` +
+        `finalized. Remove "${breakingChange.transitionId}", and phase the change in on the ` +
+        `interface that replaces this one instead.`
+      );
+
+    case "newImplementationsDisallowed":
+      return (
+        `${where}: now sets \`allowNewImplementations: false\` without a schema migration. ` +
+        `Leave new implementations allowed and phase the deprecation in instead, so that ` +
+        `implementing object types get a grace period to move off it, through a migration like:\n` +
+        `  ${describeSuggestedTransition({ type: "deprecate" })}`
+      );
+
+    case "actionTypeConstraintBecameRequired": {
+      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      return (
+        `${where}: action type constraint "${constraint}" became required without a schema ` +
+        `migration. Implementing object types that do not implement it yet are blocked from ` +
+        `upgrading. Keep it declared \`requireImplementation: false\` and phase it in instead ` +
+        `through a migration like:\n` +
+        `  ${describeSuggestedAddRequiredActionTypeConstraintTransition(constraint)}`
+      );
+    }
+
+    case "requiredActionTypeConstraintAdded": {
+      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      return (
+        `${where}: action type constraint "${constraint}" was added as required. Existing ` +
+        `implementing object types do not implement it yet, so this is a breaking change. ` +
+        `Declare it \`requireImplementation: false\` and phase it in instead through a ` +
+        `migration like:\n` +
+        `  ${describeSuggestedAddRequiredActionTypeConstraintTransition(constraint)}`
+      );
+    }
 
     case "interfaceExtensionAdded": {
       const extended = breakingChange.extendedInterfaceApiName;
@@ -270,7 +309,82 @@ export function describeWarning(warning: LockfileWarning): string {
         `again if it was not.`
       );
     }
+
+    case "actionTypeConstraintRequirementRelaxed": {
+      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      return (
+        `Interface ${warning.interfaceApiName}: action type constraint "${constraint}" no ` +
+        `longer requires implementation. Implementing object types need not implement it from ` +
+        `this release on, so clients that expect it to always be available will start finding ` +
+        `it missing. Nothing to do if that was intended; declare it ` +
+        `\`requireImplementation: true\` again if it was not.`
+      );
+    }
+
+    case "actionTypeConstraintRemoved": {
+      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      return (
+        `Interface ${warning.interfaceApiName}: action type constraint "${constraint}" was ` +
+        `removed. Clients that apply actions through it will stop finding it. Nothing to do if ` +
+        `that was intended; restore it if it was not.`
+      );
+    }
+
+    case "newImplementationsAllowed":
+      return (
+        `Interface ${warning.interfaceApiName} accepts new implementations again, after a ` +
+        `previous release finalized its deprecation. Object types may start implementing it ` +
+        `again. Nothing to do if that was intended; set \`allowNewImplementations: false\` ` +
+        `again if it was not.`
+      );
   }
+}
+
+/**
+ * The instruction as the author would have written it, for prose. The DSL form names a replacement
+ * interface by object or api name, so naming it by api name is still a valid instruction.
+ */
+function toAuthoredInstruction(
+  instruction: LockedInstruction,
+): InterfaceSchemaMigrationInstruction {
+  switch (instruction.type) {
+    case "addRequiredProperty":
+      return {
+        type: "addRequiredProperty",
+        property: authoredKeyOf(instruction.property),
+      };
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        actionTypeConstraint: authoredKeyOf(instruction.actionTypeConstraint),
+      };
+    case "deprecate": {
+      const { replacement } = instruction;
+      return replacement === undefined
+        ? { type: "deprecate" }
+        : {
+            type: "deprecate",
+            replacement: {
+              ...replacement,
+              propertyMappings: replacement.propertyMappings ?? {},
+            },
+          };
+    }
+    default: {
+      const unhandled: never = instruction;
+      throw new Error(
+        `Unknown schema migration instruction type: ${
+          (unhandled as LockedInstruction).type
+        }`,
+      );
+    }
+  }
+}
+
+function targetApiNameOf(target: TargetState): string {
+  return "propertyApiName" in target
+    ? target.propertyApiName
+    : target.actionTypeConstraintApiName;
 }
 
 function describeValueType(valueType: LockedValueType): string {
@@ -320,18 +434,28 @@ function describeTypeClasses(typeClasses: readonly TypeClass[]): string {
 
 /** A transition's instructions, named as the author wrote them. */
 function describeInstructions(
-  instructions: readonly InterfaceSchemaMigrationInstruction[],
+  instructions: readonly LockedInstruction[],
 ): string {
   return `[${instructions
     .map((instruction) =>
-      describeInstruction(mapPropertyNames(instruction, authoredKeyOf)),
+      describeInstruction(toAuthoredInstruction(instruction)),
     )
     .join(", ")}]`;
 }
 
-/** Explains what actually happened to a transition's target properties, for the error message. */
-function describeTargetDrift(targets: readonly TargetPropertyState[]): string {
-  const descriptions = targets.map(({ propertyApiName, previous, next }) => {
+/** Explains what actually happened to a transition's targets, for the error message. */
+function describeTargetDrift(targets: readonly TargetState[]): string {
+  const descriptions = targets.map((target) => {
+    if (!("propertyApiName" in target)) {
+      const authoredConstraintName = authoredKeyOf(
+        target.actionTypeConstraintApiName,
+      );
+      return target.next === undefined
+        ? `action type constraint "${authoredConstraintName}" was removed from the interface`
+        : `"${authoredConstraintName}" is \`requireImplementation: ${target.next.requireImplementation}\``;
+    }
+
+    const { propertyApiName, previous, next } = target;
     const authoredPropertyName = authoredKeyOf(propertyApiName);
     if (next === undefined) {
       return `"${authoredPropertyName}" was removed from the interface`;
@@ -354,11 +478,11 @@ function describeTargetDrift(targets: readonly TargetPropertyState[]): string {
 
 /** Everything the author would do to have the transition be finalized instead. */
 function describeFinalizations(
-  instructions: readonly InterfaceSchemaMigrationInstruction[],
+  instructions: readonly LockedInstruction[],
 ): string {
   return instructions
     .map((instruction) =>
-      describeFinalization(mapPropertyNames(instruction, authoredKeyOf)),
+      describeFinalization(toAuthoredInstruction(instruction)),
     )
     .join(", and ");
 }
@@ -368,4 +492,14 @@ function describeSuggestedAddRequiredPropertyTransition(
   property: string,
 ): string {
   return describeSuggestedTransition({ type: "addRequiredProperty", property });
+}
+
+/** The transition an author should have declared to make `actionTypeConstraint` required. */
+function describeSuggestedAddRequiredActionTypeConstraintTransition(
+  actionTypeConstraint: string,
+): string {
+  return describeSuggestedTransition({
+    type: "addRequiredActionTypeConstraint",
+    actionTypeConstraint,
+  });
 }

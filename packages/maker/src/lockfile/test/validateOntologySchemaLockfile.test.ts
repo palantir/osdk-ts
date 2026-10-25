@@ -21,6 +21,8 @@ import type { InterfaceSchemaGracePeriod } from "../../api/interface/InterfaceSc
 import type { Nullability } from "../../api/properties/Nullability.js";
 import type { SourceCensus } from "../generateOntologySchemaLockfile.js";
 import type {
+  LockedActionTypeConstraint,
+  LockedInterfaceSchema,
   LockedInterfaceType,
   LockedProperty,
   LockedTransition,
@@ -1057,6 +1059,282 @@ describe("validateOntologySchemaLockfile", () => {
           transitionId: "requireLastName",
           kind: "finalized",
         },
+      ]);
+    });
+  });
+
+  describe("action type constraints", () => {
+    const SEND_EMAIL = "com.palantir.sendEmail";
+    const OPTIONAL: LockedActionTypeConstraint = {
+      requireImplementation: false,
+    };
+    const REQUIRED: LockedActionTypeConstraint = {
+      requireImplementation: true,
+    };
+
+    const requireSendEmail: LockedTransition = {
+      id: "requireSendEmail",
+      gracePeriod: THIRTY_DAYS,
+      instructions: [
+        {
+          type: "addRequiredActionTypeConstraint",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ],
+    };
+
+    /** A single-interface lockfile whose interface declares the given constraints. */
+    function personConstrained(
+      actionTypeConstraints: Record<string, LockedActionTypeConstraint>,
+      transitions: LockedTransition[] = [],
+    ): OntologySchemaLockfile {
+      return lockfile({
+        Person: {
+          schema: {
+            properties: { firstName: REQUIRED_STRING },
+            ...(Object.keys(actionTypeConstraints).length > 0 && {
+              actionTypeConstraints,
+            }),
+          },
+          transitions,
+        },
+      });
+    }
+
+    const sendEmailInFlight = personConstrained({ [SEND_EMAIL]: OPTIONAL }, [
+      requireSendEmail,
+    ]);
+
+    it("reads the constraint becoming required as a finalization", () => {
+      const result = validate(
+        sendEmailInFlight,
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "finalized",
+        },
+      ]);
+    });
+
+    it("reads the constraint staying optional as a deletion", () => {
+      const result = validate(
+        sendEmailInFlight,
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "deleted",
+        },
+      ]);
+    });
+
+    it("rejects a disappearance that removes the target constraint", () => {
+      const result = validate(sendEmailInFlight, personConstrained({}));
+      expect(result.warnings).toEqual([]);
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "ambiguousDisappearance",
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          targets: [
+            {
+              actionTypeConstraintApiName: SEND_EMAIL,
+              previous: OPTIONAL,
+              next: undefined,
+            },
+          ],
+          instructions: requireSendEmail.instructions,
+        },
+      ]);
+    });
+
+    it("accepts a constraint that stays in flight", () => {
+      const result = validate(sendEmailInFlight, sendEmailInFlight);
+      expect(result).toEqual({
+        breakingChanges: [],
+        checkpoints: [],
+        warnings: [],
+      });
+    });
+
+    it("rejects making an existing constraint required without a migration", () => {
+      const result = validate(
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "actionTypeConstraintBecameRequired",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it("rejects adding a required constraint", () => {
+      const result = validate(
+        personConstrained({}),
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "requiredActionTypeConstraintAdded",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it("accepts adding an optional constraint", () => {
+      const result = validate(
+        personConstrained({}),
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result).toEqual({
+        breakingChanges: [],
+        checkpoints: [],
+        warnings: [],
+      });
+    });
+
+    it("warns, rather than rejects, when a constraint stops being required", () => {
+      const result = validate(
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([
+        {
+          code: "actionTypeConstraintRequirementRelaxed",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it.each([OPTIONAL, REQUIRED])(
+      "warns, rather than rejects, when a constraint is removed (%o)",
+      (constraint) => {
+        const result = validate(
+          personConstrained({ [SEND_EMAIL]: constraint }),
+          personConstrained({}),
+        );
+        expect(result.breakingChanges).toEqual([]);
+        expect(result.warnings).toEqual([
+          {
+            code: "actionTypeConstraintRemoved",
+            interfaceApiName: "Person",
+            actionTypeConstraint: SEND_EMAIL,
+          },
+        ]);
+      },
+    );
+  });
+
+  describe("deprecation", () => {
+    const deprecate: LockedTransition = {
+      id: "deprecate",
+      gracePeriod: THIRTY_DAYS,
+      instructions: [
+        {
+          type: "deprecate",
+          replacement: { interfaceType: "PersonV2" },
+        },
+      ],
+    };
+
+    /** A single-interface lockfile, deprecated with new implementations disallowed or not. */
+    function personDeprecated(
+      allowNewImplementations: boolean,
+      transitions: LockedTransition[] = [],
+    ): OntologySchemaLockfile {
+      const schema: LockedInterfaceSchema = {
+        properties: { firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING },
+        ...(!allowNewImplementations && {
+          allowNewImplementations: false as const,
+        }),
+      };
+      return lockfile({ Person: { schema, transitions } });
+    }
+
+    const deprecationInFlight = personDeprecated(true, [deprecate]);
+
+    it("reads disallowing new implementations as a finalization", () => {
+      const result = validate(deprecationInFlight, personDeprecated(false));
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([]);
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "deprecate",
+          kind: "finalized",
+        },
+      ]);
+    });
+
+    it("reads still allowing new implementations as a deletion", () => {
+      const result = validate(deprecationInFlight, personDeprecated(true));
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "deprecate",
+          kind: "deleted",
+        },
+      ]);
+    });
+
+    it("rejects disallowing new implementations without a migration", () => {
+      const result = validate(personDeprecated(true), personDeprecated(false));
+      expect(result.breakingChanges).toEqual([
+        { code: "newImplementationsDisallowed", interfaceApiName: "Person" },
+      ]);
+    });
+
+    it("warns, rather than rejects, when a finalized deprecation is walked back", () => {
+      const result = validate(personDeprecated(false), personDeprecated(true));
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([
+        { code: "newImplementationsAllowed", interfaceApiName: "Person" },
+      ]);
+    });
+
+    it.each([
+      ["a deprecate", deprecate],
+      ["any other migration", requireLastName],
+    ])(
+      "rejects declaring %s after a deprecation is finalized",
+      (_name, transition) => {
+        const result = validate(
+          personDeprecated(false),
+          personDeprecated(false, [transition]),
+        );
+        expect(result.breakingChanges).toEqual([
+          {
+            code: "transitionAfterFinalizedDeprecation",
+            interfaceApiName: "Person",
+            transitionId: transition.id,
+          },
+        ]);
+      },
+    );
+
+    it("rejects a changed replacement on an in-flight deprecation", () => {
+      const result = validate(
+        deprecationInFlight,
+        personDeprecated(true, [
+          { ...deprecate, instructions: [{ type: "deprecate" }] },
+        ]),
+      );
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
+        "instructionsChanged",
       ]);
     });
   });
