@@ -22,8 +22,8 @@ import {
   PopoverTrigger,
 } from "fumadocs-ui/components/ui/popover";
 import { ChevronDown, ExternalLink, Text } from "lucide-react";
-import type { StaticImageData } from "next/image";
 import type { ReactNode } from "react";
+import { BrandIcon } from "./brand-icon";
 import ChatGptIcon from "./icons/chatgpt.svg";
 import ClaudeIcon from "./icons/claude.svg";
 import CursorIcon from "./icons/cursor.svg";
@@ -100,15 +100,5 @@ export function OpenPageMenu({
         ))}
       </PopoverContent>
     </Popover>
-  );
-}
-
-function BrandIcon({ icon }: { icon: StaticImageData }) {
-  return (
-    <span
-      aria-hidden={true}
-      className="size-4 shrink-0 bg-current [mask-size:contain] [mask-repeat:no-repeat]"
-      style={{ maskImage: `url(${icon.src})` }}
-    />
   );
 }

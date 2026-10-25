@@ -26,10 +26,9 @@ import { notFound } from "next/navigation";
 import { FoundryDocsLinks } from "@/components/foundry-docs-links";
 import { getMDXComponents } from "@/components/mdx";
 import { OpenPageMenu } from "@/components/open-page-menu";
-import { markdownTwinUrl } from "@/lib/llms";
 import { ogSize, pageOgUrl } from "@/lib/og";
 import { markdownPath, site, siteUrl, withBasePath } from "@/lib/site";
-import { editUrl, source } from "@/lib/source";
+import { editUrl, markdownTwinUrl, source } from "@/lib/source";
 
 export default async function Page(props: PageProps<"/[...slug]">) {
   const { slug } = await props.params;

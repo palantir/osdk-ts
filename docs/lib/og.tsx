@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { OgFrame } from "@/components/og-frame";
 import type { Node } from "fumadocs-core/page-tree";
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
@@ -23,7 +24,6 @@ import { type Page, source } from "./source";
 export const ogSize = { width: 1200, height: 630 };
 
 const INSET = 72;
-const LINE = "rgba(255, 255, 255, 0.09)";
 
 const ACCENTS: Record<string, string> = {
   Guides: "59, 130, 246",
@@ -106,7 +106,8 @@ function truncate(text: string, max: number): string {
   if (text.length <= max) {
     return text;
   }
-  return `${text.slice(0, text.lastIndexOf(" ", max)).replace(/[,.;:]$/, "")}…`;
+  const end = text.lastIndexOf(" ", max);
+  return `${text.slice(0, end > 0 ? end : max).replace(/[,.;:]$/, "")}…`;
 }
 
 export async function renderOgImage({
@@ -141,7 +142,7 @@ export async function renderOgImage({
           fontFamily: "Geist",
         }}
       >
-        <Frame />
+        <OgFrame {...ogSize} inset={INSET} />
         <div
           style={{
             display: "flex",
@@ -251,40 +252,3 @@ export const homeOg = {
   section: "Docs",
   url: `${siteUrl}/`,
 };
-
-function Frame() {
-  const { width, height } = ogSize;
-  const lines = [
-    { top: INSET, left: 0, width, height: 1 },
-    { top: height - INSET, left: 0, width, height: 1 },
-    { top: 0, left: INSET, width: 1, height },
-    { top: 0, left: width - INSET, width: 1, height },
-  ];
-  const corners = [
-    [INSET, INSET],
-    [width - INSET, INSET],
-    [INSET, height - INSET],
-    [width - INSET, height - INSET],
-  ];
-  return (
-    <>
-      {lines.map((line, i) => (
-        <div
-          key={i}
-          style={{ position: "absolute", backgroundColor: LINE, ...line }}
-        />
-      ))}
-      {corners.map(([x, y], i) => (
-        <svg
-          key={i}
-          width="21"
-          height="21"
-          viewBox="0 0 21 21"
-          style={{ position: "absolute", left: x - 10, top: y - 10 }}
-        >
-          <path d="M10.5 0V21M0 10.5H21" stroke="#52525b" strokeWidth="1" />
-        </svg>
-      ))}
-    </>
-  );
-}

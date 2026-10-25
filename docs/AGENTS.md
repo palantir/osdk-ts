@@ -10,7 +10,7 @@ The site at https://palantir.github.io/osdk-ts/ is a [Fumadocs](https://fumadocs
 | Component pages                       | `packages/react-components/docs/` | `.md`, titled by an H1, because they also ship on npm and render in Storybook |
 | Sidebar order and sections            | `meta.json` in each folder        | `---Label---` adds a section header                                           |
 
-Component pages stay `.md` in place. `scripts/gen-props.mjs` only scans that folder, Storybook imports them by file name, and the first H1 and the paragraph under it become the page title and description. The component sidebar is `docs/content/components/meta.json`; a component page must also be listed in `docs/lib/source.ts`.
+Component pages stay `.md` in place. `scripts/gen-props.mjs` only scans that folder, Storybook imports them by file name, and the first H1 and the paragraph under it become the page title and description. The component sidebar is `docs/content/components/meta.json`; a component page must also be listed in `docs/lib/source.ts`, and the build fails if the two lists differ.
 
 ## Voice
 

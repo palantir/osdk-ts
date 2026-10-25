@@ -26,11 +26,14 @@ import {
   remarkAutoTypeTable,
 } from "fumadocs-typescript";
 import { icons } from "lucide-react";
+import { dirname } from "node:path";
 import { createElement } from "react";
 import { z } from "zod";
+import { componentPages, toKebabCase } from "./component-pages.mjs";
 import { remarkGithubAlerts } from "./remark-github-alerts";
+import { remarkLlmsComponents } from "./remark-llms-components";
 import { remarkTitleFromHeading } from "./remark-title-from-heading";
-import { foundryDocsUrl, markdownPath, siteUrl } from "./site";
+import { foundryDocsUrl, githubUrl, site, siteUrl } from "./site";
 
 const typeTableGenerator = createGenerator({
   tsconfigPath: "./tsconfig.reference.json",
@@ -62,6 +65,7 @@ const guides = defineDocs({
           generator: typeTableGenerator,
           options: typeTableOptions,
         }],
+        remarkLlmsComponents,
       ],
     }),
     postprocess: { includeProcessedMarkdown: { headingIds: false } },
@@ -103,13 +107,22 @@ const components = defineDocs({
 });
 
 const componentsPrefix = "components";
+const componentFiles = components.toFumadocsSource().files;
+const componentFileNames = componentFiles
+  .filter((file) => file.type === "page")
+  .map((file) => file.path.replace(/\.md$/, ""));
+if (componentFileNames.toSorted().join() !== componentPages.toSorted().join()) {
+  throw new Error(
+    "The component files in docs/lib/source.ts must match docs/content/components/meta.json",
+  );
+}
 
 export const source = loader({
   baseUrl: "/",
   source: update(guides.toFumadocsSource())
     .files((files) => [
       ...files,
-      ...components.toFumadocsSource().files.map((file) => ({
+      ...componentFiles.map((file) => ({
         ...file,
         path: `${componentsPrefix}/${file.path}`,
       })),
@@ -138,7 +151,7 @@ export function editUrl(page: Page): string {
       page.path.slice(componentsPrefix.length + 1)
     }`
     : `docs/content/${page.path}`;
-  return `https://github.com/palantir/osdk-ts/blob/main/${path}`;
+  return `${githubUrl}/blob/${site.github.branch}/${path}`;
 }
 
 export const docsLlms = llms(source, {
@@ -157,34 +170,40 @@ export const docsLlms = llms(source, {
         header.push(`- [${link.title}](${foundryDocsUrl(link.path)})`);
       }
     }
-    const body = stripLeadingTitle(
-      await page.data.getText("processed"),
-      page.data.description,
+    const body = absoluteLinks(
+      page,
+      (await page.data.getText("processed")).trim(),
     );
     return `${header.join("\n")}\n\n${body}`;
   },
 });
 
-function stripLeadingTitle(markdown: string, description?: string): string {
-  const withoutTitle = markdown.replace(/^\s*# [^\n]*\n+/, "");
-  if (withoutTitle === markdown || !description) {
-    return withoutTitle;
+export function markdownTwinUrl(page: Page): string {
+  return `${siteUrl}${page.url === "/" ? "/index" : page.url}.md`;
+}
+
+const linkPattern =
+  /^[ \t]*(`{3,}|~{3,})[^\n]*\n[\s\S]*?^[ \t]*\1`*[ \t]*$|(\]\(<?|^ {0,3}\[[^\]\n]+\]:[ \t]*<?)((?:[^()\s>]|\([^()\s]*\))+)/gm;
+
+function absoluteLinks(page: Page, markdown: string): string {
+  return markdown.replace(
+    linkPattern,
+    (match, fence?: string, prefix?: string, href?: string) =>
+      fence || !prefix || !href
+        ? match
+        : `${prefix}${resolveMarkdownHref(page, href)}`,
+  );
+}
+
+function resolveMarkdownHref(page: Page, href: string): string {
+  if (/^(#|[a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) {
+    return href;
   }
-  const [lead, ...rest] = withoutTitle.split(/\n\s*\n/);
-  const normalize = (text: string) =>
-    text.replace(/[`*_]/g, "").replace(/\s+/g, " ").trim();
-  return normalize(lead) === normalize(description)
-    ? rest.join("\n\n")
-    : withoutTitle;
-}
-
-export function absoluteMarkdownUrl(page: Page): string {
-  return `${siteUrl}${markdownPath(page.slugs)}`;
-}
-
-function toKebabCase(segment: string): string {
-  return segment
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-    .toLowerCase();
+  const target = source.getPageByHref(href, { dir: dirname(page.path) });
+  if (target) {
+    return `${markdownTwinUrl(target.page)}${
+      target.hash ? `#${target.hash}` : ""
+    }`;
+  }
+  return href.startsWith("/") ? `${siteUrl}${href}` : href;
 }

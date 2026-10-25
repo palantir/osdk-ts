@@ -15,17 +15,13 @@
  */
 "use client";
 
+import { useCopyButton } from "fumadocs-ui/utils/use-copy-button";
 import { Check, Copy } from "lucide-react";
-import { useState } from "react";
 
 export function CopyCommand({ command }: { command: string }) {
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
-    await navigator.clipboard.writeText(command);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
+  const [copied, copy] = useCopyButton(() =>
+    navigator.clipboard.writeText(command)
+  );
 
   return (
     <button

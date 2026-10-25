@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { replaceSource } from "fumadocs-core/mdx-plugins/stringifier";
 import type { Heading, Paragraph, Root, RootContent } from "mdast";
 import { toString } from "mdast-util-to-string";
 import type { VFile } from "vfile";
@@ -47,7 +48,9 @@ export function remarkTitleFromHeading() {
     if (removeCount === 2) {
       frontmatter.description = toString(next).replace(/\s+/g, " ").trim();
     }
-    tree.children.splice(index, removeCount);
+    for (const node of tree.children.splice(index, removeCount)) {
+      replaceSource(file, node, "");
+    }
   };
 }
 
