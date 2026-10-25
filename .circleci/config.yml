@@ -370,7 +370,7 @@ jobs:
   build-storybook:
     executor:
       name: node
-      resource-class: xlarge
+      resource-class: large
     environment:
       # Relative, because CircleCI serves artifacts under a path prefix
       STORYBOOK_BASE_PATH: ./
