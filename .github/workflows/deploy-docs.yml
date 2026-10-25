@@ -7,8 +7,6 @@ on:
     paths:
       - 'docs/**'
       - 'packages/react-components/docs/**'
-      - 'packages/*/src/**'
-      - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
 permissions:
@@ -49,7 +47,9 @@ jobs:
           # Clean up temp directory
           rm -rf gh-pages-temp
           
+          # Deploy from docs/out as before
           cd docs/out
+          touch .nojekyll
           git init
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

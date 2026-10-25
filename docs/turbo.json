@@ -4,25 +4,11 @@
   "tasks": {
     "build": {
       "inputs": [
-        "app/**",
-        "components/**",
-        "content/**",
-        "lib/**",
-        "public/**",
-        "scripts/**",
-        "*.mjs",
-        "*.json",
+        "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/packages/react-components/docs/**",
         "$TURBO_ROOT$/packages/*/src/**"
       ],
       "outputs": ["out/**"]
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "typecheck": {
-      "dependsOn": []
     }
   }
 }

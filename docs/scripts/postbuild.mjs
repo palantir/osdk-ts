@@ -62,8 +62,6 @@ for (const [from, to] of Object.entries(redirects)) {
   }
 }
 
-await writeFile(path.join(out, ".nojekyll"), "");
-
 const broken = [];
 for await (const file of walk(out)) {
   if (file.endsWith(".md") && !file.startsWith(markdownRoot)) {
