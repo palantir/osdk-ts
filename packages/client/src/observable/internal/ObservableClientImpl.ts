@@ -70,7 +70,10 @@ import type { MediaPropertyLocation } from "../ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
-import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
+import type {
+  ObserveObjectSetOptions,
+  ObserveObjectSetV2Options,
+} from "./objectset/ObjectSetQueryOptions.js";
 import type { Rdp } from "./RdpCanonicalizer.js";
 import type { Store } from "./Store.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
@@ -280,6 +283,31 @@ export class ObservableClientImpl implements ObservableClient {
     return this.__experimentalStore.objectSets.observe(
       { baseObjectSet, ...options },
       // cast to cross typed to untyped barrier
+      subFn as unknown as Observer<ObjectSetPayload>,
+    );
+  }
+
+  public EXPERIMENTAL__observeObjectSetV2<
+    T extends ObjectOrInterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    objectSet: ObjectSet<T, RDPs>,
+    options: ObserveObjectSetV2Options<T, RDPs>,
+    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
+  ): Unsubscribable {
+    return this.__experimentalStore.objectSets.observe(
+      {
+        baseObjectSet: objectSet as unknown as ObjectSet<any>,
+        experimentalV2: true,
+        orderBy: options.orderBy,
+        select: options.select,
+        pageSize: options.pageSize,
+        autoFetchMore: options.autoFetchMore,
+        streamUpdates: options.streamUpdates,
+        $loadPropertySecurityMetadata: options.$loadPropertySecurityMetadata,
+        mode: options.mode,
+        dedupeInterval: options.dedupeInterval,
+      },
       subFn as unknown as Observer<ObjectSetPayload>,
     );
   }
