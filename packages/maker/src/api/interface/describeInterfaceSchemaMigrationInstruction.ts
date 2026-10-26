@@ -43,14 +43,11 @@ export function mapPropertyNames(
       };
     case "addRequiredActionTypeConstraint":
       return instruction;
-    case "deprecate": {
+    case "replace": {
       const { replacement } = instruction;
-      if (replacement === undefined) {
-        return instruction;
-      }
       // Only the keys are this interface type's properties; the values belong to the replacement
       return {
-        type: "deprecate",
+        type: "replace",
         replacement: {
           ...replacement,
           propertyMappings: Object.fromEntries(
@@ -100,28 +97,19 @@ function proseFor(
           `instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "${actionTypeConstraint}" }] }`,
       };
     }
-    case "deprecate": {
-      const { replacement } = instruction;
+    case "replace": {
+      const { interfaceType } = instruction.replacement;
       const replacementApiName =
-        replacement === undefined
-          ? undefined
-          : typeof replacement.interfaceType === "string"
-            ? replacement.interfaceType
-            : replacement.interfaceType.apiName;
+        typeof interfaceType === "string"
+          ? interfaceType
+          : interfaceType.apiName;
       return {
-        describe:
-          replacementApiName === undefined
-            ? `deprecate()`
-            : `deprecate(replacement: "${replacementApiName}")`,
-        finalization: `set \`allowNewImplementations: false\` on the deprecated status`,
+        describe: `replace("${replacementApiName}")`,
+        finalization: `keep the interface's \`deprecated\` status`,
         suggestedTransition:
-          `{ id: "deprecate", title: "Deprecate", ` +
+          `{ id: "replace", title: "Replace with ${replacementApiName}", ` +
           `gracePeriod: { type: "afterInstall", days: 30 }, ` +
-          `instructions: [{ type: "deprecate"${
-            replacementApiName === undefined
-              ? ""
-              : `, replacement: { interfaceType: "${replacementApiName}", propertyMappings: {} }`
-          } }] }`,
+          `instructions: [{ type: "replace", replacement: { interfaceType: "${replacementApiName}", propertyMappings: {} } }] }`,
       };
     }
     default: {

@@ -376,21 +376,7 @@ describe("describeBreakingChange", () => {
     });
   });
 
-  describe("deprecation", () => {
-    it("tells the author to declare a deprecate transition", () => {
-      expect(
-        describeBreakingChange({
-          code: "newImplementationsDisallowed",
-          interfaceApiName: "Person",
-        }),
-      ).toContain(
-        "phase the deprecation in instead, so that implementing object types get a grace " +
-          'period to move off it, through a migration like:\n  { id: "deprecate", ' +
-          'title: "Deprecate", gracePeriod: { type: "afterInstall", days: 30 }, ' +
-          'instructions: [{ type: "deprecate" }] }',
-      );
-    });
-
+  describe("replacement", () => {
     it("says no transitions may follow a finalized deprecation", () => {
       const message = describeBreakingChange({
         code: "transitionAfterFinalizedDeprecation",
@@ -398,27 +384,32 @@ describe("describeBreakingChange", () => {
         transitionId: "requireLastName",
       });
       expect(message).toContain(
-        "No future transitions are allowed after a deprecation is finalized.",
+        "No future transitions other than a `replace` are allowed after a deprecation is finalized.",
       );
       expect(message).toContain('Remove "requireLastName"');
     });
 
-    it("names the replacement of a changed deprecate instruction", () => {
+    it("names the replacement of a changed replace instruction", () => {
       expect(
         describeBreakingChange({
           code: "instructionsChanged",
           interfaceApiName: "Person",
-          transitionId: "deprecate",
+          transitionId: "replace",
           previousInstructions: [
             {
-              type: "deprecate",
+              type: "replace",
               replacement: { interfaceType: "com.example.PersonV2" },
             },
           ],
-          nextInstructions: [{ type: "deprecate" }],
+          nextInstructions: [
+            {
+              type: "replace",
+              replacement: { interfaceType: "com.example.PersonV3" },
+            },
+          ],
         }),
       ).toContain(
-        'from [deprecate(replacement: "com.example.PersonV2")] to [deprecate()]',
+        'from [replace("com.example.PersonV2")] to [replace("com.example.PersonV3")]',
       );
     });
   });
@@ -568,11 +559,6 @@ describe("describeWarning", () => {
     actionTypeConstraint: "com.example.sendEmail",
   });
 
-  const newImplementationsAllowed = describeWarning({
-    code: "newImplementationsAllowed",
-    interfaceApiName: "Person",
-  });
-
   it("names the authored constraint that no longer requires implementation", () => {
     expect(actionTypeConstraintRequirementRelaxed).toContain(
       'action type constraint "sendEmail" no longer requires implementation',
@@ -655,11 +641,6 @@ describe("describeWarning", () => {
       name: "a removed constraint",
       message: actionTypeConstraintRemoved,
       affected: "will stop finding it",
-    },
-    {
-      name: "a walked-back deprecation",
-      message: newImplementationsAllowed,
-      affected: "may start implementing it again",
     },
   ])(
     "says who is affected by $name without demanding a fix",

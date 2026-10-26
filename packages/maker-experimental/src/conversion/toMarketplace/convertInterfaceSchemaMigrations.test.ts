@@ -505,7 +505,7 @@ function defineReplacementPair(
       ownerSpt: { sharedPropertyType: ownerSpt, required: true },
     },
     schemaMigrations: migrations({
-      type: "deprecate",
+      type: "replace",
       replacement: {
         interfaceType: replacementOf(newInterface),
         propertyMappings: { title: "name", ownerSpt: "ownerSpt" },
@@ -553,7 +553,7 @@ function importedInterface(): InterfaceType {
   };
 }
 
-/** Deprecates `Old` in favor of the imported interface type, which is referenced by API name. */
+/** Replaces `Old` with the imported interface type, which is referenced by API name. */
 function defineImportedReplacement(): void {
   importOntologyEntity(importedInterface());
   const old = defineInterface({
@@ -561,7 +561,7 @@ function defineImportedReplacement(): void {
     status: DEPRECATED,
     properties: { title: { type: "string" } },
     schemaMigrations: migrations({
-      type: "deprecate",
+      type: "replace",
       replacement: {
         interfaceType: "com.other.Imported",
         propertyMappings: { title: "fullName" },
@@ -636,7 +636,7 @@ function onlyMigration(block: InterfaceTypeBlockDataV2) {
   return migration;
 }
 
-describe("addRequiredActionTypeConstraint and deprecate schema migrations", () => {
+describe("addRequiredActionTypeConstraint and replace schema migrations", () => {
   it("targets an action type constraint by its published rid", async () => {
     const block = await convertInterfaces(() => {
       const foo = defineInterface({
@@ -667,24 +667,6 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
     });
   });
 
-  it("emits an empty deprecation without a replacement", async () => {
-    const block = await convertInterfaces(() => {
-      defineInterface({
-        apiName: "Old",
-        status: DEPRECATED,
-        schemaMigrations: migrations({ type: "deprecate" }),
-      });
-    });
-
-    expect(onlyMigration(block)).toEqual({ type: "deprecate", deprecate: {} });
-    expect(block.schemaMigrations).toMatchObject({
-      interfaceActionTypeConstraintRidsToApiNames: {},
-      interfaceLinkTypeRidsToApiNames: {},
-      interfacePropertyTypeRidsToApiNames: {},
-      interfaceTypeRidsToApiNames: {},
-    });
-  });
-
   it("maps a locally defined replacement's members by their published rids", async () => {
     const ontology = await convertOntology(() => defineReplacementPair());
     const { block } = blockOf(ontology, "com.palantir.Old");
@@ -695,8 +677,8 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
     const base = memberRids(ontology, "com.palantir.Base");
 
     expect(onlyMigration(block)).toEqual({
-      type: "deprecate",
-      deprecate: {
+      type: "replace",
+      replace: {
         replacement: {
           interfaceTypeRid: newRid,
           propertyMappings: {
@@ -767,8 +749,8 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
     const imported = memberRids(importedOntology, "com.other.Imported");
 
     expect(onlyMigration(block)).toEqual({
-      type: "deprecate",
-      deprecate: {
+      type: "replace",
+      replace: {
         replacement: {
           interfaceTypeRid: importedRid,
           propertyMappings: {
@@ -795,7 +777,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
           status: DEPRECATED,
           properties: { title: { type: "string" } },
           schemaMigrations: migrations({
-            type: "deprecate",
+            type: "replace",
             replacement: {
               interfaceType: "com.other.Unknown",
               propertyMappings: { title: "fullName" },
@@ -804,7 +786,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
         });
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Interface com.palantir.Old is deprecated in favor of com.other.Unknown, which is neither defined in this ontology nor imported. Import it with \`importOntologyEntity\` so that it becomes an input to this block.]`,
+      `[Error: Interface com.palantir.Old is being replaced by com.other.Unknown, which is neither defined in this ontology nor imported. Import it with \`importOntologyEntity\` so that it becomes an input to this block.]`,
     );
   });
 
@@ -848,7 +830,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
           status: DEPRECATED,
           properties: { title: { type: "string" } },
           schemaMigrations: migrations({
-            type: "deprecate",
+            type: "replace",
             replacement: {
               interfaceType: "com.other.Imported",
               propertyMappings: { title: "ownerSpt" },
@@ -857,36 +839,12 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
         });
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Interface com.palantir.Old is deprecated in favor of com.other.Imported, mapping property "title" to the SPT-backed property "com.palantir.ownerSpt" of imported interface com.other.Imported. Mapping to imported SPT-backed properties is not supported yet, because they have no interface property type input shape to reference.]`,
+      `[Error: Interface com.palantir.Old is being replaced by com.other.Imported, mapping property "title" to the SPT-backed property "com.palantir.ownerSpt" of imported interface com.other.Imported. Mapping to imported SPT-backed properties is not supported yet, because they have no interface property type input shape to reference.]`,
     );
   });
-
-  it.each([
-    [{ allowNewImplementations: false }, { allowNewImplementations: false }],
-    [{ allowNewImplementations: true }, { allowNewImplementations: true }],
-    [{}, {}],
-  ])(
-    "carries a deprecated status's allowNewImplementations %j onto the interface type",
-    async (authored, expected) => {
-      const block = await convertInterfaces(() => {
-        defineInterface({
-          apiName: "Old",
-          status: { ...DEPRECATED, ...authored },
-          schemaMigrations: migrations({ type: "deprecate" }),
-        });
-      });
-
-      invariant(block.interfaceType.status.type === "deprecated");
-      expect(block.interfaceType.status.deprecated).toEqual({
-        message: DEPRECATED.message,
-        deadline: DEPRECATED.deadline,
-        ...expected,
-      });
-    },
-  );
 });
 
-describe("addRequiredActionTypeConstraint and deprecate output shapes", () => {
+describe("addRequiredActionTypeConstraint and replace output shapes", () => {
   async function convertWithShapes(body: () => void) {
     const { ontologyIr, shapes } = await defineOntologyV2(
       "com.palantir.",
@@ -940,21 +898,6 @@ describe("addRequiredActionTypeConstraint and deprecate output shapes", () => {
     });
   });
 
-  it("emits an empty deprecation without a replacement", async () => {
-    const { shapes } = await convertWithShapes(() => {
-      defineInterface({
-        apiName: "Old",
-        status: DEPRECATED,
-        schemaMigrations: migrations({ type: "deprecate" }),
-      });
-    });
-
-    expect(migrationShape(shapes.outputShapes, "com.palantir.Old")).toEqual({
-      type: "deprecate",
-      deprecate: {},
-    });
-  });
-
   it("references a locally defined replacement's output shapes", async () => {
     const { shapes } = await convertWithShapes(() => defineReplacementPair());
     const ids = {
@@ -993,8 +936,8 @@ describe("addRequiredActionTypeConstraint and deprecate output shapes", () => {
       expect(shapes.outputShapes.has(id), id).toBe(true);
     }
     expect(migrationShape(shapes.outputShapes, "com.palantir.Old")).toEqual({
-      type: "deprecate",
-      deprecate: {
+      type: "replace",
+      replace: {
         replacement: {
           interfaceType: blockId(ids.newInterface),
           propertyMappings: {
@@ -1031,8 +974,8 @@ describe("addRequiredActionTypeConstraint and deprecate output shapes", () => {
       expect(shapes.outputShapes.has(id), id).toBe(false);
     }
     expect(migrationShape(shapes.outputShapes, "com.palantir.Old")).toEqual({
-      type: "deprecate",
-      deprecate: {
+      type: "replace",
+      replace: {
         replacement: {
           interfaceType: blockId(ids.imported),
           propertyMappings: {

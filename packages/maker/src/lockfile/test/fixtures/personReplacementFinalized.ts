@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-// `Person` being replaced by `PersonV2`. New implementations are already disallowed, which an
-// in-flight deprecation may do without that being binding yet.
+// `personReplacementInFlight`, with the replacement finalized: it stays deprecated.
 import { defineInterface } from "../../../api/defineInterface.js";
 
-const personV2 = defineInterface({
+defineInterface({
   apiName: "PersonV2",
   displayName: "Person",
   properties: {
@@ -33,27 +32,9 @@ defineInterface({
     type: "deprecated",
     message: "Use PersonV2",
     deadline: "2030-01-01T00:00:00Z",
-    allowNewImplementations: false,
   },
   properties: {
     name: { type: "string" },
   },
-  schemaMigrations: {
-    transitions: [
-      {
-        id: "replaceWithPersonV2",
-        title: "Replace with PersonV2",
-        gracePeriod: { type: "afterInstall", days: 30 },
-        instructions: [
-          {
-            type: "deprecate",
-            replacement: {
-              interfaceType: personV2,
-              propertyMappings: { name: "fullName" },
-            },
-          },
-        ],
-      },
-    ],
-  },
+  schemaMigrations: { transitions: [] },
 });

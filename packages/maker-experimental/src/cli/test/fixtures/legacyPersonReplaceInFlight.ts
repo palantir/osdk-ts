@@ -39,7 +39,7 @@ defineInterface({
         gracePeriod: { type: "afterInstall", days: 30 },
         instructions: [
           {
-            type: "deprecate",
+            type: "replace",
             replacement: {
               interfaceType: person,
               propertyMappings: { fullName: "firstName" },

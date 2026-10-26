@@ -266,21 +266,21 @@ export interface InterfaceTypeAddRequiredActionTypeConstraintMigrationModificati
   actionTypeConstraint: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
 }
 /**
- * Migration to require that no object type implements this interface type once the grace period elapses,
- * optionally replacing each implementation with an implementation of another interface type.
+ * Migration to replace each object type's implementation of this interface type with an implementation of
+ * another interface type, so that no object type implements this interface type once the grace period elapses.
  */
-export interface InterfaceTypeDeprecateMigration {
-  replacement?: InterfaceTypeReplacement | null | undefined;
+export interface InterfaceTypeReplaceMigration {
+  replacement: InterfaceTypeReplacement;
 }
 /**
- * Migration to require that no object type implements this interface type once the grace period elapses,
- * optionally replacing each implementation with an implementation of another interface type.
+ * Migration to replace each object type's implementation of this interface type with an implementation of
+ * another interface type, so that no object type implements this interface type once the grace period elapses.
  */
-export interface InterfaceTypeDeprecateMigrationModification {
-  replacement?: InterfaceTypeReplacementModification | null | undefined;
+export interface InterfaceTypeReplaceMigrationModification {
+  replacement: InterfaceTypeReplacementModification;
 }
 /**
- * The interface type that replaces a deprecated one, and how the deprecated interface type's
+ * The interface type that replaces another, and how the replaced interface type's
  * properties, link type constraints, and action type constraints map onto the replacement's.
  */
 export interface InterfaceTypeReplacement {
@@ -370,9 +370,9 @@ export interface InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeCo
   addRequiredActionTypeConstraint: InterfaceTypeAddRequiredActionTypeConstraintMigration;
 }
 
-export interface InterfaceTypeSchemaMigrationInstruction_deprecate {
-  type: "deprecate";
-  deprecate: InterfaceTypeDeprecateMigration;
+export interface InterfaceTypeSchemaMigrationInstruction_replace {
+  type: "replace";
+  replace: InterfaceTypeReplaceMigration;
 }
 /**
  * An instruction in an InterfaceType schema transition.
@@ -380,7 +380,7 @@ export interface InterfaceTypeSchemaMigrationInstruction_deprecate {
 export type InterfaceTypeSchemaMigrationInstruction =
   | InterfaceTypeSchemaMigrationInstruction_addRequiredProperty
   | InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
-  | InterfaceTypeSchemaMigrationInstruction_deprecate;
+  | InterfaceTypeSchemaMigrationInstruction_replace;
 
 export interface InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty {
   type: "addRequiredProperty";
@@ -392,9 +392,9 @@ export interface InterfaceTypeSchemaMigrationInstructionModification_addRequired
   addRequiredActionTypeConstraint: InterfaceTypeAddRequiredActionTypeConstraintMigrationModification;
 }
 
-export interface InterfaceTypeSchemaMigrationInstructionModification_deprecate {
-  type: "deprecate";
-  deprecate: InterfaceTypeDeprecateMigrationModification;
+export interface InterfaceTypeSchemaMigrationInstructionModification_replace {
+  type: "replace";
+  replace: InterfaceTypeReplaceMigrationModification;
 }
 /**
  * A modification instruction in an InterfaceType schema transition.
@@ -402,7 +402,7 @@ export interface InterfaceTypeSchemaMigrationInstructionModification_deprecate {
 export type InterfaceTypeSchemaMigrationInstructionModification =
   | InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty
   | InterfaceTypeSchemaMigrationInstructionModification_addRequiredActionTypeConstraint
-  | InterfaceTypeSchemaMigrationInstructionModification_deprecate;
+  | InterfaceTypeSchemaMigrationInstructionModification_replace;
 
 export interface InterfaceTypeSchemaMigrationModification {
   transitions: Array<InterfaceTypeSchemaTransitionModification>;
@@ -873,14 +873,14 @@ export interface OntologyIrInterfaceTypeAddRequiredActionTypeConstraintMigration
   actionTypeConstraintRid: _api_InterfaceActionTypeConstraintApiName;
 }
 /**
- * Migration to require that no object type implements this interface type once the grace period elapses,
- * optionally replacing each implementation with an implementation of another interface type.
+ * Migration to replace each object type's implementation of this interface type with an implementation of
+ * another interface type, so that no object type implements this interface type once the grace period elapses.
  */
-export interface OntologyIrInterfaceTypeDeprecateMigration {
-  replacement?: OntologyIrInterfaceTypeReplacement | null | undefined;
+export interface OntologyIrInterfaceTypeReplaceMigration {
+  replacement: OntologyIrInterfaceTypeReplacement;
 }
 /**
- * The interface type that replaces a deprecated one, and how the deprecated interface type's
+ * The interface type that replaces another, and how the replaced interface type's
  * properties, link type constraints, and action type constraints map onto the replacement's.
  */
 export interface OntologyIrInterfaceTypeReplacement {
@@ -914,9 +914,9 @@ export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredAc
   addRequiredActionTypeConstraint: OntologyIrInterfaceTypeAddRequiredActionTypeConstraintMigration;
 }
 
-export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_deprecate {
-  type: "deprecate";
-  deprecate: OntologyIrInterfaceTypeDeprecateMigration;
+export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_replace {
+  type: "replace";
+  replace: OntologyIrInterfaceTypeReplaceMigration;
 }
 /**
  * An instruction in an InterfaceType schema transition.
@@ -924,7 +924,7 @@ export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_deprecate {
 export type OntologyIrInterfaceTypeSchemaMigrationInstruction =
   | OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredProperty
   | OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
-  | OntologyIrInterfaceTypeSchemaMigrationInstruction_deprecate;
+  | OntologyIrInterfaceTypeSchemaMigrationInstruction_replace;
 
 /**
  * A collection of instructions for migrating an InterfaceType schema.

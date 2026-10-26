@@ -26,7 +26,7 @@ import type {
 } from "./OntologySchemaLockfile.js";
 import {
   actionTypeConstraintsOf,
-  allowNewImplementationsOf,
+  isDeprecated,
   own,
 } from "./OntologySchemaLockfile.js";
 
@@ -42,7 +42,7 @@ export type ApplyMode = "lenient" | "strict";
 export type SchemaElement =
   | { kind: "property"; apiName: string }
   | { kind: "actionTypeConstraint"; apiName: string }
-  | { kind: "allowNewImplementations" };
+  | { kind: "deprecated" };
 
 /** What an instruction does to a property when applied. */
 export type PropertyEdit =
@@ -73,8 +73,8 @@ type ElementTransition =
       lenient: ActionTypeConstraintEdit;
       strict: ActionTypeConstraintEdit;
     }
-  /** The value `allowNewImplementations` takes in each mode. */
-  | { kind: "allowNewImplementations"; lenient: boolean; strict: boolean };
+  /** Whether the interface is deprecated in each mode. */
+  | { kind: "deprecated"; lenient: boolean; strict: boolean };
 
 /** The per-element changes an instruction makes. */
 function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
@@ -97,12 +97,11 @@ function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
           strict: { op: "patch", requireImplementation: true },
         },
       ];
-    case "deprecate":
+    case "replace":
       // The replacement only steers what proposals do to implementing object types; the
-      // interface's own schema records nothing of it.
-      return [
-        { kind: "allowNewImplementations", lenient: true, strict: false },
-      ];
+      // interface's own schema records nothing of it. The interface is already deprecated while
+      // this is in flight; finalizing keeps it deprecated, while deleting reverts that.
+      return [{ kind: "deprecated", lenient: false, strict: true }];
     default: {
       const unhandled: never = instruction;
       throw new Error(
@@ -115,7 +114,7 @@ function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
 }
 
 function elementOf(transition: ElementTransition): SchemaElement {
-  return transition.kind === "allowNewImplementations"
+  return transition.kind === "deprecated"
     ? { kind: transition.kind }
     : { kind: transition.kind, apiName: transition.apiName };
 }
@@ -203,12 +202,12 @@ export function applyTransition(
 ): AppliedTransition | undefined {
   const {
     actionTypeConstraints: _actionTypeConstraints,
-    allowNewImplementations: _allowNewImplementations,
+    deprecated: _deprecated,
     ...rest
   } = schema;
   const properties = { ...schema.properties };
   const actionTypeConstraints = { ...actionTypeConstraintsOf(schema) };
-  let allowNewImplementations = allowNewImplementationsOf(schema);
+  let deprecated = isDeprecated(schema);
   const touched = new Map<string, SchemaElement>();
 
   for (const instruction of transition.instructions) {
@@ -236,8 +235,8 @@ export function applyTransition(
             return undefined;
           }
           break;
-        case "allowNewImplementations":
-          allowNewImplementations = elementTransition[mode];
+        case "deprecated":
+          deprecated = elementTransition[mode];
           break;
         default: {
           const unhandled: never = elementTransition;
@@ -260,9 +259,7 @@ export function applyTransition(
       ...(Object.keys(actionTypeConstraints).length > 0 && {
         actionTypeConstraints,
       }),
-      ...(!allowNewImplementations && {
-        allowNewImplementations: false as const,
-      }),
+      ...(deprecated && { deprecated: true as const }),
     },
     touched: [...touched.values()],
   };
@@ -301,8 +298,8 @@ function valueAt(
       return own(schema.properties, element.apiName);
     case "actionTypeConstraint":
       return own(actionTypeConstraintsOf(schema), element.apiName);
-    case "allowNewImplementations":
-      return allowNewImplementationsOf(schema);
+    case "deprecated":
+      return isDeprecated(schema);
     default: {
       const unhandled: never = element;
       throw new Error(`Unknown schema element: ${JSON.stringify(unhandled)}`);

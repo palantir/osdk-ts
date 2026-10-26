@@ -119,20 +119,17 @@ function convertInstruction(
           ),
         },
       };
-    case "deprecate":
+    case "replace":
       return {
-        type: "deprecate",
-        deprecate:
-          instruction.replacement !== undefined
-            ? {
-                replacement: convertReplacement(
-                  resolveInterfaceTypeReplacementApiNames(
-                    interfaceType,
-                    instruction.replacement,
-                  ),
-                ),
-              }
-            : {},
+        type: "replace",
+        replace: {
+          replacement: convertReplacement(
+            resolveInterfaceTypeReplacementApiNames(
+              interfaceType,
+              instruction.replacement,
+            ),
+          ),
+        },
       };
     default: {
       const unhandled: never = instruction;
@@ -181,7 +178,7 @@ export interface ResolvedInterfaceProperty extends ResolvedInterfaceMember {
 export interface ResolvedInterfaceMemberMapping<
   M extends ResolvedInterfaceMember = ResolvedInterfaceMember,
 > {
-  /** The entity on the deprecated interface type. */
+  /** The entity on the replaced interface type. */
   from: M;
   /** The entity on the replacement interface type. */
   to: M;
@@ -198,8 +195,8 @@ export interface ResolvedInterfaceTypeReplacement {
 }
 
 /**
- * Resolves a `deprecate` instruction's authored replacement to the API names, and declaring
- * interface types, of everything it maps, on both the deprecated and the replacement side.
+ * Resolves a `replace` instruction's authored replacement to the API names, and declaring
+ * interface types, of everything it maps, on both the replaced and the replacement side.
  *
  * Mapped entities may be inherited, so each side is searched through its extended interfaces.
  * When the replacement is known only by API name, its side passes the authored names through.

@@ -97,7 +97,7 @@ function validateInstructionReferences(
         ),
       );
       return;
-    case "deprecate": {
+    case "replace": {
       const { interfaceType, prefix } = context;
       const extender = interfaceTypes.find((candidate) =>
         candidate.extendsInterfaces.some(
@@ -106,11 +106,9 @@ function validateInstructionReferences(
       );
       invariant(
         extender === undefined,
-        `${prefix}, but interface ${extender?.apiName} extends it. An interface type may not be deprecated while another interface type extends it; remove the extension first.`,
+        `${prefix}, but interface ${extender?.apiName} extends it. An interface type may not be replaced while another interface type extends it; remove the extension first.`,
       );
-      if (instruction.replacement !== undefined) {
-        validateReplacement(context, instruction.replacement);
-      }
+      validateReplacement(context, instruction.replacement);
       return;
     }
     default: {
@@ -173,9 +171,9 @@ function validateReplacement(
   );
   invariant(
     !instructionsOf(replacementType).some(
-      (instruction) => instruction.type === "deprecate",
+      (instruction) => instruction.type === "replace",
     ),
-    `${prefix}, but ${replacementType.apiName} has an in-flight deprecation of its own. Replace ${interfaceType.apiName} with an interface type that is not being deprecated.`,
+    `${prefix}, but ${replacementType.apiName} is itself being replaced. Replace ${interfaceType.apiName} with an interface type that is not being replaced.`,
   );
 
   const replacementInstructions = instructionsOf(replacementType, true);

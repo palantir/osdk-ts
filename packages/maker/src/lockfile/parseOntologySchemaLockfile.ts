@@ -138,8 +138,8 @@ const instructionSchema = z.discriminatedUnion(
       .passthrough(),
     z
       .object({
-        type: z.literal("deprecate"),
-        replacement: replacementSchema.optional(),
+        type: z.literal("replace"),
+        replacement: replacementSchema,
       })
       .passthrough(),
   ],
@@ -305,13 +305,13 @@ const interfaceSchema = z
                   `interface that declares none.`,
               })
               .optional(),
-            // Absent means new implementations are allowed, so only `false` is ever recorded
-            allowNewImplementations: z
-              .literal(false, {
+            // Absent means not deprecated, so only `true` is ever recorded
+            deprecated: z
+              .literal(true, {
                 errorMap: () => ({
                   message:
-                    `Expected false, or no value at all for an interface that accepts new ` +
-                    `implementations. Restore what the last published release declared.`,
+                    `Expected true, or no value at all for an interface that is not ` +
+                    `deprecated. Restore what the last published release declared.`,
                 }),
               })
               .optional(),

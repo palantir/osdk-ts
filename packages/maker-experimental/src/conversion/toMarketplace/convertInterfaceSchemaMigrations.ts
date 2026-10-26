@@ -187,19 +187,16 @@ function convertInstruction(
           }),
         },
       };
-    case "deprecate":
+    case "replace":
       return {
-        type: "deprecate",
-        deprecate:
-          instruction.replacement !== undefined
-            ? {
-                replacement: convertReplacement(
-                  interfaceType,
-                  instruction.replacement,
-                  references,
-                ),
-              }
-            : {},
+        type: "replace",
+        replace: {
+          replacement: convertReplacement(
+            interfaceType,
+            instruction.replacement,
+            references,
+          ),
+        },
       };
     default: {
       const unhandled: never = instruction;
@@ -266,7 +263,7 @@ function assertReplacementHasBlockShapes(
     !isDefinedIn(getImportedTypes(), interfaceTypeApiName)
   ) {
     throw new Error(
-      `Interface ${interfaceType.apiName} is deprecated in favor of ${interfaceTypeApiName}, which is neither defined in this ontology nor imported. Import it with \`importOntologyEntity\` so that it becomes an input to this block.`,
+      `Interface ${interfaceType.apiName} is being replaced by ${interfaceTypeApiName}, which is neither defined in this ontology nor imported. Import it with \`importOntologyEntity\` so that it becomes an input to this block.`,
     );
   }
   // Imported SPT-backed properties are represented only by their shared property type's input shape
@@ -278,7 +275,7 @@ function assertReplacementHasBlockShapes(
   );
   if (importedSptBacked !== undefined) {
     throw new Error(
-      `Interface ${interfaceType.apiName} is deprecated in favor of ${interfaceTypeApiName}, mapping property "${importedSptBacked.from.apiName}" to the SPT-backed property "${importedSptBacked.to.apiName}" of imported interface ${importedSptBacked.to.interfaceTypeApiName}. Mapping to imported SPT-backed properties is not supported yet, because they have no interface property type input shape to reference.`,
+      `Interface ${interfaceType.apiName} is being replaced by ${interfaceTypeApiName}, mapping property "${importedSptBacked.from.apiName}" to the SPT-backed property "${importedSptBacked.to.apiName}" of imported interface ${importedSptBacked.to.interfaceTypeApiName}. Mapping to imported SPT-backed properties is not supported yet, because they have no interface property type input shape to reference.`,
     );
   }
 }

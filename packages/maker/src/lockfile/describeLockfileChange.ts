@@ -78,18 +78,10 @@ export function describeBreakingChange(
     case "transitionAfterFinalizedDeprecation":
       return (
         `${where}: declares schema migration "${breakingChange.transitionId}", but a previous ` +
-        `release finalized its deprecation, so it no longer accepts new implementations and ` +
-        `only awaits removal. No future transitions are allowed after a deprecation is ` +
-        `finalized. Remove "${breakingChange.transitionId}", and phase the change in on the ` +
-        `interface that replaces this one instead.`
-      );
-
-    case "newImplementationsDisallowed":
-      return (
-        `${where}: now sets \`allowNewImplementations: false\` without a schema migration. ` +
-        `Leave new implementations allowed and phase the deprecation in instead, so that ` +
-        `implementing object types get a grace period to move off it, through a migration like:\n` +
-        `  ${describeSuggestedTransition({ type: "deprecate" })}`
+        `release finalized its deprecation, so it only awaits removal. No future transitions ` +
+        `other than a \`replace\` are allowed after a deprecation is finalized. Remove ` +
+        `"${breakingChange.transitionId}", and phase the change in on the interface that ` +
+        `replaces this one instead.`
       );
 
     case "actionTypeConstraintBecameRequired": {
@@ -329,14 +321,6 @@ export function describeWarning(warning: LockfileWarning): string {
         `that was intended; restore it if it was not.`
       );
     }
-
-    case "newImplementationsAllowed":
-      return (
-        `Interface ${warning.interfaceApiName} accepts new implementations again, after a ` +
-        `previous release finalized its deprecation. Object types may start implementing it ` +
-        `again. Nothing to do if that was intended; set \`allowNewImplementations: false\` ` +
-        `again if it was not.`
-      );
   }
 }
 
@@ -358,17 +342,15 @@ function toAuthoredInstruction(
         type: "addRequiredActionTypeConstraint",
         actionTypeConstraint: authoredKeyOf(instruction.actionTypeConstraint),
       };
-    case "deprecate": {
+    case "replace": {
       const { replacement } = instruction;
-      return replacement === undefined
-        ? { type: "deprecate" }
-        : {
-            type: "deprecate",
-            replacement: {
-              ...replacement,
-              propertyMappings: replacement.propertyMappings ?? {},
-            },
-          };
+      return {
+        type: "replace",
+        replacement: {
+          ...replacement,
+          propertyMappings: replacement.propertyMappings ?? {},
+        },
+      };
     }
     default: {
       const unhandled: never = instruction;

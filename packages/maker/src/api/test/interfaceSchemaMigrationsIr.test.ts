@@ -65,11 +65,6 @@ function migrationsIr(apiName: string) {
     .schemaMigrations?.schemaTransitions.t1.migrations;
 }
 
-function status(apiName: string) {
-  return dumpOntologyFullMetadata().ontology.interfaceTypes[apiName]
-    .interfaceType.status;
-}
-
 function defineActionTypeConstraint(
   interfaceType: InterfaceType,
   apiName: string,
@@ -140,7 +135,7 @@ describe("Interface schema migrations to ontology IR", () => {
     });
   });
 
-  describe("deprecate", () => {
+  describe("replace", () => {
     /**
      * `Old` and its replacement `New`, which inherits `name` from `Base`. Both carry the `ownerSpt`
      * SPT, whose published api name differs from its authored key, a link to `Target`, and an action
@@ -179,7 +174,7 @@ describe("Interface schema migrations to ontology IR", () => {
           title: { type: "string" },
           ownerSpt: { sharedPropertyType: ownerSpt, required: true },
         },
-        schemaMigrations: migrations({ type: "deprecate", replacement }),
+        schemaMigrations: migrations({ type: "replace", replacement }),
       });
       defineInterfaceLinkConstraint({
         apiName: "oldTarget",
@@ -196,32 +191,13 @@ describe("Interface schema migrations to ontology IR", () => {
       return { old, replacement };
     }
 
-    it("emits an empty migration without a replacement", async () => {
-      await define(() => {
-        defineInterface({
-          apiName: "Old",
-          status: DEPRECATED,
-          schemaMigrations: migrations({ type: "deprecate" }),
-        });
-      });
-
-      expect(migrationsIr("com.palantir.Old")).toMatchInlineSnapshot(`
-        [
-          {
-            "deprecate": {},
-            "type": "deprecate",
-          },
-        ]
-      `);
-    });
-
     it("emits published api names for a locally defined replacement", async () => {
       await define(defineReplacementPair);
 
       expect(migrationsIr("com.palantir.Old")).toMatchInlineSnapshot(`
         [
           {
-            "deprecate": {
+            "replace": {
               "replacement": {
                 "actionTypeConstraintMappings": {
                   "com.palantir.oldAction": "com.palantir.newAction",
@@ -236,7 +212,7 @@ describe("Interface schema migrations to ontology IR", () => {
                 },
               },
             },
-            "type": "deprecate",
+            "type": "replace",
           },
         ]
       `);
@@ -253,7 +229,7 @@ describe("Interface schema migrations to ontology IR", () => {
           status: DEPRECATED,
           properties: { title: { type: "string" } },
           schemaMigrations: migrations({
-            type: "deprecate",
+            type: "replace",
             replacement: {
               interfaceType: "New",
               propertyMappings: { title: "name" },
@@ -264,7 +240,7 @@ describe("Interface schema migrations to ontology IR", () => {
       expect(migrationsIr("com.palantir.Old")).toMatchInlineSnapshot(`
         [
           {
-            "deprecate": {
+            "replace": {
               "replacement": {
                 "actionTypeConstraintMappings": {},
                 "interfaceTypeRid": "com.palantir.New",
@@ -274,7 +250,7 @@ describe("Interface schema migrations to ontology IR", () => {
                 },
               },
             },
-            "type": "deprecate",
+            "type": "replace",
           },
         ]
       `);
@@ -294,7 +270,7 @@ describe("Interface schema migrations to ontology IR", () => {
             ownerSpt: { sharedPropertyType: ownerSpt, required: true },
           },
           schemaMigrations: migrations({
-            type: "deprecate",
+            type: "replace",
             replacement: {
               interfaceType: "com.other.New",
               propertyMappings: { ownerSpt: "owner" },
@@ -316,7 +292,7 @@ describe("Interface schema migrations to ontology IR", () => {
       expect(migrationsIr("com.palantir.Old")).toMatchInlineSnapshot(`
         [
           {
-            "deprecate": {
+            "replace": {
               "replacement": {
                 "actionTypeConstraintMappings": {
                   "com.palantir.oldAction": "com.other.newAction",
@@ -330,7 +306,7 @@ describe("Interface schema migrations to ontology IR", () => {
                 },
               },
             },
-            "type": "deprecate",
+            "type": "replace",
           },
         ]
       `);
@@ -415,42 +391,6 @@ describe("Interface schema migrations to ontology IR", () => {
           ],
         });
       });
-    });
-  });
-
-  describe("deprecated status", () => {
-    it("carries allowNewImplementations into the IR status", () => {
-      defineInterface({
-        apiName: "Old",
-        status: { ...DEPRECATED, allowNewImplementations: false },
-      });
-
-      expect(status("com.palantir.Old")).toMatchInlineSnapshot(`
-        {
-          "deprecated": {
-            "allowNewImplementations": false,
-            "deadline": "2026-12-31T00:00:00Z",
-            "message": "Use the replacement",
-            "replacedBy": undefined,
-          },
-          "type": "deprecated",
-        }
-      `);
-    });
-
-    it("omits allowNewImplementations when unset", () => {
-      defineInterface({ apiName: "Old", status: DEPRECATED });
-
-      expect(status("com.palantir.Old")).toMatchInlineSnapshot(`
-        {
-          "deprecated": {
-            "deadline": "2026-12-31T00:00:00Z",
-            "message": "Use the replacement",
-            "replacedBy": undefined,
-          },
-          "type": "deprecated",
-        }
-      `);
     });
   });
 });

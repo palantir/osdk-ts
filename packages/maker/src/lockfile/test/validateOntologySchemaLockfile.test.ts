@@ -1238,99 +1238,100 @@ describe("validateOntologySchemaLockfile", () => {
     );
   });
 
-  describe("deprecation", () => {
-    const deprecate: LockedTransition = {
-      id: "deprecate",
+  describe("replacement", () => {
+    const replace: LockedTransition = {
+      id: "replace",
       gracePeriod: THIRTY_DAYS,
       instructions: [
         {
-          type: "deprecate",
+          type: "replace",
           replacement: { interfaceType: "PersonV2" },
         },
       ],
     };
 
-    /** A single-interface lockfile, deprecated with new implementations disallowed or not. */
-    function personDeprecated(
-      allowNewImplementations: boolean,
+    /** A single-interface lockfile, deprecated or not. */
+    function lockedPerson(
+      deprecated: boolean,
       transitions: LockedTransition[] = [],
     ): OntologySchemaLockfile {
       const schema: LockedInterfaceSchema = {
         properties: { firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING },
-        ...(!allowNewImplementations && {
-          allowNewImplementations: false as const,
-        }),
+        ...(deprecated && { deprecated: true as const }),
       };
       return lockfile({ Person: { schema, transitions } });
     }
 
-    const deprecationInFlight = personDeprecated(true, [deprecate]);
+    const replacementInFlight = lockedPerson(true, [replace]);
 
-    it("reads disallowing new implementations as a finalization", () => {
-      const result = validate(deprecationInFlight, personDeprecated(false));
+    it("reads keeping the interface deprecated as a finalization", () => {
+      const result = validate(replacementInFlight, lockedPerson(true));
       expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([]);
       expect(result.checkpoints).toEqual([
         {
           interfaceApiName: "Person",
-          transitionId: "deprecate",
+          transitionId: "replace",
           kind: "finalized",
         },
       ]);
     });
 
-    it("reads still allowing new implementations as a deletion", () => {
-      const result = validate(deprecationInFlight, personDeprecated(true));
+    it("reads reverting the interface to not deprecated as a deletion", () => {
+      const result = validate(replacementInFlight, lockedPerson(false));
       expect(result.breakingChanges).toEqual([]);
       expect(result.checkpoints).toEqual([
         {
           interfaceApiName: "Person",
-          transitionId: "deprecate",
+          transitionId: "replace",
           kind: "deleted",
         },
       ]);
     });
 
-    it("rejects disallowing new implementations without a migration", () => {
-      const result = validate(personDeprecated(true), personDeprecated(false));
-      expect(result.breakingChanges).toEqual([
-        { code: "newImplementationsDisallowed", interfaceApiName: "Person" },
-      ]);
-    });
-
-    it("warns, rather than rejects, when a finalized deprecation is walked back", () => {
-      const result = validate(personDeprecated(false), personDeprecated(true));
-      expect(result.breakingChanges).toEqual([]);
-      expect(result.warnings).toEqual([
-        { code: "newImplementationsAllowed", interfaceApiName: "Person" },
-      ]);
-    });
-
     it.each([
-      ["a deprecate", deprecate],
-      ["any other migration", requireLastName],
+      ["deprecating", false, true],
+      ["un-deprecating", true, false],
     ])(
-      "rejects declaring %s after a deprecation is finalized",
-      (_name, transition) => {
-        const result = validate(
-          personDeprecated(false),
-          personDeprecated(false, [transition]),
-        );
-        expect(result.breakingChanges).toEqual([
-          {
-            code: "transitionAfterFinalizedDeprecation",
-            interfaceApiName: "Person",
-            transitionId: transition.id,
-          },
-        ]);
+      "accepts %s the interface without a migration",
+      (_name, previous, next) => {
+        const result = validate(lockedPerson(previous), lockedPerson(next));
+        expect(result.breakingChanges).toEqual([]);
+        expect(result.warnings).toEqual([]);
+        expect(result.checkpoints).toEqual([]);
       },
     );
 
-    it("rejects a changed replacement on an in-flight deprecation", () => {
+    it("accepts a replace on an already-deprecated interface", () => {
+      const result = validate(lockedPerson(true), replacementInFlight);
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("rejects declaring any other migration after a deprecation is finalized", () => {
       const result = validate(
-        deprecationInFlight,
-        personDeprecated(true, [
-          { ...deprecate, instructions: [{ type: "deprecate" }] },
+        lockedPerson(true),
+        lockedPerson(true, [requireLastName]),
+      );
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "transitionAfterFinalizedDeprecation",
+          interfaceApiName: "Person",
+          transitionId: requireLastName.id,
+        },
+      ]);
+    });
+
+    it("rejects a changed replacement on an in-flight replace", () => {
+      const result = validate(
+        replacementInFlight,
+        lockedPerson(false, [
+          {
+            ...replace,
+            instructions: [
+              { type: "replace", replacement: { interfaceType: "PersonV3" } },
+            ],
+          },
         ]),
       );
       expect(result.breakingChanges.map(({ code }) => code)).toEqual([

@@ -33,7 +33,7 @@ export interface ResolvedReplacementInterfaceType {
 }
 
 /**
- * Resolves the interface type a `deprecate` instruction's replacement refers to: an object returned
+ * Resolves the interface type a `replace` instruction's replacement refers to: an object returned
  * by `defineInterface`, or the API name of a locally-defined or imported interface type.
  */
 export function resolveReplacementInterfaceType(

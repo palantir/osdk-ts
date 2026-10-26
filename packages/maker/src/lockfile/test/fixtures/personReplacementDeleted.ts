@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// `personDeprecationInFlight`, with the deprecation deleted: it still accepts new implementations.
+// `personReplacementInFlight`, with the replacement deleted: it is no longer deprecated.
 import { defineInterface } from "../../../api/defineInterface.js";
 
 defineInterface({
@@ -28,12 +28,7 @@ defineInterface({
 defineInterface({
   apiName: "Person",
   displayName: "Person",
-  status: {
-    type: "deprecated",
-    message: "Use PersonV2",
-    deadline: "2030-01-01T00:00:00Z",
-    allowNewImplementations: true,
-  },
+  status: { type: "active" },
   properties: {
     name: { type: "string" },
   },

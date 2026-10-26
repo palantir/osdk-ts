@@ -101,20 +101,20 @@ export type InterfaceSchemaMigrationInstruction =
    */
   | { type: "addRequiredActionTypeConstraint"; actionTypeConstraint: string }
   /**
-   * No object type may implement this interface type once the grace period elapses.
+   * Every object type's implementation of this interface type is replaced with an implementation of
+   * `replacement`, so that no object type implements this interface type once the grace period
+   * elapses.
    *
-   * Use this to replace an interface type with another, for example when API names change. If
-   * `replacement` is set, proposals swap each object type's implementation of this interface type
-   * for the replacement. Consumers must already read both interface types, because object types
-   * move over one at a time during the grace period.
-   *
-   * Without a `replacement`, proposals simply remove the implementation.
+   * Use this to replace an interface type with another, for example when API names change.
+   * Proposals swap each object type's implementation of this interface type for the replacement.
+   * Consumers must already read both interface types, because object types move over one at a time
+   * during the grace period.
    *
    * The interface type must have a `deprecated` status, and this must be the only instruction of the
-   * only transition it declares. Finalize the migration by setting the status's
-   * `allowNewImplementations` to `false`; delete it by leaving `allowNewImplementations` `true`.
+   * only transition it declares. Finalize the migration by keeping the `deprecated` status; delete it
+   * by reverting to a non-deprecated status.
    */
-  | { type: "deprecate"; replacement?: InterfaceTypeReplacement };
+  | { type: "replace"; replacement: InterfaceTypeReplacement };
 
 export interface InterfaceTypeReplacement {
   /**

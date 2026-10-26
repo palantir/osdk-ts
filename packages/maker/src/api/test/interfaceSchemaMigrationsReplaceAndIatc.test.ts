@@ -70,12 +70,16 @@ function requireConstraint(
   return { type: "addRequiredActionTypeConstraint", actionTypeConstraint };
 }
 
-function deprecate(
-  replacement?: InterfaceTypeReplacement,
+/** A replacement known only by API name, so there is nothing to check its mappings against. */
+const UNRESOLVED_REPLACEMENT: InterfaceTypeReplacement = {
+  interfaceType: "com.other.Bar",
+  propertyMappings: {},
+};
+
+function replace(
+  replacement: InterfaceTypeReplacement = UNRESOLVED_REPLACEMENT,
 ): InterfaceSchemaMigrationInstruction {
-  return replacement === undefined
-    ? { type: "deprecate" }
-    : { type: "deprecate", replacement };
+  return { type: "replace", replacement };
 }
 
 function defineConstraint(
@@ -98,16 +102,16 @@ function inOntology(body: () => void): Promise<unknown> {
   return defineOntology("com.palantir.", body, undefined);
 }
 
-/** `Foo`, deprecated in favor of `replacement`. */
-function defineDeprecated(
-  replacement?: InterfaceTypeReplacement,
+/** `Foo`, being replaced by `replacement`. */
+function defineReplaced(
+  replacement: InterfaceTypeReplacement = UNRESOLVED_REPLACEMENT,
   overrides: Partial<InterfaceTypeDefinition> = {},
 ): InterfaceType {
   return defineInterface({
     apiName: "Foo",
     status: DEPRECATED,
     properties: { name: REQUIRED_STRING },
-    schemaMigrations: { transitions: [transition([deprecate(replacement)])] },
+    schemaMigrations: { transitions: [transition([replace(replacement)])] },
     ...overrides,
   });
 }
@@ -122,7 +126,7 @@ function defineReplacement(
   });
 }
 
-describe("addRequiredActionTypeConstraint and deprecate schema migrations", () => {
+describe("addRequiredActionTypeConstraint and replace schema migrations", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
   });
@@ -225,56 +229,48 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
     });
   });
 
-  describe("deprecate: local shape", () => {
-    it("accepts a deprecation without a replacement", async () => {
+  describe("replace: local shape", () => {
+    it("accepts a replacement known only by api name", async () => {
       await expect(
         inOntology(() => {
-          defineDeprecated();
+          defineReplaced();
         }),
       ).resolves.toBeDefined();
     });
 
-    it("accepts allowNewImplementations: false while in flight", () => {
-      expect(() =>
-        defineDeprecated(undefined, {
-          status: { ...DEPRECATED, allowNewImplementations: false },
-        }),
-      ).not.toThrow();
-    });
-
     it("rejects an interface that is not deprecated", () => {
       expect(() =>
-        defineDeprecated(undefined, { status: { type: "active" } }),
+        defineReplaced(undefined, { status: { type: "active" } }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(), but interface com.palantir.Foo has status "active". Set its status to \`{ type: "deprecated", ... }\` while the migration is in flight.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Foo has status "active". Set its status to \`{ type: "deprecated", ... }\` while the migration is in flight.]`,
       );
     });
 
-    it("rejects a deprecation sharing its transition with another instruction", () => {
+    it("rejects a replacement sharing its transition with another instruction", () => {
       expect(() =>
-        defineDeprecated(undefined, {
+        defineReplaced(undefined, {
           properties: { optional: OPTIONAL_STRING },
           schemaMigrations: {
             transitions: [
               transition([
-                deprecate(),
+                replace(),
                 { type: "addRequiredProperty", property: "optional" },
               ]),
             ],
           },
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(), but the transition has 2 instructions. A deprecation must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but the transition has 2 instructions. A replacement must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.]`,
       );
     });
 
-    it("rejects a deprecation alongside another transition", () => {
+    it("rejects a replacement alongside another transition", () => {
       expect(() =>
-        defineDeprecated(undefined, {
+        defineReplaced(undefined, {
           properties: { optional: OPTIONAL_STRING },
           schemaMigrations: {
             transitions: [
-              transition([deprecate()], "t1"),
+              transition([replace()], "t1"),
               transition(
                 [{ type: "addRequiredProperty", property: "optional" }],
                 "t2",
@@ -283,13 +279,13 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
           },
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(), but interface com.palantir.Foo has 2 transitions. A deprecation must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Foo has 2 transitions. A replacement must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.]`,
       );
     });
 
     it("rejects two sources mapped to the same target", () => {
       expect(() =>
-        defineDeprecated(
+        defineReplaced(
           {
             interfaceType: "com.palantir.Bar",
             propertyMappings: { first: "fullName", second: "fullName" },
@@ -299,12 +295,12 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
           },
         ),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), whose propertyMappings maps both "first" and "second" to "fullName". Each target may be mapped from at most one source.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings maps both "first" and "second" to "fullName". Each target may be mapped from at most one source.]`,
       );
     });
   });
 
-  describe("deprecate: references", () => {
+  describe("replace: references", () => {
     it("accepts a replacement whose required entities are all mapped", async () => {
       await expect(
         inOntology(() => {
@@ -317,7 +313,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
           });
           defineConstraint(bar, "barAction", true);
 
-          const foo = defineDeprecated({
+          const foo = defineReplaced({
             interfaceType: bar,
             propertyMappings: { name: "fullName" },
             linkTypeConstraintMappings: { fooLink: "barLink" },
@@ -342,7 +338,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
             properties: { name: REQUIRED_STRING },
             schemaMigrations: { transitions: [] },
           });
-          defineDeprecated(
+          defineReplaced(
             { interfaceType: bar, propertyMappings: { name: "fullName" } },
             { properties: {}, extends: parent },
           );
@@ -354,17 +350,17 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
       await expect(
         inOntology(() => {
           defineReplacement();
-          defineDeprecated({ interfaceType: "Bar", propertyMappings: {} });
+          defineReplaced({ interfaceType: "Bar", propertyMappings: {} });
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
       );
     });
 
     it("skips replacement checks for an interface type it has no definition for", async () => {
       await expect(
         inOntology(() => {
-          defineDeprecated({
+          defineReplaced({
             interfaceType: "com.other.Unknown",
             propertyMappings: { name: "whatever" },
           });
@@ -376,20 +372,20 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
       await expect(
         inOntology(() => {
           importOntologyEntity(importedInterface());
-          defineDeprecated({
+          defineReplaced({
             interfaceType: "com.other.Imported",
             propertyMappings: { name: "missing" },
           });
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.other.Imported"), whose propertyMappings maps to property "missing", but com.other.Imported has no such property.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Imported"), whose propertyMappings maps to property "missing", but com.other.Imported has no such property.]`,
       );
     });
 
-    it("rejects an interface extending the deprecated interface", async () => {
+    it("rejects an interface extending the replaced interface", async () => {
       await expect(
         inOntology(() => {
-          const foo = defineDeprecated();
+          const foo = defineReplaced();
           defineInterface({
             apiName: "Child",
             extends: foo,
@@ -397,36 +393,36 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
           });
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(), but interface com.palantir.Child extends it. An interface type may not be deprecated while another interface type extends it; remove the extension first.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Child extends it. An interface type may not be replaced while another interface type extends it; remove the extension first.]`,
       );
     });
 
     it("rejects replacing an interface with itself", async () => {
       await expect(
         inOntology(() => {
-          defineDeprecated({
+          defineReplaced({
             interfaceType: "Foo",
             propertyMappings: { name: "name" },
           });
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "Foo"), but an interface type cannot be replaced by itself.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("Foo"), but an interface type cannot be replaced by itself.]`,
       );
     });
 
-    it("rejects a replacement the deprecated interface extends", async () => {
+    it("rejects a replacement the replaced interface extends", async () => {
       await expect(
         inOntology(() => {
           const bar = defineReplacement({
             schemaMigrations: { transitions: [] },
           });
-          defineDeprecated(
+          defineReplaced(
             { interfaceType: bar, propertyMappings: { name: "fullName" } },
             { extends: bar },
           );
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), but one of com.palantir.Foo and com.palantir.Bar extends the other. The replacement must be unrelated to the interface type it replaces.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but one of com.palantir.Foo and com.palantir.Bar extends the other. The replacement must be unrelated to the interface type it replaces.]`,
       );
     });
 
@@ -434,64 +430,64 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
       await expect(
         inOntology(() => {
           const bar = defineReplacement({ status: DEPRECATED });
-          defineDeprecated({
+          defineReplaced({
             interfaceType: bar,
             propertyMappings: { name: "fullName" },
           });
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), but com.palantir.Bar is itself deprecated. Replace com.palantir.Foo with an interface type that is not deprecated.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but com.palantir.Bar is itself deprecated. Replace com.palantir.Foo with an interface type that is not deprecated.]`,
       );
     });
 
-    it("rejects a replacement with an in-flight deprecation of its own", async () => {
+    it("rejects a replacement that is itself being replaced", async () => {
       await expect(
         inOntology(() => {
           importOntologyEntity({
             ...importedInterface(),
-            schemaMigrations: { transitions: [transition([deprecate()])] },
+            schemaMigrations: { transitions: [transition([replace()])] },
           });
-          defineDeprecated({
+          defineReplaced({
             interfaceType: "com.other.Imported",
             propertyMappings: { name: "fullName" },
           });
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.other.Imported"), but com.other.Imported has an in-flight deprecation of its own. Replace com.palantir.Foo with an interface type that is not being deprecated.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Imported"), but com.other.Imported is itself being replaced. Replace com.palantir.Foo with an interface type that is not being replaced.]`,
       );
     });
 
     describe("propertyMappings", () => {
-      it("rejects a source the deprecated interface does not have", async () => {
+      it("rejects a source the replaced interface does not have", async () => {
         await expect(
           inOntology(() => {
-            defineDeprecated({
+            defineReplaced({
               interfaceType: defineReplacement(),
               propertyMappings: { name: "fullName", missing: "other" },
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), whose propertyMappings maps from property "missing", but com.palantir.Foo has no such property.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings maps from property "missing", but com.palantir.Foo has no such property.]`,
         );
       });
 
       it("rejects a target the replacement does not have", async () => {
         await expect(
           inOntology(() => {
-            defineDeprecated({
+            defineReplaced({
               interfaceType: defineReplacement(),
               propertyMappings: { name: "missing" },
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), whose propertyMappings maps to property "missing", but com.palantir.Bar has no such property.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings maps to property "missing", but com.palantir.Bar has no such property.]`,
         );
       });
 
       it("rejects mismatched property types", async () => {
         await expect(
           inOntology(() => {
-            defineDeprecated({
+            defineReplaced({
               interfaceType: defineReplacement({
                 properties: { fullName: REQUIRED_INTEGER },
               }),
@@ -499,27 +495,27 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), whose propertyMappings maps property "name" to "fullName", but its type "string" does not match "integer".]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings maps property "name" to "fullName", but its type "string" does not match "integer".]`,
         );
       });
 
       it("rejects an unmapped required target", async () => {
         await expect(
           inOntology(() => {
-            defineDeprecated({
+            defineReplaced({
               interfaceType: defineReplacement(),
               propertyMappings: {},
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
         );
       });
 
       it("accepts an unmapped optional target", async () => {
         await expect(
           inOntology(() => {
-            defineDeprecated({
+            defineReplaced({
               interfaceType: defineReplacement({
                 properties: { fullName: OPTIONAL_STRING },
               }),
@@ -532,7 +528,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
       it("rejects an unmapped target the replacement is migrating to required", async () => {
         await expect(
           inOntology(() => {
-            defineDeprecated({
+            defineReplaced({
               interfaceType: defineReplacement({
                 properties: { fullName: OPTIONAL_STRING },
                 schemaMigrations: {
@@ -547,7 +543,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
         );
       });
     });
@@ -576,7 +572,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
                 required: barLink.required,
               },
         );
-        const foo = defineDeprecated({
+        const foo = defineReplaced({
           interfaceType: bar,
           propertyMappings: { name: "fullName" },
           linkTypeConstraintMappings: mappings,
@@ -597,7 +593,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
             ),
           ),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), whose linkTypeConstraintMappings maps to link type constraint "missing", but com.palantir.Bar has no such link type constraint.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose linkTypeConstraintMappings maps to link type constraint "missing", but com.palantir.Bar has no such link type constraint.]`,
         );
       });
 
@@ -610,7 +606,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
             ),
           ),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), whose linkTypeConstraintMappings maps link type constraint "fooLink" to "barLink", but its cardinality SINGLE does not match MANY.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose linkTypeConstraintMappings maps link type constraint "fooLink" to "barLink", but its cardinality SINGLE does not match MANY.]`,
         );
       });
 
@@ -623,7 +619,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
             ),
           ),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), whose linkTypeConstraintMappings maps link type constraint "fooLink" to "barLink", but its linked entity interface com.palantir.Target does not match interface com.palantir.Other.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose linkTypeConstraintMappings maps link type constraint "fooLink" to "barLink", but its linked entity interface com.palantir.Target does not match interface com.palantir.Other.]`,
         );
       });
 
@@ -633,7 +629,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
             defineWithLinks({ many: false, required: true }, {}),
           ),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), but its linkTypeConstraintMappings does not map to link type constraint "com.palantir.barLink", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a link type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its linkTypeConstraintMappings does not map to link type constraint "com.palantir.barLink", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a link type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
         );
       });
 
@@ -647,19 +643,19 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
     });
 
     describe("actionTypeConstraintMappings", () => {
-      it("rejects a source the deprecated interface does not have", async () => {
+      it("rejects a source the replaced interface does not have", async () => {
         await expect(
           inOntology(() => {
             const bar = defineReplacement();
             defineConstraint(bar, "barAction", false);
-            defineDeprecated({
+            defineReplaced({
               interfaceType: bar,
               propertyMappings: { name: "fullName" },
               actionTypeConstraintMappings: { missing: "barAction" },
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), whose actionTypeConstraintMappings maps from action type constraint "missing", but com.palantir.Foo has no such action type constraint.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose actionTypeConstraintMappings maps from action type constraint "missing", but com.palantir.Foo has no such action type constraint.]`,
         );
       });
 
@@ -668,13 +664,13 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
           inOntology(() => {
             const bar = defineReplacement();
             defineConstraint(bar, "barAction", true);
-            defineDeprecated({
+            defineReplaced({
               interfaceType: bar,
               propertyMappings: { name: "fullName" },
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), but its actionTypeConstraintMappings does not map to action type constraint "com.palantir.barAction", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a action type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings does not map to action type constraint "com.palantir.barAction", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a action type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
         );
       });
 
@@ -687,13 +683,13 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
               },
             });
             defineConstraint(bar, "barAction", false);
-            defineDeprecated({
+            defineReplaced({
               interfaceType: bar,
               propertyMappings: { name: "fullName" },
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares deprecate(replacement: "com.palantir.Bar"), but its actionTypeConstraintMappings does not map to action type constraint "com.palantir.barAction", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a action type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings does not map to action type constraint "com.palantir.barAction", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a action type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
         );
       });
     });
@@ -703,8 +699,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
     it("describes each instruction and its finalization", () => {
       const instructions: InterfaceSchemaMigrationInstruction[] = [
         requireConstraint("doThing"),
-        deprecate(),
-        deprecate({ interfaceType: "com.other.Bar", propertyMappings: {} }),
+        replace(),
       ];
       expect(
         instructions.map((instruction) => [
@@ -718,21 +713,17 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
             "set "doThing" to \`requireImplementation: true\`",
           ],
           [
-            "deprecate()",
-            "set \`allowNewImplementations: false\` on the deprecated status",
-          ],
-          [
-            "deprecate(replacement: "com.other.Bar")",
-            "set \`allowNewImplementations: false\` on the deprecated status",
+            "replace("com.other.Bar")",
+            "keep the interface's \`deprecated\` status",
           ],
         ]
       `);
     });
 
-    it("renames only the keys of a deprecation's property mappings", () => {
+    it("renames only the keys of a replacement's property mappings", () => {
       expect(
         mapPropertyNames(
-          deprecate({
+          replace({
             interfaceType: "com.other.Bar",
             propertyMappings: { name: "fullName" },
             linkTypeConstraintMappings: { fooLink: "barLink" },
@@ -740,7 +731,7 @@ describe("addRequiredActionTypeConstraint and deprecate schema migrations", () =
           (key) => `com.palantir.${key}`,
         ),
       ).toEqual(
-        deprecate({
+        replace({
           interfaceType: "com.other.Bar",
           propertyMappings: { "com.palantir.name": "fullName" },
           linkTypeConstraintMappings: { fooLink: "barLink" },

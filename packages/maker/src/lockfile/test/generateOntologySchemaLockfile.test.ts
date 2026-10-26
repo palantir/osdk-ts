@@ -627,100 +627,76 @@ describe("action type constraints", () => {
   });
 });
 
-describe("deprecation", () => {
+describe("replacement", () => {
   const DEPRECATED = {
     type: "deprecated",
     message: "Use PersonV2",
     deadline: "2030-01-01T00:00:00Z",
   } as const;
 
-  function deprecateTo(replacement?: InterfaceType): InterfaceSchemaTransition {
+  function replaceWith(replacement: InterfaceType): InterfaceSchemaTransition {
     return {
-      id: "deprecate",
-      title: "Deprecate",
+      id: "replace",
+      title: "Replace",
       gracePeriod: { type: "afterInstall", days: 30 },
       instructions: [
-        replacement === undefined
-          ? { type: "deprecate" }
-          : {
-              type: "deprecate",
-              replacement: {
-                interfaceType: replacement,
-                propertyMappings: { name: "fullName" },
-              },
-            },
+        {
+          type: "replace",
+          replacement: {
+            interfaceType: replacement,
+            propertyMappings: { name: "fullName" },
+          },
+        },
       ],
     };
   }
 
-  it("records a finalized deprecation as disallowing new implementations", () => {
-    defineInterface({
-      apiName: "Person",
-      status: { ...DEPRECATED, allowNewImplementations: false },
-      schemaMigrations: { transitions: [] },
-    });
-
-    expect(lockedSchema()).toStrictEqual({
-      properties: {},
-      allowNewImplementations: false,
-    });
-  });
-
-  it.each([true, undefined])(
-    "omits the key for a deprecated status with allowNewImplementations: %s",
-    (allowNewImplementations) => {
-      defineInterface({
-        apiName: "Person",
-        status: {
-          ...DEPRECATED,
-          ...(allowNewImplementations !== undefined && {
-            allowNewImplementations,
-          }),
-        },
-        schemaMigrations: { transitions: [] },
-      });
-
-      expect(Object.keys(lockedSchema())).toEqual(["properties"]);
-    },
-  );
-
-  it.each([true, false])(
-    "records the lenient form while a deprecate is in flight, whatever allowNewImplementations: %s says",
-    (allowNewImplementations) => {
-      defineInterface({
-        apiName: "Person",
-        status: { ...DEPRECATED, allowNewImplementations },
-        schemaMigrations: { transitions: [deprecateTo()] },
-      });
-
-      expect(Object.keys(lockedSchema())).toEqual(["properties"]);
-    },
-  );
-
-  it("records a deprecate instruction without a replacement as bare", () => {
-    defineInterface({
-      apiName: "Person",
-      status: DEPRECATED,
-      schemaMigrations: { transitions: [deprecateTo()] },
-    });
-
-    expect(
-      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
-        "com.palantir.Person"
-      ].transitions[0].instructions,
-    ).toStrictEqual([{ type: "deprecate" }]);
-  });
-
-  it("records the replacement by api name, omitting empty mappings", () => {
-    const personV2 = defineInterface({
+  function definePersonV2(): InterfaceType {
+    return defineInterface({
       apiName: "PersonV2",
       properties: { fullName: { type: "string" } },
     });
+  }
+
+  it("records a deprecated status without an in-flight replace as deprecated", () => {
+    defineInterface({
+      apiName: "Person",
+      status: DEPRECATED,
+      schemaMigrations: { transitions: [] },
+    });
+
+    expect(lockedSchema()).toStrictEqual({ properties: {}, deprecated: true });
+  });
+
+  it("omits the key for a non-deprecated status", () => {
+    defineInterface({
+      apiName: "Person",
+      status: { type: "active" },
+      schemaMigrations: { transitions: [] },
+    });
+
+    expect(Object.keys(lockedSchema())).toEqual(["properties"]);
+  });
+
+  it("records the deprecated status while a replace is in flight", () => {
+    const personV2 = definePersonV2();
     defineInterface({
       apiName: "Person",
       status: DEPRECATED,
       properties: { name: { type: "string" } },
-      schemaMigrations: { transitions: [deprecateTo(personV2)] },
+      schemaMigrations: { transitions: [replaceWith(personV2)] },
+    });
+
+    expect(lockedSchema().deprecated).toBe(true);
+  });
+
+  it("records the replacement by api name, omitting empty mappings", () => {
+    const personV2 = definePersonV2();
+    defineInterface({
+      apiName: "Person",
+      status: DEPRECATED,
+      properties: { name: { type: "string" } },
+      schemaMigrations: { transitions: [replaceWith(personV2)] },
     });
 
     expect(
@@ -729,7 +705,7 @@ describe("deprecation", () => {
       ].transitions[0].instructions,
     ).toStrictEqual([
       {
-        type: "deprecate",
+        type: "replace",
         replacement: {
           interfaceType: "com.palantir.PersonV2",
           propertyMappings: { name: "fullName" },
@@ -739,7 +715,7 @@ describe("deprecation", () => {
   });
 });
 
-describe("deprecation of an interface with inherited properties", () => {
+describe("replacement of an interface with inherited properties", () => {
   it("records a mapping from an inherited property under its published api name", () => {
     const email = defineSharedPropertyType({
       apiName: "email",
@@ -765,12 +741,12 @@ describe("deprecation of an interface with inherited properties", () => {
       schemaMigrations: {
         transitions: [
           {
-            id: "deprecate",
-            title: "Deprecate",
+            id: "replace",
+            title: "Replace",
             gracePeriod: { type: "afterInstall", days: 30 },
             instructions: [
               {
-                type: "deprecate",
+                type: "replace",
                 replacement: {
                   interfaceType: personV2,
                   propertyMappings: { email: "emailAddress" },
@@ -788,7 +764,7 @@ describe("deprecation of an interface with inherited properties", () => {
       ].transitions[0].instructions,
     ).toStrictEqual([
       {
-        type: "deprecate",
+        type: "replace",
         replacement: {
           interfaceType: "com.palantir.PersonV2",
           propertyMappings: { "com.palantir.email": "emailAddress" },

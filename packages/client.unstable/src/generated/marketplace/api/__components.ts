@@ -13504,11 +13504,11 @@ export interface InterfaceTypeReferenceUnresolvable {
 }
 export type InterfaceTypeRid = string;
 /**
- * Migration instruction to require that no object type implements an interface type once the grace period
- * elapses, optionally replacing each implementation with an implementation of another interface type.
+ * Migration instruction to replace each object type's implementation of an interface type with an
+ * implementation of another interface type, so that no object type implements it once the grace period elapses.
  */
-export interface DeprecateInterfaceMigration {
-  replacement?: InterfaceTypeReplacement | null | undefined;
+export interface ReplaceInterfaceMigration {
+  replacement: InterfaceTypeReplacement;
 }
 export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
   type: "addRequiredProperty";
@@ -13520,9 +13520,9 @@ export interface InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeCo
   addRequiredActionTypeConstraint: AddRequiredInterfaceActionTypeConstraintMigration;
 }
 
-export interface InterfaceTypeSchemaMigrationInstruction_deprecate {
-  type: "deprecate";
-  deprecate: DeprecateInterfaceMigration;
+export interface InterfaceTypeSchemaMigrationInstruction_replace {
+  type: "replace";
+  replace: ReplaceInterfaceMigration;
 }
 /**
  * A single migration instruction within an interface type schema transition.
@@ -13530,10 +13530,10 @@ export interface InterfaceTypeSchemaMigrationInstruction_deprecate {
 export type InterfaceTypeSchemaMigrationInstruction =
   | InterfaceTypeSchemaMigrationInstruction_addRequiredProperty
   | InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
-  | InterfaceTypeSchemaMigrationInstruction_deprecate;
+  | InterfaceTypeSchemaMigrationInstruction_replace;
 
 /**
- * The interface type that replaces a deprecated one, and how the deprecated interface type's
+ * The interface type that replaces another, and how the replaced interface type's
  * properties, link type constraints, and action type constraints map onto the replacement's.
  */
 export interface InterfaceTypeReplacement {

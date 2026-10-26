@@ -41,10 +41,10 @@ import type {
 } from "./OntologySchemaLockfile.js";
 import {
   actionTypeConstraintsOf,
-  allowNewImplementationsOf,
   authoredKeyOf,
   declarationOf,
   extensionsOf,
+  isDeprecated,
   nullabilityOf,
   own,
   primaryKeyConstraintOf,
@@ -103,16 +103,14 @@ export type LockfileBreakingChange =
       nextInstructions: readonly LockedInstruction[];
     }
   /**
-   * The interface stopped accepting new implementations in an earlier release, so it is on its way
-   * out, and no migration can be phased in on it any more.
+   * The interface was deprecated in an earlier release, so it is on its way out, and no migration
+   * other than a `replace` can be phased in on it any more.
    */
   | {
       code: "transitionAfterFinalizedDeprecation";
       interfaceApiName: string;
       transitionId: string;
     }
-  /** The interface stopped accepting new implementations without finalizing a `deprecate`. */
-  | { code: "newImplementationsDisallowed"; interfaceApiName: string }
   | {
       code: "actionTypeConstraintBecameRequired";
       interfaceApiName: string;
@@ -237,9 +235,7 @@ export type LockfileWarning =
       code: "actionTypeConstraintRemoved";
       interfaceApiName: string;
       actionTypeConstraint: string;
-    }
-  /** A finalized deprecation was walked back: the interface accepts new implementations again. */
-  | { code: "newImplementationsAllowed"; interfaceApiName: string };
+    };
 
 export interface LockfileValidationResult {
   /**
@@ -332,7 +328,6 @@ function validateInterface(
   const accountedFor: AccountedFor = {
     properties: new Set(),
     actionTypeConstraints: new Set(),
-    allowNewImplementations: false,
   };
 
   for (const previousTransition of previousInterface.transitions) {
@@ -369,8 +364,8 @@ function validateInterface(
           case "actionTypeConstraint":
             accountedFor.actionTypeConstraints.add(element.apiName);
             break;
-          case "allowNewImplementations":
-            accountedFor.allowNewImplementations = true;
+          case "deprecated":
+            // Deprecating or un-deprecating an interface is never a breaking change by itself
             break;
           default: {
             const unhandled: never = element;
@@ -420,15 +415,6 @@ function validateInterface(
     accountedFor.actionTypeConstraints,
     result,
   );
-
-  if (!accountedFor.allowNewImplementations) {
-    validateAllowNewImplementationsDiff(
-      interfaceApiName,
-      previousInterface.schema,
-      nextInterface.schema,
-      result,
-    );
-  }
 }
 
 interface AccountedFor {
@@ -436,12 +422,14 @@ interface AccountedFor {
   properties: Set<string>;
   /** Fully-qualified api names. */
   actionTypeConstraints: Set<string>;
-  allowNewImplementations: boolean;
 }
 
 /**
  * Once a deprecation is finalized the interface only awaits removal. Per the interface schema
  * migrations RFC it may not phase in anything further; OMS does not enforce this yet.
+ *
+ * A `replace` is the exception, since it moves implementors off the interface rather than changing
+ * it, and an interface deprecated without one (e.g. with just `replacedBy`) may adopt one later.
  */
 function validateNoTransitionsAfterFinalizedDeprecation(
   interfaceApiName: string,
@@ -449,7 +437,7 @@ function validateNoTransitionsAfterFinalizedDeprecation(
   nextInterface: LockedInterfaceType,
   breakingChanges: LockfileBreakingChange[],
 ): void {
-  if (allowNewImplementationsOf(previousInterface.schema)) {
+  if (!isDeprecated(previousInterface.schema)) {
     return;
   }
 
@@ -457,7 +445,7 @@ function validateNoTransitionsAfterFinalizedDeprecation(
     previousInterface.transitions.map((transition) => transition.id),
   );
   for (const transition of nextInterface.transitions) {
-    if (!previousIds.has(transition.id)) {
+    if (!previousIds.has(transition.id) && !isReplacement(transition)) {
       breakingChanges.push({
         code: "transitionAfterFinalizedDeprecation",
         interfaceApiName,
@@ -465,6 +453,12 @@ function validateNoTransitionsAfterFinalizedDeprecation(
       });
     }
   }
+}
+
+function isReplacement(transition: LockedTransition): boolean {
+  return transition.instructions.every(
+    (instruction) => instruction.type === "replace",
+  );
 }
 
 /**
@@ -534,29 +528,6 @@ function validateActionTypeConstraintsDiff(
         actionTypeConstraint,
       });
     }
-  }
-}
-
-/**
- * Disallowing new implementations only binds object types that don't implement the interface yet,
- * but it is how a `deprecate` migration is finalized, so doing it without one skips the grace
- * period the RFC promises existing implementors. OMS does not enforce this yet.
- */
-function validateAllowNewImplementationsDiff(
-  interfaceApiName: string,
-  previousSchema: LockedInterfaceSchema,
-  nextSchema: LockedInterfaceSchema,
-  { breakingChanges, warnings }: LockfileValidationResult,
-): void {
-  const previous = allowNewImplementationsOf(previousSchema);
-  const next = allowNewImplementationsOf(nextSchema);
-  if (previous && !next) {
-    breakingChanges.push({
-      code: "newImplementationsDisallowed",
-      interfaceApiName,
-    });
-  } else if (!previous && next) {
-    warnings.push({ code: "newImplementationsAllowed", interfaceApiName });
   }
 }
 

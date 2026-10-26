@@ -299,34 +299,33 @@ describe("maker CLI", () => {
     });
   });
 
-  describe("a deprecation", () => {
+  describe("a replacement", () => {
     const PERSON_SCHEMA: LockedInterfaceSchema = {
       properties: { name: { type: "string", required: true } },
     };
 
-    /** Publishes the release that starts deprecating `Person`. */
-    async function publishDeprecationInFlight(): Promise<void> {
-      await runMaker("personDeprecationInFlight", "--write-locks");
+    /** Publishes the release that starts replacing `Person`. */
+    async function publishReplacementInFlight(): Promise<void> {
+      await runMaker("personReplacementInFlight", "--write-locks");
       await fs.rm(output);
     }
 
-    it("records the deprecation in flight in its lenient form, naming the replacement by api name", async () => {
-      await publishDeprecationInFlight();
+    it("records the replacement in flight with its deprecated status, naming the replacement by api name", async () => {
+      await publishReplacementInFlight();
 
-      // `PersonV2` is not opted in, and the in-flight `allowNewImplementations: false` is not
-      // binding yet, so it is not recorded.
+      // `PersonV2` is not opted in, so it is not recorded
       expect(await readLockfile()).toStrictEqual({
         version: 1,
         interfaces: {
           Person: {
-            schema: PERSON_SCHEMA,
+            schema: { ...PERSON_SCHEMA, deprecated: true },
             transitions: [
               {
                 id: "replaceWithPersonV2",
                 gracePeriod: { type: "afterInstall", days: 30 },
                 instructions: [
                   {
-                    type: "deprecate",
+                    type: "replace",
                     replacement: {
                       interfaceType: "PersonV2",
                       propertyMappings: { name: "fullName" },
@@ -340,18 +339,18 @@ describe("maker CLI", () => {
       });
     });
 
-    it("accepts finalizing it by disallowing new implementations", async () => {
-      await publishDeprecationInFlight();
+    it("accepts finalizing it by keeping the interface deprecated", async () => {
+      await publishReplacementInFlight();
 
       const warnings = spyOnWarnings();
-      await runMaker("personDeprecationFinalized", "--write-locks", "--yes");
+      await runMaker("personReplacementFinalized", "--write-locks", "--yes");
 
       expect(warnings()).toContain("FINALIZE replaceWithPersonV2");
       expect(await readLockfile()).toStrictEqual({
         version: 1,
         interfaces: {
           Person: {
-            schema: { ...PERSON_SCHEMA, allowNewImplementations: false },
+            schema: { ...PERSON_SCHEMA, deprecated: true },
             transitions: [],
           },
         },
@@ -359,11 +358,11 @@ describe("maker CLI", () => {
       expect(await exists(output)).toBe(true);
     });
 
-    it("accepts deleting it by still allowing new implementations", async () => {
-      await publishDeprecationInFlight();
+    it("accepts deleting it by reverting the interface to not deprecated", async () => {
+      await publishReplacementInFlight();
 
       const warnings = spyOnWarnings();
-      await runMaker("personDeprecationDeleted", "--write-locks", "--yes");
+      await runMaker("personReplacementDeleted", "--write-locks", "--yes");
 
       expect(warnings()).toContain("DELETE replaceWithPersonV2");
       expect(await readLockfile()).toStrictEqual({
@@ -373,16 +372,33 @@ describe("maker CLI", () => {
       expect(await exists(output)).toBe(true);
     });
 
-    it("does not write an ontology that declares a migration after the deprecation is finalized", async () => {
-      await publishDeprecationInFlight();
-      await runMaker("personDeprecationFinalized", "--write-locks", "--yes");
+    it("accepts a replace on an interface deprecated without one", async () => {
+      await runMaker("personReplacementFinalized", "--write-locks");
+      await fs.rm(output);
+
+      await runMaker("personReplacementInFlight", "--write-locks", "--yes");
+
+      expect(await readLockfile()).toMatchObject({
+        interfaces: {
+          Person: {
+            schema: { ...PERSON_SCHEMA, deprecated: true },
+            transitions: [{ id: "replaceWithPersonV2" }],
+          },
+        },
+      });
+      expect(await exists(output)).toBe(true);
+    });
+
+    it("does not write an ontology that declares a migration after the replacement is finalized", async () => {
+      await publishReplacementInFlight();
+      await runMaker("personReplacementFinalized", "--write-locks", "--yes");
       await fs.rm(output);
       const finalized = await fs.readFile(lockfile, "utf-8");
 
       await expect(
-        runMaker("personMigratedAfterDeprecation", "--write-locks", "--yes"),
+        runMaker("personMigratedAfterReplacement", "--write-locks", "--yes"),
       ).rejects.toThrowError(
-        /declares schema migration "requireNickname", but a previous release finalized its deprecation[\s\S]*No future transitions are allowed after a deprecation is finalized/u,
+        /declares schema migration "requireNickname", but a previous release finalized its deprecation[\s\S]*No future transitions other than a `replace` are allowed after a deprecation is finalized/u,
       );
       expect(await exists(output)).toBe(false);
       expect(await fs.readFile(lockfile, "utf-8")).toBe(finalized);

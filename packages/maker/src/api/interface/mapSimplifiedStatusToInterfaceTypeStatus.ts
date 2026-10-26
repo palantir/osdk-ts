@@ -29,9 +29,6 @@ export function mapSimplifiedStatusToInterfaceTypeStatus(
           message: status.message,
           deadline: status.deadline,
           replacedBy: undefined,
-          ...(status.allowNewImplementations !== undefined
-            ? { allowNewImplementations: status.allowNewImplementations }
-            : {}),
         },
       };
     case "active":

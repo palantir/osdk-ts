@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-// `personDeprecationFinalized`, one release later, wrongly phasing in a new required property.
+// `Person` being replaced by `PersonV2`, deprecated as an in-flight replace requires.
 import { defineInterface } from "../../../api/defineInterface.js";
 
-defineInterface({
+const personV2 = defineInterface({
   apiName: "PersonV2",
   displayName: "Person",
   properties: {
@@ -32,19 +32,25 @@ defineInterface({
     type: "deprecated",
     message: "Use PersonV2",
     deadline: "2030-01-01T00:00:00Z",
-    allowNewImplementations: false,
   },
   properties: {
     name: { type: "string" },
-    nickname: { type: "string", required: false },
   },
   schemaMigrations: {
     transitions: [
       {
-        id: "requireNickname",
-        title: "Require nickname",
+        id: "replaceWithPersonV2",
+        title: "Replace with PersonV2",
         gracePeriod: { type: "afterInstall", days: 30 },
-        instructions: [{ type: "addRequiredProperty", property: "nickname" }],
+        instructions: [
+          {
+            type: "replace",
+            replacement: {
+              interfaceType: personV2,
+              propertyMappings: { name: "fullName" },
+            },
+          },
+        ],
       },
     ],
   },

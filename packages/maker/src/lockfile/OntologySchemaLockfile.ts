@@ -47,7 +47,8 @@ export interface OntologySchemaLockfile {
 export interface LockedInterfaceType {
   /**
    * The interface's schema in its "lenient" form: as if none of the active transitions have
-   * been finalized yet.
+   * been finalized yet. The exception is `deprecated`, which records the status as declared,
+   * since stacks install it while a `replace` is in flight.
    */
   schema: LockedInterfaceSchema;
   /**
@@ -80,13 +81,10 @@ export interface LockedInterfaceSchema {
    */
   actionTypeConstraints?: Record<string, LockedActionTypeConstraint>;
   /**
-   * Present only when the interface is deprecated and no longer accepts new implementations, i.e.
-   * a `deprecate` migration was finalized. Absent means new implementations are allowed.
-   *
-   * While a `deprecate` migration is in flight this is absent regardless of what the status says,
-   * since the lockfile records the lenient form.
+   * Present only when the interface is deprecated, including while a `replace` migration is in
+   * flight. Absent means it is not deprecated.
    */
-  allowNewImplementations?: false;
+  deprecated?: true;
 }
 
 export interface LockedActionTypeConstraint {
@@ -142,12 +140,12 @@ export interface LockedTransition {
 export type LockedInstruction =
   | { type: "addRequiredProperty"; property: string }
   | { type: "addRequiredActionTypeConstraint"; actionTypeConstraint: string }
-  | { type: "deprecate"; replacement?: LockedInterfaceTypeReplacement };
+  | { type: "replace"; replacement: LockedInterfaceTypeReplacement };
 
 export interface LockedInterfaceTypeReplacement {
   /** The replacement's fully-qualified api name. */
   interfaceType: string;
-  /** Deprecated interface's property api name -> replacement's. Absent when empty. */
+  /** Replaced interface's property api name -> replacement's. Absent when empty. */
   propertyMappings?: Record<string, string>;
   /** Same as `propertyMappings`, for link type constraints. Absent when empty. */
   linkTypeConstraintMappings?: Record<string, string>;
@@ -169,10 +167,8 @@ export function actionTypeConstraintsOf(
   return schema.actionTypeConstraints ?? {};
 }
 
-export function allowNewImplementationsOf(
-  schema: LockedInterfaceSchema,
-): boolean {
-  return schema.allowNewImplementations ?? true;
+export function isDeprecated(schema: LockedInterfaceSchema): boolean {
+  return schema.deprecated ?? false;
 }
 
 export function primaryKeyConstraintOf(

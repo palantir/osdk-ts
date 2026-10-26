@@ -3845,11 +3845,6 @@ export interface DeprecatedActionTypeStatus {
  * deadline specified.
  */
 export interface DeprecatedInterfaceTypeStatus {
-  /**
-   * Whether object types may newly implement this interface type. Existing implementations may remain
-   * but should be removed by the deadline. Defaults to true.
-   */
-  allowNewImplementations?: boolean | null | undefined;
   deadline: string;
   message: string;
   replacedBy?: InterfaceTypeRid | null | undefined;

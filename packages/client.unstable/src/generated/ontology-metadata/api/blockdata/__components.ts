@@ -409,11 +409,6 @@ export interface MarketplaceDataSecurity {
   markingConstraint?: _api_MandatoryMarkingConstraint | null | undefined;
 }
 export interface MarketplaceDeprecatedInterfaceTypeStatus {
-  /**
-   * Whether object types may newly implement this interface type. Existing implementations may remain
-   * but should be removed by the deadline. Defaults to true.
-   */
-  allowNewImplementations?: boolean | null | undefined;
   deadline: string;
   message: string;
   replacedBy?: _api_InterfaceTypeRid | null | undefined;
@@ -772,11 +767,6 @@ export interface OntologyIrMarketplaceDataSecurity {
     | undefined;
 }
 export interface OntologyIrMarketplaceDeprecatedInterfaceTypeStatus {
-  /**
-   * Whether object types may newly implement this interface type. Existing implementations may remain
-   * but should be removed by the deadline. Defaults to true.
-   */
-  allowNewImplementations?: boolean | null | undefined;
   deadline: string;
   message: string;
   replacedBy?: _api_InterfaceTypeApiName | null | undefined;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// `personDeprecationInFlight`, with the deprecation finalized: it no longer accepts new implementations.
+// `personReplacementFinalized`, one release later, wrongly phasing in a new required property.
 import { defineInterface } from "../../../api/defineInterface.js";
 
 defineInterface({
@@ -32,10 +32,19 @@ defineInterface({
     type: "deprecated",
     message: "Use PersonV2",
     deadline: "2030-01-01T00:00:00Z",
-    allowNewImplementations: false,
   },
   properties: {
     name: { type: "string" },
+    nickname: { type: "string", required: false },
   },
-  schemaMigrations: { transitions: [] },
+  schemaMigrations: {
+    transitions: [
+      {
+        id: "requireNickname",
+        title: "Require nickname",
+        gracePeriod: { type: "afterInstall", days: 30 },
+        instructions: [{ type: "addRequiredProperty", property: "nickname" }],
+      },
+    ],
+  },
 });

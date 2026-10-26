@@ -351,25 +351,23 @@ describe("parseLockfile", () => {
     );
   });
 
-  it("accepts an interface that disallows new implementations", () => {
-    const disallowed = withInterface({
-      schema: { properties: {}, allowNewImplementations: false },
+  it("accepts a deprecated interface", () => {
+    const deprecated = withInterface({
+      schema: { properties: {}, deprecated: true },
       transitions: [],
     });
-    expect(parse(disallowed)).toStrictEqual(disallowed);
+    expect(parse(deprecated)).toStrictEqual(deprecated);
   });
 
-  it("rejects an interface that spells out allowing new implementations", () => {
+  it("rejects an interface that spells out not being deprecated", () => {
     expect(() =>
       parse(
         withInterface({
-          schema: { properties: {}, allowNewImplementations: true },
+          schema: { properties: {}, deprecated: false },
           transitions: [],
         }),
       ),
-    ).toThrowError(
-      /schema\.allowNewImplementations: Expected false, or no value at all/u,
-    );
+    ).toThrowError(/schema\.deprecated: Expected true, or no value at all/u);
   });
 
   it("accepts a property that records a value type", () => {
@@ -539,11 +537,10 @@ describe("parseLockfile", () => {
         actionTypeConstraint: "com.palantir.sendEmail",
       },
     ],
-    ["a bare deprecate", { type: "deprecate" }],
     [
-      "a deprecate with a replacement",
+      "a replace",
       {
-        type: "deprecate",
+        type: "replace",
         replacement: {
           interfaceType: "com.palantir.PersonV2",
           propertyMappings: { name: "fullName" },
@@ -570,13 +567,21 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("rejects a `replace` instruction that records no replacement", () => {
+    expect(() =>
+      parse(withTransition({ instructions: [{ type: "replace" }] })),
+    ).toThrowError(
+      /instructions\[0\]\.replacement: Expected an object recording the replacement interface/u,
+    );
+  });
+
   it("rejects a replacement that records an empty mapping", () => {
     expect(() =>
       parse(
         withTransition({
           instructions: [
             {
-              type: "deprecate",
+              type: "replace",
               replacement: {
                 interfaceType: "com.palantir.PersonV2",
                 propertyMappings: {},
@@ -596,7 +601,7 @@ describe("parseLockfile", () => {
         withTransition({
           instructions: [
             {
-              type: "deprecate",
+              type: "replace",
               replacement: { interfaceType: { apiName: "PersonV2" } },
             },
           ],

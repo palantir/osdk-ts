@@ -75,7 +75,7 @@ export type {
   AdditionalOutputShapeResult,
   AddRequiredInterfaceActionTypeConstraintMigration,
   AddRequiredInterfacePropertyMigration,
-  DeprecateInterfaceMigration,
+  ReplaceInterfaceMigration,
   AddToDraftGroupRequest,
   AipAgentCreateBlockRequest,
   AipAgentIdentifier,

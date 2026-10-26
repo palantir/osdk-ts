@@ -255,9 +255,9 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
     });
   });
 
-  describe("deprecate", () => {
-    it("locks the in-flight migration with the lenient schema", async () => {
-      await run("legacyPersonDeprecateInFlight", "--write-locks");
+  describe("replace", () => {
+    it("locks the in-flight migration with the deprecated status", async () => {
+      await run("legacyPersonReplaceInFlight", "--write-locks");
 
       expect(await readLockfile()).toStrictEqual({
         version: 1,
@@ -265,6 +265,7 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
           LegacyPerson: {
             schema: {
               properties: { fullName: { type: "string", required: true } },
+              deprecated: true,
             },
             transitions: [
               {
@@ -272,7 +273,7 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
                 gracePeriod: { type: "afterInstall", days: 30 },
                 instructions: [
                   {
-                    type: "deprecate",
+                    type: "replace",
                     replacement: {
                       interfaceType: "Person",
                       propertyMappings: { fullName: "firstName" },
@@ -286,10 +287,10 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
       });
     });
 
-    it("locks allowNewImplementations: false once finalized", async () => {
-      await run("legacyPersonDeprecateInFlight", "--write-locks");
+    it("locks the interface as deprecated once finalized", async () => {
+      await run("legacyPersonReplaceInFlight", "--write-locks");
 
-      await run("legacyPersonDeprecateFinalized", "--write-locks", "--yes");
+      await run("legacyPersonReplaceFinalized", "--write-locks", "--yes");
 
       expect(await readLockfile()).toStrictEqual({
         version: 1,
@@ -297,7 +298,7 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
           LegacyPerson: {
             schema: {
               properties: { fullName: { type: "string", required: true } },
-              allowNewImplementations: false,
+              deprecated: true,
             },
             transitions: [],
           },

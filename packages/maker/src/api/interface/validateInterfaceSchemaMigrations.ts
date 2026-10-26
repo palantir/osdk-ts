@@ -212,7 +212,7 @@ function validateInstruction(
     case "addRequiredActionTypeConstraint":
       // Whether the constraint exists is checked once the ontology is fully defined
       return;
-    case "deprecate": {
+    case "replace": {
       const description = describeInstruction(instruction);
       invariant(
         status.type === "deprecated",
@@ -224,16 +224,14 @@ function validateInstruction(
           transitionCount === 1
             ? `the transition has ${transition.instructions.length} instructions`
             : `interface ${interfaceApiName} has ${transitionCount} transitions`
-        }. A deprecation must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.`,
+        }. A replacement must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.`,
       );
-      if (instruction.replacement !== undefined) {
-        validateReplacementMappings(
-          interfaceApiName,
-          transitionId,
-          description,
-          instruction.replacement,
-        );
-      }
+      validateReplacementMappings(
+        interfaceApiName,
+        transitionId,
+        description,
+        instruction.replacement,
+      );
       return;
     }
     default: {
@@ -292,8 +290,8 @@ function getClaims(
           instruction.actionTypeConstraint,
         )}`,
       ];
-    case "deprecate":
-      return ["deprecate"];
+    case "replace":
+      return ["replace"];
     default: {
       const unhandled: never = instruction;
       throw new Error(

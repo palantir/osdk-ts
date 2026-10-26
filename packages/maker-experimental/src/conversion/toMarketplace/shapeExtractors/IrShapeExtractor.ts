@@ -485,21 +485,16 @@ function toMarketplaceSchemaMigrationInstruction(
           ),
         },
       };
-    case "deprecate": {
-      const { replacement } = instruction.deprecate;
+    case "replace":
       return {
-        type: "deprecate",
-        deprecate:
-          replacement != null
-            ? {
-                replacement: toMarketplaceInterfaceTypeReplacement(
-                  replacement,
-                  knownMarketplaceIdentifiers,
-                ),
-              }
-            : {},
+        type: "replace",
+        replace: {
+          replacement: toMarketplaceInterfaceTypeReplacement(
+            instruction.replace.replacement,
+            knownMarketplaceIdentifiers,
+          ),
+        },
       };
-    }
     default: {
       const unhandled: never = instruction;
       throw new Error(

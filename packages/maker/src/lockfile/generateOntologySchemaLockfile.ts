@@ -133,8 +133,8 @@ function lockInterfaceSchema(
     // have no key at all) still compare equal.
     ...(extendsInterfaces !== undefined && { extendsInterfaces }),
     ...(actionTypeConstraints !== undefined && { actionTypeConstraints }),
-    ...(!allowsNewImplementations(interfaceType) && {
-      allowNewImplementations: false as const,
+    ...(interfaceType.status.type === "deprecated" && {
+      deprecated: true as const,
     }),
   };
 }
@@ -153,25 +153,6 @@ function lockActionTypeConstraints(
           [metadata.apiName, { requireImplementation }] as const,
       )
       .sort(([a], [b]) => compare(a, b)),
-  );
-}
-
-/**
- * Whether the lenient form of the interface accepts new implementations. An in-flight `deprecate`
- * may already disallow them, but finalizing is what makes that binding, so until then the lockfile
- * records the default.
- */
-function allowsNewImplementations(interfaceType: InterfaceType): boolean {
-  const { status, schemaMigrations } = interfaceType;
-  const deprecating = (schemaMigrations?.transitions ?? []).some((transition) =>
-    transition.instructions.some(
-      (instruction) => instruction.type === "deprecate",
-    ),
-  );
-  return (
-    deprecating ||
-    status.type !== "deprecated" ||
-    status.deprecated.allowNewImplementations !== false
   );
 }
 
@@ -292,16 +273,11 @@ function lockInstruction(
           instruction.actionTypeConstraint,
         ),
       };
-    case "deprecate":
-      return instruction.replacement === undefined
-        ? { type: "deprecate" }
-        : {
-            type: "deprecate",
-            replacement: lockReplacement(
-              interfaceType,
-              instruction.replacement,
-            ),
-          };
+    case "replace":
+      return {
+        type: "replace",
+        replacement: lockReplacement(interfaceType, instruction.replacement),
+      };
     default: {
       const unhandled: never = instruction;
       throw new Error(

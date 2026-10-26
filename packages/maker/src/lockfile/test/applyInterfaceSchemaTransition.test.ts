@@ -164,13 +164,13 @@ describe("applyTransition", () => {
     });
   });
 
-  describe("deprecate", () => {
-    const deprecate: LockedTransition = {
-      id: "deprecate",
+  describe("replace", () => {
+    const replace: LockedTransition = {
+      id: "replace",
       gracePeriod: { type: "afterInstall", days: 30 },
       instructions: [
         {
-          type: "deprecate",
+          type: "replace",
           replacement: {
             interfaceType: "com.example.PersonV2",
             propertyMappings: { lastName: "surname" },
@@ -178,35 +178,43 @@ describe("applyTransition", () => {
         },
       ],
     };
-    const disallowed: LockedInterfaceSchema = {
+    const deprecated: LockedInterfaceSchema = {
       ...previousSchema,
-      allowNewImplementations: false,
+      deprecated: true,
     };
 
-    it("leaves new implementations allowed when applied leniently", () => {
-      const lenient = applyTransition(deprecate, previousSchema, "lenient");
+    it("leaves the interface not deprecated when applied leniently", () => {
+      const lenient = applyTransition(replace, previousSchema, "lenient");
 
       expect(lenient).toStrictEqual({
         schema: previousSchema,
-        touched: [{ kind: "allowNewImplementations" }],
+        touched: [{ kind: "deprecated" }],
       });
     });
 
-    it("disallows new implementations when applied strictly", () => {
+    it("deprecates the interface when applied strictly", () => {
       expect(
-        applyTransition(deprecate, previousSchema, "strict")?.schema,
-      ).toStrictEqual(disallowed);
+        applyTransition(replace, previousSchema, "strict")?.schema,
+      ).toStrictEqual(deprecated);
     });
 
-    it("reproduces a finalization only when new implementations are disallowed", () => {
-      const strict = applyTransition(deprecate, previousSchema, "strict");
-      const lenient = applyTransition(deprecate, previousSchema, "lenient");
+    // The lockfile records the interface as deprecated while the replace is in flight, but the
+    // classification must not depend on that
+    it.each([
+      ["not deprecated", previousSchema],
+      ["deprecated", deprecated],
+    ])(
+      "reproduces a finalization only when the interface is deprecated, from a %s schema",
+      (_name, inFlightSchema) => {
+        const strict = applyTransition(replace, inFlightSchema, "strict");
+        const lenient = applyTransition(replace, inFlightSchema, "lenient");
 
-      expect(reproduces(strict, disallowed)).toBe(true);
-      expect(reproduces(strict, previousSchema)).toBe(false);
-      expect(reproduces(lenient, previousSchema)).toBe(true);
-      expect(reproduces(lenient, disallowed)).toBe(false);
-    });
+        expect(reproduces(strict, deprecated)).toBe(true);
+        expect(reproduces(strict, previousSchema)).toBe(false);
+        expect(reproduces(lenient, previousSchema)).toBe(true);
+        expect(reproduces(lenient, deprecated)).toBe(false);
+      },
+    );
   });
 });
 

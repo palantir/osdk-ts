@@ -29,7 +29,6 @@ defineInterface({
     type: "deprecated",
     message: "Use Person instead",
     deadline: "2027-01-01T00:00:00Z",
-    allowNewImplementations: false,
   },
   properties: { fullName: { type: "string" } },
   schemaMigrations: { transitions: [] },
