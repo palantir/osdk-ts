@@ -1,5 +1,5 @@
 ---
-"@osdk/unit-testing": major
+"@osdk/integration-testing": minor
 ---
 
-Make `@osdk/unit-testing` generally available with the 1.0.0 release. Remove the `@osdk/unit-testing/experimental` entry point. Replace imports from `@osdk/unit-testing/experimental` with `@osdk/unit-testing`; all mock factories and types are available from the main entry point.
+Update the dependency on `@osdk/unit-testing` to its generally available 1.0.0 release.
