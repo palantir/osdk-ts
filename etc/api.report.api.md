@@ -1826,7 +1826,7 @@ export namespace Osdk {
             			timezoneId?: string
             		}) => string | undefined
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$propertySecurities" extends OPTIONS ? {
-        		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>
+        		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>>
         	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
