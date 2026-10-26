@@ -233,6 +233,10 @@ export interface InterfaceTypeSchemaMigrationBlockData {
     _api_InterfaceLinkTypeRid,
     _api_InterfaceLinkTypeApiName
   >;
+  interfaceParameterConstraintRidsToApiNames: Record<
+    _api_InterfaceParameterConstraintRid,
+    _api_InterfaceParameterConstraintApiName
+  >;
   interfacePropertyTypeRidsToApiNames: Record<
     _api_InterfacePropertyTypeRid,
     _api_InterfacePropertyTypeApiName

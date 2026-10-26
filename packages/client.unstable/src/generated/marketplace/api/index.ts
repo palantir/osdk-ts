@@ -1205,6 +1205,7 @@ export type {
   InterfaceActionTypeConstraintIdentifier,
   InterfaceActionTypeConstraintNotFound,
   InterfaceActionTypeConstraintReference,
+  InterfaceActionTypeConstraintReplacement,
   InterfaceActionTypeConstraintReferenceUnresolvable,
   InterfaceActionTypeConstraintRequiredMismatch,
   InterfaceActionTypeConstraintRid,

@@ -29,6 +29,7 @@ import type {
   InterfaceTypeReplacement,
 } from "../interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../interface/InterfaceType.js";
+import type { ParameterConstraintDefinition } from "../InterfaceActionTypeConstraintDefinition.js";
 
 const DEPRECATED = {
   type: "deprecated",
@@ -69,6 +70,7 @@ function defineActionTypeConstraint(
   interfaceType: InterfaceType,
   apiName: string,
   requireImplementation: boolean,
+  parameters: ParameterConstraintDefinition[] = [],
 ): void {
   defineInterfaceActionTypeConstraint({
     interfaceType,
@@ -76,7 +78,7 @@ function defineActionTypeConstraint(
     displayName: apiName,
     description: apiName,
     requireImplementation,
-    parameters: [],
+    parameters,
   });
 }
 
@@ -139,7 +141,7 @@ describe("Interface schema migrations to ontology IR", () => {
     /**
      * `Old` and its replacement `New`, which inherits `name` from `Base`. Both carry the `ownerSpt`
      * SPT, whose published api name differs from its authored key, a link to `Target`, and an action
-     * type constraint, each named differently on either side.
+     * type constraint with a parameter, each named differently on either side.
      */
     function defineReplacementPair(): {
       old: InterfaceType;
@@ -165,7 +167,12 @@ describe("Interface schema migrations to ontology IR", () => {
         interfaceType: newInterface,
         propertyMappings: { title: "name", ownerSpt: "ownerSpt" },
         linkTypeConstraintMappings: { oldTarget: "newTarget" },
-        actionTypeConstraintMappings: { oldAction: "newAction" },
+        actionTypeConstraintMappings: {
+          oldAction: {
+            actionTypeConstraint: "newAction",
+            parameterMappings: { subject: "target" },
+          },
+        },
       };
       const old = defineInterface({
         apiName: "Old",
@@ -186,8 +193,22 @@ describe("Interface schema migrations to ontology IR", () => {
         from: newInterface,
         toOne: target,
       });
-      defineActionTypeConstraint(old, "oldAction", true);
-      defineActionTypeConstraint(newInterface, "newAction", true);
+      defineActionTypeConstraint(old, "oldAction", true, [
+        {
+          apiName: "subject",
+          displayName: "Subject",
+          type: { type: "string", string: {} },
+          requireImplementation: true,
+        },
+      ]);
+      defineActionTypeConstraint(newInterface, "newAction", true, [
+        {
+          apiName: "target",
+          displayName: "Target",
+          type: { type: "string", string: {} },
+          requireImplementation: true,
+        },
+      ]);
       return { old, replacement };
     }
 
@@ -200,7 +221,12 @@ describe("Interface schema migrations to ontology IR", () => {
             "replace": {
               "replacement": {
                 "actionTypeConstraintMappings": {
-                  "com.palantir.oldAction": "com.palantir.newAction",
+                  "com.palantir.oldAction": {
+                    "actionTypeConstraintRid": "com.palantir.newAction",
+                    "parameterMappings": {
+                      "subject": "target",
+                    },
+                  },
                 },
                 "interfaceTypeRid": "com.palantir.New",
                 "linkTypeConstraintMappings": {
@@ -276,7 +302,10 @@ describe("Interface schema migrations to ontology IR", () => {
               propertyMappings: { ownerSpt: "owner" },
               linkTypeConstraintMappings: { oldTarget: "com.other.newTarget" },
               actionTypeConstraintMappings: {
-                oldAction: "com.other.newAction",
+                oldAction: {
+                  actionTypeConstraint: "com.other.newAction",
+                  parameterMappings: { subject: "target" },
+                },
               },
             },
           }),
@@ -295,7 +324,12 @@ describe("Interface schema migrations to ontology IR", () => {
             "replace": {
               "replacement": {
                 "actionTypeConstraintMappings": {
-                  "com.palantir.oldAction": "com.other.newAction",
+                  "com.palantir.oldAction": {
+                    "actionTypeConstraintRid": "com.other.newAction",
+                    "parameterMappings": {
+                      "subject": "target",
+                    },
+                  },
                 },
                 "interfaceTypeRid": "com.other.New",
                 "linkTypeConstraintMappings": {
@@ -387,6 +421,7 @@ describe("Interface schema migrations to ontology IR", () => {
                 apiName: "com.palantir.newAction",
                 interfaceTypeApiName: "com.palantir.New",
               },
+              parameterMappings: { subject: "target" },
             },
           ],
         });

@@ -541,10 +541,28 @@ function toMarketplaceInterfaceTypeReplacement(
       knownMarketplaceIdentifiers.interfaceLinkTypes,
       "interface link type",
     ),
-    actionTypeConstraintMappings: toReferences(
-      replacement.actionTypeConstraintMappings,
-      knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
-      "interface action type constraint",
+    actionTypeConstraintMappings: Object.fromEntries(
+      Object.entries(replacement.actionTypeConstraintMappings).map(
+        ([from, { actionTypeConstraintRid, parameterMappings }]) => [
+          requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+            from,
+            "interface action type constraint",
+          ),
+          {
+            actionTypeConstraint: requireKnownIdentifier(
+              knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+              actionTypeConstraintRid,
+              "interface action type constraint",
+            ),
+            parameterMappings: toReferences(
+              parameterMappings,
+              knownMarketplaceIdentifiers.interfaceParameterConstraints,
+              "interface parameter constraint",
+            ),
+          },
+        ],
+      ),
     ),
   };
 }

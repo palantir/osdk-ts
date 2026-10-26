@@ -13533,13 +13533,24 @@ export type InterfaceTypeSchemaMigrationInstruction =
   | InterfaceTypeSchemaMigrationInstruction_replace;
 
 /**
+ * The action type constraint that replaces another, and how the replaced action type constraint's
+ * parameter constraints map onto the replacement's.
+ */
+export interface InterfaceActionTypeConstraintReplacement {
+  actionTypeConstraint: InterfaceActionTypeConstraintReference;
+  parameterMappings: Record<
+    InterfaceParameterConstraintReference,
+    InterfaceParameterConstraintReference
+  >;
+}
+/**
  * The interface type that replaces another, and how the replaced interface type's
  * properties, link type constraints, and action type constraints map onto the replacement's.
  */
 export interface InterfaceTypeReplacement {
   actionTypeConstraintMappings: Record<
     InterfaceActionTypeConstraintReference,
-    InterfaceActionTypeConstraintReference
+    InterfaceActionTypeConstraintReplacement
   >;
   interfaceType: InterfaceTypeReference;
   linkTypeConstraintMappings: Record<

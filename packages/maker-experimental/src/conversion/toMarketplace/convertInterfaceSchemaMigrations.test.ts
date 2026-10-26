@@ -120,6 +120,7 @@ describe("interface type schema migrations", () => {
     expect(block.schemaMigrations).toEqual({
       interfaceActionTypeConstraintRidsToApiNames: {},
       interfaceLinkTypeRidsToApiNames: {},
+      interfaceParameterConstraintRidsToApiNames: {},
       interfacePropertyTypeRidsToApiNames: {},
       interfaceTypeRidsToApiNames: {},
       schemaTransitions: {},
@@ -463,6 +464,7 @@ function defineActionTypeConstraint(
   interfaceType: InterfaceType,
   apiName: string,
   requireImplementation: boolean,
+  parameterApiNames: string[] = [],
 ): void {
   defineInterfaceActionTypeConstraint({
     interfaceType,
@@ -470,7 +472,12 @@ function defineActionTypeConstraint(
     displayName: apiName,
     description: apiName,
     requireImplementation,
-    parameters: [],
+    parameters: parameterApiNames.map((parameterApiName) => ({
+      apiName: parameterApiName,
+      displayName: parameterApiName,
+      type: { type: "string", string: {} },
+      requireImplementation: true,
+    })),
   });
 }
 
@@ -510,7 +517,12 @@ function defineReplacementPair(
         interfaceType: replacementOf(newInterface),
         propertyMappings: { title: "name", ownerSpt: "ownerSpt" },
         linkTypeConstraintMappings: { oldTarget: "newTarget" },
-        actionTypeConstraintMappings: { oldAction: "newAction" },
+        actionTypeConstraintMappings: {
+          oldAction: {
+            actionTypeConstraint: "newAction",
+            parameterMappings: { subject: "target" },
+          },
+        },
       },
     }),
   });
@@ -524,8 +536,8 @@ function defineReplacementPair(
     from: newInterface,
     toOne: target,
   });
-  defineActionTypeConstraint(old, "oldAction", true);
-  defineActionTypeConstraint(newInterface, "newAction", true);
+  defineActionTypeConstraint(old, "oldAction", true, ["subject"]);
+  defineActionTypeConstraint(newInterface, "newAction", true, ["target"]);
 }
 
 /** An interface type declared as an input to the project, with a property and a constraint. */
@@ -544,7 +556,13 @@ function importedInterface(): InterfaceType {
           displayName: "importedAction",
           description: "importedAction",
         },
-        parameters: {},
+        parameters: {
+          target: {
+            displayMetadata: { apiName: "target", displayName: "target" },
+            type: { type: "string", string: {} },
+            requireImplementation: true,
+          },
+        },
         requireImplementation: true,
       },
     ],
@@ -566,12 +584,15 @@ function defineImportedReplacement(): void {
         interfaceType: "com.other.Imported",
         propertyMappings: { title: "fullName" },
         actionTypeConstraintMappings: {
-          oldAction: "com.other.importedAction",
+          oldAction: {
+            actionTypeConstraint: "com.other.importedAction",
+            parameterMappings: { subject: "target" },
+          },
         },
       },
     }),
   });
-  defineActionTypeConstraint(old, "oldAction", true);
+  defineActionTypeConstraint(old, "oldAction", true, ["subject"]);
 }
 
 function blockOf(
@@ -628,6 +649,23 @@ function memberRids(ontology: OntologyBlockDataV2, apiName: string) {
         "action type constraint",
         name,
       ),
+    parameter: (constraintApiName: string, name: string) =>
+      find(
+        interfaceType.actionTypeConstraints
+          .filter(
+            (constraint) => constraint.metadata.apiName === constraintApiName,
+          )
+          .flatMap((constraint) =>
+            Object.entries(constraint.parameters).map(
+              ([rid, parameter]): [string, string] => [
+                rid,
+                parameter.displayMetadata.apiName!,
+              ],
+            ),
+          ),
+        `parameter of ${constraintApiName}`,
+        name,
+      ),
   };
 }
 
@@ -662,6 +700,7 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
         [constraint.rid]: "com.palantir.doThing",
       },
       interfaceLinkTypeRidsToApiNames: {},
+      interfaceParameterConstraintRidsToApiNames: {},
       interfacePropertyTypeRidsToApiNames: {},
       interfaceTypeRidsToApiNames: {},
     });
@@ -694,8 +733,15 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
             ),
           },
           actionTypeConstraintMappings: {
-            [old.actionTypeConstraint("com.palantir.oldAction")]:
-              replacement.actionTypeConstraint("com.palantir.newAction"),
+            [old.actionTypeConstraint("com.palantir.oldAction")]: {
+              actionTypeConstraintRid: replacement.actionTypeConstraint(
+                "com.palantir.newAction",
+              ),
+              parameterMappings: {
+                [old.parameter("com.palantir.oldAction", "subject")]:
+                  replacement.parameter("com.palantir.newAction", "target"),
+              },
+            },
           },
         },
       },
@@ -710,6 +756,10 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
       interfaceLinkTypeRidsToApiNames: {
         [old.link("com.palantir.oldTarget")]: "com.palantir.oldTarget",
         [replacement.link("com.palantir.newTarget")]: "com.palantir.newTarget",
+      },
+      interfaceParameterConstraintRidsToApiNames: {
+        [old.parameter("com.palantir.oldAction", "subject")]: "subject",
+        [replacement.parameter("com.palantir.newAction", "target")]: "target",
       },
       interfacePropertyTypeRidsToApiNames: {
         [old.property("title")]: "title",
@@ -758,8 +808,15 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
           },
           linkTypeConstraintMappings: {},
           actionTypeConstraintMappings: {
-            [old.actionTypeConstraint("com.palantir.oldAction")]:
-              imported.actionTypeConstraint("com.other.importedAction"),
+            [old.actionTypeConstraint("com.palantir.oldAction")]: {
+              actionTypeConstraintRid: imported.actionTypeConstraint(
+                "com.other.importedAction",
+              ),
+              parameterMappings: {
+                [old.parameter("com.palantir.oldAction", "subject")]:
+                  imported.parameter("com.other.importedAction", "target"),
+              },
+            },
           },
         },
       },
@@ -930,6 +987,16 @@ describe("addRequiredActionTypeConstraint and replace output shapes", () => {
         "com.palantir.New",
         "com.palantir.newAction",
       ),
+      subject: ReadableIdGenerator.getForInterfaceParameterConstraint(
+        "com.palantir.Old",
+        "com.palantir.oldAction",
+        "subject",
+      ),
+      target: ReadableIdGenerator.getForInterfaceParameterConstraint(
+        "com.palantir.New",
+        "com.palantir.newAction",
+        "target",
+      ),
     };
 
     for (const id of Object.values(ids)) {
@@ -948,7 +1015,12 @@ describe("addRequiredActionTypeConstraint and replace output shapes", () => {
             [blockId(ids.oldTarget)]: blockId(ids.newTarget),
           },
           actionTypeConstraintMappings: {
-            [blockId(ids.oldAction)]: blockId(ids.newAction),
+            [blockId(ids.oldAction)]: {
+              actionTypeConstraint: blockId(ids.newAction),
+              parameterMappings: {
+                [blockId(ids.subject)]: blockId(ids.target),
+              },
+            },
           },
         },
       },
@@ -966,6 +1038,11 @@ describe("addRequiredActionTypeConstraint and replace output shapes", () => {
       importedAction: ReadableIdGenerator.getForInterfaceActionTypeConstraint(
         "com.other.Imported",
         "com.other.importedAction",
+      ),
+      target: ReadableIdGenerator.getForInterfaceParameterConstraint(
+        "com.other.Imported",
+        "com.other.importedAction",
+        "target",
       ),
     };
 
@@ -993,7 +1070,18 @@ describe("addRequiredActionTypeConstraint and replace output shapes", () => {
                 "com.palantir.Old",
                 "com.palantir.oldAction",
               ),
-            )]: blockId(ids.importedAction),
+            )]: {
+              actionTypeConstraint: blockId(ids.importedAction),
+              parameterMappings: {
+                [blockId(
+                  ReadableIdGenerator.getForInterfaceParameterConstraint(
+                    "com.palantir.Old",
+                    "com.palantir.oldAction",
+                    "subject",
+                  ),
+                )]: blockId(ids.target),
+              },
+            },
           },
         },
       },

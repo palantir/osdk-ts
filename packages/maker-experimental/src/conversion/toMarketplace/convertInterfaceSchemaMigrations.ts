@@ -94,6 +94,7 @@ class WireReferences {
   readonly ridsToApiNames: RidsToApiNames = {
     interfaceActionTypeConstraintRidsToApiNames: {},
     interfaceLinkTypeRidsToApiNames: {},
+    interfaceParameterConstraintRidsToApiNames: {},
     interfacePropertyTypeRidsToApiNames: {},
     interfaceTypeRidsToApiNames: {},
   };
@@ -134,6 +135,21 @@ class WireReferences {
     );
     this.ridsToApiNames.interfaceActionTypeConstraintRidsToApiNames[rid] =
       apiName;
+    return rid;
+  }
+
+  /** Parameter API names are scoped to `actionTypeConstraint`, which keys their rids. */
+  parameterConstraint(
+    { apiName, interfaceTypeApiName }: ResolvedInterfaceMember,
+    parameterApiName: string,
+  ): string {
+    const rid = this.ridGenerator.generateRidForInterfaceParameterConstraint(
+      apiName,
+      interfaceTypeApiName,
+      parameterApiName,
+    );
+    this.ridsToApiNames.interfaceParameterConstraintRidsToApiNames[rid] =
+      parameterApiName;
     return rid;
   }
 
@@ -234,10 +250,22 @@ function convertReplacement(
       ]),
     ),
     actionTypeConstraintMappings: Object.fromEntries(
-      resolved.actionTypeConstraintMappings.map(({ from, to }) => [
-        references.actionTypeConstraint(from),
-        references.actionTypeConstraint(to),
-      ]),
+      resolved.actionTypeConstraintMappings.map(
+        ({ from, to, parameterMappings }) => [
+          references.actionTypeConstraint(from),
+          {
+            actionTypeConstraintRid: references.actionTypeConstraint(to),
+            parameterMappings: Object.fromEntries(
+              Object.entries(parameterMappings).map(
+                ([fromParameter, toParameter]) => [
+                  references.parameterConstraint(from, fromParameter),
+                  references.parameterConstraint(to, toParameter),
+                ],
+              ),
+            ),
+          },
+        ],
+      ),
     ),
   };
 }

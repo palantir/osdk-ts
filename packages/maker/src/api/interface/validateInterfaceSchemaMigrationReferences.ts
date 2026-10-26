@@ -179,6 +179,7 @@ function validateReplacement(
   const replacementInstructions = instructionsOf(replacementType, true);
   validateMapping(
     context,
+    interfaceType.apiName,
     replacementType.apiName,
     replacement.propertyMappings,
     {
@@ -205,6 +206,7 @@ function validateReplacement(
   );
   validateMapping(
     context,
+    interfaceType.apiName,
     replacementType.apiName,
     replacement.linkTypeConstraintMappings ?? {},
     {
@@ -224,8 +226,13 @@ function validateReplacement(
   );
   validateMapping(
     context,
+    interfaceType.apiName,
     replacementType.apiName,
-    replacement.actionTypeConstraintMappings ?? {},
+    Object.fromEntries(
+      Object.entries(replacement.actionTypeConstraintMappings ?? {}).map(
+        ([from, { actionTypeConstraint }]) => [from, actionTypeConstraint],
+      ),
+    ),
     {
       field: "actionTypeConstraintMappings",
       noun: "action type constraint",
@@ -245,14 +252,57 @@ function validateReplacement(
       mismatch: () => undefined,
     },
   );
+  validateParameterMappings(context, replacement, replacementType);
+}
+
+/**
+ * Validates each mapped action type constraint's parameter mappings against the constraints they
+ * map between, once `validateMapping` has established that both exist.
+ */
+function validateParameterMappings(
+  context: ReferenceContext,
+  replacement: InterfaceTypeReplacement,
+  replacementType: InterfaceType,
+): void {
+  const sources = flattenedActionTypeConstraints(context.interfaceType);
+  const targets = flattenedActionTypeConstraints(replacementType);
+  for (const [
+    authoredSource,
+    { actionTypeConstraint, parameterMappings },
+  ] of Object.entries(replacement.actionTypeConstraintMappings ?? {})) {
+    const source = sources.get(
+      combineApiNamespaceIfMissing(namespace, authoredSource),
+    )!;
+    const target = targets.get(
+      combineApiNamespaceIfMissing(namespace, actionTypeConstraint),
+    )!;
+    validateMapping(
+      context,
+      source.metadata.apiName,
+      target.metadata.apiName,
+      parameterMappings ?? {},
+      {
+        field: `actionTypeConstraintMappings["${authoredSource}"].parameterMappings`,
+        noun: "parameter",
+        sources: new Map(Object.entries(source.parameters)),
+        targets: new Map(Object.entries(target.parameters)),
+        normalizeKey: (key) => key,
+        isRequired: (_key, parameter) => parameter.requireImplementation,
+        mismatch: (from, to) =>
+          isDeepStrictEqual(from.type, to.type)
+            ? undefined
+            : `type ${JSON.stringify(from.type)} does not match ${JSON.stringify(to.type)}`,
+      },
+    );
+  }
 }
 
 interface MappingSpec<T> {
-  field: keyof InterfaceTypeReplacement;
+  field: string;
   noun: string;
-  /** The declaring interface type's entities, keyed by normalized API name. */
+  /** The replaced entity's members, keyed by normalized API name. */
   sources: ReadonlyMap<string, T>;
-  /** The replacement's entities, keyed by normalized API name. */
+  /** The replacement entity's members, keyed by normalized API name. */
   targets: ReadonlyMap<string, T>;
   /** Normalizes an authored API name to the key `sources` and `targets` use. */
   normalizeKey: (authored: string) => string;
@@ -263,7 +313,8 @@ interface MappingSpec<T> {
 }
 
 function validateMapping<T>(
-  { interfaceType, prefix }: ReferenceContext,
+  { prefix }: ReferenceContext,
+  sourceApiName: string,
   targetApiName: string,
   mapping: Record<string, string>,
   {
@@ -281,7 +332,7 @@ function validateMapping<T>(
     const source = sources.get(normalizeKey(authoredSource));
     invariant(
       source !== undefined,
-      `${prefix}, whose ${field} maps from ${noun} "${authoredSource}", but ${interfaceType.apiName} has no such ${noun}.`,
+      `${prefix}, whose ${field} maps from ${noun} "${authoredSource}", but ${sourceApiName} has no such ${noun}.`,
     );
     const targetKey = normalizeKey(authoredTarget);
     const target = targets.get(targetKey);
@@ -300,7 +351,7 @@ function validateMapping<T>(
   for (const [key, target] of targets) {
     invariant(
       mappedTargets.has(key) || !isRequired(key, target),
-      `${prefix}, but its ${field} does not map to ${noun} "${key}", which ${targetApiName} requires (or will require once its in-flight migrations finalize). Map a ${noun} of ${interfaceType.apiName} to it, so that proposals produce a valid implementation.`,
+      `${prefix}, but its ${field} does not map to ${noun} "${key}", which ${targetApiName} requires (or will require once its in-flight migrations finalize). Map a ${noun} of ${sourceApiName} to it, so that proposals produce a valid implementation.`,
     );
   }
 }

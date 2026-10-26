@@ -29,6 +29,9 @@ import type { InterfaceTypeApiName as _api_InterfaceTypeApiName } from "../__com
 import type { InterfaceActionTypeConstraintRid as _api_InterfaceActionTypeConstraintRid } from "../__components.js";
 import type { InterfaceActionTypeConstraintRidOrIdInRequest as _api_InterfaceActionTypeConstraintRidOrIdInRequest } from "../__components.js";
 import type { InterfaceActionTypeConstraintApiName as _api_InterfaceActionTypeConstraintApiName } from "../__components.js";
+import type { InterfaceParameterConstraintRid as _api_InterfaceParameterConstraintRid } from "../__components.js";
+import type { InterfaceParameterConstraintRidOrIdInRequest as _api_InterfaceParameterConstraintRidOrIdInRequest } from "../__components.js";
+import type { InterfaceParameterConstraintApiName as _api_InterfaceParameterConstraintApiName } from "../__components.js";
 import type { InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid } from "../__components.js";
 import type { InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest } from "../__components.js";
 import type { InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName } from "../__components.js";
@@ -280,13 +283,31 @@ export interface InterfaceTypeReplaceMigrationModification {
   replacement: InterfaceTypeReplacementModification;
 }
 /**
+ * The action type constraint that replaces another, and how the replaced action type constraint's
+ * parameter constraints map onto the replacement's.
+ */
+export interface InterfaceActionTypeConstraintReplacement {
+  actionTypeConstraintRid: _api_InterfaceActionTypeConstraintRid;
+  parameterMappings: Record<
+    _api_InterfaceParameterConstraintRid,
+    _api_InterfaceParameterConstraintRid
+  >;
+}
+export interface InterfaceActionTypeConstraintReplacementModification {
+  actionTypeConstraint: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  parameterMappings: Record<
+    _api_InterfaceParameterConstraintRid,
+    _api_InterfaceParameterConstraintRidOrIdInRequest
+  >;
+}
+/**
  * The interface type that replaces another, and how the replaced interface type's
  * properties, link type constraints, and action type constraints map onto the replacement's.
  */
 export interface InterfaceTypeReplacement {
   actionTypeConstraintMappings: Record<
     _api_InterfaceActionTypeConstraintRid,
-    _api_InterfaceActionTypeConstraintRid
+    InterfaceActionTypeConstraintReplacement
   >;
   interfaceTypeRid: _api_InterfaceTypeRid;
   linkTypeConstraintMappings: Record<
@@ -301,7 +322,7 @@ export interface InterfaceTypeReplacement {
 export interface InterfaceTypeReplacementModification {
   actionTypeConstraintMappings: Record<
     _api_InterfaceActionTypeConstraintRid,
-    _api_InterfaceActionTypeConstraintRidOrIdInRequest
+    InterfaceActionTypeConstraintReplacementModification
   >;
   interfaceTypeRid: _api_InterfaceTypeRidOrIdInRequest;
   linkTypeConstraintMappings: Record<
@@ -880,13 +901,24 @@ export interface OntologyIrInterfaceTypeReplaceMigration {
   replacement: OntologyIrInterfaceTypeReplacement;
 }
 /**
+ * The action type constraint that replaces another, and how the replaced action type constraint's
+ * parameter constraints map onto the replacement's.
+ */
+export interface OntologyIrInterfaceActionTypeConstraintReplacement {
+  actionTypeConstraintRid: _api_InterfaceActionTypeConstraintApiName;
+  parameterMappings: Record<
+    _api_InterfaceParameterConstraintApiName,
+    _api_InterfaceParameterConstraintApiName
+  >;
+}
+/**
  * The interface type that replaces another, and how the replaced interface type's
  * properties, link type constraints, and action type constraints map onto the replacement's.
  */
 export interface OntologyIrInterfaceTypeReplacement {
   actionTypeConstraintMappings: Record<
     _api_InterfaceActionTypeConstraintApiName,
-    _api_InterfaceActionTypeConstraintApiName
+    OntologyIrInterfaceActionTypeConstraintReplacement
   >;
   interfaceTypeRid: _api_InterfaceTypeApiName;
   linkTypeConstraintMappings: Record<

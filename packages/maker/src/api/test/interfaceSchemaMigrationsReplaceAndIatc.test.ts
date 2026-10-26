@@ -37,6 +37,7 @@ import type {
   InterfaceTypeReplacement,
 } from "../interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../interface/InterfaceType.js";
+import type { ParameterConstraintDefinition } from "../InterfaceActionTypeConstraintDefinition.js";
 
 type AuthoredProperty = NonNullable<
   InterfaceTypeDefinition["properties"]
@@ -86,6 +87,7 @@ function defineConstraint(
   interfaceType: InterfaceType,
   apiName: string,
   requireImplementation: boolean,
+  parameters: ParameterConstraintDefinition[] = [],
 ): void {
   defineInterfaceActionTypeConstraint({
     interfaceType,
@@ -93,8 +95,21 @@ function defineConstraint(
     displayName: apiName,
     description: apiName,
     requireImplementation,
-    parameters: [],
+    parameters,
   });
+}
+
+const STRING_PARAMETER: ParameterConstraintDefinition["type"] = {
+  type: "string",
+  string: {},
+};
+
+function parameter(
+  apiName: string,
+  requireImplementation: boolean,
+  type = STRING_PARAMETER,
+): ParameterConstraintDefinition {
+  return { apiName, displayName: apiName, type, requireImplementation };
 }
 
 /** Runs `body` as an ontology, so that the ontology-level validation runs too. */
@@ -298,6 +313,23 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
         `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings maps both "first" and "second" to "fullName". Each target may be mapped from at most one source.]`,
       );
     });
+
+    it("rejects two parameters mapped to the same target", () => {
+      expect(() =>
+        defineReplaced({
+          interfaceType: "com.palantir.Bar",
+          propertyMappings: { name: "fullName" },
+          actionTypeConstraintMappings: {
+            fooAction: {
+              actionTypeConstraint: "barAction",
+              parameterMappings: { first: "target", second: "target" },
+            },
+          },
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose actionTypeConstraintMappings["fooAction"].parameterMappings maps both "first" and "second" to "target". Each target may be mapped from at most one source.]`,
+      );
+    });
   });
 
   describe("replace: references", () => {
@@ -317,7 +349,9 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
             interfaceType: bar,
             propertyMappings: { name: "fullName" },
             linkTypeConstraintMappings: { fooLink: "barLink" },
-            actionTypeConstraintMappings: { fooAction: "barAction" },
+            actionTypeConstraintMappings: {
+              fooAction: { actionTypeConstraint: "barAction" },
+            },
           });
           defineInterfaceLinkConstraint({
             apiName: "fooLink",
@@ -651,7 +685,9 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
             defineReplaced({
               interfaceType: bar,
               propertyMappings: { name: "fullName" },
-              actionTypeConstraintMappings: { missing: "barAction" },
+              actionTypeConstraintMappings: {
+                missing: { actionTypeConstraint: "barAction" },
+              },
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -691,6 +727,93 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings does not map to action type constraint "com.palantir.barAction", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a action type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
         );
+      });
+
+      describe("parameterMappings", () => {
+        /** `fooAction` on `Foo` mapped to `barAction` on `Bar`, each with the given parameters. */
+        function defineWithParameters(
+          fooParameters: ParameterConstraintDefinition[],
+          barParameters: ParameterConstraintDefinition[],
+          parameterMappings: Record<string, string>,
+        ): void {
+          const bar = defineReplacement();
+          defineConstraint(bar, "barAction", false, barParameters);
+          const foo = defineReplaced({
+            interfaceType: bar,
+            propertyMappings: { name: "fullName" },
+            actionTypeConstraintMappings: {
+              fooAction: {
+                actionTypeConstraint: "barAction",
+                parameterMappings,
+              },
+            },
+          });
+          defineConstraint(foo, "fooAction", false, fooParameters);
+        }
+
+        it("accepts mappings to every required parameter", async () => {
+          await expect(
+            inOntology(() =>
+              defineWithParameters(
+                [parameter("subject", true)],
+                [parameter("target", true), parameter("note", false)],
+                { subject: "target" },
+              ),
+            ),
+          ).resolves.toBeDefined();
+        });
+
+        it("rejects a source the replaced constraint does not have", async () => {
+          await expect(
+            inOntology(() =>
+              defineWithParameters([], [parameter("target", false)], {
+                missing: "target",
+              }),
+            ),
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose actionTypeConstraintMappings["fooAction"].parameterMappings maps from parameter "missing", but com.palantir.fooAction has no such parameter.]`,
+          );
+        });
+
+        it("rejects a target the replacement constraint does not have", async () => {
+          await expect(
+            inOntology(() =>
+              defineWithParameters([parameter("subject", false)], [], {
+                subject: "missing",
+              }),
+            ),
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose actionTypeConstraintMappings["fooAction"].parameterMappings maps to parameter "missing", but com.palantir.barAction has no such parameter.]`,
+          );
+        });
+
+        it("rejects mismatched types", async () => {
+          await expect(
+            inOntology(() =>
+              defineWithParameters(
+                [parameter("subject", true)],
+                [parameter("target", true, { type: "integer", integer: {} })],
+                { subject: "target" },
+              ),
+            ),
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose actionTypeConstraintMappings["fooAction"].parameterMappings maps parameter "subject" to "target", but its type {"type":"string","string":{}} does not match {"type":"integer","integer":{}}.]`,
+          );
+        });
+
+        it("rejects an unmapped required target", async () => {
+          await expect(
+            inOntology(() =>
+              defineWithParameters(
+                [parameter("subject", false)],
+                [parameter("target", true)],
+                {},
+              ),
+            ),
+          ).rejects.toThrowErrorMatchingInlineSnapshot(
+            `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings["fooAction"].parameterMappings does not map to parameter "target", which com.palantir.barAction requires (or will require once its in-flight migrations finalize). Map a parameter of com.palantir.fooAction to it, so that proposals produce a valid implementation.]`,
+          );
+        });
       });
     });
   });

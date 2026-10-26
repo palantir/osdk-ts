@@ -154,8 +154,13 @@ function convertReplacement(
     interfaceTypeRid: resolved.interfaceTypeApiName,
     propertyMappings: toApiNames(resolved.propertyMappings),
     linkTypeConstraintMappings: toApiNames(resolved.linkTypeConstraintMappings),
-    actionTypeConstraintMappings: toApiNames(
-      resolved.actionTypeConstraintMappings,
+    actionTypeConstraintMappings: Object.fromEntries(
+      resolved.actionTypeConstraintMappings.map(
+        ({ from, to, parameterMappings }) => [
+          from.apiName,
+          { actionTypeConstraintRid: to.apiName, parameterMappings },
+        ],
+      ),
     ),
   };
 }
@@ -184,6 +189,14 @@ export interface ResolvedInterfaceMemberMapping<
   to: M;
 }
 
+export interface ResolvedInterfaceActionTypeConstraintMapping extends ResolvedInterfaceMemberMapping {
+  /**
+   * Parameter API names on `from` -> those on `to`. Parameter API names are scoped to their action
+   * type constraint, so they are never namespaced.
+   */
+  parameterMappings: Record<string, string>;
+}
+
 export interface ResolvedInterfaceTypeReplacement {
   /** The replacement's fully-qualified API name. */
   interfaceTypeApiName: string;
@@ -191,7 +204,7 @@ export interface ResolvedInterfaceTypeReplacement {
     ResolvedInterfaceMemberMapping<ResolvedInterfaceProperty>
   >;
   linkTypeConstraintMappings: Array<ResolvedInterfaceMemberMapping>;
-  actionTypeConstraintMappings: Array<ResolvedInterfaceMemberMapping>;
+  actionTypeConstraintMappings: Array<ResolvedInterfaceActionTypeConstraintMapping>;
 }
 
 /**
@@ -241,7 +254,7 @@ export function resolveInterfaceTypeReplacementApiNames(
     })),
     actionTypeConstraintMappings: Object.entries(
       replacement.actionTypeConstraintMappings ?? {},
-    ).map(([from, to]) => ({
+    ).map(([from, { actionTypeConstraint, parameterMappings }]) => ({
       from: resolveConstraint(
         declaringInterface,
         declaringInterface.apiName,
@@ -251,9 +264,10 @@ export function resolveInterfaceTypeReplacementApiNames(
       to: resolveConstraint(
         replacementDefinition,
         resolved.apiName,
-        to,
+        actionTypeConstraint,
         actionTypeConstraintApiNames,
       ),
+      parameterMappings: parameterMappings ?? {},
     })),
   };
 }

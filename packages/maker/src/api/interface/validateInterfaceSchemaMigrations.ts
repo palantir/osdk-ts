@@ -245,12 +245,6 @@ function validateInstruction(
   }
 }
 
-const REPLACEMENT_MAPPINGS = [
-  "propertyMappings",
-  "linkTypeConstraintMappings",
-  "actionTypeConstraintMappings",
-] as const satisfies ReadonlyArray<keyof InterfaceTypeReplacement>;
-
 /** Rejects mappings that send two of this interface type's entities to the same target. */
 function validateReplacementMappings(
   interfaceApiName: string,
@@ -258,9 +252,36 @@ function validateReplacementMappings(
   description: string,
   replacement: InterfaceTypeReplacement,
 ): void {
-  for (const field of REPLACEMENT_MAPPINGS) {
+  const actionTypeConstraintMappings = Object.entries(
+    replacement.actionTypeConstraintMappings ?? {},
+  );
+  const mappings: Array<[field: string, mapping: Record<string, string>]> = [
+    ["propertyMappings", replacement.propertyMappings],
+    [
+      "linkTypeConstraintMappings",
+      replacement.linkTypeConstraintMappings ?? {},
+    ],
+    [
+      "actionTypeConstraintMappings",
+      Object.fromEntries(
+        actionTypeConstraintMappings.map(
+          ([source, { actionTypeConstraint }]) => [
+            source,
+            actionTypeConstraint,
+          ],
+        ),
+      ),
+    ],
+    ...actionTypeConstraintMappings.map(
+      ([source, { parameterMappings }]): [string, Record<string, string>] => [
+        `actionTypeConstraintMappings["${source}"].parameterMappings`,
+        parameterMappings ?? {},
+      ],
+    ),
+  ];
+  for (const [field, mapping] of mappings) {
     const sourceByTarget = new Map<string, string>();
-    for (const [source, target] of Object.entries(replacement[field] ?? {})) {
+    for (const [source, target] of Object.entries(mapping)) {
       const previous = sourceByTarget.get(target);
       invariant(
         previous === undefined,

@@ -149,8 +149,18 @@ export interface LockedInterfaceTypeReplacement {
   propertyMappings?: Record<string, string>;
   /** Same as `propertyMappings`, for link type constraints. Absent when empty. */
   linkTypeConstraintMappings?: Record<string, string>;
-  /** Same as `propertyMappings`, for action type constraints. Absent when empty. */
-  actionTypeConstraintMappings?: Record<string, string>;
+  /** Replaced interface's action type constraint api name -> replacement's. Absent when empty. */
+  actionTypeConstraintMappings?: Record<
+    string,
+    LockedActionTypeConstraintReplacement
+  >;
+}
+
+export interface LockedActionTypeConstraintReplacement {
+  /** The replacement's action type constraint api name. */
+  actionTypeConstraint: string;
+  /** Replaced constraint's parameter api name -> replacement's. Absent when empty. */
+  parameterMappings?: Record<string, string>;
 }
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {

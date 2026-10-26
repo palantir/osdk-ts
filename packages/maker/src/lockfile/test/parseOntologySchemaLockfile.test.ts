@@ -545,7 +545,10 @@ describe("parseLockfile", () => {
           interfaceType: "com.palantir.PersonV2",
           propertyMappings: { name: "fullName" },
           actionTypeConstraintMappings: {
-            "com.palantir.sendEmail": "com.palantir.notify",
+            "com.palantir.sendEmail": {
+              actionTypeConstraint: "com.palantir.notify",
+              parameterMappings: { subject: "title" },
+            },
           },
         },
       },
@@ -592,6 +595,53 @@ describe("parseLockfile", () => {
       ),
     ).toThrowError(
       /replacement\.propertyMappings: Expected at least one property mapping, or no value at all/u,
+    );
+  });
+
+  it("rejects a replacement that records an empty parameter mapping", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [
+            {
+              type: "replace",
+              replacement: {
+                interfaceType: "com.palantir.PersonV2",
+                actionTypeConstraintMappings: {
+                  "com.palantir.sendEmail": {
+                    actionTypeConstraint: "com.palantir.notify",
+                    parameterMappings: {},
+                  },
+                },
+              },
+            },
+          ],
+        }),
+      ),
+    ).toThrowError(
+      /parameterMappings: Expected at least one parameter mapping, or no value at all/u,
+    );
+  });
+
+  it("rejects an action type constraint mapping recorded in its pre-parameter string form", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [
+            {
+              type: "replace",
+              replacement: {
+                interfaceType: "com.palantir.PersonV2",
+                actionTypeConstraintMappings: {
+                  "com.palantir.sendEmail": "com.palantir.notify",
+                },
+              },
+            },
+          ],
+        }),
+      ),
+    ).toThrowError(
+      /Expected an object recording the replacement action type constraint/u,
     );
   });
 

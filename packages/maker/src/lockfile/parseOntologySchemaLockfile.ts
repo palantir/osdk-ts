@@ -86,16 +86,22 @@ const gracePeriodSchema = z.discriminatedUnion(
   appendRestoreAdviceFor("grace period"),
 );
 
-/** A replacement mapping, which the lockfile omits rather than records empty. */
 function mappingsSchema(what: string) {
+  return nonEmptyMappingsSchema(
+    what,
+    z.string({ message: `Expected the ${what} api name to map to.` }),
+  );
+}
+
+/** A replacement mapping, which the lockfile omits rather than records empty. */
+function nonEmptyMappingsSchema<T extends z.ZodTypeAny>(
+  what: string,
+  target: T,
+) {
   return z
-    .record(
-      z.string(),
-      z.string({ message: `Expected the ${what} api name to map to.` }),
-      {
-        message: `Expected an object mapping ${what} api names.`,
-      },
-    )
+    .record(z.string(), target, {
+      message: `Expected an object mapping ${what} api names.`,
+    })
     .refine((mappings) => Object.keys(mappings).length > 0, {
       message: `Expected at least one ${what} mapping, or no value at all for none.`,
     })
@@ -110,7 +116,24 @@ const replacementSchema = z
       }),
       propertyMappings: mappingsSchema("property"),
       linkTypeConstraintMappings: mappingsSchema("link type constraint"),
-      actionTypeConstraintMappings: mappingsSchema("action type constraint"),
+      actionTypeConstraintMappings: nonEmptyMappingsSchema(
+        "action type constraint",
+        z
+          .object(
+            {
+              actionTypeConstraint: z.string({
+                message:
+                  "Expected the api name of the action type constraint to map to.",
+              }),
+              parameterMappings: mappingsSchema("parameter"),
+            },
+            {
+              message:
+                "Expected an object recording the replacement action type constraint.",
+            },
+          )
+          .passthrough(),
+      ),
     },
     { message: "Expected an object recording the replacement interface." },
   )

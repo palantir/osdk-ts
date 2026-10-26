@@ -40,12 +40,14 @@ import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import {
+  type ResolvedInterfaceActionTypeConstraintMapping,
   type ResolvedInterfaceMemberMapping,
   resolveInterfaceTypeReplacementApiNames,
 } from "../conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
   LockedActionTypeConstraint,
+  LockedActionTypeConstraintReplacement,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
@@ -302,7 +304,7 @@ function lockReplacement(
   const linkTypeConstraintMappings = lockMappings(
     resolved.linkTypeConstraintMappings,
   );
-  const actionTypeConstraintMappings = lockMappings(
+  const actionTypeConstraintMappings = lockActionTypeConstraintMappings(
     resolved.actionTypeConstraintMappings,
   );
   return {
@@ -315,6 +317,33 @@ function lockReplacement(
       actionTypeConstraintMappings,
     }),
   };
+}
+
+function lockActionTypeConstraintMappings(
+  mappings: readonly ResolvedInterfaceActionTypeConstraintMapping[],
+): Record<string, LockedActionTypeConstraintReplacement> | undefined {
+  if (mappings.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    mappings
+      .map(({ from, to, parameterMappings }) => {
+        const sortedParameterMappings = Object.entries(parameterMappings).sort(
+          ([a], [b]) => compare(a, b),
+        );
+        return [
+          from.apiName,
+          {
+            actionTypeConstraint: to.apiName,
+            ...(sortedParameterMappings.length > 0 && {
+              parameterMappings: Object.fromEntries(sortedParameterMappings),
+            }),
+          },
+        ] as const;
+      })
+      .sort(([a], [b]) => compare(a, b)),
+  );
 }
 
 function lockMappings(

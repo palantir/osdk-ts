@@ -136,5 +136,19 @@ export interface InterfaceTypeReplacement {
    * Maps this interface type's action type constraint API names to the replacement's, with the same
    * semantics as `propertyMappings`.
    */
-  actionTypeConstraintMappings?: Record<string, string>;
+  actionTypeConstraintMappings?: Record<
+    string,
+    InterfaceActionTypeConstraintReplacement
+  >;
+}
+
+export interface InterfaceActionTypeConstraintReplacement {
+  /** The API name of the replacement's action type constraint. */
+  actionTypeConstraint: string;
+  /**
+   * Maps this action type constraint's parameter API names to the replacement constraint's. Every
+   * parameter that is `requireImplementation: true` on the replacement constraint must be a target,
+   * and each mapped pair must have the same type.
+   */
+  parameterMappings?: Record<string, string>;
 }

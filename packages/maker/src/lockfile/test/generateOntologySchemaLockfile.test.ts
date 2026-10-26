@@ -713,6 +713,62 @@ describe("replacement", () => {
       },
     ]);
   });
+
+  it("records action type constraint mappings with sorted parameter mappings, omitting empty ones", () => {
+    const personV2 = definePersonV2();
+    defineInterface({
+      apiName: "Person",
+      status: DEPRECATED,
+      properties: { name: { type: "string" } },
+      schemaMigrations: {
+        transitions: [
+          {
+            ...replaceWith(personV2),
+            instructions: [
+              {
+                type: "replace",
+                replacement: {
+                  interfaceType: personV2,
+                  propertyMappings: { name: "fullName" },
+                  actionTypeConstraintMappings: {
+                    sendEmail: {
+                      actionTypeConstraint: "notify",
+                      parameterMappings: { subject: "title", body: "message" },
+                    },
+                    archive: { actionTypeConstraint: "retire" },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    const instructions = generateOntologySchemaLockfile(getOntologyDefinition())
+      .interfaces["com.palantir.Person"].transitions[0].instructions;
+    // Compared as JSON so that key order, which the lockfile sorts to avoid churn, is checked too
+    expect(JSON.stringify(instructions)).toBe(
+      JSON.stringify([
+        {
+          type: "replace",
+          replacement: {
+            interfaceType: "com.palantir.PersonV2",
+            propertyMappings: { name: "fullName" },
+            actionTypeConstraintMappings: {
+              "com.palantir.archive": {
+                actionTypeConstraint: "com.palantir.retire",
+              },
+              "com.palantir.sendEmail": {
+                actionTypeConstraint: "com.palantir.notify",
+                parameterMappings: { body: "message", subject: "title" },
+              },
+            },
+          },
+        },
+      ]),
+    );
+  });
 });
 
 describe("replacement of an interface with inherited properties", () => {

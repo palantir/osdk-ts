@@ -111,6 +111,7 @@ export {
 } from "./api/interface/InterfacePropertyType.js";
 export { getFlattenedInterfaceProperties } from "./api/interface/getFlattenedInterfaceProperties.js";
 export type {
+  InterfaceActionTypeConstraintReplacement,
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaMigrations,
@@ -161,6 +162,7 @@ export type {
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
 export type {
+  ResolvedInterfaceActionTypeConstraintMapping,
   ResolvedInterfaceMember,
   ResolvedInterfaceMemberMapping,
   ResolvedInterfaceProperty,
