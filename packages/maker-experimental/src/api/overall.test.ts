@@ -194,6 +194,96 @@ describe("Experimental Test Suite", () => {
     );
   });
 
+  describe("Function-backed action submission criteria", () => {
+    async function defineUpdateTagsAction(
+      validation?: ActionType["validation"],
+    ) {
+      const outputDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "maker-function-action-validation-"),
+      );
+      const functionsIrFile = path.join(outputDir, "functions-ir.json");
+      const functionsIr: FunctionsIr = {
+        discoveredFunctions: [
+          {
+            locator: {
+              type: "typescript",
+              typescript: { functionName: "updateTags" },
+            },
+            inputs: [{ name: "tags", dataType: { type: "string" } }],
+            output: { type: "void" },
+            customTypes: {},
+            ontologyProvenance: {
+              editedObjects: { "com.palantir.TaggedObject": {} },
+              editedLinks: {},
+              editedInterfaces: {},
+            },
+          },
+        ],
+      };
+
+      try {
+        fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
+        const result = await defineOntologyV2(
+          "com.palantir.",
+          () => {
+            defineObject({
+              apiName: "TaggedObject",
+              displayName: "Tagged object",
+              pluralDisplayName: "Tagged objects",
+              titlePropertyApiName: "id",
+              primaryKeyPropertyApiName: "id",
+              properties: {
+                id: { type: "string" },
+                tags: { type: "string" },
+              },
+            });
+            defineFunctionBackedAction({
+              functionApiName: "updateTags",
+              validation,
+            });
+          },
+          undefined,
+          undefined,
+          functionsIrFile,
+        );
+        const actions = Object.values(result.ontologyIr.ontology.actionTypes);
+        expect(actions).toHaveLength(1);
+        return Object.values(
+          actions[0].actionType.actionTypeLogic.validation
+            .actionTypeLevelValidation.rules,
+        );
+      } finally {
+        fs.rmSync(outputDir, { recursive: true, force: true });
+      }
+    }
+
+    it("passes custom submission criteria through", async () => {
+      const validation: ActionType["validation"] = [
+        {
+          condition: { type: "true", true: {} },
+          displayMetadata: {
+            failureMessage: "Tags are locked",
+            typeClasses: [],
+          },
+        },
+      ];
+
+      expect(await defineUpdateTagsAction(validation)).toEqual(validation);
+    });
+
+    it("defaults to an always-true rule when no validation is given", async () => {
+      expect(await defineUpdateTagsAction()).toEqual([
+        {
+          condition: { type: "true", true: {} },
+          displayMetadata: {
+            failureMessage: "Validation failed",
+            typeClasses: [],
+          },
+        },
+      ]);
+    });
+  });
+
   describe("Empty backing Media Sets", () => {
     it("requires opted-in Media Sets to exist before reconciliation", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
