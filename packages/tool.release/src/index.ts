@@ -103,6 +103,14 @@ async function getContext(args: {
         choices: ["version", "publish", "simulateMinorBump", "tag-version"],
         default: "version",
       },
+      "allow-major-release": {
+        type: "string",
+        array: true,
+        requiresArg: true,
+        default: [],
+        description:
+          "Allow a major release for this package on main (repeatable)",
+      },
       publishCmd: {
         type: "string",
         description: "Publish command to run in publish mode",
@@ -193,6 +201,7 @@ async function getContext(args: {
     }
 
     await runVersion({
+      allowedMajorReleases: args["allow-major-release"],
       prTitle: args.title,
       commitMessage: args.commitMessage,
       branch: args.branch,
