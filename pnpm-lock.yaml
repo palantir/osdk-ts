@@ -4485,6 +4485,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/shared.test':
+        specifier: workspace:~
+        version: link:../shared.test
       '@types/node':
         specifier: ^18.19.124
         version: 18.19.124

@@ -433,8 +433,8 @@ describe("Load Ontologies Metadata", () => {
       weatherAgentApiName,
       weatherAgentVersion,
       weatherAgentOtherVersion,
-      noArgsAgentApiName,
-      noArgsAgentVersion,
+      noArgumentsAgentApiName,
+      noArgumentsAgentVersion,
     } = stubData;
     const ontologyRid =
       "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361";
@@ -445,7 +445,7 @@ describe("Load Ontologies Metadata", () => {
         {
           agentApiNamesToLoad: [
             `${weatherAgentApiName}:${weatherAgentOtherVersion.version}`,
-            `${noArgsAgentApiName}:${noArgsAgentVersion.version}`,
+            `${noArgumentsAgentApiName}:${noArgumentsAgentVersion.version}`,
           ],
         },
       );
@@ -454,46 +454,17 @@ describe("Load Ontologies Metadata", () => {
       }
       expect(result.value.requestedMetadata.agents).toMatchInlineSnapshot(`
         {
-          "noArgsAgent": {
+          "noArgumentsAgent": {
             "agentStateType": {
-              "fields": [
-                {
-                  "dataType": {
-                    "type": "integer",
-                  },
-                  "name": "temperature",
-                },
-              ],
+              "fields": [],
               "type": "struct",
             },
-            "apiName": "noArgsAgent",
+            "apiName": "noArgumentsAgent",
             "argumentDefinitions": [],
-            "contextItemDefinitions": [
-              {
-                "contextItemType": "weather-result",
-                "dataType": {
-                  "type": "string",
-                },
-              },
-            ],
+            "contextItemDefinitions": [],
             "createdBy": "user",
             "createdTime": "2026-01-01T00:00:00Z",
-            "eventDefinitions": [
-              {
-                "eventType": "LookupWeather",
-                "payloadType": {
-                  "fields": [
-                    {
-                      "dataType": {
-                        "type": "string",
-                      },
-                      "name": "city",
-                    },
-                  ],
-                  "type": "struct",
-                },
-              },
-            ],
+            "eventDefinitions": [],
             "version": "1.2.3",
           },
           "weatherAgent": {
@@ -550,7 +521,7 @@ describe("Load Ontologies Metadata", () => {
       expect(result.value.agentVersionReferences).toEqual(
         new Map([
           [weatherAgentApiName, weatherAgentOtherVersion.version],
-          [noArgsAgentApiName, noArgsAgentVersion.version],
+          [noArgumentsAgentApiName, noArgumentsAgentVersion.version],
         ]),
       );
       expect(result.value.requestedMetadata.objectTypes).toEqual({});

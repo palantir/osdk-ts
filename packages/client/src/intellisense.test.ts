@@ -108,7 +108,7 @@ describe("intellisense", () => {
       offset: 12,
     });
     expect(resp.body?.displayString).toMatchInlineSnapshot(
-      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_createSession: (args?: Record<string, unknown>) => Promise<AgentSession>"`,
+      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_createSession: (args: weatherAgent.CreateSessionArguments) => Promise<AgentSession>"`,
     );
   });
 

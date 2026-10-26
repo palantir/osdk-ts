@@ -24,10 +24,15 @@ import deepEqual from "fast-deep-equal";
 
 import { createLazyAgentImpl } from "../createLazyAgentImpl.js";
 import {
-  noArgsAgentApiName,
-  noArgsAgentVersion,
+  noArgumentsAgentApiName,
+  noArgumentsAgentOtherVersion,
+  noArgumentsAgentVersion,
   objectArgumentsAgentApiName,
   objectArgumentsAgentVersion,
+  optionalArgumentsAgentApiName,
+  optionalArgumentsAgentVersion,
+  structuredArgumentsAgentApiName,
+  structuredArgumentsAgentVersion,
   weatherAgentApiName,
   weatherAgentOtherVersion,
   weatherAgentVersion,
@@ -62,20 +67,31 @@ export const weatherAgentOtherVersionResponse: AgentSession = {
   agentVersion: weatherAgentOtherVersion.version,
 };
 
-export const noArgsAgentRequest: CreateAgentSessionRequest = {
+export const noArgumentsAgentRequest: CreateAgentSessionRequest = {
   agent: {
     type: "agentApiName",
     ontology: defaultOntologyMetadata.rid as string,
-    agentApiName: noArgsAgentApiName,
+    agentApiName: noArgumentsAgentApiName,
   },
-  agentVersion: noArgsAgentVersion.version,
+  agentVersion: noArgumentsAgentVersion.version,
   arguments: {},
 };
 
-export const noArgsAgentResponse: AgentSession = {
-  id: "no-args-session",
-  agentRid: "ri.aip-agents.main.agent.no-args",
-  agentVersion: noArgsAgentVersion.version,
+export const noArgumentsAgentResponse: AgentSession = {
+  id: "no-arguments-session",
+  agentRid: "ri.aip-agents.main.agent.no-arguments",
+  agentVersion: noArgumentsAgentVersion.version,
+};
+
+export const noArgumentsAgentOtherVersionRequest: CreateAgentSessionRequest = {
+  ...noArgumentsAgentRequest,
+  agentVersion: noArgumentsAgentOtherVersion.version,
+};
+
+export const noArgumentsAgentOtherVersionResponse: AgentSession = {
+  ...noArgumentsAgentResponse,
+  id: "no-arguments-session-other-version",
+  agentVersion: noArgumentsAgentOtherVersion.version,
 };
 
 export function objectArgumentsAgentRequest(
@@ -105,6 +121,69 @@ export const objectArgumentsAgentResponse: AgentSession = {
   agentVersion: objectArgumentsAgentVersion.version,
 };
 
+export const optionalArgumentsAgentRequest: CreateAgentSessionRequest = {
+  agent: {
+    type: "agentApiName",
+    ontology: defaultOntologyMetadata.rid as string,
+    agentApiName: optionalArgumentsAgentApiName,
+  },
+  agentVersion: optionalArgumentsAgentVersion.version,
+  arguments: {},
+};
+
+export const optionalArgumentsAgentWithCityRequest: CreateAgentSessionRequest =
+  {
+    ...optionalArgumentsAgentRequest,
+    arguments: { city: "London" },
+  };
+
+export const optionalArgumentsAgentResponse: AgentSession = {
+  id: "optional-arguments-session",
+  agentRid: "ri.aip-agents.main.agent.optional-arguments",
+  agentVersion: optionalArgumentsAgentVersion.version,
+};
+
+export const structuredArgumentsAgentRequest: CreateAgentSessionRequest = {
+  agent: {
+    type: "agentApiName",
+    ontology: defaultOntologyMetadata.rid as string,
+    agentApiName: structuredArgumentsAgentApiName,
+  },
+  agentVersion: structuredArgumentsAgentVersion.version,
+  arguments: {
+    requiredText: "hello",
+    nested: {
+      label: null,
+      enabled: true,
+      count: 1,
+      date: "2026-01-01",
+      timestamp: "2026-01-01T00:00:00Z",
+      float: 1.5,
+      long: 123456789,
+      short: 12,
+      tags: ["tag"],
+      scores: { score: 1 },
+      empty: {},
+    },
+    selection: {
+      kind: "employee",
+      employee: {
+        ontologyRid: defaultOntologyMetadata.rid,
+        objectTypeApiName: "Employee",
+        primaryKey: { employeeId: 50030 },
+      },
+    },
+    future: { newShape: true },
+    optionalText: "text",
+  },
+};
+
+export const structuredArgumentsAgentResponse: AgentSession = {
+  id: "structured-arguments-session",
+  agentRid: "ri.aip-agents.main.agent.structured-arguments",
+  agentVersion: structuredArgumentsAgentVersion.version,
+};
+
 const agentRequestHandlers: {
   [agentApiName: string]: {
     [agentVersion: string]: {
@@ -121,9 +200,27 @@ const agentRequestHandlers: {
         weatherAgentOtherVersionResponse,
     },
   },
-  [noArgsAgentApiName]: {
-    [noArgsAgentVersion.version]: {
-      [JSON.stringify(noArgsAgentRequest)]: noArgsAgentResponse,
+  [optionalArgumentsAgentApiName]: {
+    [optionalArgumentsAgentVersion.version]: {
+      [JSON.stringify(optionalArgumentsAgentRequest)]:
+        optionalArgumentsAgentResponse,
+      [JSON.stringify(optionalArgumentsAgentWithCityRequest)]:
+        optionalArgumentsAgentResponse,
+    },
+  },
+  [structuredArgumentsAgentApiName]: {
+    [structuredArgumentsAgentVersion.version]: {
+      [JSON.stringify(structuredArgumentsAgentRequest)]:
+        structuredArgumentsAgentResponse,
+    },
+  },
+  [noArgumentsAgentApiName]: {
+    [noArgumentsAgentVersion.version]: {
+      [JSON.stringify(noArgumentsAgentRequest)]: noArgumentsAgentResponse,
+    },
+    [noArgumentsAgentOtherVersion.version]: {
+      [JSON.stringify(noArgumentsAgentOtherVersionRequest)]:
+        noArgumentsAgentOtherVersionResponse,
     },
   },
 };
@@ -132,7 +229,19 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
   const agentDefinitions = [
     { apiName: weatherAgentApiName, definition: weatherAgentVersion },
     { apiName: weatherAgentApiName, definition: weatherAgentOtherVersion },
-    { apiName: noArgsAgentApiName, definition: noArgsAgentVersion },
+    { apiName: noArgumentsAgentApiName, definition: noArgumentsAgentVersion },
+    {
+      apiName: noArgumentsAgentApiName,
+      definition: noArgumentsAgentOtherVersion,
+    },
+    {
+      apiName: optionalArgumentsAgentApiName,
+      definition: optionalArgumentsAgentVersion,
+    },
+    {
+      apiName: structuredArgumentsAgentApiName,
+      definition: structuredArgumentsAgentVersion,
+    },
   ];
 
   for (const { apiName, definition } of Object.values(agentDefinitions)) {
