@@ -20,24 +20,48 @@ import type {
 } from "./OsdkRequestContext.js";
 
 export const OSDK_REQUEST_CONTEXT_HEADER = "X-OSDK-Request-Context";
+const MAX_CONCURRENT_REQUESTS = 150;
 
 export function createConcurrencyTrackingFetch(
   fetchFn: typeof globalThis.fetch,
 ): typeof globalThis.fetch {
   let activeHttpAttempts = 0;
+  const waitingRequests: Array<() => void> = [];
 
-  return async function concurrencyTrackingFetch(input, init) {
-    const headers = new Headers(
-      input instanceof Request ? input.headers : undefined,
-    );
-    if (init?.headers != null) {
-      new Headers(init.headers).forEach((value, name) => {
-        headers.set(name, value);
-      });
+  function acquireSlot(): Promise<void> | undefined {
+    if (activeHttpAttempts < MAX_CONCURRENT_REQUESTS) {
+      activeHttpAttempts++;
+      return;
     }
 
-    activeHttpAttempts++;
+    return new Promise<void>((resolve) => waitingRequests.push(resolve));
+  }
+
+  function releaseSlot(): void {
+    const nextRequest = waitingRequests.shift();
+    if (nextRequest == null) {
+      activeHttpAttempts--;
+    } else {
+      nextRequest();
+    }
+  }
+
+  return async function concurrencyTrackingFetch(input, init) {
+    const slotAvailable = acquireSlot();
+    if (slotAvailable != null) {
+      await slotAvailable;
+    }
+
     try {
+      const headers = new Headers(
+        input instanceof Request ? input.headers : undefined,
+      );
+      if (init?.headers != null) {
+        new Headers(init.headers).forEach((value, name) => {
+          headers.set(name, value);
+        });
+      }
+
       const clientMetrics: ClientMetrics = { concurrency: activeHttpAttempts };
       const requestContext: OsdkRequestContext = {
         clientMetrics,
@@ -45,7 +69,7 @@ export function createConcurrencyTrackingFetch(
       headers.set(OSDK_REQUEST_CONTEXT_HEADER, JSON.stringify(requestContext));
       return await fetchFn(input, { ...init, headers });
     } finally {
-      activeHttpAttempts--;
+      releaseSlot();
     }
   };
 }
