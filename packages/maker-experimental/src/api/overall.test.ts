@@ -265,6 +265,14 @@ describe("Experimental Test Suite", () => {
                 type: {
                   type: "marking",
                   markingType,
+                  markingInputGroupName: "referenceClassification",
+                },
+              },
+              // Sharing a group adds no second entry to the combined group.
+              copiedClassification: {
+                type: {
+                  type: "marking",
+                  markingType,
                   markingInputGroupName: "classification",
                 },
               },
@@ -272,7 +280,7 @@ describe("Experimental Test Suite", () => {
           });
         });
 
-        const combinedMarkingId = "classification/classification";
+        const combinedMarkingId = "classification/referenceClassification";
         expect(
           result.shapes.inputShapes.get(
             ReadableIdGenerator.getForMarking(combinedMarkingId, markingType),
