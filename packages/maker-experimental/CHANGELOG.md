@@ -1,5 +1,23 @@
 # @osdk/maker-experimental
 
+## 0.79.0
+
+### Minor Changes
+
+- 6df3c1e: Support folder structure in OAC
+- e2414a2: Deduplicate marking input group names when building an object's datasource marking constraint, so properties that share a group no longer create a separate repeated-name Marketplace input such as `group/group`.
+- aa664cc: Introduce defineFolder to clean up maker folder api
+
+### Patch Changes
+
+- Updated dependencies [6df3c1e]
+- Updated dependencies [e2414a2]
+- Updated dependencies [aa664cc]
+  - @osdk/maker@0.83.0
+  - @osdk/api@2.84.0
+  - @osdk/client.unstable@2.84.0
+  - @osdk/generator-converters.ontologyir@2.84.0
+
 ## 0.78.0
 
 ### Minor Changes
