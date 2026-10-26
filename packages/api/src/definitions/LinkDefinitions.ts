@@ -20,6 +20,7 @@ import type {
   ExtractModifiers,
   ObjectSet,
   SelectKeysWithModifiers,
+  SubSelectKeysHelper,
 } from "../objectSet/ObjectSet.js";
 import type { InterfaceMetadata } from "../ontology/InterfaceDefinition.js";
 import type {
@@ -79,7 +80,7 @@ export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
           ExtractOptions<R, S>,
           SelectKeysWithModifiers<
             T,
-            [L] extends [never] ? PropertyKeys<T> : L & PropertyKeys<T>,
+            SubSelectKeysHelper<T, L>,
             ExtractModifiers<T, A>
           >
         >
@@ -98,7 +99,7 @@ export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
             ExtractOptions<R, S>,
             SelectKeysWithModifiers<
               T,
-              [L] extends [never] ? PropertyKeys<T> : L & PropertyKeys<T>,
+              SubSelectKeysHelper<T, L>,
               ExtractModifiers<T, A>
             >
           >

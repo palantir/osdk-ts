@@ -82,7 +82,7 @@ type MaybeSimplifyPropertyKeys<
   L extends PropertyKeys<Q>,
 > = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L & PropertyKeys<Q>;
 
-type SubSelectKeysHelper<
+export type SubSelectKeysHelper<
   Q extends ObjectOrInterfaceDefinition,
   L extends string,
 > = [L] extends [never]
