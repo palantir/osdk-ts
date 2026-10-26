@@ -24,6 +24,7 @@ export type FunctionBackedActionTypeUserDefinition = {
   description?: string;
   status?: ActionStatus;
   permission?: EntityPermission;
+  validation?: ActionType["validation"];
 };
 
 export function defineFunctionBackedAction(
@@ -48,19 +49,17 @@ export function defineFunctionBackedAction(
       },
     ],
     status: def.status ?? "active",
-    ...{
-      validation: [
-        {
-          condition: {
-            type: "true",
-            true: {},
-          },
-          displayMetadata: {
-            failureMessage: "Validation failed",
-            typeClasses: [],
-          },
+    validation: def.validation ?? [
+      {
+        condition: {
+          type: "true",
+          true: {},
         },
-      ],
-    },
+        displayMetadata: {
+          failureMessage: "Validation failed",
+          typeClasses: [],
+        },
+      },
+    ],
   });
 }
