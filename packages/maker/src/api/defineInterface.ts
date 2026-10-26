@@ -240,7 +240,6 @@ export function defineInterface(
       apiName,
       interfaceDef.schemaMigrations,
       propertiesV3,
-      status,
     );
   }
   validateSchemaMigrationsFamilyOptIn(

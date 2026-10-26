@@ -44,7 +44,6 @@ import {
   authoredKeyOf,
   declarationOf,
   extensionsOf,
-  isDeprecated,
   nullabilityOf,
   own,
   primaryKeyConstraintOf,
@@ -101,15 +100,6 @@ export type LockfileBreakingChange =
       transitionId: string;
       previousInstructions: readonly LockedInstruction[];
       nextInstructions: readonly LockedInstruction[];
-    }
-  /**
-   * The interface was deprecated in an earlier release, so it is on its way out, and no migration
-   * other than a `replace` can be phased in on it any more.
-   */
-  | {
-      code: "transitionAfterFinalizedDeprecation";
-      interfaceApiName: string;
-      transitionId: string;
     }
   | {
       code: "actionTypeConstraintBecameRequired";
@@ -364,9 +354,6 @@ function validateInterface(
           case "actionTypeConstraint":
             accountedFor.actionTypeConstraints.add(element.apiName);
             break;
-          case "deprecated":
-            // Deprecating or un-deprecating an interface is never a breaking change by itself
-            break;
           default: {
             const unhandled: never = element;
             throw new Error(
@@ -385,13 +372,6 @@ function validateInterface(
       breakingChanges,
     );
   }
-
-  validateNoTransitionsAfterFinalizedDeprecation(
-    interfaceApiName,
-    previousInterface,
-    nextInterface,
-    breakingChanges,
-  );
 
   validateExtensionsDiff(
     interfaceApiName,
@@ -422,43 +402,6 @@ interface AccountedFor {
   properties: Set<string>;
   /** Fully-qualified api names. */
   actionTypeConstraints: Set<string>;
-}
-
-/**
- * Once a deprecation is finalized the interface only awaits removal. Per the interface schema
- * migrations RFC it may not phase in anything further; OMS does not enforce this yet.
- *
- * A `replace` is the exception, since it moves implementors off the interface rather than changing
- * it, and an interface deprecated without one (e.g. with just `replacedBy`) may adopt one later.
- */
-function validateNoTransitionsAfterFinalizedDeprecation(
-  interfaceApiName: string,
-  previousInterface: LockedInterfaceType,
-  nextInterface: LockedInterfaceType,
-  breakingChanges: LockfileBreakingChange[],
-): void {
-  if (!isDeprecated(previousInterface.schema)) {
-    return;
-  }
-
-  const previousIds = new Set(
-    previousInterface.transitions.map((transition) => transition.id),
-  );
-  for (const transition of nextInterface.transitions) {
-    if (!previousIds.has(transition.id) && !isReplacement(transition)) {
-      breakingChanges.push({
-        code: "transitionAfterFinalizedDeprecation",
-        interfaceApiName,
-        transitionId: transition.id,
-      });
-    }
-  }
-}
-
-function isReplacement(transition: LockedTransition): boolean {
-  return transition.instructions.every(
-    (instruction) => instruction.type === "replace",
-  );
 }
 
 /**
@@ -572,6 +515,12 @@ function classifyDisappearance(
   previousSchema: LockedInterfaceSchema,
   nextSchema: LockedInterfaceSchema,
 ): Disappearance {
+  // A replace is never finalized; it stays declared as a tombstone, so it can only vanish by being
+  // deleted
+  if (transition.instructions.some(({ type }) => type === "replace")) {
+    return { kind: "deleted" };
+  }
+
   const strict = applyTransition(transition, previousSchema, "strict");
   if (reproduces(strict, nextSchema)) {
     return { kind: "finalized" };

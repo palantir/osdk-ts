@@ -21,9 +21,10 @@ interface InstructionProse {
   describe: string;
   /**
    * The action an author must take for the migration to be finalized, phrased as an imperative
-   * clause to be embedded in a sentence, e.g. set "lastName" to `required: true`.
+   * clause to be embedded in a sentence, e.g. set "lastName" to `required: true`. Absent for an
+   * instruction that is never finalized.
    */
-  finalization: string;
+  finalization: string | undefined;
   /** The transition an author should declare to phase the change in, as a DSL literal they can paste. */
   suggestedTransition: string;
 }
@@ -105,7 +106,7 @@ function proseFor(
           : interfaceType.apiName;
       return {
         describe: `replace("${replacementApiName}")`,
-        finalization: `keep the interface's \`deprecated\` status`,
+        finalization: undefined,
         suggestedTransition:
           `{ id: "replace", title: "Replace with ${replacementApiName}", ` +
           `gracePeriod: { type: "afterInstall", days: 30 }, ` +
@@ -131,7 +132,7 @@ export function describeInstruction(
 
 export function describeFinalization(
   instruction: InterfaceSchemaMigrationInstruction,
-): string {
+): string | undefined {
   return proseFor(instruction).finalization;
 }
 

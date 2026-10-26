@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// `Person` being replaced by `PersonV2`, deprecated as an in-flight replace requires.
+// `Person` being replaced by `PersonV2`.
 import { defineInterface } from "../../../api/defineInterface.js";
 
 const personV2 = defineInterface({
@@ -28,11 +28,6 @@ const personV2 = defineInterface({
 defineInterface({
   apiName: "Person",
   displayName: "Person",
-  status: {
-    type: "deprecated",
-    message: "Use PersonV2",
-    deadline: "2030-01-01T00:00:00Z",
-  },
   properties: {
     name: { type: "string" },
   },

@@ -124,7 +124,6 @@ function defineReplaced(
 ): InterfaceType {
   return defineInterface({
     apiName: "Foo",
-    status: DEPRECATED,
     properties: { name: REQUIRED_STRING },
     schemaMigrations: { transitions: [transition([replace(replacement)])] },
     ...overrides,
@@ -253,13 +252,15 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
       ).resolves.toBeDefined();
     });
 
-    it("rejects an interface that is not deprecated", () => {
-      expect(() =>
-        defineReplaced(undefined, { status: { type: "active" } }),
-      ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Foo has status "active". Set its status to \`{ type: "deprecated", ... }\` while the migration is in flight.]`,
-      );
-    });
+    it.each([
+      ["an active", { type: "active" }],
+      ["a deprecated", DEPRECATED],
+    ] as const)(
+      "accepts replacing %s interface, since a replace changes nothing about its status",
+      (_name, status) => {
+        expect(() => defineReplaced(undefined, { status })).not.toThrow();
+      },
+    );
 
     it("rejects a replacement sharing its transition with another instruction", () => {
       expect(() =>
@@ -275,7 +276,7 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
           },
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but the transition has 2 instructions. A replacement must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but the transition has 2 instructions. A replacement must be the only instruction of the only transition on its interface, and stays declared as a tombstone; finalize or remove the other migrations first.]`,
       );
     });
 
@@ -294,7 +295,7 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
           },
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Foo has 2 transitions. A replacement must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Foo has 2 transitions. A replacement must be the only instruction of the only transition on its interface, and stays declared as a tombstone; finalize or remove the other migrations first.]`,
       );
     });
 
@@ -819,7 +820,7 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
   });
 
   describe("prose", () => {
-    it("describes each instruction and its finalization", () => {
+    it("describes each instruction and its finalization, if any", () => {
       const instructions: InterfaceSchemaMigrationInstruction[] = [
         requireConstraint("doThing"),
         replace(),
@@ -837,7 +838,7 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
           ],
           [
             "replace("com.other.Bar")",
-            "keep the interface's \`deprecated\` status",
+            undefined,
           ],
         ]
       `);

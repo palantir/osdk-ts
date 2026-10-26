@@ -47,8 +47,7 @@ export interface OntologySchemaLockfile {
 export interface LockedInterfaceType {
   /**
    * The interface's schema in its "lenient" form: as if none of the active transitions have
-   * been finalized yet. The exception is `deprecated`, which records the status as declared,
-   * since stacks install it while a `replace` is in flight.
+   * been finalized yet.
    */
   schema: LockedInterfaceSchema;
   /**
@@ -80,11 +79,6 @@ export interface LockedInterfaceSchema {
    * fully-qualified api name. Absent when it declares none.
    */
   actionTypeConstraints?: Record<string, LockedActionTypeConstraint>;
-  /**
-   * Present only when the interface is deprecated, including while a `replace` migration is in
-   * flight. Absent means it is not deprecated.
-   */
-  deprecated?: true;
 }
 
 export interface LockedActionTypeConstraint {
@@ -175,10 +169,6 @@ export function actionTypeConstraintsOf(
   schema: LockedInterfaceSchema,
 ): Record<string, LockedActionTypeConstraint> {
   return schema.actionTypeConstraints ?? {};
-}
-
-export function isDeprecated(schema: LockedInterfaceSchema): boolean {
-  return schema.deprecated ?? false;
 }
 
 export function primaryKeyConstraintOf(

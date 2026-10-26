@@ -24,11 +24,7 @@ import type {
   LockedProperty,
   LockedTransition,
 } from "./OntologySchemaLockfile.js";
-import {
-  actionTypeConstraintsOf,
-  isDeprecated,
-  own,
-} from "./OntologySchemaLockfile.js";
+import { actionTypeConstraintsOf, own } from "./OntologySchemaLockfile.js";
 
 /**
  * Whether a transition's instructions are being enforced.
@@ -41,8 +37,7 @@ export type ApplyMode = "lenient" | "strict";
 /** A part of an interface's schema that an instruction can assert something about. */
 export type SchemaElement =
   | { kind: "property"; apiName: string }
-  | { kind: "actionTypeConstraint"; apiName: string }
-  | { kind: "deprecated" };
+  | { kind: "actionTypeConstraint"; apiName: string };
 
 /** What an instruction does to a property when applied. */
 export type PropertyEdit =
@@ -72,9 +67,7 @@ type ElementTransition =
       apiName: string;
       lenient: ActionTypeConstraintEdit;
       strict: ActionTypeConstraintEdit;
-    }
-  /** Whether the interface is deprecated in each mode. */
-  | { kind: "deprecated"; lenient: boolean; strict: boolean };
+    };
 
 /** The per-element changes an instruction makes. */
 function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
@@ -99,9 +92,8 @@ function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
       ];
     case "replace":
       // The replacement only steers what proposals do to implementing object types; the
-      // interface's own schema records nothing of it. The interface is already deprecated while
-      // this is in flight; finalizing keeps it deprecated, while deleting reverts that.
-      return [{ kind: "deprecated", lenient: false, strict: true }];
+      // interface's own schema records nothing of it
+      return [];
     default: {
       const unhandled: never = instruction;
       throw new Error(
@@ -114,9 +106,7 @@ function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
 }
 
 function elementOf(transition: ElementTransition): SchemaElement {
-  return transition.kind === "deprecated"
-    ? { kind: transition.kind }
-    : { kind: transition.kind, apiName: transition.apiName };
+  return { kind: transition.kind, apiName: transition.apiName };
 }
 
 /** A transition applied in one mode. */
@@ -200,14 +190,9 @@ export function applyTransition(
   schema: LockedInterfaceSchema,
   mode: ApplyMode,
 ): AppliedTransition | undefined {
-  const {
-    actionTypeConstraints: _actionTypeConstraints,
-    deprecated: _deprecated,
-    ...rest
-  } = schema;
+  const { actionTypeConstraints: _actionTypeConstraints, ...rest } = schema;
   const properties = { ...schema.properties };
   const actionTypeConstraints = { ...actionTypeConstraintsOf(schema) };
-  let deprecated = isDeprecated(schema);
   const touched = new Map<string, SchemaElement>();
 
   for (const instruction of transition.instructions) {
@@ -235,9 +220,6 @@ export function applyTransition(
             return undefined;
           }
           break;
-        case "deprecated":
-          deprecated = elementTransition[mode];
-          break;
         default: {
           const unhandled: never = elementTransition;
           throw new Error(
@@ -259,7 +241,6 @@ export function applyTransition(
       ...(Object.keys(actionTypeConstraints).length > 0 && {
         actionTypeConstraints,
       }),
-      ...(deprecated && { deprecated: true as const }),
     },
     touched: [...touched.values()],
   };
@@ -292,14 +273,12 @@ export function targetActionTypeConstraintsOf(
 function valueAt(
   schema: LockedInterfaceSchema,
   element: SchemaElement,
-): LockedProperty | LockedActionTypeConstraint | boolean | undefined {
+): LockedProperty | LockedActionTypeConstraint | undefined {
   switch (element.kind) {
     case "property":
       return own(schema.properties, element.apiName);
     case "actionTypeConstraint":
       return own(actionTypeConstraintsOf(schema), element.apiName);
-    case "deprecated":
-      return isDeprecated(schema);
     default: {
       const unhandled: never = element;
       throw new Error(`Unknown schema element: ${JSON.stringify(unhandled)}`);

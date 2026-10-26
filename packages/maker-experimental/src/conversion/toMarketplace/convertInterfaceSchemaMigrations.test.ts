@@ -447,12 +447,6 @@ describe("interface type schema migration output shapes", () => {
   });
 });
 
-const DEPRECATED = {
-  type: "deprecated",
-  message: "Use the replacement",
-  deadline: "2026-12-31T00:00:00Z",
-} as const;
-
 /** Schema migrations declaring a single-instruction transition. */
 function migrations(
   instruction: InterfaceSchemaMigrationInstruction,
@@ -506,7 +500,6 @@ function defineReplacementPair(
   });
   const old = defineInterface({
     apiName: "Old",
-    status: DEPRECATED,
     properties: {
       title: { type: "string" },
       ownerSpt: { sharedPropertyType: ownerSpt, required: true },
@@ -576,7 +569,6 @@ function defineImportedReplacement(): void {
   importOntologyEntity(importedInterface());
   const old = defineInterface({
     apiName: "Old",
-    status: DEPRECATED,
     properties: { title: { type: "string" } },
     schemaMigrations: migrations({
       type: "replace",
@@ -831,7 +823,6 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
       convertOntology(() => {
         defineInterface({
           apiName: "Old",
-          status: DEPRECATED,
           properties: { title: { type: "string" } },
           schemaMigrations: migrations({
             type: "replace",
@@ -884,7 +875,6 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
         });
         defineInterface({
           apiName: "Old",
-          status: DEPRECATED,
           properties: { title: { type: "string" } },
           schemaMigrations: migrations({
             type: "replace",

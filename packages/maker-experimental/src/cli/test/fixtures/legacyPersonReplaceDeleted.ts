@@ -25,11 +25,6 @@ defineInterface({
 defineInterface({
   apiName: "LegacyPerson",
   displayName: "Legacy person",
-  status: {
-    type: "deprecated",
-    message: "Use Person instead",
-    deadline: "2027-01-01T00:00:00Z",
-  },
   properties: { fullName: { type: "string" } },
   schemaMigrations: { transitions: [] },
 });

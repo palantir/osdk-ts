@@ -377,18 +377,6 @@ describe("describeBreakingChange", () => {
   });
 
   describe("replacement", () => {
-    it("says no transitions may follow a finalized deprecation", () => {
-      const message = describeBreakingChange({
-        code: "transitionAfterFinalizedDeprecation",
-        interfaceApiName: "Person",
-        transitionId: "requireLastName",
-      });
-      expect(message).toContain(
-        "No future transitions other than a `replace` are allowed after a deprecation is finalized.",
-      );
-      expect(message).toContain('Remove "requireLastName"');
-    });
-
     it("names the replacement of a changed replace instruction", () => {
       expect(
         describeBreakingChange({

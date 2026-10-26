@@ -351,25 +351,6 @@ describe("parseLockfile", () => {
     );
   });
 
-  it("accepts a deprecated interface", () => {
-    const deprecated = withInterface({
-      schema: { properties: {}, deprecated: true },
-      transitions: [],
-    });
-    expect(parse(deprecated)).toStrictEqual(deprecated);
-  });
-
-  it("rejects an interface that spells out not being deprecated", () => {
-    expect(() =>
-      parse(
-        withInterface({
-          schema: { properties: {}, deprecated: false },
-          transitions: [],
-        }),
-      ),
-    ).toThrowError(/schema\.deprecated: Expected true, or no value at all/u);
-  });
-
   it("accepts a property that records a value type", () => {
     const valueType = { packageNamespace: "com.example", apiName: "Ssn" };
     const parsed = parse(withPropertyDefinition({ ...property, valueType }));

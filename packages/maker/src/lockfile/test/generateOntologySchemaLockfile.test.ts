@@ -658,43 +658,28 @@ describe("replacement", () => {
     });
   }
 
-  it("records a deprecated status without an in-flight replace as deprecated", () => {
-    defineInterface({
-      apiName: "Person",
-      status: DEPRECATED,
-      schemaMigrations: { transitions: [] },
-    });
+  it.each([
+    ["an active", { type: "active" }],
+    ["a deprecated", DEPRECATED],
+  ] as const)(
+    "records nothing of %s status while a replace is in flight",
+    (_name, status) => {
+      const personV2 = definePersonV2();
+      defineInterface({
+        apiName: "Person",
+        status,
+        properties: { name: { type: "string" } },
+        schemaMigrations: { transitions: [replaceWith(personV2)] },
+      });
 
-    expect(lockedSchema()).toStrictEqual({ properties: {}, deprecated: true });
-  });
-
-  it("omits the key for a non-deprecated status", () => {
-    defineInterface({
-      apiName: "Person",
-      status: { type: "active" },
-      schemaMigrations: { transitions: [] },
-    });
-
-    expect(Object.keys(lockedSchema())).toEqual(["properties"]);
-  });
-
-  it("records the deprecated status while a replace is in flight", () => {
-    const personV2 = definePersonV2();
-    defineInterface({
-      apiName: "Person",
-      status: DEPRECATED,
-      properties: { name: { type: "string" } },
-      schemaMigrations: { transitions: [replaceWith(personV2)] },
-    });
-
-    expect(lockedSchema().deprecated).toBe(true);
-  });
+      expect(Object.keys(lockedSchema())).toEqual(["properties"]);
+    },
+  );
 
   it("records the replacement by api name, omitting empty mappings", () => {
     const personV2 = definePersonV2();
     defineInterface({
       apiName: "Person",
-      status: DEPRECATED,
       properties: { name: { type: "string" } },
       schemaMigrations: { transitions: [replaceWith(personV2)] },
     });
@@ -718,7 +703,6 @@ describe("replacement", () => {
     const personV2 = definePersonV2();
     defineInterface({
       apiName: "Person",
-      status: DEPRECATED,
       properties: { name: { type: "string" } },
       schemaMigrations: {
         transitions: [
@@ -789,11 +773,6 @@ describe("replacement of an interface with inherited properties", () => {
     defineInterface({
       apiName: "Person",
       extends: [contactable],
-      status: {
-        type: "deprecated",
-        message: "Use PersonV2",
-        deadline: "2030-01-01T00:00:00Z",
-      },
       schemaMigrations: {
         transitions: [
           {

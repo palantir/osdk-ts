@@ -110,9 +110,10 @@ export type InterfaceSchemaMigrationInstruction =
    * Consumers must already read both interface types, because object types move over one at a time
    * during the grace period.
    *
-   * The interface type must have a `deprecated` status, and this must be the only instruction of the
-   * only transition it declares. Finalize the migration by keeping the `deprecated` status; delete it
-   * by reverting to a non-deprecated status.
+   * This changes nothing about the interface type's own schema, and is never finalized: it stays
+   * declared as a tombstone until the interface type itself is removed. It must be the only
+   * instruction of the only transition the interface type declares, so no further migrations can be
+   * declared on it while it stands. Delete the migration by removing its transition.
    */
   | { type: "replace"; replacement: InterfaceTypeReplacement };
 

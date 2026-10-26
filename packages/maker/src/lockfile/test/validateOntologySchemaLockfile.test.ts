@@ -1250,82 +1250,63 @@ describe("validateOntologySchemaLockfile", () => {
       ],
     };
 
-    /** A single-interface lockfile, deprecated or not. */
+    const PERSON_PROPERTIES: LockedInterfaceSchema["properties"] = {
+      firstName: REQUIRED_STRING,
+      lastName: OPTIONAL_STRING,
+    };
+
     function lockedPerson(
-      deprecated: boolean,
       transitions: LockedTransition[] = [],
+      properties = PERSON_PROPERTIES,
     ): OntologySchemaLockfile {
-      const schema: LockedInterfaceSchema = {
-        properties: { firstName: REQUIRED_STRING, lastName: OPTIONAL_STRING },
-        ...(deprecated && { deprecated: true as const }),
-      };
-      return lockfile({ Person: { schema, transitions } });
+      return lockfile({ Person: { schema: { properties }, transitions } });
     }
 
-    const replacementInFlight = lockedPerson(true, [replace]);
+    const replacementInFlight = lockedPerson([replace]);
+    const deleted = {
+      interfaceApiName: "Person",
+      transitionId: "replace",
+      kind: "deleted",
+    };
 
-    it("reads keeping the interface deprecated as a finalization", () => {
-      const result = validate(replacementInFlight, lockedPerson(true));
+    it("reads a vanished replace as a deletion, since it is never finalized", () => {
+      const result = validate(replacementInFlight, lockedPerson());
       expect(result.breakingChanges).toEqual([]);
       expect(result.warnings).toEqual([]);
-      expect(result.checkpoints).toEqual([
-        {
-          interfaceApiName: "Person",
-          transitionId: "replace",
-          kind: "finalized",
-        },
-      ]);
+      expect(result.checkpoints).toEqual([deleted]);
     });
 
-    it("reads reverting the interface to not deprecated as a deletion", () => {
-      const result = validate(replacementInFlight, lockedPerson(false));
-      expect(result.breakingChanges).toEqual([]);
-      expect(result.checkpoints).toEqual([
-        {
-          interfaceApiName: "Person",
-          transitionId: "replace",
-          kind: "deleted",
-        },
-      ]);
-    });
-
-    it.each([
-      ["deprecating", false, true],
-      ["un-deprecating", true, false],
-    ])(
-      "accepts %s the interface without a migration",
-      (_name, previous, next) => {
-        const result = validate(lockedPerson(previous), lockedPerson(next));
-        expect(result.breakingChanges).toEqual([]);
-        expect(result.warnings).toEqual([]);
-        expect(result.checkpoints).toEqual([]);
-      },
-    );
-
-    it("accepts a replace on an already-deprecated interface", () => {
-      const result = validate(lockedPerson(true), replacementInFlight);
-      expect(result.breakingChanges).toEqual([]);
-      expect(result.warnings).toEqual([]);
-    });
-
-    it("rejects declaring any other migration after a deprecation is finalized", () => {
+    it("still reports schema breaks made alongside deleting a replace", () => {
       const result = validate(
-        lockedPerson(true),
-        lockedPerson(true, [requireLastName]),
+        replacementInFlight,
+        lockedPerson([], {
+          firstName: REQUIRED_STRING,
+          lastName: REQUIRED_STRING,
+        }),
       );
+      expect(result.checkpoints).toEqual([deleted]);
       expect(result.breakingChanges).toEqual([
         {
-          code: "transitionAfterFinalizedDeprecation",
+          code: "propertyBecameRequired",
           interfaceApiName: "Person",
-          transitionId: requireLastName.id,
+          property: "lastName",
         },
       ]);
+    });
+
+    it("accepts declaring another migration once the replace is deleted", () => {
+      const result = validate(
+        replacementInFlight,
+        lockedPerson([requireLastName]),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([deleted]);
     });
 
     it("rejects a changed replacement on an in-flight replace", () => {
       const result = validate(
         replacementInFlight,
-        lockedPerson(false, [
+        lockedPerson([
           {
             ...replace,
             instructions: [

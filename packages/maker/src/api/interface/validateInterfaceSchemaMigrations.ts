@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { InterfaceTypeStatus } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
 import { namespace } from "../defineOntology.js";
@@ -51,7 +50,6 @@ export function validateInterfaceSchemaMigrations(
   // The interface type's locally-defined properties; inherited properties are not included
   // (since migrations for those should occur in the interface that defines them)
   propertiesV3: Record<string, InterfacePropertyType>,
-  status: InterfaceTypeStatus,
 ): void {
   const { transitions } = schemaMigrations;
 
@@ -110,7 +108,6 @@ export function validateInterfaceSchemaMigrations(
       validateInstruction(interfaceApiName, transition, instruction, {
         transitionCount: transitions.length,
         propertiesV3,
-        status,
       });
 
       const instructionDescription = describeInstruction(instruction);
@@ -181,7 +178,6 @@ interface InstructionContext {
   transitionCount: number;
   // The interface type's locally-defined properties
   propertiesV3: Record<string, InterfacePropertyType>;
-  status: InterfaceTypeStatus;
 }
 
 /**
@@ -193,7 +189,7 @@ function validateInstruction(
   interfaceApiName: string,
   transition: InterfaceSchemaTransition,
   instruction: InterfaceSchemaMigrationInstruction,
-  { transitionCount, propertiesV3, status }: InstructionContext,
+  { transitionCount, propertiesV3 }: InstructionContext,
 ): void {
   const transitionId = transition.id;
   switch (instruction.type) {
@@ -214,17 +210,14 @@ function validateInstruction(
       return;
     case "replace": {
       const description = describeInstruction(instruction);
-      invariant(
-        status.type === "deprecated",
-        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${description}, but interface ${interfaceApiName} has status "${status.type}". Set its status to \`{ type: "deprecated", ... }\` while the migration is in flight.`,
-      );
+      // A replace is never finalized, so this also keeps any further migration off the interface
       invariant(
         transition.instructions.length === 1 && transitionCount === 1,
         `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${description}, but ${
           transitionCount === 1
             ? `the transition has ${transition.instructions.length} instructions`
             : `interface ${interfaceApiName} has ${transitionCount} transitions`
-        }. A replacement must be the only instruction of the only transition on its interface; finalize or remove the other migrations first.`,
+        }. A replacement must be the only instruction of the only transition on its interface, and stays declared as a tombstone; finalize or remove the other migrations first.`,
       );
       validateReplacementMappings(
         interfaceApiName,

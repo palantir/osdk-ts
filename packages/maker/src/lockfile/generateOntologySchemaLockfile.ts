@@ -135,9 +135,6 @@ function lockInterfaceSchema(
     // have no key at all) still compare equal.
     ...(extendsInterfaces !== undefined && { extendsInterfaces }),
     ...(actionTypeConstraints !== undefined && { actionTypeConstraints }),
-    ...(interfaceType.status.type === "deprecated" && {
-      deprecated: true as const,
-    }),
   };
 }
 

@@ -328,16 +328,6 @@ const interfaceSchema = z
                   `interface that declares none.`,
               })
               .optional(),
-            // Absent means not deprecated, so only `true` is ever recorded
-            deprecated: z
-              .literal(true, {
-                errorMap: () => ({
-                  message:
-                    `Expected true, or no value at all for an interface that is not ` +
-                    `deprecated. Restore what the last published release declared.`,
-                }),
-              })
-              .optional(),
           },
           { message: 'Expected an object with a "properties" key.' },
         )

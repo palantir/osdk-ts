@@ -178,41 +178,14 @@ describe("applyTransition", () => {
         },
       ],
     };
-    const deprecated: LockedInterfaceSchema = {
-      ...previousSchema,
-      deprecated: true,
-    };
 
-    it("leaves the interface not deprecated when applied leniently", () => {
-      const lenient = applyTransition(replace, previousSchema, "lenient");
-
-      expect(lenient).toStrictEqual({
-        schema: previousSchema,
-        touched: [{ kind: "deprecated" }],
-      });
-    });
-
-    it("deprecates the interface when applied strictly", () => {
-      expect(
-        applyTransition(replace, previousSchema, "strict")?.schema,
-      ).toStrictEqual(deprecated);
-    });
-
-    // The lockfile records the interface as deprecated while the replace is in flight, but the
-    // classification must not depend on that
-    it.each([
-      ["not deprecated", previousSchema],
-      ["deprecated", deprecated],
-    ])(
-      "reproduces a finalization only when the interface is deprecated, from a %s schema",
-      (_name, inFlightSchema) => {
-        const strict = applyTransition(replace, inFlightSchema, "strict");
-        const lenient = applyTransition(replace, inFlightSchema, "lenient");
-
-        expect(reproduces(strict, deprecated)).toBe(true);
-        expect(reproduces(strict, previousSchema)).toBe(false);
-        expect(reproduces(lenient, previousSchema)).toBe(true);
-        expect(reproduces(lenient, deprecated)).toBe(false);
+    it.each(["lenient", "strict"] as const)(
+      "leaves the interface's schema untouched when applied %sly",
+      (mode) => {
+        expect(applyTransition(replace, previousSchema, mode)).toStrictEqual({
+          schema: previousSchema,
+          touched: [],
+        });
       },
     );
   });

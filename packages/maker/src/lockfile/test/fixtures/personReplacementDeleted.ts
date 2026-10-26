@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// `personReplacementInFlight`, with the replacement deleted: it is no longer deprecated.
+// `personReplacementInFlight`, with the replacement deleted.
 import { defineInterface } from "../../../api/defineInterface.js";
 
 defineInterface({
@@ -28,7 +28,6 @@ defineInterface({
 defineInterface({
   apiName: "Person",
   displayName: "Person",
-  status: { type: "active" },
   properties: {
     name: { type: "string" },
   },

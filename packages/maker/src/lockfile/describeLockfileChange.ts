@@ -75,15 +75,6 @@ export function describeBreakingChange(
         `declare a new one with a different id instead.`
       );
 
-    case "transitionAfterFinalizedDeprecation":
-      return (
-        `${where}: declares schema migration "${breakingChange.transitionId}", but a previous ` +
-        `release finalized its deprecation, so it only awaits removal. No future transitions ` +
-        `other than a \`replace\` are allowed after a deprecation is finalized. Remove ` +
-        `"${breakingChange.transitionId}", and phase the change in on the interface that ` +
-        `replaces this one instead.`
-      );
-
     case "actionTypeConstraintBecameRequired": {
       const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
       return (
@@ -463,8 +454,9 @@ function describeFinalizations(
   instructions: readonly LockedInstruction[],
 ): string {
   return instructions
-    .map((instruction) =>
-      describeFinalization(toAuthoredInstruction(instruction)),
+    .flatMap(
+      (instruction) =>
+        describeFinalization(toAuthoredInstruction(instruction)) ?? [],
     )
     .join(", and ");
 }

@@ -31,12 +31,6 @@ import type {
 import type { InterfaceType } from "../interface/InterfaceType.js";
 import type { ParameterConstraintDefinition } from "../InterfaceActionTypeConstraintDefinition.js";
 
-const DEPRECATED = {
-  type: "deprecated",
-  message: "Use the replacement",
-  deadline: "2026-12-31T00:00:00Z",
-} as const;
-
 /** Schema migrations declaring a single-instruction transition. */
 function migrations(
   instruction: InterfaceSchemaMigrationInstruction,
@@ -176,7 +170,6 @@ describe("Interface schema migrations to ontology IR", () => {
       };
       const old = defineInterface({
         apiName: "Old",
-        status: DEPRECATED,
         properties: {
           title: { type: "string" },
           ownerSpt: { sharedPropertyType: ownerSpt, required: true },
@@ -252,7 +245,6 @@ describe("Interface schema migrations to ontology IR", () => {
         });
         defineInterface({
           apiName: "Old",
-          status: DEPRECATED,
           properties: { title: { type: "string" } },
           schemaMigrations: migrations({
             type: "replace",
@@ -291,7 +283,6 @@ describe("Interface schema migrations to ontology IR", () => {
         const target = defineInterface({ apiName: "Target" });
         const old = defineInterface({
           apiName: "Old",
-          status: DEPRECATED,
           properties: {
             ownerSpt: { sharedPropertyType: ownerSpt, required: true },
           },

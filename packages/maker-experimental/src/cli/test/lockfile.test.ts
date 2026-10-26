@@ -256,7 +256,7 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
   });
 
   describe("replace", () => {
-    it("locks the in-flight migration with the deprecated status", async () => {
+    it("locks the in-flight migration", async () => {
       await run("legacyPersonReplaceInFlight", "--write-locks");
 
       expect(await readLockfile()).toStrictEqual({
@@ -265,7 +265,6 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
           LegacyPerson: {
             schema: {
               properties: { fullName: { type: "string", required: true } },
-              deprecated: true,
             },
             transitions: [
               {
@@ -287,10 +286,10 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
       });
     });
 
-    it("locks the interface as deprecated once finalized", async () => {
+    it("drops the migration from the lock once deleted", async () => {
       await run("legacyPersonReplaceInFlight", "--write-locks");
 
-      await run("legacyPersonReplaceFinalized", "--write-locks", "--yes");
+      await run("legacyPersonReplaceDeleted", "--write-locks", "--yes");
 
       expect(await readLockfile()).toStrictEqual({
         version: 1,
@@ -298,7 +297,6 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
           LegacyPerson: {
             schema: {
               properties: { fullName: { type: "string", required: true } },
-              deprecated: true,
             },
             transitions: [],
           },
