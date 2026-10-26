@@ -691,11 +691,14 @@ export abstract class BaseListQuery<
    * @param objectSet The ObjectSet to subscribe to
    * @param sub The parent subscription to add cleanup to
    * @param methodName The method name for logging purposes
+   * @param revalidateOnOutOfDate Whether to refetch when the subscription
+   *   reports it is out of date
    */
   protected createWebsocketSubscription(
     objectSet: ObjectSet<any>,
     sub: Subscription,
-    methodName: string = "registerStreamUpdates",
+    methodName: string,
+    revalidateOnOutOfDate: boolean,
   ): void {
     const logger =
       process.env.NODE_ENV !== "production"
@@ -710,7 +713,7 @@ export abstract class BaseListQuery<
       const websocketSubscription = objectSet.subscribe({
         onChange: this.onOswChange.bind(this),
         onError: this.onOswError.bind(this),
-        onOutOfDate: this.onOswOutOfDate.bind(this),
+        onOutOfDate: () => this.onOswOutOfDate(revalidateOnOutOfDate),
         onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
       });
 
@@ -741,11 +744,16 @@ export abstract class BaseListQuery<
 
   /**
    * Handler called when subscribed data becomes out of date.
-   * Forces a refetch so the list recovers from missed websocket updates.
+   * When `revalidate` is true, forces a refetch so the list recovers from
+   * missed websocket updates.
    */
-  protected onOswOutOfDate(): void {
+  protected onOswOutOfDate(revalidate: boolean): void {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "onOutOfDate" }).debug("");
+    }
+
+    if (!revalidate) {
+      return;
     }
 
     // A fetch already in flight may have started before the data went out of

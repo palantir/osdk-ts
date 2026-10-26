@@ -82,6 +82,18 @@ export interface ObserveObjectSetOptions<
   streamUpdates?: boolean;
 
   /**
+   * When `streamUpdates` is enabled, refetch the list whenever the websocket
+   * subscription reports it is out of date (e.g. after a reconnect). Has no
+   * effect without `streamUpdates`.
+   *
+   * The refetch reloads the list from the first page, so pages loaded with
+   * `fetchMore` are dropped (`autoFetchMore` still applies).
+   *
+   * @default false
+   */
+  revalidateOnOutOfDate?: boolean;
+
+  /**
    * When true, loads per-property security metadata (marking requirements)
    * alongside each object. The returned objects will have `$propertySecurities`
    * populated with conjunctive/disjunctive marking requirements per property.

@@ -289,11 +289,15 @@ export class ObjectSetQuery extends BaseListQuery<
     );
   }
 
-  registerStreamUpdates(sub: Subscription): void {
+  registerStreamUpdates(
+    sub: Subscription,
+    revalidateOnOutOfDate: boolean,
+  ): void {
     this.createWebsocketSubscription(
       this.#composedObjectSet,
       sub,
       "observeObjectSet",
+      revalidateOnOutOfDate,
     );
   }
 

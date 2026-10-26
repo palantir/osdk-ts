@@ -143,6 +143,18 @@ export interface ObserveListOptions<
    * development.
    */
   streamUpdates?: boolean;
+
+  /**
+   * When `streamUpdates` is enabled, refetch the list whenever the websocket
+   * subscription reports it is out of date (e.g. after a reconnect). Has no
+   * effect without `streamUpdates`.
+   *
+   * The refetch reloads the list from the first page, so pages loaded with
+   * `fetchMore` are dropped (`autoFetchMore` still applies).
+   *
+   * @default false
+   */
+  revalidateOnOutOfDate?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
 
   /**

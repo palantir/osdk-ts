@@ -93,7 +93,10 @@ export class ObjectSetHelper extends AbstractHelper<
           );
         }
       } else {
-        ret.query.registerStreamUpdates(ret.subscription);
+        ret.query.registerStreamUpdates(
+          ret.subscription,
+          options.revalidateOnOutOfDate ?? false,
+        );
       }
     }
     return ret;
