@@ -10,4 +10,4 @@ Fix `fetchPageWithErrors()` to infer property security metadata from `$loadPrope
 
 Add typed `$applyModifiers` support to `fetchOne()` and `fetchOneWithErrors()`, including reduced arrays and extracted struct main values.
 
-Apply modifier result types to `$link` single-object fetches, preserving selections, included RIDs, and existing explicit option type arguments.
+Apply modifier result types to `$link` single-object fetches, preserving selections, included RIDs, and existing explicit option type arguments. Support `$loadPropertySecurityMetadata` and include `$propertySecurities` in their result types when requested.

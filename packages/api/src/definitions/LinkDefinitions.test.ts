@@ -16,6 +16,7 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 
+import type { PropertySecurity } from "../object/PropertySecurity.js";
 import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
@@ -33,6 +34,46 @@ describe("DefaultToFalse", () => {
 describe.each(["fetchOne", "fetchOneWithErrors"] as const)(
   "$link.%s",
   (method) => {
+    it("includes property security metadata when requested", () => {
+      const loadLead = (employee: Osdk.Instance<EmployeeApiTest>) =>
+        employee.$link.lead[method]({
+          $select: ["fullName", "salaryHistory"],
+          $includeRid: true,
+          $loadPropertySecurityMetadata: true,
+        });
+
+      type Response = Awaited<ReturnType<typeof loadLead>>;
+      type Direct = Exclude<Response, Result<unknown>>;
+      type Wrapped = Extract<Response, { value: unknown }>["value"];
+      type Expected = {
+        $primaryKey: PropertySecurity[];
+        $title: PropertySecurity[];
+        fullName: PropertySecurity[];
+        salaryHistory: PropertySecurity[][];
+      };
+      expectTypeOf<Direct["$propertySecurities"]>().toEqualTypeOf<Expected>();
+      expectTypeOf<Wrapped["$propertySecurities"]>().toEqualTypeOf<Expected>();
+      expectTypeOf<Direct["$rid"]>().toEqualTypeOf<string>();
+      expectTypeOf<Wrapped["$rid"]>().toEqualTypeOf<string>();
+    });
+
+    it.each([false, undefined] as const)(
+      "omits property security metadata when the option is %s",
+      ($loadPropertySecurityMetadata) => {
+        const loadLead = (employee: Osdk.Instance<EmployeeApiTest>) =>
+          employee.$link.lead[method]({
+            $select: ["fullName"],
+            $loadPropertySecurityMetadata,
+          });
+
+        type Response = Awaited<ReturnType<typeof loadLead>>;
+        type Direct = Exclude<Response, Result<unknown>>;
+        type Wrapped = Extract<Response, { value: unknown }>["value"];
+        expectTypeOf<Direct>().not.toHaveProperty("$propertySecurities");
+        expectTypeOf<Wrapped>().not.toHaveProperty("$propertySecurities");
+      },
+    );
+
     it("applies reducers and main values to selected properties", () => {
       const loadLead = (employee: Osdk.Instance<EmployeeApiTest>) =>
         employee.$link.lead[method]({
@@ -127,6 +168,8 @@ describe.each(["fetchOne", "fetchOneWithErrors"] as const)(
       >().toEqualTypeOf<EmployeeApiTest.Props>();
       expectTypeOf<Direct>().not.toHaveProperty("$rid");
       expectTypeOf<Wrapped>().not.toHaveProperty("$rid");
+      expectTypeOf<Direct>().not.toHaveProperty("$propertySecurities");
+      expectTypeOf<Wrapped>().not.toHaveProperty("$propertySecurities");
     });
 
     it("preserves explicit option type arguments", () => {

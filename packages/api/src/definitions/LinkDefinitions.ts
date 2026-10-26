@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { FetchPageArgs, SelectArg } from "../object/FetchPageArgs.js";
+import type {
+  NullabilityAdherence,
+  SelectArg,
+} from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
 import type {
   ExtractModifiers,
@@ -71,13 +74,29 @@ export type DefaultToFalse<B extends boolean | undefined> = false extends B
 export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
   /** Load the linked object
    */
-  fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(
+  fetchOne: <
+    const A extends SelectArg<
+      T,
+      PropertyKeys<T>,
+      boolean,
+      NullabilityAdherence.Default,
+      never,
+      boolean
+    >,
+  >(
     options?: A,
   ) => Promise<
-    A extends FetchPageArgs<T, infer L, infer R, any, infer S>
+    A extends SelectArg<
+      T,
+      infer L,
+      infer R,
+      infer S,
+      never,
+      infer PROPERTY_SECURITIES
+    >
       ? Osdk.Instance<
           T,
-          ExtractOptions<R, S>,
+          ExtractOptions<R, S, false, PROPERTY_SECURITIES>,
           SelectKeysWithModifiers<
             T,
             SubSelectKeysHelper<T, L>,
@@ -89,14 +108,30 @@ export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
 
   /** Load the linked object, with a result wrapper
    */
-  fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(
+  fetchOneWithErrors: <
+    const A extends SelectArg<
+      T,
+      PropertyKeys<T>,
+      boolean,
+      NullabilityAdherence.Default,
+      never,
+      boolean
+    >,
+  >(
     options?: A,
   ) => Promise<
     Result<
-      A extends FetchPageArgs<T, infer L, infer R, any, infer S>
+      A extends SelectArg<
+        T,
+        infer L,
+        infer R,
+        infer S,
+        never,
+        infer PROPERTY_SECURITIES
+      >
         ? Osdk.Instance<
             T,
-            ExtractOptions<R, S>,
+            ExtractOptions<R, S, false, PROPERTY_SECURITIES>,
             SelectKeysWithModifiers<
               T,
               SubSelectKeysHelper<T, L>,
