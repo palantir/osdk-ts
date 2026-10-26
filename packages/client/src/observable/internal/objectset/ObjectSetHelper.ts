@@ -95,7 +95,7 @@ export class ObjectSetHelper extends AbstractHelper<
       } else {
         ret.query.registerStreamUpdates(
           ret.subscription,
-          options.revalidateOnOutOfDate ?? false,
+          options.revalidateOnOutOfDate,
         );
       }
     }

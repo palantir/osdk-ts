@@ -291,7 +291,7 @@ export class ObjectSetQuery extends BaseListQuery<
 
   registerStreamUpdates(
     sub: Subscription,
-    revalidateOnOutOfDate: boolean,
+    revalidateOnOutOfDate?: boolean,
   ): void {
     this.createWebsocketSubscription(
       this.#composedObjectSet,

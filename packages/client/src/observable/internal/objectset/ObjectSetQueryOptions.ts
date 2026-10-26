@@ -82,12 +82,8 @@ export interface ObserveObjectSetOptions<
   streamUpdates?: boolean;
 
   /**
-   * When `streamUpdates` is enabled, refetch the list whenever the websocket
-   * subscription reports it is out of date (e.g. after a reconnect). Has no
-   * effect without `streamUpdates`.
-   *
-   * The refetch reloads the list from the first page, so pages loaded with
-   * `fetchMore` are dropped (`autoFetchMore` still applies).
+   * Refetch when the `streamUpdates` subscription reports it is out of date
+   * (e.g. after a reconnect). The refetch reloads from the first page.
    *
    * @default false
    */

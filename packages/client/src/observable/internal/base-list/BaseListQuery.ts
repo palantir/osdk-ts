@@ -697,8 +697,8 @@ export abstract class BaseListQuery<
   protected createWebsocketSubscription(
     objectSet: ObjectSet<any>,
     sub: Subscription,
-    methodName: string,
-    revalidateOnOutOfDate: boolean,
+    methodName: string = "registerStreamUpdates",
+    revalidateOnOutOfDate: boolean = false,
   ): void {
     const logger =
       process.env.NODE_ENV !== "production"
@@ -713,7 +713,7 @@ export abstract class BaseListQuery<
       const websocketSubscription = objectSet.subscribe({
         onChange: this.onOswChange.bind(this),
         onError: this.onOswError.bind(this),
-        onOutOfDate: () => this.onOswOutOfDate(revalidateOnOutOfDate),
+        onOutOfDate: this.onOswOutOfDate.bind(this, revalidateOnOutOfDate),
         onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
       });
 
