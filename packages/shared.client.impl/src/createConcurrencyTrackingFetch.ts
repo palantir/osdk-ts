@@ -28,13 +28,24 @@ export function createConcurrencyTrackingFetch(
   let activeHttpAttempts = 0;
   const waitingRequests: Array<() => void> = [];
 
-  function acquireSlot(): Promise<void> | undefined {
+  function acquireSlot():
+    | Promise<Pick<ClientMetrics, "queueSize" | "queueWaitTimeMs">>
+    | undefined {
     if (activeHttpAttempts < MAX_CONCURRENT_REQUESTS) {
       activeHttpAttempts++;
       return;
     }
 
-    return new Promise<void>((resolve) => waitingRequests.push(resolve));
+    const queuedAt = Date.now();
+    const queueSize = waitingRequests.length + 1;
+    return new Promise((resolve) =>
+      waitingRequests.push(() =>
+        resolve({
+          queueSize,
+          queueWaitTimeMs: Date.now() - queuedAt,
+        }),
+      ),
+    );
   }
 
   function releaseSlot(): void {
@@ -47,9 +58,11 @@ export function createConcurrencyTrackingFetch(
   }
 
   return async function concurrencyTrackingFetch(input, init) {
+    let queueSize = 0;
+    let queueWaitTimeMs = 0;
     const slotAvailable = acquireSlot();
     if (slotAvailable != null) {
-      await slotAvailable;
+      ({ queueSize, queueWaitTimeMs } = await slotAvailable);
     }
 
     try {
@@ -62,7 +75,11 @@ export function createConcurrencyTrackingFetch(
         });
       }
 
-      const clientMetrics: ClientMetrics = { concurrency: activeHttpAttempts };
+      const clientMetrics: ClientMetrics = {
+        concurrency: activeHttpAttempts,
+        queueSize,
+        queueWaitTimeMs,
+      };
       const requestContext: OsdkRequestContext = {
         clientMetrics,
       };

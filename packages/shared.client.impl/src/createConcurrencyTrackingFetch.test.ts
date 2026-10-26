@@ -23,6 +23,7 @@ import {
 
 describe(createConcurrencyTrackingFetch, () => {
   it("limits concurrent requests to 150", async () => {
+    const dateNow = vi.spyOn(Date, "now").mockReturnValue(1_000);
     const pendingResponses: Array<(response: Response) => void> = [];
     const fetchFn = vi.fn<typeof globalThis.fetch>(
       () =>
@@ -50,12 +51,25 @@ describe(createConcurrencyTrackingFetch, () => {
     });
     expect(Math.max(...reportedConcurrency)).toBe(150);
 
+    dateNow.mockReturnValue(1_025);
     const resolveFirstRequest = pendingResponses.shift();
     if (resolveFirstRequest == null) {
       throw new Error("Expected a pending response");
     }
     resolveFirstRequest(new Response());
     await vi.waitFor(() => expect(fetchFn).toHaveBeenCalledTimes(151));
+
+    const lastRequestContextHeader = new Headers(
+      fetchFn.mock.lastCall?.[1]?.headers,
+    ).get(OSDK_REQUEST_CONTEXT_HEADER);
+    if (lastRequestContextHeader == null) {
+      throw new Error("Expected OSDK request context header");
+    }
+    expect(JSON.parse(lastRequestContextHeader).clientMetrics).toEqual({
+      concurrency: 150,
+      queueSize: 1,
+      queueWaitTimeMs: 25,
+    });
 
     for (const resolve of pendingResponses) {
       resolve(new Response());
