@@ -25,6 +25,7 @@ import type {
   Osdk,
   PageResult,
   PropertyKeys,
+  PropertySecurity,
 } from "../index.js";
 import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
@@ -72,6 +73,7 @@ export function createMockObjectSet<
     fetchPage: vi.fn(() => Promise.resolve(fauxResults)),
     fetchPageWithErrors: vi.fn(() => Promise.resolve({ value: fauxResults })),
     fetchOne: vi.fn(() => fauxObject),
+    fetchOneWithErrors: vi.fn(() => Promise.resolve({ value: fauxObject })),
     asyncIter: vi.fn(() => {
       return {};
     }),
@@ -120,6 +122,55 @@ describe("ObjectSet", () => {
       >();
     });
   });
+
+  describe.each(["fetchPage", "fetchPageWithErrors"] as const)(
+    "%s property security metadata",
+    (method) => {
+      it("includes security metadata for selected properties when requested", async () => {
+        const args = {
+          $select: ["fullName", "salaryHistory"],
+          $loadPropertySecurityMetadata: true,
+        } as const;
+        const response =
+          method === "fetchPage"
+            ? await fauxObjectSet.fetchPage(args)
+            : await fauxObjectSet.fetchPageWithErrors(args);
+        if ("error" in response) {
+          throw response.error;
+        }
+        const result = "value" in response ? response.value : response;
+
+        type Data = (typeof result.data)[number];
+        expectTypeOf<Data["$propertySecurities"]>().toEqualTypeOf<{
+          $primaryKey: PropertySecurity[];
+          $title: PropertySecurity[];
+          fullName: PropertySecurity[];
+          salaryHistory: PropertySecurity[][];
+        }>();
+      });
+
+      it.each([false, undefined] as const)(
+        "omits security metadata when the option is %s",
+        async ($loadPropertySecurityMetadata) => {
+          const args = {
+            $select: ["fullName"],
+            $loadPropertySecurityMetadata,
+          } as const;
+          const response =
+            method === "fetchPage"
+              ? await fauxObjectSet.fetchPage(args)
+              : await fauxObjectSet.fetchPageWithErrors(args);
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          type Data = (typeof result.data)[number];
+          expectTypeOf<Data>().not.toHaveProperty("$propertySecurities");
+        },
+      );
+    },
+  );
 
   describe("includeAllBaseObjectProperties", () => {
     it("has the right types if you pass true", async () => {

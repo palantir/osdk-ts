@@ -302,8 +302,8 @@ export interface AsyncIterArgs<
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
 	PROPERTY_SECURITIES extends boolean = false,
 	MODIFIERS extends ApplyModifiersArg<Q> = {}
-> extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
-    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+> extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES, MODIFIERS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
+    	$applyModifiers?: SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES, MODIFIERS>["$applyModifiers"];
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -869,7 +869,7 @@ export interface FetchPageArgs<
 	MODIFIERS extends ApplyModifiersArg<Q> = {},
 	DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = PropertyModifierValue
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
-    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    	$applyModifiers?: SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES, MODIFIERS>["$applyModifiers"];
     	$EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
     	// (undocumented)
     $nextPageToken?: string;
@@ -2240,8 +2240,11 @@ export interface SelectArg<
 	R extends boolean = false,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	RDP_KEYS extends string = never,
-	PROPERTY_SECURITIES extends boolean = false
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > {
+    	// (undocumented)
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeRid?: R;
     	// (undocumented)
