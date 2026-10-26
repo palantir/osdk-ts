@@ -141,9 +141,9 @@ type Extract$Select<X extends FetchPageArgs<any, any>> = NonNullable<
   X["$select"]
 >[number];
 
-type ExtractModifiers<Q extends ObjectOrInterfaceDefinition, X> = [X] extends [
-  never,
-]
+export type ExtractModifiers<Q extends ObjectOrInterfaceDefinition, X> = [
+  X,
+] extends [never]
   ? {}
   : X extends { $applyModifiers: infer M extends ApplyModifiersArg<Q> }
     ? M
@@ -157,7 +157,7 @@ type ModifiersToSelectStrings<M> = {
     : never;
 }[keyof M];
 
-type SelectKeysWithModifiers<
+export type SelectKeysWithModifiers<
   Q extends ObjectOrInterfaceDefinition,
   K extends PropertyKeys<Q>,
   MODIFIERS extends ApplyModifiersArg<Q>,

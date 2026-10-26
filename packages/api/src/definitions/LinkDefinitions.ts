@@ -16,7 +16,11 @@
 
 import type { FetchPageArgs, SelectArg } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
-import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import type {
+  ExtractModifiers,
+  ObjectSet,
+  SelectKeysWithModifiers,
+} from "../objectSet/ObjectSet.js";
 import type { InterfaceMetadata } from "../ontology/InterfaceDefinition.js";
 import type {
   ObjectOrInterfaceDefinition,
@@ -70,7 +74,15 @@ export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
     options?: A,
   ) => Promise<
     A extends FetchPageArgs<T, infer L, infer R, any, infer S>
-      ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>>
+      ? Osdk.Instance<
+          T,
+          ExtractOptions<R, S>,
+          SelectKeysWithModifiers<
+            T,
+            [L] extends [never] ? PropertyKeys<T> : L & PropertyKeys<T>,
+            ExtractModifiers<T, A>
+          >
+        >
       : Osdk.Instance<T>
   >;
 
@@ -81,7 +93,15 @@ export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
   ) => Promise<
     Result<
       A extends FetchPageArgs<T, infer L, infer R, any, infer S>
-        ? Osdk.Instance<T, ExtractOptions<R, S>, L>
+        ? Osdk.Instance<
+            T,
+            ExtractOptions<R, S>,
+            SelectKeysWithModifiers<
+              T,
+              [L] extends [never] ? PropertyKeys<T> : L & PropertyKeys<T>,
+              ExtractModifiers<T, A>
+            >
+          >
         : Osdk.Instance<T>
     >
   >;

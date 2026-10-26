@@ -9,3 +9,5 @@ Preserve generic result types for `asyncIter()`, `fetchPage()`, and `fetchPageWi
 Fix `fetchPageWithErrors()` to infer property security metadata from `$loadPropertySecurityMetadata`, matching `fetchPage()`. Append the new type parameter to preserve its original explicit generic parameter order.
 
 Add typed `$applyModifiers` support to `fetchOne()` and `fetchOneWithErrors()`, including reduced arrays and extracted struct main values.
+
+Apply modifier result types to `$link` single-object fetches, preserving selections, included RIDs, and existing explicit option type arguments.
