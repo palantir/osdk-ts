@@ -1,5 +1,12 @@
 # @osdk/integration-testing
 
+## 0.13.0
+
+### Patch Changes
+
+- Updated dependencies [e20b58d]
+  - @osdk/unit-testing@1.0.0
+
 ## 0.12.0
 
 ### Patch Changes
