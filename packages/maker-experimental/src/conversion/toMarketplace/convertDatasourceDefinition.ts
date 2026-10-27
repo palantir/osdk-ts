@@ -33,6 +33,7 @@ import type {
   ObjectTypeDatasourceDefinition_direct,
   SecurityConditionDefinition,
 } from "@osdk/maker";
+import { getPropertySource } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
 import {
@@ -51,7 +52,16 @@ export function convertDatasourceDefinition(
 
   // Helper to get column names from properties
   const getColumnNames = (props: ObjectPropertyType[]): Set<string> => {
-    return new Set(props.map((p) => p.apiName));
+    return new Set(
+      props.map((property) => {
+        const source = getPropertySource(property);
+        return source?.type === "struct"
+          ? source.column.column
+          : source?.type === "column"
+            ? source.column
+            : property.apiName;
+      }),
+    );
   };
 
   switch (baseDatasource?.type) {
@@ -684,19 +694,37 @@ function buildPropertyMapping(
         prop.apiName,
         objectTypeApiName,
       );
-      // editOnly
-      if (prop.editOnly) {
+      const source = getPropertySource(prop);
+      if (source?.type === "editOnly") {
         return [propertyRid, { type: "editOnly", editOnly: {} }];
       }
+      const selected =
+        source?.type === "struct"
+          ? source.column
+          : source?.type === "column"
+            ? source
+            : undefined;
       // structs
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
         const structMapping = {
           type: "struct",
           struct: {
-            column: prop.apiName,
+            column: selected?.column ?? prop.apiName,
+            // Explicit source: fields: { firstName: "FIRST_NAME" }
+            //   -> { FIRST_NAME: { apiName: "firstName", mappings: {} } }
+            // Legacy fallback: structDefinition: { firstName: "string" }
+            //   -> { firstName: { apiName: "firstName", mappings: {} } }
+            // Authored mappings go from property field to column field;
+            // Marketplace expects the result keyed by column field.
             mapping: Object.fromEntries(
-              Object.keys(prop.type.structDefinition).map((fieldName) => [
-                fieldName,
+              (source?.type === "struct"
+                ? Object.entries(source.fields)
+                : Object.keys(prop.type.structDefinition).map((name) => [
+                    name,
+                    name,
+                  ])
+              ).map(([fieldName, columnField]) => [
+                columnField,
                 { apiName: fieldName, mappings: {} },
               ]),
             ),
@@ -705,7 +733,10 @@ function buildPropertyMapping(
         return [propertyRid, structMapping];
       }
       // default: column mapping
-      return [propertyRid, { type: "column", column: prop.apiName }];
+      return [
+        propertyRid,
+        { type: "column", column: selected?.column ?? prop.apiName },
+      ];
     }),
   );
 }

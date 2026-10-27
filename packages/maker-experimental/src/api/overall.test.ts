@@ -1514,7 +1514,7 @@ describe("Experimental Test Suite", () => {
           shape.type === "property" && key.includes("importedFoo"),
       );
       expect(propertyInputShapes).toHaveLength(2);
-      expect(result.importedInputPresets).toEqual(
+      expect(result.inputPresets).toEqual(
         new Map([
           ["object-type-importedFoo", apiNamePreset("importedFoo")],
           ["importedFoo-property-type-id", apiNamePreset("id")],
@@ -1700,7 +1700,7 @@ describe("Experimental Test Suite", () => {
           },
         });
 
-      expect(result.importedInputPresets.get(valueReadableId)).toEqual(
+      expect(result.inputPresets.get(valueReadableId)).toEqual(
         apiNamePreset("value"),
       );
       expect(result.shapes.inputShapeMetadata.has(valueReadableId)).toBe(true);
@@ -1821,7 +1821,7 @@ describe("Experimental Test Suite", () => {
       );
 
       expect(
-        result.importedInputPresets.get(
+        result.inputPresets.get(
           ReadableIdGenerator.getForObjectType("importedFoo"),
         ),
       ).toEqual(
@@ -1836,12 +1836,12 @@ describe("Experimental Test Suite", () => {
         }),
       );
       expect(
-        result.importedInputPresets.get(
+        result.inputPresets.get(
           ReadableIdGenerator.getForObjectProperty("importedFoo", "name"),
         ),
       ).toEqual(apiNamePreset("name"));
       expect(
-        result.importedInputPresets.get(
+        result.inputPresets.get(
           ReadableIdGenerator.getForInterface("importedInterface"),
         ),
       ).toEqual(
@@ -1855,9 +1855,7 @@ describe("Experimental Test Suite", () => {
         }),
       );
       expect(
-        result.importedInputPresets.get(
-          ReadableIdGenerator.getForSpt("importedName"),
-        ),
+        result.inputPresets.get(ReadableIdGenerator.getForSpt("importedName")),
       ).toEqual(
         resolvedShapePreset({
           type: "sharedPropertyType",
@@ -1870,7 +1868,7 @@ describe("Experimental Test Suite", () => {
         }),
       );
       expect(
-        result.importedInputPresets.get(
+        result.inputPresets.get(
           ReadableIdGenerator.getForActionType("importedAction"),
         ),
       ).toEqual(
@@ -1908,7 +1906,7 @@ describe("Experimental Test Suite", () => {
           "importedAction",
         ],
       ] as const) {
-        expect(ineligibleResult.importedInputPresets.get(readableId)).toEqual(
+        expect(ineligibleResult.inputPresets.get(readableId)).toEqual(
           apiNamePreset(apiName),
         );
       }
@@ -1928,12 +1926,12 @@ describe("Experimental Test Suite", () => {
         },
       );
       expect(
-        missingEnrichmentResult.importedInputPresets.get(
+        missingEnrichmentResult.inputPresets.get(
           ReadableIdGenerator.getForObjectType("importedFoo"),
         ),
       ).toEqual(apiNamePreset("importedFoo"));
       expect(
-        missingEnrichmentResult.importedInputPresets.get(
+        missingEnrichmentResult.inputPresets.get(
           ReadableIdGenerator.getForActionType("importedAction"),
         ),
       ).toEqual(apiNamePreset("importedAction"));
@@ -2173,7 +2171,7 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: "com.external.pkg.externalId" },
         },
       });
-      expect(result.importedInputPresets.get(sptInputShapes[0][0])).toEqual(
+      expect(result.inputPresets.get(sptInputShapes[0][0])).toEqual(
         apiNamePreset("com.external.pkg.externalId"),
       );
     });
@@ -2213,7 +2211,7 @@ describe("Experimental Test Suite", () => {
         },
       });
       expect(
-        result.importedInputPresets.get(
+        result.inputPresets.get(
           ReadableIdGenerator.getForActionType("importedAction"),
         ),
       ).toEqual(apiNamePreset("importedAction"));
@@ -2282,7 +2280,7 @@ describe("Experimental Test Suite", () => {
         },
       });
       expect(
-        result.importedInputPresets.get(
+        result.inputPresets.get(
           ReadableIdGenerator.getForInterface("importedInterface"),
         ),
       ).toEqual(apiNamePreset("importedInterface"));
@@ -2393,7 +2391,7 @@ describe("Experimental Test Suite", () => {
           about: { fallbackTitle: sptApiName },
         },
       });
-      expect(result.importedInputPresets.get(sptReadableId)).toEqual(
+      expect(result.inputPresets.get(sptReadableId)).toEqual(
         apiNamePreset(sptApiName),
       );
     });

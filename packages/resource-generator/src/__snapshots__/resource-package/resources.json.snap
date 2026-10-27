@@ -1,0 +1,54 @@
+{
+  "resources": {
+    "employees": {
+      "type": "dataset",
+      "locator": {
+        "type": "apiName",
+        "namespace": "com.acme",
+        "apiName": "employees"
+      },
+      "schema": {
+        "columns": {
+          "employee_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "employeeView": {
+      "type": "restrictedView",
+      "locator": {
+        "type": "apiName",
+        "apiName": "employeeView"
+      },
+      "schema": {
+        "columns": {
+          "employee_id": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "documents": {
+      "type": "mediaSet",
+      "locator": {
+        "type": "apiName",
+        "apiName": "documents"
+      }
+    },
+    "updateTags": {
+      "type": "function",
+      "locator": {
+        "type": "apiName",
+        "apiName": "updateTags"
+      }
+    },
+    "events": {
+      "type": "stream",
+      "locator": {
+        "type": "apiName",
+        "apiName": "events"
+      }
+    }
+  }
+}

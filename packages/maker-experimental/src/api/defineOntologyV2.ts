@@ -32,6 +32,7 @@ import { convertOntologyFullMetadata } from "@osdk/maker-import";
 
 import type { BlockDataAddOn } from "../cli/marketplaceSerialization/BlockGeneratorResult.js";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
+import { getDatasetInputPresets } from "../conversion/toMarketplace/datasetInputPresets.js";
 import {
   type ExternalImportedOntologyMetadata,
   getImportedShapes,
@@ -57,7 +58,7 @@ export interface OntologyV2Result {
   importedTypes: OntologyDefinition;
   shapes: BlockShapes;
   blockDataAddOn: BlockDataAddOn;
-  importedInputPresets: Map<ReadableId, InputPreset>;
+  inputPresets: Map<ReadableId, InputPreset>;
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
@@ -195,6 +196,11 @@ export async function defineOntologyV2(
     );
   }
 
+  const inputPresets = new Map([
+    ...importedShapes.inputPresets,
+    ...getDatasetInputPresets(ontologyDefinition, ridGenerator),
+  ]);
+
   // Runs last so that an ontology which fails conversion can't have already updated the lockfile.
   await beforeWrite?.(ontologyDefinition);
 
@@ -225,7 +231,7 @@ export async function defineOntologyV2(
     importedTypes,
     shapes,
     blockDataAddOn,
-    importedInputPresets: importedShapes.inputPresets,
+    inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,

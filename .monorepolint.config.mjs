@@ -85,6 +85,27 @@ const archetypeRules = archetypes(standardPackageRules, {
     oxc: true,
     oxcConfig: "./oxlint.config.ts",
   })
+  .addArchetype("resourcePackage", ["@osdk/resource"], {
+    ...LIBRARY_RULES,
+    oxc: true,
+    checkApi: true,
+    extraPublishFiles: ["resource.schema.json"],
+    extraExports: {
+      "./resource.schema.json": "./resource.schema.json",
+    },
+  })
+  .addArchetype("modelingPackage", ["@osdk/internal.modeling"], {
+    ...LIBRARY_RULES,
+    oxc: true,
+    checkApi: true,
+  })
+  .addArchetype("resourceGeneratorPackage", ["@osdk/resource-generator"], {
+    ...LIBRARY_RULES,
+    output: OUTPUT_ESM_ONLY,
+    oxc: true,
+    checkApi: true,
+    extraPublishFiles: ["bin/resource-generator.mjs"],
+  })
   .addArchetype(
     "tests and benchmarks",
     ["@osdk/tests.*", "@osdk/benchmarks.*"],

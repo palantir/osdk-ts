@@ -1,0 +1,2 @@
+# Dependencies for the Python compatibility tests
+pydantic>=2.12,<3

@@ -1,0 +1,78 @@
+{
+  "name": "@osdk/resource",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "browser": "./build/browser/index.js",
+      "import": {
+        "types": "./build/types/index.d.ts",
+        "default": "./build/esm/index.js"
+      },
+      "require": "./build/cjs/index.cjs",
+      "default": "./build/browser/index.js"
+    },
+    "./resource.schema.json": "./resource.schema.json",
+    "./*": {
+      "browser": "./build/browser/public/*.js",
+      "import": {
+        "types": "./build/types/public/*.d.ts",
+        "default": "./build/esm/public/*.js"
+      },
+      "require": "./build/cjs/public/*.cjs",
+      "default": "./build/browser/public/*.js"
+    }
+  },
+  "scripts": {
+    "check-api": "api-extractor run --verbose --local",
+    "check-attw": "attw --pack .",
+    "check-models": "pnpm generate-models --check",
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "fix-lint": "oxlint -c ../../oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "generate-models": "node scripts/generate-models.mjs",
+    "lint": "oxlint -c ../../oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
+    "test": "vitest run --passWithNoTests",
+    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
+    "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
+    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@osdk/internal.modeling": "workspace:~",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@microsoft/api-documenter": "^7.26.32",
+    "@microsoft/api-extractor": "^7.52.11",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@types/node": "^20.19.13",
+    "jiti": "^2.5.1",
+    "typescript": "~5.5.4",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "resource.schema.json",
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "build/types",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "main": "./build/cjs/index.cjs",
+  "module": "./build/esm/index.js",
+  "types": "./build/cjs/index.d.cts",
+  "type": "module"
+}

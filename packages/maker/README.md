@@ -476,6 +476,45 @@ const eventObject = defineObject({
 });
 ```
 
+### Object Backed by an Existing Dataset
+
+Use a RID-based dataset reference and give every persisted property an explicit `source`. Datasources without a resource reference keep their existing behavior.
+
+```typescript
+import { column, defineObject } from "@osdk/maker";
+import { createDatasetReference } from "@osdk/resource";
+
+const employees = createDatasetReference(
+  {
+    type: "rid",
+    rid: "ri.foundry.main.dataset.12345678-1234-1234-1234-123456789abc",
+  },
+  {
+    // Optional. If defined, this is used for type safety and for runtime validation.
+    schema: {
+      columns: {
+        employee_id: { type: "string" },
+        full_name: { type: "string" },
+      },
+    },
+  },
+);
+
+const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "name",
+  datasources: [{ type: "dataset", dataset: employees }],
+  properties: {
+    id: { type: "string", source: column(employees, "employee_id") },
+    name: { type: "string", source: column(employees, "full_name") },
+    note: { type: "string", editOnly: true },
+  },
+});
+```
+
 ### Object with Property Security Groups
 
 ```typescript

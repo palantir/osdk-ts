@@ -50,7 +50,9 @@ import type {
 } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
+import { getPropertySource } from "./object/PropertySource.js";
 import { resolveDerivedPropertyLinks } from "./object/resolveDerivedPropertyLinks.js";
+import { validateDatasetDatasource } from "./object/validateDatasetDatasource.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
 import {
@@ -120,10 +122,23 @@ export function defineObject(
   );
 
   invariant(
-    !objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly,
+    getPropertySource(
+      objectDef.properties![objectDef.primaryKeyPropertyApiName],
+    )?.type !== "editOnly",
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
+  const baseDatasources = (objectDef.datasources ?? []).filter((ds) =>
+    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
+  );
+  invariant(
+    baseDatasources.length <= 1,
+    `Object ${objectDef.apiName} has more than one base datasource (got: [${baseDatasources
+      .map((ds) => ds.type)
+      .join(", ")}])`,
+  );
+
+  validateDatasetDatasource(objectDef);
   if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
     const nonDatasetDatasources = objectDef.datasources.filter(
       (ds) => ds.type !== "dataset" && ds.type !== "derived",
@@ -149,15 +164,6 @@ export function defineObject(
     );
   });
 
-  const baseDatasources = (objectDef.datasources ?? []).filter((ds) =>
-    ["dataset", "stream", "restrictedView"].includes(ds.type),
-  );
-  invariant(
-    baseDatasources.length <= 1,
-    `Object ${objectDef.apiName} has more than one base datasource (got: [${baseDatasources
-      .map((ds) => ds.type)
-      .join(", ")}])`,
-  );
   const derivedDatasources = (objectDef.datasources ?? []).filter(
     (ds) => ds.type === "derived",
   );

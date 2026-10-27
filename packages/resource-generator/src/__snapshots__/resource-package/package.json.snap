@@ -1,0 +1,29 @@
+{
+  "name": "@example/resources",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./resources.json": "./resources.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "resources.json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "@osdk/resource": "^1.0.0"
+  },
+  "devDependencies": {
+    "@osdk/resource": "^1.0.0",
+    "typescript": "~5.5.4"
+  }
+}

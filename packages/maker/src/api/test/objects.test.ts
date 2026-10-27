@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createDatasetReference } from "@osdk/resource";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
@@ -23,6 +24,7 @@ import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import { column } from "../object/column.js";
 import type { PropertyTypeTypeVector } from "../properties/PropertyTypeType.js";
 
 const VECTOR: PropertyTypeTypeVector = {
@@ -817,6 +819,67 @@ describe("Object Types", () => {
     expect(() => dumpOntologyFullMetadata()).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Vector property 'com.palantir.embedding' must have an integer 'dimension' of at least 1, but got 0]`,
     );
+  });
+
+  it.each([
+    [
+      createDatasetReference(
+        {
+          type: "rid",
+          rid: "ri.foundry.main.dataset.12345678-1234-1234-1234-123456789abc",
+        },
+        { schema: { columns: { bar: { type: "integer" } } } },
+      ),
+      'Column "bar" is incompatible with property type "string"',
+    ],
+    [
+      createDatasetReference({ type: "apiName", apiName: "foo" }),
+      "requires a RID locator",
+    ],
+  ])(
+    "validates referenced datasets when defining objects",
+    (dataset, message) => {
+      expect(() =>
+        defineObject({
+          apiName: "foo",
+          displayName: "Foo",
+          pluralDisplayName: "Foos",
+          titlePropertyApiName: "bar",
+          primaryKeyPropertyApiName: "bar",
+          properties: {
+            bar: { type: "string", source: column(dataset, "bar") },
+          },
+          datasources: [{ type: "dataset", dataset }],
+        }),
+      ).toThrow(message);
+    },
+  );
+
+  it("preserves an authored column name in the dataset property mapping", () => {
+    const dataset = createDatasetReference({
+      type: "rid",
+      rid: "ri.foundry.main.dataset.12345678-1234-1234-1234-123456789abc",
+    });
+    defineObject({
+      apiName: "foo",
+      displayName: "Foo",
+      pluralDisplayName: "Foos",
+      titlePropertyApiName: "bar",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        bar: { type: "string", source: column(dataset, "RAW_BAR") },
+      },
+      datasources: [{ type: "dataset", dataset }],
+    });
+    expect(
+      dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"]
+        .datasources[0].datasource,
+    ).toMatchObject({
+      type: "datasetV2",
+      datasetV2: {
+        propertyMapping: { bar: { type: "column", column: "RAW_BAR" } },
+      },
+    });
   });
 
   it("Explicit datasource definitions are properly defined", () => {

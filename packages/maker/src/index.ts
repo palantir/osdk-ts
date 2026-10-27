@@ -120,6 +120,16 @@ export type {
   UserLinkTypeStatus,
 } from "./api/links/LinkType.js";
 export type { InterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
+export { column, type ColumnSource } from "./api/object/column.js";
+export {
+  type ColumnPropertySource,
+  type DirectPropertySource,
+  type EditOnlyPropertySource,
+  getPropertySource,
+  type PropertySource,
+  type PropertySourceInput,
+  type StructPropertySource,
+} from "./api/object/PropertySource.js";
 export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
 export type { InterfaceImplementation } from "./api/object/InterfaceImplementation.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";

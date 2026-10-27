@@ -19,6 +19,7 @@ import type {
   MarkingType,
   ObjectTypeFieldApiName,
 } from "@osdk/client.unstable";
+import type { DatasetRef } from "@osdk/resource";
 
 import type { LinkType } from "../links/LinkType.js";
 import type { SecurityConditionDefinition } from "./SecurityCondition.js";
@@ -32,6 +33,8 @@ export type ObjectTypeDatasourceDefinition =
 
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
+  /** The dataset reference for this datasource. */
+  dataset?: DatasetRef;
   objectSecurityPolicy?: ObjectSecurityPolicy;
   propertySecurityGroups?: Array<PropertySecurityGroup>;
 }

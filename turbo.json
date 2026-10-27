@@ -176,6 +176,12 @@
       "inputs": ["bin/**"]
     },
 
+    "generate-models": {
+      "dependsOn": ["^transpileEsm", "//#global-oxc-config"],
+      "inputs": ["src/**", "!src/types.ts", "scripts/**"],
+      "outputs": ["src/types.ts", "resource.schema.json"]
+    },
+
     "transpileTypes": {
       "outputLogs": "new-only",
       "dependsOn": [

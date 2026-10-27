@@ -1,0 +1,176 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generates a package consumed by existing Maker APIs and emits deployment presets > explicit column selections 1`] = `
+{
+  "inputShapes": {
+    "dataset-datasource-column-com.acme.Employee-EMPLOYEE_ID": {
+      "blockShapeId": "902388e5-3a5b-3314-8775-0ce48c274d40",
+      "datasourceColumn": {
+        "about": {
+          "fallbackDescription": "",
+          "fallbackTitle": "Id",
+          "localizedDescription": {},
+          "localizedTitle": {},
+        },
+        "datasource": "a9b099c3-0786-34d1-bdca-69014e15ffaf",
+        "type": {
+          "concrete": {
+            "primitive": {
+              "string": {},
+              "type": "string",
+            },
+            "type": "primitive",
+          },
+          "type": "concrete",
+        },
+        "typeclasses": [],
+      },
+      "type": "datasourceColumn",
+    },
+    "dataset-datasource-column-com.acme.Employee-SALARY": {
+      "blockShapeId": "24e23218-6343-36bd-9ef1-cfacbc35418f",
+      "datasourceColumn": {
+        "about": {
+          "fallbackDescription": "",
+          "fallbackTitle": "Salary",
+          "localizedDescription": {},
+          "localizedTitle": {},
+        },
+        "datasource": "a9b099c3-0786-34d1-bdca-69014e15ffaf",
+        "type": {
+          "concrete": {
+            "primitive": {
+              "integer": {},
+              "type": "integer",
+            },
+            "type": "primitive",
+          },
+          "type": "concrete",
+        },
+        "typeclasses": [],
+      },
+      "type": "datasourceColumn",
+    },
+    "dataset-datasource-com.acme.Employee": {
+      "blockShapeId": "a9b099c3-0786-34d1-bdca-69014e15ffaf",
+      "tabularDatasource": {
+        "about": {
+          "fallbackDescription": "",
+          "fallbackTitle": "dataset-datasource-com.acme.Employee",
+          "localizedDescription": {},
+          "localizedTitle": {},
+        },
+        "schema": [
+          "902388e5-3a5b-3314-8775-0ce48c274d40",
+          "24e23218-6343-36bd-9ef1-cfacbc35418f",
+        ],
+        "supportedTypes": [
+          "DATASET",
+          "RESTRICTED_VIEW",
+        ],
+      },
+      "type": "tabularDatasource",
+    },
+  },
+  "presets": {
+    "dataset-datasource-column-com.acme.Employee-EMPLOYEE_ID": {
+      "enforcement": "SUGGESTED",
+      "exportCompatibility": "INCOMPATIBLE",
+      "isDefault": true,
+      "value": {
+        "fromSource": {
+          "resolver": {
+            "resolvedShapeResolver": {
+              "datasourceColumn": {
+                "datasource": {
+                  "dataset": {
+                    "branch": "main",
+                    "rid": "ri.foundry.main.dataset.12345678-1234-1234-1234-123456789abc",
+                  },
+                  "type": "dataset",
+                },
+                "name": "EMPLOYEE_ID",
+              },
+              "type": "datasourceColumn",
+            },
+            "type": "resolvedShapeResolver",
+          },
+        },
+        "type": "fromSource",
+      },
+    },
+    "dataset-datasource-column-com.acme.Employee-SALARY": {
+      "enforcement": "SUGGESTED",
+      "exportCompatibility": "INCOMPATIBLE",
+      "isDefault": true,
+      "value": {
+        "fromSource": {
+          "resolver": {
+            "resolvedShapeResolver": {
+              "datasourceColumn": {
+                "datasource": {
+                  "dataset": {
+                    "branch": "main",
+                    "rid": "ri.foundry.main.dataset.12345678-1234-1234-1234-123456789abc",
+                  },
+                  "type": "dataset",
+                },
+                "name": "SALARY",
+              },
+              "type": "datasourceColumn",
+            },
+            "type": "resolvedShapeResolver",
+          },
+        },
+        "type": "fromSource",
+      },
+    },
+    "dataset-datasource-com.acme.Employee": {
+      "enforcement": "SUGGESTED",
+      "exportCompatibility": "INCOMPATIBLE",
+      "isDefault": true,
+      "value": {
+        "fromSource": {
+          "resolver": {
+            "resolvedShapeResolver": {
+              "tabularDatasource": {
+                "datasourceLocator": {
+                  "dataset": {
+                    "branch": "main",
+                    "rid": "ri.foundry.main.dataset.12345678-1234-1234-1234-123456789abc",
+                  },
+                  "type": "dataset",
+                },
+              },
+              "type": "tabularDatasource",
+            },
+            "type": "resolvedShapeResolver",
+          },
+        },
+        "type": "fromSource",
+      },
+    },
+  },
+  "propertyMapping": {
+    "id": {
+      "column": "EMPLOYEE_ID",
+      "type": "column",
+    },
+    "salary": {
+      "column": "SALARY",
+      "type": "column",
+    },
+  },
+}
+`;
+
+exports[`generates a package consumed by existing Maker APIs and emits deployment presets > generated resource package source 1`] = `
+"// Generated by @osdk/resource-generator. Do not edit.
+import * as $resource from "@osdk/resource";
+
+export const employees = $resource.createDatasetReference({"type":"rid","rid":"ri.foundry.main.dataset.12345678-1234-1234-1234-123456789abc"}, {"schema":{"columns":{"id":{"type":"string"},"salary":{"type":"integer"}}}} as const);
+export const localEmployees = $resource.createDatasetReference({"type":"apiName","apiName":"employees"});
+export const renamedEmployees = $resource.createDatasetReference({"type":"rid","rid":"ri.foundry.main.dataset.12345678-1234-1234-1234-123456789abc"}, {"schema":{"columns":{"EMPLOYEE_ID":{"type":"string"},"SALARY":{"type":"integer"}}}} as const);
+export const updateTags = $resource.createFunctionReference({"type":"apiName","namespace":"com.acme","apiName":"updateTags"});
+"
+`;

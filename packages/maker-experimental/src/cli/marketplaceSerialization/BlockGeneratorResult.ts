@@ -69,7 +69,7 @@ export interface BlockGeneratorResult {
   inputs: Record<ReadableId, InputShape>;
 
   /**
-   * Portable presets for imported input shapes, keyed by ReadableId
+   * Presets for imported resources and authored dataset/column selections, keyed by ReadableId
    */
   input_presets?: Record<ReadableId, InputPreset>;
 

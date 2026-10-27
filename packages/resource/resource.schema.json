@@ -1,0 +1,542 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "ColumnType": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/ColumnType.json",
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "boolean",
+                "byte",
+                "short",
+                "integer",
+                "long",
+                "float",
+                "double",
+                "string",
+                "date",
+                "timestamp",
+                "binary"
+              ]
+            },
+            "nullable": { "type": "boolean" }
+          },
+          "required": ["type"],
+          "additionalProperties": false
+        },
+        { "$ref": "https://osdk.invalid/models/DecimalColumnType.json" },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "const": "array" },
+            "elementType": {
+              "$ref": "https://osdk.invalid/models/ColumnType.json"
+            },
+            "nullable": { "type": "boolean" }
+          },
+          "required": ["type", "elementType"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "const": "map" },
+            "keyType": {
+              "$ref": "https://osdk.invalid/models/ColumnType.json"
+            },
+            "valueType": {
+              "$ref": "https://osdk.invalid/models/ColumnType.json"
+            },
+            "nullable": { "type": "boolean" }
+          },
+          "required": ["type", "keyType", "valueType"],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "const": "struct" },
+            "fields": {
+              "type": "object",
+              "propertyNames": { "type": "string", "minLength": 1 },
+              "additionalProperties": {
+                "$ref": "https://osdk.invalid/models/ColumnType.json"
+              }
+            },
+            "nullable": { "type": "boolean" }
+          },
+          "required": ["type", "fields"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DatasetRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/DatasetRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "dataset" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": { "$ref": "https://osdk.invalid/models/DatasetRid.json" }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "schema": { "$ref": "https://osdk.invalid/models/TabularSchema.json" }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "DatasetRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/DatasetRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.foundry\\.[^.]*\\.dataset)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "DecimalColumnType": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/DecimalColumnType.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "decimal" },
+        "precision": {
+          "type": "integer",
+          "exclusiveMinimum": 0,
+          "maximum": 2147483647
+        },
+        "scale": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        "nullable": { "type": "boolean" }
+      },
+      "required": ["type", "precision", "scale"],
+      "additionalProperties": false
+    },
+    "FunctionRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/FunctionRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "function" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": {
+                  "$ref": "https://osdk.invalid/models/FunctionRid.json"
+                }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "FunctionRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/FunctionRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.function-registry\\.[^.]*\\.function)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "GeotimeIntegrationRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/GeotimeIntegrationRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "geotimeIntegration" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": {
+                  "$ref": "https://osdk.invalid/models/GeotimeIntegrationRid.json"
+                }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "GeotimeIntegrationRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/GeotimeIntegrationRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.geotime-catalog\\.[^.]*\\.integration|ri\\.geotime\\.[^.]*\\.series-integration)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "LiveDeploymentRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/LiveDeploymentRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "liveDeployment" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": {
+                  "$ref": "https://osdk.invalid/models/LiveDeploymentRid.json"
+                }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "LiveDeploymentRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/LiveDeploymentRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.foundry-ml-live\\.[^.]*\\.deployment)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "MediaSetRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/MediaSetRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "mediaSet" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": {
+                  "$ref": "https://osdk.invalid/models/MediaSetRid.json"
+                }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "MediaSetRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/MediaSetRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.mio\\.[^.]*\\.media-set)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "ResourceRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/ResourceRef.json",
+      "anyOf": [
+        { "$ref": "https://osdk.invalid/models/DatasetRef.json" },
+        { "$ref": "https://osdk.invalid/models/StreamRef.json" },
+        { "$ref": "https://osdk.invalid/models/RestrictedViewRef.json" },
+        { "$ref": "https://osdk.invalid/models/FunctionRef.json" },
+        { "$ref": "https://osdk.invalid/models/LiveDeploymentRef.json" },
+        { "$ref": "https://osdk.invalid/models/MediaSetRef.json" },
+        { "$ref": "https://osdk.invalid/models/SourceRef.json" },
+        { "$ref": "https://osdk.invalid/models/TimeSeriesSyncRef.json" },
+        { "$ref": "https://osdk.invalid/models/GeotimeIntegrationRef.json" }
+      ]
+    },
+    "RestrictedViewRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/RestrictedViewRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "restrictedView" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": {
+                  "$ref": "https://osdk.invalid/models/RestrictedViewRid.json"
+                }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "schema": { "$ref": "https://osdk.invalid/models/TabularSchema.json" }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "RestrictedViewRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/RestrictedViewRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.foundry\\.[^.]*\\.restricted-view)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "SourceRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/SourceRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "source" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": { "$ref": "https://osdk.invalid/models/SourceRid.json" }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "SourceRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/SourceRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.magritte\\.[^.]*\\.source)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "StreamRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/StreamRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "stream" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": { "$ref": "https://osdk.invalid/models/StreamRid.json" }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "schema": { "$ref": "https://osdk.invalid/models/TabularSchema.json" }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "StreamRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/StreamRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.foundry\\.[^.]*\\.stream)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "TabularResourceRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/TabularResourceRef.json",
+      "anyOf": [
+        { "$ref": "https://osdk.invalid/models/DatasetRef.json" },
+        { "$ref": "https://osdk.invalid/models/StreamRef.json" },
+        { "$ref": "https://osdk.invalid/models/RestrictedViewRef.json" }
+      ]
+    },
+    "TabularSchema": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/TabularSchema.json",
+      "type": "object",
+      "properties": {
+        "columns": {
+          "type": "object",
+          "propertyNames": { "type": "string", "minLength": 1 },
+          "additionalProperties": {
+            "$ref": "https://osdk.invalid/models/ColumnType.json"
+          }
+        }
+      },
+      "required": ["columns"],
+      "additionalProperties": false
+    },
+    "TimeSeriesSyncRef": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/TimeSeriesSyncRef.json",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "const": "timeSeriesSync" },
+        "locator": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "apiName" },
+                "namespace": {
+                  "description": "Omitted means the parent namespace.",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "apiName": { "type": "string", "minLength": 1 }
+              },
+              "required": ["type", "apiName"],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": { "type": "string", "const": "rid" },
+                "rid": {
+                  "$ref": "https://osdk.invalid/models/TimeSeriesSyncRid.json"
+                }
+              },
+              "required": ["type", "rid"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["type", "locator"],
+      "additionalProperties": false
+    },
+    "TimeSeriesSyncRid": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://osdk.invalid/models/TimeSeriesSyncRid.json",
+      "type": "string",
+      "pattern": "^(?:ri\\.time-series-catalog\\.[^.]*\\.sync)\\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    }
+  }
+}

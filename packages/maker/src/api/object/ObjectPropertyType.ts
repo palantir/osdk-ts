@@ -26,6 +26,7 @@ import type { ReducerType } from "../properties/ReducerType.js";
 import type { SharedPropertyType } from "../properties/SharedPropertyType.js";
 import type { ValueTypeDefinitionVersion } from "../values/ValueTypeDefinitionVersion.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
+import type { PropertySourceInput } from "./PropertySource.js";
 
 export type ObjectPropertyType = RequiredFields<
   Partial<ObjectPropertyTypeInner>,
@@ -54,7 +55,10 @@ export interface ObjectPropertyTypeInner {
   visibility: Visibility;
   nullability?: Nullability;
   status?: ObjectTypeStatus;
+  /** @deprecated Use source: "editOnly" instead. */
   editOnly?: boolean;
+  /** Where this property's values come from. Omission preserves implicit datasource mappings. */
+  source?: PropertySourceInput;
   /** Creates an empty multimodal Media Set to back this media reference when the ontology is installed. */
   includeEmptyBackingMediaSet?: boolean;
 }

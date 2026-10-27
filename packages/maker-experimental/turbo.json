@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "test": {
+      // The resource-package integration test imports this package's built ESM in a Node subprocess.
+      "dependsOn": ["^transpileEsm", "transpileEsm"]
+    }
+  }
+}

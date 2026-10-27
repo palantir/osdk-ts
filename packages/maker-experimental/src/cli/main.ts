@@ -312,7 +312,7 @@ export default async function main(
     importedTypes,
     shapes,
     blockDataAddOn,
-    importedInputPresets,
+    inputPresets,
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
@@ -568,7 +568,7 @@ export default async function main(
     oci_block_data_metadata: undefined,
     maven_block_data_metadata: undefined,
     inputs: Object.fromEntries(shapes.inputShapes),
-    input_presets: Object.fromEntries(importedInputPresets),
+    input_presets: Object.fromEntries(inputPresets),
     outputs: Object.fromEntries(shapes.outputShapes),
     input_mapping_entries: ontologyInputMappingEntries,
     external_recommendations: getExternalRecommendations(

@@ -36,6 +36,7 @@ objs
 onwarn
 parseable
 peopleapp
+pydantic
 pypi
 retryable
 revals
@@ -63,5 +64,6 @@ unresolve
 Unsubscribable
 upgrader
 upgraders
+venv
 webapi
 xlarge

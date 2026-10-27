@@ -43,6 +43,7 @@
     "@blueprintjs/icons": "^6.7.0",
     "@osdk/api": "workspace:~",
     "@osdk/generator-converters.ontologyir": "workspace:~",
+    "@osdk/resource": "workspace:~",
     "@osdk/typescript-sdk-docs": "^0.2.0",
     "consola": "^3.4.2",
     "jiti": "^2.5.1",
