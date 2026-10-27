@@ -126,6 +126,10 @@ export type {
 } from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type {
+  ResolvedInterfaceMember,
+  ResolvedInterfaceProperty,
+} from "./api/interface/ResolvedInterfaceMember.js";
+export type {
   LinkType,
   OneToManyLinkTypeDefinition,
   UserLinkTypeStatus,
