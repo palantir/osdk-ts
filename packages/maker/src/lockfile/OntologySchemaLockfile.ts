@@ -74,6 +74,21 @@ export interface LockedInterfaceSchema {
    * property it contributed.
    */
   extendsInterfaces?: string[];
+  /**
+   * The action type constraints the interface declares directly (i.e. non-inherited), keyed by
+   * fully-qualified api name. Absent when it declares none.
+   */
+  actionTypeConstraints?: Record<string, LockedActionTypeConstraint>;
+}
+
+export interface LockedActionTypeConstraint {
+  /**
+   * Whether implementing object types must provide an action type for this constraint.
+   *
+   * Recorded explicitly, like `LockedProperty.required`, because it is the constraint's defining
+   * attribute rather than a departure from a default.
+   */
+  requireImplementation: boolean;
 }
 
 /** Where a property's definition comes from. */
@@ -122,6 +137,12 @@ export function declarationOf(property: LockedProperty): PropertyDeclaration {
 
 export function extensionsOf(schema: LockedInterfaceSchema): readonly string[] {
   return schema.extendsInterfaces ?? [];
+}
+
+export function actionTypeConstraintsOf(
+  schema: LockedInterfaceSchema,
+): Record<string, LockedActionTypeConstraint> {
+  return schema.actionTypeConstraints ?? {};
 }
 
 export function primaryKeyConstraintOf(

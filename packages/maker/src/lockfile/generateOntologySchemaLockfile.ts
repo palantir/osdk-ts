@@ -36,6 +36,7 @@ import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedActionTypeConstraint,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
@@ -114,13 +115,32 @@ function lockInterfaceSchema(
     )
     .sort(([a], [b]) => compare(a, b));
   const extendsInterfaces = lockExtensions(interfaceType);
+  const actionTypeConstraints = lockActionTypeConstraints(interfaceType);
 
   return {
     properties: Object.fromEntries(locked),
     // NB: spread rather than assigned `undefined` so a lockfile read back from disk (where absents
     // have no key at all) still compare equal.
     ...(extendsInterfaces !== undefined && { extendsInterfaces }),
+    ...(actionTypeConstraints !== undefined && { actionTypeConstraints }),
   };
+}
+
+function lockActionTypeConstraints(
+  interfaceType: InterfaceType,
+): Record<string, LockedActionTypeConstraint> | undefined {
+  if (interfaceType.actionTypeConstraints.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    interfaceType.actionTypeConstraints
+      .map(
+        ({ metadata, requireImplementation }) =>
+          [metadata.apiName, { requireImplementation }] as const,
+      )
+      .sort(([a], [b]) => compare(a, b)),
+  );
 }
 
 function lockExtensions(interfaceType: InterfaceType): string[] | undefined {
