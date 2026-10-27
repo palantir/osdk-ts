@@ -26,7 +26,8 @@ export function createConcurrencyTrackingFetch(
   fetchFn: typeof globalThis.fetch,
 ): typeof globalThis.fetch {
   let activeHttpAttempts = 0;
-  const waitingRequests: Array<() => void> = [];
+  const waitingRequests: Array<(() => void) | undefined> = [];
+  let waitingRequestHead = 0;
 
   function acquireSlot():
     | Promise<Pick<ClientMetrics, "queueSize" | "queueWaitTimeMs">>
@@ -37,7 +38,7 @@ export function createConcurrencyTrackingFetch(
     }
 
     const queuedAt = Date.now();
-    const queueSize = waitingRequests.length + 1;
+    const queueSize = waitingRequests.length - waitingRequestHead + 1;
     return new Promise((resolve) =>
       waitingRequests.push(() =>
         resolve({
@@ -49,12 +50,19 @@ export function createConcurrencyTrackingFetch(
   }
 
   function releaseSlot(): void {
-    const nextRequest = waitingRequests.shift();
+    const nextRequest = waitingRequests[waitingRequestHead];
     if (nextRequest == null) {
       activeHttpAttempts--;
-    } else {
-      nextRequest();
+      return;
     }
+
+    waitingRequests[waitingRequestHead] = undefined;
+    waitingRequestHead++;
+    if (waitingRequestHead === waitingRequests.length) {
+      waitingRequests.length = 0;
+      waitingRequestHead = 0;
+    }
+    nextRequest();
   }
 
   return async function concurrencyTrackingFetch(input, init) {

@@ -33,7 +33,7 @@ describe(createConcurrencyTrackingFetch, () => {
     );
     const fetchWithConcurrencyLimit = createConcurrencyTrackingFetch(fetchFn);
 
-    const requests = Array.from({ length: 151 }, () =>
+    const requests = Array.from({ length: 152 }, () =>
       fetchWithConcurrencyLimit("https://example.com"),
     );
 
@@ -68,6 +68,25 @@ describe(createConcurrencyTrackingFetch, () => {
     expect(JSON.parse(lastRequestContextHeader).clientMetrics).toEqual({
       concurrency: 150,
       queueSize: 1,
+      queueWaitTimeMs: 25,
+    });
+
+    const resolveSecondRequest = pendingResponses.shift();
+    if (resolveSecondRequest == null) {
+      throw new Error("Expected a pending response");
+    }
+    resolveSecondRequest(new Response());
+    await vi.waitFor(() => expect(fetchFn).toHaveBeenCalledTimes(152));
+
+    const finalRequestContextHeader = new Headers(
+      fetchFn.mock.lastCall?.[1]?.headers,
+    ).get(OSDK_REQUEST_CONTEXT_HEADER);
+    if (finalRequestContextHeader == null) {
+      throw new Error("Expected OSDK request context header");
+    }
+    expect(JSON.parse(finalRequestContextHeader).clientMetrics).toEqual({
+      concurrency: 150,
+      queueSize: 2,
       queueWaitTimeMs: 25,
     });
 
