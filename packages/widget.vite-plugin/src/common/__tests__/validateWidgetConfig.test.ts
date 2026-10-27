@@ -144,6 +144,78 @@ describe("validateWidgetConfig", () => {
     expect(() => validateWidgetConfig(validConfig)).not.toThrow();
   });
 
+  test("accepts valid struct parameters", () => {
+    const validConfig = getValidConfig();
+    validConfig.parameters.myStruct = {
+      displayName: "My Struct",
+      type: "struct",
+      fields: {
+        name: { displayName: "Name", type: "string" },
+        startDate: { displayName: "Start Date", type: "date" },
+      },
+    };
+    validConfig.parameters.myStructArray = {
+      displayName: "My Struct Array",
+      type: "array",
+      subType: "struct",
+      fields: {
+        count: { displayName: "Count", type: "number" },
+      },
+    };
+    validConfig.events.updateParameters.parameterUpdateIds.push(
+      "myStruct",
+      "myStructArray",
+    );
+
+    expect(() => validateWidgetConfig(validConfig)).not.toThrow();
+  });
+
+  test("throws for struct parameter with no fields", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.parameters.myStruct = {
+      displayName: "My Struct",
+      type: "struct",
+      fields: {},
+    };
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      'Struct parameter "myStruct" must have at least one field',
+    );
+  });
+
+  test("throws for struct parameter with too many fields", () => {
+    const invalidConfig = getValidConfig();
+    const fields: Record<string, { displayName: string; type: "string" }> = {};
+    for (let index = 0; index < 51; index++) {
+      fields[`field${index}`] = { displayName: `Field ${index}`, type: "string" };
+    }
+    invalidConfig.parameters.myStructArray = {
+      displayName: "My Struct Array",
+      type: "array",
+      subType: "struct",
+      fields,
+    };
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      'Struct parameter "myStructArray" can have at most 50 fields',
+    );
+  });
+
+  test("throws for struct field id that is not camelCase", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.parameters.myStruct = {
+      displayName: "My Struct",
+      type: "struct",
+      fields: {
+        "not-camel-case": { displayName: "Name", type: "string" },
+      },
+    };
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      'Struct field id "not-camel-case" in parameter "myStruct" does not match allowed pattern (must be camelCase)',
+    );
+  });
+
   test("throws for invalid object set parameter", () => {
     const invalidConfig = getValidConfig();
     invalidConfig.parameters.myObjectSet = {
