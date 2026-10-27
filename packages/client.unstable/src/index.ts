@@ -57,9 +57,13 @@ export type * from "./generated/ontology-metadata/api/blockdata/__components.ts"
 
 export type {
   GracePeriod,
+  InterfaceActionTypeConstraintReplacement,
+  InterfaceTypeReplacement,
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransition,
   InterfaceTypeSchemaTransitionId,
+  OntologyIrInterfaceActionTypeConstraintReplacement,
+  OntologyIrInterfaceTypeReplacement,
   OntologyIrInterfaceTypeSchemaMigrationInstruction,
   OntologyIrInterfaceTypeSchemaTransition,
 } from "./generated/ontology-metadata/api/schemamigrations/__components.js";
