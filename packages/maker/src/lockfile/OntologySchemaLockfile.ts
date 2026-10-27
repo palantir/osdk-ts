@@ -19,10 +19,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { TypeClass } from "../api/common/TypeClass.js";
 import { withoutNamespace } from "../api/defineOntology.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
-import type {
-  InterfaceSchemaGracePeriod,
-  InterfaceSchemaMigrationInstruction,
-} from "../api/interface/InterfaceSchemaMigrations.js";
+import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 
@@ -111,8 +108,18 @@ export interface LockedProperty {
 export interface LockedTransition {
   id: string;
   gracePeriod: InterfaceSchemaGracePeriod;
-  instructions: InterfaceSchemaMigrationInstruction[];
+  instructions: LockedInstruction[];
 }
+
+/**
+ * An `InterfaceSchemaMigrationInstruction` in the form the lockfile records it: every entity it
+ * references is named by the fully-qualified api name it publishes under, and nothing is an object
+ * reference, so it survives a JSON round trip.
+ */
+export type LockedInstruction = {
+  type: "addRequiredProperty";
+  property: string;
+};
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
   return property.declaredBy ?? "interface";
