@@ -39,6 +39,7 @@ import type {
 } from "../../api/object/ObjectTypeDatasourceDefinition.js";
 import { resolveDerivedPropertyLinks } from "../../api/object/resolveDerivedPropertyLinks.js";
 import { isExotic } from "../../api/properties/PropertyTypeType.js";
+import type { CoversEveryVariant } from "../../util/CoversEveryVariant.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 
@@ -320,6 +321,12 @@ function buildDerivedDatasource(
     fullDefinition,
   );
 }
+
+// Fails to compile when OMS adds an aggregation that DerivedPropertyAggregation does not expose yet.
+const _COVERS_EVERY_AGGREGATION: CoversEveryVariant<
+  OntologyIrDerivedPropertyAggregation,
+  DerivedPropertyAggregation
+> = true;
 
 function buildAggregation(
   agg: DerivedPropertyAggregation,
