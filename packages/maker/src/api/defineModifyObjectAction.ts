@@ -44,10 +44,15 @@ export function defineModifyObjectAction(
   const def = cloneDefinition(defInput);
   const propertyKeys = getPropertyKeys(def.objectType);
   validateActionParameters(def, propertyKeys, def.objectType.apiName);
+  const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
+    .filter((ds) => ds.type === "derived")
+    .flatMap((ds) => Object.keys(ds.propertyMapping));
+
   const propertyParameters = propertyKeys.filter(
     (id) =>
       isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!) &&
-      id !== def.objectType.primaryKeyPropertyApiName,
+      id !== def.objectType.primaryKeyPropertyApiName &&
+      !propertiesWithDerivedDatasources.includes(id),
   );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
