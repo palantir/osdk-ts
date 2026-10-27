@@ -16,6 +16,7 @@
 
 import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
+import invariant from "tiny-invariant";
 
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyIrV2 } from "../../api/OntologyIrV2.js";
@@ -31,6 +32,8 @@ export function convertOntologyDefinition(
   packageForEdge = false,
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
+  validateInterfaceActionReferences(ontology, importedTypes);
+
   const allOntologies = [ontology, importedTypes];
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
@@ -111,4 +114,37 @@ export function convertOntologyDefinition(
     ),
     randomnessKey,
   };
+}
+
+function validateInterfaceActionReferences(
+  ontology: OntologyDefinition,
+  importedTypes: OntologyDefinition,
+): void {
+  const actionApiNames = new Set([
+    ...Object.keys(ontology.ACTION_TYPE),
+    ...Object.keys(importedTypes.ACTION_TYPE),
+  ]);
+  const validationErrors: string[] = [];
+
+  for (const objectType of Object.values(ontology.OBJECT_TYPE)) {
+    for (const implementation of objectType.implementsInterfaces ?? []) {
+      for (const [constraintApiName, { actionTypeApiName }] of Object.entries(
+        implementation.actionTypeImplementations ?? {},
+      )) {
+        if (!actionApiNames.has(actionTypeApiName)) {
+          validationErrors.push(
+            `Action "${actionTypeApiName}" referenced by action type constraint "${constraintApiName}" on interface "${implementation.implements.apiName}" for object "${objectType.apiName}" is not defined or imported`,
+          );
+        }
+      }
+    }
+  }
+
+  invariant(
+    validationErrors.length === 0,
+    "\n" +
+      validationErrors
+        .map((error) => `Ontology Definition Error: ${error}\n`)
+        .join("\n"),
+  );
 }
