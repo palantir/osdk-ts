@@ -73,7 +73,6 @@ export function useCbacBanner({
   const handleQuery = React.useCallback(() => {
     return CbacBanners.get(client, {
       markingIds: stableMarkingIds,
-      preview: true,
     });
   }, [client, stableMarkingIds]);
 
