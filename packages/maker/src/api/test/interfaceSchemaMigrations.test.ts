@@ -333,7 +333,7 @@ describe("Interface schema migrations", () => {
           transition({ id: "t2", instructions: [instruction] }),
         ]),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property may be migrated by at most one in-flight transition.]`,
+        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property or action type constraint may be migrated by at most one in-flight transition.]`,
       );
     });
 
@@ -345,7 +345,7 @@ describe("Interface schema migrations", () => {
           transition({ id: "t1", instructions: [instruction, instruction] }),
         ]),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property may be migrated by at most one in-flight transition.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property or action type constraint may be migrated by at most one in-flight transition.]`,
       );
     });
   });
