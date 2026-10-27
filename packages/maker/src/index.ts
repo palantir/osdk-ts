@@ -124,6 +124,13 @@ export type {
   ResolvedInterfaceProperty,
 } from "./api/interface/ResolvedInterfaceMember.js";
 export type {
+  ResolvedInterfaceActionTypeConstraintMapping,
+  ResolvedInterfaceMemberMapping,
+  ResolvedInterfaceTypeReplacement,
+} from "./api/interface/resolveInterfaceTypeReplacement.js";
+export { resolveInterfaceTypeReplacement } from "./api/interface/resolveInterfaceTypeReplacement.js";
+export { validateInterfaceSchemaMigrationReferences } from "./api/interface/validateInterfaceSchemaMigrationReferences.js";
+export type {
   LinkType,
   OneToManyLinkTypeDefinition,
   UserLinkTypeStatus,
