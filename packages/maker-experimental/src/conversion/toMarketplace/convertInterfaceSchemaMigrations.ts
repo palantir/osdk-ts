@@ -22,8 +22,11 @@ import type {
 import type {
   InterfaceSchemaMigrationInstruction,
   InterfaceType,
+  ResolvedInterfaceMember,
+  ResolvedInterfaceProperty,
 } from "@osdk/maker";
 import {
+  addNamespaceIfNone,
   convertInterfaceSchemaGracePeriod,
   interfacePropertyWireApiName,
 } from "@osdk/maker";
@@ -35,12 +38,12 @@ export function convertInterfaceSchemaMigrations(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
 ): InterfaceTypeSchemaMigrationBlockData | undefined {
-  const { schemaMigrations, propertiesV3 } = interfaceType;
+  const { schemaMigrations } = interfaceType;
   if (schemaMigrations === undefined) {
     return undefined;
   }
 
-  const interfacePropertyTypeRidsToApiNames: Record<string, string> = {};
+  const references = new WireReferences(ridGenerator);
   const schemaTransitions = Object.fromEntries(
     schemaMigrations.transitions.map(
       (transition): [string, InterfaceTypeSchemaTransition] => {
@@ -58,74 +61,101 @@ export function convertInterfaceSchemaMigrations(
             gracePeriod: convertInterfaceSchemaGracePeriod(
               transition.gracePeriod,
             ),
-            migrations: transition.instructions.map((instruction) => {
-              const { migration, referencedProperties } = convertInstruction(
-                instruction,
-                (propertyApiName) => {
-                  const property = propertiesV3[propertyApiName];
-                  return {
-                    rid: interfacePropertyWireRid(
-                      property,
-                      propertyApiName,
-                      interfaceType.apiName,
-                      ridGenerator,
-                    ),
-                    apiName: interfacePropertyWireApiName(
-                      property,
-                      propertyApiName,
-                    ),
-                  };
-                },
-              );
-              for (const property of referencedProperties) {
-                interfacePropertyTypeRidsToApiNames[property.rid] =
-                  property.apiName;
-              }
-              return migration;
-            }),
+            migrations: transition.instructions.map((instruction) =>
+              convertInstruction(instruction, interfaceType, references),
+            ),
           },
         ];
       },
     ),
   );
 
-  return {
+  return { ...references.ridsToApiNames, schemaTransitions };
+}
+
+type RidsToApiNames = Omit<
+  InterfaceTypeSchemaMigrationBlockData,
+  "schemaTransitions"
+>;
+
+/**
+ * Generates the rids the migrations reference, recording each one's API name for the block data.
+ */
+class WireReferences {
+  readonly ridsToApiNames: RidsToApiNames = {
     interfaceActionTypeConstraintRidsToApiNames: {},
     interfaceLinkTypeRidsToApiNames: {},
     interfaceParameterConstraintRidsToApiNames: {},
-    interfacePropertyTypeRidsToApiNames,
+    interfacePropertyTypeRidsToApiNames: {},
     interfaceTypeRidsToApiNames: {},
-    schemaTransitions,
   };
-}
 
-/** How a property the instruction names is identified on the wire. */
-interface WireProperty {
-  rid: string;
-  apiName: string;
-}
+  constructor(private readonly ridGenerator: OntologyRidGenerator) {}
 
-/** A converted instruction, alongside the properties it came out referencing. */
-interface ConvertedInstruction {
-  migration: InterfaceTypeSchemaMigrationInstruction;
-  referencedProperties: readonly WireProperty[];
+  property({
+    apiName,
+    authoredKey,
+    interfaceTypeApiName,
+    property,
+  }: ResolvedInterfaceProperty): string {
+    const rid = interfacePropertyWireRid(
+      property,
+      authoredKey,
+      interfaceTypeApiName,
+      this.ridGenerator,
+    );
+    this.ridsToApiNames.interfacePropertyTypeRidsToApiNames[rid] = apiName;
+    return rid;
+  }
+
+  actionTypeConstraint({
+    apiName,
+    interfaceTypeApiName,
+  }: ResolvedInterfaceMember): string {
+    const rid = this.ridGenerator.generateRidForInterfaceActionTypeConstraint(
+      apiName,
+      interfaceTypeApiName,
+    );
+    this.ridsToApiNames.interfaceActionTypeConstraintRidsToApiNames[rid] =
+      apiName;
+    return rid;
+  }
 }
 
 function convertInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
-  resolveProperty: (propertyApiName: string) => WireProperty,
-): ConvertedInstruction {
+  interfaceType: InterfaceType,
+  references: WireReferences,
+): InterfaceTypeSchemaMigrationInstruction {
   switch (instruction.type) {
     case "addRequiredProperty": {
-      const property = resolveProperty(instruction.property);
+      const property = interfaceType.propertiesV3[instruction.property];
       return {
-        migration: {
-          type: "addRequiredProperty",
-          addRequiredProperty: { propertyTypeRid: property.rid },
+        type: "addRequiredProperty",
+        addRequiredProperty: {
+          propertyTypeRid: references.property({
+            apiName: interfacePropertyWireApiName(
+              property,
+              instruction.property,
+            ),
+            interfaceTypeApiName: interfaceType.apiName,
+            authoredKey: instruction.property,
+            property,
+          }),
         },
-        referencedProperties: [property],
       };
     }
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        addRequiredActionTypeConstraint: {
+          // Validation requires the constraint to be declared directly by this interface type
+          actionTypeConstraintRid: references.actionTypeConstraint({
+            apiName: addNamespaceIfNone(instruction.actionTypeConstraint),
+            interfaceTypeApiName: interfaceType.apiName,
+          }),
+        },
+      };
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(

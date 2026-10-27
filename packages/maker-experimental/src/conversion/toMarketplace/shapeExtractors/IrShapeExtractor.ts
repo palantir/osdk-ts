@@ -472,6 +472,17 @@ function toMarketplaceSchemaMigrationInstruction(
           ),
         },
       };
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        addRequiredActionTypeConstraint: {
+          actionTypeConstraint: requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+            instruction.addRequiredActionTypeConstraint.actionTypeConstraintRid,
+            "interface action type constraint",
+          ),
+        },
+      };
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(
