@@ -112,14 +112,6 @@ export interface UseObjectSetOptions<
   streamUpdates?: boolean;
 
   /**
-   * Refetch when the `streamUpdates` subscription reports it is out of date
-   * (e.g. after a reconnect). The refetch reloads from the first page.
-   *
-   * @default false
-   */
-  revalidateOnOutOfDate?: boolean;
-
-  /**
    * Restrict which properties are returned for each object.
    * When provided, only the specified properties will be fetched,
    * reducing payload sizes for list views.
@@ -319,7 +311,6 @@ export function useObjectSet<
             dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
             autoFetchMore: otherOptions.autoFetchMore,
             streamUpdates,
-            revalidateOnOutOfDate: otherOptions.revalidateOnOutOfDate,
             select: canonOptions.$select,
           },
           observer,
@@ -348,7 +339,6 @@ export function useObjectSet<
     otherOptions.autoFetchMore,
     otherOptions.dedupeIntervalMs,
     streamUpdates,
-    otherOptions.revalidateOnOutOfDate,
     objectTypeKey,
   ]);
 

@@ -143,14 +143,6 @@ export interface ObserveListOptions<
    * development.
    */
   streamUpdates?: boolean;
-
-  /**
-   * Refetch when the `streamUpdates` subscription reports it is out of date
-   * (e.g. after a reconnect). The refetch reloads from the first page.
-   *
-   * @default false
-   */
-  revalidateOnOutOfDate?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
 
   /**

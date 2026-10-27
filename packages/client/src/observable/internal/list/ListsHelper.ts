@@ -96,10 +96,7 @@ export class ListsHelper extends AbstractHelper<
           );
         }
       } else {
-        ret.query.registerStreamUpdates(
-          ret.subscription,
-          options.revalidateOnOutOfDate,
-        );
+        ret.query.registerStreamUpdates(ret.subscription);
       }
     }
     return ret;

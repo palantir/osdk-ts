@@ -82,14 +82,6 @@ export interface ObserveObjectSetOptions<
   streamUpdates?: boolean;
 
   /**
-   * Refetch when the `streamUpdates` subscription reports it is out of date
-   * (e.g. after a reconnect). The refetch reloads from the first page.
-   *
-   * @default false
-   */
-  revalidateOnOutOfDate?: boolean;
-
-  /**
    * When true, loads per-property security metadata (marking requirements)
    * alongside each object. The returned objects will have `$propertySecurities`
    * populated with conjunctive/disjunctive marking requirements per property.

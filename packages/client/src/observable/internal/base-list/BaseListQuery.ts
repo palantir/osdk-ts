@@ -691,14 +691,11 @@ export abstract class BaseListQuery<
    * @param objectSet The ObjectSet to subscribe to
    * @param sub The parent subscription to add cleanup to
    * @param methodName The method name for logging purposes
-   * @param revalidateOnOutOfDate Whether to refetch when the subscription
-   *   reports it is out of date
    */
   protected createWebsocketSubscription(
     objectSet: ObjectSet<any>,
     sub: Subscription,
     methodName: string = "registerStreamUpdates",
-    revalidateOnOutOfDate: boolean = false,
   ): void {
     const logger =
       process.env.NODE_ENV !== "production"
@@ -713,7 +710,7 @@ export abstract class BaseListQuery<
       const websocketSubscription = objectSet.subscribe({
         onChange: this.onOswChange.bind(this),
         onError: this.onOswError.bind(this),
-        onOutOfDate: this.onOswOutOfDate.bind(this, revalidateOnOutOfDate),
+        onOutOfDate: this.onOswOutOfDate.bind(this),
         onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
       });
 
@@ -744,29 +741,18 @@ export abstract class BaseListQuery<
 
   /**
    * Handler called when subscribed data becomes out of date.
-   * When `revalidate` is true, forces a refetch so the list recovers from
-   * missed websocket updates.
+   * Forces a refetch so the list recovers from missed websocket updates.
    */
-  protected onOswOutOfDate(revalidate: boolean): void {
+  protected onOswOutOfDate(): void {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "onOutOfDate" }).debug("");
     }
 
-    if (!revalidate) {
-      return;
-    }
-
-    // A fetch already in flight may have started before the data went out of
-    // date, and `revalidate(true)` would just join it, so refetch once it
-    // settles instead.
-    const pending = this.pendingFetch?.catch(() => {}) ?? Promise.resolve();
-    void pending
-      .then(() => this.revalidate(true))
-      .catch((e: unknown) => {
-        this.logger
-          ?.child({ methodName: "onOutOfDate" })
-          .error("Failed to revalidate after out of date", e);
-      });
+    void this.revalidate(true).catch((error: unknown) => {
+      this.logger
+        ?.child({ methodName: "onOutOfDate" })
+        .error("Failed to revalidate after out of date", error);
+    });
   }
 
   /**

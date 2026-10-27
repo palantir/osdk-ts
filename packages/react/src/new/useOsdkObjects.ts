@@ -153,14 +153,6 @@ interface UseOsdkObjectsBaseOptions<
   streamUpdates?: boolean;
 
   /**
-   * Refetch when the `streamUpdates` subscription reports it is out of date
-   * (e.g. after a reconnect). The refetch reloads from the first page.
-   *
-   * @default false
-   */
-  revalidateOnOutOfDate?: boolean;
-
-  /**
    * Restrict which properties are returned for each object.
    * When provided, only the specified properties will be fetched,
    * reducing payload sizes for list views.
@@ -308,7 +300,6 @@ export function useOsdkObjects<
     where,
     orderBy,
     streamUpdates,
-    revalidateOnOutOfDate,
     autoFetchMore,
     intersectWith,
     pivotTo,
@@ -350,7 +341,6 @@ export function useOsdkObjects<
             pageSize,
             orderBy: canonOptions.orderBy,
             streamUpdates,
-            revalidateOnOutOfDate,
             withProperties: canonOptions.withProperties,
             autoFetchMore,
             $includeAllBaseObjectProperties,
@@ -385,7 +375,6 @@ export function useOsdkObjects<
     pageSize,
     canonOptions.orderBy,
     streamUpdates,
-    revalidateOnOutOfDate,
     canonOptions.withProperties,
     autoFetchMore,
     canonOptions.intersectWith,

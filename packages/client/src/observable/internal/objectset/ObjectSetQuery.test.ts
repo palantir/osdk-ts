@@ -26,7 +26,6 @@ import { createChangedObjects } from "../Changes.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { createOptimisticId } from "../OptimisticId.js";
 import { Store } from "../Store.js";
-import { ObjectSetQuery } from "./ObjectSetQuery.js";
 
 describe("ObjectSetQuery cache reconciliation", () => {
   let client: Client;
@@ -230,99 +229,15 @@ describe("ObjectSetQuery websocket out of date", () => {
     store = new Store(client);
   });
 
-  function getQuery() {
-    return store.objectSets.getQuery({
+  it("forces a revalidate when the subscription goes out of date", () => {
+    const query = store.objectSets.getQuery({
       baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
       mode: "offline",
     });
-  }
-
-  function fireOutOfDate(
-    query: ReturnType<typeof getQuery>,
-    revalidate: boolean,
-  ) {
-    (
-      query as unknown as { onOswOutOfDate(revalidate: boolean): void }
-    ).onOswOutOfDate(revalidate);
-  }
-
-  it("does not revalidate unless opted in", async () => {
-    const query = getQuery();
     const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
 
-    fireOutOfDate(query, false);
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    (query as unknown as { onOswOutOfDate(): void }).onOswOutOfDate();
 
-    expect(revalidate).not.toHaveBeenCalled();
-  });
-
-  it("forces a revalidate when the subscription goes out of date", async () => {
-    const query = getQuery();
-    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
-
-    fireOutOfDate(query, true);
-
-    await vitest.waitFor(() => expect(revalidate).toHaveBeenCalledWith(true));
-  });
-
-  it("passes revalidateOnOutOfDate through to the stream subscription", () => {
-    const registerStreamUpdates = vitest
-      .spyOn(ObjectSetQuery.prototype, "registerStreamUpdates")
-      .mockImplementation(() => {});
-
-    try {
-      const sub = store.objectSets.observe(
-        {
-          baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
-          mode: "offline",
-          streamUpdates: true,
-          revalidateOnOutOfDate: true,
-        },
-        { next: () => {}, error: () => {}, complete: () => {} },
-      );
-      sub.subscription.unsubscribe();
-
-      expect(registerStreamUpdates).toHaveBeenCalledWith(
-        expect.anything(),
-        true,
-      );
-    } finally {
-      registerStreamUpdates.mockRestore();
-    }
-  });
-
-  it("waits for an in-flight fetch before revalidating", async () => {
-    const query = getQuery();
-    let resolvePending!: () => void;
-    query.pendingFetch = new Promise<void>((resolve) => {
-      resolvePending = resolve;
-    });
-    const revalidate = vitest
-      .spyOn(query, "revalidate")
-      .mockImplementation(() => {
-        expect(query.pendingFetch).toBeUndefined();
-        return Promise.resolve();
-      });
-
-    fireOutOfDate(query, true);
-    await Promise.resolve();
-    expect(revalidate).not.toHaveBeenCalled();
-
-    query.pendingFetch = undefined;
-    resolvePending();
-
-    await vitest.waitFor(() => expect(revalidate).toHaveBeenCalledWith(true));
-    expect(revalidate).toHaveBeenCalledTimes(1);
-  });
-
-  it("still revalidates if the in-flight fetch fails", async () => {
-    const query = getQuery();
-    query.pendingFetch = Promise.reject(new Error("boom"));
-    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
-
-    fireOutOfDate(query, true);
-
-    await vitest.waitFor(() => expect(revalidate).toHaveBeenCalledWith(true));
-    query.pendingFetch = undefined;
+    expect(revalidate).toHaveBeenCalledWith(true);
   });
 });
