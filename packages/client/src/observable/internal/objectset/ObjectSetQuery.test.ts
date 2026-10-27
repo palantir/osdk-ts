@@ -241,3 +241,81 @@ describe("ObjectSetQuery websocket out of date", () => {
     expect(revalidate).toHaveBeenCalledWith(true);
   });
 });
+
+describe("ObjectSetQuery forced revalidate with a fetch in flight", () => {
+  let client: Client;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+    ontologies.addEmployeeOntology(testSetup.fauxFoundry.getDefaultOntology());
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+  });
+
+  function setup() {
+    const query = store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
+      mode: "offline",
+    });
+    let settlePending!: () => void;
+    query.pendingFetch = new Promise<void>((resolve) => {
+      settlePending = () => {
+        query.pendingFetch = undefined;
+        resolve();
+      };
+    });
+    const fetchAndStore = vitest
+      .spyOn(
+        query as unknown as { _fetchAndStore(): Promise<void> },
+        "_fetchAndStore",
+      )
+      .mockResolvedValue();
+    return { query, settlePending, fetchAndStore };
+  }
+
+  it("fetches again once the pending fetch settles", async () => {
+    const { query, settlePending, fetchAndStore } = setup();
+
+    const first = query.revalidate(true);
+    const second = query.revalidate(true);
+    await Promise.resolve();
+    expect(fetchAndStore).not.toHaveBeenCalled();
+
+    settlePending();
+    await Promise.all([first, second]);
+
+    expect(fetchAndStore).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips the follow-up fetch if the query is disposed", async () => {
+    const { query, settlePending, fetchAndStore } = setup();
+
+    const revalidate = query.revalidate(true);
+    query.dispose();
+    settlePending();
+    await revalidate;
+
+    expect(fetchAndStore).not.toHaveBeenCalled();
+  });
+
+  it("joins the pending fetch when not forced", async () => {
+    const { query, settlePending, fetchAndStore } = setup();
+
+    const revalidate = query.revalidate();
+    settlePending();
+    await revalidate;
+
+    expect(fetchAndStore).not.toHaveBeenCalled();
+  });
+});

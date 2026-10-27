@@ -38,7 +38,6 @@ import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
-import type { OptimisticId } from "../OptimisticId.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
@@ -326,22 +325,6 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     return ret;
   }
-
-  /**
-   * Implements Query.maybeUpdateAndRevalidate to handle cache invalidation
-   */
-  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
-  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
-  maybeUpdateAndRevalidate = async (
-    changes: Changes,
-    _optimisticId: OptimisticId | undefined,
-  ): Promise<void> => {
-    if (changes.modified.has(this.cacheKey)) {
-      return this.revalidate(true);
-    }
-
-    return Promise.resolve();
-  };
 
   invalidateObjectType = (
     objectType: string,

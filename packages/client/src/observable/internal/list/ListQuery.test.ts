@@ -30,7 +30,7 @@ import {
   stubData,
 } from "@osdk/shared.test";
 import chalk from "chalk";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
@@ -470,6 +470,41 @@ describe("ListQuery sort stability across pages", () => {
     expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
       0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
     ]);
+  });
+
+  it("revalidating keeps pages loaded with fetchMore", async () => {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    for (let i = 0; i < 10; i++) {
+      dataStore.registerObject(Todo, { $apiName: "Todo", id: i, text: "t" });
+    }
+
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        { type: Todo, where: {}, orderBy: { id: "asc" }, pageSize: 5 },
+        listSub,
+      ),
+    );
+    await vi.waitFor(() =>
+      expect(listSub.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({ status: "loaded" }),
+      ),
+    );
+    await listSub.next.mock.lastCall![0].fetchMore();
+    await vi.waitFor(() =>
+      expect(listSub.next.mock.lastCall![0].resolvedList).toHaveLength(10),
+    );
+    listSub.next.mockClear();
+
+    await store.invalidateObjectType(Todo, undefined);
+
+    expect(listSub.next).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: "loaded" }),
+    );
+    for (const [payload] of listSub.next.mock.calls) {
+      expect(payload.resolvedList).toHaveLength(10);
+    }
   });
 
   it("fetchMore preserves page boundaries when pages have overlapping sort keys", async () => {

@@ -816,12 +816,15 @@ describe(Store, () => {
         linkSubFn,
       );
 
-      await waitForCall(linkSubFn);
+      await vi.waitFor(() =>
+        expect(linkSubFn.next).toHaveBeenLastCalledWith(
+          expect.not.objectContaining({ status: "loading" }),
+        ),
+      );
       linkSubFn.next.mockClear();
 
       await cache.invalidateObjectType(Employee, undefined);
 
-      await waitForCall(linkSubFn);
       expect(linkSubFn.next).toHaveBeenCalled();
 
       subscription.unsubscribe();

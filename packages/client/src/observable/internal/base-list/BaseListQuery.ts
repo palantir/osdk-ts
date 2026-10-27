@@ -47,6 +47,9 @@ import type {
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 
+/** The largest page size the server accepts. */
+const MAX_PAGE_SIZE = 10_000;
+
 export type ListUpdateMode =
   | { type: "serverOrdered"; append: boolean }
   | { type: "clientOrdered" };
@@ -125,6 +128,7 @@ export abstract class BaseListQuery<
   protected currentTotalCount?: string;
 
   #subscriberPageSizes: Map<string, number> = new Map();
+  #firstPageSize = 0;
 
   //
   // Shared Implementations
@@ -343,6 +347,9 @@ export abstract class BaseListQuery<
    * @override Reset pagination state before a fetch
    */
   protected _preFetch(): void {
+    // Refetch everything already loaded as the first page, so revalidating
+    // doesn't drop pages loaded with fetchMore.
+    this.#firstPageSize = Math.min(this.getLoadedCount(), MAX_PAGE_SIZE);
     this.nextPageToken = undefined;
     super._preFetch();
   }
@@ -404,10 +411,13 @@ export abstract class BaseListQuery<
    * Falls back to options.pageSize or 100 if no subscribers have registered.
    */
   getEffectiveFetchPageSize(): number {
-    if (this.#subscriberPageSizes.size > 0) {
-      return Math.max(...this.#subscriberPageSizes.values());
-    }
-    return this.options.pageSize ?? 100;
+    const pageSize =
+      this.#subscriberPageSizes.size > 0
+        ? Math.max(...this.#subscriberPageSizes.values())
+        : (this.options.pageSize ?? 100);
+    return this.nextPageToken == null
+      ? Math.max(pageSize, this.#firstPageSize)
+      : pageSize;
   }
 
   /**

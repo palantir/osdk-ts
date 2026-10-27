@@ -53,6 +53,8 @@ export abstract class Query<
   #subscription?: Subscription;
   #subject: Observable<SubjectPayload<KEY>>;
   #subscriptionDedupeIntervals: Map<string, number> = new Map();
+  #refetchAfterPending?: Promise<void>;
+  #disposed = false;
 
   /** @internal */
   protected logger: Logger | undefined;
@@ -170,6 +172,22 @@ export abstract class Query<
 
     // if we are pending the first page/object we can just ignore this
     if (this.pendingFetch) {
+      if (force) {
+        // The pending fetch may have started before the data changed, so fetch
+        // again once it settles. Forced calls made meanwhile share that fetch.
+        if (process.env.NODE_ENV !== "production") {
+          logger?.debug("Fetch is already pending, refetching after it");
+        }
+        this.#refetchAfterPending ??= this.pendingFetch
+          .catch(() => {})
+          .then(() => {
+            this.#refetchAfterPending = undefined;
+            if (!this.#disposed) {
+              return this.revalidate(true);
+            }
+          });
+        return this.#refetchAfterPending;
+      }
       if (process.env.NODE_ENV !== "production") {
         logger?.debug("Fetch is already pending, using it");
       }
@@ -256,6 +274,7 @@ export abstract class Query<
   }
 
   dispose(): void {
+    this.#disposed = true;
     if (this.abortController) {
       this.abortController.abort();
     }
