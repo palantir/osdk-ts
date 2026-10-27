@@ -233,6 +233,34 @@ const interfaceSchema = z
                   `all for an interface that extends none.`,
               })
               .optional(),
+            actionTypeConstraints: z
+              .record(
+                z.string(),
+                z
+                  .object(
+                    {
+                      requireImplementation: z.boolean({
+                        message: "Expected a boolean.",
+                      }),
+                    },
+                    {
+                      message:
+                        "Expected an object recording whether the action type constraint is required.",
+                    },
+                  )
+                  .passthrough(),
+                {
+                  message:
+                    "Expected an object keyed by action type constraint api name.",
+                },
+              )
+              // Absent means "declares none"
+              .refine((constraints) => Object.keys(constraints).length > 0, {
+                message:
+                  `Expected at least one action type constraint, or no value at all for an ` +
+                  `interface that declares none.`,
+              })
+              .optional(),
           },
           { message: 'Expected an object with a "properties" key.' },
         )

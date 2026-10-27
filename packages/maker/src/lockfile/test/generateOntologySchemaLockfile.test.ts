@@ -18,6 +18,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import type { TypeClass } from "../../api/common/TypeClass.js";
 import { defineInterface } from "../../api/defineInterface.js";
+import { defineInterfaceActionTypeConstraint } from "../../api/defineInterfaceActionTypeConstraint.js";
 import {
   defineOntology,
   getOntologyDefinition,
@@ -522,6 +523,58 @@ describe("generateOntologySchemaLockfile", () => {
 
       expect(Object.keys(lockedSchema())).toEqual(["properties"]);
     });
+  });
+});
+
+describe("action type constraints", () => {
+  function constrain(
+    interfaceType: InterfaceType,
+    apiName: string,
+    requireImplementation: boolean,
+  ): void {
+    defineInterfaceActionTypeConstraint({
+      interfaceType,
+      apiName,
+      displayName: apiName,
+      description: apiName,
+      requireImplementation,
+      parameters: [],
+    });
+  }
+
+  it("records each directly-declared constraint by api name, sorted, with whether it is required", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(person, "sendEmail", false);
+    constrain(person, "archive", true);
+
+    expect(lockedSchema().actionTypeConstraints).toEqual({
+      "com.palantir.archive": { requireImplementation: true },
+      "com.palantir.sendEmail": { requireImplementation: false },
+    });
+    expect(
+      Object.keys(lockedSchema().actionTypeConstraints ?? {}),
+    ).toStrictEqual(["com.palantir.archive", "com.palantir.sendEmail"]);
+  });
+
+  it("does not record the constraints an extended interface declares", () => {
+    const named = defineInterface({
+      apiName: "Named",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(named, "rename", true);
+    defineInterface({
+      apiName: "Person",
+      extends: [named],
+      schemaMigrations: { transitions: [] },
+    });
+
+    expect(Object.keys(lockedSchema())).toEqual([
+      "properties",
+      "extendsInterfaces",
+    ]);
   });
 });
 

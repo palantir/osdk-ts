@@ -37,6 +37,7 @@ import type {
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
 import {
+  actionTypeConstraintsOf,
   authoredKeyOf,
   declarationOf,
   extensionsOf,
@@ -87,6 +88,16 @@ export type LockfileBreakingChange =
       transitionId: string;
       previousInstructions: readonly LockedInstruction[];
       nextInstructions: readonly LockedInstruction[];
+    }
+  | {
+      code: "actionTypeConstraintBecameRequired";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  | {
+      code: "requiredActionTypeConstraintAdded";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
     }
   | {
       code: "interfaceExtensionAdded";
@@ -191,6 +202,17 @@ export type LockfileWarning =
       code: "interfaceExtensionRemoved";
       interfaceApiName: string;
       extendedInterfaceApiName: string;
+    }
+  /** An action type constraint implementing object types had to implement no longer has to be. */
+  | {
+      code: "actionTypeConstraintRequirementRelaxed";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  | {
+      code: "actionTypeConstraintRemoved";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
     };
 
 export interface LockfileValidationResult {
@@ -279,9 +301,12 @@ function validateInterface(
     nextInterface.transitions.map((transition) => [transition.id, transition]),
   );
 
-  // Authored keys whose change is already explained by a finalization or deletion, and so must be
-  // exempt from the general breaking-change checks below.
-  const propertiesAccountedFor = new Set<string>();
+  // Schema elements whose change is already explained by a finalization or deletion, and so must
+  // be exempt from the general breaking-change checks below.
+  const accountedFor: AccountedFor = {
+    properties: new Set(),
+    actionTypeConstraints: new Set(),
+  };
 
   for (const previousTransition of previousInterface.transitions) {
     const nextTransition = nextTransitions.get(previousTransition.id);
@@ -310,7 +335,7 @@ function validateInterface(
       // Whether the disappearance was legal or not, its target properties have been reported on;
       // re-reporting them as raw schema breaks would only add noise.
       for (const property of targetPropertiesOf(previousTransition)) {
-        propertiesAccountedFor.add(authoredKeyOf(property));
+        accountedFor.properties.add(authoredKeyOf(property));
       }
       continue;
     }
@@ -334,9 +359,94 @@ function validateInterface(
     interfaceApiName,
     previousInterface.schema,
     nextInterface.schema,
-    propertiesAccountedFor,
+    accountedFor.properties,
     result,
   );
+
+  validateActionTypeConstraintsDiff(
+    interfaceApiName,
+    previousInterface.schema,
+    nextInterface.schema,
+    accountedFor.actionTypeConstraints,
+    result,
+  );
+}
+
+interface AccountedFor {
+  /** Authored keys. */
+  properties: Set<string>;
+  /** Fully-qualified api names. */
+  actionTypeConstraints: Set<string>;
+}
+
+/**
+ * Reports changes to the action type constraints the interface declares directly.
+ *
+ * OMS rejects an implementing object type that lacks an implementation of a constraint with
+ * `requireImplementation: true` (`InterfaceActionTypeConstraintImplementationValidator`), and
+ * re-runs that for every existing implementor when the interface changes
+ * (`ObjectTypeInterfaceImplementationModificationValidator.validateDeploy`), so requiring one
+ * breaks untouched object types. Nothing in OMS rejects removing a constraint
+ * (`InterfaceTypeModificationValidator` only guards property removal), so that is only a warning.
+ */
+function validateActionTypeConstraintsDiff(
+  interfaceApiName: string,
+  previousSchema: LockedInterfaceSchema,
+  nextSchema: LockedInterfaceSchema,
+  accountedFor: ReadonlySet<string>,
+  { breakingChanges, warnings }: LockfileValidationResult,
+): void {
+  const previousConstraints = actionTypeConstraintsOf(previousSchema);
+  const nextConstraints = actionTypeConstraintsOf(nextSchema);
+
+  for (const [actionTypeConstraint, previous] of Object.entries(
+    previousConstraints,
+  )) {
+    if (accountedFor.has(actionTypeConstraint)) {
+      continue;
+    }
+
+    const next = own(nextConstraints, actionTypeConstraint);
+    if (next === undefined) {
+      warnings.push({
+        code: "actionTypeConstraintRemoved",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+      continue;
+    }
+
+    if (!previous.requireImplementation && next.requireImplementation) {
+      breakingChanges.push({
+        code: "actionTypeConstraintBecameRequired",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    } else if (previous.requireImplementation && !next.requireImplementation) {
+      warnings.push({
+        code: "actionTypeConstraintRequirementRelaxed",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    }
+  }
+
+  for (const [actionTypeConstraint, next] of Object.entries(nextConstraints)) {
+    if (
+      accountedFor.has(actionTypeConstraint) ||
+      own(previousConstraints, actionTypeConstraint) !== undefined
+    ) {
+      continue;
+    }
+
+    if (next.requireImplementation) {
+      breakingChanges.push({
+        code: "requiredActionTypeConstraintAdded",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    }
+  }
 }
 
 function validateExtensionsDiff(
