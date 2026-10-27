@@ -35,7 +35,7 @@ import { authoredKeyOf } from "./OntologySchemaLockfile.js";
 import type {
   LockfileBreakingChange,
   LockfileWarning,
-  TargetPropertyState,
+  TargetState,
 } from "./validateOntologySchemaLockfile.js";
 
 /** Renders a breaking change as the report an author reads. */
@@ -55,7 +55,7 @@ export function describeBreakingChange(
       }
 
       const targets = breakingChange.targets
-        .map(({ propertyApiName }) => `"${authoredKeyOf(propertyApiName)}"`)
+        .map((target) => `"${authoredKeyOf(targetApiNameOf(target))}"`)
         .join(", ");
       return (
         `${where}: schema migration "${breakingChange.transitionId}" is no longer declared, but ` +
@@ -383,12 +383,26 @@ function toAuthoredInstruction(
         type: "addRequiredProperty",
         property: authoredKeyOf(instruction.property),
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        actionTypeConstraint: authoredKeyOf(instruction.actionTypeConstraint),
+      };
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as LockedInstruction).type
+        }`,
       );
+    }
   }
+}
+
+function targetApiNameOf(target: TargetState): string {
+  return "propertyApiName" in target
+    ? target.propertyApiName
+    : target.actionTypeConstraintApiName;
 }
 
 function describeValueType(valueType: LockedValueType): string {
@@ -447,9 +461,19 @@ function describeInstructions(
     .join(", ")}]`;
 }
 
-/** Explains what actually happened to a transition's target properties, for the error message. */
-function describeTargetDrift(targets: readonly TargetPropertyState[]): string {
-  const descriptions = targets.map(({ propertyApiName, previous, next }) => {
+/** Explains what actually happened to a transition's targets, for the error message. */
+function describeTargetDrift(targets: readonly TargetState[]): string {
+  const descriptions = targets.map((target) => {
+    if (!("propertyApiName" in target)) {
+      const authoredConstraintName = authoredKeyOf(
+        target.actionTypeConstraintApiName,
+      );
+      return target.next === undefined
+        ? `action type constraint "${authoredConstraintName}" was removed from the interface`
+        : `"${authoredConstraintName}" is \`requireImplementation: ${target.next.requireImplementation}\``;
+    }
+
+    const { propertyApiName, previous, next } = target;
     const authoredPropertyName = authoredKeyOf(propertyApiName);
     if (next === undefined) {
       return `"${authoredPropertyName}" was removed from the interface`;
