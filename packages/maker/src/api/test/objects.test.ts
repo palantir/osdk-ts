@@ -23,6 +23,7 @@ import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import type { DerivedPropertyAggregation } from "../object/ObjectTypeDatasourceDefinition.js";
 import type { PropertyTypeTypeVector } from "../properties/PropertyTypeType.js";
 
 const VECTOR: PropertyTypeTypeVector = {
@@ -3415,6 +3416,84 @@ describe("Object Types", () => {
         },
       }
     `);
+  });
+
+  it.each<DerivedPropertyAggregation>([
+    { type: "count" },
+    { type: "avg", property: "fare" },
+    { type: "sum", property: "fare" },
+    { type: "min", property: "fare" },
+    { type: "max", property: "fare" },
+    { type: "approximateCardinality", property: "fare" },
+    { type: "exactCardinality", property: "fare" },
+    { type: "collectList", property: "fare", limit: 20 },
+    { type: "collectSet", property: "fare", limit: 30 },
+  ])("Derived $type aggregations are defined correctly", (aggregation) => {
+    const passenger = defineObject({
+      displayName: "Passenger",
+      pluralDisplayName: "Passengers",
+      apiName: "passenger",
+      primaryKeyPropertyApiName: "name",
+      titlePropertyApiName: "name",
+      properties: {
+        name: { type: "string" },
+        flight_id: { type: "string" },
+        fare: { type: "double" },
+      },
+    });
+    const flightToPassengers = defineLink({
+      apiName: "flightToPassengersLink",
+      one: {
+        object: "com.palantir.flight",
+        metadata: { apiName: "flightFromPassengers" },
+      },
+      toMany: {
+        object: passenger.apiName,
+        metadata: { apiName: "passengersFromFlight" },
+      },
+      manyForeignKeyProperty: "flight_id",
+    });
+    defineObject({
+      displayName: "Flight",
+      pluralDisplayName: "Flights",
+      apiName: "flight",
+      primaryKeyPropertyApiName: "id",
+      titlePropertyApiName: "id",
+      properties: {
+        id: { type: "string" },
+        result: { type: "double", array: "limit" in aggregation },
+      },
+      datasources: [
+        { type: "dataset" },
+        {
+          type: "derived",
+          linkDefinition: [{ linkType: flightToPassengers }],
+          propertyMapping: { result: aggregation },
+        },
+      ],
+    });
+
+    const [derived] = dumpOntologyFullMetadata().ontology.objectTypes[
+      "com.palantir.flight"
+    ].datasources.flatMap(({ datasource }) =>
+      datasource.type === "derived" ? [datasource.derived.definition] : [],
+    );
+    const fare = { type: "propertyType", propertyType: "fare" };
+    const metric =
+      aggregation.type === "count"
+        ? {}
+        : "limit" in aggregation
+          ? { linkedProperty: fare, limit: aggregation.limit }
+          : fare;
+    expect(derived).toEqual({
+      type: "aggregatedProperties",
+      aggregatedProperties: {
+        linkDefinition: expect.anything(),
+        propertyTypeMapping: {
+          result: { type: aggregation.type, [aggregation.type]: metric },
+        },
+      },
+    });
   });
 
   it("Default PSGs configurations are defined correctly", () => {

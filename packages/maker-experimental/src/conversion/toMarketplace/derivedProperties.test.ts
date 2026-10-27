@@ -104,7 +104,7 @@ function expectForeignProperties(
   expect(aggregated.aggregatedProperties.propertyTypeMapping).toEqual({
     [propertyRid(source, "total")]: {
       type: "sum",
-      sum: { property: foreignProperty },
+      sum: foreignProperty,
     },
   });
 }
@@ -320,7 +320,7 @@ describe("derived property conversion", () => {
         ? {}
         : "limit" in aggregation
           ? { linkedProperty: foreignProperty, limit: aggregation.limit }
-          : { property: foreignProperty };
+          : foreignProperty;
     expect(derived.aggregatedProperties.propertyTypeMapping).toEqual({
       [propertyRid(source, "result")]: {
         type: aggregation.type,
@@ -435,10 +435,8 @@ describe("derived property conversion", () => {
         [propertyRid(source, "result")]: {
           type: "sum",
           sum: {
-            property: {
-              type: "propertyType",
-              propertyType: propertyRid(target, "value"),
-            },
+            type: "propertyType",
+            propertyType: propertyRid(target, "value"),
           },
         },
       });
@@ -527,7 +525,7 @@ describe("derived property conversion", () => {
           },
           propertyTypeMapping: {
             [propertyRid(source, "total")]: {
-              sum: { property: { propertyType: propertyRid(target, "value") } },
+              sum: { propertyType: propertyRid(target, "value") },
             },
           },
         },
