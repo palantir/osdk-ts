@@ -44,6 +44,17 @@ function proseFor(
           `instructions: [{ type: "addRequiredProperty", property: "${propertyApiName}" }] }`,
       };
     }
+    case "addRequiredActionTypeConstraint": {
+      const { actionTypeConstraint } = instruction;
+      return {
+        describe: `addRequiredActionTypeConstraint("${actionTypeConstraint}")`,
+        finalization: `set "${actionTypeConstraint}" to \`requireImplementation: true\``,
+        suggestedTransition:
+          `{ id: "require-${actionTypeConstraint}", title: "Require ${actionTypeConstraint}", ` +
+          `gracePeriod: { type: "afterInstall", days: 30 }, ` +
+          `instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "${actionTypeConstraint}" }] }`,
+      };
+    }
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(
