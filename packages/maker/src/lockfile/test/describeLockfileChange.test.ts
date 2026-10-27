@@ -16,12 +16,14 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { InterfaceSchemaMigrationInstruction } from "../../api/interface/InterfaceSchemaMigrations.js";
 import {
   describeBreakingChange,
   describeWarning,
 } from "../describeLockfileChange.js";
-import type { LockedProperty } from "../OntologySchemaLockfile.js";
+import type {
+  LockedInstruction,
+  LockedProperty,
+} from "../OntologySchemaLockfile.js";
 import type {
   LockfileBreakingChange,
   TargetPropertyState,
@@ -31,7 +33,7 @@ const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
 
 describe("describeBreakingChange", () => {
   function ambiguous(
-    instructions: InterfaceSchemaMigrationInstruction[],
+    instructions: LockedInstruction[],
     targets: TargetPropertyState[],
   ): string {
     return describeBreakingChange({
