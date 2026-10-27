@@ -18,6 +18,7 @@ import { isDeepStrictEqual } from "node:util";
 
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedActionTypeConstraint,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedProperty,
@@ -33,6 +34,11 @@ import { actionTypeConstraintsOf, own } from "./OntologySchemaLockfile.js";
  */
 export type ApplyMode = "lenient" | "strict";
 
+/** A part of an interface's schema that an instruction can assert something about. */
+export type SchemaElement =
+  | { kind: "property"; apiName: string }
+  | { kind: "actionTypeConstraint"; apiName: string };
+
 /** What an instruction does to a property when applied. */
 export type PropertyEdit =
   /** Adjusts attributes of a property the schema already records. */
@@ -42,40 +48,68 @@ export type PropertyEdit =
   /** Retires a property the schema records. */
   | { op: "remove" };
 
-/** * What an instruction does to one property, in both modes. */
-interface PropertyTransition {
-  lenient: PropertyEdit;
-  strict: PropertyEdit;
+/** What an instruction does to an action type constraint the schema already records. */
+export interface ActionTypeConstraintEdit {
+  op: "patch";
+  requireImplementation: boolean;
 }
 
-/** The per-property changes an instruction makes, keyed by the property each one applies to. */
-function editsOf(
-  instruction: LockedInstruction,
-): ReadonlyMap<string, PropertyTransition> {
+/** What an instruction does to one schema element, in both modes. */
+type ElementTransition =
+  | {
+      kind: "property";
+      apiName: string;
+      lenient: PropertyEdit;
+      strict: PropertyEdit;
+    }
+  | {
+      kind: "actionTypeConstraint";
+      apiName: string;
+      lenient: ActionTypeConstraintEdit;
+      strict: ActionTypeConstraintEdit;
+    };
+
+/** The per-element changes an instruction makes. */
+function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
   switch (instruction.type) {
     case "addRequiredProperty":
-      return new Map([
-        [
-          instruction.property,
-          {
-            lenient: { op: "patch", required: false },
-            strict: { op: "patch", required: true },
-          } satisfies PropertyTransition,
-        ],
-      ]);
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+      return [
+        {
+          kind: "property",
+          apiName: instruction.property,
+          lenient: { op: "patch", required: false },
+          strict: { op: "patch", required: true },
+        },
+      ];
+    case "addRequiredActionTypeConstraint":
+      return [
+        {
+          kind: "actionTypeConstraint",
+          apiName: instruction.actionTypeConstraint,
+          lenient: { op: "patch", requireImplementation: false },
+          strict: { op: "patch", requireImplementation: true },
+        },
+      ];
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as LockedInstruction).type
+        }`,
       );
+    }
   }
+}
+
+function elementOf(transition: ElementTransition): SchemaElement {
+  return { kind: transition.kind, apiName: transition.apiName };
 }
 
 /** A transition applied in one mode. */
 export interface AppliedTransition {
   schema: LockedInterfaceSchema;
-  /** The properties this application asserted something about. */
-  touched: readonly string[];
+  /** The schema elements this application asserted something about. */
+  touched: readonly SchemaElement[];
 }
 
 /**
@@ -123,6 +157,26 @@ export function applyEdit(
 }
 
 /**
+ * Applies one edit to `actionTypeConstraints` in place, reporting whether it could apply at all.
+ *
+ * @internal
+ */
+export function applyActionTypeConstraintEdit(
+  actionTypeConstraints: Record<string, LockedActionTypeConstraint>,
+  apiName: string,
+  edit: ActionTypeConstraintEdit,
+): boolean {
+  const existing = own(actionTypeConstraints, apiName);
+  if (existing === undefined) {
+    return false;
+  }
+
+  const { op: _op, ...attributes } = edit;
+  actionTypeConstraints[apiName] = { ...existing, ...attributes };
+  return true;
+}
+
+/**
  * The result of applying `transition` to `schema` in the given mode, or `undefined` if the
  * transition cannot be applied to that schema at all (e.g. it patches a property the schema does
  * not record).
@@ -135,14 +189,43 @@ export function applyTransition(
   const { actionTypeConstraints: _actionTypeConstraints, ...rest } = schema;
   const properties = { ...schema.properties };
   const actionTypeConstraints = { ...actionTypeConstraintsOf(schema) };
-  const touched = new Set<string>();
+  const touched = new Map<string, SchemaElement>();
 
   for (const instruction of transition.instructions) {
-    for (const [propertyApiName, byMode] of editsOf(instruction)) {
-      if (!applyEdit(properties, propertyApiName, byMode[mode])) {
-        return undefined;
+    for (const elementTransition of editsOf(instruction)) {
+      switch (elementTransition.kind) {
+        case "property":
+          if (
+            !applyEdit(
+              properties,
+              elementTransition.apiName,
+              elementTransition[mode],
+            )
+          ) {
+            return undefined;
+          }
+          break;
+        case "actionTypeConstraint":
+          if (
+            !applyActionTypeConstraintEdit(
+              actionTypeConstraints,
+              elementTransition.apiName,
+              elementTransition[mode],
+            )
+          ) {
+            return undefined;
+          }
+          break;
+        default: {
+          const unhandled: never = elementTransition;
+          throw new Error(
+            `Unknown schema element: ${JSON.stringify(unhandled)}`,
+          );
+        }
       }
-      touched.add(propertyApiName);
+
+      const element = elementOf(elementTransition);
+      touched.set(JSON.stringify(element), element);
     }
   }
 
@@ -155,19 +238,52 @@ export function applyTransition(
         actionTypeConstraints,
       }),
     },
-    touched: [...touched],
+    touched: [...touched.values()],
   };
+}
+
+/** Every schema element a transition could touch, in either mode. */
+export function targetsOf(transition: LockedTransition): SchemaElement[] {
+  return transition.instructions.flatMap((instruction) =>
+    editsOf(instruction).map(elementOf),
+  );
 }
 
 /** Every property a transition could touch, in either mode. */
 export function targetPropertiesOf(transition: LockedTransition): string[] {
-  return transition.instructions.flatMap((instruction) => [
-    ...editsOf(instruction).keys(),
-  ]);
+  return targetsOf(transition).flatMap((element) =>
+    element.kind === "property" ? [element.apiName] : [],
+  );
+}
+
+/** Every action type constraint a transition could touch, in either mode. */
+export function targetActionTypeConstraintsOf(
+  transition: LockedTransition,
+): string[] {
+  return targetsOf(transition).flatMap((element) =>
+    element.kind === "actionTypeConstraint" ? [element.apiName] : [],
+  );
+}
+
+/** What `schema` records for `element`. */
+function valueAt(
+  schema: LockedInterfaceSchema,
+  element: SchemaElement,
+): LockedProperty | LockedActionTypeConstraint | undefined {
+  switch (element.kind) {
+    case "property":
+      return own(schema.properties, element.apiName);
+    case "actionTypeConstraint":
+      return own(actionTypeConstraintsOf(schema), element.apiName);
+    default: {
+      const unhandled: never = element;
+      throw new Error(`Unknown schema element: ${JSON.stringify(unhandled)}`);
+    }
+  }
 }
 
 /**
- * Whether applying a transition in one mode results in `schema`, comparing only the properties the
+ * Whether applying a transition in one mode results in `schema`, comparing only the elements the
  * application asserted something about.
  */
 export function reproduces(
@@ -178,10 +294,10 @@ export function reproduces(
     return false;
   }
 
-  return applied.touched.every((propertyApiName) =>
+  return applied.touched.every((element) =>
     isDeepStrictEqual(
-      own(applied.schema.properties, propertyApiName),
-      own(schema.properties, propertyApiName),
+      valueAt(applied.schema, element),
+      valueAt(schema, element),
     ),
   );
 }

@@ -128,10 +128,9 @@ export interface LockedTransition {
   instructions: LockedInstruction[];
 }
 
-export type LockedInstruction = {
-  type: "addRequiredProperty";
-  property: string;
-};
+export type LockedInstruction =
+  | { type: "addRequiredProperty"; property: string }
+  | { type: "addRequiredActionTypeConstraint"; actionTypeConstraint: string };
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
   return property.declaredBy ?? "interface";

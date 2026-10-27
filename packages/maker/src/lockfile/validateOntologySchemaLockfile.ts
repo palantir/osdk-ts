@@ -22,7 +22,9 @@ import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
   reproduces,
+  targetActionTypeConstraintsOf,
   targetPropertiesOf,
+  targetsOf,
 } from "./applyInterfaceSchemaTransition.js";
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
@@ -70,6 +72,15 @@ export interface TargetPropertyState {
   next: LockedProperty | undefined;
 }
 
+/** An action type constraint a transition targets, as the lockfile records it and as the source now declares it. */
+export interface TargetActionTypeConstraintState {
+  actionTypeConstraintApiName: string;
+  previous: LockedActionTypeConstraint | undefined;
+  next: LockedActionTypeConstraint | undefined;
+}
+
+export type TargetState = TargetPropertyState | TargetActionTypeConstraintState;
+
 /** A change that would be rejected at installation-time, in machine-readable form. */
 export type LockfileBreakingChange =
   /**
@@ -80,7 +91,7 @@ export type LockfileBreakingChange =
       code: "ambiguousDisappearance";
       interfaceApiName: string;
       transitionId: string;
-      targets: readonly TargetPropertyState[];
+      targets: readonly TargetState[];
       /** What the vanished transition instructed, as the lockfile recorded it. */
       instructions: readonly LockedInstruction[];
     }
@@ -366,10 +377,23 @@ function validateInterface(
         });
       }
 
-      // Whether the disappearance was legal or not, its target properties have been reported on;
+      // Whether the disappearance was legal or not, its targets have been reported on;
       // re-reporting them as raw schema breaks would only add noise.
-      for (const property of targetPropertiesOf(previousTransition)) {
-        accountedFor.properties.add(authoredKeyOf(property));
+      for (const element of targetsOf(previousTransition)) {
+        switch (element.kind) {
+          case "property":
+            accountedFor.properties.add(authoredKeyOf(element.apiName));
+            break;
+          case "actionTypeConstraint":
+            accountedFor.actionTypeConstraints.add(element.apiName);
+            break;
+          default: {
+            const unhandled: never = element;
+            throw new Error(
+              `Unknown schema element: ${JSON.stringify(unhandled)}`,
+            );
+          }
+        }
       }
       continue;
     }
@@ -572,7 +596,7 @@ function validateExtensionsDiff(
 type Disappearance =
   | { kind: "finalized" }
   | { kind: "deleted" }
-  | { kind: "ambiguous"; targets: readonly TargetPropertyState[] };
+  | { kind: "ambiguous"; targets: readonly TargetState[] };
 
 function classifyDisappearance(
   transition: LockedTransition,
@@ -591,11 +615,28 @@ function classifyDisappearance(
 
   return {
     kind: "ambiguous",
-    targets: targetPropertiesOf(transition).map((propertyApiName) => ({
-      propertyApiName,
-      previous: own(previousSchema.properties, propertyApiName),
-      next: own(nextSchema.properties, propertyApiName),
-    })),
+    targets: [
+      ...targetPropertiesOf(transition).map(
+        (propertyApiName): TargetPropertyState => ({
+          propertyApiName,
+          previous: own(previousSchema.properties, propertyApiName),
+          next: own(nextSchema.properties, propertyApiName),
+        }),
+      ),
+      ...targetActionTypeConstraintsOf(transition).map(
+        (actionTypeConstraintApiName): TargetActionTypeConstraintState => ({
+          actionTypeConstraintApiName,
+          previous: own(
+            actionTypeConstraintsOf(previousSchema),
+            actionTypeConstraintApiName,
+          ),
+          next: own(
+            actionTypeConstraintsOf(nextSchema),
+            actionTypeConstraintApiName,
+          ),
+        }),
+      ),
+    ],
   };
 }
 
