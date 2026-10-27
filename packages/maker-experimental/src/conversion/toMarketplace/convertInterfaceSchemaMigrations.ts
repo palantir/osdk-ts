@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfaceTypeReplacement as WireInterfaceTypeReplacement,
   InterfaceTypeSchemaMigrationBlockData,
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransition,
@@ -22,13 +23,19 @@ import type {
 import type {
   InterfaceSchemaMigrationInstruction,
   InterfaceType,
+  InterfaceTypeReplacement,
   ResolvedInterfaceMember,
   ResolvedInterfaceProperty,
+  ResolvedInterfaceTypeReplacement,
 } from "@osdk/maker";
 import {
   addNamespaceIfNone,
   convertInterfaceSchemaGracePeriod,
+  getOntologyDefinition,
   interfacePropertyWireApiName,
+  isInterfaceSharedPropertyType,
+  OntologyEntityTypeEnum,
+  resolveInterfaceTypeReplacementApiNames,
 } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
@@ -39,7 +46,8 @@ export function convertInterfaceSchemaMigrations(
   ridGenerator: OntologyRidGenerator,
 ): InterfaceTypeSchemaMigrationBlockData | undefined {
   const { schemaMigrations } = interfaceType;
-  if (schemaMigrations === undefined) {
+  // Imported interface types' migrations belong to the block that defines them
+  if (schemaMigrations === undefined || !isLocal(interfaceType.apiName)) {
     return undefined;
   }
 
@@ -120,6 +128,36 @@ class WireReferences {
       apiName;
     return rid;
   }
+
+  /** Parameter API names are scoped to `actionTypeConstraint`, which keys their rids. */
+  parameterConstraint(
+    { apiName, interfaceTypeApiName }: ResolvedInterfaceMember,
+    parameterApiName: string,
+  ): string {
+    const rid = this.ridGenerator.generateRidForInterfaceParameterConstraint(
+      apiName,
+      interfaceTypeApiName,
+      parameterApiName,
+    );
+    this.ridsToApiNames.interfaceParameterConstraintRidsToApiNames[rid] =
+      parameterApiName;
+    return rid;
+  }
+
+  linkType({ apiName, interfaceTypeApiName }: ResolvedInterfaceMember): string {
+    const rid = this.ridGenerator.generateRidForInterfaceLinkType(
+      apiName,
+      interfaceTypeApiName,
+    );
+    this.ridsToApiNames.interfaceLinkTypeRidsToApiNames[rid] = apiName;
+    return rid;
+  }
+
+  interfaceType(apiName: string): string {
+    const rid = this.ridGenerator.generateRidForInterface(apiName);
+    this.ridsToApiNames.interfaceTypeRidsToApiNames[rid] = apiName;
+    return rid;
+  }
 }
 
 function convertInstruction(
@@ -155,10 +193,97 @@ function convertInstruction(
           }),
         },
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "replace":
+      return {
+        type: "replace",
+        replace: {
+          replacement: convertReplacement(
+            interfaceType,
+            instruction.replacement,
+            references,
+          ),
+        },
+      };
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
+}
+
+function convertReplacement(
+  interfaceType: InterfaceType,
+  replacement: InterfaceTypeReplacement,
+  references: WireReferences,
+): WireInterfaceTypeReplacement {
+  const resolved = resolveInterfaceTypeReplacementApiNames(
+    interfaceType,
+    replacement,
+  );
+  assertReplacementHasBlockShapes(interfaceType, resolved);
+  return {
+    interfaceTypeRid: references.interfaceType(resolved.interfaceTypeApiName),
+    propertyMappings: Object.fromEntries(
+      resolved.propertyMappings.map(({ from, to }) => [
+        references.property(from),
+        references.property(to),
+      ]),
+    ),
+    linkTypeConstraintMappings: Object.fromEntries(
+      resolved.linkTypeConstraintMappings.map(({ from, to }) => [
+        references.linkType(from),
+        references.linkType(to),
+      ]),
+    ),
+    actionTypeConstraintMappings: Object.fromEntries(
+      resolved.actionTypeConstraintMappings.map(
+        ({ from, to, parameterMappings }) => [
+          references.actionTypeConstraint(from),
+          {
+            actionTypeConstraintRid: references.actionTypeConstraint(to),
+            parameterMappings: Object.fromEntries(
+              Object.entries(parameterMappings).map(
+                ([fromParameter, toParameter]) => [
+                  references.parameterConstraint(from, fromParameter),
+                  references.parameterConstraint(to, toParameter),
+                ],
+              ),
+            ),
+          },
+        ],
+      ),
+    ),
+  };
+}
+
+/**
+ * A locally defined interface type's replacement must resolve to block shapes: outputs when it is
+ * defined locally too, the inputs `ImportedShapeExtractor` emits when it is imported.
+ */
+function assertReplacementHasBlockShapes(
+  interfaceType: InterfaceType,
+  resolved: ResolvedInterfaceTypeReplacement,
+): void {
+  // Imported SPT-backed properties are represented only by their shared property type's input shape
+  const importedSptBacked = resolved.propertyMappings.find(
+    ({ to }) =>
+      isInterfaceSharedPropertyType(to.property) &&
+      !isLocal(to.interfaceTypeApiName),
+  );
+  if (importedSptBacked !== undefined) {
+    throw new Error(
+      `Interface ${interfaceType.apiName} is being replaced by ${resolved.interfaceTypeApiName}, mapping property "${importedSptBacked.from.apiName}" to the SPT-backed property "${importedSptBacked.to.apiName}" of imported interface ${importedSptBacked.to.interfaceTypeApiName}. Mapping to imported SPT-backed properties is not supported yet, because they have no interface property type input shape to reference.`,
+    );
+  }
+}
+
+function isLocal(interfaceTypeApiName: string): boolean {
+  return Object.hasOwn(
+    getOntologyDefinition()[OntologyEntityTypeEnum.INTERFACE_TYPE],
+    interfaceTypeApiName,
+  );
 }
