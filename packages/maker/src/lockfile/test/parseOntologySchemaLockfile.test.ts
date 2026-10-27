@@ -546,6 +546,22 @@ describe("parseLockfile", () => {
         actionTypeConstraint: "com.palantir.sendEmail",
       },
     ],
+    [
+      "a replace",
+      {
+        type: "replace",
+        replacement: {
+          interfaceType: "com.palantir.PersonV2",
+          propertyMappings: { name: "fullName" },
+          actionTypeConstraintMappings: {
+            "com.palantir.sendEmail": {
+              actionTypeConstraint: "com.palantir.notify",
+              parameterMappings: { subject: "title" },
+            },
+          },
+        },
+      },
+    ],
   ])("accepts %s instruction", (_name, instruction) => {
     const lockfile = withTransition({ instructions: [instruction] });
     expect(parse(lockfile)).toStrictEqual(lockfile);
@@ -560,6 +576,98 @@ describe("parseLockfile", () => {
       ),
     ).toThrowError(
       /instructions\[0\]\.actionTypeConstraint: Expected the api name of the action type constraint to require/u,
+    );
+  });
+
+  it("rejects a `replace` instruction that records no replacement", () => {
+    expect(() =>
+      parse(withTransition({ instructions: [{ type: "replace" }] })),
+    ).toThrowError(
+      /instructions\[0\]\.replacement: Expected an object recording the replacement interface/u,
+    );
+  });
+
+  it("rejects a replacement that records an empty mapping", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [
+            {
+              type: "replace",
+              replacement: {
+                interfaceType: "com.palantir.PersonV2",
+                propertyMappings: {},
+              },
+            },
+          ],
+        }),
+      ),
+    ).toThrowError(
+      /replacement\.propertyMappings: Expected at least one property mapping, or no value at all/u,
+    );
+  });
+
+  it("rejects a replacement that records an empty parameter mapping", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [
+            {
+              type: "replace",
+              replacement: {
+                interfaceType: "com.palantir.PersonV2",
+                actionTypeConstraintMappings: {
+                  "com.palantir.sendEmail": {
+                    actionTypeConstraint: "com.palantir.notify",
+                    parameterMappings: {},
+                  },
+                },
+              },
+            },
+          ],
+        }),
+      ),
+    ).toThrowError(
+      /parameterMappings: Expected at least one parameter mapping, or no value at all/u,
+    );
+  });
+
+  it("rejects an action type constraint mapping recorded in its pre-parameter string form", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [
+            {
+              type: "replace",
+              replacement: {
+                interfaceType: "com.palantir.PersonV2",
+                actionTypeConstraintMappings: {
+                  "com.palantir.sendEmail": "com.palantir.notify",
+                },
+              },
+            },
+          ],
+        }),
+      ),
+    ).toThrowError(
+      /Expected an object recording the replacement action type constraint/u,
+    );
+  });
+
+  it("rejects a replacement that names its interface by object", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [
+            {
+              type: "replace",
+              replacement: { interfaceType: { apiName: "PersonV2" } },
+            },
+          ],
+        }),
+      ),
+    ).toThrowError(
+      /replacement\.interfaceType: Expected the api name of the replacement interface/u,
     );
   });
 

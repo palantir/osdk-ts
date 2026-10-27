@@ -413,6 +413,32 @@ describe("describeBreakingChange", () => {
     });
   });
 
+  describe("replacement", () => {
+    it("names the replacement of a changed replace instruction", () => {
+      expect(
+        describeBreakingChange({
+          code: "instructionsChanged",
+          interfaceApiName: "Person",
+          transitionId: "replace",
+          previousInstructions: [
+            {
+              type: "replace",
+              replacement: { interfaceType: "com.example.PersonV2" },
+            },
+          ],
+          nextInstructions: [
+            {
+              type: "replace",
+              replacement: { interfaceType: "com.example.PersonV3" },
+            },
+          ],
+        }),
+      ).toContain(
+        'from [replace("com.example.PersonV2")] to [replace("com.example.PersonV3")]',
+      );
+    });
+  });
+
   describe("authored names", () => {
     // A shared property type publishes under a namespaced api name, which the lockfile records
     // verbatim, but the author keys it by the un-namespaced name.

@@ -22,7 +22,11 @@ import type {
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../api/common/TypeClass.js";
-import { namespace } from "../api/defineOntology.js";
+import {
+  importedTypes,
+  namespace,
+  ontologyDefinition,
+} from "../api/defineOntology.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
@@ -35,16 +39,26 @@ import {
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "../api/interface/InterfacePropertyType.js";
-import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
+import type {
+  InterfaceSchemaMigrationInstruction,
+  InterfaceTypeReplacement,
+} from "../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
+import {
+  type ResolvedInterfaceActionTypeConstraintMapping,
+  type ResolvedInterfaceMemberMapping,
+  resolveInterfaceTypeReplacement,
+} from "../api/interface/resolveInterfaceTypeReplacement.js";
 import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
 import { normalizePropertyType } from "../api/properties/normalizePropertyType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import type {
   LockedActionTypeConstraint,
+  LockedActionTypeConstraintReplacement,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
+  LockedInterfaceTypeReplacement,
   LockedParameterConstraint,
   LockedProperty,
   LockedTransition,
@@ -303,12 +317,90 @@ function lockInstruction(
           instruction.actionTypeConstraint,
         ),
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "replace":
+      return {
+        type: "replace",
+        replacement: lockReplacement(interfaceType, instruction.replacement),
+      };
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
+}
+
+/** The replacement under the same api names conversion publishes it with. */
+function lockReplacement(
+  interfaceType: InterfaceType,
+  replacement: InterfaceTypeReplacement,
+): LockedInterfaceTypeReplacement {
+  const resolved = resolveInterfaceTypeReplacement(
+    { ontology: ontologyDefinition, importedTypes },
+    interfaceType,
+    replacement,
+  );
+  const propertyMappings = lockMappings(resolved.propertyMappings);
+  const linkTypeConstraintMappings = lockMappings(
+    resolved.linkTypeConstraintMappings,
+  );
+  const actionTypeConstraintMappings = lockActionTypeConstraintMappings(
+    resolved.actionTypeConstraintMappings,
+  );
+  return {
+    interfaceType: resolved.interfaceTypeApiName,
+    ...(propertyMappings !== undefined && { propertyMappings }),
+    ...(linkTypeConstraintMappings !== undefined && {
+      linkTypeConstraintMappings,
+    }),
+    ...(actionTypeConstraintMappings !== undefined && {
+      actionTypeConstraintMappings,
+    }),
+  };
+}
+
+function lockActionTypeConstraintMappings(
+  mappings: readonly ResolvedInterfaceActionTypeConstraintMapping[],
+): Record<string, LockedActionTypeConstraintReplacement> | undefined {
+  if (mappings.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    mappings
+      .map(({ from, to, parameterMappings }) => {
+        const sortedParameterMappings = Object.entries(parameterMappings).sort(
+          ([a], [b]) => compare(a, b),
+        );
+        return [
+          from.apiName,
+          {
+            actionTypeConstraint: to.apiName,
+            ...(sortedParameterMappings.length > 0 && {
+              parameterMappings: Object.fromEntries(sortedParameterMappings),
+            }),
+          },
+        ] as const;
+      })
+      .sort(([a], [b]) => compare(a, b)),
+  );
+}
+
+function lockMappings(
+  mappings: readonly ResolvedInterfaceMemberMapping[],
+): Record<string, string> | undefined {
+  if (mappings.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    mappings
+      .map(({ from, to }) => [from.apiName, to.apiName] as const)
+      .sort(([a], [b]) => compare(a, b)),
+  );
 }
 
 /**
