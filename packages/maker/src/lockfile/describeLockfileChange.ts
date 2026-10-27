@@ -498,8 +498,9 @@ function describeFinalizations(
   instructions: readonly LockedInstruction[],
 ): string {
   return instructions
-    .map((instruction) =>
-      describeFinalization(toAuthoredInstruction(instruction)),
+    .flatMap(
+      (instruction) =>
+        describeFinalization(toAuthoredInstruction(instruction)) ?? [],
     )
     .join(", and ");
 }
