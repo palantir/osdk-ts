@@ -662,8 +662,19 @@ function memberRids(ontology: OntologyBlockDataV2, apiName: string) {
 }
 
 function onlyMigration(block: InterfaceTypeBlockDataV2) {
-  const [migration] = transitionById(block, "t1").migrations;
-  return migration;
+  const convertedMigrations = transitionById(block, "t1").migrations;
+  invariant(
+    convertedMigrations.length === 1,
+    `expected one migration, got ${convertedMigrations.length}`,
+  );
+  return convertedMigrations[0];
+}
+
+function migrationReferences(block: InterfaceTypeBlockDataV2) {
+  const { schemaMigrations } = block;
+  invariant(schemaMigrations != null, "expected schema migrations");
+  const { schemaTransitions: _, ...references } = schemaMigrations;
+  return references;
 }
 
 describe("addRequiredActionTypeConstraint and replace schema migrations", () => {
@@ -687,7 +698,7 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
         actionTypeConstraintRid: constraint.rid,
       },
     });
-    expect(block.schemaMigrations).toMatchObject({
+    expect(migrationReferences(block)).toEqual({
       interfaceActionTypeConstraintRidsToApiNames: {
         [constraint.rid]: "com.palantir.doThing",
       },
@@ -738,7 +749,7 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
         },
       },
     });
-    expect(block.schemaMigrations).toMatchObject({
+    expect(migrationReferences(block)).toEqual({
       interfaceActionTypeConstraintRidsToApiNames: {
         [old.actionTypeConstraint("com.palantir.oldAction")]:
           "com.palantir.oldAction",

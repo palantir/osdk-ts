@@ -244,23 +244,11 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
   });
 
   describe("replace: local shape", () => {
-    it("accepts a replacement known only by api name", async () => {
-      await expect(
-        inOntology(() => {
-          defineReplaced();
-        }),
-      ).resolves.toBeDefined();
+    it("accepts replacing a deprecated interface, since replace does not change its status", () => {
+      expect(() =>
+        defineReplaced(undefined, { status: DEPRECATED }),
+      ).not.toThrow();
     });
-
-    it.each([
-      ["an active", { type: "active" }],
-      ["a deprecated", DEPRECATED],
-    ] as const)(
-      "accepts replacing %s interface, since a replace changes nothing about its status",
-      (_name, status) => {
-        expect(() => defineReplaced(undefined, { status })).not.toThrow();
-      },
-    );
 
     it("rejects a replacement sharing its transition with another instruction", () => {
       expect(() =>

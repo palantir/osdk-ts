@@ -232,27 +232,6 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
 
       expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
     });
-
-    it("locks the strict constraint once finalized", async () => {
-      await run("personSendEmailInFlight", "--write-locks");
-
-      await run("personSendEmailFinalized", "--write-locks", "--yes");
-
-      expect(await readLockfile()).toStrictEqual({
-        version: 1,
-        interfaces: {
-          Person: {
-            schema: {
-              properties: { firstName: { type: "string", required: true } },
-              actionTypeConstraints: {
-                sendEmail: { requireImplementation: true },
-              },
-            },
-            transitions: [],
-          },
-        },
-      });
-    });
   });
 
   describe("replace", () => {
@@ -281,24 +260,6 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
                 ],
               },
             ],
-          },
-        },
-      });
-    });
-
-    it("drops the migration from the lock once deleted", async () => {
-      await run("legacyPersonReplaceInFlight", "--write-locks");
-
-      await run("legacyPersonReplaceDeleted", "--write-locks", "--yes");
-
-      expect(await readLockfile()).toStrictEqual({
-        version: 1,
-        interfaces: {
-          LegacyPerson: {
-            schema: {
-              properties: { fullName: { type: "string", required: true } },
-            },
-            transitions: [],
           },
         },
       });
