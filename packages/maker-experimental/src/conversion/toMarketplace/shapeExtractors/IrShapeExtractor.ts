@@ -581,19 +581,18 @@ function getInterfaceLinkTypeOutputShape(
   interfaceLinkType: MarketplaceInterfaceLinkType,
   ridGenerator: OntologyRidGenerator,
 ): { id: ReadableId; outputShape: OutputShape } {
-  // Build linked entity type reference
-  const interfaceRidOrUndefined =
-    interfaceLinkType.linkedEntityTypeId.type === "interfaceType"
-      ? interfaceLinkType.linkedEntityTypeId.interfaceType
-      : undefined;
-
-  if (!interfaceRidOrUndefined) {
-    throw new Error("Object link references not implemented");
-  }
-
-  const linkedEntityTypeRef = ridGenerator.toBlockInternalId(
-    ridGenerator.getInterfaceRids().inverse().get(interfaceRidOrUndefined)!,
-  );
+  const { linkedEntityTypeId } = interfaceLinkType;
+  const linkedReadableId =
+    linkedEntityTypeId.type === "interfaceType"
+      ? ridGenerator
+          .getInterfaceRids()
+          .inverse()
+          .get(linkedEntityTypeId.interfaceType)!
+      : ridGenerator
+          .getObjectTypeIds()
+          .inverse()
+          .get(linkedEntityTypeId.objectType)!;
+  const linkedEntityTypeRef = ridGenerator.toBlockInternalId(linkedReadableId);
 
   // Map cardinality
   const cardinality =
@@ -607,10 +606,10 @@ function getInterfaceLinkTypeOutputShape(
     interfaceType:
       knownMarketplaceIdentifiers.interfaceTypes?.[interfaceType.rid] ??
       interfaceType.rid,
-    linkedEntityType: {
-      type: "interfaceType",
-      interfaceType: linkedEntityTypeRef,
-    },
+    linkedEntityType:
+      linkedEntityTypeId.type === "interfaceType"
+        ? { type: "interfaceType", interfaceType: linkedEntityTypeRef }
+        : { type: "objectType", objectType: linkedEntityTypeRef },
     cardinality,
     required: interfaceLinkType.required,
   };

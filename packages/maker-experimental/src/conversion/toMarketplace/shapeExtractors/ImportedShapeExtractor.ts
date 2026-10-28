@@ -433,6 +433,11 @@ function extractImportedInterfaceTypes(
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
 ): void {
   const knownIdentifiers = importedBlockData.knownIdentifiers;
+  const importedObjectTypeIds = new Set(
+    Object.values(importedBlockData.objectTypes).map(
+      ({ objectType }) => objectType.id,
+    ),
+  );
 
   for (const [_rid, interfaceTypeBlock] of Object.entries(
     importedBlockData.interfaceTypes,
@@ -607,23 +612,23 @@ function extractImportedInterfaceTypes(
         interfaceLinkType.metadata.apiName,
       );
 
-      const linkedInterfaceRid =
-        interfaceLinkType.linkedEntityTypeId.type === "interfaceType"
-          ? interfaceLinkType.linkedEntityTypeId.interfaceType
-          : undefined;
+      const { linkedEntityTypeId } = interfaceLinkType;
+      const linkedReadableId =
+        linkedEntityTypeId.type === "interfaceType"
+          ? ridGenerator
+              .getInterfaceRids()
+              .inverse()
+              .get(linkedEntityTypeId.interfaceType)
+          : importedObjectTypeIds.has(linkedEntityTypeId.objectType)
+            ? ridGenerator
+                .getObjectTypeIds()
+                .inverse()
+                .get(linkedEntityTypeId.objectType)
+            : undefined;
 
-      const linkedReadableId = linkedInterfaceRid
-        ? ridGenerator.getInterfaceRids().inverse().get(linkedInterfaceRid)
-        : undefined;
-
-      const linkedEntityTypeRef = linkedReadableId
-        ? {
-            type: "interfaceType" as const,
-            interfaceType: ridGenerator.toBlockInternalId(linkedReadableId),
-          }
-        : undefined;
-
-      if (!linkedEntityTypeRef) continue;
+      if (!linkedReadableId) continue;
+      const linkedEntityTypeRef =
+        ridGenerator.toBlockInternalId(linkedReadableId);
 
       const linkInputShape: InterfaceLinkTypeInputShape = {
         about: createLocalizedAbout(
@@ -631,7 +636,10 @@ function extractImportedInterfaceTypes(
           interfaceLinkType.metadata.description,
         ),
         interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
-        linkedEntityType: linkedEntityTypeRef,
+        linkedEntityType:
+          linkedEntityTypeId.type === "interfaceType"
+            ? { type: "interfaceType", interfaceType: linkedEntityTypeRef }
+            : { type: "objectType", objectType: linkedEntityTypeRef },
         cardinality:
           interfaceLinkType.cardinality === "SINGLE" ? "SINGLE" : "MANY",
         required: interfaceLinkType.required,

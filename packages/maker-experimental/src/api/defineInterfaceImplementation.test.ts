@@ -30,6 +30,7 @@ import {
 } from "@osdk/maker";
 import { beforeEach, describe, expect, it, onTestFinished } from "vitest";
 
+import { ReadableIdGenerator } from "../util/generateRid.js";
 import { defineInterfaceImplementation } from "./defineInterfaceImplementation.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 
@@ -40,6 +41,28 @@ function defineEmployeeObject() {
     apiName: "employee",
     displayName: "Employee",
     pluralDisplayName: "Employees",
+    titlePropertyApiName: "id",
+    primaryKeyPropertyApiName: "id",
+    properties: { id: { type: "string" } },
+  });
+}
+
+function defineAirlineObject() {
+  return defineObject({
+    apiName: "airline",
+    displayName: "Airline",
+    pluralDisplayName: "Airlines",
+    titlePropertyApiName: "id",
+    primaryKeyPropertyApiName: "id",
+    properties: { id: { type: "string" }, airportId: { type: "string" } },
+  });
+}
+
+function defineAirportObject() {
+  return defineObject({
+    apiName: "airport",
+    displayName: "Airport",
+    pluralDisplayName: "Airports",
     titlePropertyApiName: "id",
     primaryKeyPropertyApiName: "id",
     properties: { id: { type: "string" } },
@@ -206,6 +229,66 @@ describe("defineInterfaceImplementation", () => {
     expect(Object.keys(actionTypeImplementations[0].parameters)).toEqual([
       Object.keys(actionConstraint.parameters)[0],
     ]);
+  });
+
+  it("packages interface link constraints that target an object type", async () => {
+    const result = await defineOntologyV2(NAMESPACE, () => {
+      const facility = defineInterface({ apiName: "Facility" });
+      const airline = defineAirlineObject();
+      const airlines = defineInterfaceLinkConstraint({
+        apiName: "airlines",
+        from: facility,
+        toMany: airline,
+      });
+      const airport = defineAirportObject();
+      const airportAirlines = defineLink({
+        apiName: "airport-airlines",
+        one: { object: airport, metadata: { apiName: "airlines" } },
+        toMany: { object: airline, metadata: { apiName: "airport" } },
+        manyForeignKeyProperty: "airportId",
+      });
+      defineInterfaceImplementation({
+        interfaceType: facility,
+        objectType: airport,
+        linkImplementations: {
+          [airlines.apiName]: [
+            { linkType: airportAirlines, sideApiName: "airlines" },
+          ],
+        },
+      });
+    });
+
+    const facility = Object.values(
+      result.ontologyIr.ontology.interfaceTypes,
+    ).find(
+      (interfaceType) =>
+        interfaceType.interfaceType.apiName === `${NAMESPACE}Facility`,
+    );
+    expect(facility!.interfaceType.links[0].linkedEntityTypeId).toEqual({
+      type: "objectType",
+      objectType: "com-palantir-airline",
+    });
+    expect(
+      result.shapes.outputShapes.get(
+        ReadableIdGenerator.getForInterfaceLinkType(
+          `${NAMESPACE}Facility`,
+          `${NAMESPACE}airlines`,
+        ),
+      ),
+    ).toMatchObject({
+      type: "interfaceLinkType",
+      interfaceLinkType: {
+        linkedEntityType: {
+          type: "objectType",
+          objectType:
+            result.blockDataAddOn.idToBlockShapeId[
+              ReadableIdGenerator.getForObjectType(`${NAMESPACE}airline`)
+            ],
+        },
+        cardinality: "MANY",
+        required: true,
+      },
+    });
   });
 
   it("rejects duplicate implementations of the same interface", () => {

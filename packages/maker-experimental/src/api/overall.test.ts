@@ -2296,6 +2296,124 @@ describe("Experimental Test Suite", () => {
       ).toEqual(apiNamePreset("importedInterface"));
     });
 
+    it("generates input shapes for imported interface links that target an object type", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineImportObject({
+          apiName: "importedAirline",
+          properties: { id: { type: "string" } },
+        });
+        const importedInterface: InterfaceType = {
+          apiName: "importedFacility",
+          displayMetadata: {
+            displayName: "Imported Facility",
+            description: "An imported facility",
+          },
+          propertiesV2: {},
+          propertiesV3: {},
+          extendsInterfaces: [],
+          actionTypeConstraints: [],
+          status: { type: "active", active: {} },
+          links: [
+            {
+              cardinality: "MANY",
+              linkedEntityTypeId: {
+                type: "objectType",
+                objectType: "importedAirline",
+              },
+              metadata: {
+                apiName: "airlines",
+                displayName: "Airlines",
+                description: "Airlines",
+              },
+              required: false,
+            },
+          ],
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+      });
+
+      expect(
+        result.shapes.inputShapes.get(
+          ReadableIdGenerator.getForInterfaceLinkType(
+            "importedFacility",
+            "airlines",
+          ),
+        ),
+      ).toEqual({
+        type: "interfaceLinkType",
+        interfaceLinkType: {
+          about: {
+            fallbackTitle: "Airlines",
+            fallbackDescription: "Airlines",
+            localizedTitle: {},
+            localizedDescription: {},
+          },
+          interfaceType:
+            result.blockDataAddOn.idToBlockShapeId[
+              ReadableIdGenerator.getForInterface("importedFacility")
+            ],
+          linkedEntityType: {
+            type: "objectType",
+            objectType:
+              result.blockDataAddOn.idToBlockShapeId[
+                ReadableIdGenerator.getForObjectType("importedAirline")
+              ],
+          },
+          cardinality: "MANY",
+          required: false,
+        },
+      });
+    });
+
+    it("skips imported interface links whose target object type is not imported", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        const importedInterface: InterfaceType = {
+          apiName: "importedFacility",
+          displayMetadata: {
+            displayName: "Imported Facility",
+            description: "An imported facility",
+          },
+          propertiesV2: {},
+          propertiesV3: {},
+          extendsInterfaces: [],
+          actionTypeConstraints: [],
+          status: { type: "active", active: {} },
+          links: [
+            {
+              cardinality: "MANY",
+              linkedEntityTypeId: {
+                type: "objectType",
+                objectType: "notImportedAirline",
+              },
+              metadata: {
+                apiName: "airlines",
+                displayName: "Airlines",
+                description: "Airlines",
+              },
+              required: false,
+            },
+          ],
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+      });
+
+      expect(
+        result.shapes.inputShapes.has(
+          ReadableIdGenerator.getForInterface("importedFacility"),
+        ),
+      ).toBe(true);
+      expect(
+        result.shapes.inputShapes.has(
+          ReadableIdGenerator.getForInterfaceLinkType(
+            "importedFacility",
+            "airlines",
+          ),
+        ),
+      ).toBe(false);
+    });
+
     it("maps imported SPT-backed interface properties using the SPT API name", async () => {
       const interfaceApiName =
         "com.palantir.core.ontology.types.sourceSystemMetadata";
