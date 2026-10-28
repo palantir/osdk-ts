@@ -269,8 +269,8 @@
     "test": {
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR", "CI"],
-      "dependsOn": ["^transpileEsm"],
-      "outputs": ["reports/**"]
+      "dependsOn": ["^transpileEsm", "transpileEsm"],
+      "outputs": []
     },
 
     "updateSnapshots": {
