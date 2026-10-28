@@ -52,7 +52,10 @@ export interface IDataType {
 }
 
 export interface IDiscoveredFunction {
-  locator: { type: string; typescript?: { functionName: string } };
+  locator: {
+    type: string;
+    typescript?: { functionName: string; filePath: string };
+  };
   inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output:
     | { type?: "single"; single: { dataType: IDataType } }
@@ -62,6 +65,10 @@ export interface IDiscoveredFunction {
     editedLinks: Record<string, {}>;
     editedObjects: Record<string, {}>;
     editedInterfaces: Record<string, {}>;
+  };
+  metadata?: {
+    functionRid: string;
+    functionVersion: string;
   };
 }
 
@@ -460,8 +467,14 @@ export class OntologyIrToFullMetadataConverter {
       );
     }
 
+    for (const func of tsFunctions) {
+      func.metadata = readImportedFunctionMetadata(
+        path.resolve(projectDir, func.locator.typescript!.filePath),
+      );
+    }
+
     if (irOutputFile) {
-      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions, null, 2));
     }
 
     return tsFunctions.flatMap((func: IDiscoveredFunction) => {
@@ -470,8 +483,9 @@ export class OntologyIrToFullMetadataConverter {
         return [
           {
             apiName: functionName,
-            rid: `ri.function-registry.main.function.${functionName}`,
-            version: "0.0.0",
+            rid: func.metadata?.functionRid
+              ?? `ri.function-registry.main.function.${functionName}`,
+            version: func.metadata?.functionVersion ?? "0.0.0",
             parameters: func.inputs.reduce<
               Record<ApiName, Ontologies.QueryParameterV2>
             >((acc, input, index) => {
@@ -1589,6 +1603,28 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error(`Unknown link type status: ${status}`);
     }
   }
+}
+
+function readImportedFunctionMetadata(
+  filePath: string,
+): IDiscoveredFunction["metadata"] {
+  const source = fs.readFileSync(filePath, "utf-8");
+  const metadataBlock = source.match(
+    /-----BEGIN FUNCTION METADATA-----([\s\S]*?)-----END FUNCTION METADATA-----/u,
+  );
+  if (!metadataBlock) {
+    return undefined;
+  }
+
+  // Support comment prefixes and the trailing commas in imported metadata.
+  const { config, error } = ts.parseConfigFileTextToJson(
+    filePath,
+    metadataBlock[1],
+  );
+  if (error) {
+    throw new Error(ts.flattenDiagnosticMessageText(error.messageText, "\n"));
+  }
+  return config;
 }
 
 function discoverComponentRoot(
