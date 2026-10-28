@@ -723,6 +723,7 @@ export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
                           | "geohash"
                           | "geoshape"
                           | "objectType"
+                          | "scenarioReference"
                           | "timeSeriesReference"
                       ? "UNSUPPORTED"
                       : P extends

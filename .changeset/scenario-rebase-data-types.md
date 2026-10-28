@@ -10,6 +10,7 @@
 "@osdk/integration-testing": patch
 "@osdk/maker-experimental": patch
 "@osdk/maker-import": patch
+"@osdk/react-components": patch
 "@osdk/seed-compiler": patch
 "@osdk/seed-helpers": patch
 "@osdk/vite-plugin-oac": patch
