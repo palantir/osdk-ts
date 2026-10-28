@@ -18,11 +18,6 @@ import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
 import type { Media, MediaReference, MediaUpload } from "../object/Media.js";
 import type { TimeSeriesReference } from "../timeseries/timeseries.js";
 
-export type TimeSeriesReference =
-  | string
-  | { seriesId: string; syncRid: string }
-  | { templateRid: string; templateVersion?: string };
-
 /**
  * Map from the DataValue type to the typescript type that we return
  */

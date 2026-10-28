@@ -1,5 +1,6 @@
 ---
 "@osdk/api": minor
+"@osdk/cli.cmd.typescript": patch
 "@osdk/client": minor
 "@osdk/faux": patch
 "@osdk/foundry-sdk-generator": patch
