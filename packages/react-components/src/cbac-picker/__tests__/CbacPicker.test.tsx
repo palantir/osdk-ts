@@ -95,9 +95,11 @@ describe("CbacPicker", () => {
     render(<CbacPicker onChange={vi.fn()} />);
     expect(useMarkingCategories).toHaveBeenLastCalledWith({
       includeDeleted: undefined,
+      markingType: "CBAC",
     });
     expect(useMarkings).toHaveBeenLastCalledWith({
       includeDeleted: undefined,
+      markingType: "CBAC",
     });
   });
 
@@ -105,8 +107,12 @@ describe("CbacPicker", () => {
     render(<CbacPicker onChange={vi.fn()} includeDeleted={false} />);
     expect(useMarkingCategories).toHaveBeenLastCalledWith({
       includeDeleted: false,
+      markingType: "CBAC",
     });
-    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: false });
+    expect(useMarkings).toHaveBeenLastCalledWith({
+      includeDeleted: false,
+      markingType: "CBAC",
+    });
   });
 
   it("does not change the selection when readOnly", () => {

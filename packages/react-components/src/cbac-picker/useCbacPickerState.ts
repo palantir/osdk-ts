@@ -20,7 +20,7 @@ import {
   useMarkingCategories,
   useMarkings,
 } from "@osdk/react/platform-apis";
-import React from "react";
+import React, { useMemo } from "react";
 
 import type {
   CategoryMarkingGroup,
@@ -69,18 +69,22 @@ export function useCbacPickerState(
   options?: UseCbacPickerStateOptions,
 ): UseCbacPickerStateResult {
   const stableSelectedIds = useStableArray(selectedIds);
+  const allOptions = useMemo(
+    () => ({ ...options, markingType: "CBAC" as const }),
+    [options],
+  );
   const {
     categories: rawCategories,
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories(options);
+  } = useMarkingCategories(allOptions);
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings(options);
+  } = useMarkings(allOptions);
   const {
     banner: latestBanner,
     isLoading: bannerLoading,
