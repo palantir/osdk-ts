@@ -26,6 +26,7 @@ import {
   importOntologyEntity,
   initializeOntologyState,
   OntologyEntityTypeEnum,
+  validateDerivedForeignProperties,
   writeDependencyFile,
   writeStaticObjects,
 } from "@osdk/maker";
@@ -116,6 +117,7 @@ export async function defineOntologyV2(
       }
     }
   }
+  validateDerivedForeignProperties();
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();

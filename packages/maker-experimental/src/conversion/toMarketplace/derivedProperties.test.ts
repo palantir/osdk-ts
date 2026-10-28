@@ -550,6 +550,97 @@ describe("derived property conversion", () => {
     expectForeignProperties(source, source);
   });
 
+  it("resolves inline derived properties on objects that derive from each other", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const link = defineLink({
+        apiName: "aToB",
+        one: { object: "com.palantir.a", metadata: { apiName: "b" } },
+        toMany: { object: "com.palantir.b", metadata: { apiName: "a" } },
+        manyForeignKeyProperty: "parentId",
+        cardinality: "OneToOne",
+      });
+      for (const apiName of ["a", "b"]) {
+        object(apiName, {
+          datasources: [
+            { type: "dataset" },
+            {
+              type: "derived",
+              linkDefinition: [{ linkType: link }],
+              propertyMapping: { result: "value" },
+            },
+            {
+              type: "derived",
+              linkDefinition: [{ linkType: link }],
+              propertyMapping: { total: { type: "sum", property: "value" } },
+            },
+          ],
+        });
+      }
+    });
+    const a = block(result.ontologyIr.ontology, "com.palantir.a");
+    const b = block(result.ontologyIr.ontology, "com.palantir.b");
+    expectForeignProperties(a, b);
+    expectForeignProperties(b, a);
+  });
+
+  it("rejects a derived property missing on an object defined later", async () => {
+    await expect(
+      defineOntologyV2("com.palantir.", () => {
+        const link = defineLink({
+          apiName: "aToB",
+          one: { object: "com.palantir.a", metadata: { apiName: "b" } },
+          toMany: { object: "com.palantir.b", metadata: { apiName: "a" } },
+          manyForeignKeyProperty: "parentId",
+        });
+        object("a", {
+          datasources: [
+            { type: "dataset" },
+            {
+              type: "derived",
+              linkDefinition: [{ linkType: link }],
+              propertyMapping: { result: "ghost" },
+            },
+          ],
+        });
+        object("b");
+      }),
+    ).rejects.toThrow(
+      "Property 'ghost' on object 'com.palantir.b' is not defined",
+    );
+  });
+
+  it("builds an imported object whose derived target is not imported", async () => {
+    let source: ObjectType;
+    await defineOntologyV2("upstream.", () => {
+      const link = defineLink({
+        apiName: "sourceToTarget",
+        one: { object: "upstream.source", metadata: { apiName: "target" } },
+        toMany: { object: object("target"), metadata: { apiName: "source" } },
+        manyForeignKeyProperty: "parentId",
+        cardinality: "OneToOne",
+      });
+      object("source", {
+        datasources: [
+          { type: "dataset" },
+          {
+            type: "derived",
+            linkDefinition: [{ linkType: link }],
+            propertyMapping: { result: "value" },
+          },
+        ],
+      });
+      source = getOntologyDefinition().OBJECT_TYPE["upstream.source"];
+    });
+    const result = await defineOntologyV2("com.palantir.", () => {
+      importOntologyEntity(source);
+    });
+    expect(
+      derivedDefinitions(
+        block(result.ontologyIr.importedOntology, "upstream.source"),
+      ),
+    ).toHaveLength(1);
+  });
+
   it("resolves properties through an imported link to an imported object", async () => {
     let middle: ObjectType;
     let target: ObjectType;
