@@ -1,7 +1,6 @@
 ---
 "@osdk/api": minor
 "@osdk/client": minor
-"@osdk/e2e.generated.catchall": patch
 "@osdk/faux": patch
 "@osdk/foundry-sdk-generator": patch
 "@osdk/generator-converters.ontologyir": patch
