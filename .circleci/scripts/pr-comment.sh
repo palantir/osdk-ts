@@ -75,9 +75,11 @@ payload="$(node -e '
   process.stdout.write(JSON.stringify({ body: fs.readFileSync(process.argv[1], "utf8") }));
 ' "$BODY_FILE")"
 
+# Only our own App's comments: we cannot edit ones posted by other bots that
+# happen to share the marker (e.g. the GitHub Actions size-limit job).
 existing="$(
   gh_api GET "/repos/$REPO/issues/$pr_number/comments?per_page=100" \
-    | MARKER="$MARKER" node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const c=JSON.parse(s);const m=c.find(x=>typeof x.body==="string"&&x.body.startsWith(process.env.MARKER));if(m)process.stdout.write(String(m.id))}catch{}})'
+    | MARKER="$MARKER" node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const c=JSON.parse(s);const m=c.find(x=>String(x.performed_via_github_app?.id)===process.env.GITHUB_APP_ID&&typeof x.body==="string"&&x.body.startsWith(process.env.MARKER));if(m)process.stdout.write(String(m.id))}catch{}})'
 )"
 
 if [[ "$existing" =~ ^[0-9]+$ ]]; then
