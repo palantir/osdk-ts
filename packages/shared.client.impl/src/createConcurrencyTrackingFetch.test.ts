@@ -49,7 +49,9 @@ describe(createConcurrencyTrackingFetch, () => {
       const requestContext = JSON.parse(requestContextHeader);
       return requestContext.clientMetrics.concurrency;
     });
-    expect(Math.max(...reportedConcurrency)).toBe(150);
+    expect(reportedConcurrency).toEqual(
+      Array.from({ length: 150 }, (_, index) => index + 1),
+    );
 
     dateNow.mockReturnValue(1_025);
     const resolveFirstRequest = pendingResponses.shift();

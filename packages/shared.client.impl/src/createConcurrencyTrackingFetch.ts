@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import pLimit from "p-limit";
+
 import type {
   ClientMetrics,
   OsdkRequestContext,
@@ -25,76 +27,44 @@ const MAX_CONCURRENT_REQUESTS = 150;
 export function createConcurrencyTrackingFetch(
   fetchFn: typeof globalThis.fetch,
 ): typeof globalThis.fetch {
+  const limit = pLimit(MAX_CONCURRENT_REQUESTS);
   let activeHttpAttempts = 0;
-  const waitingRequests: Array<(() => void) | undefined> = [];
-  let waitingRequestHead = 0;
 
-  function acquireSlot():
-    | Promise<Pick<ClientMetrics, "queueSize" | "queueWaitTimeMs">>
-    | undefined {
-    if (activeHttpAttempts < MAX_CONCURRENT_REQUESTS) {
-      activeHttpAttempts++;
-      return;
-    }
-
+  return function concurrencyTrackingFetch(input, init) {
     const queuedAt = Date.now();
-    const queueSize = waitingRequests.length - waitingRequestHead + 1;
-    return new Promise((resolve) =>
-      waitingRequests.push(() =>
-        resolve({
-          queueSize,
-          queueWaitTimeMs: Date.now() - queuedAt,
-        }),
-      ),
+    const queueSize = Math.max(
+      0,
+      limit.activeCount + limit.pendingCount + 1 - MAX_CONCURRENT_REQUESTS,
     );
-  }
 
-  function releaseSlot(): void {
-    const nextRequest = waitingRequests[waitingRequestHead];
-    if (nextRequest == null) {
-      activeHttpAttempts--;
-      return;
-    }
+    return limit(async () => {
+      activeHttpAttempts++;
+      try {
+        const headers = new Headers(
+          input instanceof Request ? input.headers : undefined,
+        );
+        if (init?.headers != null) {
+          new Headers(init.headers).forEach((value, name) => {
+            headers.set(name, value);
+          });
+        }
 
-    waitingRequests[waitingRequestHead] = undefined;
-    waitingRequestHead++;
-    if (waitingRequestHead === waitingRequests.length) {
-      waitingRequests.length = 0;
-      waitingRequestHead = 0;
-    }
-    nextRequest();
-  }
-
-  return async function concurrencyTrackingFetch(input, init) {
-    let queueSize = 0;
-    let queueWaitTimeMs = 0;
-    const slotAvailable = acquireSlot();
-    if (slotAvailable != null) {
-      ({ queueSize, queueWaitTimeMs } = await slotAvailable);
-    }
-
-    try {
-      const headers = new Headers(
-        input instanceof Request ? input.headers : undefined,
-      );
-      if (init?.headers != null) {
-        new Headers(init.headers).forEach((value, name) => {
-          headers.set(name, value);
-        });
+        const clientMetrics: ClientMetrics = {
+          concurrency: activeHttpAttempts,
+          queueSize,
+          queueWaitTimeMs: queueSize === 0 ? 0 : Date.now() - queuedAt,
+        };
+        const requestContext: OsdkRequestContext = {
+          clientMetrics,
+        };
+        headers.set(
+          OSDK_REQUEST_CONTEXT_HEADER,
+          JSON.stringify(requestContext),
+        );
+        return await fetchFn(input, { ...init, headers });
+      } finally {
+        activeHttpAttempts--;
       }
-
-      const clientMetrics: ClientMetrics = {
-        concurrency: activeHttpAttempts,
-        queueSize,
-        queueWaitTimeMs,
-      };
-      const requestContext: OsdkRequestContext = {
-        clientMetrics,
-      };
-      headers.set(OSDK_REQUEST_CONTEXT_HEADER, JSON.stringify(requestContext));
-      return await fetchFn(input, { ...init, headers });
-    } finally {
-      releaseSlot();
-    }
+    });
   };
 }
