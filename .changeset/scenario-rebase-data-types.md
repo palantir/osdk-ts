@@ -16,4 +16,4 @@
 "@osdk/vite-plugin-oac": patch
 ---
 
-Add `rebase` to `EXPERIMENTAL_ScenarioClient`, add the public `TimeSeriesReference` type and support `timeSeriesReference` action parameters, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+Add support for rebase to scenario clients, add the public `TimeSeriesReference` type and support `timeSeriesReference` action parameters, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
