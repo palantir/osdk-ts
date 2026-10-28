@@ -82,6 +82,7 @@ describe("media", () => {
       itemMetadata: {
         type: "untyped",
         sizeBytes: 25,
+        sizeBytesLong: "25",
       },
     });
   });
@@ -100,6 +101,7 @@ describe("media", () => {
       itemMetadata: {
         type: "untyped",
         sizeBytes: 25,
+        sizeBytesLong: "25",
       },
     });
   });

@@ -385,10 +385,10 @@ export async function setupFauxFoundry(): Promise<void> {
   const admin = fauxFoundry.getAdmin();
 
   for (const category of cbacCategories) {
-    admin.registerMarkingCategory(category);
+    admin.registerMarkingCategory({ ...category, deleted: false });
   }
   for (const marking of cbacMarkings) {
-    admin.registerMarking(marking);
+    admin.registerMarking({ ...marking, deleted: false });
   }
 
   const categoryColors: Record<string, { textColor: string; bg: string }> = {
