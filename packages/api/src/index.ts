@@ -65,6 +65,7 @@ export type {
   AllowedBucketTypes,
   DataValueClientToWire,
   DataValueWireToClient,
+  TimeSeriesReference,
 } from "./mapping/DataValueMapping.js";
 export type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
 export type {
