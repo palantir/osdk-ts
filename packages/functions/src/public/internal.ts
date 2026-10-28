@@ -15,6 +15,7 @@
  */
 
 export type {
+  AddInterfaceLink,
   AddLink,
   AnyEdit,
   CreateObject,
@@ -23,6 +24,7 @@ export type {
   DeleteObjectForInterface,
   InterfaceLocator,
   ObjectLocator,
+  RemoveInterfaceLink,
   RemoveLink,
   UpdateObject,
   UpdateObjectForInterface,
