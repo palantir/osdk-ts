@@ -352,7 +352,7 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       { $seriesId: "sensor-123" },
       clientCtx,
-      mockActionMetadata,
+      "timeSeriesReference",
     );
     expect(converted).toEqual("sensor-123");
   });
@@ -361,7 +361,7 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       { $seriesId: "sensor-123", $syncRid: "ri.time-series.main.sync.abc" },
       clientCtx,
-      mockActionMetadata,
+      "timeSeriesReference",
     );
     expect(converted).toEqual({
       seriesId: "sensor-123",
@@ -376,7 +376,7 @@ describe(toDataValue, () => {
         $templateVersion: "1",
       },
       clientCtx,
-      mockActionMetadata,
+      "timeSeriesReference",
     );
     expect(converted).toEqual({
       templateRid: "ri.time-series.main.template.abc",
