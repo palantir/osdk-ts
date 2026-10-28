@@ -64,7 +64,7 @@ export function getListMembershipChanges(
 
 function classifyAddedObjects(
   addedObjects: ReadonlyArray<ObjectHolder | InterfaceHolder>,
-  { whereClause, result }: ListMembershipContext,
+  { whereClause, optimistic, result }: ListMembershipContext,
 ): void {
   for (const obj of addedObjects) {
     // if its a strict match we can just insert it into place
@@ -75,6 +75,7 @@ function classifyAddedObjects(
     // sorta match means it used a filter we cannot use on the frontend
     const uncertain = objectMatchesWhereClause(obj, whereClause, false);
     result.hasUncertainMatches ||= uncertain;
+    result.needsRevalidation ||= uncertain && !optimistic;
   }
 }
 
