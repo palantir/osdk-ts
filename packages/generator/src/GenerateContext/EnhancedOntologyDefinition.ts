@@ -19,6 +19,7 @@ import { GeneratorError } from "@osdk/generator-converters";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedAction } from "./EnhancedAction.js";
+import { EnhancedAgent } from "./EnhancedAgent.js";
 import { extractNamespace } from "./EnhancedBase.js";
 import { EnhancedInterfaceType } from "./EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "./EnhancedObjectType.js";
@@ -44,6 +45,7 @@ export class EnhancedOntologyDefinition {
   ontology: OntologyV2;
   objectTypes: Record<string, EnhancedObjectType | ForeignType>;
   actionTypes: Record<string, EnhancedAction>;
+  agents: Record<string, EnhancedAgent>;
   queryTypes: Record<string, EnhancedQuery>;
   interfaceTypes: Record<
     string,
@@ -87,6 +89,7 @@ export class EnhancedOntologyDefinition {
       this.common,
       EnhancedQuery,
     );
+    this.agents = remap(raw.agents, this.common, EnhancedAgent);
     this.interfaceTypes = remap(
       raw.interfaceTypes,
       this.common,
@@ -143,18 +146,18 @@ export class EnhancedOntologyDefinition {
 }
 
 function remap<T, X>(
-  r: Record<string, T>,
+  r: Record<string, T> | undefined,
   common: EnhanceCommon,
   Constructor: { new(common: EnhanceCommon, og: T): X },
 ): Record<string, X>;
 function remap<T, X>(
-  r: Record<string, T>,
+  r: Record<string, T> | undefined,
   common: EnhanceCommon,
   Constructor: { new(common: EnhanceCommon, original: T): X },
   externalMap?: Map<string, string>,
 ): Record<string, X | ForeignType>;
 function remap<T, X, const Q extends Map<string, string> | undefined>(
-  r: Record<string, T>,
+  r: Record<string, T> | undefined,
   common: EnhanceCommon,
   Constructor: { new(common: EnhanceCommon, og: T): X },
   externalMap?: Q,

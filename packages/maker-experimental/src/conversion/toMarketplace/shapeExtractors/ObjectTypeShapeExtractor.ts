@@ -30,6 +30,7 @@ import type {
   StreamLocatorRid,
   TimeSeriesSyncRid,
   Type,
+  ValueTypeReference,
 } from "@osdk/client.unstable";
 import type {
   DatasourceColumnShape,
@@ -213,7 +214,6 @@ export class ObjectTypeShapeExtractor {
     )) {
       this.extractValueTypeInputShapeIfPresent(
         propertyType.valueType,
-        propertyType.displayMetadata.displayName,
         propertyType.type,
         blockShapes,
         ridGenerator,
@@ -842,24 +842,23 @@ export class ObjectTypeShapeExtractor {
   }
 
   private extractValueTypeInputShapeIfPresent(
-    valueTypeReference: any,
-    displayName: string,
+    valueTypeReference: ValueTypeReference | null | undefined,
     type: Type,
     blockShapes: BlockShapes,
     ridGenerator: OntologyRidGenerator,
   ): void {
     if (!valueTypeReference) return;
 
+    const mappingEntry =
+      ridGenerator.valueTypeMappingForReference(valueTypeReference);
     const valueTypeInput: InputShape = {
       type: "valueType",
       valueType: {
-        about: createLocalizedAbout(`Value Type Input for ${displayName}`, ""),
+        about: createLocalizedAbout(mappingEntry.input, ""),
         baseType: typeToMarketplaceBaseType(type),
       },
     };
 
-    const mappingEntry =
-      ridGenerator.valueTypeMappingForReference(valueTypeReference);
     blockShapes.inputShapes.set(mappingEntry.input, valueTypeInput);
   }
 

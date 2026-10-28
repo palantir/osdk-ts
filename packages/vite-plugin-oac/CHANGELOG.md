@@ -1,5 +1,62 @@
 # @osdk/vite-plugin-oac
 
+## 0.86.0
+
+### Patch Changes
+
+- Updated dependencies [6df3c1e]
+- Updated dependencies [e2414a2]
+- Updated dependencies [aa664cc]
+  - @osdk/maker@0.83.0
+  - @osdk/api@2.84.0
+  - @osdk/client.unstable@2.84.0
+  - @osdk/generator-converters.ontologyir@2.84.0
+  - @osdk/cli@0.112.0
+
+## 0.85.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+  - @osdk/generator-converters.ontologyir@2.83.0
+  - @osdk/api@2.83.0
+  - @osdk/faux@0.61.0
+  - @osdk/cli@0.111.0
+
+## 0.84.0
+
+### Patch Changes
+
+- Updated dependencies [2089ca9]
+- Updated dependencies [9f97981]
+- Updated dependencies [553461f]
+  - @osdk/maker@0.81.0
+  - @osdk/api@2.82.0
+  - @osdk/faux@0.60.0
+  - @osdk/cli@0.110.0
+  - @osdk/client.unstable@2.82.0
+  - @osdk/generator-converters.ontologyir@2.82.0
+
+## 0.83.0
+
+### Patch Changes
+
+- Updated dependencies [3677309]
+- Updated dependencies [24630ae]
+- Updated dependencies [d9eb929]
+- Updated dependencies [1ab9e14]
+- Updated dependencies [23701c5]
+- Updated dependencies [f28586c]
+- Updated dependencies [8bc6e4a]
+  - @osdk/faux@0.59.0
+  - @osdk/api@2.81.0
+  - @osdk/maker@0.80.0
+  - @osdk/generator-converters.ontologyir@2.81.0
+  - @osdk/cli@0.109.0
+  - @osdk/client.unstable@2.81.0
+
 ## 0.82.0
 
 ### Patch Changes

@@ -770,7 +770,6 @@ function extractImportedSharedPropertyTypes(
 
     extractValueTypeInputShapeIfPresent(
       spt.valueType ?? undefined,
-      spt.displayMetadata.displayName,
       spt.type,
       blockShapes,
       ridGenerator,

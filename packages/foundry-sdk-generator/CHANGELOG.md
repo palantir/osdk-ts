@@ -1,5 +1,59 @@
 # @osdk/foundry-sdk-generator
 
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/client.unstable@2.84.0
+- @osdk/client@2.84.0
+- @osdk/generator-converters@2.84.0
+- @osdk/generator-utils@2.84.0
+- @osdk/generator@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/client@2.83.0
+  - @osdk/api@2.83.0
+  - @osdk/generator-converters@2.83.0
+  - @osdk/generator-utils@2.83.0
+  - @osdk/generator@2.83.0
+
+## 2.82.0
+
+### Minor Changes
+
+- 553461f: Add client generation for agents.
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+- Updated dependencies [553461f]
+  - @osdk/api@2.82.0
+  - @osdk/client@2.82.0
+  - @osdk/generator-converters@2.82.0
+  - @osdk/generator@2.82.0
+  - @osdk/client.unstable@2.82.0
+  - @osdk/generator-utils@2.82.0
+
+## 2.81.0
+
+### Patch Changes
+
+- Updated dependencies [3677309]
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/client@2.81.0
+  - @osdk/api@2.81.0
+  - @osdk/generator@2.81.0
+  - @osdk/generator-converters@2.81.0
+  - @osdk/client.unstable@2.81.0
+  - @osdk/generator-utils@2.81.0
+
 ## 2.80.0
 
 ### Patch Changes

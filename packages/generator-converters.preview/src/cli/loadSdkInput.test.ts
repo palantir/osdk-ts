@@ -246,7 +246,7 @@ describe("loadSdkInput", () => {
     const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
       .mockResolvedValue(undefined);
     await expect(generateClientSdkVersionTwoPointZero(
-      { ...metadata, actionTypes: {} },
+      { ...metadata, agents: {}, actionTypes: {} },
       "test",
       {
         readdir: () => Promise.resolve([]),

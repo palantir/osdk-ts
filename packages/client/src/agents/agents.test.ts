@@ -16,6 +16,7 @@
 
 import type { AgentSession } from "@osdk/api/unstable";
 import {
+  $Agents,
   Employee,
   noArgsAgent,
   objectArgumentsAgent,
@@ -124,7 +125,9 @@ describe("agents", () => {
     const experimental_createSession =
       client(weatherAgent).experimental_createSession;
     type InferredParamType = Parameters<typeof experimental_createSession>[0];
-    expectTypeOf<{ city: string }>().toMatchTypeOf<InferredParamType>();
+    expectTypeOf<InferredParamType>().toEqualTypeOf<
+      Record<string, unknown> | undefined
+    >();
 
     const session = await client(weatherAgent).experimental_createSession({
       city: "London",
@@ -148,6 +151,15 @@ describe("agents", () => {
     const { experimental_createSession } = client(weatherAgent);
     const session = await experimental_createSession({ city: "London" });
     expect(session).toEqual({ id: stubData.weatherAgentResponse.id });
+  });
+
+  it("exports agents through $Agents", () => {
+    expect(Object.keys($Agents)).toEqual([
+      "noArgsAgent",
+      "objectArgumentsAgent",
+      "weatherAgent",
+    ]);
+    expect($Agents.weatherAgent).toBe(weatherAgent);
   });
 
   it("creates a session without arguments", async () => {

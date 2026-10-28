@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export * from "./build/cjs/public/experimental.cjs";
+/**
+ * `true` when `Covering` has a variant for every `type` of the union `Union`, otherwise `never`.
+ *
+ * Assign it to a `true` constant to fail compilation once `Union` grows a variant `Covering` lacks.
+ */
+export type CoversEveryVariant<
+  Union extends { type: string },
+  Covering extends { type: string },
+> = [Union["type"]] extends [Covering["type"]] ? true : never;

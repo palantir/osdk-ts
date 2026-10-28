@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata, Media, MediaUpload } from "@osdk/api";
+import type { Media, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
@@ -40,7 +40,6 @@ import { toDataValue } from "./toDataValue.js";
 describe(toDataValue, () => {
   let client: Client;
   let clientCtx: MinimalClient;
-  let mockActionMetadata: ActionMetadata;
   let apiServer: SetupServer;
 
   const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
@@ -58,12 +57,6 @@ describe(toDataValue, () => {
       {},
     );
 
-    // toDataValue only needs the apiName right now, update this if that changes
-    const fakeActionMetadata = {
-      apiName: "createUnstructuredImageExampleObject",
-    };
-    mockActionMetadata = fakeActionMetadata as ActionMetadata;
-
     return () => {
       testSetup.apiServer.close();
     };
@@ -79,11 +72,17 @@ describe(toDataValue, () => {
       string: "string",
       timestamp: "2024-01-01T00:00:00Z",
     };
-    const convertedBasic = await toDataValue(
-      basic,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const convertedBasic = await toDataValue(basic, clientCtx, {
+      type: "struct",
+      struct: {
+        null: { type: "string", nullable: true },
+        boolean: "boolean",
+        date: "datetime",
+        integer: "integer",
+        string: "string",
+        timestamp: "timestamp",
+      },
+    });
     expect(convertedBasic).toEqual(basic);
   });
 
@@ -99,7 +98,14 @@ describe(toDataValue, () => {
         attachmentSet,
       },
       clientCtx,
-      mockActionMetadata,
+      {
+        type: "struct",
+        struct: {
+          attachment: "attachment",
+          attachmentArray: "attachment",
+          attachmentSet: "attachment",
+        },
+      },
     );
 
     expect(recursiveConversion).toEqual({
@@ -113,24 +119,42 @@ describe(toDataValue, () => {
     const struct = {
       inner: {
         attachment: "rid",
+        amount: 123.45,
+        preciseAmount: "12345678901234567890.123456789012345678",
+        count: 5,
       },
     };
 
-    const recursiveConversion = await toDataValue(
-      struct,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const recursiveConversion = await toDataValue(struct, clientCtx, {
+      type: "struct",
+      struct: {
+        inner: {
+          type: "struct",
+          struct: {
+            attachment: "attachment",
+            amount: { type: "decimal", nullable: false },
+            preciseAmount: "decimal",
+            count: "integer",
+          },
+        },
+      },
+    });
 
     expect(recursiveConversion).toEqual({
-      inner: { attachment: "rid" },
+      inner: {
+        attachment: "rid",
+        amount: "123.45",
+        preciseAmount: "12345678901234567890.123456789012345678",
+        count: 5,
+      },
     });
   });
 
-  it("passes GeoJSON geometries through as objects", async () => {
-    const point: GeoJSON.Point = {
+  it("recursively converts GeoJSON geometries and foreign members", async () => {
+    const point: GeoJSON.Point & { labels: Set<string> } = {
       type: "Point",
       coordinates: [-74.0, 40.7],
+      labels: new Set(["office", "headquarters"]),
     };
     const polygon: GeoJSON.Polygon = {
       type: "Polygon",
@@ -144,31 +168,29 @@ describe(toDataValue, () => {
       ],
     };
 
-    expect(await toDataValue(point, clientCtx, mockActionMetadata)).toEqual(
-      point,
-    );
-    expect(await toDataValue(polygon, clientCtx, mockActionMetadata)).toEqual(
-      polygon,
-    );
+    expect(await toDataValue(point, clientCtx, "geohash")).toEqual({
+      type: "Point",
+      coordinates: [-74.0, 40.7],
+      labels: ["office", "headquarters"],
+    });
+    expect(await toDataValue(polygon, clientCtx, "geoshape")).toEqual(polygon);
   });
 
   it("maps an ontology object into just its primary key", async () => {
     const employee = stubData.employee1;
-    const ontologyConversion = await toDataValue(
-      employee,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const ontologyConversion = await toDataValue(employee, clientCtx, {
+      type: "object",
+      object: "Employee",
+    });
     expect(ontologyConversion).toEqual(stubData.employee1.__primaryKey);
   });
 
   it("maps an ontology object into just its primary key with osdk wrapper", async () => {
     const task = await client(Employee).fetchOne(50030);
-    const ontologyConversion = await toDataValue(
-      task,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const ontologyConversion = await toDataValue(task, clientCtx, {
+      type: "object",
+      object: "Employee",
+    });
     expect(ontologyConversion).toEqual(task.$primaryKey);
   });
 
@@ -190,18 +212,16 @@ describe(toDataValue, () => {
       },
     }
   `;
-    const objectSetConversion = await toDataValue(
-      clientObjectSet,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const objectSetConversion = await toDataValue(clientObjectSet, clientCtx, {
+      type: "objectSet",
+      objectSet: "Task",
+    });
     expect(objectSetConversion).toMatchInlineSnapshot(expected);
 
-    const definitionConversion = await toDataValue(
-      definition,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const definitionConversion = await toDataValue(definition, clientCtx, {
+      type: "objectSet",
+      objectSet: "Task",
+    });
     expect(definitionConversion).toMatchInlineSnapshot(expected);
   });
 
@@ -211,7 +231,7 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       attachmentUpload,
       clientCtx,
-      mockActionMetadata,
+      "attachment",
     );
 
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
@@ -226,7 +246,7 @@ describe(toDataValue, () => {
       { name: "file1.txt" },
     );
 
-    const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+    const converted = await toDataValue(file, clientCtx, "attachment");
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/iu);
   });
 
@@ -258,7 +278,7 @@ describe(toDataValue, () => {
           },
         ),
       );
-      const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+      const converted = await toDataValue(file, clientCtx, "mediaReference");
       expect(isMediaReference(converted)).toBe(true);
     });
   });
@@ -279,13 +299,13 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       mediaReference,
       clientCtx,
-      mockActionMetadata,
+      "mediaReference",
     );
     expect(converted).toEqual(mediaReference);
   });
 
   it("passes through nulls correctly", async () => {
-    const converted = await toDataValue(null, clientCtx, mockActionMetadata);
+    const converted = await toDataValue(null, clientCtx, "decimal");
     expect(converted).toBeNull();
   });
 
@@ -311,11 +331,7 @@ describe(toDataValue, () => {
       getMediaReference: () => expectedMediaReference,
     };
 
-    const converted = await toDataValue(
-      mockMedia,
-      clientCtx,
-      mockActionMetadata,
-    );
+    const converted = await toDataValue(mockMedia, clientCtx, "mediaReference");
 
     expect(converted).toEqual(expectedMediaReference);
     expect(isMediaReference(converted)).toBe(true);
@@ -327,7 +343,7 @@ describe(toDataValue, () => {
     const converted = await toDataValue(
       scenario,
       clientCtx,
-      mockActionMetadata,
+      "scenarioReference",
     );
     expect(converted).toBe("ri.actions..scenario.abc");
   });

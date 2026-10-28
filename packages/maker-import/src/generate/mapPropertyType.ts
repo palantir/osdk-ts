@@ -15,8 +15,7 @@
  */
 
 import type { ObjectPropertyType } from "@osdk/foundry.ontologies";
-import type { PropertyTypeType } from "@osdk/maker";
-import { consola } from "consola";
+import type { PropertyTypeType, PropertyTypeTypeVector } from "@osdk/maker";
 
 /**
  * Result of mapping a gateway ObjectPropertyType to a maker PropertyTypeType.
@@ -31,11 +30,11 @@ export interface MappedPropertyType {
  * Maps a gateway ObjectPropertyType (discriminated union with {type: string})
  * to a maker PropertyTypeType.
  *
- * Returns undefined for unsupported types (with a warning).
+ * Throws for unsupported types or invalid type configurations.
  */
 export function mapPropertyType(
   dataType: ObjectPropertyType,
-): MappedPropertyType | undefined {
+): MappedPropertyType {
   switch (dataType.type) {
     case "string":
       return { type: "string" };
@@ -96,12 +95,13 @@ export function mapPropertyType(
       for (const field of dataType.structFieldTypes) {
         const mappedField = mapPropertyType(field.dataType);
         if (
-          mappedField === undefined ||
           mappedField.array === true ||
           (typeof mappedField.type === "object" &&
             mappedField.type.type === "struct")
         ) {
-          return undefined;
+          throw new Error(
+            `Cannot map struct field "${field.apiName}": array and nested struct fields are unsupported`,
+          );
         }
         structDefinition[field.apiName] = {
           fieldType: mappedField.type,
@@ -118,8 +118,8 @@ export function mapPropertyType(
         const mappedMainValue = mapPropertyType(
           dataType.mainValue.mainValueType,
         );
-        if (mappedMainValue === undefined || mappedMainValue.array === true) {
-          return undefined;
+        if (mappedMainValue.array === true) {
+          throw new Error("Cannot map struct main value with an array type");
         }
         mainValue = {
           fields: dataType.mainValue.fields,
@@ -138,16 +138,59 @@ export function mapPropertyType(
     case "array": {
       const subType = dataType.subType;
       if (!subType) {
-        consola.warn("Array type missing subType, skipping");
-        return undefined;
+        throw new Error("Cannot map array type with missing subType");
       }
       const inner = mapPropertyType(subType);
-      if (!inner) {
-        return undefined;
-      }
       return { type: inner.type, array: true };
     }
+    case "vector": {
+      if (dataType.supportsSearchWith.length !== 1) {
+        throw new Error(
+          `Can only map vectors with exactly one "supportsSearchWith", found ${dataType.supportsSearchWith.length}`,
+        );
+      }
+      if (!dataType.supportsSearchWith[0].value) {
+        throw new Error(
+          'Cannot map vectors with undefined "supportsSearchWith" value',
+        );
+      }
+      let embeddingModel: PropertyTypeTypeVector["embeddingModel"];
+      if (dataType.embeddingModel?.type === "lms") {
+        embeddingModel = {
+          type: "text",
+          text: { type: "lms", lms: dataType.embeddingModel.value },
+        };
+      }
+      if (dataType.embeddingModel?.type === "foundryLiveDeployment") {
+        const { rid, inputParamName, outputParamName } =
+          dataType.embeddingModel;
+        if (
+          rid === undefined ||
+          inputParamName === undefined ||
+          outputParamName === undefined
+        ) {
+          throw new Error(
+            "Cannot map vector embedding model with missing live deployment configuration",
+          );
+        }
+        embeddingModel = {
+          type: "text",
+          text: {
+            type: "foundryLiveDeployment",
+            foundryLiveDeployment: { rid, inputParamName, outputParamName },
+          },
+        };
+      }
+      return {
+        type: {
+          type: "vector",
+          dimension: dataType.dimension,
+          supportsSearchWith: dataType.supportsSearchWith[0].value,
+          embeddingModel,
+        },
+      };
+    }
     default:
-      return undefined;
+      throw new Error(`Unsupported property type "${dataType.type}"`);
   }
 }

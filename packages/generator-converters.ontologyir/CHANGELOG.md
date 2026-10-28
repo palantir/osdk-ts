@@ -1,5 +1,35 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+
+## 2.82.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.82.0
+
+## 2.81.0
+
+### Minor Changes
+
+- f28586c: Remove getOsdkPropertyType duplication
+- 8bc6e4a: Preserve vector properties, their dimensions and supported similarity functions when converting ontology metadata for SDK generation.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.81.0
+
 ## 2.80.0
 
 ### Patch Changes

@@ -1,5 +1,53 @@
 # @osdk/client
 
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/client.unstable@2.84.0
+- @osdk/generator-converters@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/api@2.83.0
+  - @osdk/generator-converters@2.83.0
+  - @osdk/shared.test@2.56.0
+
+## 2.82.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+  - @osdk/generator-converters@2.82.0
+  - @osdk/shared.test@2.55.0
+  - @osdk/client.unstable@2.82.0
+
+## 2.81.0
+
+### Minor Changes
+
+- 3677309: Convert agent session arguments containing OSDK objects and object sets, including nested values.
+
+### Patch Changes
+
+- Updated dependencies [3677309]
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/shared.test@2.54.0
+  - @osdk/api@2.81.0
+  - @osdk/generator-converters@2.81.0
+  - @osdk/client.unstable@2.81.0
+
 ## 2.80.0
 
 ### Patch Changes

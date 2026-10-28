@@ -16,6 +16,7 @@
 
 import type { Sdk, SdkPackage } from "@osdk/client.unstable.tpsa";
 import { getSdk, getSdkPackage } from "@osdk/client.unstable.tpsa";
+import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
 import type {
   ActionParameterType,
   ActionTypeV2,
@@ -26,8 +27,10 @@ import type {
   QueryDataType,
   QueryTypeV2,
 } from "@osdk/foundry.ontologies";
+import type { WireOntologyDefinition } from "@osdk/generator";
 import { GeneratorError } from "@osdk/generator-converters";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
+import { randomBytes } from "node:crypto";
 import { Result } from "./Result.js";
 
 /**
@@ -61,10 +64,11 @@ type PackageInfo = Map<string, {
 }>;
 
 export interface OntologyInfo {
-  requestedMetadata: OntologyFullMetadata;
+  requestedMetadata: WireOntologyDefinition;
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
   queryVersionReferences: ReadonlyMap<string, string>;
+  agentVersionReferences: ReadonlyMap<string, string>;
 }
 
 export class OntologyMetadataResolver {
@@ -74,12 +78,21 @@ export class OntologyMetadataResolver {
   }
 
   private getClientContext() {
+    const traceId = process.env.TRACE_ID;
+    const traceHeaders = traceId
+      ? {
+        "X-B3-TraceId": traceId,
+        "X-B3-SpanId": randomBytes(8).toString("hex"),
+      }
+      : undefined;
     return createSharedClientContext(
       this.stackName.match(/^https?:\/\//)
         ? this.stackName
         : `https://${this.stackName}`,
       () => Promise.resolve(this.#authToken),
       `foundry-typescript-osdk-generator/${process.env.npm_package_version!}`,
+      undefined,
+      traceHeaders,
     );
   }
 
@@ -202,6 +215,7 @@ export class OntologyMetadataResolver {
       actionTypesApiNamesToLoad?: string[];
       objectTypesApiNamesToLoad?: string[];
       queryTypesApiNamesToLoad?: string[];
+      agentApiNamesToLoad?: string[];
       interfaceTypesApiNamesToLoad?: string[];
       linkTypesApiNamesToLoad?: string[];
       includeActionTypeFullMetadata?: boolean;
@@ -227,6 +241,58 @@ export class OntologyMetadataResolver {
           { error: JSON.stringify(e) },
         ),
       ]);
+    }
+
+    const agents: WireOntologyDefinition["agents"] = {};
+    const agentVersionReferences = new Map<string, string>();
+
+    for (const agent of entities.agentApiNamesToLoad ?? []) {
+      const lastColonIndex = agent.lastIndexOf(":");
+      if (lastColonIndex <= 0 || lastColonIndex === agent.length - 1) {
+        return Result.err([
+          new GeneratorError(
+            "Agents require an API name and version in apiName:version format",
+            { agent },
+          ),
+        ]);
+      }
+
+      const agentApiName = agent.substring(0, lastColonIndex);
+      if (agentVersionReferences.has(agentApiName)) {
+        return Result.err([
+          new GeneratorError("Agent was specified multiple times", {
+            agentApiName,
+          }),
+        ]);
+      }
+
+      agentVersionReferences.set(
+        agentApiName,
+        agent.substring(lastColonIndex + 1),
+      );
+    }
+
+    for (const [apiName, version] of agentVersionReferences) {
+      try {
+        // TODO(mhogberg): This will be slow for large SDKs. Bulk load instead of loading
+        //  one-by-one.
+        const agentDefinitionVersion = await AgentDefinitionVersions.get(
+          this.getClientContext(),
+          apiName,
+          version,
+          { ontology: ontologyRid as OntologyIdentifier, preview: true },
+        );
+
+        agents[apiName] = { ...agentDefinitionVersion, apiName };
+      } catch (error) {
+        return Result.err([
+          new GeneratorError("Unable to load agent metadata", {
+            apiName,
+            version,
+            error: String(error),
+          }),
+        ]);
+      }
     }
 
     // If we're passing in an external SDK package, we need to load the full metadata. As a result, we cannot use query
@@ -347,7 +413,8 @@ export class OntologyMetadataResolver {
         return Result.err(validData.error);
       }
       return Result.ok({
-        requestedMetadata: filteredFullMetadata,
+        requestedMetadata: { ...filteredFullMetadata, agents },
+        agentVersionReferences,
         externalInterfaces,
         externalObjects,
         queryVersionReferences: new Map(),
@@ -433,7 +500,8 @@ export class OntologyMetadataResolver {
         return Result.err(validData.error);
       }
       return Result.ok({
-        requestedMetadata,
+        requestedMetadata: { ...requestedMetadata, agents },
+        agentVersionReferences,
         externalInterfaces: new Map(),
         externalObjects: new Map(),
         queryVersionReferences,

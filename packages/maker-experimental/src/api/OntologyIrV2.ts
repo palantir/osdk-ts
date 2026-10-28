@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-export type {
-  AggregateStubBuilder,
-  FetchOneStubBuilder,
-  FetchPageStubBuilder,
-  MockClient,
-  MockOsdkObjectOptions,
-  MockWriteableClient,
-  QueryStubBuilder,
-  StubBuilderFor,
-  StubClient,
-} from "../api/index.js";
-export { createMockAttachment } from "../mock/createMockAttachment.js";
-export { createMockClient } from "../mock/createMockClient.js";
-export { createMockObjectSet } from "../mock/createMockObjectSet.js";
-export { createMockOsdkObject } from "../mock/createMockOsdkObject.js";
-export { createMockWriteableClient } from "../mock/createMockWriteableClient.js";
+import type {
+  OntologyBlockDataV2,
+  ValueTypeBlockData,
+} from "@osdk/client.unstable";
+
+import type { ValueTypeBlockDataWithDependencies } from "../conversion/toMarketplace/convertValueTypeToWireBlockData.js";
+
+/** Converted ontology data and the dependencies needed for Marketplace packaging. */
+export interface OntologyIrV2 {
+  ontology: OntologyBlockDataV2;
+  importedOntology: OntologyBlockDataV2;
+  valueTypes: ValueTypeBlockDataWithDependencies[];
+  importedValueTypes: ValueTypeBlockData[];
+  transitiveImportedOntology: OntologyBlockDataV2;
+  randomnessKey?: string;
+}

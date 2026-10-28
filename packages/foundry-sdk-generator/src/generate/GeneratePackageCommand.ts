@@ -31,6 +31,7 @@ export interface generatePackageCommandArgs {
   objectTypes?: string[];
   actionTypes?: string[];
   queryTypes?: string[];
+  agents?: string[];
   linkTypes?: string[];
   interfaceTypes?: string[];
   experimentalFeatures?: string[];
@@ -118,6 +119,16 @@ export class GeneratePackageCommand implements
         default: undefined,
         defaultDescription:
           `By default, no arguments will not load any link type.`,
+      })
+      .options("agents", {
+        array: true,
+        string: true,
+        demandOption: false,
+        description:
+          "The API names and versions of the agents to generate. Example Usage: --agents weatherAgent:1.2.3",
+        default: undefined,
+        defaultDescription:
+          `By default, no arguments will not load any agents.`,
       })
       .options("queryTypes", {
         array: true,
@@ -241,6 +252,7 @@ export class GeneratePackageCommand implements
                 objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
                 actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
                 queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+                agentApiNamesToLoad: transformArrayArg(args.agents),
                 interfaceTypesApiNamesToLoad: transformArrayArg(
                   args.interfaceTypes,
                 ),

@@ -5,6 +5,7 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Folder Placement](#folder-placement)
 - [Key Concepts](#key-concepts)
 - [Defining an Ontology](#defining-an-ontology)
 - [Defining Shared Property Types](#defining-shared-property-types)
@@ -23,6 +24,12 @@ To get started with the maker package, install it as a dependency in your projec
 ```bash
 npm install @osdk/maker
 ```
+
+## Folder Placement
+
+Use `defineFolder({ id: "objects", folder: "/objects", resources: ["FutureObject", MyObject] })` with API-name strings or object, interface, action, link, and shared-property definitions. Resources must have `permission: "publicProject"` and can belong to only one folder.
+
+Paths are relative to the installation root; maker-experimental creates nested folders automatically. Keep `id` stable across renames and moves. Use `resources: []` for empty folders or explicit parents. Unassigned resources use the root.
 
 ## Defining Shared Property Types
 

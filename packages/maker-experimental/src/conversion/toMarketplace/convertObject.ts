@@ -411,24 +411,30 @@ function resolveInterfaceProperty(
 }
 
 /**
- * Extracts marking group names of a specific type from object properties
+ * Extracts the distinct marking group names of a specific type from object
+ * properties, in first-seen order. Properties that share a group share one
+ * datasource marking input.
  */
 export function extractMarkingGroups(
   properties: ObjectPropertyType[],
   markingType: "CBAC" | "MANDATORY",
 ): string[] {
-  return properties
-    .map((prop) => {
-      if (
-        typeof prop.type === "object" &&
-        prop.type.type === "marking" &&
-        prop.type.markingType === markingType
-      ) {
-        return prop.type.markingInputGroupName;
-      }
-      return undefined;
-    })
-    .filter((val): val is string => val !== undefined);
+  return [
+    ...new Set(
+      properties
+        .map((prop) => {
+          if (
+            typeof prop.type === "object" &&
+            prop.type.type === "marking" &&
+            prop.type.markingType === markingType
+          ) {
+            return prop.type.markingInputGroupName;
+          }
+          return undefined;
+        })
+        .filter((val): val is string => val !== undefined),
+    ),
+  ];
 }
 export function extractPropertyDatasource(
   property: ObjectPropertyType,
@@ -597,38 +603,43 @@ function buildAggregation(
   targetObjectApiName: string,
   ridGenerator: OntologyRidGenerator,
 ): DerivedPropertyAggregationWire {
-  const type = agg.type;
-  const limit = "limit" in agg ? agg.limit : undefined;
-  const foreignProperty = "property" in agg ? agg.property : undefined;
-  const innerDef: any = {};
-  if (type !== "count") {
-    if (["collectList", "collectSet"].includes(type)) {
-      innerDef.linkedProperty = {
-        type: "propertyType",
-        propertyType: foreignProperty
-          ? ridGenerator.generatePropertyRid(
-              foreignProperty,
-              targetObjectApiName,
-            )
-          : undefined,
-      };
-      innerDef.limit = limit;
-    } else {
-      innerDef.property = {
-        type: "propertyType",
-        propertyType: foreignProperty
-          ? ridGenerator.generatePropertyRid(
-              foreignProperty,
-              targetObjectApiName,
-            )
-          : undefined,
-      };
-    }
+  if (agg.type === "count") {
+    return { type: "count", count: {} };
   }
-  return {
-    type,
-    [type]: innerDef,
-  } as unknown as DerivedPropertyAggregationWire;
+  const property = {
+    type: "propertyType" as const,
+    propertyType: ridGenerator.generatePropertyRid(
+      agg.property,
+      targetObjectApiName,
+    ),
+  };
+  switch (agg.type) {
+    case "avg":
+      return { type: "avg", avg: property };
+    case "sum":
+      return { type: "sum", sum: property };
+    case "min":
+      return { type: "min", min: property };
+    case "max":
+      return { type: "max", max: property };
+    case "approximateCardinality":
+      return {
+        type: "approximateCardinality",
+        approximateCardinality: property,
+      };
+    case "exactCardinality":
+      return { type: "exactCardinality", exactCardinality: property };
+    case "collectList":
+      return {
+        type: "collectList",
+        collectList: { linkedProperty: property, limit: agg.limit },
+      };
+    case "collectSet":
+      return {
+        type: "collectSet",
+        collectSet: { linkedProperty: property, limit: agg.limit },
+      };
+  }
 }
 
 /**

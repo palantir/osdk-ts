@@ -1,5 +1,76 @@
 # @osdk/maker-experimental
 
+## 0.79.0
+
+### Minor Changes
+
+- 6df3c1e: Support folder structure in OAC
+- e2414a2: Deduplicate marking input group names when building an object's datasource marking constraint, so properties that share a group no longer create a separate repeated-name Marketplace input such as `group/group`.
+- aa664cc: Introduce defineFolder to clean up maker folder api
+
+### Patch Changes
+
+- Updated dependencies [6df3c1e]
+- Updated dependencies [e2414a2]
+- Updated dependencies [aa664cc]
+  - @osdk/maker@0.83.0
+  - @osdk/api@2.84.0
+  - @osdk/client.unstable@2.84.0
+  - @osdk/generator-converters.ontologyir@2.84.0
+
+## 0.78.0
+
+### Minor Changes
+
+- 4c59807: Support authored value type references in struct constraints, including inline constraints on struct and array-of-struct object properties, and package their Marketplace dependencies with consistent value type input titles and descriptions across blocks. Move `OntologyIrV2` from `@osdk/client.unstable` to `@osdk/maker-experimental` and include value type dependencies in its `valueTypes` entries.
+
+### Patch Changes
+
+- Updated dependencies [8818fcf]
+- Updated dependencies [4c59807]
+  - @osdk/maker-import@0.48.0
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+  - @osdk/generator-converters.ontologyir@2.83.0
+  - @osdk/generator-converters.preview@0.58.0
+  - @osdk/api@2.83.0
+
+## 0.77.0
+
+### Patch Changes
+
+- Updated dependencies [2089ca9]
+- Updated dependencies [9f97981]
+  - @osdk/maker@0.81.0
+  - @osdk/api@2.82.0
+  - @osdk/maker-import@0.47.0
+  - @osdk/generator-converters.preview@0.57.0
+  - @osdk/client.unstable@2.82.0
+  - @osdk/generator-converters.ontologyir@2.82.0
+
+## 0.76.0
+
+### Minor Changes
+
+- d9eb929: Resolve derived property traversal directions consistently during validation and generation, and reference the final linked object's property RIDs. Allow derived datasources alongside empty backing datasets and exclude derived properties from generated backing columns.
+- 1ab9e14: Enforce the interface schema migration lockfile in `maker-experimental` before writing block data, with `--lockfile`, `--write-locks`, and `--yes` options matching `maker`.
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [d9eb929]
+- Updated dependencies [1ab9e14]
+- Updated dependencies [23701c5]
+- Updated dependencies [bc63bd9]
+- Updated dependencies [f28586c]
+- Updated dependencies [8bc6e4a]
+  - @osdk/api@2.81.0
+  - @osdk/maker@0.80.0
+  - @osdk/generator-converters.preview@0.56.0
+  - @osdk/generator-converters.ontologyir@2.81.0
+  - @osdk/client.unstable@2.81.0
+  - @osdk/maker-import@0.46.0
+
 ## 0.75.0
 
 ### Minor Changes

@@ -381,14 +381,14 @@ export class FauxOntology {
     }
   }
 
-  registerAgentType(
+  registerAgent(
     agentApiName: string,
     def: Agents.AgentDefinitionVersion,
     implementation?: FauxAgentImpl,
   ): void {
     if (this.#agentDefinitions.get(agentApiName)?.has(def.version)) {
       throw new Error(
-        `AgentType ${agentApiName}:${def.version} already registered`,
+        `Agent ${agentApiName}:${def.version} already registered`,
       );
     }
     if (!this.#agentDefinitions.has(agentApiName)) {

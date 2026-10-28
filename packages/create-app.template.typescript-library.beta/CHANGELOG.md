@@ -1,5 +1,17 @@
 # @osdk/create-app.template.typescript-library.beta
 
+## 2.84.0
+
+### Minor Changes
+
+- 2de7af2: Remove .nvmrc from the typescript-library template; node version pinning now comes from osdk-templates-bundle
+
+## 2.83.0
+
+## 2.82.0
+
+## 2.81.0
+
 ## 2.80.0
 
 ## 2.79.0

@@ -21,7 +21,11 @@ import { fileURLToPath } from "node:url";
 
 // @ts-check
 import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import { $ } from "execa";
 
 const ONTOLOGY_METADATA_ENTRYPOINT = "./experimental/ontology-metadata";
@@ -77,6 +81,10 @@ async function setup() {
       "returnsObject",
       "twoDimensionalAggregationFunction",
       "threeDimensionalAggregationFunction",
+    ],
+    agents: [
+      `${stubData.weatherAgentApiName}:${stubData.weatherAgentVersion.version}`,
+      `${stubData.noArgsAgentApiName}:${stubData.noArgsAgentVersion.version}`,
     ],
     interfaceTypes: ["FooInterface", "BarInterface"],
     linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],

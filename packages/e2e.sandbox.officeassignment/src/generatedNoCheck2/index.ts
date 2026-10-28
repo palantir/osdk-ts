@@ -1,5 +1,7 @@
 export { endAssignment, recordStatusUpdate, toggleStatusExclusion, updateAssignment } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
+export {} from './ontology/agents.js';
+export * as $Agents from './ontology/agents.js';
 export {} from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export { Assignment, Employee, Floor, Manager, Office, StatusUpdate } from './ontology/objects.js';

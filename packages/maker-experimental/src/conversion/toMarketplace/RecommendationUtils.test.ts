@@ -34,7 +34,7 @@ function callGetExternalRecommendations(
 ) {
   return getExternalRecommendations(
     result.ontologyIr.importedOntology,
-    result.ontologyIr.valueTypes,
+    result.ontologyIr.valueTypes.map(({ blockData }) => blockData),
     result.importedTypes,
     result.shapes.inputShapes,
   );

@@ -154,4 +154,86 @@ describe("Marking Constraints", () => {
       "classificationGroup",
     );
   });
+
+  it("uses one marking group when several properties share it", () => {
+    defineObject({
+      titlePropertyApiName: "title",
+      displayName: "Document",
+      pluralDisplayName: "Documents",
+      apiName: "document",
+      primaryKeyPropertyApiName: "title",
+      properties: {
+        title: { type: "string", displayName: "Title" },
+        classification: {
+          type: {
+            type: "marking",
+            markingType: "CBAC",
+            markingInputGroupName: "classificationGroup",
+          },
+          displayName: "Classification",
+        },
+        referenceClassification: {
+          type: {
+            type: "marking",
+            markingType: "CBAC",
+            markingInputGroupName: "classificationGroup",
+          },
+          displayName: "Reference Classification",
+        },
+      },
+    });
+
+    const ontology = dumpOntologyFullMetadata();
+    const classificationConstraint =
+      ontology.ontology.objectTypes["com.palantir.document"].datasources[0]
+        .dataSecurity?.classificationConstraint!;
+    expect(classificationConstraint.markingGroupName).toEqual(
+      "classificationGroup",
+    );
+  });
+
+  it("joins distinct marking groups once each in property order", () => {
+    defineObject({
+      titlePropertyApiName: "title",
+      displayName: "Document",
+      pluralDisplayName: "Documents",
+      apiName: "document",
+      primaryKeyPropertyApiName: "title",
+      properties: {
+        title: { type: "string", displayName: "Title" },
+        classification: {
+          type: {
+            type: "marking",
+            markingType: "CBAC",
+            markingInputGroupName: "classificationGroup",
+          },
+          displayName: "Classification",
+        },
+        referenceClassification: {
+          type: {
+            type: "marking",
+            markingType: "CBAC",
+            markingInputGroupName: "referenceGroup",
+          },
+          displayName: "Reference Classification",
+        },
+        otherClassification: {
+          type: {
+            type: "marking",
+            markingType: "CBAC",
+            markingInputGroupName: "classificationGroup",
+          },
+          displayName: "Other Classification",
+        },
+      },
+    });
+
+    const ontology = dumpOntologyFullMetadata();
+    const classificationConstraint =
+      ontology.ontology.objectTypes["com.palantir.document"].datasources[0]
+        .dataSecurity?.classificationConstraint!;
+    expect(classificationConstraint.markingGroupName).toEqual(
+      "classificationGroup/referenceGroup",
+    );
+  });
 });

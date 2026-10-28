@@ -1,5 +1,37 @@
 # @osdk/shared.test
 
+## 0.61.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+- @osdk/generator-converters@2.83.0
+
+## 0.60.0
+
+### Minor Changes
+
+- 553461f: Add client generation for agents.
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+  - @osdk/generator-converters@2.82.0
+
+## 0.59.0
+
+### Minor Changes
+
+- 3677309: Convert agent session arguments containing OSDK objects and object sets, including nested values.
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/api@2.81.0
+  - @osdk/generator-converters@2.81.0
+
 ## 0.58.0
 
 ### Patch Changes

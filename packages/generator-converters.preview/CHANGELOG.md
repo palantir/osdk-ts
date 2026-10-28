@@ -1,5 +1,37 @@
 # @osdk/generator-converters.preview
 
+## 0.58.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/foundry-sdk-generator@2.83.0
+  - @osdk/generator-converters.ontologyir@2.83.0
+
+## 0.57.0
+
+### Patch Changes
+
+- Updated dependencies [553461f]
+  - @osdk/foundry-sdk-generator@2.82.0
+  - @osdk/client.unstable@2.82.0
+  - @osdk/generator-converters.ontologyir@2.82.0
+
+## 0.56.0
+
+### Minor Changes
+
+- bc63bd9: Include imported action types in preview
+
+### Patch Changes
+
+- Updated dependencies [f28586c]
+- Updated dependencies [8bc6e4a]
+  - @osdk/generator-converters.ontologyir@2.81.0
+  - @osdk/foundry-sdk-generator@2.81.0
+  - @osdk/client.unstable@2.81.0
+
 ## 0.55.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator",
-  "version": "2.80.0",
+  "version": "2.84.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
+    "@osdk/foundry.agents": "catalog:foundry-platform-typescript",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator-converters": "workspace:~",
     "consola": "^3.4.2",

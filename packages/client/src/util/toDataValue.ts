@@ -46,12 +46,16 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
-  actionMetadata: ActionMetadata,
+  parameterType: ActionMetadata.Parameter["type"],
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
     // Sending null over the wire clears the data, whereas undefined is dropped at request time.
     return value;
+  }
+
+  if (parameterType === "decimal" && typeof value === "number") {
+    return String(value);
   }
 
   // arrays and sets are both sent over the wire as arrays
@@ -65,14 +69,14 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValue(value, client, actionMetadata));
+        converted.push(await toDataValue(value, client, parameterType));
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValue(innerValue, client, actionMetadata),
+        await toDataValue(innerValue, client, parameterType),
     );
     return Promise.all(promiseArray);
   }
@@ -82,21 +86,21 @@ export async function toDataValue(
     const attachment = await Attachments.upload(client, value.data, {
       filename: value.name,
     });
-    return await toDataValue(attachment.rid, client, actionMetadata);
+    return await toDataValue(attachment.rid, client, parameterType);
   }
 
   if (isAttachmentFile(value)) {
     const attachment = await Attachments.upload(client, value, {
       filename: value.name as string,
     });
-    return await toDataValue(attachment.rid, client, actionMetadata);
+    return await toDataValue(attachment.rid, client, parameterType);
   }
 
   if (isMediaUpload(value)) {
     const mediaRef = await MediaSets.uploadMedia(client, value.data, {
       filename: value.fileName,
     });
-    return await toDataValue(mediaRef, client, actionMetadata);
+    return await toDataValue(mediaRef, client, parameterType);
   }
 
   if (isMedia(value)) {
@@ -109,11 +113,11 @@ export async function toDataValue(
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(value.__primaryKey, client, actionMetadata);
+    return await toDataValue(value.__primaryKey, client, parameterType);
   }
 
   if (isObjectSpecifiersObject(value)) {
-    return await toDataValue(value.$primaryKey, client, actionMetadata);
+    return await toDataValue(value.$primaryKey, client, parameterType);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
@@ -155,12 +159,26 @@ export async function toDataValue(
   // two dimensional aggregation
   // three dimensional aggregation
 
-  // struct
+  // structs and GeoJSON
   if (typeof value === "object") {
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
-        acc[key] = await toDataValue(structValue, client, actionMetadata);
+        let fieldType = parameterType;
+        if (
+          typeof parameterType === "object" &&
+          parameterType.type === "struct"
+        ) {
+          const fieldDefinition:
+            | ActionMetadata.Parameter["type"]
+            | ActionMetadata.DataType.StructFieldDefinition<ActionMetadata.DataType.BaseActionParameterTypes> =
+            parameterType.struct[key];
+          fieldType =
+            typeof fieldDefinition === "object" && "nullable" in fieldDefinition
+              ? fieldDefinition.type
+              : fieldDefinition;
+        }
+        acc[key] = await toDataValue(structValue, client, fieldType);
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),
