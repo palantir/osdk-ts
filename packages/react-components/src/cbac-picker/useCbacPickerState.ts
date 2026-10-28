@@ -154,8 +154,8 @@ export function useCbacPickerState(
       rawMarkings,
       (marking) => -Number(marking.priority),
     );
-    // Keep markings without prominence selectable, but after both known groups
-    // when determining the visible grid and overflow order.
+    // Order common markings first, then markings without prominence, then
+    // uncommon markings for both the visible grid and overflow.
     const [markingsWithProminence, markingsWithoutProminence] = partition(
       markings,
       (marking) => marking.prominence != null,
@@ -165,7 +165,7 @@ export function useCbacPickerState(
       (marking) => marking.prominence === "COMMON",
     );
     return groupMarkingsByCategory(
-      [...commonMarkings, ...uncommonMarkings, ...markingsWithoutProminence],
+      [...commonMarkings, ...markingsWithoutProminence, ...uncommonMarkings],
       categories,
     );
   }, [rawMarkings, rawCategories]);

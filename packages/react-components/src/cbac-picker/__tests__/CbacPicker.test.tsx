@@ -180,7 +180,7 @@ describe("CbacPicker", () => {
       ]);
     });
 
-    it("orders common, uncommon, then missing-prominence markings across overflow and selection", async () => {
+    it("orders common, missing-prominence, then uncommon markings across overflow and selection", async () => {
       const markings: NonNullable<ReturnType<typeof useMarkings>["markings"]> =
         [
           {
@@ -214,7 +214,7 @@ describe("CbacPicker", () => {
             priority: "100",
             prominence: "UNCOMMON" as const,
           },
-          ...Array.from({ length: 8 }, (_, i) => ({
+          ...Array.from({ length: 9 }, (_, i) => ({
             id: `common-${i}`,
             name: `Common ${i}`,
             priority: "0",
@@ -239,9 +239,8 @@ describe("CbacPicker", () => {
       const visibleNames = [
         "Common high",
         "Common low",
-        ...Array.from({ length: 8 }, (_, i) => `Common ${i}`),
-        "Zulu uncommon",
-        "+3 more",
+        ...Array.from({ length: 9 }, (_, i) => `Common ${i}`),
+        "+4 more",
       ];
       expect(
         category.getAllByRole("button").map((button) => button.textContent),
@@ -253,15 +252,16 @@ describe("CbacPicker", () => {
         category.getAllByRole("button").map((button) => button.textContent),
       ).toEqual(visibleNames);
 
-      fireEvent.click(category.getByRole("button", { name: "+3 more" }));
+      fireEvent.click(category.getByRole("button", { name: "+4 more" }));
       const missingProminenceButton = await screen.findByRole("button", {
         name: "Missing prominence",
       });
       const overflow = within(screen.getByRole("dialog"));
       const overflowNames = [
+        "Missing prominence",
+        "Zulu uncommon",
         "Alpha uncommon",
         "Uncommon low",
-        "Missing prominence",
       ];
       expect(
         overflow.getAllByRole("button").map((button) => button.textContent),
