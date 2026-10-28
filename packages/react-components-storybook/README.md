@@ -61,6 +61,38 @@ Notes:
 - In CI the tests run in a dedicated job that only triggers when
   `@osdk/react-components` or `@osdk/react-components-storybook` changes.
 
+## Running visual regression tests
+
+[Chromatic](https://www.chromatic.com/) captures a screenshot of every story
+and diffs it against an accepted baseline. This runs automatically in CI (see
+`.github/workflows/chromatic.yml`) for pushes to `main` and for PRs from
+branches in this repo — fork PRs are skipped, because they cannot read the
+`CHROMATIC_PROJECT_TOKEN` secret.
+
+To publish a build from your machine — useful for a fork PR, or to see diffs
+before pushing:
+
+```bash
+# from the repo root
+
+# build the browser bundles of the workspace packages the stories import
+pnpm turbo transpileBrowser --filter='@osdk/react-components-storybook^...'
+
+# build the Storybook
+pnpm --filter @osdk/react-components-storybook chromatic:build
+
+# upload it (get the token from the project's Chromatic settings)
+CHROMATIC_PROJECT_TOKEN=… pnpm --filter @osdk/react-components-storybook chromatic
+```
+
+Notes:
+
+- The CLI needs Node >= 22; this repo's `.nvmrc` is older, so switch with
+  `nvm use 24` (the version CI uses) first.
+- CI passes `--exit-zero-on-changes` while the baselines settle, so visual
+  diffs are reported but do not fail the build. Locally the CLI exits non-zero
+  on changes unless you pass the same flag.
+
 ## Features
 
 - Interactive component demonstrations
