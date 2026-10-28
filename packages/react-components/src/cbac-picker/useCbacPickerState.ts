@@ -20,6 +20,7 @@ import {
   useMarkingCategories,
   useMarkings,
 } from "@osdk/react/platform-apis";
+import { partition, sortBy } from "lodash-es";
 import React, { useMemo } from "react";
 
 import type {
@@ -143,7 +144,30 @@ export function useCbacPickerState(
     if (rawCategories === undefined || rawMarkings === undefined) {
       return [];
     }
-    return groupMarkingsByCategory(rawMarkings, rawCategories);
+    // Sort by descending numeric priority, preserving input order for ties. Missing
+    // priorities become NaN, which sortBy places after numeric priorities.
+    const categories = sortBy(
+      rawCategories,
+      (category) => -Number(category.priority),
+    );
+    const markings = sortBy(
+      rawMarkings,
+      (marking) => -Number(marking.priority),
+    );
+    // Keep markings without prominence selectable, but after both known groups
+    // when determining the visible grid and overflow order.
+    const [markingsWithProminence, markingsWithoutProminence] = partition(
+      markings,
+      (marking) => marking.prominence != null,
+    );
+    const [commonMarkings, uncommonMarkings] = partition(
+      markingsWithProminence,
+      (marking) => marking.prominence === "COMMON",
+    );
+    return groupMarkingsByCategory(
+      [...commonMarkings, ...uncommonMarkings, ...markingsWithoutProminence],
+      categories,
+    );
   }, [rawMarkings, rawCategories]);
 
   const markingStates = React.useMemo(
