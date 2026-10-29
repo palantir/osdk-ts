@@ -5,27 +5,39 @@
 ```ts
 
 // @public
-export function connectToWorkshopModule({ targetWindow, targetOrigin, signal, timeoutMs, hostWindow }: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection>;
+export function connectToWorkshopModule<const TSchema extends WorkshopVariableSchema>(options: ConnectToWorkshopModuleOptions<TSchema> & {
+    	variableSchema: TSchema
+}): Promise<WorkshopModuleConnection<TSchema>>;
+
+// @public (undocumented)
+export function connectToWorkshopModule(options: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection>;
 
 // @public
-export interface ConnectToWorkshopModuleOptions {
+export interface ConnectToWorkshopModuleOptions<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> {
     	hostWindow?: Window;
     	signal?: AbortSignal;
     	targetOrigin: string;
     	targetWindow: Window;
     	timeoutMs?: number;
+    	variableSchema?: TSchema;
 }
 
 // @public
 export function isWorkshopEmbedMessage(value: unknown): value is WorkshopEmbedMessage;
 
 // @public
-export function listenForWorkshopModuleEmbedMessages({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions): () => void;
+export function listenForWorkshopModuleEmbedMessages<const TSchema extends WorkshopVariableSchema>(options: ListenForWorkshopModuleEmbedMessagesOptions<TSchema> & {
+    	variableSchema: TSchema
+}): () => void;
+
+// @public (undocumented)
+export function listenForWorkshopModuleEmbedMessages(options?: ListenForWorkshopModuleEmbedMessagesOptions): () => void;
 
 // @public
-export interface ListenForWorkshopModuleEmbedMessagesOptions {
+export interface ListenForWorkshopModuleEmbedMessagesOptions<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> {
     	hostWindow?: Window;
-    	onConnect?: WorkshopModuleConnectHandler;
+    	onConnect?: WorkshopModuleConnectHandler<TSchema>;
+    	variableSchema?: TSchema;
 }
 
 // @public
@@ -53,22 +65,30 @@ export interface WorkshopEmbedMessage {
 }
 
 // @public
-export type WorkshopModuleConnectHandler = (connection: WorkshopModuleConnection) => void | (() => void);
+export type WorkshopModuleConnectHandler<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> = (connection: WorkshopModuleConnection<TSchema>) => void | (() => void);
 
 // @public
-export interface WorkshopModuleConnection {
+export interface WorkshopModuleConnection<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> {
     	disconnect: () => void;
-    	onVariablesSet: (listener: (values: WorkshopVariableValues) => void) => () => void;
+    	onVariablesSet: (listener: (values: WorkshopVariableValues<TSchema>) => void) => () => void;
     	readonly port: MessagePort;
     	readonly sessionId: string;
-    	setVariables: (values: WorkshopVariableValues) => void;
+    	setVariables: (values: WorkshopVariableValues<TSchema>) => void;
 }
 
 // @public
-export type WorkshopVariableValue = string | number | boolean | null;
+export type WorkshopVariableSchema = Readonly<Record<string, {
+    	readonly type: WorkshopVariableType
+}>>;
 
 // @public
-export type WorkshopVariableValues = Readonly<Record<string, WorkshopVariableValue>>;
+export type WorkshopVariableType = "string" | "number" | "boolean";
+
+// @public
+export type WorkshopVariableValue<TType extends WorkshopVariableType = WorkshopVariableType> = (TType extends "string" ? string : TType extends "number" ? number : boolean) | null;
+
+// @public
+export type WorkshopVariableValues<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> = keyof TSchema extends never ? Readonly<Record<string, never>> : string extends keyof TSchema ? Readonly<Record<string, WorkshopVariableValue<TSchema[string]["type"]>>> : { readonly [TName in keyof TSchema]? : WorkshopVariableValue<TSchema[TName]["type"]> };
 
 // (No @packageDocumentation comment for this package)
 

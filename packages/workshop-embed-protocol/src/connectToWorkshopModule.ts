@@ -17,13 +17,19 @@
 import { createConnection } from "./connection.js";
 import type { WorkshopModuleConnection } from "./connection.js";
 import { createMessage, isWorkshopEmbedMessage } from "./protocol.js";
+import { snapshotVariableSchema } from "./variables.js";
+import type { WorkshopVariableSchema } from "./variables.js";
 
 /** Options for a single connection attempt to a Workshop iframe. @public */
-export interface ConnectToWorkshopModuleOptions {
+export interface ConnectToWorkshopModuleOptions<
+  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+> {
   /** The iframe's contentWindow. */
   targetWindow: Window;
   /** HTTP(S) origin expected to host Workshop. Wildcards and opaque origins are rejected. */
   targetOrigin: string;
+  /** Local definitions used to infer and validate variable inputs. Not sent to Workshop. */
+  variableSchema?: TSchema;
   /** Abort to cancel the attempt or disconnect an established connection. */
   signal?: AbortSignal;
   /** Maximum handshake duration in milliseconds. Defaults to 10000. */
@@ -38,14 +44,31 @@ export interface ConnectToWorkshopModuleOptions {
  * cancellation, or connection failure. Call again after iframe navigation.
  * @public
  */
-export function connectToWorkshopModule({
+export function connectToWorkshopModule<
+  const TSchema extends WorkshopVariableSchema,
+>(
+  options: ConnectToWorkshopModuleOptions<TSchema> & {
+    variableSchema: TSchema;
+  },
+): Promise<WorkshopModuleConnection<TSchema>>;
+/** @public */
+export function connectToWorkshopModule(
+  options: ConnectToWorkshopModuleOptions,
+): Promise<WorkshopModuleConnection>;
+export function connectToWorkshopModule<
+  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+>({
   targetWindow,
   targetOrigin,
   signal,
   timeoutMs = 10_000,
   hostWindow = window,
-}: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection> {
+  variableSchema,
+}: ConnectToWorkshopModuleOptions<TSchema>): Promise<
+  WorkshopModuleConnection<TSchema>
+> {
   return new Promise((resolve, reject) => {
+    const schema = snapshotVariableSchema(variableSchema);
     const url = new URL(targetOrigin);
     if (url.protocol !== "https:" && url.protocol !== "http:") {
       throw new TypeError("Workshop origin must use http or https.");
@@ -62,7 +85,7 @@ export function connectToWorkshopModule({
     const origin = url.origin;
     const sessionId = crypto.randomUUID();
     let settled = false;
-    let managed: ReturnType<typeof createConnection> | undefined;
+    let managed: ReturnType<typeof createConnection<TSchema>> | undefined;
     let transferredPort: MessagePort | undefined;
 
     function cleanupBootstrap() {
@@ -127,13 +150,18 @@ export function connectToWorkshopModule({
       try {
         const channel = new MessageChannel();
         transferredPort = channel.port2;
-        managed = createConnection(channel.port1, sessionId, () => {
-          cleanup();
-          if (!settled) {
-            settled = true;
-            reject(new Error("Workshop port closed before acknowledgement."));
-          }
-        });
+        managed = createConnection(
+          channel.port1,
+          sessionId,
+          () => {
+            cleanup();
+            if (!settled) {
+              settled = true;
+              reject(new Error("Workshop port closed before acknowledgement."));
+            }
+          },
+          schema,
+        );
         channel.port1.addEventListener("message", handlePortMessage);
         targetWindow.postMessage(createMessage("connect", sessionId), origin, [
           channel.port2,

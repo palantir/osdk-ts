@@ -22,11 +22,17 @@ import {
   WORKSHOP_EMBED_QUERY_PARAM,
   WORKSHOP_EMBED_QUERY_VALUE,
 } from "./protocol.js";
+import { snapshotVariableSchema } from "./variables.js";
+import type { WorkshopVariableSchema } from "./variables.js";
 
 /** Options for the Workshop-side listener. @public */
-export interface ListenForWorkshopModuleEmbedMessagesOptions {
+export interface ListenForWorkshopModuleEmbedMessagesOptions<
+  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+> {
   /** Called for each accepted connection. Return a function to clean up per-connection resources. */
-  onConnect?: WorkshopModuleConnectHandler;
+  onConnect?: WorkshopModuleConnectHandler<TSchema>;
+  /** Local definitions used to infer and validate variable inputs. */
+  variableSchema?: TSchema;
   /** Workshop's window. Defaults to the current window. */
   hostWindow?: Window;
 }
@@ -37,10 +43,24 @@ export interface ListenForWorkshopModuleEmbedMessagesOptions {
  * Returns an idempotent cleanup that removes listeners and closes the active port.
  * @public
  */
-export function listenForWorkshopModuleEmbedMessages({
+export function listenForWorkshopModuleEmbedMessages<
+  const TSchema extends WorkshopVariableSchema,
+>(
+  options: ListenForWorkshopModuleEmbedMessagesOptions<TSchema> & {
+    variableSchema: TSchema;
+  },
+): () => void;
+/** @public */
+export function listenForWorkshopModuleEmbedMessages(
+  options?: ListenForWorkshopModuleEmbedMessagesOptions,
+): () => void;
+export function listenForWorkshopModuleEmbedMessages<
+  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+>({
   onConnect,
   hostWindow = window,
-}: ListenForWorkshopModuleEmbedMessagesOptions = {}): () => void {
+  variableSchema,
+}: ListenForWorkshopModuleEmbedMessagesOptions<TSchema> = {}): () => void {
   if (
     hostWindow.parent === hostWindow ||
     new URLSearchParams(hostWindow.location.search).get(
@@ -49,8 +69,9 @@ export function listenForWorkshopModuleEmbedMessages({
   )
     return () => {};
 
+  const schema = snapshotVariableSchema(variableSchema);
   let pending: { sessionId: string; origin: string } | undefined;
-  let active: ReturnType<typeof createConnection> | undefined;
+  let active: ReturnType<typeof createConnection<TSchema>> | undefined;
   let stopped = false;
 
   function disconnect() {
@@ -103,9 +124,14 @@ export function listenForWorkshopModuleEmbedMessages({
       port.close();
       return;
     }
-    const next = createConnection(port, message.sessionId, () => {
-      if (active === next) active = undefined;
-    });
+    const next = createConnection(
+      port,
+      message.sessionId,
+      () => {
+        if (active === next) active = undefined;
+      },
+      schema,
+    );
     active = next;
     try {
       port.postMessage(createMessage("connected", message.sessionId));

@@ -46,3 +46,39 @@ Values may be strings, finite numbers, booleans, or `null` to request clearing a
 This API provides the messaging layer. Applying inputs requires a Workshop integration that checks module readiness, external IDs, variable types, and whether each variable can be set. Handshake-only deployments ignore variable messages. A successful `setVariables` call does not acknowledge that Workshop received or applied the update.
 
 Connections expose `onVariablesSet(listener)` for receiving validated input messages for the current session. The returned function unsubscribes the listener, and disconnecting removes all listeners. Calling either variable method on a closed connection throws. Output subscriptions and notifications of variable state changes are not implemented yet.
+
+## Declaring variable types
+
+Pass a local schema to infer the allowed external IDs and their value types:
+
+```ts
+import {
+  connectToWorkshopModule,
+  type WorkshopVariableSchema,
+} from "@osdk/workshop-embed-protocol";
+
+const variableSchema = {
+  searchText: { type: "string" },
+  maxResults: { type: "number" },
+  includeArchived: { type: "boolean" },
+} as const satisfies WorkshopVariableSchema;
+
+const connection = await connectToWorkshopModule({
+  targetWindow: iframe.contentWindow!,
+  targetOrigin: new URL(iframe.src).origin,
+  variableSchema,
+});
+
+connection.setVariables({ searchText: "Ada", maxResults: 25 });
+connection.setVariables({ searchText: null }); // Request clearing a value.
+
+// TypeScript errors:
+// connection.setVariables({ maxResults: "25" });
+// connection.setVariables({ unknownVariable: true });
+```
+
+The schema also determines the types received by `onVariablesSet`. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<typeof variableSchema>` to refer to the inferred update type. Without a schema, the connection accepts any non-empty external ID with a supported scalar value.
+
+Connections snapshot the schema locally and validate outgoing and incoming values against it. Sending an unknown ID or an incorrect value type throws a `TypeError`; an incoming batch that does not match is ignored. The schema is not sent across the iframe boundary and adds no binding or readiness exchange.
+
+The schema is a plain data object that can be authored manually or emitted by future code generation. It describes the app's expectations; it does not discover or verify the actual Workshop module's variables. The Workshop integration must still validate the module interface and apply inputs when the module is ready.

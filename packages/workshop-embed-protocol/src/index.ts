@@ -31,6 +31,8 @@ export {
 } from "./protocol.js";
 export type { WorkshopEmbedMessage } from "./protocol.js";
 export type {
+  WorkshopVariableSchema,
+  WorkshopVariableType,
   WorkshopVariableValue,
   WorkshopVariableValues,
 } from "./variables.js";

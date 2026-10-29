@@ -19,43 +19,55 @@ import {
   createSetVariablesMessage,
   isSetVariablesMessage,
 } from "./variables.js";
-import type { WorkshopVariableValues } from "./variables.js";
+import type {
+  WorkshopVariableSchema,
+  WorkshopVariableValues,
+} from "./variables.js";
 
 /** An established transport connection; this does not imply module readiness. @public */
-export interface WorkshopModuleConnection {
+export interface WorkshopModuleConnection<
+  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+> {
   /** Identifies this connection attempt. */
   readonly sessionId: string;
   /** Dedicated transport. Add listeners with addEventListener; use disconnect to close it. */
   readonly port: MessagePort;
   /** Sends scalar inputs to the peer. Throws for invalid values or a closed connection. Does not acknowledge application. */
-  setVariables: (values: WorkshopVariableValues) => void;
+  setVariables: (values: WorkshopVariableValues<TSchema>) => void;
   /** Receives validated inputs for this session. Returns an unsubscribe function; disconnect removes all listeners. Throws if closed. */
   onVariablesSet: (
-    listener: (values: WorkshopVariableValues) => void,
+    listener: (values: WorkshopVariableValues<TSchema>) => void,
   ) => () => void;
   /** Notifies the peer, closes the port, and runs connection cleanup. Idempotent. */
   disconnect: () => void;
 }
 
 /** Callback invoked when a connection is established. Its returned cleanup runs on disposal. @public */
-export type WorkshopModuleConnectHandler = (
-  connection: WorkshopModuleConnection,
-) => void | (() => void);
+export type WorkshopModuleConnectHandler<
+  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+> = (connection: WorkshopModuleConnection<TSchema>) => void | (() => void);
 
-interface ManagedConnection {
-  connection: WorkshopModuleConnection;
+interface ManagedConnection<TSchema extends WorkshopVariableSchema> {
+  connection: WorkshopModuleConnection<TSchema>;
   dispose: (notifyPeer: boolean) => void;
-  activate: (handler: WorkshopModuleConnectHandler | undefined) => void;
+  activate: (
+    handler: WorkshopModuleConnectHandler<TSchema> | undefined,
+  ) => void;
 }
 
-export function createConnection(
+export function createConnection<
+  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+>(
   port: MessagePort,
   sessionId: string,
   onDispose: () => void,
-): ManagedConnection {
+  variableSchema?: TSchema,
+): ManagedConnection<TSchema> {
   let disposed = false;
   let cleanup: void | (() => void);
-  const variableListeners = new Set<(values: WorkshopVariableValues) => void>();
+  const variableListeners = new Set<
+    (values: WorkshopVariableValues<TSchema>) => void
+  >();
 
   function dispose(notifyPeer: boolean) {
     if (disposed) return;
@@ -90,7 +102,7 @@ export function createConnection(
     ) {
       dispose(false);
     } else if (
-      isSetVariablesMessage(event.data) &&
+      isSetVariablesMessage(event.data, variableSchema) &&
       event.data.sessionId === sessionId
     ) {
       // Defer listeners added by a callback until the next message.
@@ -105,13 +117,15 @@ export function createConnection(
     if (disposed) throw new Error("Workshop connection is closed.");
   }
 
-  const connection: WorkshopModuleConnection = {
+  const connection: WorkshopModuleConnection<TSchema> = {
     port,
     sessionId,
     disconnect,
     setVariables(values) {
       assertOpen();
-      port.postMessage(createSetVariablesMessage(sessionId, values));
+      port.postMessage(
+        createSetVariablesMessage(sessionId, values, variableSchema),
+      );
     },
     onVariablesSet(listener) {
       assertOpen();
