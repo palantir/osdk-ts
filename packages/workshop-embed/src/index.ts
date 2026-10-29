@@ -23,14 +23,6 @@ export type {
 export { listenForWorkshopModuleEmbedMessages } from "./listenForWorkshopModuleEmbedMessages.js";
 export type { ListenForWorkshopModuleEmbedMessagesOptions } from "./listenForWorkshopModuleEmbedMessages.js";
 export {
-  isWorkshopEmbedMessage,
-  WORKSHOP_EMBED_CHANNEL,
-  WORKSHOP_EMBED_MESSAGE_TYPES,
   WORKSHOP_EMBED_QUERY_PARAM,
   WORKSHOP_EMBED_QUERY_VALUE,
-  WORKSHOP_EMBED_VERSION,
-} from "./protocol.js";
-export type {
-  WorkshopEmbedMessage,
-  WorkshopEmbedMessageType,
 } from "./protocol.js";

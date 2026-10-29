@@ -20,13 +20,13 @@ export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 /** Value required for the Workshop embed opt-in. @public */
 export const WORKSHOP_EMBED_QUERY_VALUE = "1";
 
-/** Identifies messages belonging to the Workshop embedding protocol. @public */
+/** Identifies messages belonging to the Workshop embedding protocol. */
 export const WORKSHOP_EMBED_CHANNEL = "workshop-module-embed";
 
-/** Wire protocol version, independent of the npm package version. @public */
+/** Wire protocol version, independent of the npm package version. */
 export const WORKSHOP_EMBED_VERSION = 1;
 
-/** Supported handshake and lifecycle message types. @public */
+/** Supported handshake and lifecycle message types. */
 export const WORKSHOP_EMBED_MESSAGE_TYPES = [
   "probe",
   "available",
@@ -36,11 +36,11 @@ export const WORKSHOP_EMBED_MESSAGE_TYPES = [
 ] as const;
 Object.freeze(WORKSHOP_EMBED_MESSAGE_TYPES);
 
-/** A supported handshake or lifecycle message type. @public */
+/** A supported handshake or lifecycle message type. */
 export type WorkshopEmbedMessageType =
   (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
 
-/** Handshake and lifecycle messages. connect transfers one port outside this object. @public */
+/** Handshake and lifecycle messages. connect transfers one port outside this object. */
 export interface WorkshopEmbedMessage {
   channel: typeof WORKSHOP_EMBED_CHANNEL;
   version: typeof WORKSHOP_EMBED_VERSION;
@@ -48,7 +48,7 @@ export interface WorkshopEmbedMessage {
   type: WorkshopEmbedMessageType;
 }
 
-/** Validates an untrusted handshake or lifecycle message at runtime. @public */
+/** Validates an untrusted handshake or lifecycle message at runtime. */
 export function isWorkshopEmbedMessage(
   value: unknown,
 ): value is WorkshopEmbedMessage {

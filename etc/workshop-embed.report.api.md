@@ -17,9 +17,6 @@ export interface ConnectToWorkshopModuleOptions {
 }
 
 // @public
-export function isWorkshopEmbedMessage(value: unknown): value is WorkshopEmbedMessage;
-
-// @public
 export function listenForWorkshopModuleEmbedMessages({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions): () => void;
 
 // @public
@@ -29,34 +26,10 @@ export interface ListenForWorkshopModuleEmbedMessagesOptions {
 }
 
 // @public
-export const WORKSHOP_EMBED_CHANNEL = "workshop-module-embed";
-
-// @public
-export const WORKSHOP_EMBED_MESSAGE_TYPES: readonly ["probe", "available", "connect", "connected", "disconnect"];
-
-// @public
 export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 
 // @public
 export const WORKSHOP_EMBED_QUERY_VALUE = "1";
-
-// @public
-export const WORKSHOP_EMBED_VERSION = 1;
-
-// @public
-export interface WorkshopEmbedMessage {
-    	// (undocumented)
-    channel: typeof WORKSHOP_EMBED_CHANNEL;
-    	// (undocumented)
-    sessionId: string;
-    	// (undocumented)
-    type: WorkshopEmbedMessageType;
-    	// (undocumented)
-    version: typeof WORKSHOP_EMBED_VERSION;
-}
-
-// @public
-export type WorkshopEmbedMessageType = (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
 
 // @public
 export type WorkshopModuleConnectHandler = (connection: WorkshopModuleConnection) => void | (() => void);
