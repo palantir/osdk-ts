@@ -1,5 +1,16 @@
 # @osdk/generator-converters
 
+## 2.85.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/api@2.85.0
+
 ## 2.84.0
 
 ### Patch Changes

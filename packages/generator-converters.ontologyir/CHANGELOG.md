@@ -1,5 +1,16 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.85.0
+
+### Minor Changes
+
+- 8f34b57: Extract action parameter validation logic and ensure it matches Foundry backend logic
+
+### Patch Changes
+
+- Updated dependencies [646d01d]
+  - @osdk/client.unstable@2.85.0
+
 ## 2.84.0
 
 ### Patch Changes

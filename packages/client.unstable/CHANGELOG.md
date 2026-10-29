@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.85.0
+
+### Minor Changes
+
+- 646d01d: Expose implementing-object reference and reference-list parameter constraints for interface action types in the generated Marketplace API.
+
 ## 2.84.0
 
 ## 2.83.0

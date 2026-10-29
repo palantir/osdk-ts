@@ -1,5 +1,18 @@
 # @osdk/integration-testing
 
+## 0.14.0
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [34c76cd]
+- Updated dependencies [d0f3019]
+  - @osdk/client@2.85.0
+  - @osdk/api@2.85.0
+  - @osdk/generator-converters.preview@0.59.0
+  - @osdk/unit-testing@1.1.0
+
 ## 0.13.0
 
 ### Patch Changes

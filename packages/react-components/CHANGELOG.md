@@ -1,5 +1,15 @@
 # @osdk/react-components
 
+## 0.67.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
 ## 0.66.0
 
 ### Minor Changes

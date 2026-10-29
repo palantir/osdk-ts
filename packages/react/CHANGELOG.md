@@ -1,5 +1,15 @@
 # @osdkkit/react
 
+## 2.85.0
+
+### Minor Changes
+
+- d0f3019: Upgrade the admin Platform SDK to 2.86.0 and remove the obsolete CBAC banner preview parameter.
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
 ## 2.84.0
 
 ### Patch Changes

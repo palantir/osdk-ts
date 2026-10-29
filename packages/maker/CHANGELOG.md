@@ -1,5 +1,20 @@
 # @osdk/maker
 
+## 0.84.0
+
+### Minor Changes
+
+- d583566: Emit derived `avg`, `sum`, `min`, `max`, `approximateCardinality` and `exactCardinality` aggregations with the property type identifier directly under the aggregation key, so packaging no longer fails with "missing field `type`".
+- a0c6e14: New TimeSeriesReference action parameter
+- 050417c: Exclude derived properties from auto-generated modify object action parameters and logic rule, matching create and create-or-modify actions
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+  - @osdk/api@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+
 ## 0.83.0
 
 ### Minor Changes

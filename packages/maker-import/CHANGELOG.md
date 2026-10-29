@@ -1,5 +1,20 @@
 # @osdk/maker-import
 
+## 0.49.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [d583566]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [050417c]
+  - @osdk/maker@0.84.0
+  - @osdk/client.unstable@2.85.0
+
 ## 0.48.0
 
 ### Minor Changes
