@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isRecord } from "./isRecord.js";
+
 /** URL parameter that enables the Workshop-side listener. @public */
 export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 
@@ -26,12 +28,22 @@ export const WORKSHOP_EMBED_CHANNEL = "workshop-module-embed";
 /** Wire protocol version, independent of the npm package version. @public */
 export const WORKSHOP_EMBED_VERSION = 1;
 
+/** Supported handshake and lifecycle message types. @public */
+export const WORKSHOP_EMBED_MESSAGE_TYPES = [
+  "probe",
+  "available",
+  "connect",
+  "connected",
+  "disconnect",
+] as const;
+Object.freeze(WORKSHOP_EMBED_MESSAGE_TYPES);
+
 /** Handshake and lifecycle messages. connect transfers one port outside this object. @public */
 export interface WorkshopEmbedMessage {
   channel: typeof WORKSHOP_EMBED_CHANNEL;
   version: typeof WORKSHOP_EMBED_VERSION;
   sessionId: string;
-  type: "probe" | "available" | "connect" | "connected" | "disconnect";
+  type: (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
 }
 
 /** Validates an untrusted handshake or lifecycle message at runtime. @public */
@@ -39,21 +51,12 @@ export function isWorkshopEmbedMessage(
   value: unknown,
 ): value is WorkshopEmbedMessage {
   return (
-    value != null &&
-    typeof value === "object" &&
-    "channel" in value &&
+    isRecord(value) &&
     value.channel === WORKSHOP_EMBED_CHANNEL &&
-    "version" in value &&
     value.version === WORKSHOP_EMBED_VERSION &&
-    "sessionId" in value &&
     typeof value.sessionId === "string" &&
     value.sessionId.length > 0 &&
-    "type" in value &&
-    (value.type === "probe" ||
-      value.type === "available" ||
-      value.type === "connect" ||
-      value.type === "connected" ||
-      value.type === "disconnect")
+    WORKSHOP_EMBED_MESSAGE_TYPES.some((type) => type === value.type)
   );
 }
 

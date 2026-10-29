@@ -25,6 +25,7 @@ export type { ListenForWorkshopModuleEmbedMessagesOptions } from "./listenForWor
 export {
   isWorkshopEmbedMessage,
   WORKSHOP_EMBED_CHANNEL,
+  WORKSHOP_EMBED_MESSAGE_TYPES,
   WORKSHOP_EMBED_QUERY_PARAM,
   WORKSHOP_EMBED_QUERY_VALUE,
   WORKSHOP_EMBED_VERSION,
