@@ -61,94 +61,77 @@ export function connectToWorkshopModule({
     }
     const origin = url.origin;
     const sessionId = crypto.randomUUID();
-    let settled = false;
-    let managed: ReturnType<typeof createConnection> | undefined;
-    let transferredPort: MessagePort | undefined;
+    let handshakeSettled = false;
+    let managedConnection: ReturnType<typeof createConnection> | undefined;
+    let portToTransfer: MessagePort | undefined;
 
-    function cleanupBootstrap() {
-      clearTimeout(timeout);
-      clearInterval(retry);
+    function cleanupHandshake() {
+      clearTimeout(handshakeTimeout);
+      clearInterval(probeInterval);
       hostWindow.removeEventListener("message", handleWindowMessage);
-      managed?.connection.port.removeEventListener(
+      managedConnection?.connection.port.removeEventListener(
         "message",
         handlePortMessage,
       );
     }
 
     function cleanup() {
-      cleanupBootstrap();
+      cleanupHandshake();
       signal?.removeEventListener("abort", abort);
       hostWindow.removeEventListener("pagehide", abort);
-      transferredPort?.close();
-      transferredPort = undefined;
+      portToTransfer?.close();
+      portToTransfer = undefined;
     }
 
     function fail(error: Error) {
-      if (!settled) {
-        settled = true;
+      if (!handshakeSettled) {
+        handshakeSettled = true;
         reject(error);
       }
       cleanup();
-      managed?.dispose(true);
+      managedConnection?.dispose(true);
     }
 
     function abort() {
       fail(new DOMException("Workshop connection aborted.", "AbortError"));
     }
 
-    function handlePortMessage(event: MessageEvent<unknown>) {
-      if (
-        !settled &&
-        managed != null &&
-        isWorkshopEmbedMessage(event.data) &&
-        event.data.sessionId === sessionId &&
-        event.data.type === "connected"
-      ) {
-        settled = true;
-        cleanupBootstrap();
-        resolve(managed.connection);
+    function handleConnectionClosed() {
+      cleanup();
+      if (!handshakeSettled) {
+        handshakeSettled = true;
+        reject(new Error("Workshop port closed before acknowledgement."));
       }
     }
 
     function handleWindowMessage(event: MessageEvent<unknown>) {
+      const message = event.data;
       if (
-        settled ||
-        managed != null ||
         event.source !== targetWindow ||
         event.origin !== origin ||
-        !isWorkshopEmbedMessage(event.data) ||
-        event.data.type !== "available" ||
-        event.data.sessionId !== sessionId ||
+        !isWorkshopEmbedMessage(message) ||
+        message.type !== "available" ||
+        message.sessionId !== sessionId ||
         event.ports.length !== 0
       )
         return;
 
-      clearInterval(retry);
-      try {
-        const channel = new MessageChannel();
-        transferredPort = channel.port2;
-        managed = createConnection(channel.port1, sessionId, () => {
-          cleanup();
-          if (!settled) {
-            settled = true;
-            reject(new Error("Workshop port closed before acknowledgement."));
-          }
-        });
-        channel.port1.addEventListener("message", handlePortMessage);
-        targetWindow.postMessage(createMessage("connect", sessionId), origin, [
-          channel.port2,
-        ]);
-        transferredPort = undefined;
-      } catch (error) {
-        fail(
-          error instanceof Error
-            ? error
-            : new Error("Workshop connection failed."),
-        );
-      }
+      handleAvailable();
     }
 
-    function probe() {
+    function handlePortMessage(event: MessageEvent<unknown>) {
+      const message = event.data;
+      if (
+        !isWorkshopEmbedMessage(message) ||
+        message.sessionId !== sessionId ||
+        message.type !== "connected"
+      )
+        return;
+
+      handleConnected();
+    }
+
+    function sendProbe() {
       try {
         targetWindow.postMessage(createMessage("probe", sessionId), origin);
       } catch (error) {
@@ -158,14 +141,48 @@ export function connectToWorkshopModule({
       }
     }
 
+    function handleAvailable() {
+      if (handshakeSettled || managedConnection != null) return;
+
+      clearInterval(probeInterval);
+      try {
+        const channel = new MessageChannel();
+        portToTransfer = channel.port2;
+        managedConnection = createConnection(
+          channel.port1,
+          sessionId,
+          handleConnectionClosed,
+        );
+        channel.port1.addEventListener("message", handlePortMessage);
+        targetWindow.postMessage(createMessage("connect", sessionId), origin, [
+          channel.port2,
+        ]);
+        portToTransfer = undefined;
+      } catch (error) {
+        fail(
+          error instanceof Error
+            ? error
+            : new Error("Workshop connection failed."),
+        );
+      }
+    }
+
+    function handleConnected() {
+      if (handshakeSettled || managedConnection == null) return;
+
+      handshakeSettled = true;
+      cleanupHandshake();
+      resolve(managedConnection.connection);
+    }
+
     hostWindow.addEventListener("message", handleWindowMessage);
     hostWindow.addEventListener("pagehide", abort);
     signal?.addEventListener("abort", abort);
-    const timeout = setTimeout(
+    const handshakeTimeout = setTimeout(
       () => fail(new Error("Workshop handshake timed out.")),
       timeoutMs,
     );
-    const retry = setInterval(probe, 250);
-    probe();
+    const probeInterval = setInterval(sendProbe, 250);
+    sendProbe();
   });
 }
