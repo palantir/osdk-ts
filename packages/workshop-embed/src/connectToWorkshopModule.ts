@@ -61,7 +61,6 @@ export function connectToWorkshopModule({
     const origin = url.origin;
     const sessionId = crypto.randomUUID();
     const { port1, port2 } = new MessageChannel();
-    let settled = false;
     let transferred = false;
     const handshakeTimeout = setTimeout(
       () => fail(new Error("Workshop handshake timed out.")),
@@ -86,10 +85,7 @@ export function connectToWorkshopModule({
     }
 
     function fail(error: unknown) {
-      if (!settled) {
-        settled = true;
-        reject(error instanceof Error ? error : new Error(String(error)));
-      }
+      reject(error instanceof Error ? error : new Error(String(error)));
       dispose(true);
     }
 
@@ -128,7 +124,6 @@ export function connectToWorkshopModule({
         message.type === "connected" &&
         message.sessionId === sessionId
       ) {
-        settled = true;
         stopHandshake();
         resolve(connection);
       }
