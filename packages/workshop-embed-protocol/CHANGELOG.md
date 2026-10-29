@@ -1,1 +1,0 @@
-# @osdk/workshop-embed-protocol
