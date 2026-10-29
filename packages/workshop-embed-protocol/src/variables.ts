@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isRecord } from "./isRecord.js";
 import { WORKSHOP_EMBED_CHANNEL, WORKSHOP_EMBED_VERSION } from "./protocol.js";
 import type { WorkshopEmbedMessage } from "./protocol.js";
 
@@ -137,13 +138,5 @@ function isVariableValues<TSchema extends WorkshopVariableSchema>(
           (Object.hasOwn(schema, externalId) &&
             (input == null || typeof input === schema[externalId]?.type))),
     )
-  );
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return (
-    value != null &&
-    typeof value === "object" &&
-    Object.prototype.toString.call(value) === "[object Object]"
   );
 }

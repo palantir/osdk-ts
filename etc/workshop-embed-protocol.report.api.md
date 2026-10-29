@@ -44,6 +44,9 @@ export interface ListenForWorkshopModuleEmbedMessagesOptions<TSchema extends Wor
 export const WORKSHOP_EMBED_CHANNEL = "workshop-module-embed";
 
 // @public
+export const WORKSHOP_EMBED_MESSAGE_TYPES: readonly ["probe", "available", "connect", "connected", "disconnect"];
+
+// @public
 export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 
 // @public
@@ -59,7 +62,7 @@ export interface WorkshopEmbedMessage {
     	// (undocumented)
     sessionId: string;
     	// (undocumented)
-    type: "probe" | "available" | "connect" | "connected" | "disconnect";
+    type: (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
     	// (undocumented)
     version: typeof WORKSHOP_EMBED_VERSION;
 }
