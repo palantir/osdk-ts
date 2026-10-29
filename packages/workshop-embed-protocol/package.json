@@ -1,7 +1,7 @@
 {
   "name": "@osdk/workshop-embed-protocol",
   "version": "0.0.0",
-  "description": "Experimental protocol for embedding Workshop modules",
+  "description": "Shared MessageChannel handshake for embedding Workshop modules",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -34,6 +34,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
     "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
+    "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",

@@ -4,6 +4,64 @@
 
 ```ts
 
+// @public
+export function connectToWorkshopModule({ targetWindow, targetOrigin, signal, timeoutMs, hostWindow }: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection>;
+
+// @public
+export interface ConnectToWorkshopModuleOptions {
+    	hostWindow?: Window;
+    	signal?: AbortSignal;
+    	targetOrigin: string;
+    	targetWindow: Window;
+    	timeoutMs?: number;
+}
+
+// @public
+export function isWorkshopEmbedMessage(value: unknown): value is WorkshopEmbedMessage;
+
+// @public
+export function listenForWorkshopModuleEmbedMessages({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions): () => void;
+
+// @public
+export interface ListenForWorkshopModuleEmbedMessagesOptions {
+    	hostWindow?: Window;
+    	onConnect?: WorkshopModuleConnectHandler;
+}
+
+// @public
+export const WORKSHOP_EMBED_CHANNEL = "workshop-module-embed";
+
+// @public
+export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
+
+// @public
+export const WORKSHOP_EMBED_QUERY_VALUE = "1";
+
+// @public
+export const WORKSHOP_EMBED_VERSION = 1;
+
+// @public
+export interface WorkshopEmbedMessage {
+    	// (undocumented)
+    channel: typeof WORKSHOP_EMBED_CHANNEL;
+    	// (undocumented)
+    sessionId: string;
+    	// (undocumented)
+    type: "probe" | "available" | "connect" | "connected" | "disconnect";
+    	// (undocumented)
+    version: typeof WORKSHOP_EMBED_VERSION;
+}
+
+// @public
+export type WorkshopModuleConnectHandler = (connection: WorkshopModuleConnection) => void | (() => void);
+
+// @public
+export interface WorkshopModuleConnection {
+    	disconnect: () => void;
+    	readonly port: MessagePort;
+    	readonly sessionId: string;
+}
+
 // (No @packageDocumentation comment for this package)
 
 ```
