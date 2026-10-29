@@ -1255,6 +1255,12 @@ function getMarkingShapes(
  * Consume (merge) block shapes into the target
  */
 function consumeBlockShapes(target: BlockShapes, source: BlockShapes): void {
+  if (source.inputPresets?.size) {
+    target.inputPresets ??= new Map();
+    for (const [key, value] of source.inputPresets) {
+      target.inputPresets.set(key, value);
+    }
+  }
   for (const [key, value] of source.inputShapes.entries()) {
     target.inputShapes.set(key, value);
   }

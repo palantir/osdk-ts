@@ -257,7 +257,10 @@ export async function defineOntologyV2(
     importedTypes,
     shapes,
     blockDataAddOn,
-    importedInputPresets: importedShapes.inputPresets,
+    importedInputPresets: new Map([
+      ...importedShapes.inputPresets,
+      ...(shapes.inputPresets ?? []),
+    ]),
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
