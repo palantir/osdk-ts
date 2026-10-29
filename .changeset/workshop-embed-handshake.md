@@ -1,5 +1,5 @@
 ---
-"@osdk/workshop-embed-protocol": minor
+"@osdk/workshop-embed": minor
 ---
 
-Create the experimental Workshop embed protocol package.
+Create the experimental Workshop embed package.

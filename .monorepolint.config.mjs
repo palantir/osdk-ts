@@ -310,7 +310,7 @@ const archetypeRules = archetypes(standardPackageRules, {
       "@osdk/functions",
       "@osdk/agents",
       "@osdk/unit-testing",
-      "@osdk/workshop-embed-protocol",
+      "@osdk/workshop-embed",
     ],
     {
       ...LIBRARY_RULES,

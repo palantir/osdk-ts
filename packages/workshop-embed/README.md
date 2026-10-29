@@ -1,4 +1,4 @@
-# @osdk/workshop-embed-protocol
+# @osdk/workshop-embed
 
 Experimental package for communication between an embedding application and Workshop. Workshop also uses this package internally.
 
