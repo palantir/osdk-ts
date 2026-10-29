@@ -24,6 +24,6 @@ Start a fresh attempt on each iframe `load`, URL change, and parent `pageshow`. 
 
 ## Connection lifecycle
 
-The promise resolves after Workshop acknowledges a dedicated `MessagePort`. This confirms that the transport is connected; it does not indicate that the module has loaded. Interface-variable updates are not implemented by this package.
+The promise resolves after Workshop acknowledges a dedicated `MessagePort`. This confirms that the transport is connected; it does not indicate that the module has loaded.
 
 The connection exposes its `sessionId`, `port`, and `disconnect()` method. Add port listeners with `addEventListener`. Call `connection.disconnect()` or abort the signal to notify Workshop and close the connection, rather than closing the port directly. Dispose the connection when the embedding application unmounts or navigates to another module.
