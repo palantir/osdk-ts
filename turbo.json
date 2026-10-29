@@ -270,7 +270,7 @@
       "outputLogs": "new-only",
       "env": ["FORCE_COLOR", "CI"],
       "dependsOn": ["^transpileEsm", "transpileEsm"],
-      "outputs": []
+      "outputs": ["reports/**"]
     },
 
     "updateSnapshots": {
