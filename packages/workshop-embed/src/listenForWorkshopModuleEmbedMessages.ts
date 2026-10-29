@@ -109,7 +109,7 @@ export function listenForWorkshopModuleEmbedMessages({
     pendingHandshake = undefined;
     activeConnection = next;
     try {
-      // If the previous cleanup stops the listener, next is disposed and activate skips it.
+      // Dispose previous directly; disconnect() would also drop next, which is already active.
       previous?.dispose(true);
       next.activate(onConnect);
     } catch (error) {

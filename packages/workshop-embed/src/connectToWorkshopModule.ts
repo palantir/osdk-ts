@@ -68,7 +68,6 @@ export function connectToWorkshopModule({
     );
     const probeInterval = setInterval(sendProbe, 250);
 
-    // Every exit path disposes the connection, which runs this exactly once.
     const { connection, dispose } = createConnection(port1, sessionId, () => {
       stopHandshake();
       signal?.removeEventListener("abort", abort);
