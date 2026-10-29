@@ -56,133 +56,96 @@ export function connectToWorkshopModule({
       );
     }
     if (signal?.aborted) {
-      reject(new DOMException("Workshop connection aborted.", "AbortError"));
-      return;
+      throw new DOMException("Workshop connection aborted.", "AbortError");
     }
     const origin = url.origin;
     const sessionId = crypto.randomUUID();
-    let handshakeSettled = false;
-    let managedConnection: ReturnType<typeof createConnection> | undefined;
-    let portToTransfer: MessagePort | undefined;
+    const { port1, port2 } = new MessageChannel();
+    let settled = false;
+    let transferred = false;
+    const handshakeTimeout = setTimeout(
+      () => fail(new Error("Workshop handshake timed out.")),
+      timeoutMs,
+    );
+    const probeInterval = setInterval(sendProbe, 250);
 
-    function cleanupHandshake() {
+    // Every exit path disposes the connection, which runs this exactly once.
+    const { connection, dispose } = createConnection(port1, sessionId, () => {
+      stopHandshake();
+      signal?.removeEventListener("abort", abort);
+      hostWindow.removeEventListener("pagehide", abort);
+      if (!transferred) port2.close();
+      fail(new Error("Workshop port closed before acknowledgement."));
+    });
+
+    function stopHandshake() {
       clearTimeout(handshakeTimeout);
       clearInterval(probeInterval);
       hostWindow.removeEventListener("message", handleWindowMessage);
-      managedConnection?.connection.port.removeEventListener(
-        "message",
-        handlePortMessage,
-      );
+      port1.removeEventListener("message", handlePortMessage);
     }
 
-    function cleanup() {
-      cleanupHandshake();
-      signal?.removeEventListener("abort", abort);
-      hostWindow.removeEventListener("pagehide", abort);
-      portToTransfer?.close();
-      portToTransfer = undefined;
-    }
-
-    function fail(error: Error) {
-      if (!handshakeSettled) {
-        handshakeSettled = true;
-        reject(error);
+    function fail(error: unknown) {
+      if (!settled) {
+        settled = true;
+        reject(error instanceof Error ? error : new Error(String(error)));
       }
-      cleanup();
-      managedConnection?.dispose(true);
+      dispose(true);
     }
 
     function abort() {
       fail(new DOMException("Workshop connection aborted.", "AbortError"));
     }
 
-    function handleConnectionClosed() {
-      cleanup();
-      if (!handshakeSettled) {
-        handshakeSettled = true;
-        reject(new Error("Workshop port closed before acknowledgement."));
-      }
-    }
-
     function handleWindowMessage(event: MessageEvent<unknown>) {
       const message = event.data;
       if (
+        transferred ||
         event.source !== targetWindow ||
         event.origin !== origin ||
+        event.ports.length !== 0 ||
         !isWorkshopEmbedMessage(message) ||
         message.type !== "available" ||
-        message.sessionId !== sessionId ||
-        event.ports.length !== 0
+        message.sessionId !== sessionId
       )
         return;
 
-      handleAvailable();
+      clearInterval(probeInterval);
+      try {
+        targetWindow.postMessage(createMessage("connect", sessionId), origin, [
+          port2,
+        ]);
+        transferred = true;
+      } catch (error) {
+        fail(error);
+      }
     }
 
     function handlePortMessage(event: MessageEvent<unknown>) {
       const message = event.data;
       if (
-        !isWorkshopEmbedMessage(message) ||
-        message.sessionId !== sessionId ||
-        message.type !== "connected"
-      )
-        return;
-
-      handleConnected();
+        isWorkshopEmbedMessage(message) &&
+        message.type === "connected" &&
+        message.sessionId === sessionId
+      ) {
+        settled = true;
+        stopHandshake();
+        resolve(connection);
+      }
     }
 
     function sendProbe() {
       try {
         targetWindow.postMessage(createMessage("probe", sessionId), origin);
       } catch (error) {
-        fail(
-          error instanceof Error ? error : new Error("Workshop probe failed."),
-        );
+        fail(error);
       }
     }
 
-    function handleAvailable() {
-      if (handshakeSettled || managedConnection != null) return;
-
-      clearInterval(probeInterval);
-      try {
-        const channel = new MessageChannel();
-        portToTransfer = channel.port2;
-        managedConnection = createConnection(
-          channel.port1,
-          sessionId,
-          handleConnectionClosed,
-        );
-        channel.port1.addEventListener("message", handlePortMessage);
-        targetWindow.postMessage(createMessage("connect", sessionId), origin, [
-          channel.port2,
-        ]);
-        portToTransfer = undefined;
-      } catch (error) {
-        fail(
-          error instanceof Error
-            ? error
-            : new Error("Workshop connection failed."),
-        );
-      }
-    }
-
-    function handleConnected() {
-      if (handshakeSettled || managedConnection == null) return;
-
-      handshakeSettled = true;
-      cleanupHandshake();
-      resolve(managedConnection.connection);
-    }
-
+    port1.addEventListener("message", handlePortMessage);
     hostWindow.addEventListener("message", handleWindowMessage);
     hostWindow.addEventListener("pagehide", abort);
     signal?.addEventListener("abort", abort);
-    const handshakeTimeout = setTimeout(
-      () => fail(new Error("Workshop handshake timed out.")),
-      timeoutMs,
-    );
-    const probeInterval = setInterval(sendProbe, 250);
     sendProbe();
   });
 }

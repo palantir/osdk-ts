@@ -192,8 +192,9 @@ describe("connectToWorkshopModule", () => {
       controller.abort();
       if (phase !== "after connection")
         await expect(result).rejects.toMatchObject({ name: "AbortError" });
-      expect(channel.port1.close).toHaveBeenCalledTimes(
-        phase === "before transfer" ? 0 : 1,
+      expect(channel.port1.close).toHaveBeenCalledTimes(1);
+      expect(channel.port2.close).toHaveBeenCalledTimes(
+        phase === "before transfer" ? 1 : 0,
       );
     },
   );
