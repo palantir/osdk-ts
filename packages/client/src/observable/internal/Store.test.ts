@@ -27,6 +27,7 @@ import {
 import type { SetupServer } from "@osdk/shared.test";
 import {
   FauxFoundry,
+  msw,
   ontologies,
   startNodeApiServer,
   stubData,
@@ -833,6 +834,8 @@ describe(Store, () => {
 
   describe("with mock server", () => {
     let client: Client;
+    let apiServer: SetupServer;
+    let loadObjectRequests = 0;
     let cache: Store;
     let cacheKeys: CacheKeys<KnownCacheKey>;
 
@@ -845,7 +848,7 @@ describe(Store, () => {
         createClient,
         { logger },
       );
-      ({ client } = testSetup);
+      ({ client, apiServer } = testSetup);
 
       setupOntology(testSetup.fauxFoundry);
       setupSomeEmployees(testSetup.fauxFoundry);
@@ -862,6 +865,11 @@ describe(Store, () => {
         }),
         ...employeesAsServerReturns.slice(2),
       ];
+      apiServer.events.on("request:start", ({ request }) => {
+        if (new URL(request.url).pathname.endsWith("/objectSets/loadObjects")) {
+          loadObjectRequests++;
+        }
+      });
 
       return () => {
         testSetup.apiServer.close();
@@ -869,6 +877,8 @@ describe(Store, () => {
     });
 
     beforeEach(() => {
+      apiServer.resetHandlers();
+      loadObjectRequests = 0;
       cache = new Store(client);
       cacheKeys = cache.cacheKeys;
 
@@ -1359,13 +1369,6 @@ describe(Store, () => {
     });
 
     describe(".invalidateObjectType", () => {
-      beforeEach(() => {
-        vi.useFakeTimers({});
-      });
-      afterEach(() => {
-        vi.useRealTimers();
-      });
-
       it("triggers an update", async () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
@@ -1443,6 +1446,79 @@ describe(Store, () => {
         // we don't need this value to control the test but we want to make sure we don't have
         // any unhandled exceptions upon test completion
         await pInvalidateComplete;
+      });
+      describe("correctly updates individually cached objects when part of a cached list as well", () => {
+        it("does not refetch objects returned unchanged by the list", async () => {
+          updateList(
+            cache,
+            { type: Employee, where: {}, orderBy: {} },
+            employeesAsServerReturns,
+          );
+
+          await cache.invalidateObjectType(Employee, undefined);
+
+          expect(loadObjectRequests).toBe(1);
+        });
+
+        it("refreshes cached objects that are not members of a refreshing list", async () => {
+          const [member, outside] = employeesAsServerReturns;
+          updateList(
+            cache,
+            {
+              type: Employee,
+              where: { employeeId: member.$primaryKey },
+              orderBy: {},
+            },
+            [member],
+          );
+          updateObject(cache, outside.$clone({ fullName: "stale" }));
+
+          await cache.invalidateObjectType(Employee, undefined);
+
+          expect(getObject(cache, "Employee", outside.$primaryKey)).toEqual(
+            outside,
+          );
+          expect(loadObjectRequests).toBe(2);
+        });
+
+        it("refreshes an object that no longer matches the list filter", async () => {
+          const emp = employeesAsServerReturns[0];
+          const staleEmp = emp.$clone({ fullName: "stale" });
+          updateList(
+            cache,
+            {
+              type: Employee,
+              where: { fullName: "stale" },
+              orderBy: {},
+            },
+            [staleEmp],
+          );
+
+          await cache.invalidateObjectType(Employee, undefined);
+
+          expect(getObject(cache, "Employee", emp.$primaryKey)).toEqual(emp);
+          expect(loadObjectRequests).toBe(2);
+        });
+
+        it("refreshes cached objects even when the list request fails", async () => {
+          const emp = employeesAsServerReturns[0];
+          const staleEmp = emp.$clone({ fullName: "stale" });
+          updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
+            staleEmp,
+          ]);
+          apiServer.use(
+            msw.http.post(
+              "*/objectSets/loadObjects",
+              () => msw.HttpResponse.error(),
+              { once: true },
+            ),
+          );
+
+          await cache.invalidateObjectType(Employee, undefined);
+
+          expect(getObject(cache, "Employee", emp.$primaryKey)).toEqual(emp);
+          expect(loadObjectRequests).toBe(2);
+        });
       });
     });
 

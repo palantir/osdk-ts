@@ -64,6 +64,7 @@ import {
   RDP_IDX as LIST_RDP_IDX,
 } from "./list/ListCacheKey.js";
 import { ListsHelper } from "./list/ListsHelper.js";
+import { ListRefreshCoordinator } from "./ListRefreshCoordinator.js";
 import { MediaHelper } from "./media/MediaHelper.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
@@ -652,34 +653,74 @@ export class Store {
         .info(changes ? DEBUG_ONLY__changesToString(changes) : void 0);
     }
 
-    const promises: Array<Promise<void>> = [];
-
-    for (const cacheKey of this.layers.truth.keys()) {
-      if (
-        cacheKey.type !== "mediaMetadata" &&
-        changes &&
-        changes.modified.has(cacheKey)
-      ) {
-        continue;
-      }
-      const query = this.queries.peek(cacheKey);
-      if (!query) continue;
-
-      promises.push(query.invalidateObjectType(apiName, changes));
-    }
-
-    // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
-    return Promise.allSettled(promises).then(() => void 0);
+    const cacheKeys = Array.from(this.layers.truth.keys()).filter(
+      (cacheKey) =>
+        !(
+          cacheKey.type !== "mediaMetadata" &&
+          changes &&
+          changes.modified.has(cacheKey)
+        ),
+    );
+    return this.#revalidateWithLists(
+      cacheKeys,
+      (cacheKey) =>
+        this.queries.peek(cacheKey)?.invalidateObjectType(apiName, changes) ??
+        Promise.resolve(),
+      changes,
+      apiName,
+    );
   }
 
   // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   public async invalidateAll(): Promise<void> {
+    return this.#revalidateWithLists(
+      Array.from(this.queries.keys()),
+      (cacheKey) =>
+        this.queries.peek(cacheKey)?.revalidate(true) ?? Promise.resolve(),
+    );
+  }
+
+  #revalidateWithLists(
+    cacheKeys: KnownCacheKey[],
+    revalidate: (cacheKey: KnownCacheKey) => Promise<void>,
+    changes?: Changes,
+    objectType?: string,
+  ): Promise<void> {
+    const coordinator = new ListRefreshCoordinator();
     const promises: Array<Promise<unknown>> = [];
-    for (const cacheKey of this.queries.keys()) {
-      const query = this.queries.peek(cacheKey);
-      if (query) {
-        promises.push(query.revalidate(true));
+    for (const cacheKey of cacheKeys) {
+      if (cacheKey.type === "object") continue;
+      const query =
+        cacheKey.type === "list" ? this.queries.peek(cacheKey) : undefined;
+      promises.push(
+        query
+          ? coordinator.start(query, () => revalidate(cacheKey))
+          : revalidate(cacheKey),
+      );
+    }
+    for (const cacheKey of cacheKeys) {
+      if (cacheKey.type !== "object") continue;
+      const pendingList =
+        objectType == null ||
+        cacheKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
+          ? coordinator.waitForObject(cacheKey)
+          : undefined;
+      if (pendingList) {
+        this.batch({}, (batch) => {
+          this.queries.peek(cacheKey)?.setStatus("loading", batch);
+        });
+        promises.push(
+          pendingList.then((refreshed) => {
+            if (refreshed) {
+              changes?.modified.add(cacheKey);
+            } else {
+              return revalidate(cacheKey);
+            }
+          }),
+        );
+      } else {
+        promises.push(revalidate(cacheKey));
       }
     }
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
