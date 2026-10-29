@@ -66,12 +66,15 @@ export function convertActionParameterValidation(
     allowedValues,
     valueTypes,
   );
+
   const arraySize = required.type === "listLengthValidation"
     ? convertArraySize(required.listLengthValidation)
     : undefined;
+
   if (convertedAllowedValues == null && arraySize == null) {
     return undefined;
   }
+
   return {
     defaultValidation: { allowedValues: convertedAllowedValues, arraySize },
   };
@@ -178,8 +181,6 @@ function convertAllowedValues(
   }
 }
 
-// `Other` names the union's only non-empty member, so a member added to the
-// bindings fails to compile at the call site instead of converting to nothing.
 function mustBeEmptyIfEmpty<Other extends string = never>(
   { type }: { type: "empty" | NoInfer<Other> },
 ): Ontologies.ParameterAllowedValues | undefined {
@@ -227,6 +228,7 @@ function convertMarkdown(
   if (minLength == null && maxLength == null) {
     return undefined;
   }
+
   return {
     type: "markdown",
     gte: minLength ?? undefined,
@@ -240,13 +242,17 @@ function convertOneOf(
     | OntologyIrParameterValueOneOf,
 ): Ontologies.ParameterAllowedValues | undefined {
   const options: Ontologies.ParameterAllowedValueOption[] = [];
+
   for (const { label, value } of labelledValues) {
     const converted = convertDataValue(value);
+
     if (converted === undefined) {
       return undefined;
     }
+
     options.push({ displayName: label, value: converted });
   }
+
   return {
     type: "oneOf",
     options,
@@ -311,6 +317,7 @@ function convertBounds<B extends { inclusive: boolean; value: unknown }, T>(
 ): { gt?: T; gte?: T; lt?: T; lte?: T } | undefined {
   const min = minimum == null ? undefined : convertValue(minimum.value);
   const max = maximum == null ? undefined : convertValue(maximum.value);
+
   if (
     (minimum != null && min == null)
     || (maximum != null && max == null)
@@ -318,6 +325,7 @@ function convertBounds<B extends { inclusive: boolean; value: unknown }, T>(
   ) {
     return undefined;
   }
+
   return {
     gte: minimum?.inclusive ? min : undefined,
     gt: minimum?.inclusive ? undefined : min,
