@@ -701,6 +701,10 @@ export class Store {
     }
     for (const cacheKey of cacheKeys) {
       if (cacheKey.type !== "object") continue;
+      if (this.queries.peek(cacheKey)?.pendingFetch) {
+        promises.push(revalidate(cacheKey));
+        continue;
+      }
       const pendingList =
         objectType == null ||
         cacheKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
@@ -714,6 +718,7 @@ export class Store {
           pendingList.then((refreshed) => {
             if (refreshed) {
               changes?.modified.add(cacheKey);
+              return this.queries.peek(cacheKey)?.pendingFetch;
             } else {
               return revalidate(cacheKey);
             }
