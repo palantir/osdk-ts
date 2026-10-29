@@ -41,6 +41,10 @@ export interface BaseWorkshopModuleProps extends WorkshopModuleProps {
   /** HTTP or HTTPS Foundry base URL, for example `https://example.palantirfoundry.com`. */
   foundryUrl: string;
 
+  /** Foundry branch RID. Changing the branch reloads the module.
+   * @default undefined (main branch) */
+  branchRid?: string;
+
   /**
    * Sets the initial theme. `system` reads the browser's preference once before the module loads.
    *

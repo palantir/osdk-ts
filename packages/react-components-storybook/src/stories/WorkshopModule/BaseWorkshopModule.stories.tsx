@@ -74,6 +74,11 @@ const meta: Meta<BaseWorkshopModuleProps> = {
         "latest for the latest saved version, or published for the published version. Defaults to published.",
     },
     title: { control: "text" },
+    branchRid: {
+      control: "text",
+      description:
+        "Foundry branch RID. Leave blank to use main. Changing the branch reloads the module.",
+    },
     defaultTheme: {
       control: "select",
       options: [undefined, "light", "dark", "system"],
