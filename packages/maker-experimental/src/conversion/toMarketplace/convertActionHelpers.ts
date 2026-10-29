@@ -449,7 +449,19 @@ function convertFunctionBackedAction(
   };
 
   const actionParameters = convertActionParameters(action, ridGenerator);
-  const functionRid = `ri.function-registry.main.function.${functionName}`;
+  const functionNameToExternalMetadata = Object.fromEntries(
+    functionsIr.discoveredFunctions.flatMap((f) => {
+      const fName = f.locator.typescript?.functionName;
+      if (fName && f.externalMetadata) {
+        return [[fName, f.externalMetadata]];
+      } else {
+        return [];
+      }
+    }),
+  );
+  const functionRid =
+    functionNameToExternalMetadata[functionName]?.functionRid ??
+    `ri.function-registry.main.function.${functionName}`;
 
   return {
     actionType: {
@@ -460,7 +472,9 @@ function convertFunctionBackedAction(
               type: "functionRule",
               functionRule: {
                 functionRid,
-                functionVersion: "0.1.0",
+                functionVersion:
+                  functionNameToExternalMetadata[functionName]
+                    ?.functionVersion ?? "0.1.0",
                 functionInputValues,
                 customExecutionMode: null,
                 experimentalDeclarativeEditInformation: null,

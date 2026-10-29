@@ -66,7 +66,7 @@ export interface IDiscoveredFunction {
     editedObjects: Record<string, {}>;
     editedInterfaces: Record<string, {}>;
   };
-  metadata?: {
+  externalMetadata?: {
     functionRid: string;
     functionVersion: string;
   };
@@ -106,6 +106,13 @@ interface IPythonCustomType {
 interface IPythonDiscoveryResult {
   functions: IPythonDiscoveredFunction[];
   errors?: Array<unknown>;
+}
+
+interface IFunctionMetadata {
+  functions: Record<string, {
+    functionRid: string;
+    functionVersion: string;
+  }>;
 }
 
 function discoverPythonFunctions(
@@ -476,9 +483,9 @@ export class OntologyIrToFullMetadataConverter {
     if (fs.existsSync(importedFunctionsMetadataPath)) {
       const importedFunctionsMetadata = JSON.parse(
         fs.readFileSync(importedFunctionsMetadataPath, "utf-8"),
-      ) as { functions: Record<string, IDiscoveredFunction["metadata"]> };
+      ) as IFunctionMetadata;
       for (const func of tsFunctions) {
-        func.metadata = importedFunctionsMetadata.functions[
+        func.externalMetadata = importedFunctionsMetadata.functions[
           func.locator.typescript!.functionName
         ];
       }
@@ -494,9 +501,9 @@ export class OntologyIrToFullMetadataConverter {
         return [
           {
             apiName: functionName,
-            rid: func.metadata?.functionRid
+            rid: func.externalMetadata?.functionRid
               ?? `ri.function-registry.main.function.${functionName}`,
-            version: func.metadata?.functionVersion ?? "0.0.0",
+            version: func.externalMetadata?.functionVersion ?? "0.0.0",
             parameters: func.inputs.reduce<
               Record<ApiName, Ontologies.QueryParameterV2>
             >((acc, input, index) => {
