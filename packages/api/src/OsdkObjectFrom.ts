@@ -357,7 +357,11 @@ export namespace Osdk {
           ? {
               readonly $propertySecurities: ObjectPropertySecurities<
                 Q,
-                GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
+                GetPropsKeys<
+                  Q,
+                  GetPropNamesFromP<P>,
+                  [R] extends [{}] ? false : true
+                >
               >;
             }
           : {}) &

@@ -81,6 +81,7 @@ export interface SelectArg<
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   RDP_KEYS extends string = never,
   PROPERTY_SECURITIES extends boolean = false,
+  MODIFIERS extends ApplyModifiersArg<Q> = {},
 > {
   /**
    * The properties to load for each object. If omitted, the API loads its default property
@@ -115,6 +116,8 @@ export interface SelectArg<
   $select?: readonly L[];
   $includeRid?: R;
   $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
+  $applyModifiers?: ApplyModifiersArg<Q> &
+    MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
   $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
 
@@ -193,8 +196,15 @@ export interface FetchPageArgs<
    * });
    * ```
    */
-  $applyModifiers?: ApplyModifiersArg<Q> &
-    MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
+  $applyModifiers?: SelectArg<
+    Q,
+    K,
+    R,
+    S,
+    RDP_KEYS,
+    PROPERTY_SECURITIES,
+    MODIFIERS
+  >["$applyModifiers"];
   /**
    * Best-effort load level applied to every property without listing them:
    * reducers and struct main values where defined, other properties unchanged.
@@ -230,7 +240,7 @@ export interface AsyncIterArgs<
   MODIFIERS extends ApplyModifiersArg<Q> = {},
 >
   extends
-    SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>,
+    SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES, MODIFIERS>,
     OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
   /**
@@ -258,8 +268,15 @@ export interface AsyncIterArgs<
    * }
    * ```
    */
-  $applyModifiers?: ApplyModifiersArg<Q> &
-    MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
+  $applyModifiers?: SelectArg<
+    Q,
+    K,
+    R,
+    S,
+    RDP_KEYS,
+    PROPERTY_SECURITIES,
+    MODIFIERS
+  >["$applyModifiers"];
 }
 
 export type Augment<X extends ObjectOrInterfaceDefinition, T extends string> = {

@@ -718,145 +718,418 @@ describe("ExtractOptions", () => {
       });
     });
 
-    describe("Modifiers flow through fetchPage", () => {
-      it("applies modifiers from fetchPage args to result type", async () => {
-        const objectSet = createMockObjectSet<EmployeeApiTest>();
-
-        const result = await objectSet.fetchPage({
-          $applyModifiers: {
-            addressStruct: "applyMainValue",
-          },
-        });
-
-        type ResultType = (typeof result)["data"][0]["addressStruct"];
-        expectTypeOf<ResultType>().toEqualTypeOf<
-          { city: string; zipCode: string } | undefined
-        >();
-      });
-
-      it("applies applyReducers modifier through fetchPage", async () => {
-        const objectSet = createMockObjectSet<EmployeeApiTest>();
-
-        const result = await objectSet.fetchPage({
+    describe("Modifiers flow through asyncIter", () => {
+      it("applies modifiers and preserves unmodified properties without $select", () => {
+        const result = createMockObjectSet<EmployeeApiTest>().asyncIter({
           $applyModifiers: {
             salaryHistory: "applyReducers",
-          },
-        });
-
-        // salaryHistory should be single number | undefined, not number[]
-        type ResultType = (typeof result)["data"][0]["salaryHistory"];
-        expectTypeOf<ResultType>().toEqualTypeOf<number | undefined>();
-      });
-
-      it("applies applyReducersAndExtractMainValue modifier through fetchPage", async () => {
-        const objectSet = createMockObjectSet<EmployeeApiTest>();
-
-        const result = await objectSet.fetchPage({
-          $select: ["bonusHistory"],
-          $applyModifiers: {
+            addressStruct: "applyMainValue",
             bonusHistory: "applyReducersAndExtractMainValue",
           },
         });
 
-        type OsdkType = (typeof result)["data"][0];
-        expectTypeOf<OsdkType>().toEqualTypeOf<
-          Osdk.Instance<
-            EmployeeApiTest,
-            never,
-            "bonusHistory:applyReducersAndExtractMainValue",
-            {}
-          >
+        type Data =
+          typeof result extends AsyncIterableIterator<infer T> ? T : never;
+        expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
+          number | undefined
         >();
-        // bonusHistory has single mainValue field, wire returns scalar
-        type ResultType = (typeof result)["data"][0]["bonusHistory"];
-        expectTypeOf<ResultType>().toEqualTypeOf<number | undefined>();
-      });
-
-      it("preserves unmodified properties alongside modified ones", async () => {
-        const objectSet = createMockObjectSet<EmployeeApiTest>();
-
-        const result = await objectSet.fetchPage({
-          $applyModifiers: {
-            addressStruct: "applyMainValue",
-          },
-        });
-
-        type Data = (typeof result)["data"][0];
-        // fullName should be unchanged
+        expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
+          { city: string; zipCode: string } | undefined
+        >();
+        expectTypeOf<Data["bonusHistory"]>().toEqualTypeOf<
+          number | undefined
+        >();
         expectTypeOf<Data["fullName"]>().toEqualTypeOf<string | undefined>();
-        // addressStruct should be transformed
-        expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
-          { city: string; zipCode: string } | undefined
-        >();
-        // salaryHistory should be unchanged (no modifier applied)
-        expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
-          number[] | undefined
-        >();
       });
 
-      it("returns original types when no modifiers specified", async () => {
-        const objectSet = createMockObjectSet<EmployeeApiTest>();
-
-        const result = await objectSet.fetchPage({
-          $select: ["addressStruct", "salaryHistory"],
+      it("applies reducers to selected properties", () => {
+        const result = createMockObjectSet<EmployeeApiTest>().asyncIter({
+          $select: ["salaryHistory", "fullName"],
+          $applyModifiers: { salaryHistory: "applyReducers" },
         });
 
-        type Data = (typeof result)["data"][0];
-        // Should be original struct type
-        expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
-          { street: string; city: string; zipCode: string } | undefined
-        >();
-        // Should be original array type
-        expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
-          number[] | undefined
-        >();
-      });
-
-      it("works when using $select on a modified property", async () => {
-        const objectSet = createMockObjectSet<EmployeeApiTest>();
-
-        const result = await objectSet.fetchPage({
-          $select: ["addressStruct"],
-          $applyModifiers: {
-            addressStruct: "applyMainValue",
-          },
-        });
-
-        type OsdkType = (typeof result)["data"][0];
-        expectTypeOf<OsdkType>().toEqualTypeOf<
-          Osdk.Instance<
-            EmployeeApiTest,
-            never,
-            "addressStruct:applyMainValue",
-            {}
+        expectTypeOf(result).toEqualTypeOf<
+          AsyncIterableIterator<
+            Osdk.Instance<
+              EmployeeApiTest,
+              never,
+              "salaryHistory:applyReducers" | "fullName"
+            >
           >
         >();
+      });
 
-        type Data = (typeof result)["data"][0];
-        // addressStruct should be transformed
-        expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
-          { city: string; zipCode: string } | undefined
+      it("applies reducers with explicit fetch option type parameters", () => {
+        const result = createMockObjectSet<EmployeeApiTest>().asyncIter<
+          "salaryHistory" | "fullName",
+          false,
+          never,
+          NullabilityAdherence.Default,
+          false,
+          {},
+          { salaryHistory: "applyReducers" }
+        >({
+          $select: ["salaryHistory", "fullName"],
+          $applyModifiers: { salaryHistory: "applyReducers" },
+        });
+
+        expectTypeOf(result).toEqualTypeOf<
+          AsyncIterableIterator<
+            Osdk.Instance<
+              EmployeeApiTest,
+              never,
+              "salaryHistory:applyReducers" | "fullName"
+            >
+          >
         >();
       });
 
-      it("disallows invalid modifiers in fetchPage args", async () => {
-        const objectSet = createMockObjectSet<EmployeeApiTest>();
+      it("preserves runtime-derived and unmodified array properties", () => {
+        const result = createMockObjectSet<EmployeeApiTest>()
+          .withProperties({
+            leadCount: (base) => base.pivotTo("lead").aggregate("$count"),
+          })
+          .asyncIter({
+            $select: ["salaryHistory", "bonusHistory", "leadCount"],
+            $applyModifiers: { salaryHistory: "applyReducers" },
+          });
 
-        await objectSet.fetchPage({
-          $applyModifiers: {
-            // @ts-expect-error invalid modifier value
-            addressStruct: "invalidModifier",
-          },
-        });
-
-        await objectSet.fetchPage({
-          $applyModifiers: {
-            // @ts-expect-error invalid modifier key
-            invalidProp: "applyMainValue",
-          },
-        });
+        type Data =
+          typeof result extends AsyncIterableIterator<infer T> ? T : never;
+        expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
+          number | undefined
+        >();
+        expectTypeOf<Data["bonusHistory"]>().toEqualTypeOf<
+          { year: number; amount: number }[] | undefined
+        >();
+        expectTypeOf<Data["leadCount"]>().toEqualTypeOf<number>();
       });
     });
+
+    it("preserves explicit modifier type arguments in fetchPageWithErrors", async () => {
+      const result =
+        await createMockObjectSet<EmployeeApiTest>().fetchPageWithErrors<
+          "salaryHistory",
+          false,
+          never,
+          NullabilityAdherence.Default,
+          false,
+          {},
+          { salaryHistory: "applyReducers" }
+        >({
+          $select: ["salaryHistory"],
+          $applyModifiers: { salaryHistory: "applyReducers" },
+        });
+
+      type Data = NonNullable<typeof result.value>["data"][number];
+      expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<number | undefined>();
+    });
+
+    describe.each(["fetchPage", "fetchPageWithErrors"] as const)(
+      "Modifiers flow through %s",
+      (method) => {
+        it("applies modifiers from args to result type", async () => {
+          const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+          const args = {
+            $applyModifiers: {
+              addressStruct: "applyMainValue",
+            },
+          } as const;
+          const response =
+            method === "fetchPage"
+              ? await objectSet.fetchPage(args)
+              : await objectSet.fetchPageWithErrors(args);
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          type ResultType = (typeof result)["data"][0]["addressStruct"];
+          expectTypeOf<ResultType>().toEqualTypeOf<
+            { city: string; zipCode: string } | undefined
+          >();
+        });
+
+        it("applies applyReducers modifier", async () => {
+          const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+          const args = {
+            $applyModifiers: {
+              salaryHistory: "applyReducers",
+            },
+          } as const;
+          const response =
+            method === "fetchPage"
+              ? await objectSet.fetchPage(args)
+              : await objectSet.fetchPageWithErrors(args);
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          // salaryHistory should be single number | undefined, not number[]
+          type ResultType = (typeof result)["data"][0]["salaryHistory"];
+          expectTypeOf<ResultType>().toEqualTypeOf<number | undefined>();
+        });
+
+        it("applies applyReducersAndExtractMainValue modifier", async () => {
+          const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+          const args = {
+            $select: ["bonusHistory"],
+            $applyModifiers: {
+              bonusHistory: "applyReducersAndExtractMainValue",
+            },
+          } as const;
+          const response =
+            method === "fetchPage"
+              ? await objectSet.fetchPage(args)
+              : await objectSet.fetchPageWithErrors(args);
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          type OsdkType = (typeof result)["data"][0];
+          expectTypeOf<OsdkType>().toEqualTypeOf<
+            Osdk.Instance<
+              EmployeeApiTest,
+              never,
+              "bonusHistory:applyReducersAndExtractMainValue",
+              {}
+            >
+          >();
+          // bonusHistory has single mainValue field, wire returns scalar
+          type ResultType = (typeof result)["data"][0]["bonusHistory"];
+          expectTypeOf<ResultType>().toEqualTypeOf<number | undefined>();
+        });
+
+        it("preserves unmodified properties alongside modified ones", async () => {
+          const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+          const args = {
+            $applyModifiers: {
+              addressStruct: "applyMainValue",
+            },
+          } as const;
+          const response =
+            method === "fetchPage"
+              ? await objectSet.fetchPage(args)
+              : await objectSet.fetchPageWithErrors(args);
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          type Data = (typeof result)["data"][0];
+          // fullName should be unchanged
+          expectTypeOf<Data["fullName"]>().toEqualTypeOf<string | undefined>();
+          // addressStruct should be transformed
+          expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
+            { city: string; zipCode: string } | undefined
+          >();
+          // salaryHistory should be unchanged (no modifier applied)
+          expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
+            number[] | undefined
+          >();
+        });
+
+        it("returns original types when no modifiers specified", async () => {
+          const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+          const args = {
+            $select: ["addressStruct", "salaryHistory"],
+          } as const;
+          const response =
+            method === "fetchPage"
+              ? await objectSet.fetchPage(args)
+              : await objectSet.fetchPageWithErrors(args);
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          type Data = (typeof result)["data"][0];
+          // Should be original struct type
+          expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
+            { street: string; city: string; zipCode: string } | undefined
+          >();
+          // Should be original array type
+          expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
+            number[] | undefined
+          >();
+        });
+
+        it("works when using $select on a modified property", async () => {
+          const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+          const args = {
+            $select: ["addressStruct"],
+            $applyModifiers: {
+              addressStruct: "applyMainValue",
+            },
+          } as const;
+          const response =
+            method === "fetchPage"
+              ? await objectSet.fetchPage(args)
+              : await objectSet.fetchPageWithErrors(args);
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          type OsdkType = (typeof result)["data"][0];
+          expectTypeOf<OsdkType>().toEqualTypeOf<
+            Osdk.Instance<
+              EmployeeApiTest,
+              never,
+              "addressStruct:applyMainValue",
+              {}
+            >
+          >();
+
+          type Data = (typeof result)["data"][0];
+          // addressStruct should be transformed
+          expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
+            { city: string; zipCode: string } | undefined
+          >();
+        });
+
+        it("disallows invalid modifiers in args", async () => {
+          const objectSet = createMockObjectSet<EmployeeApiTest>();
+
+          await {
+            fetchPage: () =>
+              objectSet.fetchPage({
+                $applyModifiers: {
+                  // @ts-expect-error invalid modifier value
+                  addressStruct: "invalidModifier",
+                },
+              }),
+            fetchPageWithErrors: () =>
+              objectSet.fetchPageWithErrors({
+                $applyModifiers: {
+                  // @ts-expect-error invalid modifier value
+                  addressStruct: "invalidModifier",
+                },
+              }),
+          }[method]();
+
+          await {
+            fetchPage: () =>
+              objectSet.fetchPage({
+                $applyModifiers: {
+                  // @ts-expect-error invalid modifier key
+                  invalidProp: "applyMainValue",
+                },
+              }),
+            fetchPageWithErrors: () =>
+              objectSet.fetchPageWithErrors({
+                $applyModifiers: {
+                  // @ts-expect-error invalid modifier key
+                  invalidProp: "applyMainValue",
+                },
+              }),
+          }[method]();
+        });
+
+        it("applies modifiers to selected properties", async () => {
+          const args = {
+            $select: [
+              "salaryHistory",
+              "addressStruct",
+              "bonusHistory",
+              "fullName",
+            ],
+            $applyModifiers: {
+              salaryHistory: "applyReducers",
+              addressStruct: "applyMainValue",
+              bonusHistory: "applyReducersAndExtractMainValue",
+            },
+          } as const;
+          const response =
+            method === "fetchPage"
+              ? await createMockObjectSet<EmployeeApiTest>().fetchPage(args)
+              : await createMockObjectSet<EmployeeApiTest>().fetchPageWithErrors(
+                  args,
+                );
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          type Data = (typeof result.data)[number];
+          expectTypeOf<Data["salaryHistory"]>().toEqualTypeOf<
+            number | undefined
+          >();
+          expectTypeOf<Data["addressStruct"]>().toEqualTypeOf<
+            { city: string; zipCode: string } | undefined
+          >();
+          expectTypeOf<Data["bonusHistory"]>().toEqualTypeOf<
+            number | undefined
+          >();
+          expectTypeOf<Data["fullName"]>().toEqualTypeOf<string | undefined>();
+        });
+      },
+    );
+
+    describe.each(["fetchOne", "fetchOneWithErrors"] as const)(
+      "%s",
+      (method) => {
+        it("applies reducers and main values to selected properties", async () => {
+          const response = await createMockObjectSet<EmployeeApiTest>()[method](
+            12345,
+            {
+              $select: [
+                "salaryHistory",
+                "addressStruct",
+                "bonusHistory",
+                "fullName",
+              ],
+              $applyModifiers: {
+                salaryHistory: "applyReducers",
+                addressStruct: "applyMainValue",
+                bonusHistory: "applyReducersAndExtractMainValue",
+              },
+            },
+          );
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          expectTypeOf(result.salaryHistory).toEqualTypeOf<
+            number | undefined
+          >();
+          expectTypeOf(result.addressStruct).toEqualTypeOf<
+            { city: string; zipCode: string } | undefined
+          >();
+          expectTypeOf(result.bonusHistory).toEqualTypeOf<number | undefined>();
+          expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
+        });
+
+        it("returns original types when no modifiers specified", async () => {
+          const response = await createMockObjectSet<EmployeeApiTest>()[method](
+            12345,
+            {
+              $select: ["addressStruct", "salaryHistory"],
+            },
+          );
+          if ("error" in response) {
+            throw response.error;
+          }
+          const result = "value" in response ? response.value : response;
+
+          expectTypeOf(result.addressStruct).toEqualTypeOf<
+            { street: string; city: string; zipCode: string } | undefined
+          >();
+          expectTypeOf(result.salaryHistory).toEqualTypeOf<
+            number[] | undefined
+          >();
+        });
+      },
+    );
   });
 
   describe("$as from interface to OT", () => {

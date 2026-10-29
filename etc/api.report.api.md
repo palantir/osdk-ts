@@ -302,8 +302,8 @@ export interface AsyncIterArgs<
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
 	PROPERTY_SECURITIES extends boolean = false,
 	MODIFIERS extends ApplyModifiersArg<Q> = {}
-> extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
-    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+> extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES, MODIFIERS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
+    	$applyModifiers?: SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES, MODIFIERS>["$applyModifiers"];
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -869,7 +869,7 @@ export interface FetchPageArgs<
 	MODIFIERS extends ApplyModifiersArg<Q> = {},
 	DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = PropertyModifierValue
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
-    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    	$applyModifiers?: SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES, MODIFIERS>["$applyModifiers"];
     	$EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
     	// (undocumented)
     $nextPageToken?: string;
@@ -1826,7 +1826,7 @@ export namespace Osdk {
             			timezoneId?: string
             		}) => string | undefined
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$propertySecurities" extends OPTIONS ? {
-        		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>
+        		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, GetPropNamesFromP<P>, [R] extends [{}] ? false : true>>
         	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
@@ -2240,8 +2240,11 @@ export interface SelectArg<
 	R extends boolean = false,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	RDP_KEYS extends string = never,
-	PROPERTY_SECURITIES extends boolean = false
+	PROPERTY_SECURITIES extends boolean = false,
+	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > {
+    	// (undocumented)
+    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeRid?: R;
     	// (undocumented)
@@ -2286,8 +2289,11 @@ export namespace SimplePropertyDef {
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
-    	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
-    	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
+    	// Warning: (ae-forgotten-export) The symbol "SelectKeysWithModifiers" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "SubSelectKeysHelper" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "ExtractModifiers" needs to be exported by the entry point index.d.ts
+    fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean, NullabilityAdherence.Default, never, boolean>>(options?: A) => Promise<A extends SelectArg<T, infer L, infer R, infer S, never, infer PROPERTY_SECURITIES> ? Osdk.Instance<T, ExtractOptions<R, S, false, PROPERTY_SECURITIES>, SelectKeysWithModifiers<T, SubSelectKeysHelper<T, L>, ExtractModifiers<T, A>>> : Osdk.Instance<T>>;
+    	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean, NullabilityAdherence.Default, never, boolean>>(options?: A) => Promise<Result<A extends SelectArg<T, infer L, infer R, infer S, never, infer PROPERTY_SECURITIES> ? Osdk.Instance<T, ExtractOptions<R, S, false, PROPERTY_SECURITIES>, SelectKeysWithModifiers<T, SubSelectKeysHelper<T, L>, ExtractModifiers<T, A>>> : Osdk.Instance<T>>>;
 }
 
 // @public

@@ -82,7 +82,7 @@ type MaybeSimplifyPropertyKeys<
   L extends PropertyKeys<Q>,
 > = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L & PropertyKeys<Q>;
 
-type SubSelectKeysHelper<
+export type SubSelectKeysHelper<
   Q extends ObjectOrInterfaceDefinition,
   L extends string,
 > = [L] extends [never]
@@ -141,9 +141,9 @@ type Extract$Select<X extends FetchPageArgs<any, any>> = NonNullable<
   X["$select"]
 >[number];
 
-type ExtractModifiers<Q extends ObjectOrInterfaceDefinition, X> = [X] extends [
-  never,
-]
+export type ExtractModifiers<Q extends ObjectOrInterfaceDefinition, X> = [
+  X,
+] extends [never]
   ? {}
   : X extends { $applyModifiers: infer M extends ApplyModifiersArg<Q> }
     ? M
@@ -156,6 +156,16 @@ type ModifiersToSelectStrings<M> = {
       : never
     : never;
 }[keyof M];
+
+export type SelectKeysWithModifiers<
+  Q extends ObjectOrInterfaceDefinition,
+  K extends PropertyKeys<Q>,
+  MODIFIERS extends ApplyModifiersArg<Q>,
+> = keyof MODIFIERS extends never
+  ? K
+  : ApplyModifiersArg<Q> extends MODIFIERS
+    ? K
+    : Exclude<K, keyof MODIFIERS> | ModifiersToSelectStrings<MODIFIERS>;
 
 interface FetchPage<
   Q extends ObjectOrInterfaceDefinition,
@@ -237,11 +247,11 @@ interface FetchPageSignature<
         Osdk.Instance<
           Q,
           ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-          | Exclude<
-              NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-              keyof MODIFIERS
-            >
-          | ModifiersToSelectStrings<MODIFIERS>,
+          SelectKeysWithModifiers<
+            Q,
+            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+            MODIFIERS
+          >,
           SubSelectRDPs<RDPs, NonNullable<typeof args>>
         >,
         ORDER_BY_OPTIONS
@@ -278,7 +288,6 @@ interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
 interface FetchPageWithErrorsSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
    * Gets a page of objects of this type, with a result wrapper
@@ -312,6 +321,7 @@ interface FetchPageWithErrorsSignature<
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
     const MODIFIERS extends ApplyModifiersArg<Q> = {},
+    PROPERTY_SECURITIES extends boolean = false,
   >(
     args?: FetchPageArgs<
       Q,
@@ -332,11 +342,11 @@ interface FetchPageWithErrorsSignature<
           Osdk.Instance<
             Q,
             ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-            | Exclude<
-                NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-                keyof MODIFIERS
-              >
-            | ModifiersToSelectStrings<MODIFIERS>,
+            SelectKeysWithModifiers<
+              Q,
+              NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+              MODIFIERS
+            >,
             SubSelectRDPs<RDPs, NonNullable<typeof args>>
           >,
           ORDER_BY_OPTIONS
@@ -402,7 +412,7 @@ interface AsyncIterSignature<
     Osdk.Instance<
       Q,
       ExtractOptions2<X>,
-      SubSelectKeys<Q, X>,
+      SelectKeysWithModifiers<Q, SubSelectKeys<Q, X>, ExtractModifiers<Q, X>>,
       SubSelectRDPs<RDPs, X>
     >
   >;
@@ -457,7 +467,11 @@ interface AsyncIterSignature<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
-        NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+        SelectKeysWithModifiers<
+          Q,
+          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+          MODIFIERS
+        >,
         SubSelectRDPs<RDPs, NonNullable<typeof args>>
       >,
       ORDER_BY_OPTIONS
@@ -635,14 +649,19 @@ interface FetchOneSignature<
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
     PROPERTY_SECURITIES extends boolean = false,
+    const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>,
+    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES, MODIFIERS>,
   ): Promise<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, false, PROPERTY_SECURITIES>,
-      NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
+      SelectKeysWithModifiers<
+        Q,
+        NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
+        MODIFIERS
+      >,
       SubSelectRDPs<RDPs, { $select: Array<L> }>
     >
   >;
@@ -670,15 +689,20 @@ interface FetchOneWithErrorsSignature<
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
     PROPERTY_SECURITIES extends boolean = false,
+    const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>,
+    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES, MODIFIERS>,
   ): Promise<
     Result<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S, false, PROPERTY_SECURITIES>,
-        NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
+        SelectKeysWithModifiers<
+          Q,
+          NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
+          MODIFIERS
+        >,
         SubSelectRDPs<RDPs, { $select: Array<L> }>
       >
     >
