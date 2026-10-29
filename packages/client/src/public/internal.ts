@@ -16,6 +16,7 @@
 
 export { createMediaFromReference } from "../createMediaFromReference.js";
 export { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
+export { getClientBranch } from "../public-utils/getClientBranch.js";
 export { hydrateAttachmentFromRid } from "../public-utils/hydrateAttachmentFromRid.js";
 export { hydrateObjectSetFromObjectRids } from "../public-utils/hydrateObjectSetFromObjectRids.js";
 export { hydrateObjectSetFromRid } from "../public-utils/hydrateObjectSetFromRid.js";
