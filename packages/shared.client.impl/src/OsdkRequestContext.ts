@@ -16,6 +16,8 @@
 
 export interface ClientMetrics {
   concurrency: number;
+  queueSize: number;
+  queueWaitTimeMs: number;
 }
 
 export interface OsdkRequestContext {
