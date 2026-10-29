@@ -144,9 +144,9 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   );
 
   useEffect(() => {
-    let hostHotkeys: HostMessage.Payload.HotkeyList["hotkeys"] = [];
+    let hostHotkeys: HostMessage.Payload.SetHotkeys["hotkeys"] = [];
     client.subscribe();
-    client.hostEventTarget.addEventListener("host.hotkey-list", (payload) => {
+    client.hostEventTarget.addEventListener("host.set-hotkeys", (payload) => {
       hostHotkeys = payload.detail.hotkeys;
     });
     client.hostEventTarget.addEventListener(
@@ -283,7 +283,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         return;
       }
       event.preventDefault();
-      client.hotkeyForward({
+      client.hotkey({
         hotkey: {
           key: event.key,
           altKey: event.altKey,

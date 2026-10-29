@@ -43,7 +43,7 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   /**
    * Notifies the host that the widget has forwarded a hotkey
    */
-  hotkeyForward: (payload: WidgetMessage.Payload.HotkeyForward) => void;
+  hotkey: (payload: WidgetMessage.Payload.Hotkey) => void;
 
   /**
    * Emits an event with the given ID and payload
@@ -113,8 +113,8 @@ export function createFoundryWidgetClient<
 
   const listenForHostMessages = (event: CustomEvent<HostMessage<C>>) => {
     visitHostMessage(event.detail, {
-      "host.hotkey-list": (payload) => {
-        hostEventTarget.dispatchEventMessage("host.hotkey-list", payload);
+      "host.set-hotkeys": (payload) => {
+        hostEventTarget.dispatchEventMessage("host.set-hotkeys", payload);
       },
       "host.update-parameters": (payload) => {
         hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
@@ -150,9 +150,9 @@ export function createFoundryWidgetClient<
         payload,
       });
     },
-    hotkeyForward: (payload) => {
+    hotkey: (payload) => {
       sendMessageToHost({
-        type: "widget.hotkey-forward",
+        type: "widget.hotkey",
         payload,
       });
     },

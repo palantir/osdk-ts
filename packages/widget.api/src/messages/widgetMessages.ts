@@ -50,8 +50,8 @@ export namespace WidgetMessage {
       height: number;
     }
 
-    export type HotkeyForward = {
-      hotkey: HostMessage.Payload.HotkeyList["hotkeys"][number];
+    export type Hotkey = {
+      hotkey: HostMessage.Payload.SetHotkeys["hotkeys"][number];
     };
 
     export type EmitEvent<C extends WidgetConfig<C["parameters"]>> =
@@ -62,7 +62,7 @@ export namespace WidgetMessage {
     | Payload.Ready
     | Payload.Reload
     | Payload.Resize
-    | Payload.HotkeyForward
+    | Payload.Hotkey
     | Payload.EmitEvent<C>;
 
   /**
@@ -92,9 +92,9 @@ export namespace WidgetMessage {
   /**
    * Emit when the widget forwards a hotkey to the host
    */
-  export interface HotkeyForward extends WidgetBaseMessage<
-    "widget.hotkey-forward",
-    Payload.HotkeyForward
+  export interface Hotkey extends WidgetBaseMessage<
+    "widget.hotkey",
+    Payload.Hotkey
   > {}
 
   /**
@@ -109,7 +109,7 @@ export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
   | WidgetMessage.Ready
   | WidgetMessage.Reload
   | WidgetMessage.Resize
-  | WidgetMessage.HotkeyForward
+  | WidgetMessage.Hotkey
   | WidgetMessage.EmitEvent<C>;
 
 export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
@@ -130,10 +130,10 @@ export function isWidgetResizeMessage<C extends WidgetConfig<C["parameters"]>>(
   return event.type === "widget.resize";
 }
 
-export function isWidgetHotkeyForwardMessage<
-  C extends WidgetConfig<C["parameters"]>,
->(event: WidgetMessage<C>): event is WidgetMessage.HotkeyForward {
-  return event.type === "widget.hotkey-forward";
+export function isWidgetHotkeyMessage<C extends WidgetConfig<C["parameters"]>>(
+  event: WidgetMessage<C>,
+): event is WidgetMessage.Hotkey {
+  return event.type === "widget.hotkey";
 }
 
 export function isWidgetEmitEventMessage<

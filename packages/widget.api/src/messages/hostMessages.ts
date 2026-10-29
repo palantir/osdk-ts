@@ -36,7 +36,7 @@ export namespace HostMessage {
   export type Version = typeof Version;
 
   export namespace Payload {
-    export interface HotkeyList {
+    export interface SetHotkeys {
       hotkeys: Hotkey[];
     }
 
@@ -45,11 +45,11 @@ export namespace HostMessage {
     }
   }
 
-  export type Payload = Payload.UpdateParameters<any> | Payload.HotkeyList;
+  export type Payload = Payload.UpdateParameters<any> | Payload.SetHotkeys;
 
-  export interface HotkeyList extends HostBaseMessage<
-    "host.hotkey-list",
-    Payload.HotkeyList
+  export interface SetHotkeys extends HostBaseMessage<
+    "host.set-hotkeys",
+    Payload.SetHotkeys
   > {}
 
   export interface UpdateParameters<
@@ -62,12 +62,12 @@ export namespace HostMessage {
 
 export type HostMessage<C extends WidgetConfig<C["parameters"]>> =
   | HostMessage.UpdateParameters<C>
-  | HostMessage.HotkeyList;
+  | HostMessage.SetHotkeys;
 
-export function isHostHotkeyListMessage<
+export function isHostSetHotkeysMessage<
   C extends WidgetConfig<C["parameters"]>,
->(event: HostMessage<C>): event is HostMessage.HotkeyList {
-  return event.type === "host.hotkey-list";
+>(event: HostMessage<C>): event is HostMessage.SetHotkeys {
+  return event.type === "host.set-hotkeys";
 }
 
 export function isHostParametersUpdatedMessage<
