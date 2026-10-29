@@ -33,7 +33,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
   args: {
     foundryUrl: "",
     moduleRid: "ri.workshop.main.module.example",
-    moduleVersion: "latest",
+    moduleVersion: "published",
     title: "Workshop module preview",
   },
   render: (args: BaseWorkshopModuleProps) => (
@@ -54,7 +54,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
     docs: {
       description: {
         component:
-          "This story makes no requests until a Foundry URL is supplied. Provide your own URL and module RID in the controls to render a real Workshop module. The module version can be latest, dev, or a specific version.",
+          "This story makes no requests until a Foundry URL is supplied. Provide your own URL and module RID in the controls to render a real Workshop module. Use latest for the latest saved version or published for the published version.",
       },
     },
   },
@@ -68,8 +68,10 @@ const meta: Meta<BaseWorkshopModuleProps> = {
       description: "RID of a Workshop module you can access.",
     },
     moduleVersion: {
-      control: "text",
-      description: "latest, dev, or a specific version such as 0.49.0.",
+      control: "select",
+      options: ["latest", "published"],
+      description:
+        "latest for the latest saved version, or published for the published version.",
     },
     title: { control: "text" },
     className: { control: "text" },
@@ -80,4 +82,17 @@ const meta: Meta<BaseWorkshopModuleProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `<BaseWorkshopModule
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  moduleVersion="published"
+  style={{ height: "24rem" }}
+/>`,
+      },
+    },
+  },
+};

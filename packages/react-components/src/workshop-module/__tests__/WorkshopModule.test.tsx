@@ -38,7 +38,7 @@ describe("WorkshopModule", () => {
       <OsdkProvider client={client}>
         <WorkshopModule
           moduleRid="ri.workshop.main.module.example"
-          moduleVersion="latest"
+          moduleVersion="published"
           title="Embedded dashboard"
         />
       </OsdkProvider>,

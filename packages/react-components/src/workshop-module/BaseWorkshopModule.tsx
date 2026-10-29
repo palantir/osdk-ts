@@ -30,8 +30,10 @@ export function BaseWorkshopModule({
   className,
   style,
 }: BaseWorkshopModuleProps): React.ReactElement {
+  // Workshop URLs historically use "latest" for published and "dev" for latest saved.
+  const version = moduleVersion === "published" ? "latest" : "dev";
   const url = new URL(
-    `/workspace/module/view/${encodeURIComponent(moduleVersion)}/${encodeURIComponent(moduleRid)}`,
+    `/workspace/module/view/${version}/${encodeURIComponent(moduleRid)}`,
     foundryUrl,
   );
   invariant(

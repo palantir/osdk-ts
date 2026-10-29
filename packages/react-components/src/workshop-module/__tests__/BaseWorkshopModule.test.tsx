@@ -40,17 +40,23 @@ describe("BaseWorkshopModule", () => {
     ).toThrow("Foundry URL must use http or https.");
   });
 
-  it("renders the module at the Foundry origin in embedded mode", () => {
-    render(
-      <BaseWorkshopModule
-        foundryUrl="https://foundry.example.com/api/v2/?ignored=true#ignored"
-        moduleRid="ri.workshop.main.module.example"
-        moduleVersion="0.49.0"
-      />,
-    );
+  it.each([
+    { moduleVersion: "latest", pathVersion: "dev" },
+    { moduleVersion: "published", pathVersion: "latest" },
+  ] as const)(
+    "renders the $moduleVersion module at the Foundry origin in embedded mode",
+    ({ moduleVersion, pathVersion }) => {
+      render(
+        <BaseWorkshopModule
+          foundryUrl="https://foundry.example.com/api/v2/?ignored=true#ignored"
+          moduleRid="ri.workshop.main.module.example"
+          moduleVersion={moduleVersion}
+        />,
+      );
 
-    expect(screen.getByTitle("Workshop module").getAttribute("src")).toBe(
-      "https://foundry.example.com/workspace/module/view/0.49.0/ri.workshop.main.module.example?embedded=true",
-    );
-  });
+      expect(screen.getByTitle("Workshop module").getAttribute("src")).toBe(
+        `https://foundry.example.com/workspace/module/view/${pathVersion}/ri.workshop.main.module.example?embedded=true`,
+      );
+    },
+  );
 });
