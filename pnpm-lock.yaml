@@ -6513,6 +6513,24 @@ importers:
         specifier: ^6.0.0
         version: 6.0.1(webpack@5.106.1)
 
+  packages/workshop-embed-protocol:
+    devDependencies:
+      '@microsoft/api-documenter':
+        specifier: ^7.26.32
+        version: 7.26.32(@types/node@18.19.124)
+      '@microsoft/api-extractor':
+        specifier: ^7.52.11
+        version: 7.52.11(@types/node@18.19.124)
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
 packages:
 
   '@0no-co/graphql.web@1.0.11':

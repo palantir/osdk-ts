@@ -52,6 +52,8 @@ const OXC_PACKAGE_GLOB = `packages/{${
  * at that nested config instead of the root one. Map of package dir -> config.
  */
 const OXC_NESTED_CONFIG_PACKAGES = {
+  "workshop-embed-protocol":
+    "packages/workshop-embed-protocol/oxlint.config.ts",
   "aliases": "packages/aliases/oxlint.config.ts",
   "react-components-storybook":
     "packages/react-components-storybook/oxlint.config.ts",

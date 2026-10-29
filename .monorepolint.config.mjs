@@ -305,7 +305,13 @@ const archetypeRules = archetypes(standardPackageRules, {
   // off to keep the migration a reformat, not a rewrite.
   .addArchetype(
     "oxc migrated libraries with check-api",
-    ["@osdk/api", "@osdk/functions", "@osdk/agents", "@osdk/unit-testing"],
+    [
+      "@osdk/api",
+      "@osdk/functions",
+      "@osdk/agents",
+      "@osdk/unit-testing",
+      "@osdk/workshop-embed-protocol",
+    ],
     {
       ...LIBRARY_RULES,
       oxc: true,
