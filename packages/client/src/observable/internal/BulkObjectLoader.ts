@@ -15,6 +15,7 @@
  */
 
 import type {
+  DerivedProperty,
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
@@ -26,8 +27,10 @@ import pDefer from "p-defer";
 import { additionalContext, type Client } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { DefType } from "../../util/interfaceUtils.js";
+import type { Canonical } from "./Canonical.js";
 import { DefaultMap } from "./collections/DefaultMap.js";
 import { DefaultWeakMap } from "./collections/DefaultWeakMap.js";
+import type { Rdp } from "./RdpCanonicalizer.js";
 
 interface InternalValue {
   primaryKey: string;
@@ -40,6 +43,7 @@ interface LoadParams {
   select?: readonly string[];
   loadPropertySecurityMetadata?: boolean;
   includeAllBaseObjectProperties: true | undefined;
+  rdpConfig?: Canonical<Rdp>;
 }
 
 interface Accumulator extends Partial<LoadParams> {
@@ -65,6 +69,8 @@ export class BulkObjectLoader {
   #logger: Logger | undefined;
   #maxWait: number;
   #maxEntries: number;
+  #nextRdpId = 0;
+  #rdpIds = new DefaultWeakMap<Canonical<Rdp>, number>(() => this.#nextRdpId++);
 
   constructor(client: Client, maxWait = 25, maxEntries = 100) {
     this.#client = client;
@@ -80,12 +86,14 @@ export class BulkObjectLoader {
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
     includeAllBaseObjectProperties?: boolean,
+    rdpConfig?: Canonical<Rdp>,
   ): Promise<ObjectHolder> {
     const params: LoadParams = {
       apiName,
       defType,
       select,
       loadPropertySecurityMetadata,
+      rdpConfig,
       // The flag is interface-only on the server. Drop it for object fetches
       // so they don't fragment batches or the cache.
       includeAllBaseObjectProperties:
@@ -110,6 +118,7 @@ export class BulkObjectLoader {
       entry.loadPropertySecurityMetadata = params.loadPropertySecurityMetadata;
       entry.includeAllBaseObjectProperties =
         params.includeAllBaseObjectProperties;
+      entry.rdpConfig = params.rdpConfig;
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
@@ -136,11 +145,14 @@ export class BulkObjectLoader {
   #buildSelectKey(params: LoadParams): string {
     const securitySuffix = params.loadPropertySecurityMetadata ? "\0sec" : "";
     const baseSuffix = params.includeAllBaseObjectProperties ? "\0base" : "";
+    const rdpSuffix = params.rdpConfig
+      ? `\0rdp${this.#rdpIds.get(params.rdpConfig)}`
+      : "";
     return params.select && params.select.length > 0
       ? `${params.apiName}\0${[...params.select]
           .sort()
-          .join(",")}${securitySuffix}${baseSuffix}`
-      : `${params.apiName}${securitySuffix}${baseSuffix}`;
+          .join(",")}${securitySuffix}${baseSuffix}${rdpSuffix}`
+      : `${params.apiName}${securitySuffix}${baseSuffix}${rdpSuffix}`;
   }
 
   #loadObjects(arr: InternalValue[], params: LoadParams) {
@@ -180,20 +192,25 @@ export class BulkObjectLoader {
         ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
         : { [objMetadata.primaryKeyApiName]: { $in: pks } };
 
-    const { data } = await this.#client(objectDef)
-      .where(whereClause)
-      .fetchPage({
-        $pageSize: pks.length,
-        $includeRid: true,
-        ...(params.select && params.select.length > 0
-          ? { $select: params.select }
-          : {}),
-        $loadPropertySecurityMetadata:
-          params.loadPropertySecurityMetadata ?? false,
-        ...(params.includeAllBaseObjectProperties
-          ? { $includeAllBaseObjectProperties: true }
-          : {}),
-      });
+    let objectSet = this.#client(objectDef);
+    if (params.rdpConfig) {
+      objectSet = objectSet.withProperties(
+        params.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+      );
+    }
+
+    const { data } = await objectSet.where(whereClause).fetchPage({
+      $pageSize: pks.length,
+      $includeRid: true,
+      ...(params.select && params.select.length > 0
+        ? { $select: params.select }
+        : {}),
+      $loadPropertySecurityMetadata:
+        params.loadPropertySecurityMetadata ?? false,
+      ...(params.includeAllBaseObjectProperties
+        ? { $includeAllBaseObjectProperties: true }
+        : {}),
+    });
 
     for (const { primaryKey, deferred } of arr) {
       const object = data.find((x) => x.$primaryKey === primaryKey) as
