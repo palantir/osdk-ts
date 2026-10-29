@@ -16,35 +16,23 @@
 
 import classnames from "classnames";
 import React from "react";
-import invariant from "tiny-invariant";
 
+import { getWorkshopModuleUrl } from "./getWorkshopModuleUrl.js";
 import type { BaseWorkshopModuleProps } from "./WorkshopModuleApi.js";
 
 import styles from "./BaseWorkshopModule.module.css";
 
 export function BaseWorkshopModule({
-  foundryUrl,
-  moduleRid,
-  moduleVersion = "published",
   title = "Workshop module",
   className,
   style,
+  ...props
 }: BaseWorkshopModuleProps): React.ReactElement {
-  // Workshop URLs historically use "latest" for published and "dev" for latest saved.
-  const version = moduleVersion === "published" ? "latest" : "dev";
-  const url = new URL(
-    `/workspace/module/view/${version}/${encodeURIComponent(moduleRid)}`,
-    foundryUrl,
-  );
-  invariant(
-    url.protocol === "https:" || url.protocol === "http:",
-    "Foundry URL must use http or https.",
-  );
-  url.searchParams.set("embedded", "true");
+  const src = getWorkshopModuleUrl(props);
 
   return (
     <iframe
-      src={url.href}
+      src={src}
       title={title}
       className={classnames(styles.iframe, className)}
       style={style}
