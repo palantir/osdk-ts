@@ -18,6 +18,9 @@ export interface ClientMetrics {
   concurrency: number;
 }
 
+export type ObjectLoadSelectionOrigin = "OMITTED_BY_CALLER" | "EXPLICIT";
+
 export interface OsdkRequestContext {
   clientMetrics: ClientMetrics;
+  selectionOrigin?: ObjectLoadSelectionOrigin;
 }

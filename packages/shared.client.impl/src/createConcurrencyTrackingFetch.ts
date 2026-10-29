@@ -38,8 +38,39 @@ export function createConcurrencyTrackingFetch(
 
     activeHttpAttempts++;
     try {
-      const clientMetrics: ClientMetrics = { concurrency: activeHttpAttempts };
+      let existingRequestContext: Record<string, unknown> = {};
+      const serializedRequestContext = headers.get(OSDK_REQUEST_CONTEXT_HEADER);
+      if (serializedRequestContext != null) {
+        try {
+          const parsedRequestContext: unknown = JSON.parse(
+            serializedRequestContext,
+          );
+          if (
+            parsedRequestContext != null &&
+            typeof parsedRequestContext === "object" &&
+            !Array.isArray(parsedRequestContext)
+          ) {
+            existingRequestContext = parsedRequestContext as Record<
+              string,
+              unknown
+            >;
+          }
+        } catch {
+          // Ignore malformed caller-provided context.
+        }
+      }
+
+      const existingClientMetrics = existingRequestContext.clientMetrics;
+      const clientMetrics: ClientMetrics = {
+        ...(existingClientMetrics != null &&
+        typeof existingClientMetrics === "object" &&
+        !Array.isArray(existingClientMetrics)
+          ? existingClientMetrics
+          : {}),
+        concurrency: activeHttpAttempts,
+      };
       const requestContext: OsdkRequestContext = {
+        ...existingRequestContext,
         clientMetrics,
       };
       headers.set(OSDK_REQUEST_CONTEXT_HEADER, JSON.stringify(requestContext));

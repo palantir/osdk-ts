@@ -42,6 +42,7 @@ import type {
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
 import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
+import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import invariant from "tiny-invariant";
 
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
@@ -97,6 +98,27 @@ interface SelectV2PropertyWithLoadLevel {
 }
 
 type SelectV2Entry = SelectV2SimpleProperty | SelectV2PropertyWithLoadLevel;
+type ObjectLoadSelectionOrigin = "OMITTED_BY_CALLER" | "EXPLICIT";
+
+const OSDK_REQUEST_CONTEXT_HEADER = "X-OSDK-Request-Context";
+
+function addSelectionOriginHeader(
+  client: MinimalClient,
+  select: readonly string[] | undefined,
+): MinimalClient {
+  const selectionOrigin: ObjectLoadSelectionOrigin =
+    select != null && select.length > 0 ? "EXPLICIT" : "OMITTED_BY_CALLER";
+  return {
+    ...client,
+    fetch: createFetchHeaderMutator(client.fetch, (headers) => {
+      headers.set(
+        OSDK_REQUEST_CONTEXT_HEADER,
+        JSON.stringify({ selectionOrigin }),
+      );
+      return headers;
+    }),
+  };
+}
 
 export function buildSelectV2(
   select: readonly string[] | undefined,
@@ -270,7 +292,10 @@ export async function fetchStaticRidPage<
   }
 
   const result = await OntologyObjectSets.loadMultipleObjectTypes(
-    addUserAgentHeader(client, { osdkMetadata: undefined }),
+    addSelectionOriginHeader(
+      addUserAgentHeader(client, { osdkMetadata: undefined }),
+      args.$select,
+    ),
     await client.ontologyRid,
     requestBody,
     {
@@ -384,7 +409,10 @@ async function fetchInterfacePage<
   }
 
   const result = await OntologyObjectSets.loadMultipleObjectTypes(
-    addUserAgentHeader(client, interfaceType),
+    addSelectionOriginHeader(
+      addUserAgentHeader(client, interfaceType),
+      args.$select,
+    ),
     await client.ontologyRid,
     requestBody,
     {
@@ -790,7 +818,10 @@ export async function fetchObjectPage<
   }
 
   const r = await OntologyObjectSets.load(
-    addUserAgentHeader(client, objectType),
+    addSelectionOriginHeader(
+      addUserAgentHeader(client, objectType),
+      args.$select,
+    ),
     await client.ontologyRid,
     requestBody,
     {
