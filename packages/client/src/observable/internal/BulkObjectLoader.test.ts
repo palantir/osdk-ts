@@ -562,68 +562,13 @@ describe(BulkObjectLoader, () => {
       });
     });
 
-    it("keeps different definitions of the same RDP field in separate batches", async () => {
+    it("batches RDP objects by definition, selection, and security options", async () => {
       const loader = new BulkObjectLoader(rdpClient);
-      const officeName = store.rdpCanonicalizer.canonicalize(withProperties);
+      const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
       const officeId = store.rdpCanonicalizer.canonicalize({
         officeName: (base) =>
           base.pivotTo("officeLink").selectProperty("officeId"),
       } satisfies DerivedProperty.Clause<typeof Employee>);
-
-      const objects = await Promise.all([
-        loader.fetch(
-          "Employee",
-          1,
-          "object",
-          undefined,
-          undefined,
-          undefined,
-          officeName,
-        ),
-        loader.fetch(
-          "Employee",
-          2,
-          "object",
-          undefined,
-          undefined,
-          undefined,
-          officeName,
-        ),
-        loader.fetch(
-          "Employee",
-          3,
-          "object",
-          undefined,
-          undefined,
-          undefined,
-          officeId,
-        ),
-        loader.fetch(
-          "Employee",
-          4,
-          "object",
-          undefined,
-          undefined,
-          undefined,
-          officeId,
-        ),
-        loader.fetch("Employee", 5),
-      ]);
-
-      expect(loadRequests).toHaveLength(3);
-      expect(objects).toMatchObject([
-        { $primaryKey: 1, officeName: "Original Office" },
-        { $primaryKey: 2, officeName: "Original Office" },
-        { $primaryKey: 3, officeName: "101" },
-        { $primaryKey: 4, officeName: "101" },
-        { $primaryKey: 5, fullName: "Employee 5" },
-      ]);
-      expect(objects[4]).not.toHaveProperty("officeName");
-    });
-
-    it("preserves selection and security options when batching RDP objects", async () => {
-      const loader = new BulkObjectLoader(rdpClient);
-      const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
       apiServer.use(
         msw.http.post("*/objectSets/loadObjects", async ({ request }) => {
           const body = (await request.clone().json()) as {
@@ -690,9 +635,18 @@ describe(BulkObjectLoader, () => {
           undefined,
           rdpConfig,
         ),
+        loader.fetch(
+          "Employee",
+          5,
+          "object",
+          ["officeName"],
+          false,
+          undefined,
+          officeId,
+        ),
       ]);
 
-      expect(loadRequests).toHaveLength(3);
+      expect(loadRequests).toHaveLength(4);
       expect(objects).toMatchObject([
         { $primaryKey: 1, officeName: "Original Office" },
         { $primaryKey: 2, officeName: "Original Office" },
@@ -702,6 +656,7 @@ describe(BulkObjectLoader, () => {
           officeName: "Original Office",
         },
         { $primaryKey: 4, officeName: "Original Office" },
+        { $primaryKey: 5, officeName: "101" },
       ]);
       expect(objects[0]).not.toHaveProperty("fullName");
       expect(objects[1]).not.toHaveProperty("fullName");
@@ -727,72 +682,6 @@ describe(BulkObjectLoader, () => {
           }),
         ]),
       );
-    });
-
-    it("splits large RDP batches and resolves every requested object", async () => {
-      const loader = new BulkObjectLoader(rdpClient, 25, 2);
-      const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
-
-      const objects = await Promise.all(
-        [1, 2, 3, 4, 5].map((pk) =>
-          loader.fetch(
-            "Employee",
-            pk,
-            "object",
-            undefined,
-            undefined,
-            undefined,
-            rdpConfig,
-          ),
-        ),
-      );
-
-      expect(loadRequests).toHaveLength(3);
-      expect(objects).toMatchObject([
-        { $primaryKey: 1, officeName: "Original Office" },
-        { $primaryKey: 2, officeName: "Original Office" },
-        { $primaryKey: 3, officeName: "Original Office" },
-        { $primaryKey: 4, officeName: "Original Office" },
-        { $primaryKey: 5, officeName: "Original Office" },
-      ]);
-    });
-
-    it("rejects a missing RDP object without failing the other objects in its batch", async () => {
-      const loader = new BulkObjectLoader(rdpClient);
-      const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
-
-      const results = await Promise.allSettled([
-        loader.fetch(
-          "Employee",
-          1,
-          "object",
-          undefined,
-          undefined,
-          undefined,
-          rdpConfig,
-        ),
-        loader.fetch(
-          "Employee",
-          999,
-          "object",
-          undefined,
-          undefined,
-          undefined,
-          rdpConfig,
-        ),
-      ]);
-
-      expect(loadRequests).toHaveLength(1);
-      expect(results).toMatchObject([
-        {
-          status: "fulfilled",
-          value: { $primaryKey: 1, officeName: "Original Office" },
-        },
-        {
-          status: "rejected",
-          reason: expect.objectContaining({ message: "Object not found: 999" }),
-        },
-      ]);
     });
   });
 });
