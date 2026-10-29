@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { isRecord } from "./isRecord.js";
-import { WORKSHOP_EMBED_CHANNEL, WORKSHOP_EMBED_VERSION } from "./protocol.js";
+import {
+  isRecord,
+  WORKSHOP_EMBED_CHANNEL,
+  WORKSHOP_EMBED_VERSION,
+} from "./protocol.js";
 import type { WorkshopEmbedMessage } from "./protocol.js";
 
 /** Scalar types supported by the variable input protocol. @public */
@@ -30,11 +33,11 @@ export type WorkshopVariableSchema = Readonly<
 export type WorkshopVariableValue<
   TType extends WorkshopVariableType = WorkshopVariableType,
 > =
-  | (TType extends "string"
-      ? string
-      : TType extends "number"
-        ? number
-        : boolean)
+  | {
+      string: string;
+      number: number;
+      boolean: boolean;
+    }[TType]
   | null;
 
 /** Variable inputs keyed by non-empty external IDs. Omitted variables are unchanged. @public */
@@ -97,9 +100,10 @@ export function snapshotVariableSchema<TSchema extends WorkshopVariableSchema>(
   schema: TSchema | undefined,
 ): TSchema | undefined {
   if (schema === undefined) return undefined;
+  const entries = isRecord(schema) ? Object.entries(schema) : undefined;
   if (
-    !isRecord(schema) ||
-    !Object.entries(schema).every(
+    entries === undefined ||
+    !entries.every(
       ([name, definition]) =>
         name.length > 0 &&
         isRecord(definition) &&
@@ -114,10 +118,7 @@ export function snapshotVariableSchema<TSchema extends WorkshopVariableSchema>(
   }
   // A caller changing the config must not change an established connection's types.
   return Object.fromEntries(
-    Object.entries(schema).map(([name, definition]) => [
-      name,
-      { ...definition },
-    ]),
+    entries.map(([name, definition]) => [name, { ...definition }]),
   ) as TSchema;
 }
 
@@ -125,18 +126,22 @@ function isVariableValues<TSchema extends WorkshopVariableSchema>(
   value: unknown,
   schema: TSchema | undefined,
 ): value is WorkshopVariableValues<TSchema> {
-  return (
-    isRecord(value) &&
-    Object.entries(value).every(
-      ([externalId, input]) =>
-        externalId.length > 0 &&
-        ((typeof input === "object" && input == null) ||
-          typeof input === "string" ||
-          typeof input === "boolean" ||
-          (typeof input === "number" && Number.isFinite(input))) &&
-        (schema === undefined ||
-          (Object.hasOwn(schema, externalId) &&
-            (input == null || typeof input === schema[externalId]?.type))),
-    )
-  );
+  if (!isRecord(value)) return false;
+  return Object.entries(value).every(([externalId, input]) => {
+    if (externalId.length === 0 || input === undefined) return false;
+    if (
+      input != null &&
+      typeof input !== "string" &&
+      typeof input !== "number" &&
+      typeof input !== "boolean"
+    ) {
+      return false;
+    }
+    if (typeof input === "number" && !Number.isFinite(input)) return false;
+    if (schema === undefined) return true;
+    return (
+      Object.hasOwn(schema, externalId) &&
+      (input == null || typeof input === schema[externalId]?.type)
+    );
+  });
 }

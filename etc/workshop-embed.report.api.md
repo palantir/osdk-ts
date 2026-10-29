@@ -23,9 +23,6 @@ export interface ConnectToWorkshopModuleOptions<TSchema extends WorkshopVariable
 }
 
 // @public
-export function isWorkshopEmbedMessage(value: unknown): value is WorkshopEmbedMessage;
-
-// @public
 export function listenForWorkshopModuleEmbedMessages<const TSchema extends WorkshopVariableSchema>(options: ListenForWorkshopModuleEmbedMessagesOptions<TSchema> & {
     	variableSchema: TSchema
 }): () => void;
@@ -41,34 +38,10 @@ export interface ListenForWorkshopModuleEmbedMessagesOptions<TSchema extends Wor
 }
 
 // @public
-export const WORKSHOP_EMBED_CHANNEL = "workshop-module-embed";
-
-// @public
-export const WORKSHOP_EMBED_MESSAGE_TYPES: readonly ["probe", "available", "connect", "connected", "disconnect"];
-
-// @public
 export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 
 // @public
 export const WORKSHOP_EMBED_QUERY_VALUE = "1";
-
-// @public
-export const WORKSHOP_EMBED_VERSION = 1;
-
-// @public
-export interface WorkshopEmbedMessage {
-    	// (undocumented)
-    channel: typeof WORKSHOP_EMBED_CHANNEL;
-    	// (undocumented)
-    sessionId: string;
-    	// (undocumented)
-    type: WorkshopEmbedMessageType;
-    	// (undocumented)
-    version: typeof WORKSHOP_EMBED_VERSION;
-}
-
-// @public
-export type WorkshopEmbedMessageType = (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
 
 // @public
 export type WorkshopModuleConnectHandler<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> = (connection: WorkshopModuleConnection<TSchema>) => void | (() => void);
@@ -91,7 +64,11 @@ export type WorkshopVariableSchema = Readonly<Record<string, {
 export type WorkshopVariableType = "string" | "number" | "boolean";
 
 // @public
-export type WorkshopVariableValue<TType extends WorkshopVariableType = WorkshopVariableType> = (TType extends "string" ? string : TType extends "number" ? number : boolean) | null;
+export type WorkshopVariableValue<TType extends WorkshopVariableType = WorkshopVariableType> = {
+    	string: string
+    	number: number
+    	boolean: boolean
+}[TType] | null;
 
 // @public
 export type WorkshopVariableValues<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> = keyof TSchema extends never ? Readonly<Record<string, never>> : string extends keyof TSchema ? Readonly<Record<string, WorkshopVariableValue<TSchema[string]["type"]>>> : { readonly [TName in keyof TSchema]? : WorkshopVariableValue<TSchema[TName]["type"]> };
