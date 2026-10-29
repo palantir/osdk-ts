@@ -1,5 +1,7 @@
 # @osdk/create-app.template.react
 
+## 2.85.0
+
 ## 2.84.0
 
 ## 2.83.0

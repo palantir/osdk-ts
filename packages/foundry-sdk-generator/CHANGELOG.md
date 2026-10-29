@@ -1,5 +1,24 @@
 # @osdk/foundry-sdk-generator
 
+## 2.85.0
+
+### Minor Changes
+
+- 94e35b4: Propagate the generator TRACE_ID environment variable as valid B3 trace context on ontology metadata requests for log correlation.
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+  - @osdk/client@2.85.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+  - @osdk/generator@2.85.0
+  - @osdk/generator-utils@2.85.0
+
 ## 2.84.0
 
 ### Patch Changes

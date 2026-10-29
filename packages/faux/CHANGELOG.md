@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 0.62.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+- d0f3019: Upgrade the admin Platform SDK to 2.86.0 and remove the obsolete CBAC banner preview parameter.
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+
 ## 0.61.0
 
 ### Patch Changes

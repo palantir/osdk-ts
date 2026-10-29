@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.85.0
+
+### Minor Changes
+
+- 396ffce: Refetch observable lists and object sets when their websocket subscription reports it is out of date
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+  - @osdk/shared.test@2.57.0
+
 ## 2.84.0
 
 ### Patch Changes

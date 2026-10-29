@@ -1,5 +1,21 @@
 # @osdk/generator-converters.preview
 
+## 0.59.0
+
+### Minor Changes
+
+- 34c76cd: Emit `createOrModifyObjectV2` logic rules with `objectToModify` and converted property arguments so the local preview can apply create-or-modify actions.
+
+### Patch Changes
+
+- Updated dependencies [94e35b4]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+  - @osdk/foundry-sdk-generator@2.85.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+
 ## 0.58.0
 
 ### Patch Changes
