@@ -54,7 +54,7 @@ export interface IDataType {
 export interface IDiscoveredFunction {
   locator: {
     type: string;
-    typescript?: { functionName: string; filePath: string };
+    typescript?: { functionName: string };
   };
   inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output:
@@ -467,10 +467,21 @@ export class OntologyIrToFullMetadataConverter {
       );
     }
 
-    for (const func of tsFunctions) {
-      func.metadata = readImportedFunctionMetadata(
-        path.resolve(projectDir, func.locator.typescript!.filePath),
-      );
+    const importedFunctionsMetadataPath = path.join(
+      projectDir,
+      "functions",
+      "external-imports",
+      "functions-full-metadata.json",
+    );
+    if (fs.existsSync(importedFunctionsMetadataPath)) {
+      const importedFunctionsMetadata = JSON.parse(
+        fs.readFileSync(importedFunctionsMetadataPath, "utf-8"),
+      ) as { functions: Record<string, IDiscoveredFunction["metadata"]> };
+      for (const func of tsFunctions) {
+        func.metadata = importedFunctionsMetadata.functions[
+          func.locator.typescript!.functionName
+        ];
+      }
     }
 
     if (irOutputFile) {
@@ -1603,28 +1614,6 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error(`Unknown link type status: ${status}`);
     }
   }
-}
-
-function readImportedFunctionMetadata(
-  filePath: string,
-): IDiscoveredFunction["metadata"] {
-  const source = fs.readFileSync(filePath, "utf-8");
-  const metadataBlock = source.match(
-    /-----BEGIN FUNCTION METADATA-----([\s\S]*?)-----END FUNCTION METADATA-----/u,
-  );
-  if (!metadataBlock) {
-    return undefined;
-  }
-
-  // Support comment prefixes and the trailing commas in imported metadata.
-  const { config, error } = ts.parseConfigFileTextToJson(
-    filePath,
-    metadataBlock[1],
-  );
-  if (error) {
-    throw new Error(ts.flattenDiagnosticMessageText(error.messageText, "\n"));
-  }
-  return config;
 }
 
 function discoverComponentRoot(
