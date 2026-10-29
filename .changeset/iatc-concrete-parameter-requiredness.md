@@ -4,4 +4,4 @@
 "@osdk/maker-experimental": patch
 ---
 
-Preserve absent, false, and true values of `isRequiredParameterOnConcreteAction` independently of implementation requirements when authoring interface action type constraints and generating Marketplace input and output shapes. Validate that mapped Action parameters are required when the constraint explicitly requires it.
+Preserve `isRequiredParameterOnConcreteAction` in Maker and Marketplace shapes. When the flag is true, check that mapped Action parameters are required.
