@@ -50,10 +50,13 @@ export interface WorkshopEmbedMessage {
     	// (undocumented)
     sessionId: string;
     	// (undocumented)
-    type: (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
+    type: WorkshopEmbedMessageType;
     	// (undocumented)
     version: typeof WORKSHOP_EMBED_VERSION;
 }
+
+// @public
+export type WorkshopEmbedMessageType = (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
 
 // @public
 export type WorkshopModuleConnectHandler = (connection: WorkshopModuleConnection) => void | (() => void);
