@@ -536,8 +536,14 @@ function validateAggregations(
           `Property '${propName}' on object '${objectDef.apiName}' is not primitive`,
         );
         break;
-      default:
+      case "count":
         break;
+      default: {
+        const unhandled: never = agg;
+        throw new Error(
+          `Unknown derived property aggregation: ${JSON.stringify(unhandled)}`,
+        );
+      }
     }
 
     // if a foreign property is referenced, it must exist in the final object

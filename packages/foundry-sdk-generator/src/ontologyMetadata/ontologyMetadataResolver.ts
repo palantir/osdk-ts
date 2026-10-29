@@ -30,6 +30,7 @@ import type {
 import type { WireOntologyDefinition } from "@osdk/generator";
 import { GeneratorError } from "@osdk/generator-converters";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
+import { randomBytes } from "node:crypto";
 import { Result } from "./Result.js";
 
 /**
@@ -77,12 +78,21 @@ export class OntologyMetadataResolver {
   }
 
   private getClientContext() {
+    const traceId = process.env.TRACE_ID;
+    const traceHeaders = traceId
+      ? {
+        "X-B3-TraceId": traceId,
+        "X-B3-SpanId": randomBytes(8).toString("hex"),
+      }
+      : undefined;
     return createSharedClientContext(
       this.stackName.match(/^https?:\/\//)
         ? this.stackName
         : `https://${this.stackName}`,
       () => Promise.resolve(this.#authToken),
       `foundry-typescript-osdk-generator/${process.env.npm_package_version!}`,
+      undefined,
+      traceHeaders,
     );
   }
 

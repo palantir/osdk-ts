@@ -41,6 +41,11 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   resize: (payload: WidgetMessage.Payload.Resize) => void;
 
   /**
+   * Notifies the host that the widget has forwarded a hotkey
+   */
+  hotkey: (payload: WidgetMessage.Payload.Hotkey) => void;
+
+  /**
    * Emits an event with the given ID and payload
    */
   emitEvent: <
@@ -108,6 +113,9 @@ export function createFoundryWidgetClient<
 
   const listenForHostMessages = (event: CustomEvent<HostMessage<C>>) => {
     visitHostMessage(event.detail, {
+      "host.set-hotkeys": (payload) => {
+        hostEventTarget.dispatchEventMessage("host.set-hotkeys", payload);
+      },
       "host.update-parameters": (payload) => {
         hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
       },
@@ -139,6 +147,12 @@ export function createFoundryWidgetClient<
     resize: (payload) => {
       sendMessageToHost({
         type: "widget.resize",
+        payload,
+      });
+    },
+    hotkey: (payload) => {
+      sendMessageToHost({
+        type: "widget.hotkey",
         payload,
       });
     },
