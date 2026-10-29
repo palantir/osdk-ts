@@ -15,6 +15,11 @@
  */
 
 import { createMessage, isWorkshopEmbedMessage } from "./protocol.js";
+import {
+  createSetVariablesMessage,
+  isSetVariablesMessage,
+} from "./variables.js";
+import type { WorkshopVariableValues } from "./variables.js";
 
 /** An established transport connection; this does not imply module readiness. @public */
 export interface WorkshopModuleConnection {
@@ -22,6 +27,12 @@ export interface WorkshopModuleConnection {
   readonly sessionId: string;
   /** Dedicated transport. Add listeners with addEventListener; use disconnect to close it. */
   readonly port: MessagePort;
+  /** Sends scalar inputs to the peer. Throws for invalid values or a closed connection. Does not acknowledge application. */
+  setVariables: (values: WorkshopVariableValues) => void;
+  /** Receives validated inputs for this session. Returns an unsubscribe function; disconnect removes all listeners. Throws if closed. */
+  onVariablesSet: (
+    listener: (values: WorkshopVariableValues) => void,
+  ) => () => void;
   /** Notifies the peer, closes the port, and runs connection cleanup. Idempotent. */
   disconnect: () => void;
 }
@@ -44,6 +55,7 @@ export function createConnection(
 ): ManagedConnection {
   let disposed = false;
   let cleanup: void | (() => void);
+  const variableListeners = new Set<(values: WorkshopVariableValues) => void>();
 
   function dispose(notifyPeer: boolean) {
     if (disposed) return;
@@ -57,6 +69,7 @@ export function createConnection(
     }
     port.removeEventListener("message", handleMessage);
     port.removeEventListener("messageerror", disconnect);
+    variableListeners.clear();
     port.close();
     try {
       cleanup?.();
@@ -76,10 +89,38 @@ export function createConnection(
       event.data.type === "disconnect"
     ) {
       dispose(false);
+    } else if (
+      isSetVariablesMessage(event.data) &&
+      event.data.sessionId === sessionId
+    ) {
+      // Defer listeners added by a callback until the next message.
+      const listeners = [...variableListeners];
+      for (const listener of listeners) {
+        if (variableListeners.has(listener)) listener(event.data.values);
+      }
     }
   }
 
-  const connection: WorkshopModuleConnection = { port, sessionId, disconnect };
+  function assertOpen() {
+    if (disposed) throw new Error("Workshop connection is closed.");
+  }
+
+  const connection: WorkshopModuleConnection = {
+    port,
+    sessionId,
+    disconnect,
+    setVariables(values) {
+      assertOpen();
+      port.postMessage(createSetVariablesMessage(sessionId, values));
+    },
+    onVariablesSet(listener) {
+      assertOpen();
+      variableListeners.add(listener);
+      return () => {
+        variableListeners.delete(listener);
+      };
+    },
+  };
   port.addEventListener("message", handleMessage);
   port.addEventListener("messageerror", disconnect);
   port.start();

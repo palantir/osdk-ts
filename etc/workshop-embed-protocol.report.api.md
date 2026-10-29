@@ -58,9 +58,17 @@ export type WorkshopModuleConnectHandler = (connection: WorkshopModuleConnection
 // @public
 export interface WorkshopModuleConnection {
     	disconnect: () => void;
+    	onVariablesSet: (listener: (values: WorkshopVariableValues) => void) => () => void;
     	readonly port: MessagePort;
     	readonly sessionId: string;
+    	setVariables: (values: WorkshopVariableValues) => void;
 }
+
+// @public
+export type WorkshopVariableValue = string | number | boolean | null;
+
+// @public
+export type WorkshopVariableValues = Readonly<Record<string, WorkshopVariableValue>>;
 
 // (No @packageDocumentation comment for this package)
 

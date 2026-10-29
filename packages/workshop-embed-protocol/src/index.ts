@@ -30,3 +30,7 @@ export {
   WORKSHOP_EMBED_VERSION,
 } from "./protocol.js";
 export type { WorkshopEmbedMessage } from "./protocol.js";
+export type {
+  WorkshopVariableValue,
+  WorkshopVariableValues,
+} from "./variables.js";

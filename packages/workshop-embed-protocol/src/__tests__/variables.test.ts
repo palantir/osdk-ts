@@ -1,0 +1,140 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { runInNewContext } from "node:vm";
+
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { createConnection } from "../connection.js";
+import type {
+  WorkshopModuleConnection,
+  WorkshopVariableValues,
+} from "../index.js";
+
+describe("scalar variable inputs", () => {
+  let sender: WorkshopModuleConnection;
+  let receiver: WorkshopModuleConnection;
+
+  beforeEach(() => {
+    const channel = new MessageChannel();
+    sender = createConnection(channel.port1, "session", () => {}).connection;
+    receiver = createConnection(channel.port2, "session", () => {}).connection;
+  });
+
+  afterEach(() => {
+    sender.disconnect();
+    receiver.disconnect();
+    vi.restoreAllMocks();
+  });
+
+  it("delivers scalar inputs from another realm over a real MessageChannel", async () => {
+    const values: unknown = runInNewContext(
+      '({ searchText: "Ada", count: 0, enabled: false, selectedName: null })',
+    );
+    const received = nextInputs(receiver);
+    sender.setVariables(values as WorkshopVariableValues);
+    const result = await received;
+    expect(result).toEqual(values);
+    expect(result).not.toBe(values);
+  });
+
+  it("ignores malformed and foreign-session messages before delivering a valid update", async () => {
+    const listener = vi.fn();
+    receiver.onVariablesSet(listener);
+    const port = sender.port;
+    const valid = {
+      channel: "workshop-module-embed",
+      version: 1,
+      sessionId: "session",
+      type: "setVariables",
+      values: { count: 1 },
+    };
+    for (const data of [
+      null,
+      { ...valid, channel: "another-protocol" },
+      { ...valid, version: 2 },
+      { ...valid, sessionId: "old-session" },
+      { ...valid, type: "variablesChanged" },
+      ...invalidInputs.map((values) => ({ ...valid, values })),
+    ]) {
+      port.postMessage(data);
+    }
+    const received = nextInputs(receiver);
+    sender.setVariables(valid.values);
+    await received;
+    expect(listener).toHaveBeenCalledExactlyOnceWith({ count: 1 });
+  });
+
+  it("rejects unsupported inputs before posting a message", () => {
+    const postMessage = vi.spyOn(sender.port, "postMessage");
+    const { setVariables } = sender;
+    for (const values of invalidInputs) {
+      expect(() => setVariables(values as WorkshopVariableValues)).toThrow(
+        TypeError,
+      );
+    }
+    expect(postMessage).not.toHaveBeenCalled();
+  });
+
+  it("handles subscription changes during delivery and rejects operations after disconnect", async () => {
+    const listener = vi.fn();
+    const replacement = vi.fn();
+    const unsubscribe = receiver.onVariablesSet((values) => {
+      listener(values);
+      unsubscribe();
+      receiver.onVariablesSet(replacement);
+    });
+    const received = nextInputs(receiver);
+    sender.setVariables({ count: 2 });
+    await expect(received).resolves.toEqual({ count: 2 });
+    expect(replacement).not.toHaveBeenCalled();
+
+    unsubscribe();
+    const next = nextInputs(receiver);
+    sender.setVariables({ count: 3 });
+    await next;
+    expect(listener).toHaveBeenCalledExactlyOnceWith({ count: 2 });
+    expect(replacement).toHaveBeenCalledExactlyOnceWith({ count: 3 });
+
+    receiver.disconnect();
+    expect(() => receiver.setVariables({ count: 3 })).toThrow("closed");
+    expect(() => receiver.onVariablesSet(listener)).toThrow("closed");
+  });
+});
+
+function nextInputs(
+  connection: WorkshopModuleConnection,
+): Promise<WorkshopVariableValues> {
+  return new Promise((resolve) => {
+    const unsubscribe = connection.onVariablesSet((values) => {
+      unsubscribe();
+      resolve(values);
+    });
+  });
+}
+
+const invalidInputs: unknown[] = [
+  undefined,
+  null,
+  [],
+  new Date(),
+  { "": 1 },
+  { count: Number.NaN },
+  { count: Number.POSITIVE_INFINITY },
+  { count: undefined },
+  { names: ["Ada"] },
+  { employees: { objectSetRid: "ri.object-set.main.object-set.example" } },
+];
