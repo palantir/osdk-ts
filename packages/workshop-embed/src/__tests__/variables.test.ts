@@ -312,7 +312,7 @@ const invalidInputs: unknown[] = [
   undefined,
   null,
   [],
-  new Date(),
+  { date: new Date() },
   { "": 1 },
   { count: Number.NaN },
   { count: Number.POSITIVE_INFINITY },
