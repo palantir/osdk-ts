@@ -38,12 +38,16 @@ export const WORKSHOP_EMBED_MESSAGE_TYPES = [
 ] as const;
 Object.freeze(WORKSHOP_EMBED_MESSAGE_TYPES);
 
+/** A supported handshake or lifecycle message type. @public */
+export type WorkshopEmbedMessageType =
+  (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
+
 /** Handshake and lifecycle messages. connect transfers one port outside this object. @public */
 export interface WorkshopEmbedMessage {
   channel: typeof WORKSHOP_EMBED_CHANNEL;
   version: typeof WORKSHOP_EMBED_VERSION;
   sessionId: string;
-  type: (typeof WORKSHOP_EMBED_MESSAGE_TYPES)[number];
+  type: WorkshopEmbedMessageType;
 }
 
 /** Validates an untrusted handshake or lifecycle message at runtime. @public */
@@ -61,7 +65,7 @@ export function isWorkshopEmbedMessage(
 }
 
 export function createMessage(
-  type: WorkshopEmbedMessage["type"],
+  type: WorkshopEmbedMessageType,
   sessionId: string,
 ): WorkshopEmbedMessage {
   return {

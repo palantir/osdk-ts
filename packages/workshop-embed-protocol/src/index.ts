@@ -30,7 +30,10 @@ export {
   WORKSHOP_EMBED_QUERY_VALUE,
   WORKSHOP_EMBED_VERSION,
 } from "./protocol.js";
-export type { WorkshopEmbedMessage } from "./protocol.js";
+export type {
+  WorkshopEmbedMessage,
+  WorkshopEmbedMessageType,
+} from "./protocol.js";
 export type {
   WorkshopVariableSchema,
   WorkshopVariableType,
