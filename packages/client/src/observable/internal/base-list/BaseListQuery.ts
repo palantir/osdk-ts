@@ -741,11 +741,18 @@ export abstract class BaseListQuery<
 
   /**
    * Handler called when subscribed data becomes out of date.
+   * Forces a refetch so the list recovers from missed websocket updates.
    */
   protected onOswOutOfDate(): void {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "onOutOfDate" }).debug("");
     }
+
+    void this.revalidate(true).catch((error: unknown) => {
+      this.logger
+        ?.child({ methodName: "onOutOfDate" })
+        .error("Failed to revalidate after out of date", error);
+    });
   }
 
   /**
