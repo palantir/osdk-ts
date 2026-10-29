@@ -1,4 +1,4 @@
-# @osdk/workshop-embed-protocol
+# @osdk/workshop-embed
 
 Experimental, React-free helpers for connecting an application to an embedded Workshop module. Workshop uses this package internally for its side of the connection. There are no runtime dependencies.
 
@@ -7,7 +7,7 @@ Experimental, React-free helpers for connecting an application to an embedded Wo
 Set `embedded=true&workshopEmbed=1` on the module URL and connect to the iframe from the parent application:
 
 ```ts
-import { connectToWorkshopModule } from "@osdk/workshop-embed-protocol";
+import { connectToWorkshopModule } from "@osdk/workshop-embed";
 
 const controller = new AbortController();
 const connection = await connectToWorkshopModule({

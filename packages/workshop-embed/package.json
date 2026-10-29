@@ -1,7 +1,7 @@
 {
-  "name": "@osdk/workshop-embed-protocol",
+  "name": "@osdk/workshop-embed",
   "version": "0.0.0",
-  "description": "Shared MessageChannel handshake for embedding Workshop modules",
+  "description": "Framework-independent APIs for embedding and communicating with Workshop modules",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
