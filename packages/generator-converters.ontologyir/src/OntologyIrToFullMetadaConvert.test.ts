@@ -15,7 +15,12 @@
  */
 
 import type {
+  OntologyIrActionTypeBlockDataV2,
+  OntologyIrConditionalValidationBlock,
   OntologyIrLinkTypeBlockDataV2,
+  OntologyIrParameter,
+  ParameterFreeText,
+  ParameterRequiredConfiguration,
   VectorPropertyType,
 } from "@osdk/client.unstable";
 import { fileURLToPath } from "node:url";
@@ -3684,6 +3689,106 @@ describe(OntologyIrToFullMetadataConverter, () => {
         "valueTypes": {},
       }
     `);
+  });
+
+  it("converts action parameter text and list length validation", () => {
+    const parameter = (
+      id: string,
+      type: OntologyIrParameter["type"],
+    ): OntologyIrParameter => ({
+      id,
+      displayMetadata: { displayName: id, description: "", typeClasses: [] },
+      type,
+    });
+    const validation = (
+      required: ParameterRequiredConfiguration,
+      text: ParameterFreeText,
+    ): OntologyIrConditionalValidationBlock => ({
+      conditionalOverrides: [],
+      defaultValidation: {
+        display: {
+          renderHint: { type: "textInput", textInput: {} },
+          visibility: { type: "editable", editable: {} },
+        },
+        validation: {
+          required,
+          allowedValues: { type: "text", text: { type: "text", text } },
+        },
+      },
+    });
+    const action: OntologyIrActionTypeBlockDataV2 = {
+      actionType: {
+        metadata: {
+          apiName: "createItem",
+          displayMetadata: {
+            displayName: "Create item",
+            description: "",
+            applyingMessage: [],
+            successMessage: [],
+            typeClasses: [],
+          },
+          status: { type: "active", active: {} },
+          parameters: {
+            title: parameter("title", { type: "string", string: {} }),
+            tags: parameter("tags", { type: "stringList", stringList: {} }),
+          },
+          parameterOrdering: ["title", "tags"],
+          formContentOrdering: [],
+          sections: {},
+        },
+        actionTypeLogic: {
+          logic: { rules: [] },
+          validation: {
+            actionTypeLevelValidation: { rules: {} },
+            parameterValidations: {
+              title: validation({ type: "required", required: {} }, {
+                minLength: 3,
+                maxLength: 20,
+                regex: { regex: "^[A-Za-z].*", failureMessage: "Invalid" },
+              }),
+              tags: validation({
+                type: "listLengthValidation",
+                listLengthValidation: { minLength: 1, maxLength: 2 },
+              }, {}),
+            },
+            sectionValidations: {},
+          },
+        },
+      },
+    };
+
+    const result = OntologyIrToFullMetadataConverter.getOsdkActionParameters(
+      action,
+    );
+
+    expect(result).toEqual({
+      title: {
+        displayName: "title",
+        description: "",
+        required: true,
+        dataType: { type: "string" },
+        typeClasses: [],
+        validation: {
+          defaultValidation: {
+            allowedValues: {
+              type: "text",
+              gte: 3,
+              lte: 20,
+              regex: "^[A-Za-z].*",
+              configuredFailureMessage: "Invalid",
+            },
+          },
+        },
+      },
+      tags: {
+        displayName: "tags",
+        description: "",
+        required: true,
+        dataType: { type: "array", subType: { type: "string" } },
+        typeClasses: [],
+        validation: { defaultValidation: { arraySize: { gte: 1, lte: 2 } } },
+      },
+    });
   });
 
   describe(isInjectedRuntimeInput, () => {
