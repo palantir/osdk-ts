@@ -180,6 +180,14 @@ describe("connectToWorkshopModule", () => {
     expect(target.postMessage).not.toHaveBeenCalled();
   });
 
+  it("connects when crypto.randomUUID is unavailable", async () => {
+    vi.stubGlobal("crypto", {});
+    const result = connect();
+    available();
+    acknowledge();
+    expect((await result).sessionId).toBe(sessionId());
+  });
+
   it.each(["before transfer", "after transfer", "after connection"])(
     "cleans up on abort %s",
     async (phase) => {

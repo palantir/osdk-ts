@@ -59,7 +59,7 @@ export function connectToWorkshopModule({
       throw new DOMException("Workshop connection aborted.", "AbortError");
     }
     const origin = url.origin;
-    const sessionId = crypto.randomUUID();
+    const sessionId = createSessionId();
     const { port1, port2 } = new MessageChannel();
     let transferred = false;
     const handshakeTimeout = setTimeout(
@@ -142,4 +142,15 @@ export function connectToWorkshopModule({
     signal?.addEventListener("abort", abort);
     sendProbe();
   });
+}
+
+function createSessionId(): string {
+  // randomUUID is only available in secure contexts and in Node 19+.
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }
