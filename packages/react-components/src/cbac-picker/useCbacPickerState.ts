@@ -20,8 +20,7 @@ import {
   useMarkingCategories,
   useMarkings,
 } from "@osdk/react/platform-apis";
-import { partition, sortBy } from "lodash-es";
-import React, { useMemo } from "react";
+import React from "react";
 
 import type {
   CategoryMarkingGroup,
@@ -33,6 +32,8 @@ import { EMPTY_ARRAY, resolveRequiredGroups } from "./utils/cbacPickerUtils.js";
 import {
   computeMarkingStates,
   groupMarkingsByCategory,
+  sortCategoriesByPriority,
+  sortMarkingsByProminenceAndPriority,
 } from "./utils/selectionLogic.js";
 
 const EMPTY_GROUPS: string[][] = [];
@@ -70,22 +71,18 @@ export function useCbacPickerState(
   options?: UseCbacPickerStateOptions,
 ): UseCbacPickerStateResult {
   const stableSelectedIds = useStableArray(selectedIds);
-  const allOptions = useMemo(
-    () => ({ ...options, markingType: "CBAC" as const }),
-    [options],
-  );
   const {
     categories: rawCategories,
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories(allOptions);
+  } = useMarkingCategories({ ...options, markingType: "CBAC" });
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings(allOptions);
+  } = useMarkings({ ...options, markingType: "CBAC" });
   const {
     banner: latestBanner,
     isLoading: bannerLoading,
@@ -144,29 +141,9 @@ export function useCbacPickerState(
     if (rawCategories === undefined || rawMarkings === undefined) {
       return [];
     }
-    // Sort by descending numeric priority, preserving input order for ties. Missing
-    // priorities become NaN, which sortBy places after numeric priorities.
-    const categories = sortBy(
-      rawCategories,
-      (category) => -Number(category.priority),
-    );
-    const markings = sortBy(
-      rawMarkings,
-      (marking) => -Number(marking.priority),
-    );
-    // Order common markings first, then markings without prominence, then
-    // uncommon markings for both the visible grid and overflow.
-    const [markingsWithProminence, markingsWithoutProminence] = partition(
-      markings,
-      (marking) => marking.prominence != null,
-    );
-    const [commonMarkings, uncommonMarkings] = partition(
-      markingsWithProminence,
-      (marking) => marking.prominence === "COMMON",
-    );
     return groupMarkingsByCategory(
-      [...commonMarkings, ...markingsWithoutProminence, ...uncommonMarkings],
-      categories,
+      sortMarkingsByProminenceAndPriority(rawMarkings),
+      sortCategoriesByPriority(rawCategories),
     );
   }, [rawMarkings, rawCategories]);
 

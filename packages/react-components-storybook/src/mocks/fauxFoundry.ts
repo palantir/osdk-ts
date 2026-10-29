@@ -344,7 +344,7 @@ export async function setupFauxFoundry(): Promise<void> {
       categoryId: "cat-compartment",
       name: "BRAVO",
       priority: "10",
-      // Intentionally omit prominence: sort between common and uncommon markings.
+      // Intentionally omit prominence
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },

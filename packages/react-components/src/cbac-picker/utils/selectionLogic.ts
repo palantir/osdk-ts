@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { sortBy } from "lodash-es";
+
 import type {
   CategoryMarkingGroup,
   MarkingSelectionState,
@@ -121,4 +123,37 @@ export function groupMarkingsByCategory(
   }
 
   return groups;
+}
+
+type MarkingProminence = "COMMON" | "UNCOMMON";
+
+// Common markings first, then uncommon markings, then markings without prominence.
+const PROMINENCE_RANK: Record<MarkingProminence, number> = {
+  COMMON: 0,
+  UNCOMMON: 1,
+};
+const MISSING_PROMINENCE_RANK = 2;
+
+// Sort by descending numeric priority, preserving input order for ties. Missing
+// priorities become NaN, which sortBy places after numeric priorities.
+export function sortCategoriesByPriority<T extends { priority?: string }>(
+  categories: readonly T[],
+): T[] {
+  return sortBy(categories, getDescendingPriority);
+}
+
+export function sortMarkingsByProminenceAndPriority<
+  T extends { priority?: string; prominence?: MarkingProminence },
+>(markings: readonly T[]): T[] {
+  return sortBy(markings, [
+    (marking) =>
+      marking.prominence != null
+        ? PROMINENCE_RANK[marking.prominence]
+        : MISSING_PROMINENCE_RANK,
+    getDescendingPriority,
+  ]);
+}
+
+function getDescendingPriority({ priority }: { priority?: string }): number {
+  return -Number(priority);
 }
