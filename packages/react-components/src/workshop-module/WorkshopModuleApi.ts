@@ -20,8 +20,9 @@ export interface WorkshopModuleProps {
   /** RID of the Workshop module to render. */
   moduleRid: string;
 
-  /** Module version: `latest` for the latest saved version, or `published` for the published version (falling back to the latest saved version if none is published). */
-  moduleVersion: "latest" | "published";
+  /** Module version: `latest` for the latest saved version, or `published` for the published version (falling back to the latest saved version if none is published).
+   * @default "published" */
+  moduleVersion?: "latest" | "published";
 
   /** Accessible title for the iframe.
    * @default "Workshop module" */

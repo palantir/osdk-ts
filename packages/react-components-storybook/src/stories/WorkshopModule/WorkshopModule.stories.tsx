@@ -28,7 +28,7 @@ function isFoundryUrl(value: string): boolean {
 }
 
 const meta: Meta<BaseWorkshopModuleProps> = {
-  title: "Beta/WorkshopModule",
+  title: "Components/WorkshopModule",
   component: BaseWorkshopModule,
   args: {
     foundryUrl: "",
@@ -54,7 +54,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
     docs: {
       description: {
         component:
-          "This story makes no requests until a Foundry URL is supplied. Provide your own URL and module RID in the controls to render a real Workshop module. Use latest for the latest saved version or published for the published version.",
+          "This story makes no requests until a Foundry URL is supplied. Provide your own URL and module RID in the controls to render a real Workshop module. The version defaults to published; use latest for the latest saved version.",
       },
     },
   },
@@ -71,7 +71,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
       control: "select",
       options: ["latest", "published"],
       description:
-        "latest for the latest saved version, or published for the published version.",
+        "latest for the latest saved version, or published for the published version. Defaults to published.",
     },
     title: { control: "text" },
     className: { control: "text" },
@@ -89,7 +89,6 @@ export const Default: Story = {
         code: `<BaseWorkshopModule
   foundryUrl="https://example.palantirfoundry.com"
   moduleRid="ri.workshop.main.module.example"
-  moduleVersion="published"
   style={{ height: "24rem" }}
 />`,
       },

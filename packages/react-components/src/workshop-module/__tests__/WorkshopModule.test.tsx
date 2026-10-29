@@ -27,7 +27,7 @@ import { WorkshopModule } from "../WorkshopModule.js";
 afterEach(cleanup);
 
 describe("WorkshopModule", () => {
-  it("uses the Foundry origin of the client supplied to OsdkProvider", () => {
+  it("uses the client's Foundry origin and defaults to the published version", () => {
     const client = createClient(
       "https://provider.example.com/",
       "ri.ontology.main.ontology.example",
@@ -38,7 +38,6 @@ describe("WorkshopModule", () => {
       <OsdkProvider client={client}>
         <WorkshopModule
           moduleRid="ri.workshop.main.module.example"
-          moduleVersion="published"
           title="Embedded dashboard"
         />
       </OsdkProvider>,

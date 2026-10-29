@@ -25,7 +25,7 @@ import styles from "./BaseWorkshopModule.module.css";
 export function BaseWorkshopModule({
   foundryUrl,
   moduleRid,
-  moduleVersion,
+  moduleVersion = "published",
   title = "Workshop module",
   className,
   style,
