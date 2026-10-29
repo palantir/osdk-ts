@@ -79,121 +79,106 @@ export function connectToWorkshopModule<
       );
     }
     if (signal?.aborted) {
-      reject(new DOMException("Workshop connection aborted.", "AbortError"));
-      return;
+      throw new DOMException("Workshop connection aborted.", "AbortError");
     }
     const origin = url.origin;
-    const sessionId = crypto.randomUUID();
-    let settled = false;
-    let managed: ReturnType<typeof createConnection<TSchema>> | undefined;
-    let transferredPort: MessagePort | undefined;
+    const sessionId = createSessionId();
+    const { port1, port2 } = new MessageChannel();
+    let transferred = false;
+    const handshakeTimeout = setTimeout(
+      () => fail(new Error("Workshop handshake timed out.")),
+      timeoutMs,
+    );
+    const probeInterval = setInterval(sendProbe, 250);
 
-    function cleanupBootstrap() {
-      clearTimeout(timeout);
-      clearInterval(retry);
+    const { connection, dispose } = createConnection(
+      port1,
+      sessionId,
+      () => {
+        stopHandshake();
+        signal?.removeEventListener("abort", abort);
+        hostWindow.removeEventListener("pagehide", abort);
+        if (!transferred) port2.close();
+        fail(new Error("Workshop port closed before acknowledgement."));
+      },
+      schema,
+    );
+
+    function stopHandshake() {
+      clearTimeout(handshakeTimeout);
+      clearInterval(probeInterval);
       hostWindow.removeEventListener("message", handleWindowMessage);
-      managed?.connection.port.removeEventListener(
-        "message",
-        handlePortMessage,
-      );
+      port1.removeEventListener("message", handlePortMessage);
     }
 
-    function cleanup() {
-      cleanupBootstrap();
-      signal?.removeEventListener("abort", abort);
-      hostWindow.removeEventListener("pagehide", abort);
-      transferredPort?.close();
-      transferredPort = undefined;
-    }
-
-    function fail(error: Error) {
-      if (!settled) {
-        settled = true;
-        reject(error);
-      }
-      cleanup();
-      managed?.dispose(true);
+    function fail(error: unknown) {
+      reject(error instanceof Error ? error : new Error(String(error)));
+      dispose(true);
     }
 
     function abort() {
       fail(new DOMException("Workshop connection aborted.", "AbortError"));
     }
 
-    function handlePortMessage(event: MessageEvent<unknown>) {
-      if (
-        !settled &&
-        managed != null &&
-        isWorkshopEmbedMessage(event.data) &&
-        event.data.sessionId === sessionId &&
-        event.data.type === "connected"
-      ) {
-        settled = true;
-        cleanupBootstrap();
-        resolve(managed.connection);
-      }
-    }
-
     function handleWindowMessage(event: MessageEvent<unknown>) {
+      const message = event.data;
       if (
-        settled ||
-        managed != null ||
+        transferred ||
         event.source !== targetWindow ||
         event.origin !== origin ||
-        !isWorkshopEmbedMessage(event.data) ||
-        event.data.type !== "available" ||
-        event.data.sessionId !== sessionId ||
-        event.ports.length !== 0
+        event.ports.length !== 0 ||
+        !isWorkshopEmbedMessage(message) ||
+        message.type !== "available" ||
+        message.sessionId !== sessionId
       )
         return;
 
-      clearInterval(retry);
+      clearInterval(probeInterval);
       try {
-        const channel = new MessageChannel();
-        transferredPort = channel.port2;
-        managed = createConnection(
-          channel.port1,
-          sessionId,
-          () => {
-            cleanup();
-            if (!settled) {
-              settled = true;
-              reject(new Error("Workshop port closed before acknowledgement."));
-            }
-          },
-          schema,
-        );
-        channel.port1.addEventListener("message", handlePortMessage);
         targetWindow.postMessage(createMessage("connect", sessionId), origin, [
-          channel.port2,
+          port2,
         ]);
-        transferredPort = undefined;
+        transferred = true;
       } catch (error) {
-        fail(
-          error instanceof Error
-            ? error
-            : new Error("Workshop connection failed."),
-        );
+        fail(error);
       }
     }
 
-    function probe() {
+    function handlePortMessage(event: MessageEvent<unknown>) {
+      const message = event.data;
+      if (
+        isWorkshopEmbedMessage(message) &&
+        message.type === "connected" &&
+        message.sessionId === sessionId
+      ) {
+        stopHandshake();
+        resolve(connection);
+      }
+    }
+
+    function sendProbe() {
       try {
         targetWindow.postMessage(createMessage("probe", sessionId), origin);
       } catch (error) {
-        fail(
-          error instanceof Error ? error : new Error("Workshop probe failed."),
-        );
+        fail(error);
       }
     }
 
+    port1.addEventListener("message", handlePortMessage);
     hostWindow.addEventListener("message", handleWindowMessage);
     hostWindow.addEventListener("pagehide", abort);
     signal?.addEventListener("abort", abort);
-    const timeout = setTimeout(
-      () => fail(new Error("Workshop handshake timed out.")),
-      timeoutMs,
-    );
-    const retry = setInterval(probe, 250);
-    probe();
+    sendProbe();
   });
+}
+
+function createSessionId(): string {
+  // randomUUID is only available in secure contexts and in Node 19+.
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
 }

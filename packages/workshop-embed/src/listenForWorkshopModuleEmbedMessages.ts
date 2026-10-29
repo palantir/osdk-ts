@@ -70,13 +70,14 @@ export function listenForWorkshopModuleEmbedMessages<
     return () => {};
 
   const schema = snapshotVariableSchema(variableSchema);
-  let pending: { sessionId: string; origin: string } | undefined;
-  let active: ReturnType<typeof createConnection<TSchema>> | undefined;
-  let stopped = false;
+  let pendingHandshake: { sessionId: string; origin: string } | undefined;
+  let activeConnection:
+    | ReturnType<typeof createConnection<TSchema>>
+    | undefined;
 
   function disconnect() {
-    pending = undefined;
-    active?.dispose(true);
+    pendingHandshake = undefined;
+    activeConnection?.dispose(true);
   }
 
   function handleMessage(event: MessageEvent<unknown>) {
@@ -88,53 +89,56 @@ export function listenForWorkshopModuleEmbedMessages<
     )
       return;
 
-    if (message.type === "probe") {
-      if (event.ports.length !== 0) {
-        for (const unusedPort of event.ports) unusedPort.close();
+    switch (message.type) {
+      case "probe":
+        return handleProbe(message.sessionId, event);
+      case "connect":
+        return handleConnect(message.sessionId, event);
+      default:
         return;
-      }
-      if (active?.connection.sessionId !== message.sessionId) {
-        pending = { sessionId: message.sessionId, origin: event.origin };
-      }
-      hostWindow.parent.postMessage(
-        createMessage("available", message.sessionId),
-        event.origin,
-      );
+    }
+  }
+
+  function handleProbe(sessionId: string, event: MessageEvent<unknown>) {
+    if (event.ports.length !== 0) {
+      for (const unusedPort of event.ports) unusedPort.close();
       return;
     }
-    if (message.type !== "connect") return;
+    if (activeConnection?.connection.sessionId !== sessionId) {
+      pendingHandshake = { sessionId, origin: event.origin };
+    }
+    hostWindow.parent.postMessage(
+      createMessage("available", sessionId),
+      event.origin,
+    );
+  }
+
+  function handleConnect(sessionId: string, event: MessageEvent<unknown>) {
     const port = event.ports[0];
     if (
       event.ports.length !== 1 ||
       port == null ||
-      pending?.sessionId !== message.sessionId ||
-      pending.origin !== event.origin
+      pendingHandshake?.sessionId !== sessionId ||
+      pendingHandshake.origin !== event.origin
     ) {
       for (const unusedPort of event.ports) unusedPort.close();
       return;
     }
 
-    try {
-      disconnect();
-    } catch (error) {
-      port.close();
-      throw error;
-    }
-    if (stopped) {
-      port.close();
-      return;
-    }
+    const previous = activeConnection;
     const next = createConnection(
       port,
-      message.sessionId,
+      sessionId,
       () => {
-        if (active === next) active = undefined;
+        if (activeConnection === next) activeConnection = undefined;
       },
       schema,
     );
-    active = next;
+    pendingHandshake = undefined;
+    activeConnection = next;
     try {
-      port.postMessage(createMessage("connected", message.sessionId));
+      // Dispose previous directly; disconnect() would also drop next, which is already active.
+      previous?.dispose(true);
       next.activate(onConnect);
     } catch (error) {
       next.dispose(true);
@@ -145,7 +149,6 @@ export function listenForWorkshopModuleEmbedMessages<
   hostWindow.addEventListener("message", handleMessage);
   hostWindow.addEventListener("pagehide", disconnect);
   return () => {
-    stopped = true;
     hostWindow.removeEventListener("message", handleMessage);
     hostWindow.removeEventListener("pagehide", disconnect);
     disconnect();

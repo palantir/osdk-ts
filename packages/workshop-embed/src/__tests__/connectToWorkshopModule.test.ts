@@ -180,6 +180,14 @@ describe("connectToWorkshopModule", () => {
     expect(target.postMessage).not.toHaveBeenCalled();
   });
 
+  it("connects when crypto.randomUUID is unavailable", async () => {
+    vi.stubGlobal("crypto", {});
+    const result = connect();
+    available();
+    acknowledge();
+    expect((await result).sessionId).toBe(sessionId());
+  });
+
   it.each(["before transfer", "after transfer", "after connection"])(
     "cleans up on abort %s",
     async (phase) => {
@@ -192,8 +200,9 @@ describe("connectToWorkshopModule", () => {
       controller.abort();
       if (phase !== "after connection")
         await expect(result).rejects.toMatchObject({ name: "AbortError" });
-      expect(channel.port1.close).toHaveBeenCalledTimes(
-        phase === "before transfer" ? 0 : 1,
+      expect(channel.port1.close).toHaveBeenCalledTimes(1);
+      expect(channel.port2.close).toHaveBeenCalledTimes(
+        phase === "before transfer" ? 1 : 0,
       );
     },
   );

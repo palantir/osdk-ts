@@ -72,13 +72,7 @@ export function createConnection<
   function dispose(notifyPeer: boolean) {
     if (disposed) return;
     disposed = true;
-    if (notifyPeer) {
-      try {
-        port.postMessage(createMessage("disconnect", sessionId));
-      } catch {
-        // The peer may already have navigated or closed its port.
-      }
-    }
+    if (notifyPeer) port.postMessage(createMessage("disconnect", sessionId));
     port.removeEventListener("message", handleMessage);
     port.removeEventListener("messageerror", disconnect);
     variableListeners.clear();
@@ -143,14 +137,11 @@ export function createConnection<
     connection,
     dispose,
     activate(handler) {
-      try {
-        const result = handler?.(connection);
-        if (disposed) result?.();
-        else cleanup = result;
-      } catch (error) {
-        disconnect();
-        throw error;
-      }
+      if (disposed) return;
+      port.postMessage(createMessage("connected", sessionId));
+      const result = handler?.(connection);
+      if (disposed) result?.();
+      else cleanup = result;
     },
   };
 }
