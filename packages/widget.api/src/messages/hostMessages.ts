@@ -45,7 +45,7 @@ export namespace HostMessage {
     }
   }
 
-  export type Payload = Payload.UpdateParameters<any> | Payload.SetHotkeys;
+  export type Payload = Payload.SetHotkeys | Payload.UpdateParameters<any>;
 
   export interface SetHotkeys extends HostBaseMessage<
     "host.set-hotkeys",
@@ -61,8 +61,8 @@ export namespace HostMessage {
 }
 
 export type HostMessage<C extends WidgetConfig<C["parameters"]>> =
-  | HostMessage.UpdateParameters<C>
-  | HostMessage.SetHotkeys;
+  | HostMessage.SetHotkeys
+  | HostMessage.UpdateParameters<C>;
 
 export function isHostSetHotkeysMessage<
   C extends WidgetConfig<C["parameters"]>,
