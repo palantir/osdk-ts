@@ -18,6 +18,7 @@ import type { Entry, FilterHandler, Options } from "dir-compare";
 import { filterHandlers } from "dir-compare";
 import type { GlobbyFilterFunction } from "globby";
 import { isGitIgnoredSync } from "globby";
+import path from "node:path";
 
 /**
  * Implements a custom filter that ignores files according to .gitignore rules.
@@ -53,8 +54,16 @@ export function gitIgnoreFilter(
     if (entry.name === ".git") {
       return false;
     }
+    const ignoredPath = entry.isDirectory
+      ? `${
+        path.relative(
+          entry.origin === "left" ? pathLeft : pathRight,
+          entry.absolutePath,
+        )
+      }/`
+      : entry.absolutePath;
     // Use globby to evaluate the current path
-    if (isIgnored(entry.absolutePath)) {
+    if (isIgnored(ignoredPath)) {
       return false;
     }
     // Fallback on the default 'minimatch' implementation to deal with includeFilter and excludeFilter options
