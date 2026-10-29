@@ -15,10 +15,15 @@
  */
 
 import type {
+  ActionTypeBlockDataV2,
+  ConditionalValidationBlock,
   InterfaceTypeBlockDataV2,
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
   OntologyBlockDataV2,
+  Parameter,
+  ParameterFreeText,
+  ParameterRequiredConfiguration,
   PropertyType,
 } from "@osdk/client.unstable";
 import { describe, expect, it } from "vitest";
@@ -812,5 +817,116 @@ describe(OntologyBlockDataToFullMetadataConverter, () => {
     expect(result.interfaceTypes[interfaceApiName]).not.toBe(importedInterface);
     expect(result.interfaceTypes[interfaceApiName].implementedByObjectTypes)
       .not.toBe(importedInterface.implementedByObjectTypes);
+  });
+
+  it("converts action parameter text and list length validation", () => {
+    const parameter = (
+      id: string,
+      type: Parameter["type"],
+    ): Parameter => ({
+      id,
+      rid: `${id}-rid`,
+      displayMetadata: {
+        displayName: id,
+        description: "",
+        structFields: {},
+        structFieldsV2: [],
+        typeClasses: [],
+      },
+      type,
+    });
+    const validation = (
+      required: ParameterRequiredConfiguration,
+      text: ParameterFreeText,
+    ): ConditionalValidationBlock => ({
+      conditionalOverrides: [],
+      structFieldValidations: {},
+      defaultValidation: {
+        display: {
+          renderHint: { type: "textInput", textInput: {} },
+          visibility: { type: "editable", editable: {} },
+        },
+        validation: {
+          required,
+          allowedValues: { type: "text", text: { type: "text", text } },
+        },
+      },
+    });
+    const action: ActionTypeBlockDataV2 = {
+      parameterIds: { title: "title", tags: "tags" },
+      actionType: {
+        metadata: {
+          rid: "action-rid",
+          apiName: "createItem",
+          version: "1.0.0",
+          displayMetadata: {
+            displayName: "Create item",
+            description: "",
+            applyingMessage: [],
+            successMessage: [],
+            typeClasses: [],
+          },
+          status: { type: "active", active: {} },
+          parameters: {
+            title: parameter("title", { type: "string", string: {} }),
+            tags: parameter("tags", { type: "stringList", stringList: {} }),
+          },
+          parameterOrdering: ["title", "tags"],
+          formContentOrdering: [],
+          sections: {},
+        },
+        actionTypeLogic: {
+          logic: { rules: [] },
+          notifications: [],
+          validation: {
+            actionTypeLevelValidation: { ordering: [], rules: {} },
+            parameterValidations: {
+              title: validation({ type: "required", required: {} }, {
+                minLength: 3,
+                maxLength: 20,
+                regex: { regex: "^[A-Za-z].*", failureMessage: "Invalid" },
+              }),
+              tags: validation({
+                type: "listLengthValidation",
+                listLengthValidation: { minLength: 1, maxLength: 2 },
+              }, {}),
+            },
+            sectionValidations: {},
+          },
+        },
+      },
+    };
+
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getOsdkActionParametersFromBlockData(action, undefined, undefined);
+
+    expect(result).toEqual({
+      title: {
+        displayName: "title",
+        description: "",
+        required: true,
+        dataType: { type: "string" },
+        typeClasses: [],
+        validation: {
+          defaultValidation: {
+            allowedValues: {
+              type: "text",
+              gte: 3,
+              lte: 20,
+              regex: "^[A-Za-z].*",
+              configuredFailureMessage: "Invalid",
+            },
+          },
+        },
+      },
+      tags: {
+        displayName: "tags",
+        description: "",
+        required: true,
+        dataType: { type: "array", subType: { type: "string" } },
+        typeClasses: [],
+        validation: { defaultValidation: { arraySize: { gte: 1, lte: 2 } } },
+      },
+    });
   });
 });

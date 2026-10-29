@@ -1241,6 +1241,16 @@ export interface BaseParameterConstraintType_anyStructList {
   type: "anyStructList";
   anyStructList: AnyStructListType;
 }
+
+export interface BaseParameterConstraintType_implementingObjectReference {
+  type: "implementingObjectReference";
+  implementingObjectReference: ImplementingObjectReferenceType;
+}
+
+export interface BaseParameterConstraintType_implementingObjectReferenceList {
+  type: "implementingObjectReferenceList";
+  implementingObjectReferenceList: ImplementingObjectReferenceListType;
+}
 /**
  * All possible types for parameter constraints on InterfaceActionTypeConstraints.
  * Mirrors com.palantir.ontology.metadata.api.types.BaseParameterConstraintType from the
@@ -1299,7 +1309,9 @@ export type BaseParameterConstraintType =
   | BaseParameterConstraintType_anyInterfaceReferenceList
   | BaseParameterConstraintType_anyInterfaceObjectSetRid
   | BaseParameterConstraintType_anyStruct
-  | BaseParameterConstraintType_anyStructList;
+  | BaseParameterConstraintType_anyStructList
+  | BaseParameterConstraintType_implementingObjectReference
+  | BaseParameterConstraintType_implementingObjectReferenceList;
 
 export interface BaseParameterType_boolean {
   type: "boolean";
@@ -10095,6 +10107,16 @@ export type ImageryDecodeFormat =
 export interface ImagerySchema {
   format: ImageryDecodeFormat;
 }
+
+/**
+ * A parameter constraint type requiring a list of references to implementing object types.
+ */
+export interface ImplementingObjectReferenceListType {}
+/**
+ * A parameter constraint type requiring a reference to an implementing object type.
+ */
+export interface ImplementingObjectReferenceType {}
+
 export interface ImportBlockSetResponse {
   blockSetId: BlockSetId;
   blockSetVersionId: BlockSetVersionId;
