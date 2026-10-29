@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { isRecord } from "./isRecord.js";
-
 /** URL parameter that enables the Workshop-side listener. @public */
 export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 
@@ -62,6 +60,10 @@ export function isWorkshopEmbedMessage(
     value.sessionId.length > 0 &&
     WORKSHOP_EMBED_MESSAGE_TYPES.some((type) => type === value.type)
   );
+}
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return value != null && typeof value === "object" && !Array.isArray(value);
 }
 
 export function createMessage(
