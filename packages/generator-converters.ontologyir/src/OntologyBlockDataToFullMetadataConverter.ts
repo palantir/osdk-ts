@@ -35,6 +35,10 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
+import {
+  convertActionParameterValidation,
+  isActionParameterRequired,
+} from "./convertActionParameterValidation.js";
 import { convertValueType } from "./convertValueType.js";
 import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
 
@@ -869,12 +873,16 @@ export class OntologyBlockDataToFullMetadataConverter {
           throw new Error("Unknown parameter type");
       }
 
+      const { validation } = action.actionType.actionTypeLogic.validation
+        .parameterValidations[paramKey].defaultValidation;
+      const convertedValidation = convertActionParameterValidation(validation);
       result[paramKey] = {
         displayName: irParameter.displayMetadata.displayName,
         description: irParameter.displayMetadata.description,
-        required: isBlockDataParameterRequired(action, paramKey),
+        required: isActionParameterRequired(validation.required),
         dataType,
         typeClasses: [],
+        ...(convertedValidation && { validation: convertedValidation }),
       };
     }
 
@@ -1271,15 +1279,6 @@ function getAllAncestorInterfaceTypes(
 
   visitParents(apiName);
   return ancestors;
-}
-
-function isBlockDataParameterRequired(
-  action: ActionTypeBlockDataV2,
-  paramKey: string,
-): boolean {
-  return action.actionType.actionTypeLogic.validation
-    .parameterValidations[paramKey].defaultValidation.validation.required.type
-    === "required";
 }
 
 function getOsdkActionStructFieldsFromBlockData(
