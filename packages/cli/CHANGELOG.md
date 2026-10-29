@@ -1,5 +1,70 @@
 # @osdk/cli
 
+## 0.112.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.84.0
+
+## 0.111.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.83.0
+
+## 0.110.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.82.0
+
+## 0.109.0
+
+### Patch Changes
+
+- Updated dependencies [c7d3f6c]
+  - @osdk/foundry-config-json@1.14.0
+  - @osdk/widget.api@3.81.0
+
+## 0.108.0
+
+### Minor Changes
+
+- 74891bf: Add `--branchName` to `widgetset deploy` and `widgetset version list` to override the current Git branch.
+
+## 0.107.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.80.0
+
+## 0.106.0
+
+### Minor Changes
+
+- a25a34d: Use the current git branch when listing and publishing widget set releases.
+
+### Patch Changes
+
+- @osdk/widget.api@3.79.0
+
+## 0.105.0
+
+### Patch Changes
+
+- Updated dependencies [630e179]
+  - @osdk/widget.api@3.78.0
+
+## 0.104.0
+
+### Minor Changes
+
+- c1adfaa: Expose `osdk branch sync` directly while retaining `osdk unstable branch sync` for backward compatibility.
+
+### Patch Changes
+
+- @osdk/widget.api@3.77.0
+
 ## 0.103.0
 
 ### Patch Changes

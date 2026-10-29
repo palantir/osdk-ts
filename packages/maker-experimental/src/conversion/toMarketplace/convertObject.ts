@@ -43,13 +43,17 @@ import {
   isExotic,
   isInterfaceSharedPropertyType,
   OntologyEntityTypeEnum,
+  resolveDerivedPropertyLinks,
   withoutNamespace,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { buildDatasource } from "./convertActionHelpers.js";
-import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
+import {
+  convertDatasourceDefinition,
+  convertDatasourceForEdge,
+} from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 
 /**
@@ -109,6 +113,7 @@ function convertImplementingLinkTypeSide(
 export function convertObject(
   objectType: ObjectType,
   ridGenerator: OntologyRidGenerator,
+  packageForEdge = false,
 ): ObjectTypeBlockDataV2 {
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType, ridGenerator);
@@ -326,6 +331,14 @@ export function convertObject(
       ...derivedDatasources,
       objectDatasource,
     ],
+    // Property and derived datasources already work on edge.
+    ...(packageForEdge
+      ? {
+          mappedEdgeOnlyDatasources: [
+            convertDatasourceForEdge(objectDatasource, objectType.apiName),
+          ],
+        }
+      : {}),
     entityMetadata: buildEntityMetadata(objectType, ridGenerator),
     propertySecurityGroupPackagingVersion: { type: "v2", v2: {} },
     schemaMigrations: undefined,
@@ -398,24 +411,30 @@ function resolveInterfaceProperty(
 }
 
 /**
- * Extracts marking group names of a specific type from object properties
+ * Extracts the distinct marking group names of a specific type from object
+ * properties, in first-seen order. Properties that share a group share one
+ * datasource marking input.
  */
 export function extractMarkingGroups(
   properties: ObjectPropertyType[],
   markingType: "CBAC" | "MANDATORY",
 ): string[] {
-  return properties
-    .map((prop) => {
-      if (
-        typeof prop.type === "object" &&
-        prop.type.type === "marking" &&
-        prop.type.markingType === markingType
-      ) {
-        return prop.type.markingInputGroupName;
-      }
-      return undefined;
-    })
-    .filter((val): val is string => val !== undefined);
+  return [
+    ...new Set(
+      properties
+        .map((prop) => {
+          if (
+            typeof prop.type === "object" &&
+            prop.type.type === "marking" &&
+            prop.type.markingType === markingType
+          ) {
+            return prop.type.markingInputGroupName;
+          }
+          return undefined;
+        })
+        .filter((val): val is string => val !== undefined),
+    ),
+  ];
 }
 export function extractPropertyDatasource(
   property: ObjectPropertyType,
@@ -506,11 +525,15 @@ function buildDerivedDatasource(
   objectTypeApiName: string,
   ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasource {
-  // TODO: Convert linkType from API name to RID
+  const { steps, targetObjectApiName } = resolveDerivedPropertyLinks(
+    objectTypeApiName,
+    datasource.linkDefinition,
+  );
+
   const linkDefinition = {
     type: "multiHopLink" as const,
     multiHopLink: {
-      steps: datasource.linkDefinition.map((step) => ({
+      steps: steps.map((step) => ({
         type: "searchAround" as const,
         searchAround: {
           linkTypeIdentifier: {
@@ -519,7 +542,7 @@ function buildDerivedDatasource(
               cleanAndValidateLinkTypeId(step.linkType.apiName),
             ),
           },
-          linkTypeSide: step.side ?? "SOURCE",
+          linkTypeSide: step.side,
         },
       })),
     },
@@ -540,7 +563,7 @@ function buildDerivedDatasource(
                   type: "propertyType" as const,
                   propertyType: ridGenerator.generatePropertyRid(
                     targetProp,
-                    objectTypeApiName,
+                    targetObjectApiName,
                   ),
                 },
               ],
@@ -556,7 +579,7 @@ function buildDerivedDatasource(
             Object.entries(datasource.propertyMapping).map(
               ([sourceProp, agg]) => [
                 ridGenerator.generatePropertyRid(sourceProp, objectTypeApiName),
-                buildAggregation(agg, ridGenerator),
+                buildAggregation(agg, targetObjectApiName, ridGenerator),
               ],
             ),
           ),
@@ -577,35 +600,46 @@ function buildDerivedDatasource(
 
 function buildAggregation(
   agg: DerivedPropertyAggregation,
+  targetObjectApiName: string,
   ridGenerator: OntologyRidGenerator,
 ): DerivedPropertyAggregationWire {
-  const type = agg.type;
-  const limit = "limit" in agg ? agg.limit : undefined;
-  const foreignProperty = "property" in agg ? agg.property : undefined;
-  const innerDef: any = {};
-  // TODO: Convert property references in aggregations to RIDs
-  if (type !== "count") {
-    if (["collectList", "collectSet"].includes(type)) {
-      innerDef.linkedProperty = {
-        type: "propertyType",
-        propertyType: foreignProperty
-          ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
-          : undefined,
-      };
-      innerDef.limit = limit;
-    } else {
-      innerDef.property = {
-        type: "propertyType",
-        propertyType: foreignProperty
-          ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
-          : undefined,
-      };
-    }
+  if (agg.type === "count") {
+    return { type: "count", count: {} };
   }
-  return {
-    type,
-    [type]: innerDef,
-  } as unknown as DerivedPropertyAggregationWire;
+  const property = {
+    type: "propertyType" as const,
+    propertyType: ridGenerator.generatePropertyRid(
+      agg.property,
+      targetObjectApiName,
+    ),
+  };
+  switch (agg.type) {
+    case "avg":
+      return { type: "avg", avg: property };
+    case "sum":
+      return { type: "sum", sum: property };
+    case "min":
+      return { type: "min", min: property };
+    case "max":
+      return { type: "max", max: property };
+    case "approximateCardinality":
+      return {
+        type: "approximateCardinality",
+        approximateCardinality: property,
+      };
+    case "exactCardinality":
+      return { type: "exactCardinality", exactCardinality: property };
+    case "collectList":
+      return {
+        type: "collectList",
+        collectList: { linkedProperty: property, limit: agg.limit },
+      };
+    case "collectSet":
+      return {
+        type: "collectSet",
+        collectSet: { linkedProperty: property, limit: agg.limit },
+      };
+  }
 }
 
 /**

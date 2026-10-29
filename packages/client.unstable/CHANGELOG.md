@@ -1,5 +1,33 @@
 # @osdk/client.unstable
 
+## 2.84.0
+
+## 2.83.0
+
+### Minor Changes
+
+- 4c59807: Support authored value type references in struct constraints, including inline constraints on struct and array-of-struct object properties, and package their Marketplace dependencies with consistent value type input titles and descriptions across blocks. Move `OntologyIrV2` from `@osdk/client.unstable` to `@osdk/maker-experimental` and include value type dependencies in its `valueTypes` entries.
+
+## 2.82.0
+
+## 2.81.0
+
+## 2.80.0
+
+### Minor Changes
+
+- e9bf2de: Add edge packaging to oac
+
+## 2.79.0
+
+## 2.78.0
+
+### Minor Changes
+
+- 533f264: Emit relevant interface schema migration output shapes when converting DSL to block-data/shapes in maker-experimental.
+
+## 2.77.0
+
 ## 2.76.0
 
 ### Minor Changes

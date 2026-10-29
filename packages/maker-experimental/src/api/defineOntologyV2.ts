@@ -16,11 +16,11 @@
 
 import * as fs from "fs";
 
-import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
 import {
+  getFolderDefinitions,
   getImportedTypes,
   getOntologyDefinition,
   importOntologyEntity,
@@ -38,6 +38,12 @@ import {
   getImportedShapes,
   type LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import {
+  getFolderLocationInputs,
+  getOntologyFolders,
+  type OntologyFolder,
+  resolveFolderDefinitions,
+} from "../util/foldersUtil.js";
 
 export type { ExternalImportedOntologyMetadata } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
@@ -46,6 +52,12 @@ import {
   OntologyRidGeneratorImpl,
   ReadableIdGenerator,
 } from "../util/generateRid.js";
+import type { OntologyIrV2 } from "./OntologyIrV2.js";
+
+export interface OntologyPackagingOptions {
+  // EDGE packages datasource definitions for both cloud and edge. Defaults to CLOUD.
+  targetEnvironment?: "CLOUD" | "EDGE";
+}
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
@@ -56,6 +68,7 @@ export interface OntologyV2Result {
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
+  folders: OntologyFolder[];
 }
 
 export interface FunctionsIr {
@@ -71,6 +84,9 @@ export async function defineOntologyV2(
   randomnessKey?: string,
   importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
+  packagingOptions: OntologyPackagingOptions = {},
+  /** Runs once the ontology is fully converted, but before any block data is written to disk. */
+  beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -103,6 +119,10 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
+  const folderDefinitions = resolveFolderDefinitions(
+    getFolderDefinitions(),
+    ontologyDefinition,
+  );
 
   let functionsIr: FunctionsIr | undefined;
   if (functionsIrFile) {
@@ -113,23 +133,39 @@ export async function defineOntologyV2(
     importedTypes,
     randomnessKey,
   );
-  const ontDef = convertOntologyDefinition(
+  const ontologyIr = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
     functionsIr,
     randomnessKey,
+    packagingOptions.targetEnvironment === "EDGE",
   );
 
   const shapes = await getShapes(
-    ontDef.ontology,
+    ontologyIr.ontology,
     ridGenerator,
     functionsIr,
     randomnessKey,
   );
+  const folders = getOntologyFolders(folderDefinitions, shapes.outputShapes);
+  const folderLocations = getFolderLocationInputs(folders);
+  for (const [id, input] of folderLocations.inputShapes) {
+    shapes.inputShapes.set(id, input);
+  }
+  for (const [id, metadata] of folderLocations.inputShapeMetadata) {
+    shapes.inputShapeMetadata.set(id, metadata);
+  }
+  shapes.inputMappings.push(...folderLocations.inputMappings);
+  ontologyIr.ontology.blockOutputCompassLocations = Object.fromEntries(
+    Array.from(folderLocations.outputToLocationInput, ([output, input]) => [
+      ridGenerator.toBlockInternalId(output),
+      ridGenerator.toBlockInternalId(input),
+    ]),
+  );
 
   // Generate input shapes for imported entities and merge into main shapes
   const importedShapes = getImportedShapes(
-    ontDef.importedOntology,
+    ontologyIr.importedOntology,
     ridGenerator,
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
@@ -186,6 +222,9 @@ export async function defineOntologyV2(
     );
   }
 
+  // Runs last so that an ontology which fails conversion can't have already updated the lockfile.
+  await beforeWrite?.(ontologyDefinition);
+
   if (outputDir) {
     writeStaticObjects(outputDir);
   }
@@ -205,11 +244,16 @@ export async function defineOntologyV2(
       ]),
     ),
     idToInputGroupId: {},
-    outputToLocationInput: {},
+    outputToLocationInput: Object.fromEntries(
+      Array.from(folderLocations.outputToLocationInput, ([output, input]) => [
+        ridGenerator.toBlockInternalId(output),
+        input,
+      ]),
+    ),
   };
 
   return {
-    ontologyIr: ontDef,
+    ontologyIr,
     importedTypes,
     shapes,
     blockDataAddOn,
@@ -217,5 +261,6 @@ export async function defineOntologyV2(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    folders,
   };
 }

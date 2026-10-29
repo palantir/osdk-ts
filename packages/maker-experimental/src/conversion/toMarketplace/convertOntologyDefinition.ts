@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
+import invariant from "tiny-invariant";
 
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
+import type { OntologyIrV2 } from "../../api/OntologyIrV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
 import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
@@ -28,14 +29,18 @@ export function convertOntologyDefinition(
   ridGenerator: OntologyRidGeneratorImpl,
   functionsIr?: FunctionsIr,
   randomnessKey?: string,
+  packageForEdge = false,
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
+  validateInterfaceActionReferences(ontology, importedTypes);
+
   const allOntologies = [ontology, importedTypes];
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,
     allOntologies,
     functionsIr,
+    packageForEdge,
   );
 
   const importedOntology = convertOntologyDefinitionToWireBlockData(
@@ -93,12 +98,53 @@ export function convertOntologyDefinition(
     throwawayRidGenerator,
   );
 
+  const valueTypes = convertValueTypeToWireBlockData(ontology, ridGenerator);
+  const importedValueTypeBlocks = convertValueTypeToWireBlockData(
+    importedTypes,
+    ridGenerator,
+  );
+
   return {
     ontology: mainOntology,
     importedOntology,
     transitiveImportedOntology,
-    valueTypes: convertValueTypeToWireBlockData(ontology),
-    importedValueTypes: convertValueTypeToWireBlockData(importedTypes),
+    valueTypes,
+    importedValueTypes: importedValueTypeBlocks.map(
+      ({ blockData }) => blockData,
+    ),
     randomnessKey,
   };
+}
+
+function validateInterfaceActionReferences(
+  ontology: OntologyDefinition,
+  importedTypes: OntologyDefinition,
+): void {
+  const actionApiNames = new Set([
+    ...Object.keys(ontology.ACTION_TYPE),
+    ...Object.keys(importedTypes.ACTION_TYPE),
+  ]);
+  const validationErrors: string[] = [];
+
+  for (const objectType of Object.values(ontology.OBJECT_TYPE)) {
+    for (const implementation of objectType.implementsInterfaces ?? []) {
+      for (const [constraintApiName, { actionTypeApiName }] of Object.entries(
+        implementation.actionTypeImplementations ?? {},
+      )) {
+        if (!actionApiNames.has(actionTypeApiName)) {
+          validationErrors.push(
+            `Action "${actionTypeApiName}" referenced by action type constraint "${constraintApiName}" on interface "${implementation.implements.apiName}" for object "${objectType.apiName}" is not defined or imported`,
+          );
+        }
+      }
+    }
+  }
+
+  invariant(
+    validationErrors.length === 0,
+    "\n" +
+      validationErrors
+        .map((error) => `Ontology Definition Error: ${error}\n`)
+        .join("\n"),
+  );
 }

@@ -34,6 +34,7 @@ function makeMetadata(
 
 describe("getDefaultFieldDefinitions", () => {
   it.each([
+    "decimal",
     "marking",
     "geohash",
     "geoshape",

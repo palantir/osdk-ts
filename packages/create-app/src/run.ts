@@ -195,7 +195,7 @@ export async function run({
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
     packageJson.scripts = {
       ...packageJson.scripts,
-      postinstall: "./node_modules/.bin/osdk unstable branch sync",
+      postinstall: "./node_modules/.bin/osdk branch sync",
     };
     packageJson.devDependencies = {
       "@osdk/cli": "latest",

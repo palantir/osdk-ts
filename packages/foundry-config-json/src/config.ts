@@ -134,19 +134,26 @@ const FOUNDRY_CONFIG_SCHEMA: {
   widgetSet: FOUNDRY_WIDGET_SET_CONFIG_SCHEMA,
 };
 
+export interface LoadFoundryConfigOptions {
+  cwd?: string;
+}
+
 /**
- * Asynchronously loads a configuration file. Looks for any of the CONFIG_FILE_NAMES in the current directory going up to the root directory.
+ * Loads foundry.config.json from options.cwd or its ancestors. Defaults to the current working directory.
  * @returns A promise that resolves to the configuration JSON object, or undefined if not found.
  * @throws Will throw an error if the configuration file is found but cannot be read or parsed.
  */
 export async function loadFoundryConfig(
   type: "site",
+  options?: LoadFoundryConfigOptions,
 ): Promise<LoadedFoundryConfig<"site"> | undefined>;
 export async function loadFoundryConfig(
   type: "widgetSet",
+  options?: LoadFoundryConfigOptions,
 ): Promise<LoadedFoundryConfig<"widgetSet"> | undefined>;
 export async function loadFoundryConfig(
   type: "site" | "widgetSet",
+  options?: LoadFoundryConfigOptions,
 ): Promise<LoadedFoundryConfig<typeof type> | undefined> {
   const ajvModule = await import("ajv");
   const Ajv = ajvModule.default.default; // https://github.com/ajv-validator/ajv/issues/2132
@@ -154,7 +161,7 @@ export async function loadFoundryConfig(
   const validate = ajv.compile(FOUNDRY_CONFIG_SCHEMA[type]);
 
   const { findUp } = await import("find-up");
-  const configFilePath = await findUp(CONFIG_FILE_NAMES);
+  const configFilePath = await findUp(CONFIG_FILE_NAMES, { cwd: options?.cwd });
 
   if (configFilePath) {
     let foundryConfig: FoundryConfig<typeof type>;

@@ -1365,6 +1365,51 @@ describe("Interfaces", () => {
   });
 
   describe("Action Type Constraints", () => {
+    it("preserves implementing-object parameter markers in ontology IR", () => {
+      const iface = defineInterface({ apiName: "MyInterface" });
+
+      defineInterfaceActionTypeConstraint({
+        interfaceType: iface,
+        apiName: "myConstraint",
+        displayName: "My Constraint",
+        description: "A constraint on implementing objects",
+        requireImplementation: false,
+        parameters: [
+          {
+            apiName: "objectParam",
+            displayName: "Object Param",
+            type: {
+              type: "implementingObjectReference",
+              implementingObjectReference: {},
+            },
+            requireImplementation: false,
+          },
+          {
+            apiName: "objectsParam",
+            displayName: "Objects Param",
+            type: {
+              type: "implementingObjectReferenceList",
+              implementingObjectReferenceList: {},
+            },
+            requireImplementation: false,
+          },
+        ],
+      });
+
+      const parameters =
+        dumpOntologyFullMetadata().ontology.interfaceTypes[
+          "com.palantir.MyInterface"
+        ].interfaceType.actionTypeConstraints[0].parameters;
+      expect(parameters.objectParam.type).toStrictEqual({
+        type: "implementingObjectReference",
+        implementingObjectReference: {},
+      });
+      expect(parameters.objectsParam.type).toStrictEqual({
+        type: "implementingObjectReferenceList",
+        implementingObjectReferenceList: {},
+      });
+    });
+
     it("can define an action type constraint with parameter constraints", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 

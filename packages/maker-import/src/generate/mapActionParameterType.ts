@@ -17,7 +17,6 @@
 import type { OntologyIrStructFieldBaseParameterType } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { ActionParameter, ActionParameterType } from "@osdk/maker";
-import { consola } from "consola";
 
 const SIMPLE_PARAM_TYPES: Record<string, ActionParameter["type"]> = {
   string: "string",
@@ -53,7 +52,7 @@ const LIST_VARIANT_MAP: Record<string, ActionParameter["type"]> = {
 
 function mapStructFieldType(
   fieldType: Ontologies.OntologyDataType,
-): OntologyIrStructFieldBaseParameterType | undefined {
+): OntologyIrStructFieldBaseParameterType {
   switch (fieldType.type) {
     case "boolean":
       return { type: "boolean", boolean: {} };
@@ -75,31 +74,25 @@ function mapStructFieldType(
         objectReference: { objectTypeId: fieldType.objectTypeApiName },
       };
     default:
-      return undefined;
+      throw new Error(
+        `Unsupported struct parameter field type "${fieldType.type}"`,
+      );
   }
 }
 
 function mapGatewayStructFieldsToIr(
   dataType: Ontologies.OntologyStructType,
-): Record<string, OntologyIrStructFieldBaseParameterType> | undefined {
+): Record<string, OntologyIrStructFieldBaseParameterType> {
   const fields = dataType.fields;
   if (!fields) {
-    consola.warn("Struct parameter type missing structFieldTypes, skipping");
-    return undefined;
+    throw new Error("Cannot map struct parameter type with missing fields");
   }
   const structFieldTypes: Record<
     string,
     OntologyIrStructFieldBaseParameterType
   > = {};
   for (const field of fields) {
-    const irType = mapStructFieldType(field.fieldType);
-    if (irType) {
-      structFieldTypes[field.name] = irType;
-    } else {
-      consola.warn(
-        `Skipping struct param field "${field.name}": unsupported type "${field.fieldType.type}"`,
-      );
-    }
+    structFieldTypes[field.name] = mapStructFieldType(field.fieldType);
   }
   return structFieldTypes;
 }
@@ -108,11 +101,11 @@ function mapGatewayStructFieldsToIr(
  * Maps a gateway ActionParameterType (discriminated union from OntologyFullMetadata)
  * to a maker ActionParameterType (string primitives or complex objects).
  *
- * Returns undefined for unsupported types (with a warning).
+ * Throws for unsupported types or invalid type configurations.
  */
 export function mapActionParameterType(
   dataType: Ontologies.ActionParameterType,
-): ActionParameterType | undefined {
+): ActionParameterType {
   const simpleType = SIMPLE_PARAM_TYPES[dataType.type];
   if (simpleType !== undefined) {
     return simpleType;
@@ -139,8 +132,7 @@ export function mapActionParameterType(
     case "array": {
       const subType = dataType.subType;
       if (!subType) {
-        consola.warn("Array parameter type missing subType, skipping");
-        return undefined;
+        throw new Error("Cannot map array parameter type with missing subType");
       }
 
       const listVariant = LIST_VARIANT_MAP[subType.type];
@@ -166,33 +158,28 @@ export function mapActionParameterType(
 
       if (subType.type === "struct") {
         const structFields = mapGatewayStructFieldsToIr(subType);
-        if (!structFields) return undefined;
         return {
           type: "structList",
           structList: { structFieldTypes: structFields },
         };
       }
 
-      consola.warn(
-        `Skipping array parameter with unsupported subType: ${subType.type}`,
+      throw new Error(
+        `Cannot map array parameter with unsupported subType: ${subType.type}`,
       );
-      return undefined;
     }
     case "struct": {
       const structFields = mapGatewayStructFieldsToIr(dataType);
-      if (!structFields) return undefined;
       return {
         type: "struct",
         struct: { structFieldTypes: structFields },
       };
     }
     case "vector":
-      consola.warn("Skipping vector parameter type: no maker equivalent");
-      return undefined;
+      throw new Error("Cannot map vector parameter type: no maker equivalent");
     case "objectType":
       return "objectTypeReference";
     default:
-      consola.warn(`Skipping unknown parameter type: ${dataType.type}`);
-      return undefined;
+      throw new Error(`Unsupported action parameter type "${dataType.type}"`);
   }
 }

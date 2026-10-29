@@ -27,23 +27,33 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
-import { cleanAndValidateLinkTypeId } from "@osdk/maker";
-import { consola } from "consola";
+import type { OntologyDefinition } from "@osdk/maker";
+import {
+  cleanAndValidateLinkTypeId,
+  DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
+  reconcileOntologySchemaLockfile,
+} from "@osdk/maker";
+import type { LogLevel } from "consola";
+import { consola, LogLevels } from "consola";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import { defineOntologyV2 } from "../api/defineOntologyV2.js";
+import {
+  defineOntologyV2,
+  type OntologyPackagingOptions,
+} from "../api/defineOntologyV2.js";
 import { getExternalRecommendations } from "../conversion/toMarketplace/RecommendationUtils.js";
 import type {
   ExternalImportedOntologyMetadata,
   LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import { generateFolderBlockResults } from "../util/foldersUtil.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
   generateBackingDatasetBlockResultForLink,
-  getNonEditOnlyProperties,
+  getBackingDatasetProperties,
 } from "./generateBackingDataset.js";
 import { generateBackingMediaSetBlockResult } from "./generateBackingMediaSet.js";
 import { generateDirectDatasourceBlockResult } from "./generateDirectDatasource.js";
@@ -76,6 +86,11 @@ export default async function main(
     functionsIrOutputFile?: string;
     randomnessKey?: string;
     importJson?: string;
+    targetEnvironment: "CLOUD" | "EDGE";
+    lockfile?: string;
+    writeLocks?: boolean;
+    yes?: boolean;
+    verbose: number;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -106,6 +121,11 @@ export default async function main(
         describe: "Api name prefix for namespaced ontology types",
         type: "string",
         default: "",
+      },
+      targetEnvironment: {
+        describe: "Package for CLOUD, or for both cloud and edge with EDGE",
+        choices: ["CLOUD", "EDGE"] as const,
+        default: "CLOUD" as const,
       },
       buildDir: {
         alias: "b",
@@ -150,6 +170,48 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      lockfile: {
+        describe: `Ontology schema lockfile path (default: ${DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME} beside --input)`,
+        type: "string",
+        // No `default`: it depends on --input, which `coerce` cannot see. Resolved after parsing.
+        coerce: path.resolve,
+      },
+      writeLocks: {
+        describe:
+          "Update the ontology schema lockfile instead of failing when it is out of date",
+        type: "boolean",
+        // NB: no default since "implied" below
+      },
+      yes: {
+        alias: "y",
+        describe:
+          "Accept detected ontology schema migration finalizations/deletions without prompting",
+        type: "boolean",
+        // NB: no default since "implied" below
+      },
+      verbose: {
+        alias: "v",
+        describe:
+          "Enable verbose logging: -v for debug, including stack traces on failure, -vv for trace",
+        type: "boolean",
+        count: true,
+      },
+    })
+    .middleware(({ verbose }) => {
+      consola.level = logLevelFor(verbose);
+    }, true)
+    // --yes only answers the prompt that --write-locks can raise, so on its own it does nothing.
+    .implies("yes", "writeLocks")
+    // Without this, the usage error that `implies` raises calls `process.exit` from inside the
+    // library, which takes the whole host process with it.
+    .fail((msg, err, usage) => {
+      if (err) {
+        throw err;
+      }
+
+      // Registering a failure handler suppresses yargs' showHelpOnFail behavior, so reinstate it.
+      usage.showHelp("error");
+      throw new Error(msg);
     })
     .parseAsync();
 
@@ -173,6 +235,13 @@ export default async function main(
       "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee",
     );
   }
+
+  const lockfilePath =
+    commandLineOpts.lockfile ??
+    path.join(
+      path.dirname(commandLineOpts.input),
+      DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
+    );
 
   const externalImportedMetadata =
     commandLineOpts.importJson && fs.existsSync(commandLineOpts.importJson)
@@ -248,6 +317,7 @@ export default async function main(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    folders,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -257,6 +327,16 @@ export default async function main(
     commandLineOpts.randomnessKey,
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
+    { targetEnvironment: commandLineOpts.targetEnvironment },
+    // An ontology that fails lockfile checks would fail at installation-time, so its block data
+    // should never reach disk at all.
+    (ontology) =>
+      reconcileOntologySchemaLockfile({
+        ontology,
+        lockfilePath,
+        writeLocks: commandLineOpts.writeLocks ?? false,
+        assumeYes: commandLineOpts.yes ?? false,
+      }),
   );
 
   // Create temp directory for block data
@@ -294,6 +374,17 @@ export default async function main(
   );
   consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
 
+  const folderResults = await generateFolderBlockResults(
+    folders,
+    commandLineOpts.buildDir,
+    commandLineOpts.randomnessKey,
+  );
+  const outputFolders = new Map(
+    folders.flatMap((folder) =>
+      folder.outputIds.map((outputId) => [outputId, folder] as const),
+    ),
+  );
+
   let valueTypeResults: BlockGeneratorResult[] = [];
   if (ontologyIr.valueTypes.length > 0) {
     valueTypeResults = await generateValueTypeBlockResults(
@@ -326,7 +417,7 @@ export default async function main(
     );
     if (!objectTypeBlockData) continue;
 
-    const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
+    const backingProperties = getBackingDatasetProperties(objectTypeBlockData);
 
     // The ontology block has inputs with these readable IDs (from shape extraction)
     // Map them to the datasource block's outputs (which use the same readable IDs)
@@ -340,7 +431,7 @@ export default async function main(
       });
     }
 
-    for (const prop of nonEditOnlyProps) {
+    for (const prop of backingProperties) {
       const colInputReadableId = ReadableIdGenerator.getForDatasetColumn(
         apiName,
         prop.apiName!,
@@ -413,8 +504,11 @@ export default async function main(
     }
   }
 
+  const producedValueTypes = ontologyIr.valueTypes.map(
+    ({ blockData }) => blockData,
+  );
   ontologyInputMappingEntries.push(
-    ...getValueTypeInternalMappings(ontologyIr.valueTypes, shapes.inputShapes),
+    ...getValueTypeInternalMappings(producedValueTypes, shapes.inputShapes),
   );
 
   // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
@@ -440,6 +534,7 @@ export default async function main(
           objectTypeBlockData!,
           commandLineOpts.buildDir,
           commandLineOpts.randomnessKey,
+          outputFolders.get(ReadableIdGenerator.getForObjectType(apiName)),
         );
       }),
   );
@@ -462,6 +557,11 @@ export default async function main(
           ontologyIr.ontology.objectTypes,
           commandLineOpts.buildDir,
           commandLineOpts.randomnessKey,
+          outputFolders.get(
+            ReadableIdGenerator.getForLinkType(
+              cleanAndValidateLinkTypeId(linkApiName),
+            ),
+          ),
         );
       })
       .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined),
@@ -492,7 +592,7 @@ export default async function main(
     input_mapping_entries: ontologyInputMappingEntries,
     external_recommendations: getExternalRecommendations(
       ontologyIr.importedOntology,
-      ontologyIr.valueTypes,
+      producedValueTypes,
       importedTypes,
       shapes.inputShapes,
     ),
@@ -505,6 +605,7 @@ export default async function main(
   const blockGeneratorResultJson = JSON.stringify(
     [
       blockGeneratorResult,
+      ...folderResults,
       ...directDatasourceGeneratorResults,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,
@@ -530,15 +631,23 @@ export default async function main(
   }
 }
 
+function logLevelFor(verbosity: number): LogLevel {
+  if (verbosity === 0) return LogLevels.info;
+  if (verbosity === 1) return LogLevels.debug;
+  return LogLevels.trace;
+}
+
 async function loadOntology(
   input: string,
   apiNamespace: string,
-  outputDir?: string,
-  dependencyFile?: string,
-  functionsIrFile?: string,
-  randomnessKey?: string,
-  importedLinkTypeIdsByApiName?: LinkTypeIdsByApiName,
-  externalImportedMetadata?: ExternalImportedOntologyMetadata,
+  outputDir: string | undefined,
+  dependencyFile: string | undefined,
+  functionsIrFile: string | undefined,
+  randomnessKey: string | undefined,
+  importedLinkTypeIdsByApiName: LinkTypeIdsByApiName | undefined,
+  externalImportedMetadata: ExternalImportedOntologyMetadata | undefined,
+  packagingOptions: OntologyPackagingOptions,
+  beforeWrite: (ontology: OntologyDefinition) => Promise<void>,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
@@ -549,6 +658,8 @@ async function loadOntology(
     randomnessKey,
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
+    packagingOptions,
+    beforeWrite,
   );
   return result;
 }

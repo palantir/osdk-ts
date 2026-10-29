@@ -27,15 +27,15 @@ import type {
 } from "@osdk/client.unstable";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
   generateBackingDatasetBlockResultForLink,
-  getNonEditOnlyProperties,
+  getBackingDatasetProperties,
   propertyTypeToSchemaType,
   typeToFieldSchema,
 } from "./generateBackingDataset.js";
+import type { BlockDataAddOn } from "./marketplaceSerialization/BlockGeneratorResult.js";
 
 function makePropertyType(
   apiName: string,
@@ -317,10 +317,10 @@ describe("typeToFieldSchema", () => {
   });
 });
 
-describe("getNonEditOnlyProperties", () => {
+describe("getBackingDatasetProperties", () => {
   it("returns all properties when none are edit-only", () => {
     const blockData = createObjectTypeBlockData();
-    const props = getNonEditOnlyProperties(blockData);
+    const props = getBackingDatasetProperties(blockData);
     expect(props).toHaveLength(2);
     expect(props.map((p) => p.apiName)).toEqual(["id", "count"]);
   });
@@ -333,7 +333,7 @@ describe("getNonEditOnlyProperties", () => {
         { apiName: "count", type: INTEGER_PROPERTY_TYPE },
       ],
     });
-    const props = getNonEditOnlyProperties(blockData);
+    const props = getBackingDatasetProperties(blockData);
     expect(props).toHaveLength(2);
     expect(props.map((p) => p.apiName)).toEqual(["id", "count"]);
   });
@@ -407,17 +407,16 @@ describe("generateBackingDatasetBlockResult", () => {
       (countCol.datasourceColumn as Record<string, unknown>).about,
     ).toHaveProperty("fallbackTitle", "count");
 
-    // compassResource input
-    const compassKey = "TestObject-backing-ds-compass-resource" as ReadableId;
-    expect(result.inputs[compassKey]).toBeDefined();
-    expect(result.inputs[compassKey].type).toBe("compassResource");
+    // Without a folder, the dataset uses the installation root.
+    expect(result.inputs).toEqual({});
+    expect(result.input_shape_metadata).toEqual({});
 
     // add_on_override
     expect(result.add_on_override).toBeDefined();
     const override = result.add_on_override as Record<string, unknown>;
     expect(override.idToBlockShapeId).toBeDefined();
     expect(override.idToInputGroupId).toEqual({});
-    expect(override.outputToLocationInput).toBeDefined();
+    expect(override.outputToLocationInput).toEqual({});
 
     // schema.json
     const schema = JSON.parse(
@@ -465,6 +464,38 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(zipBuffer[1]).toBe(0x4b);
     expect(zipBuffer[2]).toBe(0x05);
     expect(zipBuffer[3]).toBe(0x06);
+  });
+
+  it("keeps dataset identity independent of its folder", async () => {
+    const blockData = createObjectTypeBlockData();
+    const randomnessKey = "123e4567-e89b-12d3-a456-426614174000";
+    const root = await generateBackingDatasetBlockResult(
+      blockData,
+      buildDir,
+      randomnessKey,
+    );
+    for (const folder of [
+      { id: "fish", location: "/Aquarium/Animals/Fish" },
+      { id: "habitats", location: "/Aquarium/Habitats" },
+    ]) {
+      const placed = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+        randomnessKey,
+        folder,
+      );
+      expect(placed.block_identifier).toBe(root.block_identifier);
+      expect(placed.outputs).toEqual(root.outputs);
+      expect(
+        (placed.add_on_override as BlockDataAddOn).idToBlockShapeId[
+          "dataset-internal-shape-id"
+        ],
+      ).toBe(
+        (root.add_on_override as BlockDataAddOn).idToBlockShapeId[
+          "dataset-internal-shape-id"
+        ],
+      );
+    }
   });
 
   it.each(["CBAC", "MANDATORY"] as const)(
@@ -804,11 +835,12 @@ describe("generateBackingDatasetBlockResultForLink", () => {
     // Total outputs: 1 tabularDatasource + 2 datasourceColumn
     expect(Object.keys(result.outputs)).toHaveLength(3);
 
-    // compassResource input
-    const compassKey =
-      `${linkApiName}-link-backing-ds-compass-resource` as ReadableId;
-    expect(result.inputs[compassKey]).toBeDefined();
-    expect(result.inputs[compassKey].type).toBe("compassResource");
+    // Without a folder, the dataset uses the installation root.
+    expect(result.inputs).toEqual({});
+    expect(result.input_shape_metadata).toEqual({});
+    expect(
+      (result.add_on_override as BlockDataAddOn).outputToLocationInput,
+    ).toEqual({});
 
     // schema.json
     const schema = JSON.parse(

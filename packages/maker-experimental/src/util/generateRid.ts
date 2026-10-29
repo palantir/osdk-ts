@@ -244,6 +244,14 @@ export class ReadableIdGenerator {
     return `object-type-${objectTypeApiName}` as ReadableId;
   }
 
+  static getForCompassFolder(folderId: string): ReadableId {
+    return `compass-folder-${folderId}` as ReadableId;
+  }
+
+  static getForCompassFolderOutput(folderId: string): ReadableId {
+    return `compass-folder-output-${folderId}` as ReadableId;
+  }
+
   static getForStream(streamName: string): ReadableId {
     return `stream-datasource-${streamName}` as ReadableId;
   }
@@ -795,22 +803,22 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     apiName: string,
     version: string,
   ): ValueTypeReference {
-    const rid = `ri.ontology-metadata.temp.value-type.${this.hashString(
-      apiName,
-    )}`;
-    // Generate UUID from version string (matching Java's UUID.nameUUIDFromBytes)
-    const versionHash = createHash("md5").update(version, "utf8").digest("hex");
-    const versionAsUuid = `${versionHash.slice(0, 8)}-${versionHash.slice(
+    const versionIdentity = this.randomnessUuid
+      ? `${apiName}-${this.randomnessUuid}-${version}`
+      : `${apiName}-${version}`;
+    const versionHash = createHash("md5")
+      .update(versionIdentity, "utf8")
+      .digest("hex");
+    const versionId = `${versionHash.slice(0, 8)}-${versionHash.slice(
       8,
       12,
     )}-${versionHash.slice(12, 16)}-${versionHash.slice(16, 20)}-${versionHash.slice(
       20,
       32,
     )}`;
-
-    const valueTypeReference: ValueTypeReference = {
-      rid,
-      versionId: versionAsUuid,
+    const valueTypeReference = {
+      rid: `ri.ontology-metadata.temp.value-type.${this.hashString(apiName)}`,
+      versionId,
     } as ValueTypeReference;
 
     this.consumedValueTypeReferences.put(

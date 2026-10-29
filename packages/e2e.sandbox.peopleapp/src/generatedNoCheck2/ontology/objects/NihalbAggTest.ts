@@ -75,6 +75,7 @@ export interface NihalbAggTest extends $ObjectTypeDefinition {
     props: NihalbAggTest.Props;
     linksType: NihalbAggTest.Links;
     strictProps: NihalbAggTest.StrictProps;
+    requiredProps: 'primaryKey_';
     apiName: 'NihalbAggTest';
     description: '';
     displayName: '(nihalb)AggTest';

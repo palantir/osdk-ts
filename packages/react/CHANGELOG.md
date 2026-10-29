@@ -1,5 +1,60 @@
 # @osdkkit/react
 
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 2.83.0
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 2.82.0
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 2.81.0
+
+### Minor Changes
+
+- 9755094: add `includeDeleted` option to `useMarkings`/`useMarkingCategories` and an `includeDeleted` prop to `CbacPicker`, `CbacPickerDialog`, and `CbacBannerPopover` (default `true`, matching the platform API)
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 2.80.0
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 2.79.0
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 2.78.0
+
+### Minor Changes
+
+- a2730af: Require workspace-derived OSDK peer versions in @osdk/react-components, @osdk/react, @osdk/aip-core, and @osdk/language-models, preventing installs with older peers than the versions used to build and validate these packages.
+
+### Patch Changes
+
+- Updated dependencies [a2730af]
+  - @osdk/aip-core@0.13.0
+  - @osdk/client@2.78.0
+  - @osdk/api@2.78.0
+
+## 2.77.0
+
 ## 2.76.0
 
 ## 2.75.0

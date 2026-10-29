@@ -1,5 +1,24 @@
 # @osdk/unit-testing
 
+## 1.0.0
+
+### Major Changes
+
+- e20b58d: Make `@osdk/unit-testing` generally available with the 1.0.0 release. Remove the `@osdk/unit-testing/experimental` entry point. Replace imports from `@osdk/unit-testing/experimental` with `@osdk/unit-testing`; all mock factories and types are available from the main entry point.
+
+## 0.27.0
+
+### Minor Changes
+
+- d72c082: add createMockWriteableClient that records create/update/delete/link/unlink edits via getEdits() and no-ops flushEdits
+
+### Patch Changes
+
+- Updated dependencies [d72c082]
+  - @osdk/functions@1.29.0
+  - @osdk/client@2.78.0
+  - @osdk/api@2.78.0
+
 ## 0.26.0
 
 ### Minor Changes

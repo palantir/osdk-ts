@@ -18,6 +18,8 @@ import type {
   LinkTypeBlockDataV2,
   MarketplaceInterfaceType,
   OntologyBlockDataV2,
+  OntologyIrActionTypeBlockDataV2,
+  OntologyIrLogicRule,
   SharedPropertyType,
   ValueTypeBlockData,
   ValueTypeReference,
@@ -26,6 +28,7 @@ import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { OntologyBlockDataToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import * as path from "node:path";
 import { describe, expect, it, vi } from "vitest";
+import { convertIrLogicRuleToActionLogicRule } from "./ActionLogicRuleConverter.js";
 import { PreviewOntologyIrConverter } from "./index.js";
 
 const valueTypes: Record<string, ValueTypeBlockData> = {
@@ -350,7 +353,7 @@ describe("preview action metadata", () => {
   );
 
   it.each([true, false])(
-    "excludes imported actions without replacing local definitions (local action: %s)",
+    "preserves imported full action metadata and prefers local definitions (local action: %s)",
     hasLocalAction => {
       const blockData = hasLocalAction
         ? getActionBlockData()
@@ -363,7 +366,22 @@ describe("preview action metadata", () => {
         ...importedTypes.actionTypes.createItem,
         apiName: "importedOnly",
       };
+      importedTypes.actionTypes.withoutFullMetadata = {
+        ...importedTypes.actionTypes.createItem,
+        apiName: "withoutFullMetadata",
+      };
       importedTypes.actionTypesFullMetadata = {
+        createItem: {
+          actionType: importedTypes.actionTypes.createItem,
+          fullLogicRules: [{
+            type: "createObject",
+            objectTypeApiName: "Item",
+            propertyArguments: {
+              classificationProperty: { type: "staticValue", value: "B" },
+            },
+            structPropertyArguments: {},
+          }],
+        },
         importedOnly: {
           actionType: importedTypes.actionTypes.importedOnly,
           fullLogicRules: [],
@@ -374,19 +392,132 @@ describe("preview action metadata", () => {
       const metadata = PreviewOntologyIrConverter
         .getPreviewFullMetadataFromBlockData(blockData, importedTypes);
 
-      expect(Object.keys(metadata.actionTypes)).toEqual(
-        hasLocalAction ? ["createItem"] : [],
-      );
+      expect(Object.keys(metadata.actionTypes).sort()).toEqual([
+        "createItem",
+        "importedOnly",
+      ]);
+      expect(metadata.actionTypes.importedOnly)
+        .toEqual(importedTypes.actionTypesFullMetadata.importedOnly);
       expect(metadata.actionTypesFullMetadata).toBe(metadata.actionTypes);
       if (hasLocalAction) {
         expect(metadata.actionTypes.createItem.actionType).toMatchObject({
           rid: "action-rid",
           description: "Create a local item",
         });
+        expect(metadata.actionTypes.createItem.fullLogicRules).toEqual([{
+          type: "createObject",
+          objectTypeApiName: "Item",
+          propertyArguments: {
+            classificationProperty: { type: "staticValue", value: "A" },
+          },
+          structPropertyArguments: {},
+        }]);
+      } else {
+        expect(metadata.actionTypes.createItem)
+          .toEqual(importedTypes.actionTypesFullMetadata.createItem);
       }
       expect(importedTypes).toEqual(importedBefore);
     },
   );
+
+  it("converts block data create-or-modify rules to the parameter-based rule", () => {
+    const blockData = getActionBlockData();
+    const { actionType } = blockData.actionTypes["action-rid"];
+    actionType.metadata.parameters.parent.type = {
+      type: "objectReference",
+      objectReference: { objectTypeId: "item-rid" },
+    };
+    actionType.actionTypeLogic.logic.rules = [{
+      type: "addOrModifyObjectRuleV2",
+      addOrModifyObjectRuleV2: {
+        objectToModify: "parent",
+        propertyValues: {
+          classificationProperty: {
+            type: "staticValue",
+            staticValue: { type: "string", string: "A" },
+          },
+        },
+        structFieldValues: {},
+      },
+    }];
+
+    const metadata = PreviewOntologyIrConverter
+      .getPreviewFullMetadataFromBlockData(blockData);
+
+    expect(metadata.actionTypes.createItem.fullLogicRules).toEqual([{
+      type: "createOrModifyObjectV2",
+      objectToModify: "parent",
+      propertyArguments: {
+        classificationProperty: { type: "staticValue", value: "A" },
+      },
+      structPropertyArguments: {},
+    }]);
+  });
+
+  it("converts IR create-or-modify rules to the parameter-based rule", () => {
+    const rule: OntologyIrLogicRule = {
+      type: "addOrModifyObjectRuleV2",
+      addOrModifyObjectRuleV2: {
+        objectToModify: "item",
+        propertyValues: {
+          classificationProperty: {
+            type: "staticValue",
+            staticValue: { type: "string", string: "A" },
+          },
+        },
+        structFieldValues: {},
+      },
+    };
+    const action: OntologyIrActionTypeBlockDataV2 = {
+      actionType: {
+        metadata: {
+          apiName: "createOrModifyItem",
+          displayMetadata: {
+            displayName: "Create or modify item",
+            description: "",
+            applyingMessage: [],
+            successMessage: [],
+            typeClasses: [],
+          },
+          status: { type: "active", active: {} },
+          parameters: {
+            item: {
+              id: "item",
+              displayMetadata: {
+                displayName: "Item",
+                description: "",
+                typeClasses: [],
+              },
+              type: {
+                type: "objectReference",
+                objectReference: { objectTypeId: "Item" },
+              },
+            },
+          },
+          parameterOrdering: ["item"],
+          formContentOrdering: [],
+          sections: {},
+        },
+        actionTypeLogic: {
+          logic: { rules: [rule] },
+          validation: {
+            actionTypeLevelValidation: { rules: {} },
+            parameterValidations: {},
+            sectionValidations: {},
+          },
+        },
+      },
+    };
+
+    expect(convertIrLogicRuleToActionLogicRule(rule, action)).toEqual({
+      type: "createOrModifyObjectV2",
+      objectToModify: "item",
+      propertyArguments: {
+        classificationProperty: { type: "staticValue", value: "A" },
+      },
+      structPropertyArguments: {},
+    });
+  });
 });
 
 it("generates both directions of an intermediary link", async () => {
@@ -442,7 +573,7 @@ it("generates both directions of an intermediary link", async () => {
   const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
     .mockResolvedValue(undefined);
   await generateClientSdkVersionTwoPointZero(
-    { ...metadata, actionTypes: {} },
+    { ...metadata, agents: {}, actionTypes: {} },
     "test",
     {
       readdir: () => Promise.resolve([]),
@@ -549,7 +680,7 @@ describe("property value type associations", () => {
     const writeFile = vi.fn<(file: string, contents: string) => Promise<void>>()
       .mockResolvedValue(undefined);
     await generateClientSdkVersionTwoPointZero(
-      { ...metadata, actionTypes: {} },
+      { ...metadata, agents: {}, actionTypes: {} },
       "test",
       {
         readdir: () => Promise.resolve([]),
@@ -716,7 +847,7 @@ describe("links involving imported objects", () => {
       >()
         .mockResolvedValue(undefined);
       await generateClientSdkVersionTwoPointZero(
-        { ...metadata, actionTypes: {} },
+        { ...metadata, agents: {}, actionTypes: {} },
         "test",
         {
           readdir: () => Promise.resolve([]),

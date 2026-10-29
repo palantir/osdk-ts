@@ -41,11 +41,13 @@ export type {
   UuidMappingValue,
 } from "./api/action/MappingValue.js";
 export type { SectionConditionalOverride } from "./api/action/SectionConditionalOverride.js";
+export type { StructFieldDefaultValue } from "./api/action/StructFieldDefaultValue.js";
 export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
 export type { TableConfiguration } from "./api/action/TableConfiguration.js";
 export { addDependency } from "./api/addDependency.js";
 export type { BlueprintIcon } from "./api/common/BlueprintIcons.js";
 export type { EntityPermission } from "./api/common/EntityPermission.js";
+export type { Folder } from "./api/common/Folder.js";
 export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
 export {
@@ -65,6 +67,7 @@ export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObje
 export { defineDeleteInterfaceLinkAction } from "./api/defineDeleteInterfaceLinkAction.js";
 export { defineDeleteInterfaceObjectAction } from "./api/defineDeleteInterfaceObjectAction.js";
 export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
+export { defineFolder, type FolderDefinition } from "./api/defineFolder.js";
 export { defineInterface } from "./api/defineInterface.js";
 export { defineInterfaceActionTypeConstraint } from "./api/defineInterfaceActionTypeConstraint.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
@@ -84,6 +87,7 @@ export {
   defineOntology,
   dumpOntologyFullMetadata,
   extractNamespace,
+  getFolderDefinitions,
   getImportedTypes,
   getNamespace,
   getOntologyDefinition,
@@ -130,6 +134,7 @@ export type {
   ObjectTypeDatasourceDefinition_direct,
 } from "./api/object/ObjectTypeDatasourceDefinition.js";
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
+export { resolveDerivedPropertyLinks } from "./api/object/resolveDerivedPropertyLinks.js";
 export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";
 export type { Nullability } from "./api/properties/Nullability.js";
 export type {
@@ -147,7 +152,16 @@ export {
   validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
+export type {
+  AuthoringDataConstraint,
+  AuthoringValueTypeDataConstraint,
+} from "./api/values/ValueTypeType.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
+export { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "./lockfile/OntologySchemaLockfile.js";
+export {
+  reconcileOntologySchemaLockfile,
+  type ReconcileOntologySchemaLockfileOptions,
+} from "./lockfile/reconcileOntologySchemaLockfile.js";

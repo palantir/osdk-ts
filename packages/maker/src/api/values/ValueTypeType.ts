@@ -14,7 +14,53 @@
  * limitations under the License.
  */
 
-import type { DataConstraint, FailureMessage } from "@osdk/client.unstable";
+import type {
+  ArrayTypeElementsUniqueConstraint,
+  ArrayTypeSizeConstraint,
+  DataConstraint,
+  FailureMessage,
+  MapUniqueValuesConstraint,
+} from "@osdk/client.unstable";
+
+import type { ValueTypeDefinitionVersion } from "./ValueTypeDefinitionVersion.js";
+
+export type AuthoringDataConstraint =
+  | Exclude<DataConstraint, { type: "array" | "map" | "struct" | "structV2" }>
+  | { type: "array"; array: AuthoringArrayTypeDataConstraints }
+  | { type: "map"; map: AuthoringMapTypeDataConstraints }
+  | { type: "struct"; struct: AuthoringStructTypeDataConstraints }
+  | { type: "structV2"; structV2: AuthoringStructTypeV2DataConstraints };
+
+// Matches generated code, recreated to reference AuthoringDataConstraint
+interface AuthoringArrayTypeDataConstraints {
+  size: ArrayTypeSizeConstraint | undefined;
+  elementsConstraint: AuthoringDataConstraint | undefined;
+  elementsUnique: ArrayTypeElementsUniqueConstraint | undefined;
+}
+
+// Matches generated code, recreated to reference AuthoringDataConstraint
+interface AuthoringMapTypeDataConstraints {
+  keyTypeDataConstraints: AuthoringDataConstraint[];
+  valueTypeDataConstraints: AuthoringDataConstraint[];
+  uniqueValues: MapUniqueValuesConstraint | undefined;
+}
+
+// Matches generated code, recreated to reference AuthoringDataConstraint
+interface AuthoringStructTypeDataConstraints {
+  elementConstraints: Record<string, AuthoringDataConstraint>;
+}
+
+// Matches generated code, replacing wire references with authored value types.
+interface AuthoringStructTypeV2DataConstraints {
+  elementConstraints: Record<string, ValueTypeDefinitionVersion>;
+}
+
+export interface AuthoringValueTypeDataConstraint {
+  constraint: {
+    failureMessage: FailureMessage | undefined;
+    constraint: AuthoringDataConstraint;
+  };
+}
 
 export type ValueTypeType =
   | ValueTypeType_array
@@ -36,7 +82,7 @@ export type ValueTypeType =
 
 export interface ValueTypeType_array {
   constraints: {
-    constraint: Extract<DataConstraint, { type: "array" }>["array"];
+    constraint: AuthoringArrayTypeDataConstraints;
     failureMessage?: FailureMessage;
   }[];
   type: "array";
@@ -129,7 +175,7 @@ export interface ValueTypeType_long {
 
 export interface ValueTypeType_map {
   constraints: {
-    constraint: Extract<DataConstraint, { type: "map" }>["map"];
+    constraint: AuthoringMapTypeDataConstraints;
     failureMessage?: FailureMessage;
   }[];
   type: "map";
@@ -172,7 +218,7 @@ export interface ValueTypeType_string {
 
 export interface ValueTypeType_structV2 {
   constraints: {
-    constraint: Extract<DataConstraint, { type: "structV2" }>["structV2"];
+    constraint: AuthoringStructTypeV2DataConstraints;
     failureMessage?: FailureMessage;
   }[];
   type: "structV2";

@@ -21,32 +21,61 @@ import type {
 } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
 
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import {
+  convertConstraints,
+  type ValueTypeDependency,
+} from "./convertValueTypeDataConstraints.js";
+
+export interface ValueTypeBlockDataWithDependencies {
+  blockData: ValueTypeBlockData;
+  dependencies: ValueTypeDependency[];
+}
+
 export function convertValueTypeToWireBlockData(
   ontology: OntologyDefinition,
-): ValueTypeBlockData[] {
-  return Object.values(
-    ontology[OntologyEntityTypeEnum.VALUE_TYPE],
-  ).map<ValueTypeBlockData>((definitions) => {
-    const version = getLatestVersion(definitions);
-    return {
-      metadata: {
-        apiName: definitions[0].apiName,
-        baseType: version.baseType,
-        displayMetadata: definitions[0].displayMetadata,
-        status: definitions[0].status,
-      },
-      versions: Array.from(
+  ridGenerator: OntologyRidGenerator,
+): ValueTypeBlockDataWithDependencies[] {
+  return Object.values(ontology[OntologyEntityTypeEnum.VALUE_TYPE]).map(
+    (definitions): ValueTypeBlockDataWithDependencies => {
+      const latestVersion = getLatestVersion(definitions);
+      const convertedVersions = Array.from(
         new Map(
           definitions.map((definition) => [definition.version, definition]),
         ).values(),
-      ).map((definition) => ({
-        version: definition.version,
-        baseType: definition.baseType,
-        constraints: definition.constraints,
-        exampleValues: definition.exampleValues,
-      })),
-    };
-  });
+      ).map((definition) => {
+        const convertedConstraints = convertConstraints(
+          definition.constraints,
+          definition.baseType,
+          ridGenerator,
+        );
+        return {
+          version: {
+            version: definition.version,
+            baseType: definition.baseType,
+            constraints: convertedConstraints.constraints,
+            exampleValues: definition.exampleValues,
+          },
+          dependencies: convertedConstraints.dependencies,
+        };
+      });
+      const blockData: ValueTypeBlockData = {
+        metadata: {
+          apiName: definitions[0].apiName,
+          baseType: latestVersion.baseType,
+          displayMetadata: definitions[0].displayMetadata,
+          status: definitions[0].status,
+        },
+        versions: convertedVersions.map(({ version }) => version),
+      };
+      return {
+        blockData,
+        dependencies: convertedVersions.flatMap(
+          ({ dependencies }) => dependencies,
+        ),
+      };
+    },
+  );
 }
 
 function getLatestVersion(

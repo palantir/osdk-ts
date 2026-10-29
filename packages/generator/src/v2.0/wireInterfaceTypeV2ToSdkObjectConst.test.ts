@@ -87,6 +87,7 @@ function simpleOntology<I extends InterfaceType>(
     ) as Record<string, I["properties"][string]>;
 
   return {
+    agents: {},
     actionTypes: {},
     actionTypesFullMetadata: {},
     interfaceTypes,

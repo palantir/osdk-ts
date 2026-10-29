@@ -391,6 +391,12 @@ export interface AdditionalOutputShapeResult {
   resolvedShape: ResolvedOutputShape;
   shape: OutputShape;
 }
+/**
+ * Migration instruction to add a required property to an interface type.
+ */
+export interface AddRequiredInterfacePropertyMigration {
+  interfaceProperty: InterfacePropertyTypeReference;
+}
 export interface AddToDraftGroupRequest {
   versionIds: Array<BlockSetVersionId>;
 }
@@ -1235,6 +1241,16 @@ export interface BaseParameterConstraintType_anyStructList {
   type: "anyStructList";
   anyStructList: AnyStructListType;
 }
+
+export interface BaseParameterConstraintType_implementingObjectReference {
+  type: "implementingObjectReference";
+  implementingObjectReference: ImplementingObjectReferenceType;
+}
+
+export interface BaseParameterConstraintType_implementingObjectReferenceList {
+  type: "implementingObjectReferenceList";
+  implementingObjectReferenceList: ImplementingObjectReferenceListType;
+}
 /**
  * All possible types for parameter constraints on InterfaceActionTypeConstraints.
  * Mirrors com.palantir.ontology.metadata.api.types.BaseParameterConstraintType from the
@@ -1293,7 +1309,9 @@ export type BaseParameterConstraintType =
   | BaseParameterConstraintType_anyInterfaceReferenceList
   | BaseParameterConstraintType_anyInterfaceObjectSetRid
   | BaseParameterConstraintType_anyStruct
-  | BaseParameterConstraintType_anyStructList;
+  | BaseParameterConstraintType_anyStructList
+  | BaseParameterConstraintType_implementingObjectReference
+  | BaseParameterConstraintType_implementingObjectReferenceList;
 
 export interface BaseParameterType_boolean {
   type: "boolean";
@@ -10089,6 +10107,16 @@ export type ImageryDecodeFormat =
 export interface ImagerySchema {
   format: ImageryDecodeFormat;
 }
+
+/**
+ * A parameter constraint type requiring a list of references to implementing object types.
+ */
+export interface ImplementingObjectReferenceListType {}
+/**
+ * A parameter constraint type requiring a reference to an implementing object type.
+ */
+export interface ImplementingObjectReferenceType {}
+
 export interface ImportBlockSetResponse {
   blockSetId: BlockSetId;
   blockSetVersionId: BlockSetVersionId;
@@ -13478,6 +13506,7 @@ export interface InterfaceTypeOutputShape {
   links: Array<InterfaceLinkTypeReference>;
   properties: Array<SharedPropertyTypeReference>;
   propertiesV2: Array<InterfacePropertyTypeReference>;
+  schemaTransitionMetadata: Array<InterfaceTypeSchemaTransitionReference>;
 }
 export type InterfaceTypeReference = BlockInternalId;
 
@@ -13490,6 +13519,28 @@ export interface InterfaceTypeReferenceUnresolvable {
   expected: InterfaceTypeReference;
 }
 export type InterfaceTypeRid = string;
+export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
+  type: "addRequiredProperty";
+  addRequiredProperty: AddRequiredInterfacePropertyMigration;
+}
+/**
+ * A single migration instruction within an interface type schema transition.
+ */
+export type InterfaceTypeSchemaMigrationInstruction =
+  InterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+
+export type InterfaceTypeSchemaTransitionId = string;
+
+/**
+ * Output shape representing a schema transition for an interface type.
+ */
+export interface InterfaceTypeSchemaTransitionOutputShape {
+  about: LocalizedTitleAndDescription;
+  interfaceType: InterfaceTypeReference;
+  migrations: Array<InterfaceTypeSchemaMigrationInstruction>;
+  transitionId: InterfaceTypeSchemaTransitionId;
+}
+export type InterfaceTypeSchemaTransitionReference = BlockInternalId;
 
 /**
  * The Shape Id that was resolved for the LinkType does not match the shape id expected.
@@ -16758,6 +16809,11 @@ export interface OutputShape_interfaceParameterConstraint {
   interfaceParameterConstraint: InterfaceParameterConstraintShape;
 }
 
+export interface OutputShape_interfaceTypeSchemaTransition {
+  type: "interfaceTypeSchemaTransition";
+  interfaceTypeSchemaTransition: InterfaceTypeSchemaTransitionOutputShape;
+}
+
 export interface OutputShape_linkType {
   type: "linkType";
   linkType: LinkTypeOutputShape;
@@ -17088,6 +17144,7 @@ export type OutputShape =
   | OutputShape_interfacePropertyType
   | OutputShape_interfaceActionTypeConstraint
   | OutputShape_interfaceParameterConstraint
+  | OutputShape_interfaceTypeSchemaTransition
   | OutputShape_linkType
   | OutputShape_logic
   | OutputShape_logicFunction

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/unit-testing",
-  "version": "0.26.0",
+  "version": "1.0.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -17,15 +17,6 @@
       },
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
-    },
-    "./experimental": {
-      "browser": "./build/browser/public/experimental.js",
-      "import": {
-        "types": "./build/types/public/experimental.d.ts",
-        "default": "./build/esm/public/experimental.js"
-      },
-      "require": "./build/cjs/public/experimental.cjs",
-      "default": "./build/browser/public/experimental.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",

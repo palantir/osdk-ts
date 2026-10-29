@@ -1,5 +1,26 @@
 # @osdk/functions
 
+## 1.30.0
+
+### Minor Changes
+
+- 23701c5: Compile time checks for invalid batch.create operations missing a required field
+
+### Patch Changes
+
+- Updated dependencies [3677309]
+  - @osdk/client@2.81.0
+
+## 1.29.0
+
+### Minor Changes
+
+- d72c082: add createMockWriteableClient that records create/update/delete/link/unlink edits via getEdits() and no-ops flushEdits
+
+### Patch Changes
+
+- @osdk/client@2.78.0
+
 ## 1.28.0
 
 ### Patch Changes

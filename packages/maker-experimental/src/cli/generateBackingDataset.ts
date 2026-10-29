@@ -24,16 +24,19 @@ import type {
   PropertyTypeMappingInfo,
   Type,
 } from "@osdk/client.unstable";
-import type {
-  InputShape,
-  InputShapeMetadata,
-  OutputShape,
-} from "@osdk/client.unstable/api";
+import type { OutputShape } from "@osdk/client.unstable/api";
 
 import { typeToConcreteDataType } from "../conversion/toMarketplace/typeVisitors.js";
+import {
+  type FolderPlacement,
+  getFolderLocationInputs,
+} from "../util/foldersUtil.js";
 import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
-import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
+import type {
+  BlockDataAddOn,
+  BlockGeneratorResult,
+} from "./marketplaceSerialization/BlockGeneratorResult.js";
 import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
 
 /**
@@ -131,13 +134,13 @@ export function typeToFieldSchema(type: Type, name?: string): FieldSchema {
 }
 
 /**
- * Extract the set of edit-only property RIDs from the wire format datasources.
+ * Select properties backed by dataset columns, excluding derived and edit-only properties.
  */
-function getEditOnlyPropertyRids(
-  datasources: ObjectTypeBlockDataV2["datasources"],
-): Set<string> {
-  const editOnlyRids = new Set<string>();
-  for (const ds of datasources) {
+export function getBackingDatasetProperties(
+  objectTypeBlockData: ObjectTypeBlockDataV2,
+): PropertyType[] {
+  const mappedRids = new Set<string>();
+  for (const ds of objectTypeBlockData.datasources) {
     const def = ds.datasource;
     let propertyMapping: Record<string, PropertyTypeMappingInfo> | undefined;
     if (def.type === "datasetV2") {
@@ -147,24 +150,14 @@ function getEditOnlyPropertyRids(
     }
     if (propertyMapping) {
       for (const [rid, mapping] of Object.entries(propertyMapping)) {
-        if (mapping.type === "editOnly") {
-          editOnlyRids.add(rid);
+        if (mapping.type === "column" || mapping.type === "struct") {
+          mappedRids.add(rid);
         }
       }
     }
   }
-  return editOnlyRids;
-}
-
-/**
- * Extract non-edit-only properties from ObjectTypeBlockDataV2.
- */
-export function getNonEditOnlyProperties(
-  objectTypeBlockData: ObjectTypeBlockDataV2,
-): PropertyType[] {
-  const editOnlyRids = getEditOnlyPropertyRids(objectTypeBlockData.datasources);
   return Object.entries(objectTypeBlockData.objectType.propertyTypes)
-    .filter(([rid]) => !editOnlyRids.has(rid))
+    .filter(([rid]) => mappedRids.has(rid))
     .map(([_, prop]) => prop);
 }
 
@@ -184,6 +177,7 @@ async function generateBackingDatasetBlock(
   columns: BackingDatasetColumn[],
   buildDir: string,
   randomnessKey?: string,
+  folder?: FolderPlacement,
 ): Promise<BlockGeneratorResult> {
   // Build output shapes
   const outputs: Record<ReadableId, OutputShape> = {} as Record<
@@ -249,23 +243,26 @@ async function generateBackingDatasetBlock(
     toBlockShapeId(`column-internal-${datasetName}-${col.name}`, randomnessKey),
   );
 
-  const compassReadableId = `${blockIdentifier}-compass-resource` as ReadableId;
-  const compassBlockShapeId = toBlockShapeId(compassReadableId, randomnessKey);
+  const folderLocations = getFolderLocationInputs(
+    folder === undefined
+      ? []
+      : [{ ...folder, outputIds: [datasourceReadableId] }],
+  );
 
   const datasourceInternalId = toBlockShapeId(
     `datasource-internal-${datasetName}`,
     randomnessKey,
   );
-  const locationInternalId = toBlockShapeId(
-    `location-internal-${datasetName}`,
-    randomnessKey,
-  );
-
-  const addOnOverride: Record<string, unknown> = {
+  const addOnOverride: BlockDataAddOn = {
     idToBlockShapeId: {
       "dataset-internal-shape-id": datasourceBlockInternalId,
       [datasourceInternalId]: datasourceBlockInternalId,
-      [locationInternalId]: compassBlockShapeId,
+      ...Object.fromEntries(
+        Array.from(folderLocations.inputShapes.keys(), (input) => [
+          input,
+          toBlockShapeId(input, randomnessKey),
+        ]),
+      ),
       ...Object.fromEntries(
         columnInternalIds.map((internalId, i) => [
           internalId,
@@ -274,9 +271,12 @@ async function generateBackingDatasetBlock(
       ),
     },
     idToInputGroupId: {},
-    outputToLocationInput: {
-      [datasourceBlockInternalId]: compassBlockShapeId,
-    },
+    outputToLocationInput: Object.fromEntries(
+      Array.from(folderLocations.outputToLocationInput, ([output, input]) => [
+        toBlockShapeId(output, randomnessKey),
+        input,
+      ]),
+    ),
   };
 
   // Create block data directory
@@ -328,50 +328,19 @@ async function generateBackingDatasetBlock(
   ]);
   await fs.promises.writeFile(path.join(dsBlockDataDir, "files.zip"), emptyZip);
 
-  // Build inputs (compassResource for install location)
-  const inputs: Record<ReadableId, InputShape> = {} as Record<
-    ReadableId,
-    InputShape
-  >;
-  const input_shape_metadata: Record<ReadableId, InputShapeMetadata> =
-    {} as Record<ReadableId, InputShapeMetadata>;
-  inputs[compassReadableId] = {
-    type: "compassResource",
-    compassResource: {
-      about: {
-        fallbackTitle: blockIdentifier,
-        fallbackDescription: "",
-        localizedTitle: {},
-        localizedDescription: {},
-      },
-      allowedTypes: [],
-      typeConstraints: [
-        {
-          type: "compassFolderTypeConstraints",
-          compassFolderTypeConstraints: {
-            constraints: ["INSTALL_LOCATION"],
-          },
-        },
-      ],
-    },
-  } as InputShape;
-  input_shape_metadata[compassReadableId] = {
-    isOptional: true,
-    reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
-    isAccessedInReconcile: true,
-  } as InputShapeMetadata;
-
   return {
     block_identifier: blockIdentifier,
     block_data_directory: dsBlockDataDir,
     oci_block_data_metadata: undefined,
     maven_block_data_metadata: undefined,
-    inputs,
+    inputs: Object.fromEntries(folderLocations.inputShapes),
     outputs,
-    input_mapping_entries: [],
+    input_mapping_entries: folderLocations.inputMappings,
     external_recommendations: [],
     add_on_override: addOnOverride,
-    input_shape_metadata,
+    input_shape_metadata: Object.fromEntries(
+      folderLocations.inputShapeMetadata,
+    ),
     block_type: "STATIC_DATASET",
   };
 }
@@ -385,11 +354,12 @@ export async function generateBackingDatasetBlockResult(
   objectTypeBlockData: ObjectTypeBlockDataV2,
   buildDir: string,
   randomnessKey?: string,
+  folder?: FolderPlacement,
 ): Promise<BlockGeneratorResult> {
   const apiName = objectTypeBlockData.objectType.apiName!;
-  const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
+  const backingProperties = getBackingDatasetProperties(objectTypeBlockData);
 
-  const columns: BackingDatasetColumn[] = nonEditOnlyProps.map((prop) => ({
+  const columns: BackingDatasetColumn[] = backingProperties.map((prop) => ({
     name: prop.apiName!,
     type: prop.type,
   }));
@@ -401,6 +371,7 @@ export async function generateBackingDatasetBlockResult(
     columns,
     buildDir,
     randomnessKey,
+    folder,
   );
 }
 
@@ -415,6 +386,7 @@ export async function generateBackingDatasetBlockResultForLink(
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
   buildDir: string,
   randomnessKey?: string,
+  folder?: FolderPlacement,
 ): Promise<BlockGeneratorResult> {
   const definition = linkTypeBlockData.linkType.definition;
   if (definition.type !== "manyToMany") {
@@ -463,5 +435,6 @@ export async function generateBackingDatasetBlockResultForLink(
     ],
     buildDir,
     randomnessKey,
+    folder,
   );
 }

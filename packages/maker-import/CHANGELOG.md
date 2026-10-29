@@ -1,5 +1,55 @@
 # @osdk/maker-import
 
+## 0.48.0
+
+### Minor Changes
+
+- 8818fcf: Correctly map vector types, error on impossible type conversion instead of silent failure
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [2089ca9]
+  - @osdk/maker@0.81.0
+  - @osdk/client.unstable@2.82.0
+
+## 0.46.0
+
+### Patch Changes
+
+- Updated dependencies [d9eb929]
+- Updated dependencies [1ab9e14]
+  - @osdk/maker@0.80.0
+  - @osdk/client.unstable@2.81.0
+
+## 0.45.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+- Updated dependencies [d63eb64]
+- Updated dependencies [5b15676]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/maker@0.79.0
+
+## 0.44.0
+
+### Minor Changes
+
+- e365fc1: Preserve imported marking and struct properties in generated Marketplace input shapes.
+
+### Patch Changes
+
+- @osdk/maker@0.78.0
+- @osdk/client.unstable@2.77.0
+
 ## 0.43.0
 
 ### Minor Changes

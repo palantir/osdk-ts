@@ -109,6 +109,7 @@ export function convertOntologyDefinitionToWireBlockData(
   ridGenerator: OntologyRidGenerator,
   allOntologies?: OntologyDefinition[],
   functionsIr?: FunctionsIr,
+  packageForEdge = false,
 ): OntologyBlockDataV2 {
   const ontologiesToScan = allOntologies ?? [ontology];
 
@@ -119,7 +120,7 @@ export function convertOntologyDefinitionToWireBlockData(
     >(([apiName, objectType]) => {
       return [
         ridGenerator.generateRidForObjectType(apiName),
-        convertObject(objectType, ridGenerator),
+        convertObject(objectType, ridGenerator, packageForEdge),
       ];
     }),
   );
@@ -200,7 +201,6 @@ export function convertOntologyDefinitionToWireBlockData(
     interfaceTypes,
     linkTypes,
     actionTypes,
-    // TODO: Add proper blockOutputCompassLocations mapping
     blockOutputCompassLocations: {},
     knownIdentifiers,
     ruleSets: {},

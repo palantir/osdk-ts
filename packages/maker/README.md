@@ -5,6 +5,7 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Folder Placement](#folder-placement)
 - [Key Concepts](#key-concepts)
 - [Defining an Ontology](#defining-an-ontology)
 - [Defining Shared Property Types](#defining-shared-property-types)
@@ -23,6 +24,12 @@ To get started with the maker package, install it as a dependency in your projec
 ```bash
 npm install @osdk/maker
 ```
+
+## Folder Placement
+
+Use `defineFolder({ id: "objects", folder: "/objects", resources: ["FutureObject", MyObject] })` with API-name strings or object, interface, action, link, and shared-property definitions. Resources must have `permission: "publicProject"` and can belong to only one folder.
+
+Paths are relative to the installation root; maker-experimental creates nested folders automatically. Keep `id` stable across renames and moves. Use `resources: []` for empty folders or explicit parents. Unassigned resources use the root.
 
 ## Defining Shared Property Types
 
@@ -670,6 +677,65 @@ const modifyEmployeeAction = defineModifyObjectAction({
   objectType: employeeObject,
 });
 ```
+
+### Struct Field Defaults
+
+When generating a Marketplace ontology with `@osdk/maker-experimental`,
+`defineModifyObjectAction` and `defineCreateOrModifyObjectAction` automatically
+prefill each struct or struct-array field from the existing object's matching
+property field. Create actions do not infer these defaults.
+
+Use `structFieldValidations` to override individual field defaults. For example,
+for an object with `addresses` and `previousAddresses` struct-array properties:
+
+```typescript
+import { defineModifyObjectAction, MODIFY_OBJECT_PARAMETER } from "@osdk/maker";
+
+const modifyEmployee = defineModifyObjectAction({
+  objectType: employeeObject,
+  parameterConfiguration: {
+    addresses: {
+      structFieldValidations: {
+        city: {
+          defaultValue: {
+            type: "objectParameterStructListFieldValue",
+            objectParameterStructListFieldValue: {
+              parameterId: MODIFY_OBJECT_PARAMETER,
+              propertyTypeId: "previousAddresses",
+              structFieldApiName: "city",
+            },
+          },
+        },
+        postcode: {
+          defaultValue: {
+            type: "objectParameterStructListFieldValue",
+            objectParameterStructListFieldValue: {
+              parameterId: MODIFY_OBJECT_PARAMETER,
+              propertyTypeId: "previousAddresses",
+              structFieldApiName: "postcode",
+            },
+          },
+        },
+      },
+    },
+  },
+});
+```
+
+Use `objectParameterStructFieldValue` for a single struct. Source parameters must
+be single object references ordered before the struct parameter, with matching
+field types and struct cardinality. Maker resolves field API names to field RIDs
+when generating the Marketplace metadata.
+
+All field defaults for one parameter, including conditional overrides, must
+reference the same source object parameter and property. When switching to another
+source property, override every field that would otherwise receive an automatic
+default from the current property.
+
+A field's `defaultValue: null` suppresses its automatic default. Field
+`conditionalOverrides` also accept `type: "defaultValue"` with a struct field
+default. A top-level `defaultValue` on a struct parameter is unsupported.
+These defaults configure action-form prefills.
 
 ### Delete Object Action
 

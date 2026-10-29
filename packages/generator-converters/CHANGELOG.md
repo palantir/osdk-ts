@@ -1,5 +1,63 @@
 # @osdk/generator-converters
 
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+
+## 2.82.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+
+## 2.81.0
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/api@2.81.0
+
+## 2.80.0
+
+### Patch Changes
+
+- @osdk/api@2.80.0
+
+## 2.79.0
+
+### Patch Changes
+
+- Updated dependencies [86c708b]
+  - @osdk/api@2.79.0
+
+## 2.78.0
+
+### Patch Changes
+
+- @osdk/api@2.78.0
+
+## 2.77.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+
 ## 2.76.0
 
 ### Patch Changes

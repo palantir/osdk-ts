@@ -83,8 +83,16 @@ export interface SelectArg<
   PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
-   * API names of the properties to return. Ontology-defined derived properties
-   * are not returned by default and must be included in `$select`.
+   * The properties to load for each object. If omitted, the API loads its default property
+   * set (vector properties, for example, are not included). The primary key is always
+   * returned, even when it is not selected.
+   *
+   * Select only the properties your code needs. Loading unused properties wastes bandwidth
+   * and compute and can slow down retrieval, and reading fewer properties afterwards does
+   * not avoid the cost of fetching them.
+   *
+   * Ontology-defined derived properties are not returned by default and must be
+   * included in `$select`.
    * Include any other properties you need in the same selection.
    * Runtime-defined derived properties added via `.withProperties(...)` are returned
    * by default only when `$select` is omitted. If you pass `$select`, include them
@@ -152,7 +160,39 @@ export interface FetchPageArgs<
   MODIFIERS
 > {
   $nextPageToken?: string;
+  /**
+   * The number of objects in one page. This does not limit the total number of objects:
+   * continue with `nextPageToken` to load further pages.
+   */
   $pageSize?: number;
+  /**
+   * Applies ontology-configured reducers or struct main values to properties by API name.
+   * Only properties with the corresponding configuration in the generated SDK accept a modifier:
+   *
+   * - `"applyReducers"`: reduces an array to a single element using its configured reducers.
+   * - `"applyMainValue"`: extracts a struct's configured main value. One main-value field
+   *   returns that field's value; multiple fields return a struct containing only those fields.
+   * - `"applyReducersAndExtractMainValue"`: reduces a struct array, then extracts its main value.
+   *   Requires both reducers and a main value.
+   *
+   * When passing `$select`, include every modified property using its plain API name, along
+   * with any other properties you need. Unlisted properties are not modified by this option.
+   * The returned property types reflect the modifiers, preserving property nullability.
+   * For an explicit `Osdk.Instance` type, use `"propertyApiName:modifier"` in its property keys.
+   *
+   * @example
+   * ```ts
+   * // Assume these properties have reducers and/or main values configured in the ontology.
+   * const page = await client(Employee).fetchPage({
+   *   $select: ["fullName", "performanceScores", "employeeProfile", "bonusHistory"],
+   *   $applyModifiers: {
+   *     performanceScores: "applyReducers",
+   *     employeeProfile: "applyMainValue",
+   *     bonusHistory: "applyReducersAndExtractMainValue",
+   *   },
+   * });
+   * ```
+   */
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
   /**
@@ -165,6 +205,13 @@ export interface FetchPageArgs<
   $EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
   /**
    * Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results.
+   *
+   * Without a snapshot, if objects are added, removed, or edited between requests, later pages
+   * may repeat or skip objects. A snapshot configured for a function run still applies even
+   * when this is `false`. With a snapshot, pass `$snapshot: true` on every page request; paging
+   * fails if the snapshot expires or the backend detects a paging inconsistency
+   * (`PagingInconsistencyDetected`). Stream-backed object types do not provide this snapshot
+   * guarantee across pages. `asyncIter()` always requests a snapshot.
    * @default false
    */
   $snapshot?: boolean;
@@ -186,6 +233,31 @@ export interface AsyncIterArgs<
     SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>,
     OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
+  /**
+   * Applies ontology-configured reducers or struct main values to properties by API name
+   * on every page loaded by the iterator. Only properties with the corresponding
+   * configuration in the generated SDK accept a modifier:
+   *
+   * - `"applyReducers"`: reduces an array to a single element using its configured reducers.
+   * - `"applyMainValue"`: extracts a struct's configured main value. One main-value field
+   *   returns that field's value; multiple fields return a struct containing only those fields.
+   * - `"applyReducersAndExtractMainValue"`: reduces a struct array, then extracts its main value.
+   *   Requires both reducers and a main value.
+   *
+   * When passing `$select`, include every modified property using its plain API name, along
+   * with any other properties you need. Unlisted properties are not modified by this option.
+   *
+   * @example
+   * ```ts
+   * // Assume performanceScores has reducers configured in the ontology.
+   * for await (const employee of client(Employee).asyncIter({
+   *   $select: ["fullName", "performanceScores"],
+   *   $applyModifiers: { performanceScores: "applyReducers" },
+   * })) {
+   *   console.log(employee.fullName, employee.performanceScores);
+   * }
+   * ```
+   */
   $applyModifiers?: ApplyModifiersArg<Q> &
     MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>]: never };
 }

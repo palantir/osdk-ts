@@ -15,6 +15,18 @@ cd packages/cli
 ./bin/osdk.mjs
 ```
 
+## `branch` subcommand
+
+Sync the SDKs a project consumes to the appropriate versions for the current branch:
+
+```
+npx @osdk/cli branch sync
+```
+
+The previous `osdk unstable branch sync` command remains available during the
+transition for backward compatibility. See the [branch command documentation](./src/commands/branch/README.md)
+for supported options.
+
 ## `site` subcommand
 
 The site subcommand allows users to manage their Foundry site

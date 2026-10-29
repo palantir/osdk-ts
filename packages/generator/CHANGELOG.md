@@ -1,5 +1,75 @@
 # @osdk/generator
 
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/generator-converters@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+- @osdk/generator-converters@2.83.0
+
+## 2.82.0
+
+### Minor Changes
+
+- 553461f: Add client generation for agents.
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+  - @osdk/generator-converters@2.82.0
+
+## 2.81.0
+
+### Minor Changes
+
+- 23701c5: Compile time checks for invalid batch.create operations missing a required field
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/api@2.81.0
+  - @osdk/generator-converters@2.81.0
+
+## 2.80.0
+
+### Patch Changes
+
+- @osdk/api@2.80.0
+- @osdk/generator-converters@2.80.0
+
+## 2.79.0
+
+### Patch Changes
+
+- Updated dependencies [86c708b]
+  - @osdk/api@2.79.0
+  - @osdk/generator-converters@2.79.0
+
+## 2.78.0
+
+### Patch Changes
+
+- @osdk/api@2.78.0
+- @osdk/generator-converters@2.78.0
+
+## 2.77.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+  - @osdk/generator-converters@2.77.0
+
 ## 2.76.0
 
 ### Patch Changes

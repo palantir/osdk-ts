@@ -128,6 +128,10 @@ export async function applyAction<
           ? await remapBatchActionParams(
               parameters,
               client,
+              // We make this call because, at the time of writing this,
+              // decimal parameters require knowing the parameter type to
+              // serialize their data over the wire. We can remove this call
+              // if we allow the wire to accept JSON Numbers directly.
               await client.ontologyProvider.getActionDefinition(
                 action.unsanitizedApiName ?? action.apiName,
               ),
@@ -159,6 +163,10 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
+          // We make this call because, at the time of writing this,
+          // decimal parameters require knowing the parameter type to
+          // serialize their data over the wire. We can remove this call
+          // if we allow the wire to accept JSON Numbers directly.
           await client.ontologyProvider.getActionDefinition(
             action.unsanitizedApiName ?? action.apiName,
           ),
@@ -210,7 +218,11 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client, actionMetadata);
+    parameterMap[key] = await toDataValue(
+      value,
+      client,
+      actionMetadata.parameters[key].type,
+    );
   }
 
   return parameterMap;

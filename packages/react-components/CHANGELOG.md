@@ -1,5 +1,55 @@
 # @osdk/react-components
 
+## 0.66.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 0.65.0
+
+### Minor Changes
+
+- 9755094: add `includeDeleted` option to `useMarkings`/`useMarkingCategories` and an `includeDeleted` prop to `CbacPicker`, `CbacPickerDialog`, and `CbacBannerPopover` (default `true`, matching the platform API)
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 0.64.0
+
+### Minor Changes
+
+- 039cae5: Support react-markdown 10.x
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 0.63.0
+
+### Minor Changes
+
+- a2730af: Require workspace-derived OSDK peer versions in @osdk/react-components, @osdk/react, @osdk/aip-core, and @osdk/language-models, preventing installs with older peers than the versions used to build and validate these packages.
+
+### Patch Changes
+
+- Updated dependencies [a2730af]
+  - @osdk/react@2.78.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/client@2.78.0
+  - @osdk/api@2.78.0
+
+## 0.62.0
+
+### Minor Changes
+
+- cb903af: Prevent the default and custom table empty states from rendering while the initial data is loading.
+
 ## 0.61.0
 
 ### Minor Changes

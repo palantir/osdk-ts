@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { DataConstraint, DataConstraints } from "@osdk/client.unstable";
+import type { DataConstraints } from "@osdk/client.unstable";
 
+import type { AuthoringDataConstraint } from "../../api/values/ValueTypeType.js";
 import { dataConstraintToPropertyTypeDataConstraint } from "./dataConstraintToPropertyTypeDataConstraint.js";
 
 export function convertDataConstraintToDataConstraints(
-  dc: DataConstraint,
+  dc: AuthoringDataConstraint,
 ): DataConstraints {
   return {
     propertyTypeConstraints: [

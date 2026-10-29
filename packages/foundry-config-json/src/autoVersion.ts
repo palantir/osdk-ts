@@ -22,6 +22,10 @@ import { valid } from "semver";
 import type { AutoVersionConfig } from "./config.js";
 import { execAsync } from "./execAsync.js";
 
+export interface AutoVersionOptions {
+  cwd?: string;
+}
+
 export class AutoVersionError extends Error {
   constructor(
     public readonly msg: string,
@@ -41,12 +45,15 @@ export class AutoVersionError extends Error {
  */
 // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
 // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
-export async function autoVersion(config: AutoVersionConfig): Promise<string> {
+export async function autoVersion(
+  config: AutoVersionConfig,
+  options?: AutoVersionOptions,
+): Promise<string> {
   switch (config.type) {
     case "git-describe":
-      return gitDescribeAutoVersion(config.tagPrefix);
+      return gitDescribeAutoVersion(config.tagPrefix, options?.cwd);
     case "package-json":
-      return packageJsonAutoVersion();
+      return packageJsonAutoVersion(options?.cwd);
     default:
       const value: never = config;
       throw new Error(
@@ -55,7 +62,10 @@ export async function autoVersion(config: AutoVersionConfig): Promise<string> {
   }
 }
 
-async function gitDescribeAutoVersion(tagPrefix: string = ""): Promise<string> {
+async function gitDescribeAutoVersion(
+  tagPrefix: string = "",
+  cwd?: string,
+): Promise<string> {
   const [matchPrefix, prefixRegex] =
     tagPrefix !== ""
       ? // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
@@ -63,17 +73,17 @@ async function gitDescribeAutoVersion(tagPrefix: string = ""): Promise<string> {
       : // oxlint-disable-next-line require-unicode-regexp -- dynamic pattern; adding the u flag could change matching or throw on patterns that are valid without it
         [undefined, new RegExp(`^v?`)];
 
-  const gitVersion = await gitDescribe(matchPrefix);
+  const gitVersion = await gitDescribe(matchPrefix, cwd);
   const version = gitVersion.trim().replace(prefixRegex, "");
   validateVersion(version);
   return version;
 }
 
-async function packageJsonAutoVersion(): Promise<string> {
-  const packageJsonPath = await findUp("package.json");
+async function packageJsonAutoVersion(cwd?: string): Promise<string> {
+  const packageJsonPath = await findUp("package.json", { cwd });
   if (!packageJsonPath) {
     throw new AutoVersionError(
-      `Couldn't find package.json file in the current working directory or its parents: ${process.cwd()}`,
+      `Couldn't find package.json file in the current working directory or its parents: ${cwd ?? process.cwd()}`,
     );
   }
 
@@ -92,17 +102,21 @@ async function packageJsonAutoVersion(): Promise<string> {
   return version;
 }
 
-async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
+async function gitDescribe(
+  matchPrefix: string | undefined,
+  cwd?: string,
+): Promise<string> {
   let gitVersion;
   try {
     const { stdout } = await execAsync(
       `git describe --tags --first-parent --dirty${
         matchPrefix != null ? ` --match="${matchPrefix}*"` : ""
       }`,
-      { encoding: "utf8" },
+      { encoding: "utf8", cwd },
     );
     gitVersion = stdout;
   } catch (error: any) {
+    const directory = cwd ?? process.cwd();
     if (error instanceof Error) {
       const errorMessage: string = error.message.toLowerCase();
 
@@ -119,7 +133,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
 
       if (errorMessage.includes("fatal: not a git repository")) {
         throw new AutoVersionError(
-          `Unable to determine auto version using git-describe as the current directory is not a git repository.`,
+          `Unable to determine auto version using git-describe as ${directory} is not a git repository.`,
           `You can run the command in a git repository and try again or supply a --version option to set the version manually`,
         );
       }
@@ -130,14 +144,14 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
         )
       ) {
         throw new AutoVersionError(
-          `Unable to determine auto version using git-describe as no matching tags were found.`,
+          `Unable to determine auto version using git-describe as no matching tags were found in ${directory}.`,
           `You can create a tag matching the configured tag prefix and try again or supply a --version option to set the version manually`,
         );
       }
     }
 
     throw new AutoVersionError(
-      `Unable to determine auto version using git-describe: ${error}.`,
+      `Unable to determine auto version using git-describe in ${directory}: ${error}.`,
       `You can supply a --version option to set the version manually`,
     );
   }

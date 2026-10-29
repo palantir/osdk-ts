@@ -19,11 +19,9 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
 } from "@osdk/api";
-import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 
 import { additionalContext, type Client } from "../Client.js";
-import { getWireObjectSet } from "../objectSet/createObjectSet.js";
-import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
+import { createTemporaryObjectSet } from "../objectSet/createTemporaryObjectSet.js";
 
 /**
  * Fetches a temporary object set RID from the Foundry stack for the given object set.
@@ -40,16 +38,5 @@ export async function createAndFetchTempObjectSetRid<
     ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"],
 ): Promise<string> {
-  const response = await OntologyObjectSets.createTemporary(
-    client,
-    await client[additionalContext].ontologyRid,
-    {
-      objectSet: await normalizeInterfaceLinkSearchArounds(
-        client[additionalContext],
-        getWireObjectSet(objectSet),
-      ),
-    },
-    { branch: client[additionalContext].branch },
-  );
-  return response.objectSetRid;
+  return await createTemporaryObjectSet(client[additionalContext], objectSet);
 }

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "2.76.0",
+  "version": "2.84.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -42,6 +42,7 @@
     "@osdk/client": "workspace:*",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/client.unstable.tpsa": "workspace:*",
+    "@osdk/foundry.agents": "catalog:foundry-platform-typescript",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/foundry.thirdpartyapplications": "catalog:foundry-platform-typescript",
     "@osdk/generator": "workspace:*",

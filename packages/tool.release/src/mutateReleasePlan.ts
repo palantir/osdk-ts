@@ -72,7 +72,11 @@ export function mutateReleasePlan(
   cwd: string,
   releasePlan: ReleasePlan,
   releaseType: "release branch" | "main",
+  allowedMajorReleases: readonly string[] = [],
 ): void {
+  const allowedMajorReleaseNames = new Set(
+    releaseType === "main" ? allowedMajorReleases : [],
+  );
   let bulkErrorMsg = "";
   for (const changeSet of releasePlan.changesets) {
     let errorStarted = false;
@@ -98,9 +102,12 @@ export function mutateReleasePlan(
         )}\n`;
       }
 
-      if (release.type === "major") {
+      if (
+        release.type === "major" &&
+        !allowedMajorReleaseNames.has(release.name)
+      ) {
         throw new FailedWithUserMessage(
-          `Major changes are not allowed without explicit human intervention.`,
+          `Package "${release.name}" has a major changeset. To allow this package on main, pass --allow-major-release ${release.name}.`,
         );
       }
     }
@@ -116,9 +123,9 @@ export function mutateReleasePlan(
   }
 
   for (const q of releasePlan.releases) {
-    if (q.type === "major") {
+    if (q.type === "major" && !allowedMajorReleaseNames.has(q.name)) {
       throw new FailedWithUserMessage(
-        `Package "${q.name}" received a major bump (${q.oldVersion} -> ${q.newVersion}). Major bumps are never allowed.`,
+        `Package "${q.name}" received a major bump (${q.oldVersion} -> ${q.newVersion}). To allow this package on main, pass --allow-major-release ${q.name}.`,
       );
     }
     if (releaseType === "main" && q.type === "patch") {

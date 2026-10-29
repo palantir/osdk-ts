@@ -1,5 +1,39 @@
 # @osdk/api
 
+## 2.84.0
+
+## 2.83.0
+
+## 2.82.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
+## 2.81.0
+
+### Minor Changes
+
+- 24630ae: Document `$applyModifiers` on `FetchPageArgs` and `AsyncIterArgs`.
+- 23701c5: Compile time checks for invalid batch.create operations missing a required field
+
+## 2.80.0
+
+## 2.79.0
+
+### Minor Changes
+
+- 86c708b: Recommend $select in object loading snippets and JSDoc, stop collecting asyncIter() into arrays in "load all objects" snippets, and document snapshot behavior of fetchPage vs asyncIter
+
+## 2.78.0
+
+## 2.77.0
+
+### Minor Changes
+
+- 2ab4d7c: Clarify that ontology-defined derived properties require explicit selection, distinguish runtime-defined derived properties, and add object-loading examples.
+- 75a8f07: Add experimental agent clients with support for creating sessions.
+
 ## 2.76.0
 
 ## 2.75.0

@@ -23,7 +23,10 @@ import type {
   OntologyIrSecurityGroupGranularCondition,
   SecurityGroupComparisonValue,
 } from "@osdk/client.unstable";
-import type { ResolvedBlockSetInputShape } from "@osdk/client.unstable/api";
+import type {
+  BaseParameterConstraintType,
+  ResolvedBlockSetInputShape,
+} from "@osdk/client.unstable/api";
 import type {
   ActionType,
   InterfaceType,
@@ -265,6 +268,14 @@ describe("Experimental Test Suite", () => {
                 type: {
                   type: "marking",
                   markingType,
+                  markingInputGroupName: "referenceClassification",
+                },
+              },
+              // Sharing a group adds no second entry to the combined group.
+              copiedClassification: {
+                type: {
+                  type: "marking",
+                  markingType,
                   markingInputGroupName: "classification",
                 },
               },
@@ -272,7 +283,7 @@ describe("Experimental Test Suite", () => {
           });
         });
 
-        const combinedMarkingId = "classification/classification";
+        const combinedMarkingId = "classification/referenceClassification";
         expect(
           result.shapes.inputShapes.get(
             ReadableIdGenerator.getForMarking(combinedMarkingId, markingType),
@@ -1250,6 +1261,120 @@ describe("Experimental Test Suite", () => {
     ).toBe("The imported employee identifier");
   });
 
+  it("materializes value type references in struct field constraints", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const classification = defineValueType({
+        apiName: "classification",
+        displayName: "Classification",
+        type: { type: "string" },
+        version: "1.0.0",
+      });
+
+      defineValueType({
+        apiName: "classifiedRecord",
+        displayName: "Classified Record",
+        type: {
+          type: {
+            type: "struct",
+            fields: [{ identifier: "classification", baseType: "string" }],
+          },
+          constraints: [
+            {
+              constraint: {
+                elementConstraints: { classification },
+              },
+            },
+          ],
+        },
+        version: "1.0.0",
+      });
+    });
+
+    const classifiedRecord = result.ontologyIr.valueTypes.find(
+      ({ blockData }) => blockData.metadata.apiName === "classifiedRecord",
+    );
+    const constraint =
+      classifiedRecord?.blockData.versions[0].constraints[0]?.constraint
+        .constraint;
+    invariant(
+      constraint?.type === "structV2",
+      "Struct value type constraint is missing",
+    );
+
+    expect(constraint.structV2.elementConstraints.classification).toEqual({
+      rid: expect.any(String),
+      versionId: expect.any(String),
+    });
+
+    expect(classifiedRecord?.dependencies).toMatchObject([
+      {
+        reference: constraint.structV2.elementConstraints.classification,
+        target: { apiName: "classification", version: "1.0.0" },
+        baseType: { type: "string" },
+      },
+    ]);
+  });
+
+  it("materializes value type references in array struct constraints", async () => {
+    const result = await defineOntologyV2("com.palantir.", () => {
+      const classification = defineValueType({
+        apiName: "classification",
+        displayName: "Classification",
+        type: { type: "string" },
+        version: "1.0.0",
+      });
+
+      defineValueType({
+        apiName: "classifiedRecords",
+        displayName: "Classified Records",
+        type: {
+          type: {
+            type: "array",
+            elementType: {
+              type: "struct",
+              fields: [{ identifier: "classification", baseType: "string" }],
+            },
+          },
+          constraints: [
+            {
+              constraint: {
+                size: undefined,
+                elementsUnique: undefined,
+                elementsConstraint: {
+                  type: "structV2",
+                  structV2: {
+                    elementConstraints: { classification },
+                  },
+                },
+              },
+            },
+          ],
+        },
+        version: "1.0.0",
+      });
+    });
+
+    const classifiedRecords = result.ontologyIr.valueTypes.find(
+      ({ blockData }) => blockData.metadata.apiName === "classifiedRecords",
+    );
+    const constraint =
+      classifiedRecords?.blockData.versions[0].constraints[0]?.constraint
+        .constraint;
+    invariant(
+      constraint?.type === "array" &&
+        constraint.array.elementsConstraint?.type === "structV2",
+      "Array struct value type constraint is missing",
+    );
+
+    expect(
+      constraint.array.elementsConstraint.structV2.elementConstraints
+        .classification,
+    ).toEqual({
+      rid: expect.any(String),
+      versionId: expect.any(String),
+    });
+  });
+
   it.each([undefined, "123e4567-e89b-12d3-a456-426614174000"])(
     "materializes consumed value type identities with randomness key %s",
     async (randomnessKey) => {
@@ -1413,6 +1538,189 @@ describe("Experimental Test Suite", () => {
         result.shapes.outputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "objectType");
       expect(objectOutputShapes.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("preserves marking and struct properties from external imported metadata", async () => {
+      const externalImportedMetadata = {
+        actionTypes: {},
+        interfaceTypes: {},
+        objectTypes: {
+          TestObject: {
+            implementsInterfaces: [],
+            implementsInterfaces2: {},
+            linkTypes: [],
+            objectType: {
+              apiName: "TestObject",
+              description: "",
+              displayName: "Test Object",
+              icon: { type: "blueprint", color: "#4C90F0", name: "cube" },
+              pluralDisplayName: "Test Objects",
+              primaryKey: "id",
+              properties: {
+                id: {
+                  dataType: { type: "string" },
+                  displayName: "Id",
+                  rid: "ri.ontology.main.property.00000000-0000-0000-0000-000000000003",
+                  status: { type: "experimental" },
+                  typeClasses: [],
+                  visibility: "NORMAL",
+                },
+                value: {
+                  dataType: { type: "marking", markingType: "CBAC" },
+                  displayName: "Value",
+                  rid: "ri.ontology.main.property.00000000-0000-0000-0000-000000000004",
+                  status: { type: "experimental" },
+                  typeClasses: [],
+                  visibility: "NORMAL",
+                },
+                details: {
+                  dataType: {
+                    type: "struct",
+                    structFieldTypes: [
+                      {
+                        apiName: "name",
+                        dataType: { type: "string" },
+                        rid: "ri.ontology.main.struct-field.00000000-0000-0000-0000-000000000005",
+                        typeClasses: [],
+                      },
+                      {
+                        apiName: "count",
+                        dataType: { type: "integer" },
+                        rid: "ri.ontology.main.struct-field.00000000-0000-0000-0000-000000000006",
+                        typeClasses: [],
+                      },
+                    ],
+                  },
+                  displayName: "Details",
+                  rid: "ri.ontology.main.property.00000000-0000-0000-0000-000000000007",
+                  status: { type: "experimental" },
+                  typeClasses: [],
+                  visibility: "NORMAL",
+                },
+              },
+              rid: "ri.ontology.main.object-type.00000000-0000-0000-0000-000000000002",
+              status: "EXPERIMENTAL",
+              titleProperty: "id",
+              visibility: "NORMAL",
+            },
+            sharedPropertyTypeMapping: {},
+          },
+        },
+        ontology: {
+          apiName: "test",
+          description: "",
+          displayName: "Test",
+          rid: "ri.ontology.main.ontology.test",
+        },
+        queryTypes: {},
+        sharedPropertyTypes: {},
+        valueTypes: {},
+      } as unknown as ExternalImportedOntologyMetadata;
+
+      const result = await defineOntologyV2(
+        "com.palantir.",
+        () => {},
+        undefined,
+        undefined,
+        undefined,
+        "00000000-0000-0000-0000-00000000002a",
+        undefined,
+        externalImportedMetadata,
+      );
+
+      const objectReadableId =
+        ReadableIdGenerator.getForObjectType("TestObject");
+      const idReadableId = ReadableIdGenerator.getForObjectProperty(
+        "TestObject",
+        "id",
+      );
+      const valueReadableId = ReadableIdGenerator.getForObjectProperty(
+        "TestObject",
+        "value",
+      );
+      const detailsReadableId = ReadableIdGenerator.getForObjectProperty(
+        "TestObject",
+        "details",
+      );
+      expect(result.shapes.inputShapes.get(idReadableId)).toMatchObject({
+        type: "property",
+        property: {
+          type: {
+            type: "objectPropertyType",
+            objectPropertyType: {
+              type: "primitive",
+              primitive: { type: "stringType" },
+            },
+          },
+        },
+      });
+      expect
+        .soft(result.shapes.inputShapes.get(valueReadableId))
+        .toMatchObject({
+          type: "property",
+          property: {
+            about: { fallbackTitle: "Value" },
+            type: {
+              type: "objectPropertyType",
+              objectPropertyType: {
+                type: "primitive",
+                primitive: { type: "markingType" },
+              },
+            },
+          },
+        });
+      expect
+        .soft(result.shapes.inputShapes.get(detailsReadableId))
+        .toMatchObject({
+          type: "property",
+          property: {
+            about: { fallbackTitle: "Details" },
+            type: {
+              type: "objectPropertyType",
+              objectPropertyType: {
+                type: "primitive",
+                primitive: {
+                  type: "structType",
+                  structType: {
+                    structFieldTypes: [
+                      {
+                        type: "primitive",
+                        primitive: { type: "stringType" },
+                      },
+                      {
+                        type: "primitive",
+                        primitive: { type: "integerType" },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        });
+      expect
+        .soft(result.shapes.inputShapes.get(objectReadableId))
+        .toMatchObject({
+          type: "objectType",
+          objectType: {
+            propertyTypes: [
+              "824f0620-f826-372b-aedb-201a0482f3b0",
+              "22a321b3-ab42-35bc-917c-e64a9982f7d9",
+              "55039f50-087f-3feb-a44b-4da71c530dd7",
+            ],
+          },
+        });
+
+      expect(result.importedInputPresets.get(valueReadableId)).toEqual(
+        apiNamePreset("value"),
+      );
+      expect(result.shapes.inputShapeMetadata.has(valueReadableId)).toBe(true);
+      expect(result.blockDataAddOn.idToBlockShapeId).toMatchObject({
+        [objectReadableId]: "2208f50a-baaf-39f6-b054-bf332136365e",
+        [idReadableId]: "824f0620-f826-372b-aedb-201a0482f3b0",
+        [valueReadableId]: "22a321b3-ab42-35bc-917c-e64a9982f7d9",
+        [detailsReadableId]: "55039f50-087f-3feb-a44b-4da71c530dd7",
+      });
     });
 
     it("uses resolved presets for externally imported parent shapes", async () => {
@@ -2134,7 +2442,7 @@ describe("Experimental Test Suite", () => {
       });
     });
 
-    it("produces output shapes for interface with action type constraints", async () => {
+    it("preserves implementing-object markers through block data and output shapes", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         const iface = defineInterface({ apiName: "MyInterface" });
 
@@ -2149,6 +2457,24 @@ describe("Experimental Test Suite", () => {
               apiName: "boolParam",
               displayName: "Bool Param",
               type: { type: "boolean", boolean: {} },
+              requireImplementation: false,
+            },
+            {
+              apiName: "objectParam",
+              displayName: "Object Param",
+              type: {
+                type: "implementingObjectReference",
+                implementingObjectReference: {},
+              },
+              requireImplementation: false,
+            },
+            {
+              apiName: "objectsParam",
+              displayName: "Objects Param",
+              type: {
+                type: "implementingObjectReferenceList",
+                implementingObjectReferenceList: {},
+              },
               requireImplementation: false,
             },
           ],
@@ -2170,7 +2496,7 @@ describe("Experimental Test Suite", () => {
       const paramOutputShapes = Array.from(
         result.shapes.outputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
-      expect(paramOutputShapes).toHaveLength(1);
+      expect(paramOutputShapes).toHaveLength(3);
       expect(paramOutputShapes[0][1]).toMatchObject({
         type: "interfaceParameterConstraint",
         interfaceParameterConstraint: {
@@ -2178,9 +2504,46 @@ describe("Experimental Test Suite", () => {
           requireImplementation: false,
         },
       });
+
+      const expectedMarkerTypes: Record<string, BaseParameterConstraintType> = {
+        objectParam: {
+          type: "implementingObjectReference",
+          implementingObjectReference: {},
+        },
+        objectsParam: {
+          type: "implementingObjectReferenceList",
+          implementingObjectReferenceList: {},
+        },
+      };
+      const blockInterface = Object.values(
+        result.ontologyIr.ontology.interfaceTypes,
+      )[0].interfaceType;
+      const blockParameters = Object.values(
+        blockInterface.actionTypeConstraints[0].parameters,
+      );
+      for (const [apiName, expectedType] of Object.entries(
+        expectedMarkerTypes,
+      )) {
+        expect(
+          blockParameters.find(
+            (param) => param.displayMetadata.apiName === apiName,
+          )?.type,
+        ).toStrictEqual(expectedType);
+        const shape = result.shapes.outputShapes.get(
+          ReadableIdGenerator.getForInterfaceParameterConstraint(
+            "com.palantir.MyInterface",
+            "com.palantir.myConstraint",
+            apiName,
+          ),
+        );
+        invariant(shape?.type === "interfaceParameterConstraint");
+        expect(shape.interfaceParameterConstraint.type).toStrictEqual(
+          expectedType,
+        );
+      }
     });
 
-    it("produces input shapes for imported interface with action type constraints", async () => {
+    it("preserves implementing-object markers in imported interface input shapes", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         const importedInterface: InterfaceType = {
           apiName: "importedInterface",
@@ -2205,6 +2568,28 @@ describe("Experimental Test Suite", () => {
                     apiName: "boolParam",
                   },
                   type: { type: "boolean", boolean: {} },
+                  requireImplementation: false,
+                },
+                objectParam: {
+                  displayMetadata: {
+                    displayName: "Object Param",
+                    apiName: "objectParam",
+                  },
+                  type: {
+                    type: "implementingObjectReference",
+                    implementingObjectReference: {},
+                  },
+                  requireImplementation: false,
+                },
+                objectsParam: {
+                  displayMetadata: {
+                    displayName: "Objects Param",
+                    apiName: "objectsParam",
+                  },
+                  type: {
+                    type: "implementingObjectReferenceList",
+                    implementingObjectReferenceList: {},
+                  },
                   requireImplementation: false,
                 },
               },
@@ -2244,7 +2629,7 @@ describe("Experimental Test Suite", () => {
       const paramInputShapes = Array.from(
         result.shapes.inputShapes.entries(),
       ).filter(([_, shape]) => shape.type === "interfaceParameterConstraint");
-      expect(paramInputShapes).toHaveLength(1);
+      expect(paramInputShapes).toHaveLength(3);
       expect(paramInputShapes[0][1]).toMatchObject({
         type: "interfaceParameterConstraint",
         interfaceParameterConstraint: {
@@ -2252,6 +2637,32 @@ describe("Experimental Test Suite", () => {
           requireImplementation: false,
         },
       });
+
+      const expectedMarkerTypes: Record<string, BaseParameterConstraintType> = {
+        objectParam: {
+          type: "implementingObjectReference",
+          implementingObjectReference: {},
+        },
+        objectsParam: {
+          type: "implementingObjectReferenceList",
+          implementingObjectReferenceList: {},
+        },
+      };
+      for (const [apiName, expectedType] of Object.entries(
+        expectedMarkerTypes,
+      )) {
+        const shape = result.shapes.inputShapes.get(
+          ReadableIdGenerator.getForInterfaceParameterConstraint(
+            "importedInterface",
+            "importedConstraint",
+            apiName,
+          ),
+        );
+        invariant(shape?.type === "interfaceParameterConstraint");
+        expect(shape.interfaceParameterConstraint.type).toStrictEqual(
+          expectedType,
+        );
+      }
     });
   });
 
