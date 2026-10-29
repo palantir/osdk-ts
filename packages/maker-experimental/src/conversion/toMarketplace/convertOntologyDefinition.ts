@@ -156,7 +156,7 @@ function validateInterfaceActionImplementations(
           continue;
         }
         const action = actionsByApiName.get(actionTypeApiName);
-        // Function-backed actions have no converted parameters until function discovery.
+        // Wait until function discovery provides the Action's parameters before validating them.
         if (action === undefined) continue;
         const constraint = constraints.find(
           (candidate) => candidate.metadata.apiName === constraintApiName,
