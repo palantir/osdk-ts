@@ -51,7 +51,6 @@ export function listenForWorkshopModuleEmbedMessages({
 
   let pendingHandshake: { sessionId: string; origin: string } | undefined;
   let activeConnection: ReturnType<typeof createConnection> | undefined;
-  let stopped = false;
 
   function disconnect() {
     pendingHandshake = undefined;
@@ -103,22 +102,15 @@ export function listenForWorkshopModuleEmbedMessages({
       return;
     }
 
-    try {
-      disconnect();
-    } catch (error) {
-      port.close();
-      throw error;
-    }
-    if (stopped) {
-      port.close();
-      return;
-    }
+    const previous = activeConnection;
     const next = createConnection(port, sessionId, () => {
       if (activeConnection === next) activeConnection = undefined;
     });
+    pendingHandshake = undefined;
     activeConnection = next;
     try {
-      port.postMessage(createMessage("connected", sessionId));
+      // If the previous cleanup stops the listener, next is disposed and activate skips it.
+      previous?.dispose(true);
       next.activate(onConnect);
     } catch (error) {
       next.dispose(true);
@@ -129,7 +121,6 @@ export function listenForWorkshopModuleEmbedMessages({
   hostWindow.addEventListener("message", handleMessage);
   hostWindow.addEventListener("pagehide", disconnect);
   return () => {
-    stopped = true;
     hostWindow.removeEventListener("message", handleMessage);
     hostWindow.removeEventListener("pagehide", disconnect);
     disconnect();

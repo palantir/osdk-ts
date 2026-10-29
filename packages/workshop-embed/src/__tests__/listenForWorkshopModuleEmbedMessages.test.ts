@@ -311,7 +311,9 @@ describe("listenForWorkshopModuleEmbedMessages", () => {
     expect(cleanup).toHaveBeenCalledTimes(1);
     expect(port.close).toHaveBeenCalledTimes(1);
     expect(next.close).toHaveBeenCalledTimes(1);
-    expect(next.start).not.toHaveBeenCalled();
+    expect(next.postMessage).toHaveBeenCalledExactlyOnceWith(
+      createMessage("disconnect", "replacement"),
+    );
   });
 
   it("does not activate a replacement when the previous cleanup stops the listener", () => {
@@ -327,7 +329,9 @@ describe("listenForWorkshopModuleEmbedMessages", () => {
     connect("replacement", next);
     expect(onConnect).toHaveBeenCalledTimes(1);
     expect(next.close).toHaveBeenCalledTimes(1);
-    expect(next.start).not.toHaveBeenCalled();
+    expect(next.postMessage).toHaveBeenCalledExactlyOnceWith(
+      createMessage("disconnect", "replacement"),
+    );
   });
 
   it("runs returned cleanup even if onConnect immediately disconnects", () => {
