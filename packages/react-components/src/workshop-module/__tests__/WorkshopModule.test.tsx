@@ -18,22 +18,27 @@
 
 import { createClient } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen } from "@testing-library/react";
 import React from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { renderToString } from "react-dom/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { OsdkThemeProvider } from "../../theme/OsdkThemeProvider.js";
 import { WorkshopModule } from "../WorkshopModule.js";
 
-afterEach(cleanup);
+const client = createClient(
+  "https://provider.example.com/",
+  "ri.ontology.main.ontology.example",
+  () => Promise.resolve("test-token"),
+);
+
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 describe("WorkshopModule", () => {
   it("uses the client's Foundry origin and defaults to the published version", () => {
-    const client = createClient(
-      "https://provider.example.com/",
-      "ri.ontology.main.ontology.example",
-      () => Promise.resolve("test-token"),
-    );
-
     render(
       <OsdkProvider client={client}>
         <WorkshopModule
@@ -46,5 +51,76 @@ describe("WorkshopModule", () => {
     expect(screen.getByTitle("Embedded dashboard").getAttribute("src")).toBe(
       "https://provider.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true",
     );
+  });
+
+  it.each(["light", "dark"] as const)(
+    "inherits the initial %s theme without reloading when the provider changes",
+    (theme) => {
+      const workshopModule = (
+        <OsdkProvider client={client}>
+          <WorkshopModule moduleRid="ri.workshop.main.module.example" />
+        </OsdkProvider>
+      );
+      const { rerender } = render(
+        <OsdkThemeProvider theme={theme}>{workshopModule}</OsdkThemeProvider>,
+      );
+      const iframe = screen.getByTitle<HTMLIFrameElement>("Workshop module");
+      const initialSrc = iframe.src;
+
+      expect(new URL(initialSrc).searchParams.get("themeOverride")).toBe(
+        theme === "dark" ? "DARK_MODE" : "LIGHT_MODE",
+      );
+
+      rerender(
+        <OsdkThemeProvider theme={theme === "dark" ? "light" : "dark"}>
+          {workshopModule}
+        </OsdkThemeProvider>,
+      );
+
+      expect(screen.getByTitle("Workshop module")).toBe(iframe);
+      expect(iframe.src).toBe(initialSrc);
+    },
+  );
+
+  it("defers iframe loading until the browser's system theme is resolved", () => {
+    const mediaQueryList = window.matchMedia("(prefers-color-scheme: dark)");
+    Object.defineProperty(mediaQueryList, "matches", {
+      configurable: true,
+      value: true,
+    });
+    vi.spyOn(window, "matchMedia").mockReturnValue(mediaQueryList);
+
+    const workshopModule = (
+      <OsdkProvider client={client}>
+        <OsdkThemeProvider>
+          <WorkshopModule moduleRid="ri.workshop.main.module.example" />
+        </OsdkThemeProvider>
+      </OsdkProvider>
+    );
+    const container = document.createElement("div");
+    container.innerHTML = renderToString(workshopModule);
+    document.body.append(container);
+    const initialIframe = container.querySelector("iframe");
+    expect(initialIframe?.hasAttribute("src")).toBe(false);
+    expect(initialIframe?.hidden).toBe(true);
+
+    const onRecoverableError = vi.fn();
+    render(workshopModule, { container, hydrate: true, onRecoverableError });
+
+    const iframe = screen.getByTitle<HTMLIFrameElement>("Workshop module");
+    expect(iframe).toBe(initialIframe);
+    expect(iframe.hidden).toBe(false);
+    const initialSrc = iframe.src;
+    expect(new URL(initialSrc).searchParams.get("themeOverride")).toBe(
+      "DARK_MODE",
+    );
+    expect(onRecoverableError).not.toHaveBeenCalled();
+
+    act(() => {
+      Object.defineProperty(mediaQueryList, "matches", { value: false });
+      mediaQueryList.dispatchEvent(new Event("change"));
+    });
+
+    expect(iframe.src).toBe(initialSrc);
   });
 });
