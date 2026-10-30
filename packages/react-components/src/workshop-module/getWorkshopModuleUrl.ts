@@ -16,16 +16,18 @@
 
 import invariant from "tiny-invariant";
 
+import type { ResolvedOsdkTheme } from "../theme/types.js";
 import type { BaseWorkshopModuleProps } from "./WorkshopModuleApi.js";
 
 export function getWorkshopModuleUrl({
   foundryUrl,
   moduleRid,
   moduleVersion = "published",
+  theme,
 }: Pick<
   BaseWorkshopModuleProps,
   "foundryUrl" | "moduleRid" | "moduleVersion"
->): string {
+> & { theme?: ResolvedOsdkTheme }): string {
   // Workshop URLs historically use "latest" for published and "dev" for latest saved.
   const version = moduleVersion === "published" ? "latest" : "dev";
   const url = new URL(
@@ -37,6 +39,12 @@ export function getWorkshopModuleUrl({
     "Foundry URL must use http or https.",
   );
   url.searchParams.set("embedded", "true");
+  if (theme != null) {
+    url.searchParams.set(
+      "themeOverride",
+      theme === "dark" ? "DARK_MODE" : "LIGHT_MODE",
+    );
+  }
 
   return url.href;
 }

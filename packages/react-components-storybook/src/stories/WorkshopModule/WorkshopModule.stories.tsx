@@ -39,7 +39,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
   render: (args: BaseWorkshopModuleProps) => (
     <div style={{ height: "24rem" }}>
       {isFoundryUrl(args.foundryUrl) ? (
-        <BaseWorkshopModule {...args} />
+        <BaseWorkshopModule key={args.defaultTheme} {...args} />
       ) : (
         <p>
           Set foundryUrl to your Foundry URL and moduleRid to a module you can
@@ -74,6 +74,12 @@ const meta: Meta<BaseWorkshopModuleProps> = {
         "latest for the latest saved version, or published for the published version. Defaults to published.",
     },
     title: { control: "text" },
+    defaultTheme: {
+      control: "select",
+      options: [undefined, "light", "dark", "system"],
+      description:
+        "Initial theme override. System resolves the browser preference once. Changing this control remounts the preview to apply the theme.",
+    },
     className: { control: "text" },
     style: { control: "object" },
   },
