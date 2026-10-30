@@ -22,10 +22,7 @@ import type {
   LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
 } from "@osdk/client.unstable";
-import {
-  OntologyBlockDataToFullMetadataConverter,
-  OntologyIrToFullMetadataConverter,
-} from "@osdk/generator-converters.ontologyir";
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
 import type { OntologyDefinition } from "@osdk/maker";
 import {
@@ -350,29 +347,6 @@ export default async function main(
   const ontologyJson = JSON.stringify(ontologyIr.ontology, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
-
-  const importedMetadata =
-    OntologyBlockDataToFullMetadataConverter.getFullMetadataFromBlockData(
-      ontologyIr.importedOntology,
-      undefined,
-      ontologyIr.transitiveImportedOntology,
-    );
-  const directlyImportedInterfaceTypes = Object.values(
-    ontologyIr.importedOntology.interfaceTypes,
-  ).map(({ interfaceType }) => interfaceType.apiName);
-  const importedMetadataPath = path.join(
-    commandLineOpts.buildDir,
-    "oac-imported-metadata.json",
-  );
-  await fs.promises.writeFile(
-    importedMetadataPath,
-    JSON.stringify(
-      { ...importedMetadata, directlyImportedInterfaceTypes },
-      null,
-      2,
-    ),
-  );
-  consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
 
   const folderResults = await generateFolderBlockResults(
     folders,
