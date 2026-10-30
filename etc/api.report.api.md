@@ -317,7 +317,7 @@ export interface Attachment {
 
 // @public (undocumented)
 export interface AttachmentMetadata {
-		// (undocumented)
+	// (undocumented)
     filename: string;
     	// (undocumented)
     mediaType: string;
