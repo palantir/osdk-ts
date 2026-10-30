@@ -472,7 +472,6 @@ jobs:
           name: Build and measure this PR
           command: |
             pnpm exec turbo transpile
-            # With --json, size-limit reports errors on stdout, so show them here.
             npx size-limit --json > /tmp/current.json || cat /tmp/current.json
       - run:
           # The base checkout below replaces the working tree with a commit that

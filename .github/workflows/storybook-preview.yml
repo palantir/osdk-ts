@@ -6,7 +6,8 @@ env:
 on:
   pull_request:
     # Previews are now built and linked by the CircleCI build-storybook job; this
-    # only cleans up the gh-pages previews that earlier PRs deployed.
+    # only cleans up the gh-pages previews that earlier PRs deployed. Remove this
+    # workflow once the migration to CircleCI is complete.
     types: [closed]
 
 permissions: {}
