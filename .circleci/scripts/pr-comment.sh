@@ -53,7 +53,8 @@ gh_api() {
 
 # CIRCLE_PULL_REQUEST is a full PR URL, but CircleCI only populates it reliably
 # for fork builds, so fall back to asking GitHub which PR has this head branch.
-pr_number="${CIRCLE_PULL_REQUEST##*/}"
+pr_number="${CIRCLE_PULL_REQUEST:-}"
+pr_number="${pr_number##*/}"
 if ! [[ "$pr_number" =~ ^[0-9]+$ ]]; then
   pr_number="$(
     gh_api GET "/repos/$REPO/pulls?state=open&head=$CIRCLE_PROJECT_USERNAME:${CIRCLE_BRANCH:-}" \

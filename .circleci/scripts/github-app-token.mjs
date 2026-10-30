@@ -54,6 +54,12 @@ try {
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
       },
+      // Limit the token to commenting on this repo's PRs, whatever else the
+      // App can do.
+      body: JSON.stringify({
+        repositories: [process.env.CIRCLE_PROJECT_REPONAME],
+        permissions: { pull_requests: "write" },
+      }),
     },
   );
   const body = await res.json();
