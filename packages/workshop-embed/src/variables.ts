@@ -21,55 +21,31 @@ import {
 } from "./protocol.js";
 import type { WorkshopEmbedMessage } from "./protocol.js";
 
-type VariableValueByType = {
-  string: string;
-  number: number;
-  boolean: boolean;
-};
-
-/** Scalar types supported by the variable input protocol. @public */
-export type WorkshopVariableType = keyof VariableValueByType;
-
-/** Local variable definitions keyed by external ID. @public */
-export type WorkshopVariableSchema = Readonly<
-  Record<string, { readonly type: WorkshopVariableType }>
->;
-
 /** A scalar variable input. Numbers must be finite; null requests clearing the value. @public */
-export type WorkshopVariableValue<
-  TType extends WorkshopVariableType = WorkshopVariableType,
-> = VariableValueByType[TType] | null;
+export type WorkshopVariableValue = string | number | boolean | null;
 
 /** Variable inputs keyed by non-empty external IDs. Omitted variables are unchanged. @public */
 export type WorkshopVariableValues<
-  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
-> = keyof TSchema extends never
-  ? Readonly<Record<string, never>>
-  : string extends keyof TSchema
-    ? Readonly<Record<string, WorkshopVariableValue<TSchema[string]["type"]>>>
-    : {
-        readonly [TName in keyof TSchema]?: WorkshopVariableValue<
-          TSchema[TName]["type"]
-        >;
-      };
+  TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<
+    string,
+    WorkshopVariableValue
+  >,
+> = {
+  readonly [Name in keyof TVariables]?: TVariables[Name] | null;
+};
 
-interface SetVariablesMessage<
-  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
-> extends Omit<WorkshopEmbedMessage, "type"> {
+interface SetVariablesMessage extends Omit<WorkshopEmbedMessage, "type"> {
   type: "setVariables";
-  values: WorkshopVariableValues<TSchema>;
+  values: Readonly<Record<string, WorkshopVariableValue>>;
 }
 
-export function createSetVariablesMessage<
-  TSchema extends WorkshopVariableSchema,
->(
+export function createSetVariablesMessage(
   sessionId: string,
-  values: WorkshopVariableValues<TSchema>,
-  schema: TSchema | undefined,
-): SetVariablesMessage<TSchema> {
-  if (!isVariableValues(values, schema)) {
+  values: WorkshopVariableValues,
+): SetVariablesMessage {
+  if (!isVariableValues(values)) {
     throw new TypeError(
-      "Variable inputs must contain supported scalar values and match the declared variable schema when provided.",
+      "Variable inputs must map non-empty external IDs to strings, finite numbers, booleans, or null.",
     );
   }
   return {
@@ -81,10 +57,9 @@ export function createSetVariablesMessage<
   };
 }
 
-export function isSetVariablesMessage<TSchema extends WorkshopVariableSchema>(
+export function isSetVariablesMessage(
   value: unknown,
-  schema: TSchema | undefined,
-): value is SetVariablesMessage<TSchema> {
+): value is SetVariablesMessage {
   return (
     isRecord(value) &&
     value.channel === WORKSHOP_EMBED_CHANNEL &&
@@ -92,40 +67,13 @@ export function isSetVariablesMessage<TSchema extends WorkshopVariableSchema>(
     typeof value.sessionId === "string" &&
     value.sessionId.length > 0 &&
     value.type === "setVariables" &&
-    isVariableValues(value.values, schema)
+    isVariableValues(value.values)
   );
 }
 
-export function snapshotVariableSchema<TSchema extends WorkshopVariableSchema>(
-  schema: TSchema | undefined,
-): TSchema | undefined {
-  if (schema === undefined) return undefined;
-  const entries = isRecord(schema) ? Object.entries(schema) : undefined;
-  if (
-    entries === undefined ||
-    !entries.every(
-      ([name, definition]) =>
-        name.length > 0 &&
-        isRecord(definition) &&
-        (definition.type === "string" ||
-          definition.type === "number" ||
-          definition.type === "boolean"),
-    )
-  ) {
-    throw new TypeError(
-      "Variable schemas must map non-empty external IDs to string, number, or boolean type definitions.",
-    );
-  }
-  // A caller changing the config must not change an established connection's types.
-  return Object.fromEntries(
-    entries.map(([name, definition]) => [name, { ...definition }]),
-  ) as TSchema;
-}
-
-function isVariableValues<TSchema extends WorkshopVariableSchema>(
+function isVariableValues(
   value: unknown,
-  schema: TSchema | undefined,
-): value is WorkshopVariableValues<TSchema> {
+): value is Readonly<Record<string, WorkshopVariableValue>> {
   if (!isRecord(value)) return false;
   return Object.entries(value).every(([externalId, input]) => {
     if (externalId.length === 0 || input === undefined) return false;
@@ -137,11 +85,6 @@ function isVariableValues<TSchema extends WorkshopVariableSchema>(
     ) {
       return false;
     }
-    if (typeof input === "number" && !Number.isFinite(input)) return false;
-    if (schema === undefined) return true;
-    return (
-      Object.hasOwn(schema, externalId) &&
-      (input == null || typeof input === schema[externalId]?.type)
-    );
+    return typeof input !== "number" || Number.isFinite(input);
   });
 }

@@ -49,24 +49,20 @@ Connections expose `onVariablesSet(listener)` for receiving validated input mess
 
 ## Declaring variable types
 
-Pass a local schema to infer the allowed external IDs and their value types:
+Declare the module's external IDs and their value types with a TypeScript type:
 
 ```ts
-import {
-  connectToWorkshopModule,
-  type WorkshopVariableSchema,
-} from "@osdk/workshop-embed";
+import { connectToWorkshopModule } from "@osdk/workshop-embed";
 
-const variableSchema = {
-  searchText: { type: "string" },
-  maxResults: { type: "number" },
-  includeArchived: { type: "boolean" },
-} as const satisfies WorkshopVariableSchema;
+type ModuleVariables = {
+  searchText: string;
+  maxResults: number;
+  includeArchived: boolean;
+};
 
-const connection = await connectToWorkshopModule({
+const connection = await connectToWorkshopModule<ModuleVariables>({
   targetWindow: iframe.contentWindow!,
   targetOrigin: new URL(iframe.src).origin,
-  variableSchema,
 });
 
 connection.setVariables({ searchText: "Ada", maxResults: 25 });
@@ -77,8 +73,8 @@ connection.setVariables({ searchText: null }); // Request clearing a value.
 // connection.setVariables({ unknownVariable: true });
 ```
 
-The schema also determines the types received by `onVariablesSet`. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<typeof variableSchema>` to refer to the inferred update type. Without a schema, the connection accepts any non-empty external ID with a supported scalar value.
+The type also determines the values received by `onVariablesSet`. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, the connection accepts any non-empty external ID with a supported scalar value.
 
-Connections snapshot the schema locally and validate outgoing and incoming values against it. Sending an unknown ID or an incorrect value type throws a `TypeError`; an incoming batch that does not match is ignored. The schema is not sent across the iframe boundary and adds no binding or readiness exchange.
+This declaration provides compile-time checking only. The transport validates the message envelope and supported scalar values, but does not check values against the declared variable names or types. Incoming values are typed using the caller's declaration.
 
-The schema is a plain data object that can be authored manually or emitted by future code generation. It describes the app's expectations; it does not discover or verify the actual Workshop module's variables. The Workshop integration must still validate the module interface and apply inputs when the module is ready.
+The type can be authored manually or emitted by future code generation. It describes the app's expectations; it does not discover or verify the actual Workshop module's variables. The Workshop integration must still validate the module interface and apply inputs when the module is ready.

@@ -17,19 +17,14 @@
 import { createConnection } from "./connection.js";
 import type { WorkshopModuleConnection } from "./connection.js";
 import { createMessage, isWorkshopEmbedMessage } from "./protocol.js";
-import { snapshotVariableSchema } from "./variables.js";
-import type { WorkshopVariableSchema } from "./variables.js";
+import type { WorkshopVariableValue } from "./variables.js";
 
 /** Options for a single connection attempt to a Workshop iframe. @public */
-export interface ConnectToWorkshopModuleOptions<
-  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
-> {
+export interface ConnectToWorkshopModuleOptions {
   /** The iframe's contentWindow. */
   targetWindow: Window;
   /** HTTP(S) origin expected to host Workshop. Wildcards and opaque origins are rejected. */
   targetOrigin: string;
-  /** Local definitions used to infer and validate variable inputs. Not sent to Workshop. */
-  variableSchema?: TSchema;
   /** Abort to cancel the attempt or disconnect an established connection. */
   signal?: AbortSignal;
   /** Maximum handshake duration in milliseconds. Defaults to 10000. */
@@ -45,30 +40,20 @@ export interface ConnectToWorkshopModuleOptions<
  * @public
  */
 export function connectToWorkshopModule<
-  const TSchema extends WorkshopVariableSchema,
->(
-  options: ConnectToWorkshopModuleOptions<TSchema> & {
-    variableSchema: TSchema;
-  },
-): Promise<WorkshopModuleConnection<TSchema>>;
-/** @public */
-export function connectToWorkshopModule(
-  options: ConnectToWorkshopModuleOptions,
-): Promise<WorkshopModuleConnection>;
-export function connectToWorkshopModule<
-  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+  TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<
+    string,
+    WorkshopVariableValue
+  >,
 >({
   targetWindow,
   targetOrigin,
   signal,
   timeoutMs = 10_000,
   hostWindow = window,
-  variableSchema,
-}: ConnectToWorkshopModuleOptions<TSchema>): Promise<
-  WorkshopModuleConnection<TSchema>
+}: ConnectToWorkshopModuleOptions): Promise<
+  WorkshopModuleConnection<TVariables>
 > {
   return new Promise((resolve, reject) => {
-    const schema = snapshotVariableSchema(variableSchema);
     const url = new URL(targetOrigin);
     if (url.protocol !== "https:" && url.protocol !== "http:") {
       throw new TypeError("Workshop origin must use http or https.");
@@ -91,7 +76,7 @@ export function connectToWorkshopModule<
     );
     const probeInterval = setInterval(sendProbe, 250);
 
-    const { connection, dispose } = createConnection(
+    const { connection, dispose } = createConnection<TVariables>(
       port1,
       sessionId,
       () => {
@@ -101,7 +86,6 @@ export function connectToWorkshopModule<
         if (!transferred) port2.close();
         fail(new Error("Workshop port closed before acknowledgement."));
       },
-      schema,
     );
 
     function stopHandshake() {

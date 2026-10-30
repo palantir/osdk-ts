@@ -22,17 +22,17 @@ import {
   WORKSHOP_EMBED_QUERY_PARAM,
   WORKSHOP_EMBED_QUERY_VALUE,
 } from "./protocol.js";
-import { snapshotVariableSchema } from "./variables.js";
-import type { WorkshopVariableSchema } from "./variables.js";
+import type { WorkshopVariableValue } from "./variables.js";
 
 /** Options for the Workshop-side listener. @public */
 export interface ListenForWorkshopModuleEmbedMessagesOptions<
-  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+  TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<
+    string,
+    WorkshopVariableValue
+  >,
 > {
   /** Called for each accepted connection. Return a function to clean up per-connection resources. */
-  onConnect?: WorkshopModuleConnectHandler<TSchema>;
-  /** Local definitions used to infer and validate variable inputs. */
-  variableSchema?: TSchema;
+  onConnect?: WorkshopModuleConnectHandler<TVariables>;
   /** Workshop's window. Defaults to the current window. */
   hostWindow?: Window;
 }
@@ -44,23 +44,14 @@ export interface ListenForWorkshopModuleEmbedMessagesOptions<
  * @public
  */
 export function listenForWorkshopModuleEmbedMessages<
-  const TSchema extends WorkshopVariableSchema,
->(
-  options: ListenForWorkshopModuleEmbedMessagesOptions<TSchema> & {
-    variableSchema: TSchema;
-  },
-): () => void;
-/** @public */
-export function listenForWorkshopModuleEmbedMessages(
-  options?: ListenForWorkshopModuleEmbedMessagesOptions,
-): () => void;
-export function listenForWorkshopModuleEmbedMessages<
-  TSchema extends WorkshopVariableSchema = WorkshopVariableSchema,
+  TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<
+    string,
+    WorkshopVariableValue
+  >,
 >({
   onConnect,
   hostWindow = window,
-  variableSchema,
-}: ListenForWorkshopModuleEmbedMessagesOptions<TSchema> = {}): () => void {
+}: ListenForWorkshopModuleEmbedMessagesOptions<TVariables> = {}): () => void {
   if (
     hostWindow.parent === hostWindow ||
     new URLSearchParams(hostWindow.location.search).get(
@@ -69,10 +60,9 @@ export function listenForWorkshopModuleEmbedMessages<
   )
     return () => {};
 
-  const schema = snapshotVariableSchema(variableSchema);
   let pendingHandshake: { sessionId: string; origin: string } | undefined;
   let activeConnection:
-    | ReturnType<typeof createConnection<TSchema>>
+    | ReturnType<typeof createConnection<TVariables>>
     | undefined;
 
   function disconnect() {
@@ -126,14 +116,9 @@ export function listenForWorkshopModuleEmbedMessages<
     }
 
     const previous = activeConnection;
-    const next = createConnection(
-      port,
-      sessionId,
-      () => {
-        if (activeConnection === next) activeConnection = undefined;
-      },
-      schema,
-    );
+    const next = createConnection<TVariables>(port, sessionId, () => {
+      if (activeConnection === next) activeConnection = undefined;
+    });
     pendingHandshake = undefined;
     activeConnection = next;
     try {

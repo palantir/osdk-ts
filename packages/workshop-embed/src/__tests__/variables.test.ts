@@ -33,7 +33,7 @@ import {
 } from "../index.js";
 import type {
   WorkshopModuleConnection,
-  WorkshopVariableSchema,
+  WorkshopVariableValue,
   WorkshopVariableValues,
 } from "../index.js";
 import { createTestWindow, type TestWindow } from "./testUtils.js";
@@ -94,7 +94,7 @@ describe("scalar variable inputs", () => {
 
   it("rejects unsupported inputs before posting a message", () => {
     expectTypeOf<WorkshopVariableValues>().toEqualTypeOf<
-      Readonly<Record<string, string | number | boolean | null>>
+      Readonly<Partial<Record<string, WorkshopVariableValue>>>
     >();
     const postMessage = vi.spyOn(sender.port, "postMessage");
     const { setVariables } = sender;
@@ -132,18 +132,18 @@ describe("scalar variable inputs", () => {
   });
 });
 
-describe("declared variable schemas", () => {
-  const schema = {
-    searchText: { type: "string" },
-    count: { type: "number" },
-    enabled: { type: "boolean" },
-  } as const satisfies WorkshopVariableSchema;
+describe("declared variable types", () => {
+  interface ModuleVariables {
+    searchText: string;
+    count: number;
+    enabled: boolean;
+  }
   const appOrigin = "https://app.example.com";
   const workshopOrigin = "https://workshop.example.com";
   let parent: TestWindow;
   let child: TestWindow;
-  let sender: WorkshopModuleConnection<typeof schema>;
-  let receiver: WorkshopModuleConnection<typeof schema>;
+  let sender: WorkshopModuleConnection<ModuleVariables>;
+  let receiver: WorkshopModuleConnection<ModuleVariables>;
   let stop: (() => void) | undefined;
 
   beforeEach(async () => {
@@ -172,28 +172,26 @@ describe("declared variable schemas", () => {
         );
       },
     );
-    const accepted = new Promise<WorkshopModuleConnection<typeof schema>>(
+    const accepted = new Promise<WorkshopModuleConnection<ModuleVariables>>(
       (resolve) => {
-        stop = listenForWorkshopModuleEmbedMessages({
+        stop = listenForWorkshopModuleEmbedMessages<ModuleVariables>({
           hostWindow: child.asWindow(),
-          variableSchema: schema,
           onConnect(connection) {
             expectTypeOf(connection).toEqualTypeOf<
-              WorkshopModuleConnection<typeof schema>
+              WorkshopModuleConnection<ModuleVariables>
             >();
             resolve(connection);
           },
         });
       },
     );
-    const connection = await connectToWorkshopModule({
+    const connection = await connectToWorkshopModule<ModuleVariables>({
       hostWindow: parent.asWindow(),
       targetWindow: child.asWindow(),
       targetOrigin: workshopOrigin,
-      variableSchema: schema,
     });
     expectTypeOf(connection).toEqualTypeOf<
-      WorkshopModuleConnection<typeof schema>
+      WorkshopModuleConnection<ModuleVariables>
     >();
     sender = connection;
     receiver = await accepted;
@@ -205,10 +203,15 @@ describe("declared variable schemas", () => {
     vi.restoreAllMocks();
   });
 
-  it("infers partial values and rejects incorrect types and names before sending", async () => {
-    expectTypeOf<{ unexpected: true }>().not.toMatchTypeOf<
-      WorkshopVariableValues<Record<never, never>>
-    >();
+  it("types partial updates and clear requests using the declared variables", async () => {
+    type CountVariables = { count: number };
+    expectTypeOf<WorkshopVariableValues<CountVariables>>().toEqualTypeOf<{
+      readonly count?: number | null;
+    }>();
+    // @ts-expect-error Arrays are not supported variable types.
+    expectTypeOf<WorkshopVariableValues<{ names: string[] }>>();
+    // @ts-expect-error Objects are not supported variable types.
+    expectTypeOf<WorkshopVariableValues<{ employee: { name: string } }>>();
     receiver.onVariablesSet((values) => {
       expectTypeOf(values.searchText).toEqualTypeOf<
         string | null | undefined
@@ -218,16 +221,12 @@ describe("declared variable schemas", () => {
       // @ts-expect-error Undeclared variable IDs are not available to listeners.
       expectTypeOf(values.unknownVariable);
     });
-    const postMessage = vi.spyOn(sender.port, "postMessage");
-    expect(() => {
-      // @ts-expect-error Count is declared as a number.
-      sender.setVariables({ count: "one" });
-    }).toThrow(TypeError);
-    expect(() => {
+    // @ts-expect-error Count is declared as a number.
+    expectTypeOf(sender.setVariables).toBeCallableWith({ count: "one" });
+    expectTypeOf(sender.setVariables).toBeCallableWith({
       // @ts-expect-error Only declared variable IDs can be set.
-      sender.setVariables({ unknownVariable: true });
-    }).toThrow(TypeError);
-    expect(postMessage).not.toHaveBeenCalled();
+      unknownVariable: true,
+    });
 
     const received = nextInputs(receiver);
     sender.setVariables({ searchText: "Ada", count: 0, enabled: false });
@@ -240,66 +239,13 @@ describe("declared variable schemas", () => {
     sender.setVariables({ searchText: null });
     await expect(cleared).resolves.toEqual({ searchText: null });
   });
-
-  it("ignores entire incoming batches that do not match the schema", async () => {
-    const listener = vi.fn();
-    receiver.onVariablesSet(listener);
-    const port = sender.port;
-    for (const values of [
-      { count: "one" },
-      { unknownVariable: null },
-      { toString: null },
-      { searchText: "Ada", enabled: 1 },
-    ]) {
-      port.postMessage({
-        channel: "workshop-module-embed",
-        version: 1,
-        sessionId: sender.sessionId,
-        type: "setVariables",
-        values,
-      });
-    }
-    const received = nextInputs(receiver);
-    sender.setVariables({ count: 2 });
-    await received;
-    expect(listener).toHaveBeenCalledExactlyOnceWith({ count: 2 });
-  });
-
-  it("rejects invalid schemas before starting either side of a connection", async () => {
-    child.postMessage.mockClear();
-    const addEventListener = vi.spyOn(child, "addEventListener");
-    const hostWindow = child.asWindow();
-    for (const value of [
-      null,
-      [],
-      { "": { type: "string" } },
-      { count: "number" },
-      { count: { type: "date" } },
-    ]) {
-      const variableSchema = value as unknown as WorkshopVariableSchema;
-      await expect(
-        connectToWorkshopModule({
-          hostWindow: parent.asWindow(),
-          targetWindow: child.asWindow(),
-          targetOrigin: workshopOrigin,
-          variableSchema,
-        }),
-      ).rejects.toThrow(TypeError);
-      expect(() =>
-        listenForWorkshopModuleEmbedMessages({
-          hostWindow,
-          variableSchema,
-        }),
-      ).toThrow(TypeError);
-    }
-    expect(child.postMessage).not.toHaveBeenCalled();
-    expect(addEventListener).not.toHaveBeenCalled();
-  });
 });
 
-function nextInputs<TSchema extends WorkshopVariableSchema>(
-  connection: WorkshopModuleConnection<TSchema>,
-): Promise<WorkshopVariableValues<TSchema>> {
+function nextInputs<
+  TVariables extends Record<keyof TVariables, WorkshopVariableValue>,
+>(
+  connection: WorkshopModuleConnection<TVariables>,
+): Promise<WorkshopVariableValues<TVariables>> {
   return new Promise((resolve) => {
     const unsubscribe = connection.onVariablesSet((values) => {
       unsubscribe();

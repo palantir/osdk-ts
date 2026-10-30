@@ -5,36 +5,24 @@
 ```ts
 
 // @public
-export function connectToWorkshopModule<const TSchema extends WorkshopVariableSchema>(options: ConnectToWorkshopModuleOptions<TSchema> & {
-    	variableSchema: TSchema
-}): Promise<WorkshopModuleConnection<TSchema>>;
-
-// @public (undocumented)
-export function connectToWorkshopModule(options: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection>;
+export function connectToWorkshopModule<TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<string, WorkshopVariableValue>>({ targetWindow, targetOrigin, signal, timeoutMs, hostWindow }: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection<TVariables>>;
 
 // @public
-export interface ConnectToWorkshopModuleOptions<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> {
+export interface ConnectToWorkshopModuleOptions {
     	hostWindow?: Window;
     	signal?: AbortSignal;
     	targetOrigin: string;
     	targetWindow: Window;
     	timeoutMs?: number;
-    	variableSchema?: TSchema;
 }
 
 // @public
-export function listenForWorkshopModuleEmbedMessages<const TSchema extends WorkshopVariableSchema>(options: ListenForWorkshopModuleEmbedMessagesOptions<TSchema> & {
-    	variableSchema: TSchema
-}): () => void;
-
-// @public (undocumented)
-export function listenForWorkshopModuleEmbedMessages(options?: ListenForWorkshopModuleEmbedMessagesOptions): () => void;
+export function listenForWorkshopModuleEmbedMessages<TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<string, WorkshopVariableValue>>({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions<TVariables>): () => void;
 
 // @public
-export interface ListenForWorkshopModuleEmbedMessagesOptions<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> {
+export interface ListenForWorkshopModuleEmbedMessagesOptions<TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<string, WorkshopVariableValue>> {
     	hostWindow?: Window;
-    	onConnect?: WorkshopModuleConnectHandler<TSchema>;
-    	variableSchema?: TSchema;
+    	onConnect?: WorkshopModuleConnectHandler<TVariables>;
 }
 
 // @public
@@ -44,32 +32,22 @@ export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 export const WORKSHOP_EMBED_QUERY_VALUE = "1";
 
 // @public
-export type WorkshopModuleConnectHandler<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> = (connection: WorkshopModuleConnection<TSchema>) => void | (() => void);
+export type WorkshopModuleConnectHandler<TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<string, WorkshopVariableValue>> = (connection: WorkshopModuleConnection<TVariables>) => void | (() => void);
 
 // @public
-export interface WorkshopModuleConnection<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> {
+export interface WorkshopModuleConnection<TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<string, WorkshopVariableValue>> {
     	disconnect: () => void;
-    	onVariablesSet: (listener: (values: WorkshopVariableValues<TSchema>) => void) => () => void;
+    	onVariablesSet: (listener: (values: WorkshopVariableValues<TVariables>) => void) => () => void;
     	readonly port: MessagePort;
     	readonly sessionId: string;
-    	setVariables: (values: WorkshopVariableValues<TSchema>) => void;
+    	setVariables: (values: WorkshopVariableValues<TVariables>) => void;
 }
 
 // @public
-export type WorkshopVariableSchema = Readonly<Record<string, {
-    	readonly type: WorkshopVariableType
-}>>;
-
-// Warning: (ae-forgotten-export) The symbol "VariableValueByType" needs to be exported by the entry point index.d.ts
-//
-// @public
-export type WorkshopVariableType = keyof VariableValueByType;
+export type WorkshopVariableValue = string | number | boolean | null;
 
 // @public
-export type WorkshopVariableValue<TType extends WorkshopVariableType = WorkshopVariableType> = VariableValueByType[TType] | null;
-
-// @public
-export type WorkshopVariableValues<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> = keyof TSchema extends never ? Readonly<Record<string, never>> : string extends keyof TSchema ? Readonly<Record<string, WorkshopVariableValue<TSchema[string]["type"]>>> : { readonly [TName in keyof TSchema]? : WorkshopVariableValue<TSchema[TName]["type"]> };
+export type WorkshopVariableValues<TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<string, WorkshopVariableValue>> = { readonly [Name in keyof TVariables]? : TVariables[Name] | null };
 
 // (No @packageDocumentation comment for this package)
 
