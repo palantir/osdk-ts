@@ -56,6 +56,7 @@ Components not yet promoted remain under `experimental/`:
 - `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
 - `@osdk/react-components/experimental/cbac-picker` — CbacPicker
 - `@osdk/react-components/experimental/theme` — OsdkThemeProvider
+- `@osdk/react-components/experimental/workshop-module` — WorkshopModule, BaseWorkshopModule
 
 | Component                  | Description                                                                                                                                       |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -77,6 +78,8 @@ Components not yet promoted remain under `experimental/`:
 | **DocumentViewer**         | Unified media viewer that auto-detects file type (PDF, TIFF, image, video, spreadsheet, email, markdown, XML) and renders the appropriate viewer. |
 | **EmailViewer**            | Email viewer — parses and renders `.eml` files with headers, HTML body (sandboxed iframe), and plain text fallback.                               |
 | **SpreadsheetViewer**      | Spreadsheet viewer — parses and renders `.xlsx` spreadsheets with sheet tabs and column/row headers.                                              |
+| **WorkshopModule**         | Embeds a Workshop module by RID and version using the Foundry URL from OsdkProvider.                                                              |
+| **BaseWorkshopModule**     | Embeds a Workshop module with an explicit Foundry URL.                                                                                            |
 | **ImageViewer**            | Image viewer — renders images (PNG, JPEG, GIF, SVG, WebP, BMP) with object-fit contain.                                                           |
 | **VideoViewer**            | Video viewer — renders video with native browser controls.                                                                                        |
 | **XmlViewer**              | XML viewer — renders XML content with syntax preservation.                                                                                        |
@@ -93,6 +96,7 @@ Components not yet promoted remain under `experimental/`:
 Before using any component, read the relevant doc from this package:
 
 - **Setup & installation**: Read [README.md](./README.md) for provider, CSS layers, and peer dependencies
+- **WorkshopModule**: Read [docs/WorkshopModule.md](./docs/WorkshopModule.md) for embedding a Workshop module by RID and version.
 - **ObjectTable**: Read [docs/ObjectTable.md](./docs/ObjectTable.md) for props, column definitions, examples, theming, troubleshooting, and hooks to build custom tables
 - **ActionForm**: Read [docs/ActionForm.md](./docs/ActionForm.md) for generated fields, title behavior, custom field definitions, switch fields, and date/time behavior
 - **PdfViewer**: Read [docs/PdfViewer.md](./docs/PdfViewer.md) for props, annotations, building blocks, hooks, examples, and theming

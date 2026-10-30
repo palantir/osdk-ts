@@ -585,6 +585,7 @@ const archetypeRules = archetypes(standardPackageRules, {
         "./experimental/theme",
         "./experimental/tiff-renderer",
         "./experimental/video-viewer",
+        "./experimental/workshop-module",
         "./experimental/xml-viewer",
       ],
       setupFiles: ["./src/test/setupPolyfills.ts"],
