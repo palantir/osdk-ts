@@ -62,8 +62,6 @@ export type {
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransition,
   InterfaceTypeSchemaTransitionId,
-  OntologyIrInterfaceActionTypeConstraintReplacement,
-  OntologyIrInterfaceTypeReplacement,
   OntologyIrInterfaceTypeSchemaMigrationInstruction,
   OntologyIrInterfaceTypeSchemaTransition,
 } from "./generated/ontology-metadata/api/schemamigrations/__components.js";
