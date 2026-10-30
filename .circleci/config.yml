@@ -462,8 +462,6 @@ jobs:
   bundle-size:
     executor:
       name: node
-      # size-limit bundles every entry in parallel (~3 GB peak) on top of the
-      # ramdisk checkout; on large (8 GB) esbuild gets killed mid-run.
       resource-class: xlarge
     steps:
       - prepare
@@ -473,7 +471,6 @@ jobs:
           name: Build and measure this PR
           command: |
             pnpm exec turbo transpile
-            # With --json, size-limit reports errors on stdout, so show them here.
             npx size-limit --json > /tmp/current.json || cat /tmp/current.json
       - run:
           # The base checkout below replaces the working tree with a commit that
