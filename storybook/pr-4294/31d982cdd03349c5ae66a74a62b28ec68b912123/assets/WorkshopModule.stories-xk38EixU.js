@@ -1,0 +1,17 @@
+import{i as f,R as l,j as d}from"./iframe-Br8xONPm.js";import{c as y}from"./index-B2krqAG0.js";import"./preload-helper-DQgVVB6U.js";function R({foundryUrl:o,moduleRid:e,moduleVersion:r="published",branchRid:a,theme:s}){const i=r==="published"?"latest":"dev",t=new URL(`/workspace/module/view/${i}/${encodeURIComponent(e)}`,o);return t.protocol==="https:"||t.protocol==="http:"||f(),t.searchParams.set("embedded","true"),t.searchParams.set("foundry-branch-rid",a??""),s!=null&&t.searchParams.set("themeOverride",s==="dark"?"DARK_MODE":"LIGHT_MODE"),t.href}const k="(prefers-color-scheme: dark)";function v(){return typeof window>"u"||typeof window.matchMedia!="function"?"light":window.matchMedia(k).matches?"dark":"light"}function b(o){const[e,r]=l.useState(o);return l.useEffect(()=>{e==="system"&&r(v())},[e]),{theme:e==="system"?void 0:e,isLoading:e==="system"}}const w={iframe:"BaseWorkshopModule-module__iframe___rCE34uaJ"};function u({defaultTheme:o,title:e="Workshop module",className:r,style:a,...s}){const{theme:i,isLoading:t}=b(o),p=R({...s,theme:i});return l.createElement("iframe",{src:t?void 0:p,hidden:t,title:e,className:y(w.iframe,r),style:a})}function x(o){try{const e=new URL(o);return e.protocol==="https:"||e.protocol==="http:"}catch{return!1}}const D={title:"Components/WorkshopModule",component:u,args:{foundryUrl:"",moduleRid:"ri.workshop.main.module.example",moduleVersion:"published",title:"Workshop module preview"},render:o=>d.jsx("div",{style:{height:"24rem"},children:x(o.foundryUrl)?d.jsx(u,{...o},o.defaultTheme):d.jsx("p",{children:"Set foundryUrl to your Foundry URL and moduleRid to a module you can access in the controls below. Rendering requires a signed-in Foundry session."})}),parameters:{controls:{expanded:!0},docs:{description:{component:"This story makes no requests until a Foundry URL is supplied. Provide your own URL and module RID in the controls to render a real Workshop module. The version defaults to published; use latest for the latest saved version."}}},argTypes:{foundryUrl:{control:"text",description:"Your Foundry base URL. Leave blank to disable the iframe."},moduleRid:{control:"text",description:"RID of a Workshop module you can access."},moduleVersion:{control:"select",options:["latest","published"],description:"latest for the latest saved version, or published for the published version. Defaults to published."},title:{control:"text"},branchRid:{control:"text",description:"Foundry branch RID. Leave blank to use main. Changing the branch reloads the module."},defaultTheme:{control:"select",options:[void 0,"light","dark","system"],description:"Initial theme override. System resolves the browser preference once. Changing this control remounts the preview to apply the theme."},className:{control:"text"},style:{control:"object"}}},n={parameters:{docs:{source:{code:`<BaseWorkshopModule
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  style={{ height: "24rem" }}
+/>`}}}};var c,m,h;n.parameters={...n.parameters,docs:{...(c=n.parameters)==null?void 0:c.docs,source:{originalSource:`{
+  parameters: {
+    docs: {
+      source: {
+        code: \`<BaseWorkshopModule
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  style={{ height: "24rem" }}
+/>\`
+      }
+    }
+  }
+}`,...(h=(m=n.parameters)==null?void 0:m.docs)==null?void 0:h.source}}};const M=["Default"];export{n as Default,M as __namedExportsOrder,D as default};
