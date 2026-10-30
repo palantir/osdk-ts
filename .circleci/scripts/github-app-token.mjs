@@ -16,7 +16,7 @@
 
 // Prints a GitHub App installation token (valid for an hour), or nothing on
 // failure so the caller can skip commenting. GITHUB_APP_PRIVATE_KEY is the
-// base64-encoded .pem.
+// .pem, either as-is or base64-encoded.
 
 import { createSign } from "node:crypto";
 
@@ -29,7 +29,10 @@ try {
   const unsigned = `${enc({ alg: "RS256", typ: "JWT" })}.${
     enc({ iat: now - 60, exp: now + 540, iss: GITHUB_APP_ID })
   }`;
-  const key = Buffer.from(GITHUB_APP_PRIVATE_KEY, "base64").toString("utf8");
+  // Accept the raw .pem too (with real or escaped "\n" newlines), not just base64.
+  const key = GITHUB_APP_PRIVATE_KEY.includes("-----BEGIN")
+    ? GITHUB_APP_PRIVATE_KEY.replaceAll("\\n", "\n")
+    : Buffer.from(GITHUB_APP_PRIVATE_KEY, "base64").toString("utf8");
   const sig = createSign("RSA-SHA256").update(unsigned).sign(key, "base64url");
 
   const res = await fetch(
