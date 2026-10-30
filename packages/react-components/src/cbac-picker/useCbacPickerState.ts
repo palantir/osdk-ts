@@ -32,6 +32,8 @@ import { EMPTY_ARRAY, resolveRequiredGroups } from "./utils/cbacPickerUtils.js";
 import {
   computeMarkingStates,
   groupMarkingsByCategory,
+  sortCategoriesByPriority,
+  sortMarkingsByProminenceAndPriority,
 } from "./utils/selectionLogic.js";
 
 const EMPTY_GROUPS: string[][] = [];
@@ -74,13 +76,13 @@ export function useCbacPickerState(
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories(options);
+  } = useMarkingCategories({ ...options, markingType: "CBAC" });
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings(options);
+  } = useMarkings({ ...options, markingType: "CBAC" });
   const {
     banner: latestBanner,
     isLoading: bannerLoading,
@@ -139,7 +141,10 @@ export function useCbacPickerState(
     if (rawCategories === undefined || rawMarkings === undefined) {
       return [];
     }
-    return groupMarkingsByCategory(rawMarkings, rawCategories);
+    return groupMarkingsByCategory(
+      sortMarkingsByProminenceAndPriority(rawMarkings),
+      sortCategoriesByPriority(rawCategories),
+    );
   }, [rawMarkings, rawCategories]);
 
   const markingStates = React.useMemo(

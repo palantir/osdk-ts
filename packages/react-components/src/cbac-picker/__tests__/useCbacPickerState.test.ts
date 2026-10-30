@@ -106,16 +106,31 @@ describe("useCbacPickerState", () => {
     setHooks();
   });
 
-  it("forwards includeDeleted to the markings and categories hooks", () => {
-    renderHook(() => useCbacPickerState([]));
-    expect(useMarkingCategories).toHaveBeenLastCalledWith(undefined);
-    expect(useMarkings).toHaveBeenLastCalledWith(undefined);
+  describe("CBAC type filtering", () => {
+    it("requests only CBAC markings and categories without options", () => {
+      renderHook(() => useCbacPickerState([]));
 
-    renderHook(() => useCbacPickerState([], { includeDeleted: false }));
-    expect(useMarkingCategories).toHaveBeenLastCalledWith({
-      includeDeleted: false,
+      expect(useMarkingCategories).toHaveBeenLastCalledWith({
+        markingType: "CBAC",
+      });
+      expect(useMarkings).toHaveBeenLastCalledWith({ markingType: "CBAC" });
     });
-    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: false });
+
+    it.each([undefined, false, true])(
+      "preserves includeDeleted=%s alongside the CBAC filter",
+      (includeDeleted) => {
+        renderHook(() => useCbacPickerState([], { includeDeleted }));
+
+        expect(useMarkingCategories).toHaveBeenLastCalledWith({
+          includeDeleted,
+          markingType: "CBAC",
+        });
+        expect(useMarkings).toHaveBeenLastCalledWith({
+          includeDeleted,
+          markingType: "CBAC",
+        });
+      },
+    );
   });
 
   it("uses permissive defaults when restrictions have not loaded", () => {

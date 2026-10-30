@@ -79,7 +79,7 @@ export const Default: Story = {
 export const WithInitialSelection: Story = {
   render: () => (
     <InteractivePicker
-      initialSelection={["m-secret", "m-alpha", "m-rel-usa"]}
+      initialSelection={["m-charlie", "m-alpha", "m-rel-usa"]}
     />
   ),
 };
@@ -88,7 +88,7 @@ function ReadOnlyPicker() {
   return (
     <div style={PICKER_STYLE}>
       <CbacPicker
-        initialMarkingIds={["m-secret", "m-alpha", "m-rel-usa"]}
+        initialMarkingIds={["m-charlie", "m-alpha", "m-rel-usa"]}
         onChange={() => {}}
         readOnly={true}
       />
@@ -102,7 +102,7 @@ export const ReadOnly: Story = {
 
 function WithBannerPicker() {
   const [selectedIds, setSelectedIds] = useState<string[]>([
-    "m-top-secret",
+    "m-charlie",
     "m-alpha",
     "m-bravo",
     "m-no-foreign",
