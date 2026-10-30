@@ -21,9 +21,9 @@ executors:
   node:
     parameters:
       node-version:
-        description: cimg/node tag; MAJOR.MINOR.PATCH, or a variant like 24.19.0-browsers.
+        description: cimg/node tag; MAJOR.MINOR.PATCH, or a variant like 24.22.2-browsers.
         type: string
-        default: "24.19.0"
+        default: "24.22.2"
       resource-class:
         type: string
         default: large
@@ -42,7 +42,7 @@ executors:
   # The config is to disable verdaccio reaching the internet (by default its a proxy to the real npm registry)
   node-with-verdaccio:
     docker:
-      - image: cimg/node:24.19.0
+      - image: cimg/node:24.22.2
       - image: verdaccio/verdaccio:6.10.3
         command:
           - sh
@@ -389,6 +389,20 @@ jobs:
       - store_artifacts:
           path: packages/react-components-storybook/storybook-static
           destination: storybook-static
+      - run:
+          name: Comment with the Storybook preview link
+          command: |
+            # Artifact URLs are deterministic, so no CircleCI API token is needed to look them up.
+            url="https://output.circle-artifacts.com/output/job/$CIRCLE_WORKFLOW_JOB_ID/artifacts/${CIRCLE_NODE_INDEX:-0}/storybook-static/index.html"
+            # The invisible marker line lets pr-comment.sh edit this comment on later pushes.
+            cat > /tmp/storybook-preview.md \<<EOF
+            <!-- storybook-preview -->
+            <h3>$(git --no-pager log --pretty=format:%s -1)</h3>
+            Build artifact links for this commit: <strong><a href="$url">storybook</a></strong>
+
+            <em>This is an automated comment from the build-storybook CircleCI job.</em>
+            EOF
+            .circleci/scripts/pr-comment.sh "<!-- storybook-preview -->" /tmp/storybook-preview.md
       - save-turbo-cache:
           scope: storybook
 
@@ -397,7 +411,7 @@ jobs:
       name: node
       # The -browsers variant ships Chromium's system libraries, so
       # `playwright install` does not need --with-deps.
-      node-version: "24.19.0-browsers"
+      node-version: "24.22.2-browsers"
       resource-class: xlarge
     steps:
       - prepare
@@ -448,7 +462,7 @@ jobs:
   bundle-size:
     executor:
       name: node
-      resource-class: large
+      resource-class: xlarge
     steps:
       - prepare
       - restore-turbo-cache:
@@ -457,7 +471,7 @@ jobs:
           name: Build and measure this PR
           command: |
             pnpm exec turbo transpile
-            npx size-limit --json > /tmp/current.json || true
+            npx size-limit --json > /tmp/current.json || cat /tmp/current.json
       - run:
           # The base checkout below replaces the working tree with a commit that
           # predates these scripts.
@@ -471,7 +485,7 @@ jobs:
       - restore_cache:
           name: Restore the base-branch measurement
           keys:
-            - v1-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+            - v3-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
       - run:
           name: Build and measure the base branch
           command: |
@@ -483,10 +497,10 @@ jobs:
             pnpm exec turbo clean
             pnpm install --frozen-lockfile
             pnpm exec turbo transpile
-            npx size-limit --json > /tmp/base.json || true
+            npx size-limit --json > /tmp/base.json || { cat /tmp/base.json; rm -f /tmp/base.json; }
       - save_cache:
           name: Save the base-branch measurement
-          key: v1-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+          key: v3-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
           paths:
             - /tmp/base.json
       - run:
@@ -542,7 +556,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              node-version: ["18.20.8", "20.20.2", "22.23.2", "24.19.0"]
+              node-version: ["18.20.8", "20.20.2", "22.23.4", "24.22.2"]
           requires: [build]
       - build-storybook:
           requires: [build]
