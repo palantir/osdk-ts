@@ -31,6 +31,7 @@ import type { OntologyDefinition } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
   DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
+  loadOntologySource,
   reconcileOntologySchemaLockfile,
 } from "@osdk/maker";
 import type { LogLevel } from "consola";
@@ -74,6 +75,7 @@ export default async function main(
 
   const commandLineOpts: {
     input: string;
+    experimentalSourceLoader: boolean;
     output: string;
     valueTypesOutput: string;
     apiNamespace: string;
@@ -102,6 +104,12 @@ export default async function main(
         type: "string",
         default: ".ontology/ontology.ts",
         coerce: path.resolve,
+      },
+      "experimental-source-loader": {
+        describe:
+          "Use source-aware validation, Node 24+ is required. Older Node versions always use ordinary imports.",
+        type: "boolean",
+        default: false,
       },
       output: {
         alias: "o",
@@ -326,6 +334,7 @@ export default async function main(
     importedLinkTypeIdsByApiName,
     externalImportedMetadata,
     { targetEnvironment: commandLineOpts.targetEnvironment },
+    commandLineOpts.experimentalSourceLoader,
     // An ontology that fails lockfile checks would fail at installation-time, so its block data
     // should never reach disk at all.
     (ontology) =>
@@ -627,11 +636,18 @@ async function loadOntology(
   importedLinkTypeIdsByApiName: LinkTypeIdsByApiName | undefined,
   externalImportedMetadata: ExternalImportedOntologyMetadata | undefined,
   packagingOptions: OntologyPackagingOptions,
+  experimentalSourceLoader: boolean,
   beforeWrite: (ontology: OntologyDefinition) => Promise<void>,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
-    async () => await import(pathToFileURL(input).href),
+    async () => {
+      if (experimentalSourceLoader) {
+        await loadOntologySource(input);
+      } else {
+        await import(pathToFileURL(input).href);
+      }
+    },
     outputDir,
     dependencyFile,
     functionsIrFile,

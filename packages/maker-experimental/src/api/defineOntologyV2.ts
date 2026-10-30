@@ -82,16 +82,7 @@ export async function defineOntologyV2(
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
-  try {
-    await body();
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error(
-      "Unexpected error while processing the body of the ontology",
-      e,
-    );
-    throw e;
-  }
+  await body();
 
   if (externalImportedMetadata) {
     const importedOntology = convertOntologyFullMetadata(

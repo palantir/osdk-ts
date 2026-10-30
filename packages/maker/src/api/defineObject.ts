@@ -24,6 +24,7 @@ import {
 import {
   createValidationIssueCollector,
   type MakerValidationIssueCollector,
+  withDefinitionDiagnostics,
 } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
@@ -69,6 +70,14 @@ const ISO_8601_DATETIME =
   /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/u;
 
 export function defineObject(
+  objectDefInput: ObjectTypeDefinition,
+): ObjectTypeDefinition {
+  return withDefinitionDiagnostics(defineObject, arguments.length, () =>
+    defineObjectImpl(objectDefInput),
+  );
+}
+
+function defineObjectImpl(
   objectDefInput: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
   const collector = createValidationIssueCollector();

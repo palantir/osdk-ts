@@ -154,6 +154,12 @@ export type {
   AuthoringValueTypeDataConstraint,
 } from "./api/values/ValueTypeType.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
+export { loadOntologySource } from "./cli/loadOntologySource.js";
+export {
+  SourceValidationError,
+  type SourceDiagnostic,
+} from "./source/diagnostics.js";
+export type { SourceLocation, SourcePosition } from "./source/types.js";
 export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";

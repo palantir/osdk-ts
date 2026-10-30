@@ -38,6 +38,45 @@ export class MakerValidationError extends Error {
   }
 }
 
+type DefinitionFunction = (...args: never[]) => unknown;
+type FailureObserver = (
+  error: MakerValidationError,
+  boundary: DefinitionFunction,
+  argumentCount: number,
+) => void;
+const observers = new Set<FailureObserver>();
+
+export function observeDefinitionFailures(
+  observer: FailureObserver,
+): () => void {
+  observers.add(observer);
+  return () => {
+    observers.delete(observer);
+  };
+}
+
+export function withDefinitionDiagnostics<T>(
+  boundary: DefinitionFunction,
+  argumentCount: number,
+  body: () => T,
+): T {
+  try {
+    return body();
+  } catch (error) {
+    if (error instanceof MakerValidationError) {
+      for (const observer of observers) {
+        try {
+          observer(error, boundary, argumentCount);
+        } catch {
+          // Diagnostics must never mask the original validation failure.
+        }
+      }
+    }
+
+    throw error;
+  }
+}
+
 export function throwIfAnyValidationIssues(
   ...groups: (readonly MakerValidationIssue[])[]
 ): void {
