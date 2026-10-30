@@ -40,6 +40,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
     case "attachment":
     case "boolean":
     case "date":
+    case "geoshape":
     case "string":
     case "timestamp":
     case "mediaReference":

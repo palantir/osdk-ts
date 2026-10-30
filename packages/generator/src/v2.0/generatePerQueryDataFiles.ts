@@ -315,6 +315,7 @@ export function getQueryParamType(
     case "boolean":
     case "double":
     case "float":
+    case "geoshape":
     case "integer":
     case "long":
     case "string":

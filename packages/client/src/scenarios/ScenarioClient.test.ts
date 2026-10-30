@@ -46,6 +46,26 @@ describe("ScenarioClient methods", () => {
     );
   });
 
+  describe("rebase", () => {
+    it("rebases the scenario onto the latest base data", async () => {
+      const scenario = withScenario(client, "ri.actions..scenario.abc");
+      mockFetchResponse(fetchFunction, undefined);
+
+      await scenario.rebase();
+
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+      const url = new URL(
+        fetchFunction.mock.calls[0][0] as string,
+        "https://mock.com",
+      );
+      expect(url.pathname).toMatch(
+        /\/scenarios\/ri\.actions\.\.scenario\.abc\/rebase$/u,
+      );
+      expect(url.searchParams.get("preview")).toBe("true");
+      expect(fetchFunction.mock.calls[0][1]?.method).toBe("POST");
+    });
+  });
+
   describe("getEditedEntityTypes", () => {
     it("calls the editedEntityTypes endpoint and returns the response shape", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
