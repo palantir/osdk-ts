@@ -17,6 +17,7 @@
 import { createConnection } from "./connection.js";
 import type { WorkshopModuleConnection } from "./connection.js";
 import { createMessage, isWorkshopEmbedMessage } from "./protocol.js";
+import type { WorkshopVariableValue } from "./variables.js";
 
 /** Options for a single connection attempt to a Workshop iframe. @public */
 export interface ConnectToWorkshopModuleOptions {
@@ -38,13 +39,20 @@ export interface ConnectToWorkshopModuleOptions {
  * cancellation, or connection failure. Call again after iframe navigation.
  * @public
  */
-export function connectToWorkshopModule({
+export function connectToWorkshopModule<
+  TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<
+    string,
+    WorkshopVariableValue
+  >,
+>({
   targetWindow,
   targetOrigin,
   signal,
   timeoutMs = 10_000,
   hostWindow = window,
-}: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection> {
+}: ConnectToWorkshopModuleOptions): Promise<
+  WorkshopModuleConnection<TVariables>
+> {
   return new Promise((resolve, reject) => {
     const url = new URL(targetOrigin);
     if (url.protocol !== "https:" && url.protocol !== "http:") {
@@ -68,13 +76,17 @@ export function connectToWorkshopModule({
     );
     const probeInterval = setInterval(sendProbe, 250);
 
-    const { connection, dispose } = createConnection(port1, sessionId, () => {
-      stopHandshake();
-      signal?.removeEventListener("abort", abort);
-      hostWindow.removeEventListener("pagehide", abort);
-      if (!transferred) port2.close();
-      fail(new Error("Workshop port closed before acknowledgement."));
-    });
+    const { connection, dispose } = createConnection<TVariables>(
+      port1,
+      sessionId,
+      () => {
+        stopHandshake();
+        signal?.removeEventListener("abort", abort);
+        hostWindow.removeEventListener("pagehide", abort);
+        if (!transferred) port2.close();
+        fail(new Error("Workshop port closed before acknowledgement."));
+      },
+    );
 
     function stopHandshake() {
       clearTimeout(handshakeTimeout);
