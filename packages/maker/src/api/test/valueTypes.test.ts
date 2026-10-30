@@ -201,51 +201,7 @@ describe("Value Types", () => {
       },
       version: "0.1.0",
     });
-    expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
-        {
-          "valueTypes": [
-            {
-              "metadata": {
-                "apiName": "apiName",
-                "displayMetadata": {
-                  "description": "",
-                  "displayName": "displayName",
-                },
-                "packageNamespace": "com.palantir",
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-              },
-              "versions": [
-                {
-                  "baseType": {
-                    "boolean": {},
-                    "type": "boolean",
-                  },
-                  "constraints": [
-                    {
-                      "constraint": {
-                        "constraint": {
-                          "boolean": {
-                            "allowedValues": [
-                              "TRUE_VALUE",
-                            ],
-                          },
-                          "type": "boolean",
-                        },
-                        "failureMessage": undefined,
-                      },
-                    },
-                  ],
-                  "exampleValues": [],
-                  "version": "0.1.0",
-                },
-              ],
-            },
-          ],
-        }
-      `);
+    expect(dumpValueTypeWireType()).toMatchSnapshot();
   });
   it("Correctly sets a status", () => {
     defineValueType({
@@ -262,55 +218,7 @@ describe("Value Types", () => {
       },
       version: "0.1.0",
     });
-    expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
-      {
-        "valueTypes": [
-          {
-            "metadata": {
-              "apiName": "apiName",
-              "displayMetadata": {
-                "description": "",
-                "displayName": "displayName",
-              },
-              "packageNamespace": "com.palantir",
-              "status": {
-                "deprecated": {
-                  "deadline": "2026-01-01",
-                  "message": "This value type is deprecated",
-                  "replacedBy": undefined,
-                },
-                "type": "deprecated",
-              },
-            },
-            "versions": [
-              {
-                "baseType": {
-                  "boolean": {},
-                  "type": "boolean",
-                },
-                "constraints": [
-                  {
-                    "constraint": {
-                      "constraint": {
-                        "boolean": {
-                          "allowedValues": [
-                            "TRUE_VALUE",
-                          ],
-                        },
-                        "type": "boolean",
-                      },
-                      "failureMessage": undefined,
-                    },
-                  },
-                ],
-                "exampleValues": [],
-                "version": "0.1.0",
-              },
-            ],
-          },
-        ],
-      }
-    `);
+    expect(dumpValueTypeWireType()).toMatchSnapshot();
   });
 
   it("Prefixes apiName with namespace when namespacePrefix is true", () => {
@@ -323,37 +231,7 @@ describe("Value Types", () => {
       version: "1.0.0",
       namespacePrefix: true,
     });
-    expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
-      {
-        "valueTypes": [
-          {
-            "metadata": {
-              "apiName": "com.palantir.myValueType",
-              "displayMetadata": {
-                "description": "",
-                "displayName": "My Value Type",
-              },
-              "packageNamespace": "com.palantir",
-              "status": {
-                "active": {},
-                "type": "active",
-              },
-            },
-            "versions": [
-              {
-                "baseType": {
-                  "string": {},
-                  "type": "string",
-                },
-                "constraints": [],
-                "exampleValues": [],
-                "version": "1.0.0",
-              },
-            ],
-          },
-        ],
-      }
-    `);
+    expect(dumpValueTypeWireType()).toMatchSnapshot();
   });
 
   it("Fails to define duplicate value type with same apiName and version", () => {
