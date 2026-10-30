@@ -8,8 +8,8 @@
 # "## size-limit report"). It is how we find a previous comment to edit instead
 # of spamming the PR with one comment per push.
 #
-# Requires a GitHub App with `pull-requests: write` (GITHUB_APP_ID,
-# GITHUB_APP_PRIVATE_KEY as a base64-encoded .pem, GITHUB_APP_INSTALLATION_ID).
+# Requires GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY and GITHUB_APP_INSTALLATION_ID
+# for a GitHub App with `pull-requests: write`.
 # Every failure mode here is non-fatal: a CI job must not go red because we
 # could not decorate a PR.
 
@@ -21,8 +21,6 @@ BODY_FILE="${2:?usage: pr-comment.sh <marker> <body-file>}"
 REPO="${CIRCLE_PROJECT_USERNAME:-}/${CIRCLE_PROJECT_REPONAME:-}"
 API="https://api.github.com"
 
-# Authenticates as a GitHub App: it is scoped to this repo and its installation
-# tokens expire after an hour.
 token=""
 if [ -n "${GITHUB_APP_ID:-}" ] && [ -n "${GITHUB_APP_PRIVATE_KEY:-}" ] && [ -n "${GITHUB_APP_INSTALLATION_ID:-}" ]; then
   token="$(node "$(dirname "$0")/github-app-token.mjs")"
@@ -75,8 +73,7 @@ payload="$(node -e '
   process.stdout.write(JSON.stringify({ body: fs.readFileSync(process.argv[1], "utf8") }));
 ' "$BODY_FILE")"
 
-# Only our own App's comments: we cannot edit ones posted by other bots that
-# happen to share the marker (e.g. the GitHub Actions size-limit job).
+# Only our own App's comments: GitHub rejects edits to anyone else's.
 existing="$(
   gh_api GET "/repos/$REPO/issues/$pr_number/comments?per_page=100" \
     | MARKER="$MARKER" node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{const c=JSON.parse(s);const m=c.find(x=>String(x.performed_via_github_app?.id)===process.env.GITHUB_APP_ID&&typeof x.body==="string"&&x.body.startsWith(process.env.MARKER));if(m)process.stdout.write(String(m.id))}catch{}})'

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-// Prints a GitHub App installation token (valid for an hour), or nothing on
-// failure so the caller can skip commenting. GITHUB_APP_PRIVATE_KEY is the
-// .pem, either as-is or base64-encoded.
+// Writes a GitHub App installation token to stdout (never log it), or nothing
+// on failure so the caller can skip commenting.
 
 import { createSign } from "node:crypto";
 
@@ -36,8 +35,6 @@ try {
     : Buffer.from(GITHUB_APP_PRIVATE_KEY, "base64").toString("utf8");
   const pem = /-----BEGIN ([A-Z ]*PRIVATE KEY)-----([\s\S]*?)-----END \1-----/
     .exec(value.replaceAll("\\n", "\n"));
-  // Says what we got without printing the key, since a bad value otherwise only
-  // surfaces as an opaque OpenSSL DECODER error.
   if (!pem) {
     throw new Error(
       `GITHUB_APP_PRIVATE_KEY (${GITHUB_APP_PRIVATE_KEY.length} chars) is not a complete .pem private key (raw or base64-encoded); check it has both the BEGIN and END lines`,
