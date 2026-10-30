@@ -29,17 +29,23 @@ try {
   const unsigned = `${enc({ alg: "RS256", typ: "JWT" })}.${
     enc({ iat: now - 60, exp: now + 540, iss: GITHUB_APP_ID })
   }`;
-  // Accept the raw .pem too (with real or escaped "\n" newlines), not just base64.
-  const key = GITHUB_APP_PRIVATE_KEY.includes("-----BEGIN")
-    ? GITHUB_APP_PRIVATE_KEY.replaceAll("\\n", "\n")
+  // Accept the raw .pem too, not just base64. CircleCI's single-line env var
+  // field turns the .pem's newlines into spaces, so rebuild the PEM layout.
+  const value = GITHUB_APP_PRIVATE_KEY.includes("-----BEGIN")
+    ? GITHUB_APP_PRIVATE_KEY
     : Buffer.from(GITHUB_APP_PRIVATE_KEY, "base64").toString("utf8");
+  const pem = /-----BEGIN ([A-Z ]*PRIVATE KEY)-----([\s\S]*?)-----END \1-----/
+    .exec(value.replaceAll("\\n", "\n"));
   // Says what we got without printing the key, since a bad value otherwise only
   // surfaces as an opaque OpenSSL DECODER error.
-  if (!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(key)) {
+  if (!pem) {
     throw new Error(
-      `GITHUB_APP_PRIVATE_KEY (${GITHUB_APP_PRIVATE_KEY.length} chars) is neither a .pem private key nor a base64-encoded one`,
+      `GITHUB_APP_PRIVATE_KEY (${GITHUB_APP_PRIVATE_KEY.length} chars) is not a complete .pem private key (raw or base64-encoded); check it has both the BEGIN and END lines`,
     );
   }
+  const key = `-----BEGIN ${pem[1]}-----\n${
+    pem[2].replace(/\s+/g, "").replace(/.{64}/g, "$&\n")
+  }\n-----END ${pem[1]}-----\n`;
   const sig = createSign("RSA-SHA256").update(unsigned).sign(key, "base64url");
 
   const res = await fetch(
