@@ -392,7 +392,7 @@ export interface AdditionalOutputShapeResult {
   shape: OutputShape;
 }
 /**
- * Migration instruction to require implementing object types to implement an interface action type constraint.
+ * Migration instruction to make an action type constraint of an interface type required.
  */
 export interface AddRequiredInterfaceActionTypeConstraintMigration {
   actionTypeConstraint: InterfaceActionTypeConstraintReference;
@@ -13527,8 +13527,7 @@ export interface InterfaceTypeReferenceUnresolvable {
 }
 export type InterfaceTypeRid = string;
 /**
- * Migration instruction to replace each object type's implementation of an interface type with an
- * implementation of another interface type, so that no object type implements it once the grace period elapses.
+ * Migration instruction to replace an interface type with another interface type.
  */
 export interface ReplaceInterfaceMigration {
   replacement: InterfaceTypeReplacement;
@@ -13555,10 +13554,6 @@ export type InterfaceTypeSchemaMigrationInstruction =
   | InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
   | InterfaceTypeSchemaMigrationInstruction_replace;
 
-/**
- * The action type constraint that replaces another, and how the replaced action type constraint's
- * parameter constraints map onto the replacement's.
- */
 export interface InterfaceActionTypeConstraintReplacement {
   actionTypeConstraint: InterfaceActionTypeConstraintReference;
   parameterMappings: Record<
@@ -13566,10 +13561,6 @@ export interface InterfaceActionTypeConstraintReplacement {
     InterfaceParameterConstraintReference
   >;
 }
-/**
- * The interface type that replaces another, and how the replaced interface type's
- * properties, link type constraints, and action type constraints map onto the replacement's.
- */
 export interface InterfaceTypeReplacement {
   actionTypeConstraintMappings: Record<
     InterfaceActionTypeConstraintReference,
