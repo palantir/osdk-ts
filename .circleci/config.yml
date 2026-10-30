@@ -471,7 +471,8 @@ jobs:
           name: Build and measure this PR
           command: |
             pnpm exec turbo transpile
-            npx size-limit --json > /tmp/current.json || true
+            # With --json, size-limit reports errors on stdout, so show them here.
+            npx size-limit --json > /tmp/current.json || cat /tmp/current.json
       - run:
           # The base checkout below replaces the working tree with a commit that
           # predates these scripts.
@@ -485,7 +486,7 @@ jobs:
       - restore_cache:
           name: Restore the base-branch measurement
           keys:
-            - v1-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+            - v2-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
       - run:
           name: Build and measure the base branch
           command: |
@@ -497,10 +498,11 @@ jobs:
             pnpm exec turbo clean
             pnpm install --frozen-lockfile
             pnpm exec turbo transpile
-            npx size-limit --json > /tmp/base.json || true
+            # Drop a failed measurement so it is not cached for this base commit.
+            npx size-limit --json > /tmp/base.json || { cat /tmp/base.json; rm -f /tmp/base.json; }
       - save_cache:
           name: Save the base-branch measurement
-          key: v1-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+          key: v2-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
           paths:
             - /tmp/base.json
       - run:
