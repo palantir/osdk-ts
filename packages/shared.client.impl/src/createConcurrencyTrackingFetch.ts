@@ -18,6 +18,10 @@ import type {
   ClientMetrics,
   OsdkRequestContext,
 } from "./OsdkRequestContext.js";
+import {
+  getOsdkRequestContext,
+  removeOsdkRequestContext,
+} from "./OsdkRequestContext.js";
 
 export const OSDK_REQUEST_CONTEXT_HEADER = "X-OSDK-Request-Context";
 
@@ -38,12 +42,20 @@ export function createConcurrencyTrackingFetch(
 
     activeHttpAttempts++;
     try {
+      const requestContext = getOsdkRequestContext(init);
       const clientMetrics: ClientMetrics = { concurrency: activeHttpAttempts };
-      const requestContext: OsdkRequestContext = {
+      const requestContextWithConcurrency: OsdkRequestContext = {
+        ...requestContext,
         clientMetrics,
       };
-      headers.set(OSDK_REQUEST_CONTEXT_HEADER, JSON.stringify(requestContext));
-      return await fetchFn(input, { ...init, headers });
+      headers.set(
+        OSDK_REQUEST_CONTEXT_HEADER,
+        JSON.stringify(requestContextWithConcurrency),
+      );
+      return await fetchFn(input, {
+        ...removeOsdkRequestContext(init),
+        headers,
+      });
     } finally {
       activeHttpAttempts--;
     }
