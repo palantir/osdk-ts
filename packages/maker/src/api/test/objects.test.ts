@@ -16,12 +16,18 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { MakerValidationError } from "../../validation.js";
+import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
 import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
-import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
+import {
+  defineOntology,
+  dumpOntologyFullMetadata,
+  getOntologyDefinition,
+} from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 import type { DerivedPropertyAggregation } from "../object/ObjectTypeDatasourceDefinition.js";
 import type { PropertyTypeTypeVector } from "../properties/PropertyTypeType.js";
@@ -35,6 +41,120 @@ const VECTOR: PropertyTypeTypeVector = {
 describe("Object Types", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
+  });
+
+  it("collects independent issues without registering an invalid object", () => {
+    const definition = {
+      apiName: "Document",
+      displayName: "Document",
+      pluralDisplayName: "Documents",
+      titlePropertyApiName: "missingTitle",
+      primaryKeyPropertyApiName: "missingId",
+      properties: {
+        id: { type: "string" as const, includeEmptyBackingMediaSet: true },
+      },
+    };
+    expect(() => defineObject(definition)).toThrowError(MakerValidationError);
+    expect(() => defineObject(definition)).toThrowError(
+      expect.objectContaining({
+        issues: [
+          {
+            code: "validation_error",
+            message:
+              "Property id on object Document can only use includeEmptyBackingMediaSet when its type is mediaReference",
+            path: [],
+          },
+          {
+            code: "validation_error",
+            message:
+              "Title property missingTitle is not defined on object Document",
+            path: [],
+          },
+          {
+            code: "validation_error",
+            message:
+              "Primary key property missingId does not exist on object Document",
+            path: [],
+          },
+        ],
+      }),
+    );
+    expect(
+      getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][
+        "com.palantir.Document"
+      ],
+    ).toBeUndefined();
+
+    expect(() =>
+      defineObject({
+        ...definition,
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      }),
+    ).not.toThrow();
+  });
+
+  it("skips invalid datasource prerequisites while collecting other object issues", () => {
+    const link = defineLink({
+      apiName: "self",
+      many: {
+        object: "com.palantir.Document",
+        metadata: { apiName: "sources" },
+      },
+      toMany: {
+        object: "com.palantir.Document",
+        metadata: { apiName: "targets" },
+      },
+    });
+    expect(() =>
+      defineObject({
+        apiName: "Document",
+        displayName: "Document",
+        pluralDisplayName: "Documents",
+        description: "x".repeat(10001),
+        titlePropertyApiName: "missingTitle",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        datasources: [
+          {
+            type: "derived",
+            linkDefinition: [{ linkType: link }],
+            propertyMapping: { missingTotal: { type: "sum", property: "id" } },
+          },
+          {
+            type: "derived",
+            linkDefinition: [{ linkType: link }],
+            propertyMapping: { id: { type: "sum", property: "id" } },
+          },
+        ],
+      }),
+    ).toThrowError(
+      expect.objectContaining({
+        name: "MakerValidationError",
+        issues: [
+          expect.objectContaining({
+            message:
+              "Title property missingTitle is not defined on object Document",
+          }),
+          expect.objectContaining({
+            message:
+              "Property 'missingTotal' used in derived datasource for object 'Document' is not defined.",
+          }),
+          expect.objectContaining({
+            message: "Property 'id' on object 'Document' is not numeric",
+          }),
+          expect.objectContaining({
+            message: expect.stringContaining(
+              "description must be at most 10000",
+            ),
+          }),
+        ],
+      }),
+    );
+    expect(getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE]).toEqual(
+      {},
+    );
   });
 
   it("allows an empty backing Media Set for a media reference property", () => {
@@ -98,7 +218,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^(?=.{1,100}$)[a-zA-Z][a-zA-Z0-9]*(?:\\.[a-zA-Z0-9]+)*$/u.]`,
+      `[MakerValidationError: $["apiName"] [invalid_api_name] Invalid API name foo_with_underscores. API names must match the regex /^(?=.{1,100}$)[a-zA-Z][a-zA-Z0-9]*(?:\\.[a-zA-Z0-9]+)*$/u.]`,
     );
   });
   it("Fails if any property reference does not exist", () => {
@@ -122,7 +242,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
+      `[MakerValidationError: [validation_error] Title property fizz is not defined on object foo]`,
     );
 
     expect(() => {
@@ -135,7 +255,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
+      `[MakerValidationError: [validation_error] Primary key property fizz does not exist on object foo]`,
     );
 
     expect(() => {
@@ -159,7 +279,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`,
+      `[MakerValidationError: [validation_error] \nOntology Definition Error: Object property mapped to interface does not exist. Object Property Mapped: fizz\n]`,
     );
 
     expect(() => {
@@ -187,7 +307,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`,
+      `[MakerValidationError: [validation_error] \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`,
     );
   });
 
@@ -1595,7 +1715,7 @@ describe("Object Types", () => {
         properties: { bar: { type: "string", editOnly: true } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
+      `[MakerValidationError: [validation_error] Primary key property bar on object foo cannot be edit-only]`,
     );
   });
 
@@ -1616,7 +1736,7 @@ describe("Object Types", () => {
         ],
       }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
+      `[MakerValidationError: [validation_error] Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
     );
   });
 
@@ -1952,7 +2072,7 @@ describe("Object Types", () => {
         ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`,
+      `[MakerValidationError: [validation_error] Property 'numPassengers' on object 'flight' is not collectible]`,
     );
     const flight = defineObject({
       displayName: "Flight",

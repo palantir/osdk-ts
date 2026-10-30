@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import invariant from "tiny-invariant";
-
+import type { MakerValidationIssueCollector } from "../validation.js";
 import {
   isStruct,
   type PropertyTypeType,
@@ -46,6 +45,7 @@ export function validateMetadataLength(
   field: string,
   context: string,
   limit: number,
+  collector: MakerValidationIssueCollector,
   unit: "UTF-8 bytes" | "UTF-16 code units" = "UTF-8 bytes",
 ): void {
   if (value == null) {
@@ -53,7 +53,7 @@ export function validateMetadataLength(
   }
   const length =
     unit === "UTF-8 bytes" ? encoder.encode(value).length : value.length;
-  invariant(
+  collector.addIssue(
     length <= limit,
     `${context}: ${field} must be at most ${limit} ${unit} (got ${length})`,
   );
@@ -62,6 +62,7 @@ export function validateMetadataLength(
 export function validateDisplayMetadataLengths(
   metadata: DisplayMetadata,
   context: string,
+  collector: MakerValidationIssueCollector,
   nameLimit: number = ONTOLOGY_DISPLAY_NAME_LIMIT,
   descriptionLimit: number = ONTOLOGY_DESCRIPTION_LIMIT,
 ): void {
@@ -70,19 +71,27 @@ export function validateDisplayMetadataLengths(
     "pluralDisplayName",
     "groupDisplayName",
   ] as const) {
-    validateMetadataLength(metadata[field], field, context, nameLimit);
+    validateMetadataLength(
+      metadata[field],
+      field,
+      context,
+      nameLimit,
+      collector,
+    );
   }
   validateMetadataLength(
     metadata.description,
     "description",
     context,
     descriptionLimit,
+    collector,
   );
 }
 
 export function validateStructFieldMetadata(
   type: PropertyTypeType,
   context: string,
+  collector: MakerValidationIssueCollector,
 ): void {
   if (!isStruct(type)) {
     return;
@@ -95,6 +104,7 @@ export function validateStructFieldMetadata(
     validateDisplayMetadataLengths(
       metadata ?? { displayName: apiName },
       `${context}, struct field "${apiName}"`,
+      collector,
       OBJECT_PROPERTY_DISPLAY_NAME_LIMIT,
     );
   }

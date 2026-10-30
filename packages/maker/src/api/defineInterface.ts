@@ -23,6 +23,7 @@ import {
   isValidNamespacedApiName,
   NAMESPACED_API_NAME_PATTERN,
 } from "../util/ApiNameValidator.js";
+import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import type { EntityPermission } from "./common/EntityPermission.js";
@@ -221,8 +222,13 @@ export function defineInterface(
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
 
+  const collector = createValidationIssueCollector();
   const context = `Interface "${apiName}"`;
-  validateDisplayMetadataLengths(fullInterface.displayMetadata, context);
+  validateDisplayMetadataLengths(
+    fullInterface.displayMetadata,
+    context,
+    collector,
+  );
   for (const [propertyApiName, property] of Object.entries(propertiesV3)) {
     if (isInterfaceSharedPropertyType(property)) {
       continue;
@@ -231,9 +237,11 @@ export function defineInterface(
     validateDisplayMetadataLengths(
       { ...property, displayName: property.displayName ?? propertyApiName },
       propertyContext,
+      collector,
     );
-    validateStructFieldMetadata(property.type, propertyContext);
+    validateStructFieldMetadata(property.type, propertyContext, collector);
   }
+  collector.throwIfAnyIssues();
 
   if (interfaceDef.schemaMigrations !== undefined) {
     validateInterfaceSchemaMigrations(

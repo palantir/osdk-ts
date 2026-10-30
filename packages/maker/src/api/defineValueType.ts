@@ -21,6 +21,7 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
+import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -186,12 +187,14 @@ export function defineValueType(
     exampleValues: [],
     __type: OntologyEntityTypeEnum.VALUE_TYPE,
   };
+  const collector = createValidationIssueCollector();
   const context = `Value type "${apiName}" version "${version}"`;
   validateMetadataLength(
     vt.displayMetadata.displayName,
     "displayName",
     context,
     VALUE_TYPE_DISPLAY_NAME_LIMIT,
+    collector,
     "UTF-16 code units",
   );
   validateMetadataLength(
@@ -199,8 +202,10 @@ export function defineValueType(
     "description",
     context,
     VALUE_TYPE_DESCRIPTION_LIMIT,
+    collector,
     "UTF-16 code units",
   );
+  collector.throwIfAnyIssues();
   updateOntology(vt);
   return vt;
 }
