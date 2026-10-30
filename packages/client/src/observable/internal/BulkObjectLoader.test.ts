@@ -15,18 +15,35 @@
  */
 
 import type {
+  DerivedProperty,
   InterfaceMetadata,
   ObjectMetadata,
   ObjectSet,
   ObjectTypeDefinition,
   WhereClause,
 } from "@osdk/api";
+import { Employee, Office } from "@osdk/client.test.ontology";
+import type { SetupServer } from "@osdk/shared.test";
+import {
+  FauxFoundry,
+  msw,
+  ontologies,
+  startNodeApiServer,
+} from "@osdk/shared.test";
 import type { Mock } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Client } from "../../Client.js";
+import { createClient } from "../../createClient.js";
+import type { ObserveObjectsCallbackArgs } from "../ObservableClient.js";
 import { BulkObjectLoader } from "./BulkObjectLoader.js";
-import { createClientMockHelper, type MockClientHelper } from "./testUtils.js";
+import { ObservableClientImpl } from "./ObservableClientImpl.js";
+import { Store } from "./Store.js";
+import {
+  createClientMockHelper,
+  createDefer,
+  type MockClientHelper,
+} from "./testUtils.js";
 
 describe(BulkObjectLoader, () => {
   let client: Mock<Client> & Client;
@@ -436,5 +453,235 @@ describe(BulkObjectLoader, () => {
     expect(capturedArgs[0].$includeAllBaseObjectProperties).toBeUndefined();
 
     vi.useRealTimers();
+  });
+
+  describe("RDP", () => {
+    const defer = createDefer();
+
+    const withProperties: DerivedProperty.Clause<typeof Employee> = {
+      officeName: (base) => base.pivotTo("officeLink").selectProperty("name"),
+    };
+
+    let rdpClient: Client;
+    let apiServer: SetupServer;
+    let fauxFoundry: FauxFoundry;
+    let store: Store;
+    let loadRequests: Request[];
+
+    beforeAll(() => {
+      ({
+        client: rdpClient,
+        apiServer,
+        fauxFoundry,
+      } = startNodeApiServer(
+        new FauxFoundry("https://stack.palantir.com/"),
+        createClient,
+      ));
+      ontologies.addEmployeeOntology(fauxFoundry.getDefaultOntology());
+      apiServer.events.on("request:start", ({ request }) => {
+        if (new URL(request.url).pathname.endsWith("/objectSets/loadObjects")) {
+          loadRequests.push(request.clone());
+        }
+      });
+      return () => apiServer.close();
+    });
+
+    beforeEach(() => {
+      apiServer.resetHandlers();
+      store = new Store(rdpClient);
+      loadRequests = [];
+      const dataStore = fauxFoundry.getDefaultDataStore();
+      dataStore.clear();
+      const office = dataStore.registerObject(Office, {
+        officeId: "101",
+        name: "Original Office",
+      });
+      for (const employeeId of [1, 2, 3, 4, 5]) {
+        const employee = dataStore.registerObject(Employee, {
+          employeeId,
+          fullName: `Employee ${employeeId}`,
+        });
+        dataStore.registerLink(employee, "officeLink", office, "occupants");
+      }
+    });
+
+    it("refreshes a list and its cached RDP objects with two requests", async () => {
+      const observableClient = new ObservableClientImpl(store);
+      const observer = {
+        next: vi.fn<
+          (payload: ObserveObjectsCallbackArgs<typeof Employee>) => void
+        >(),
+        error: vi.fn(),
+        complete: vi.fn(),
+      };
+      defer(
+        observableClient.observeList(
+          { type: Employee, withProperties },
+          observer,
+        ),
+      );
+
+      await vi.waitFor(() => {
+        expect(observer.next.mock.lastCall?.[0]).toMatchObject({
+          status: "loaded",
+        });
+      });
+      expect(loadRequests).toHaveLength(1);
+      expect(observer.next.mock.lastCall?.[0].resolvedList).toHaveLength(5);
+
+      const dataStore = fauxFoundry.getDefaultDataStore();
+      dataStore.replaceObjectOrThrow({
+        ...dataStore.getObjectOrThrow("Office", "101"),
+        name: "Updated Office",
+      });
+      loadRequests.length = 0;
+
+      await observableClient.invalidateObjectType(Employee);
+
+      expect(loadRequests).toHaveLength(2);
+      const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
+      for (const pk of [1, 2, 3, 4, 5]) {
+        const query = store.objects.getQuery(
+          { apiName: Employee, pk },
+          rdpConfig,
+        );
+        expect(store.getValue(query.cacheKey)).toMatchObject({
+          status: "loaded",
+          value: { $primaryKey: pk, officeName: "Updated Office" },
+        });
+      }
+      expect(observer.next.mock.lastCall?.[0]).toMatchObject({
+        status: "loaded",
+        resolvedList: [
+          expect.objectContaining({ officeName: "Updated Office" }),
+          expect.objectContaining({ officeName: "Updated Office" }),
+          expect.objectContaining({ officeName: "Updated Office" }),
+          expect.objectContaining({ officeName: "Updated Office" }),
+          expect.objectContaining({ officeName: "Updated Office" }),
+        ],
+      });
+    });
+
+    it("batches RDP objects by definition, selection, and security options", async () => {
+      const loader = new BulkObjectLoader(rdpClient);
+      const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
+      const officeId = store.rdpCanonicalizer.canonicalize({
+        officeName: (base) =>
+          base.pivotTo("officeLink").selectProperty("officeId"),
+      } satisfies DerivedProperty.Clause<typeof Employee>);
+      apiServer.use(
+        msw.http.post("*/objectSets/loadObjects", async ({ request }) => {
+          const body = (await request.clone().json()) as {
+            loadPropertySecurities?: boolean;
+          };
+          if (!body.loadPropertySecurities) {
+            return;
+          }
+          return msw.HttpResponse.json({
+            data: [
+              {
+                __apiName: "Employee",
+                __primaryKey: 1,
+                employeeId: 1,
+                officeName: "Original Office",
+              },
+              {
+                __apiName: "Employee",
+                __primaryKey: 2,
+                employeeId: 2,
+                officeName: "Original Office",
+              },
+            ],
+            totalCount: "2",
+            propertySecurities: [],
+          });
+        }),
+      );
+
+      const objects = await Promise.all([
+        loader.fetch(
+          "Employee",
+          1,
+          "object",
+          ["officeName"],
+          true,
+          undefined,
+          rdpConfig,
+        ),
+        loader.fetch(
+          "Employee",
+          2,
+          "object",
+          ["officeName"],
+          true,
+          undefined,
+          rdpConfig,
+        ),
+        loader.fetch(
+          "Employee",
+          3,
+          "object",
+          ["fullName", "officeName"],
+          false,
+          undefined,
+          rdpConfig,
+        ),
+        loader.fetch(
+          "Employee",
+          4,
+          "object",
+          ["officeName"],
+          false,
+          undefined,
+          rdpConfig,
+        ),
+        loader.fetch(
+          "Employee",
+          5,
+          "object",
+          ["officeName"],
+          false,
+          undefined,
+          officeId,
+        ),
+      ]);
+
+      expect(loadRequests).toHaveLength(4);
+      expect(objects).toMatchObject([
+        { $primaryKey: 1, officeName: "Original Office" },
+        { $primaryKey: 2, officeName: "Original Office" },
+        {
+          $primaryKey: 3,
+          fullName: "Employee 3",
+          officeName: "Original Office",
+        },
+        { $primaryKey: 4, officeName: "Original Office" },
+        { $primaryKey: 5, officeName: "101" },
+      ]);
+      expect(objects[0]).not.toHaveProperty("fullName");
+      expect(objects[1]).not.toHaveProperty("fullName");
+      expect(
+        await Promise.all(loadRequests.map((request) => request.json())),
+      ).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            selectV2: [{ type: "property", apiName: "officeName" }],
+            loadPropertySecurities: true,
+            excludeRid: false,
+          }),
+          expect.objectContaining({
+            selectV2: [
+              { type: "property", apiName: "fullName" },
+              { type: "property", apiName: "officeName" },
+            ],
+            loadPropertySecurities: false,
+          }),
+          expect.objectContaining({
+            selectV2: [{ type: "property", apiName: "officeName" }],
+            loadPropertySecurities: false,
+          }),
+        ]),
+      );
+    });
   });
 });

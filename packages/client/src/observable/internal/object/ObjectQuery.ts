@@ -15,7 +15,6 @@
  */
 
 import type {
-  DerivedProperty,
   InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
@@ -131,41 +130,15 @@ export class ObjectQuery extends Query<
 
     const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
 
-    let obj: ObjectHolder;
-
-    if (rdpConfig) {
-      const miniDef = {
-        type: this.#defType,
-        apiName: this.#apiName,
-      } as ObjectTypeDefinition;
-
-      const fetched = await this.store
-        .client(miniDef)
-        .withProperties(
-          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-        )
-        .fetchOne(this.#pk as PrimaryKeyType<ObjectTypeDefinition>, {
-          $includeRid: true,
-          ...(this.#select && this.#select.length > 0
-            ? { $select: this.#select }
-            : {}),
-          $loadPropertySecurityMetadata: this.#loadPropertySecurityMetadata,
-          ...(this.#includeAllBaseObjectProperties
-            ? { $includeAllBaseObjectProperties: true }
-            : {}),
-        });
-      obj = fetched as ObjectHolder;
-    } else {
-      // Use batched loader for non-RDP objects (efficient batching)
-      obj = await getBulkObjectLoader(this.store.client).fetch(
-        this.#apiName,
-        this.#pk,
-        this.#defType,
-        this.#select,
-        this.#loadPropertySecurityMetadata,
-        this.#includeAllBaseObjectProperties,
-      );
-    }
+    const obj = await getBulkObjectLoader(this.store.client).fetch(
+      this.#apiName,
+      this.#pk,
+      this.#defType,
+      this.#select,
+      this.#loadPropertySecurityMetadata,
+      this.#includeAllBaseObjectProperties,
+      rdpConfig,
+    );
 
     this.store.batch({}, (batch) => {
       this.writeToStore(
