@@ -33,6 +33,13 @@ try {
   const key = GITHUB_APP_PRIVATE_KEY.includes("-----BEGIN")
     ? GITHUB_APP_PRIVATE_KEY.replaceAll("\\n", "\n")
     : Buffer.from(GITHUB_APP_PRIVATE_KEY, "base64").toString("utf8");
+  // Says what we got without printing the key, since a bad value otherwise only
+  // surfaces as an opaque OpenSSL DECODER error.
+  if (!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(key)) {
+    throw new Error(
+      `GITHUB_APP_PRIVATE_KEY (${GITHUB_APP_PRIVATE_KEY.length} chars) is neither a .pem private key nor a base64-encoded one`,
+    );
+  }
   const sig = createSign("RSA-SHA256").update(unsigned).sign(key, "base64url");
 
   const res = await fetch(
