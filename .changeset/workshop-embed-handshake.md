@@ -2,4 +2,4 @@
 "@osdk/workshop-embed": minor
 ---
 
-Create the experimental Workshop embed package.
+Add a shared Workshop iframe handshake package with a dedicated MessageChannel and connection lifecycle helpers.

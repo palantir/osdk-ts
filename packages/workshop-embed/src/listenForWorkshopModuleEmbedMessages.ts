@@ -1,0 +1,128 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { createConnection } from "./connection.js";
+import type { WorkshopModuleConnectHandler } from "./connection.js";
+import {
+  createMessage,
+  isWorkshopEmbedMessage,
+  WORKSHOP_EMBED_QUERY_PARAM,
+  WORKSHOP_EMBED_QUERY_VALUE,
+} from "./protocol.js";
+
+/** Options for the Workshop-side listener. @public */
+export interface ListenForWorkshopModuleEmbedMessagesOptions {
+  /** Called for each accepted connection. Return a function to clean up per-connection resources. */
+  onConnect?: WorkshopModuleConnectHandler;
+  /** Workshop's window. Defaults to the current window. */
+  hostWindow?: Window;
+}
+
+/**
+ * Enables the child-side handshake only when framed with workshopEmbed=1.
+ * Accepts the actual parent with a non-opaque origin, including cross-origin parents.
+ * Returns an idempotent cleanup that removes listeners and closes the active port.
+ * @public
+ */
+export function listenForWorkshopModuleEmbedMessages({
+  onConnect,
+  hostWindow = window,
+}: ListenForWorkshopModuleEmbedMessagesOptions = {}): () => void {
+  if (
+    hostWindow.parent === hostWindow ||
+    new URLSearchParams(hostWindow.location.search).get(
+      WORKSHOP_EMBED_QUERY_PARAM,
+    ) !== WORKSHOP_EMBED_QUERY_VALUE
+  )
+    return () => {};
+
+  let pendingHandshake: { sessionId: string; origin: string } | undefined;
+  let activeConnection: ReturnType<typeof createConnection> | undefined;
+
+  function disconnect() {
+    pendingHandshake = undefined;
+    activeConnection?.dispose(true);
+  }
+
+  function handleMessage(event: MessageEvent<unknown>) {
+    const message = event.data;
+    if (
+      event.source !== hostWindow.parent ||
+      event.origin === "null" ||
+      !isWorkshopEmbedMessage(message)
+    )
+      return;
+
+    switch (message.type) {
+      case "probe":
+        return handleProbe(message.sessionId, event);
+      case "connect":
+        return handleConnect(message.sessionId, event);
+      default:
+        return;
+    }
+  }
+
+  function handleProbe(sessionId: string, event: MessageEvent<unknown>) {
+    if (event.ports.length !== 0) {
+      for (const unusedPort of event.ports) unusedPort.close();
+      return;
+    }
+    if (activeConnection?.connection.sessionId !== sessionId) {
+      pendingHandshake = { sessionId, origin: event.origin };
+    }
+    hostWindow.parent.postMessage(
+      createMessage("available", sessionId),
+      event.origin,
+    );
+  }
+
+  function handleConnect(sessionId: string, event: MessageEvent<unknown>) {
+    const port = event.ports[0];
+    if (
+      event.ports.length !== 1 ||
+      port == null ||
+      pendingHandshake?.sessionId !== sessionId ||
+      pendingHandshake.origin !== event.origin
+    ) {
+      for (const unusedPort of event.ports) unusedPort.close();
+      return;
+    }
+
+    const previous = activeConnection;
+    const next = createConnection(port, sessionId, () => {
+      if (activeConnection === next) activeConnection = undefined;
+    });
+    pendingHandshake = undefined;
+    activeConnection = next;
+    try {
+      // Dispose previous directly; disconnect() would also drop next, which is already active.
+      previous?.dispose(true);
+      next.activate(onConnect);
+    } catch (error) {
+      next.dispose(true);
+      throw error;
+    }
+  }
+
+  hostWindow.addEventListener("message", handleMessage);
+  hostWindow.addEventListener("pagehide", disconnect);
+  return () => {
+    hostWindow.removeEventListener("message", handleMessage);
+    hostWindow.removeEventListener("pagehide", disconnect);
+    disconnect();
+  };
+}
