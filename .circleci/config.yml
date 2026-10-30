@@ -21,9 +21,9 @@ executors:
   node:
     parameters:
       node-version:
-        description: cimg/node tag; MAJOR.MINOR.PATCH, or a variant like 24.19.0-browsers.
+        description: cimg/node tag; MAJOR.MINOR.PATCH, or a variant like 24.22.2-browsers.
         type: string
-        default: "24.19.0"
+        default: "24.22.2"
       resource-class:
         type: string
         default: large
@@ -42,7 +42,7 @@ executors:
   # The config is to disable verdaccio reaching the internet (by default its a proxy to the real npm registry)
   node-with-verdaccio:
     docker:
-      - image: cimg/node:24.19.0
+      - image: cimg/node:24.22.2
       - image: verdaccio/verdaccio:6.10.3
         command:
           - sh
@@ -411,7 +411,7 @@ jobs:
       name: node
       # The -browsers variant ships Chromium's system libraries, so
       # `playwright install` does not need --with-deps.
-      node-version: "24.19.0-browsers"
+      node-version: "24.22.2-browsers"
       resource-class: xlarge
     steps:
       - prepare
@@ -556,7 +556,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              node-version: ["18.20.8", "20.20.2", "22.23.2", "24.19.0"]
+              node-version: ["18.20.8", "20.20.2", "22.23.4", "24.22.2"]
           requires: [build]
       - build-storybook:
           requires: [build]
