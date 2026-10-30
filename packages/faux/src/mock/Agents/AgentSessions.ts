@@ -21,3 +21,8 @@ import { handleOpenApiCall } from "../../handlers/util/handleOpenApiCall.js";
 
 export const create: CallFactory<never, typeof AgentSessions.create> =
   handleOpenApiCall(AgentSessions.create, []);
+
+export const sendEvent: CallFactory<
+  "agentSessionId",
+  typeof AgentSessions.sendEvent
+> = handleOpenApiCall(AgentSessions.sendEvent, ["agentSessionId"]);

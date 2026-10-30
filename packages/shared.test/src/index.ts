@@ -16,6 +16,7 @@
 
 export {
   authHandlerMiddleware,
+  type FauxAgentImpl,
   FauxFoundry,
   MockOntologiesV2,
   TypeHelpers,

@@ -19,6 +19,7 @@ import { Errors, OpenApiCallError } from "@osdk/faux";
 import type {
   AgentSession,
   CreateAgentSessionRequest,
+  SendEventResponse,
 } from "@osdk/foundry.agents";
 import deepEqual from "fast-deep-equal";
 
@@ -48,6 +49,10 @@ export const weatherAgentRequest: CreateAgentSessionRequest = {
 export const weatherAgentResponse: AgentSession = {
   id: "weather-session",
   agentRid: "ri.aip-agents.main.agent.weather",
+  agentApiNameIdentifier: {
+    ontology: defaultOntologyMetadata.rid as string,
+    agentApiName: weatherAgentApiName,
+  },
   agentVersion: weatherAgentVersion.version,
 };
 
@@ -75,6 +80,10 @@ export const noArgsAgentRequest: CreateAgentSessionRequest = {
 export const noArgsAgentResponse: AgentSession = {
   id: "no-args-session",
   agentRid: "ri.aip-agents.main.agent.no-args",
+  agentApiNameIdentifier: {
+    ontology: defaultOntologyMetadata.rid as string,
+    agentApiName: noArgsAgentApiName,
+  },
   agentVersion: noArgsAgentVersion.version,
 };
 
@@ -102,77 +111,100 @@ export function objectArgumentsAgentRequest(
 export const objectArgumentsAgentResponse: AgentSession = {
   id: "object-arguments-session",
   agentRid: "ri.aip-agents.main.agent.object-arguments",
+  agentApiNameIdentifier: {
+    ontology: defaultOntologyMetadata.rid as string,
+    agentApiName: objectArgumentsAgentApiName,
+  },
   agentVersion: objectArgumentsAgentVersion.version,
 };
 
-const agentRequestHandlers: {
-  [agentApiName: string]: {
-    [agentVersion: string]: {
-      [agentBody: string]: AgentSession;
-    };
-  };
-} = {
-  [weatherAgentApiName]: {
-    [weatherAgentVersion.version]: {
-      [JSON.stringify(weatherAgentRequest)]: weatherAgentResponse,
-    },
-    [weatherAgentOtherVersion.version]: {
-      [JSON.stringify(weatherAgentOtherVersionRequest)]:
-        weatherAgentOtherVersionResponse,
-    },
-  },
-  [noArgsAgentApiName]: {
-    [noArgsAgentVersion.version]: {
-      [JSON.stringify(noArgsAgentRequest)]: noArgsAgentResponse,
-    },
-  },
-};
-
 export function registerLazyAgents(fauxOntology: FauxOntology): void {
-  const agentDefinitions = [
-    { apiName: weatherAgentApiName, definition: weatherAgentVersion },
-    { apiName: weatherAgentApiName, definition: weatherAgentOtherVersion },
-    { apiName: noArgsAgentApiName, definition: noArgsAgentVersion },
-  ];
+  fauxOntology.registerAgent(
+    weatherAgentApiName,
+    weatherAgentVersion,
+    createLazyAgentImpl(
+      {
+        [JSON.stringify(weatherAgentRequest)]: weatherAgentResponse,
+      },
+      weatherEventResponses,
+    ),
+  );
 
-  for (const { apiName, definition } of Object.values(agentDefinitions)) {
-    const lazyHandlerMap = agentRequestHandlers[apiName][definition.version];
-    if (!lazyHandlerMap) {
-      throw new Error(
-        `Agent definition ${apiName} is not registered in agentRequestHandlers`,
-      );
-    }
+  fauxOntology.registerAgent(
+    weatherAgentApiName,
+    weatherAgentOtherVersion,
+    createLazyAgentImpl(
+      {
+        [JSON.stringify(weatherAgentOtherVersionRequest)]:
+          weatherAgentOtherVersionResponse,
+      },
+      weatherEventResponses,
+    ),
+  );
 
-    fauxOntology.registerAgent(
-      apiName,
-      definition,
-      createLazyAgentImpl(lazyHandlerMap),
-    );
-  }
+  fauxOntology.registerAgent(
+    noArgsAgentApiName,
+    noArgsAgentVersion,
+    createLazyAgentImpl(
+      {
+        [JSON.stringify(noArgsAgentRequest)]: noArgsAgentResponse,
+      },
+      weatherEventResponses,
+    ),
+  );
 
-  // objectArgumentsAgent has an object set argument. For object set arguments we create temporary
-  // object sets with new RIDs on each request, which means that we can't use exact request matching
-  // for this agent. Here we pull out the object set RID from the request and use it to validate the
-  // request.
   fauxOntology.registerAgent(
     objectArgumentsAgentApiName,
     objectArgumentsAgentVersion,
-    (request, dataStore) => {
-      const objectSetRid = request.arguments.employees;
-      if (
-        typeof objectSetRid !== "string" ||
-        !deepEqual(request, objectArgumentsAgentRequest(objectSetRid)) ||
-        !deepEqual(
-          dataStore.getObjectSetOrThrow(objectSetRid),
-          employeeObjectSet,
-        )
-      ) {
-        throw new OpenApiCallError(
-          400,
-          Errors.InvalidRequest("Invalid Agent Session Request"),
-        );
-      }
-      return objectArgumentsAgentResponse;
-    },
+    createLazyAgentImpl(
+      (request, dataStore) => {
+        // objectArgumentsAgent has an object set argument. For object set arguments we create temporary
+        // object sets with new RIDs on each request, which means that we can't use exact request matching
+        // for this agent. Here we pull out the object set RID from the request and use it to validate the
+        // request
+        const objectSetRid = request.arguments.employees;
+        if (
+          typeof objectSetRid !== "string" ||
+          !deepEqual(request, objectArgumentsAgentRequest(objectSetRid)) ||
+          !deepEqual(
+            dataStore.getObjectSetOrThrow(objectSetRid),
+            employeeObjectSet,
+          )
+        ) {
+          throw new OpenApiCallError(
+            400,
+            Errors.InvalidRequest("Invalid Agent Session Request"),
+          );
+        }
+        return objectArgumentsAgentResponse;
+      },
+      (request, dataStore) => {
+        const { eventType, payload } = request.event;
+        if (
+          eventType !== "SelectEmployees" ||
+          typeof payload !== "string" ||
+          !deepEqual(dataStore.getObjectSetOrThrow(payload), employeeObjectSet)
+        ) {
+          throw new OpenApiCallError(
+            400,
+            Errors.InvalidRequest("Invalid Agent Event"),
+          );
+        }
+        return acceptedAgentEvent;
+      },
+    ),
   );
 }
+
+export const acceptedAgentEvent: SendEventResponse = {
+  result: { type: "accepted", consistencyKey: "accepted-event" },
+};
+
+const weatherEventResponses: Record<string, SendEventResponse> = {
+  [JSON.stringify({
+    event: { eventType: "LookupWeather", payload: { city: "Paris" } },
+  })]: acceptedAgentEvent,
+  [JSON.stringify({
+    event: { eventType: "unknownEvent", payload: { raw: [1, null, "value"] } },
+  })]: acceptedAgentEvent,
+};
