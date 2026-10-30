@@ -487,7 +487,7 @@ jobs:
       - restore_cache:
           name: Restore the base-branch measurement
           keys:
-            - v2-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+            - v3-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
       - run:
           name: Build and measure the base branch
           command: |
@@ -499,11 +499,12 @@ jobs:
             pnpm exec turbo clean
             pnpm install --frozen-lockfile
             pnpm exec turbo transpile
-            # Drop a failed measurement so it is not cached for this base commit.
+            # ponytail: a failed run still saves an empty cache entry for this base
+            # commit, so later runs rebuild the base instead of reusing a result.
             npx size-limit --json > /tmp/base.json || { cat /tmp/base.json; rm -f /tmp/base.json; }
       - save_cache:
           name: Save the base-branch measurement
-          key: v2-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
+          key: v3-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
           paths:
             - /tmp/base.json
       - run:
