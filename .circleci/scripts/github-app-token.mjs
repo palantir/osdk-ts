@@ -17,6 +17,7 @@
 // Writes a GitHub App installation token to stdout (never log it), or nothing
 // on failure so the caller can skip commenting.
 
+// cspell:words REPONAME
 import { createSign } from "node:crypto";
 
 const { GITHUB_APP_ID, GITHUB_APP_PRIVATE_KEY, GITHUB_APP_INSTALLATION_ID } =
