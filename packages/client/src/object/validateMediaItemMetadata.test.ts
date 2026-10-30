@@ -24,6 +24,21 @@ describe("validateMediaItemMetadata", () => {
     expect(validateMediaItemMetadata(raw)).toBe(raw);
   });
 
+  it("reads the uncapped size without mutating the response", () => {
+    const raw = {
+      type: "imagery",
+      format: "PNG",
+      sizeBytes: 2147483647,
+      sizeBytesLong: "2147483648",
+      bands: [],
+    };
+    expect(validateMediaItemMetadata(raw)).toEqual({
+      ...raw,
+      sizeBytes: 2147483648,
+    });
+    expect(raw.sizeBytes).toBe(2147483647);
+  });
+
   it("wraps an unknown variant as UnknownMediaItemMetadata, preserving the raw payload", () => {
     const raw = {
       type: "streamingVideo",
