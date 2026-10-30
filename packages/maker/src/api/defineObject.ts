@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import invariant from "tiny-invariant";
-
 import { getObject } from "../conversion/toMarketplace/convertLink.js";
 import {
   API_NAME_PATTERN,
@@ -23,6 +21,10 @@ import {
   isValidObjectApiName,
   OBJECT_API_NAME_PATTERN,
 } from "../util/ApiNameValidator.js";
+import {
+  createValidationIssueCollector,
+  type MakerValidationIssueCollector,
+} from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -69,30 +71,36 @@ const ISO_8601_DATETIME =
 export function defineObject(
   objectDefInput: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
+  const collector = createValidationIssueCollector();
+  const { addIssue } = collector;
   const objectDef = cloneDefinition(objectDefInput);
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = objectDef.properties
     ? Object.keys(objectDef.properties)
     : [];
-  if (
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName] !==
-    undefined
-  ) {
-    throw new Error(
-      `Object type with apiName ${objectDef.apiName} is already defined`,
-    );
-  }
-  invariant(
-    isValidObjectApiName(objectDef.apiName),
-    `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
+
+  addIssue(
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName] ===
+      undefined,
+    {
+      code: "duplicate_definition",
+      message: `Object type with apiName ${objectDef.apiName} is already defined`,
+      path: ["apiName"],
+    },
   );
+
+  addIssue(isValidObjectApiName(objectDef.apiName), {
+    code: "invalid_api_name",
+    message: `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
+    path: ["apiName"],
+  });
   const propertyBySharedPropertyType = new Map<string, string>();
   propertyApiNames.forEach((apiName) => {
-    invariant(
+    addIssue(
       isValidApiName(apiName),
       `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
     );
-    invariant(
+    addIssue(
       objectDef.properties?.[apiName]?.includeEmptyBackingMediaSet !== true ||
         objectDef.properties[apiName].type === "mediaReference",
       `Property ${apiName} on object ${objectDef.apiName} can only use includeEmptyBackingMediaSet when its type is mediaReference`,
@@ -103,23 +111,23 @@ export function defineObject(
       const previousProperty = propertyBySharedPropertyType.get(
         sharedPropertyType.apiName,
       );
-      invariant(
+      addIssue(
         previousProperty === undefined,
         `Shared property type "${sharedPropertyType.apiName}" cannot back both "${previousProperty}" and "${apiName}" on object "${objectDef.apiName}". A shared property type can only back one property per object.`,
       );
       propertyBySharedPropertyType.set(sharedPropertyType.apiName, apiName);
     }
   });
-  invariant(
+  addIssue(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
     `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
   );
-  invariant(
+  addIssue(
     propertyApiNames.includes(objectDef.primaryKeyPropertyApiName),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} does not exist on object ${objectDef.apiName}`,
   );
 
-  invariant(
+  addIssue(
     !objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly,
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
@@ -128,7 +136,7 @@ export function defineObject(
     const nonDatasetDatasources = objectDef.datasources.filter(
       (ds) => ds.type !== "dataset" && ds.type !== "derived",
     );
-    invariant(
+    addIssue(
       nonDatasetDatasources.length === 0,
       `Object type "${objectDef.apiName}" has non-dataset datasources (${nonDatasetDatasources
         .map((ds) => ds.type)
@@ -143,7 +151,7 @@ export function defineObject(
     ) as ObjectTypeDatasourceDefinition_stream[]
   ).map((ds) => ds.retentionPeriod);
   retentionPeriods.forEach((retentionPeriod) => {
-    invariant(
+    addIssue(
       retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
       `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
     );
@@ -152,7 +160,7 @@ export function defineObject(
   const baseDatasources = (objectDef.datasources ?? []).filter((ds) =>
     ["dataset", "stream", "restrictedView"].includes(ds.type),
   );
-  invariant(
+  addIssue(
     baseDatasources.length <= 1,
     `Object ${objectDef.apiName} has more than one base datasource (got: [${baseDatasources
       .map((ds) => ds.type)
@@ -163,7 +171,7 @@ export function defineObject(
   );
   if (derivedDatasources.length > 0) {
     derivedDatasources.forEach((ds) =>
-      validateDerivedDatasource(objectDef, apiName, ds),
+      validateDerivedDatasource(objectDef, apiName, ds, collector),
     );
   }
 
@@ -189,7 +197,7 @@ export function defineObject(
         }
       },
     );
-    invariant(
+    addIssue(
       mismatchedProperties.length === 0,
       `Object "${objectDef.apiName}" has "${objectStatusType}" status, but the following properties have a different status: ${mismatchedProperties.join(
         ", ",
@@ -204,21 +212,21 @@ export function defineObject(
     objectDef.status.type === "deprecated"
   ) {
     const deadline = objectDef.status.deadline;
-    invariant(
+    addIssue(
       deadline !== undefined && ISO_8601_DATETIME.test(deadline),
       `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`,
     );
   }
   const titleProp =
     objectDef.properties?.[objectDef.titlePropertyApiName]?.type;
-  invariant(
+  addIssue(
     !isExotic(titleProp) ||
       (isStruct(titleProp) &&
         titleProp.mainValue &&
         !isExotic(titleProp.mainValue.type)),
     `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
-  invariant(
+  addIssue(
     !isExotic(
       objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.type,
     ),
@@ -284,7 +292,7 @@ export function defineObject(
     const allFailedValidations = validations
       .concat(nonExistentInterfaceProperties)
       .filter((val) => val.type === "invalid");
-    invariant(
+    addIssue(
       allFailedValidations.length === 0,
       "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
     );
@@ -303,16 +311,18 @@ export function defineObject(
     properties: flattenedProperties,
   };
   const context = `Object type "${apiName}"`;
-  validateDisplayMetadataLengths(finalObject, context);
+  validateDisplayMetadataLengths(finalObject, context, collector);
   for (const property of flattenedProperties) {
     const propertyContext = `${context}, property "${property.apiName}"`;
     validateDisplayMetadataLengths(
       property,
       propertyContext,
+      collector,
       OBJECT_PROPERTY_DISPLAY_NAME_LIMIT,
     );
-    validateStructFieldMetadata(property.type, propertyContext);
+    validateStructFieldMetadata(property.type, propertyContext, collector);
   }
+  collector.throwIfAnyIssues();
   updateOntology(finalObject);
   objectDef.apiName = apiName;
   return objectDef;
@@ -386,33 +396,46 @@ function validateDerivedDatasource(
   objectDef: ObjectTypeDefinition,
   objectTypeApiName: string,
   datasource: ObjectTypeDatasourceDefinition_derived,
+  collector: MakerValidationIssueCollector,
 ) {
+  const { addIssue } = collector;
   // there should be at least one link
-  invariant(
+  addIssue(
     datasource.linkDefinition.length > 0,
     `Derived datasource for object '${objectDef.apiName}' must have at least one link.`,
   );
 
-  // all of the links references should exist
-  datasource.linkDefinition.forEach((link) => {
-    const linkApiName = link.linkType.apiName;
-    invariant(
-      ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][linkApiName] !==
-        undefined ||
-        importedTypes[OntologyEntityTypeEnum.LINK_TYPE][linkApiName] !==
-          undefined,
-      `Link type '${linkApiName}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
+  const missingLinks = datasource.linkDefinition.filter(
+    ({ linkType }) =>
+      ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][linkType.apiName] ===
+        undefined &&
+      importedTypes[OntologyEntityTypeEnum.LINK_TYPE][linkType.apiName] ===
+        undefined,
+  );
+  missingLinks.forEach(({ linkType }) => {
+    addIssue(
+      false,
+      `Link type '${linkType.apiName}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
     );
   });
 
-  // all of the properties references on the source object should exist
-  Object.keys(datasource.propertyMapping).forEach((prop) => {
-    invariant(
-      objectDef.properties?.[prop] !== undefined,
+  const missingProperties = Object.keys(datasource.propertyMapping).filter(
+    (prop) => objectDef.properties?.[prop] === undefined,
+  );
+  missingProperties.forEach((prop) => {
+    addIssue(
+      false,
       `Property '${prop}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
     );
   });
 
+  // Skip dependent checks, but let the caller validate the other datasources.
+  if (
+    datasource.linkDefinition.length === 0 ||
+    missingLinks.length > 0 ||
+    missingProperties.length > 0
+  )
+    return;
   const isLinkedProperties =
     typeof Object.values(datasource.propertyMapping)[0] === "string";
   const { targetObjectApiName } = resolveDerivedPropertyLinks(
@@ -425,6 +448,7 @@ function validateDerivedDatasource(
       objectDef,
       objectTypeApiName,
       targetObjectApiName,
+      collector,
     );
   } else {
     validateAggregations(
@@ -432,6 +456,7 @@ function validateDerivedDatasource(
       objectDef,
       objectTypeApiName,
       targetObjectApiName,
+      collector,
     );
   }
 }
@@ -471,7 +496,9 @@ function validateLinkedProperties(
   objectDef: ObjectTypeDefinition,
   objectTypeApiName: string,
   targetObjectApiName: string,
+  collector: MakerValidationIssueCollector,
 ) {
+  const { addIssue } = collector;
   const foreignProperties = Object.values(
     datasource.propertyMapping,
   ) as string[];
@@ -482,7 +509,7 @@ function validateLinkedProperties(
     objectTypeApiName,
   );
   foreignProperties.forEach((prop) => {
-    invariant(
+    addIssue(
       hasProperty(prop),
       `Property '${prop}' on object '${apiName}' is not defined`,
     );
@@ -494,7 +521,9 @@ function validateAggregations(
   objectDef: ObjectTypeDefinition,
   objectTypeApiName: string,
   targetObjectApiName: string,
+  collector: MakerValidationIssueCollector,
 ) {
+  const { addIssue } = collector;
   const props = datasource.propertyMapping as Record<
     string,
     DerivedPropertyAggregation
@@ -508,12 +537,12 @@ function validateAggregations(
       case "collectList":
       case "collectSet":
         // property's type is collectible
-        invariant(
+        addIssue(
           isCollectible(property),
           `Property '${propName}' on object '${objectDef.apiName}' is not collectible`,
         );
         // limit <= 100
-        invariant(
+        addIssue(
           agg.limit <= 100,
           `[Error] Limit for collection '${propName}' on object '${objectDef.apiName}' is greater than 100`,
         );
@@ -521,7 +550,7 @@ function validateAggregations(
       case "avg":
       case "sum":
         // property's type is numeric
-        invariant(
+        addIssue(
           isNumeric(property.type),
           `Property '${propName}' on object '${objectDef.apiName}' is not numeric`,
         );
@@ -531,7 +560,7 @@ function validateAggregations(
       case "approximateCardinality":
       case "exactCardinality":
         // property's type is primitive
-        invariant(
+        addIssue(
           isPrimitive(property.type),
           `Property '${propName}' on object '${objectDef.apiName}' is not primitive`,
         );
@@ -548,7 +577,7 @@ function validateAggregations(
         objectDef,
         objectTypeApiName,
       );
-      invariant(
+      addIssue(
         hasProperty(foreignProperty),
         `Property '${foreignProperty}' on object '${apiName}' is not defined`,
       );

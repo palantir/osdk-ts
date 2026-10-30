@@ -22,6 +22,7 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
+import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { EntityPermission } from "./common/EntityPermission.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
@@ -91,9 +92,11 @@ export function defineSharedPropertyType(
       (shouldNotHaveRenderHints(sptDef.type) ? [] : defaultTypeClasses),
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
+  const collector = createValidationIssueCollector();
   const context = `Shared property type "${apiName}"`;
-  validateDisplayMetadataLengths(fullSpt, context);
-  validateStructFieldMetadata(fullSpt.type, context);
+  validateDisplayMetadataLengths(fullSpt, context, collector);
+  validateStructFieldMetadata(fullSpt.type, context, collector);
+  collector.throwIfAnyIssues();
   updateOntology(fullSpt);
   return fullSpt;
 }

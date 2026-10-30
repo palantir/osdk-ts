@@ -18,6 +18,7 @@ import type { LinkTypeMetadata } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
 import { isValidApiName } from "../util/ApiNameValidator.js";
+import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -83,12 +84,15 @@ export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
     "one" in linkType
       ? { one: linkType.one, toMany: linkType.toMany }
       : { many: linkType.many, toMany: linkType.toMany };
+  const collector = createValidationIssueCollector();
   for (const [side, link] of Object.entries(sides)) {
     validateDisplayMetadataLengths(
       link.metadata.displayMetadata,
       `Link type "${linkType.apiName}", ${side} "${link.metadata.apiName}"`,
+      collector,
     );
   }
+  collector.throwIfAnyIssues();
   updateOntology(linkType);
   return linkType;
 }
