@@ -500,8 +500,6 @@ jobs:
             pnpm exec turbo clean
             pnpm install --frozen-lockfile
             pnpm exec turbo transpile
-            # ponytail: a failed run still saves an empty cache entry for this base
-            # commit, so later runs rebuild the base instead of reusing a result.
             npx size-limit --json > /tmp/base.json || { cat /tmp/base.json; rm -f /tmp/base.json; }
       - save_cache:
           name: Save the base-branch measurement
