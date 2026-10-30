@@ -62,6 +62,11 @@ import {
 } from "../typeVisitors.js";
 import { LinkTypeShapeExtractor } from "./LinkTypeShapeExtractor.js";
 import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
+import {
+  getMarkingType,
+  getSchemaMigrationCandidates,
+  SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID,
+} from "./SchemaMigrationCandidatesExtractor.js";
 
 export const MIGRATION_SHAPE_READABLE_ID: ReadableId =
   "migration-input" as ReadableId;
@@ -197,9 +202,13 @@ export async function getShapes(
     consumeBlockShapes(allBlockShapes, groupShapes);
   }
 
-  // Migration shape
+  // Migration shapes
   const migrationShapes = getMigrationShape();
   consumeBlockShapes(allBlockShapes, migrationShapes);
+  consumeBlockShapes(
+    allBlockShapes,
+    getSchemaMigrationInputsShapes(ontologyBlockDataV2, ridGenerator),
+  );
 
   // Direct datasource blocks publish the same shapes under produced-* IDs.
   // Recommend those outputs for the ontology block's direct datasource inputs.
@@ -952,6 +961,49 @@ function getMigrationShape(): BlockShapes {
   };
 }
 
+function getSchemaMigrationInputsShapes(
+  ontologyBlockDataV2: OntologyBlockDataV2,
+  ridGenerator: OntologyRidGenerator,
+): BlockShapes {
+  const { candidates, markingsInputs } = getSchemaMigrationCandidates(
+    ontologyBlockDataV2.objectTypes,
+    ridGenerator,
+  );
+  const blockShapes: BlockShapes = {
+    inputShapes: new Map(),
+    outputShapes: new Map(),
+    inputShapeMetadata: new Map(),
+    inputMappings: [],
+  };
+  if (Object.keys(candidates).length === 0) {
+    return blockShapes;
+  }
+
+  const metadata: InputShapeMetadata = {
+    isOptional: true,
+    isAccessedInReconcile: false,
+  };
+  for (const [readableId, markings] of markingsInputs) {
+    blockShapes.inputShapes.set(readableId, { type: "markings", markings });
+    blockShapes.inputShapeMetadata.set(readableId, metadata);
+  }
+  blockShapes.inputShapes.set(SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID, {
+    type: "ontologySchemaMigrationInputs",
+    ontologySchemaMigrationInputs: {
+      about: createLocalizedAbout(
+        "Ontology schema migration inputs",
+        "Values required by schema migrations inferred at install time.",
+      ),
+      candidates,
+    },
+  });
+  blockShapes.inputShapeMetadata.set(
+    SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID,
+    metadata,
+  );
+  return blockShapes;
+}
+
 const MAX_CLASS_DESC =
   "The maximum classification for data under mandatory control property types and/or the max classification" +
   " allowed on an action type classification parameter.";
@@ -1031,13 +1083,6 @@ function getPropertiesForDatasource(datasourceDef: {
   }
 
   return new Set(propertyMapping ? Object.keys(propertyMapping) : []);
-}
-
-function getMarkingType(type: Type): "CBAC" | "MANDATORY" | undefined {
-  if (type.type === "array") {
-    return getMarkingType(type.array.subtype);
-  }
-  return type.type === "marking" ? type.marking.markingType : undefined;
 }
 
 /**

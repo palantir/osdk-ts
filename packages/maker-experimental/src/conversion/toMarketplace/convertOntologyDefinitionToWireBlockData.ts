@@ -53,6 +53,7 @@ import {
   getMultiInterfaceSptApiNames,
   MIGRATION_SHAPE_READABLE_ID,
 } from "./shapeExtractors/IrShapeExtractor.js";
+import { SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID } from "./shapeExtractors/SchemaMigrationCandidatesExtractor.js";
 
 function toActionTypeRestrictionStatus(
   p: EntityPermission,
@@ -665,6 +666,9 @@ function buildKnownIdentifiers(
     sharedPropertyTypes: sharedPropertyMappings,
     shapeIdForOntologyAllowSchemaMigrations: ridGenerator.toBlockInternalId(
       MIGRATION_SHAPE_READABLE_ID,
+    ),
+    shapeIdForOntologySchemaMigrationInputs: ridGenerator.toBlockInternalId(
+      SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID,
     ),
     shapeIdForInstallPrefix: null,
     structFieldRidsToApiNames,
