@@ -21,8 +21,14 @@ import {
 } from "./protocol.js";
 import type { WorkshopEmbedMessage } from "./protocol.js";
 
+type VariableValueByType = {
+  string: string;
+  number: number;
+  boolean: boolean;
+};
+
 /** Scalar types supported by the variable input protocol. @public */
-export type WorkshopVariableType = "string" | "number" | "boolean";
+export type WorkshopVariableType = keyof VariableValueByType;
 
 /** Local variable definitions keyed by external ID. @public */
 export type WorkshopVariableSchema = Readonly<
@@ -32,13 +38,7 @@ export type WorkshopVariableSchema = Readonly<
 /** A scalar variable input. Numbers must be finite; null requests clearing the value. @public */
 export type WorkshopVariableValue<
   TType extends WorkshopVariableType = WorkshopVariableType,
-> =
-  | {
-      string: string;
-      number: number;
-      boolean: boolean;
-    }[TType]
-  | null;
+> = VariableValueByType[TType] | null;
 
 /** Variable inputs keyed by non-empty external IDs. Omitted variables are unchanged. @public */
 export type WorkshopVariableValues<

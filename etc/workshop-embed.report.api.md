@@ -60,15 +60,13 @@ export type WorkshopVariableSchema = Readonly<Record<string, {
     	readonly type: WorkshopVariableType
 }>>;
 
+// Warning: (ae-forgotten-export) The symbol "VariableValueByType" needs to be exported by the entry point index.d.ts
+//
 // @public
-export type WorkshopVariableType = "string" | "number" | "boolean";
+export type WorkshopVariableType = keyof VariableValueByType;
 
 // @public
-export type WorkshopVariableValue<TType extends WorkshopVariableType = WorkshopVariableType> = {
-    	string: string
-    	number: number
-    	boolean: boolean
-}[TType] | null;
+export type WorkshopVariableValue<TType extends WorkshopVariableType = WorkshopVariableType> = VariableValueByType[TType] | null;
 
 // @public
 export type WorkshopVariableValues<TSchema extends WorkshopVariableSchema = WorkshopVariableSchema> = keyof TSchema extends never ? Readonly<Record<string, never>> : string extends keyof TSchema ? Readonly<Record<string, WorkshopVariableValue<TSchema[string]["type"]>>> : { readonly [TName in keyof TSchema]? : WorkshopVariableValue<TSchema[TName]["type"]> };
