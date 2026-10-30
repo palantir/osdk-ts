@@ -185,6 +185,15 @@ export type BaseFormProps = BaseFormCommonProps &
       }
   );
 
+/**
+ * A message surfaced in the form footer error indicator.
+ * The label is optional — omit it for errors not tied to a specific field.
+ */
+export interface FormErrorEntry {
+  label?: string;
+  message: string;
+}
+
 interface BaseFormCommonProps {
   /** Title shown in the form header. Omit to hide the header. */
   formTitle?: string;
@@ -204,4 +213,13 @@ interface BaseFormCommonProps {
   submitButtonText?: string;
   /** Visual variant of the submit button. Default `"primary"`. */
   submitButtonVariant?: "primary" | "secondary";
+  /**
+   * External validation errors to display in the footer error indicator
+   * alongside field errors. Controlled: the caller owns the array and is
+   * responsible for clearing it (e.g. on field change). BaseForm never
+   * modifies this value.
+   *
+   * @default undefined (no external errors)
+   */
+  validationErrors?: ReadonlyArray<FormErrorEntry>;
 }
