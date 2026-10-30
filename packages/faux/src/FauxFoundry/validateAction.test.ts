@@ -20,7 +20,6 @@ import { describe, expect, it } from "vitest";
 import {
   isInterfaceActionParam,
   isMediaReference,
-  isTimeSeriesReference,
   matchesOntologyDataType,
 } from "./validateAction.js";
 
@@ -575,47 +574,6 @@ describe("isMediaReference", () => {
     };
 
     expect(isMediaReference(invalidMediaRef)).toBe(false);
-  });
-});
-
-describe("isTimeSeriesReference", () => {
-  it("accepts each supported time series reference shape", () => {
-    expect(isTimeSeriesReference("series-id")).toBe(true);
-    expect(
-      isTimeSeriesReference({
-        seriesId: "series-id",
-        syncRid: "ri.timeseries-sync..sync",
-      }),
-    ).toBe(true);
-    expect(
-      isTimeSeriesReference({
-        templateRid: "ri.timeseries-template..template",
-      }),
-    ).toBe(true);
-    expect(
-      isTimeSeriesReference({
-        templateRid: "ri.timeseries-template..template",
-        templateVersion: "1",
-      }),
-    ).toBe(true);
-  });
-
-  it("rejects malformed and ambiguous time series references", () => {
-    expect(isTimeSeriesReference({})).toBe(false);
-    expect(isTimeSeriesReference({ seriesId: "series-id" })).toBe(false);
-    expect(
-      isTimeSeriesReference({
-        seriesId: "series-id",
-        syncRid: "ri.timeseries-sync..sync",
-        templateRid: "ri.timeseries-template..template",
-      }),
-    ).toBe(false);
-    expect(
-      isTimeSeriesReference({
-        templateRid: "ri.timeseries-template..template",
-        templateVersion: 1,
-      }),
-    ).toBe(false);
   });
 });
 

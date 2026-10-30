@@ -85,7 +85,6 @@ function actionPropertyToSdkPropertyDefinition(
     case "integer":
     case "long":
     case "timestamp":
-    case "timeSeriesReference":
     case "mediaReference":
     case "marking":
     case "objectType":

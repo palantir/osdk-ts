@@ -2,7 +2,6 @@
 "@osdk/api": minor
 "@osdk/cli.cmd.typescript": patch
 "@osdk/client": minor
-"@osdk/faux": patch
 "@osdk/foundry-sdk-generator": patch
 "@osdk/generator-converters.ontologyir": patch
 "@osdk/generator-converters.preview": patch
@@ -17,4 +16,4 @@
 "@osdk/vite-plugin-oac": patch
 ---
 
-Add support for rebase to scenario clients, add the public `TimeSeriesReference` type and support `timeSeriesReference` action parameters, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.

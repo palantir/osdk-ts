@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { TimeSeriesReference } from "@osdk/api";
 import type { MediaReference } from "@osdk/foundry.core";
 import type {
   ActionParameterType,
@@ -234,16 +233,6 @@ function validateActionParameterType(
       return;
     }
 
-    case "timeSeriesReference": {
-      if (!isTimeSeriesReference(value)) {
-        ret.result = "INVALID";
-        ret.parameters[paramKey] = {
-          ...baseParam,
-        };
-      }
-      return;
-    }
-
     case "vector": {
       ret.result = "INVALID";
       ret.parameters[paramKey] = {
@@ -448,33 +437,6 @@ export function isMediaReference(o: any): o is MediaReference {
     typeof o.reference.mediaSetViewItem.mediaSetRid === "string" &&
     typeof o.reference.mediaSetViewItem.mediaSetViewRid === "string" &&
     typeof o.reference.mediaSetViewItem.mediaItemRid === "string"
-  );
-}
-
-export function isTimeSeriesReference(
-  value: unknown,
-): value is TimeSeriesReference {
-  if (typeof value === "string") {
-    return true;
-  }
-  if (value == null || typeof value !== "object" || Array.isArray(value)) {
-    return false;
-  }
-
-  const reference = value as Record<string, unknown>;
-  if ("seriesId" in reference || "syncRid" in reference) {
-    return (
-      typeof reference.seriesId === "string" &&
-      typeof reference.syncRid === "string" &&
-      !("templateRid" in reference) &&
-      !("templateVersion" in reference)
-    );
-  }
-
-  return (
-    typeof reference.templateRid === "string" &&
-    (reference.templateVersion === undefined ||
-      typeof reference.templateVersion === "string")
   );
 }
 

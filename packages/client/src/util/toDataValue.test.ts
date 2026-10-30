@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Media, MediaUpload, TimeSeriesReference } from "@osdk/api";
+import type { Media, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
@@ -174,23 +174,6 @@ describe(toDataValue, () => {
       labels: ["office", "headquarters"],
     });
     expect(await toDataValue(polygon, clientCtx, "geoshape")).toEqual(polygon);
-  });
-
-  it("passes through time series references", async () => {
-    const references: TimeSeriesReference[] = [
-      "series-id",
-      { seriesId: "series-id", syncRid: "ri.timeseries-sync..sync" },
-      {
-        templateRid: "ri.timeseries-template..template",
-        templateVersion: "1",
-      },
-    ];
-
-    for (const reference of references) {
-      expect(
-        await toDataValue(reference, clientCtx, "timeSeriesReference"),
-      ).toEqual(reference);
-    }
   });
 
   it("maps an ontology object into just its primary key", async () => {
