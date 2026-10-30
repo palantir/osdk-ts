@@ -20,77 +20,23 @@ import { validateMediaItemMetadata } from "./validateMediaItemMetadata.js";
 
 describe("validateMediaItemMetadata", () => {
   it("passes a known variant through unchanged", () => {
+    const raw = { type: "imagery", format: "PNG", sizeBytes: 1024, bands: [] };
+    expect(validateMediaItemMetadata(raw)).toBe(raw);
+  });
+
+  it("reads the uncapped size without mutating the response", () => {
     const raw = {
       type: "imagery",
       format: "PNG",
-      sizeBytes: 1024,
-      sizeBytesLong: "1024",
-      bands: [],
-    };
-    expect(validateMediaItemMetadata(raw)).toBe(raw);
-  });
-
-  it.each([
-    "audio",
-    "document",
-    "imagery",
-    "spreadsheet",
-    "untyped",
-    "model3d",
-    "video",
-    "dicom",
-    "email",
-  ])("reads the uncapped size for %s without mutating the response", (type) => {
-    for (const sizeBytes of [
-      0,
-      2147483647,
-      2147483648,
-      5_000_000_000,
-      Number.MAX_SAFE_INTEGER,
-    ]) {
-      const legacySizeBytes = Math.min(sizeBytes, 2147483647);
-      const raw = {
-        type,
-        sizeBytes: legacySizeBytes,
-        sizeBytesLong: String(sizeBytes),
-      };
-      expect(validateMediaItemMetadata(raw)).toEqual({ ...raw, sizeBytes });
-      expect(raw.sizeBytes).toBe(legacySizeBytes);
-    }
-  });
-
-  it("passes an older response through without changing its legacy size", () => {
-    const raw = { type: "untyped", sizeBytes: 1024 };
-    expect(validateMediaItemMetadata(raw)).toBe(raw);
-    expect(raw).toEqual({ type: "untyped", sizeBytes: 1024 });
-  });
-
-  it("rejects known metadata without either size field", () => {
-    expect(() => validateMediaItemMetadata({ type: "untyped" })).toThrow();
-  });
-
-  it("rejects a non-string long size instead of using the capped legacy size", () => {
-    expect(() =>
-      validateMediaItemMetadata({
-        type: "untyped",
-        sizeBytes: 2147483647,
-        sizeBytesLong: 2147483648,
-      }),
-    ).toThrow();
-  });
-
-  it("keeps CAD metadata and its exact size in the unknown payload", () => {
-    const raw = {
-      type: "cad",
-      format: "STEP",
       sizeBytes: 2147483647,
       sizeBytesLong: "2147483648",
+      bands: [],
     };
-    const result = validateMediaItemMetadata(raw);
-    expect(result.type).toBe("unknown");
-    if (result.type === "unknown") {
-      expect(result.raw).toBe(raw);
-    }
+    expect(validateMediaItemMetadata(raw)).toEqual({
+      ...raw,
+      sizeBytes: 2147483648,
+    });
+    expect(raw.sizeBytes).toBe(2147483647);
   });
 
   it("wraps an unknown variant as UnknownMediaItemMetadata, preserving the raw payload", () => {

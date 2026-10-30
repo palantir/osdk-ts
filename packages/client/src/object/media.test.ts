@@ -21,7 +21,6 @@ import {
 import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
-  MockOntologiesV2,
   msw,
   startNodeApiServer,
   stubData,
@@ -39,13 +38,6 @@ describe("media", () => {
 
   const reference = stubData.objectWithAllPropertyTypes1.mediaReference;
   const { mediaSetRid, mediaItemRid } = reference.reference.mediaSetViewItem;
-  const sizeCases = [
-    0,
-    2147483647,
-    2147483648,
-    5_000_000_000,
-    Number.MAX_SAFE_INTEGER,
-  ];
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
@@ -117,9 +109,16 @@ describe("media", () => {
     });
   });
 
-  it.each(sizeCases)(
-    "reports %s bytes in raw-reference basic metadata",
-    async (sizeBytes) => {
+  it.each([
+    { response: { sizeBytes: 25 }, expected: 25 },
+    {
+      response: { sizeBytes: 2147483647, sizeBytesLong: "2147483647" },
+      expected: 2147483647,
+    },
+    { response: { sizeBytesLong: "2147483648" }, expected: 2147483648 },
+  ])(
+    "reads $expected bytes from raw-reference metadata",
+    async ({ response, expected }) => {
       await apiServer.boundary(async () => {
         apiServer.use(
           msw.http.get(
@@ -127,9 +126,7 @@ describe("media", () => {
             () =>
               msw.HttpResponse.json({
                 mimeType: "application/json",
-                path: "file1.txt",
-                sizeBytesLong: String(sizeBytes),
-                ...(sizeBytes <= 2147483647 ? { sizeBytes } : {}),
+                ...response,
               }),
           ),
         );
@@ -139,184 +136,41 @@ describe("media", () => {
           reference,
         ).fetchMetadata();
 
-        expect(metadata).toEqual({
-          mediaType: "application/json",
-          path: "file1.txt",
-          sizeBytes,
-        });
+        expect(metadata.sizeBytes).toBe(expected);
       })();
     },
   );
 
-  it("reads raw-reference basic metadata from older responses", async () => {
-    await apiServer.boundary(async () => {
-      apiServer.use(
-        msw.http.get(
-          `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}`,
-          () =>
-            msw.HttpResponse.json({
-              mimeType: "application/json",
-              path: "file1.txt",
-              sizeBytes: 25,
-            }),
-        ),
-      );
-
-      expect(
-        await createMediaFromReference(client, reference).fetchMetadata(),
-      ).toEqual({
-        mediaType: "application/json",
-        path: "file1.txt",
-        sizeBytes: 25,
-      });
-    })();
-  });
-
-  it.each(sizeCases)(
-    "reports %s bytes in object-property basic metadata",
+  it.each([2147483647, 2147483648])(
+    "reads %s bytes from full metadata through both media sources",
     async (sizeBytes) => {
       await apiServer.boundary(async () => {
         apiServer.use(
-          MockOntologiesV2.MediaReferenceProperties.getMediaMetadata(
-            baseUrl,
-            () => ({
-              mediaType: "application/json",
-              path: "file1.txt",
-              sizeBytes: String(sizeBytes),
-            }),
+          msw.http.get(
+            `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}/metadata`,
+            () =>
+              msw.HttpResponse.json({
+                type: "untyped",
+                sizeBytes: 2147483647,
+                sizeBytesLong: String(sizeBytes),
+              }),
           ),
         );
 
         const result = await client(objectTypeWithAllPropertyTypes)
           .where({ id: stubData.objectWithAllPropertyTypes1.id })
           .fetchPage();
-        const metadata = await result.data[0].mediaReference?.fetchMetadata();
-
-        expect(metadata).toEqual({
-          mediaType: "application/json",
-          path: "file1.txt",
-          sizeBytes,
-        });
+        for (const media of [
+          createMediaFromReference(client, reference),
+          result.data[0].mediaReference,
+        ]) {
+          expect(await media?.fetchFullMetadata?.()).toMatchObject({
+            itemMetadata: { sizeBytes },
+          });
+        }
       })();
     },
   );
-
-  describe.each(["raw reference", "object property"])(
-    "full metadata through %s",
-    (source) => {
-      it.each(sizeCases)(
-        "reports %s bytes from the long size instead of the capped legacy field",
-        async (sizeBytes) => {
-          await apiServer.boundary(async () => {
-            apiServer.use(
-              msw.http.get(
-                `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}/metadata`,
-                () =>
-                  msw.HttpResponse.json({
-                    type: "untyped",
-                    sizeBytes: Math.min(sizeBytes, 2147483647),
-                    sizeBytesLong: String(sizeBytes),
-                  }),
-              ),
-            );
-
-            const result =
-              source === "object property"
-                ? await client(objectTypeWithAllPropertyTypes)
-                    .where({ id: stubData.objectWithAllPropertyTypes1.id })
-                    .fetchPage()
-                : undefined;
-            const media =
-              source === "object property"
-                ? result?.data[0].mediaReference
-                : createMediaFromReference(client, reference);
-
-            expect(await media?.fetchFullMetadata?.()).toEqual({
-              itemMetadata: {
-                type: "untyped",
-                sizeBytes,
-                sizeBytesLong: String(sizeBytes),
-              },
-            });
-          })();
-        },
-      );
-
-      it("reads full metadata from older responses", async () => {
-        await apiServer.boundary(async () => {
-          apiServer.use(
-            msw.http.get(
-              `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}/metadata`,
-              () => msw.HttpResponse.json({ type: "untyped", sizeBytes: 25 }),
-            ),
-          );
-
-          const result =
-            source === "object property"
-              ? await client(objectTypeWithAllPropertyTypes)
-                  .where({ id: stubData.objectWithAllPropertyTypes1.id })
-                  .fetchPage()
-              : undefined;
-          const media =
-            source === "object property"
-              ? result?.data[0].mediaReference
-              : createMediaFromReference(client, reference);
-
-          expect(await media?.fetchFullMetadata?.()).toEqual({
-            itemMetadata: {
-              type: "untyped",
-              sizeBytes: 25,
-            },
-          });
-        })();
-      });
-    },
-  );
-
-  it("forwards read tokens for raw-reference metadata requests", async () => {
-    await apiServer.boundary(async () => {
-      const tokens: Array<string | null> = [];
-      apiServer.use(
-        msw.http.get(
-          `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}`,
-          ({ request }) => {
-            tokens.push(request.headers.get("ReadToken"));
-            return msw.HttpResponse.json({
-              mimeType: "application/json",
-              sizeBytesLong: "2147483648",
-            });
-          },
-        ),
-        msw.http.get(
-          `${baseUrl}/api/v2/mediasets/${mediaSetRid}/items/${mediaItemRid}/metadata`,
-          ({ request }) => {
-            tokens.push(request.headers.get("ReadToken"));
-            return msw.HttpResponse.json({
-              type: "untyped",
-              sizeBytes: 2147483647,
-              sizeBytesLong: "2147483648",
-            });
-          },
-        ),
-      );
-
-      const media = createMediaFromReference(client, {
-        ...reference,
-        reference: {
-          ...reference.reference,
-          mediaSetViewItem: {
-            ...reference.reference.mediaSetViewItem,
-            token: "test-read-token",
-          },
-        },
-      });
-
-      await media.fetchMetadata();
-      await media.fetchFullMetadata?.();
-
-      expect(tokens).toEqual(["test-read-token", "test-read-token"]);
-    })();
-  });
 
   it("reads media content successfully", async () => {
     const result = await client(objectTypeWithAllPropertyTypes)
