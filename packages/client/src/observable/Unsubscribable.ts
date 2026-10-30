@@ -16,4 +16,5 @@
 
 export interface Unsubscribable {
   unsubscribe: () => void;
+  revalidate?: (force?: boolean) => Promise<void>;
 }
