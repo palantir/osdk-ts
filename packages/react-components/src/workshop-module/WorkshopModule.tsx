@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getClientBranch } from "@osdk/client/internal";
 import { useOsdkClient } from "@osdk/react";
 import { symbolClientContext } from "@osdk/shared.client";
 import React from "react";
@@ -30,6 +31,7 @@ export function WorkshopModule(props: WorkshopModuleProps): React.ReactElement {
     <BaseWorkshopModule
       {...props}
       foundryUrl={client[symbolClientContext].baseUrl}
+      branchRid={getClientBranch(client)}
       defaultTheme={theme?.theme}
     />
   );

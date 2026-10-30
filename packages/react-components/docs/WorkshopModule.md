@@ -27,6 +27,22 @@ The iframe uses the user's browser session to authenticate with Foundry. The use
 
 This component renders the module only. It does not map interface variables or establish a message channel.
 
+## Branch
+
+`WorkshopModule` inherits the resolved Foundry branch from the client in `OsdkProvider`, so the embedded module uses the same branch as the app's OSDK requests. Replacing the provider's client with one on a different branch navigates the iframe and resets the module's state.
+
+`BaseWorkshopModule` accepts an explicit `branchRid`. When no branch is supplied, it opens on main, including when Workshop previously remembered another branch in the browser session.
+
+```tsx
+<BaseWorkshopModule
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  branchRid="ri.branch..branch.example"
+/>
+```
+
+Version selection keeps Workshop's existing behavior: on a branch, both `published` and `latest` load the latest saved module on that branch, falling back to the latest saved module on main if needed. On main, `moduleVersion` selects the published or latest saved version as described above.
+
 ## Theme
 
 `WorkshopModule` inherits the initial theme from the nearest [OsdkThemeProvider](./OsdkThemeProvider.md). The provider is optional; without one, Workshop uses the module's theme. In `system` mode, the iframe stays hidden with no URL until the browser preference is resolved. It starts loading only after the initial light or dark theme is known.
@@ -77,6 +93,7 @@ import { BaseWorkshopModule } from "@osdk/react-components/experimental/workshop
 | `className`     | `string`                        | Additional CSS class name for the iframe. Defaults to `undefined`.                                                                                                                                                                    |
 | `style`         | `CSSProperties`                 | Inline styles for the iframe. By default, it fills its container. Defaults to `undefined`.                                                                                                                                            |
 | `foundryUrl`    | `string`                        | **Required.** HTTP or HTTPS Foundry base URL, for example `https://example.palantirfoundry.com`.                                                                                                                                      |
+| `branchRid`     | `string`                        | Foundry branch RID. Changing the branch reloads the module. Defaults to `undefined (main branch)`.                                                                                                                                    |
 | `defaultTheme`  | `"light" \| "dark" \| "system"` | Initial theme override. `system` resolves the browser preference once before loading the module. Uncontrolled: changes after mount are ignored. Remount to apply a different theme. Defaults to `undefined (use the module's theme)`. |
 
 <!-- AUTOGEN:props END -->

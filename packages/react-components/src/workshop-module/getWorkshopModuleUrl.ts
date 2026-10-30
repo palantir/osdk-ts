@@ -23,10 +23,11 @@ export function getWorkshopModuleUrl({
   foundryUrl,
   moduleRid,
   moduleVersion = "published",
+  branchRid,
   theme,
 }: Pick<
   BaseWorkshopModuleProps,
-  "foundryUrl" | "moduleRid" | "moduleVersion"
+  "foundryUrl" | "moduleRid" | "moduleVersion" | "branchRid"
 > & { theme?: ResolvedOsdkTheme }): string {
   // Workshop URLs historically use "latest" for published and "dev" for latest saved.
   const version = moduleVersion === "published" ? "latest" : "dev";
@@ -39,6 +40,8 @@ export function getWorkshopModuleUrl({
     "Foundry URL must use http or https.",
   );
   url.searchParams.set("embedded", "true");
+  // An empty value clears Workshop's persisted branch; omitting it restores that branch.
+  url.searchParams.set("foundry-branch-rid", branchRid ?? "");
   if (theme != null) {
     url.searchParams.set(
       "themeOverride",
