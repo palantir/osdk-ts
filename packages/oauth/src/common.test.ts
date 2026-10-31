@@ -109,3 +109,71 @@ describe("local functions", () => {
     );
   });
 });
+
+describe("refresh timer", () => {
+  const authServer = createAuthorizationServer(
+    "multipass",
+    "https://stack.palantir.com",
+  );
+
+  function signInWithExpiry(expires_in: number) {
+    const refresh = vi.fn();
+    const { makeTokenAndSaveRefresh } = common(
+      { client_id: "hi_mom" },
+      authServer,
+      vi.fn(),
+      {},
+      refresh,
+      undefined,
+      "scope",
+      undefined,
+    );
+    makeTokenAndSaveRefresh(
+      {
+        refresh_token: "refresh",
+        access_token: "access",
+        token_type: "idk",
+        expires_in,
+      },
+      "signIn",
+    );
+    return refresh;
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("waits until half the token life when it lives under a minute", () => {
+    const refresh = signInWithExpiry(30);
+
+    vi.advanceTimersByTime(14_999);
+    expect(refresh).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(1);
+    expect(refresh).toHaveBeenCalledTimes(1);
+  });
+
+  it("caps the delay at the setTimeout maximum for long lived tokens", () => {
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+    const refresh = signInWithExpiry(3_000_000);
+
+    expect(setTimeoutSpy).toHaveBeenLastCalledWith(refresh, 2_147_483_647);
+    vi.advanceTimersByTime(60_000);
+    expect(refresh).not.toHaveBeenCalled();
+  });
+
+  it("refreshes a minute before expiry for ordinary tokens", () => {
+    const refresh = signInWithExpiry(3600);
+
+    vi.advanceTimersByTime(3_539_999);
+    expect(refresh).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(1);
+    expect(refresh).toHaveBeenCalledTimes(1);
+  });
+});
