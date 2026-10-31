@@ -160,7 +160,7 @@ describe("refresh timer", () => {
 
   it("caps the delay at the setTimeout maximum for long lived tokens", () => {
     const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
-    const refresh = signInWithExpiry(3_000_000);
+    const refresh = signInWithExpiry(5_000_000);
 
     expect(setTimeoutSpy).toHaveBeenLastCalledWith(refresh, 2_147_483_647);
     vi.advanceTimersByTime(60_000);

@@ -31,7 +31,7 @@ import type { Token } from "./Token.js";
 // Refresh this long before the token expires, but never earlier than half the token's life
 const REFRESH_LEAD_TIME_MS = 60 * 1000;
 
-// The largest delay `setTimeout` accepts; anything larger fires after 1ms
+// The largest delay `setTimeout` accepts; larger values overflow
 const MAX_TIMEOUT_MS = 2_147_483_647;
 
 // Node 18 is supposed to have a `CustomEvent` but it is not exposed on `globalThis`
