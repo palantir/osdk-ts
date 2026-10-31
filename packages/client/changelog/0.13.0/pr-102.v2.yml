@@ -1,5 +1,0 @@
-type: improvement
-improvement:
-  description: Tweak openapi gen
-  links:
-  - https://github.com/palantir/osdk-ts/pull/102
