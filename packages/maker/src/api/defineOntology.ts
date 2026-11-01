@@ -51,7 +51,6 @@ import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
 import type { FolderDefinition } from "./defineFolder.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
-import { validateInterfaceSchemaMigrationReferences } from "./interface/validateInterfaceSchemaMigrationReferences.js";
 import type {
   IntermediaryObjectLinkReference,
   LinkType,
@@ -60,6 +59,7 @@ import type { InterfaceImplementation } from "./object/InterfaceImplementation.j
 import type { ObjectType } from "./object/ObjectType.js";
 import type { ObjectTypeDatasourceMarkingConstraints } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
+import { validateOntology } from "./validateOntology.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -133,7 +133,7 @@ export async function defineOntology(
     consola.debug("Unexpected error while processing the body of the ontology");
     throw e;
   }
-  validateInterfaceSchemaMigrationReferences(ontologyDefinition);
+  validateOntology({ ontology: ontologyDefinition, importedTypes });
   await beforeWrite?.(ontologyDefinition);
   if (outputDir) {
     writeStaticObjects(outputDir);

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import type { OntologyIr } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { InterfaceTypeDefinition } from "../defineInterface.js";
 import { defineInterface } from "../defineInterface.js";
+import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 import { importOntologyEntity } from "../importOntologyEntity.js";
@@ -28,6 +30,7 @@ import type {
   InterfaceSchemaTransition,
 } from "../interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../interface/InterfaceType.js";
+import type { ParameterConstraintDefinition } from "../InterfaceActionTypeConstraintDefinition.js";
 
 type AuthoredProperty = NonNullable<
   InterfaceTypeDefinition["properties"]
@@ -39,6 +42,33 @@ function addRequiredProperty(
   property: string,
 ): InterfaceSchemaMigrationInstruction {
   return { type: "addRequiredProperty", property };
+}
+
+function addRequiredActionTypeConstraint(
+  actionTypeConstraint: string,
+): InterfaceSchemaMigrationInstruction {
+  return { type: "addRequiredActionTypeConstraint", actionTypeConstraint };
+}
+
+function defineConstraint(
+  interfaceType: InterfaceType,
+  apiName: string,
+  requireImplementation: boolean,
+  parameters: ParameterConstraintDefinition[] = [],
+): void {
+  defineInterfaceActionTypeConstraint({
+    interfaceType,
+    apiName,
+    displayName: apiName,
+    description: apiName,
+    requireImplementation,
+    parameters,
+  });
+}
+
+/** Runs `body` as an ontology, so that the ontology-level validation runs too. */
+function inOntology(body: () => void): Promise<OntologyIr> {
+  return defineOntology("com.palantir.", body, undefined);
 }
 
 /**
@@ -333,7 +363,7 @@ describe("Interface schema migrations", () => {
           transition({ id: "t2", instructions: [instruction] }),
         ]),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property or action type constraint may be migrated by at most one in-flight transition.]`,
+        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". Each element of an interface schema may be migrated by at most one in-flight transition.]`,
       );
     });
 
@@ -345,7 +375,26 @@ describe("Interface schema migrations", () => {
           transition({ id: "t1", instructions: [instruction, instruction] }),
         ]),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". A property or action type constraint may be migrated by at most one in-flight transition.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("optional0"), which conflicts with addRequiredProperty("optional0") already declared by transition "t1". Each element of an interface schema may be migrated by at most one in-flight transition.]`,
+      );
+    });
+
+    it("rejects two transitions migrating the same action type constraint, however it is named", () => {
+      expect(() =>
+        defineWithMigrations([
+          transition({
+            id: "t1",
+            instructions: [addRequiredActionTypeConstraint("doThing")],
+          }),
+          transition({
+            id: "t2",
+            instructions: [
+              addRequiredActionTypeConstraint("com.palantir.doThing"),
+            ],
+          }),
+        ]),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t2" on interface com.palantir.Foo declares addRequiredActionTypeConstraint("com.palantir.doThing"), which conflicts with addRequiredActionTypeConstraint("doThing") already declared by transition "t1". Each element of an interface schema may be migrated by at most one in-flight transition.]`,
       );
     });
   });
@@ -455,6 +504,71 @@ describe("Interface schema migrations", () => {
         defineTargeting("bareSpt", bareSpt),
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo targets property "bareSpt" via addRequiredProperty, but that property is required. Only properties declared required: false may be targeted.]`,
+      );
+    });
+  });
+
+  describe("addRequiredActionTypeConstraint", () => {
+    function defineTargeting(actionTypeConstraint: string): InterfaceType {
+      return defineWithMigrations([
+        transition({
+          instructions: [addRequiredActionTypeConstraint(actionTypeConstraint)],
+        }),
+      ]);
+    }
+
+    it("is not supported in ontology IR", async () => {
+      await expect(
+        inOntology(() => {
+          defineConstraint(defineTargeting("doThing"), "doThing", false);
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: addRequiredActionTypeConstraint schema migrations are not supported in ontology IR. Define the ontology with SuperRepo instead to use them.]`,
+      );
+    });
+
+    it("rejects a constraint that is not declared", async () => {
+      await expect(
+        inOntology(() => {
+          defineTargeting("doThing");
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredActionTypeConstraint("doThing"), but interface com.palantir.Foo does not declare action type constraint "com.palantir.doThing". Declare it with \`defineInterfaceActionTypeConstraint\` and \`requireImplementation: false\`.]`,
+      );
+    });
+
+    it("rejects a constraint inherited from an extended interface", async () => {
+      await expect(
+        inOntology(() => {
+          const parent = defineInterface({
+            apiName: "Parent",
+            schemaMigrations: { transitions: [] },
+          });
+          defineConstraint(parent, "doThing", false);
+          defineInterface({
+            apiName: "Child",
+            extends: parent,
+            schemaMigrations: {
+              transitions: [
+                transition({
+                  instructions: [addRequiredActionTypeConstraint("doThing")],
+                }),
+              ],
+            },
+          });
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Child declares addRequiredActionTypeConstraint("doThing"), but interface com.palantir.Child does not declare action type constraint "com.palantir.doThing". Action type constraints inherited from an extended interface must be migrated by a transition on the interface that declares them.]`,
+      );
+    });
+
+    it("rejects a constraint that is already requireImplementation:true", async () => {
+      await expect(
+        inOntology(() => {
+          defineConstraint(defineTargeting("doThing"), "doThing", true);
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredActionTypeConstraint("doThing"), but action type constraint "com.palantir.doThing" is \`requireImplementation: true\`. Only action type constraints declared \`requireImplementation: false\` may be targeted.]`,
       );
     });
   });

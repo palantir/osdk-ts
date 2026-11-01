@@ -27,7 +27,7 @@ import {
   importOntologyEntity,
   initializeOntologyState,
   OntologyEntityTypeEnum,
-  validateInterfaceSchemaMigrationReferences,
+  validateOntology,
   writeDependencyFile,
   writeStaticObjects,
 } from "@osdk/maker";
@@ -123,8 +123,8 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
-  // Runs once external imports are registered, so replacements can be checked against them
-  validateInterfaceSchemaMigrationReferences(ontologyDefinition);
+  validateOntology({ ontology: ontologyDefinition, importedTypes });
+
   const folderDefinitions = resolveFolderDefinitions(
     getFolderDefinitions(),
     ontologyDefinition,
