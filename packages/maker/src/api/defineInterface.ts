@@ -245,12 +245,7 @@ export function defineInterface(
   validateSchemaMigrationsFamilyOptIn(
     apiName,
     interfaceDef.schemaMigrations !== undefined,
-    extendsInterfaces.flatMap(
-      (parent) =>
-        ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
-          parent.apiName
-        ] ?? [],
-    ),
+    extendsInterfaces,
   );
 
   updateOntology(fullInterface);
