@@ -105,15 +105,12 @@ export type InterfaceSchemaMigrationInstruction =
    * `replacement`, so that no object type implements this interface type once the grace period
    * elapses.
    *
-   * Use this to replace an interface type with another, for example when API names change.
-   * Proposals swap each object type's implementation of this interface type for the replacement.
-   * Consumers must already read both interface types, because object types move over one at a time
-   * during the grace period.
+   * Use this to replace an interface type with another, for example when re-defining an interface
+   * in another project which resulted in new API names. Consumers must already support and understand
+   * both interface types, because object types move over one at a time during the grace period.
    *
    * This changes nothing about the interface type's own schema, and is never finalized: it stays
-   * declared as a tombstone until the interface type itself is removed. It must be the only
-   * instruction of the only transition the interface type declares, so no further migrations can be
-   * declared on it while it stands. Delete the migration by removing its transition.
+   * declared as a tombstone until the interface type itself is removed.
    */
   | { type: "replace"; replacement: InterfaceTypeReplacement };
 
@@ -125,7 +122,8 @@ export interface InterfaceTypeReplacement {
   interfaceType: InterfaceType | string;
   /**
    * Maps this interface type's property API names to the replacement's. Every property that is
-   * required on the replacement must be a target, so that proposals produce a valid implementation.
+   * required on the replacement must be a target, so that automatically-generated changes produce a
+   * valid implementation.
    */
   propertyMappings: Record<string, string>;
   /**
@@ -144,7 +142,9 @@ export interface InterfaceTypeReplacement {
 }
 
 export interface InterfaceActionTypeConstraintReplacement {
-  /** The API name of the replacement's action type constraint. */
+  /**
+   * The API name of the replacement's action type constraint.
+   */
   actionTypeConstraint: string;
   /**
    * Maps this action type constraint's parameter API names to the replacement constraint's. Every

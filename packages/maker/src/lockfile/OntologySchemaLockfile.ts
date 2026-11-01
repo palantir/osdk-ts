@@ -111,11 +111,6 @@ export interface LockedTransition {
   instructions: LockedInstruction[];
 }
 
-/**
- * An `InterfaceSchemaMigrationInstruction` in the form the lockfile records it: every entity it
- * references is named by the fully-qualified api name it publishes under, and nothing is an object
- * reference, so it survives a JSON round trip.
- */
 export type LockedInstruction = {
   type: "addRequiredProperty";
   property: string;

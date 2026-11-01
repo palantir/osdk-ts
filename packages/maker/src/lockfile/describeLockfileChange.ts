@@ -274,8 +274,7 @@ export function describeWarning(warning: LockfileWarning): string {
 }
 
 /**
- * The instruction as the author would have written it, for prose. The DSL form names a replacement
- * interface by object or api name, so naming it by api name is still a valid instruction.
+ * The instruction as the author would have written it, for prose.
  */
 function toAuthoredInstruction(
   instruction: LockedInstruction,
