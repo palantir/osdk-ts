@@ -106,7 +106,7 @@ function convertInstruction(
     case "addRequiredActionTypeConstraint":
     case "replace":
       throw new Error(
-        `${instruction.type} schema migrations are not supported in ontology IR. Define the ontology with @osdk/maker-experimental to publish them.`,
+        `${instruction.type} schema migrations are not supported in ontology IR. Define the ontology with SuperRepo instead to use them.`,
       );
     default: {
       const unhandled: never = instruction;

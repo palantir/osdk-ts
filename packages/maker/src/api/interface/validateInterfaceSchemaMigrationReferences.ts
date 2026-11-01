@@ -17,34 +17,37 @@
 import type { OntologyIrInterfaceActionTypeConstraint } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
-import type { OntologyDefinition } from "../common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { namespace } from "../defineOntology.js";
 import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
+import type { OntologyValidationContext } from "../validateOntology.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import type { InterfaceSchemaMigrationInstruction } from "./InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "./InterfaceType.js";
 
 /**
- * Validates interface schema migrations against the other entities they reference. These run once
- * the whole ontology is defined, since action type constraints, link constraints, and extending
- * interface types are all attached after `defineInterface` returns.
+ * Validates interface schema migrations against the other entities they reference.
+ *
+ * These run once the whole ontology is defined, since action type constraints, link constraints,
+ * and extending interface types are all attached after `defineInterface` returns.
  */
-export function validateInterfaceSchemaMigrationReferences(
-  ontology: OntologyDefinition,
-): void {
+export function validateInterfaceSchemaMigrationReferences({
+  ontology,
+}: OntologyValidationContext): void {
   const interfaceTypes = Object.values(
     ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
   );
+
   for (const interfaceType of interfaceTypes) {
-    for (const transition of interfaceType.schemaMigrations?.transitions ??
-      []) {
+    const transitions = interfaceType.schemaMigrations?.transitions ?? [];
+    for (const transition of transitions) {
       for (const instruction of transition.instructions) {
         const context: ReferenceContext = {
           interfaceType,
           transitionId: transition.id,
           prefix: `Schema migration transition "${transition.id}" on interface ${interfaceType.apiName} declares ${describeInstruction(instruction)}`,
         };
+
         validateInstructionReferences(context, instruction, interfaceTypes);
       }
     }
@@ -65,9 +68,10 @@ function validateInstructionReferences(
 ): void {
   switch (instruction.type) {
     case "addRequiredProperty":
-      // Fully validated by `defineInterface`
+      // Already eagerly validated by defineInterface
       return;
     case "addRequiredActionTypeConstraint":
+      // action type constraints are defined separately from defineInterface
       validateActionTypeConstraintTarget(
         context,
         combineApiNamespaceIfMissing(
@@ -86,22 +90,25 @@ function validateInstructionReferences(
 
 function validateActionTypeConstraintTarget(
   { interfaceType, prefix }: ReferenceContext,
-  apiName: string,
+  actionTypeConstraintApiName: string,
 ): void {
   const constraint = interfaceType.actionTypeConstraints.find(
-    (candidate) => candidate.metadata.apiName === apiName,
+    (candidate) => candidate.metadata.apiName === actionTypeConstraintApiName,
   );
+
   invariant(
     constraint !== undefined,
-    `${prefix}, but interface ${interfaceType.apiName} does not declare action type constraint "${apiName}". ${
-      flattenedActionTypeConstraints(interfaceType).has(apiName)
+    `${prefix}, but interface ${interfaceType.apiName} does not declare action type constraint "${actionTypeConstraintApiName}". ${
+      flattenedActionTypeConstraints(interfaceType).has(
+        actionTypeConstraintApiName,
+      )
         ? "Action type constraints inherited from an extended interface must be migrated by a transition on the interface that declares them."
         : "Declare it with `defineInterfaceActionTypeConstraint` and `requireImplementation: false`."
     }`,
   );
   invariant(
     !constraint.requireImplementation,
-    `${prefix}, but action type constraint "${apiName}" is \`requireImplementation: true\`. Only action type constraints declared \`requireImplementation: false\` may be targeted.`,
+    `${prefix}, but action type constraint "${actionTypeConstraintApiName}" is \`requireImplementation: true\`. Only action type constraints declared \`requireImplementation: false\` may be targeted.`,
   );
 }
 

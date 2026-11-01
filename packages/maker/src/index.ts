@@ -119,7 +119,6 @@ export type {
   InterfaceTypeReplacement,
 } from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
-export { validateInterfaceSchemaMigrationReferences } from "./api/interface/validateInterfaceSchemaMigrationReferences.js";
 export type {
   LinkType,
   OneToManyLinkTypeDefinition,
@@ -154,6 +153,10 @@ export {
   shouldNotHaveRenderHints,
   validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
+export {
+  type OntologyValidationContext,
+  validateOntology,
+} from "./api/validateOntology.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export type {
   AuthoringDataConstraint,

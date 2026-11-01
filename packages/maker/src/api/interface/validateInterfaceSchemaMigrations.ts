@@ -108,7 +108,7 @@ export function validateInterfaceSchemaMigrations(
         const conflict = claimedBy.get(claim);
         invariant(
           conflict === undefined,
-          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property or action type constraint may be migrated by at most one in-flight transition.`,
+          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". Each element of an interface schema may be migrated by at most one in-flight transition.`,
         );
         claimedBy.set(claim, {
           transitionId: id,
@@ -189,7 +189,8 @@ function validateInstruction(
       return;
     }
     case "addRequiredActionTypeConstraint":
-      // Whether the constraint exists is checked once the ontology is fully defined
+      // action type constraints aren't defined by defineInterface, so these are checked post-facto
+      // once the the ontology is fully-defined
       return;
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
