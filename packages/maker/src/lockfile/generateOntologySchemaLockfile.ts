@@ -217,7 +217,6 @@ function lockInterfaceSchemaMigrationTransitions(
     .sort((a, b) => compare(a.id, b.id));
 }
 
-/** The instruction as the lockfile records it, naming everything by its published api name. */
 function lockInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
   interfaceType: InterfaceType,
