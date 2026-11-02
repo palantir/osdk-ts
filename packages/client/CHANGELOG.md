@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.86.0
+
+### Minor Changes
+
+- af66ef0: Load ontology-defined derived properties by default when fetching all base object properties from an interface, while preserving an explicit opt-out.
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+  - @osdk/shared.test@2.58.0
+
 ## 2.85.0
 
 ### Minor Changes

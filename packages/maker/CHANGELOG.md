@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.85.0
+
+### Minor Changes
+
+- 6b9b2c0: Preserve `isRequiredParameterOnConcreteAction` in Maker and Marketplace shapes. When the flag is true, check that mapped Action parameters are required.
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters.ontologyir@2.86.0
+
 ## 0.84.0
 
 ### Minor Changes
