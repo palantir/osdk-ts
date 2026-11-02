@@ -52,11 +52,11 @@ import { resolveReplacementInterfaceType } from "./resolveInterfaceTypeReplaceme
  * These run once the whole ontology is defined, since action type constraints, link constraints,
  * and extending interface types are all attached after `defineInterface` returns.
  */
-export function validateInterfaceSchemaMigrationReferences({
-  ontology,
-}: OntologyValidationContext): void {
+export function validateInterfaceSchemaMigrationReferences(
+  validationContext: OntologyValidationContext,
+): void {
   const interfaceTypes = Object.values(
-    ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
+    validationContext.ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
   );
 
   for (const interfaceType of interfaceTypes) {
@@ -64,6 +64,7 @@ export function validateInterfaceSchemaMigrationReferences({
     for (const transition of transitions) {
       for (const instruction of transition.instructions) {
         const context: ReferenceContext = {
+          validationContext,
           interfaceType,
           transitionId: transition.id,
           prefix: `Schema migration transition "${transition.id}" on interface ${interfaceType.apiName} declares ${describeInstruction(instruction)}`,
@@ -76,6 +77,7 @@ export function validateInterfaceSchemaMigrationReferences({
 }
 
 interface ReferenceContext {
+  validationContext: OntologyValidationContext;
   interfaceType: InterfaceType;
   transitionId: string;
   /** The start of every error message, naming the transition, interface, and instruction. */
@@ -110,7 +112,7 @@ function validateInstructionReferences(
       );
       invariant(
         extender === undefined,
-        `${prefix}, but interface ${extender?.apiName} extends it. An interface type may not be replaced while another interface type extends it; remove the extension first.`,
+        `${prefix}, but interface ${extender?.apiName} extends it. An interface type may not be replaced while another interface type extends it; replace or remove the extension first.`,
       );
       validateReplacement(context, instruction.replacement);
       return;
@@ -134,15 +136,14 @@ function validateActionTypeConstraintTarget(
     (candidate) => candidate.metadata.apiName === actionTypeConstraintApiName,
   );
 
+  const hint = flattenedActionTypeConstraintsIncludingInherited(
+    interfaceType,
+  ).has(actionTypeConstraintApiName)
+    ? "Action type constraints inherited from an extended interface must be migrated by a transition on the interface that declares them."
+    : "Declare it with `defineInterfaceActionTypeConstraint` and `requireImplementation: false`.";
   invariant(
     constraint !== undefined,
-    `${prefix}, but interface ${interfaceType.apiName} does not declare action type constraint "${actionTypeConstraintApiName}". ${
-      flattenedActionTypeConstraints(interfaceType).has(
-        actionTypeConstraintApiName,
-      )
-        ? "Action type constraints inherited from an extended interface must be migrated by a transition on the interface that declares them."
-        : "Declare it with `defineInterfaceActionTypeConstraint` and `requireImplementation: false`."
-    }`,
+    `${prefix}, but interface ${interfaceType.apiName} does not declare action type constraint "${actionTypeConstraintApiName}". ${hint}`,
   );
   invariant(
     !constraint.requireImplementation,
@@ -154,8 +155,9 @@ function validateReplacement(
   context: ReferenceContext,
   replacement: InterfaceTypeReplacement,
 ): void {
-  const { interfaceType, prefix } = context;
+  const { validationContext, interfaceType, prefix } = context;
   const { definition: replacementType } = resolveReplacementInterfaceType(
+    validationContext,
     interfaceType,
     replacement,
   );
@@ -171,7 +173,6 @@ function validateReplacement(
     `${prefix}, but one of ${interfaceType.apiName} and ${replacementType.apiName} extends the other. The replacement must be unrelated to the interface type it replaces.`,
   );
 
-  const replacementInstructions = instructionsOf(replacementType);
   validateMapping(
     context,
     interfaceType.apiName,
@@ -180,16 +181,10 @@ function validateReplacement(
     {
       field: "propertyMappings",
       noun: "property",
-      sources: flattenedProperties(interfaceType),
-      targets: flattenedProperties(replacementType),
+      sources: flattenedPropertiesIncludingInherited(interfaceType),
+      targets: flattenedPropertiesIncludingInherited(replacementType),
       normalizeKey: (key) => key,
-      isRequired: (key, property) =>
-        isInterfacePropertyRequired(property) ||
-        replacementInstructions.some(
-          (instruction) =>
-            instruction.type === "addRequiredProperty" &&
-            instruction.property === key,
-        ),
+      isRequired: (property) => isInterfacePropertyRequired(property),
       mismatch: (from, to) => {
         const sourceType = lockedTypeOf(from);
         const targetType = lockedTypeOf(to);
@@ -207,16 +202,11 @@ function validateReplacement(
     {
       field: "linkTypeConstraintMappings",
       noun: "link type constraint",
-      sources: flattenedLinks(interfaceType),
-      targets: flattenedLinks(replacementType),
+      sources: flattenedLinksIncludingInherited(interfaceType),
+      targets: flattenedLinksIncludingInherited(replacementType),
       normalizeKey: (key) => combineApiNamespaceIfMissing(namespace, key),
-      isRequired: (_key, link) => link.required,
-      mismatch: (from, to) =>
-        from.cardinality !== to.cardinality
-          ? `cardinality ${from.cardinality} does not match ${to.cardinality}`
-          : !isDeepStrictEqual(from.linkedEntityTypeId, to.linkedEntityTypeId)
-            ? `linked entity ${describeLinkedEntity(from.linkedEntityTypeId)} does not match ${describeLinkedEntity(to.linkedEntityTypeId)}`
-            : undefined,
+      isRequired: (link) => link.required,
+      mismatch: checkForLinkMismatch,
     },
   );
   validateMapping(
@@ -231,36 +221,29 @@ function validateReplacement(
     {
       field: "actionTypeConstraintMappings",
       noun: "action type constraint",
-      sources: flattenedActionTypeConstraints(interfaceType),
-      targets: flattenedActionTypeConstraints(replacementType),
+      sources: flattenedActionTypeConstraintsIncludingInherited(interfaceType),
+      targets:
+        flattenedActionTypeConstraintsIncludingInherited(replacementType),
       normalizeKey: (key) => combineApiNamespaceIfMissing(namespace, key),
-      isRequired: (key, constraint) =>
-        constraint.requireImplementation ||
-        replacementInstructions.some(
-          (instruction) =>
-            instruction.type === "addRequiredActionTypeConstraint" &&
-            combineApiNamespaceIfMissing(
-              namespace,
-              instruction.actionTypeConstraint,
-            ) === key,
-        ),
+      isRequired: (constraint) => constraint.requireImplementation,
+      // After required-ness check above, only the parameters need compatibility
+      // checking, and that happens separately in validateParameterMappings
       mismatch: () => undefined,
     },
   );
   validateParameterMappings(context, replacement, replacementType);
 }
 
-/**
- * Validates each mapped action type constraint's parameter mappings against the constraints they
- * map between, once `validateMapping` has established that both exist.
- */
 function validateParameterMappings(
   context: ReferenceContext,
   replacement: InterfaceTypeReplacement,
   replacementType: InterfaceType,
 ): void {
-  const sources = flattenedActionTypeConstraints(context.interfaceType);
-  const targets = flattenedActionTypeConstraints(replacementType);
+  const sources = flattenedActionTypeConstraintsIncludingInherited(
+    context.interfaceType,
+  );
+  const targets =
+    flattenedActionTypeConstraintsIncludingInherited(replacementType);
   for (const [
     authoredSource,
     { actionTypeConstraint, parameterMappings },
@@ -271,6 +254,7 @@ function validateParameterMappings(
     const target = targets.get(
       combineApiNamespaceIfMissing(namespace, actionTypeConstraint),
     )!;
+
     validateMapping(
       context,
       source.metadata.apiName,
@@ -282,7 +266,7 @@ function validateParameterMappings(
         sources: new Map(Object.entries(source.parameters)),
         targets: new Map(Object.entries(target.parameters)),
         normalizeKey: (key) => key,
-        isRequired: (_key, parameter) => parameter.requireImplementation,
+        isRequired: (parameter) => parameter.requireImplementation,
         mismatch: (from, to) =>
           isDeepStrictEqual(from.type, to.type)
             ? undefined
@@ -301,8 +285,8 @@ interface MappingSpec<T> {
   targets: ReadonlyMap<string, T>;
   /** Normalizes an authored API name to the key `sources` and `targets` use. */
   normalizeKey: (authored: string) => string;
-  /** Whether the replacement requires `target`, now or once its in-flight migrations finalize. */
-  isRequired: (key: string, target: T) => boolean;
+  /** Whether the replacement requires `target`. */
+  isRequired: (target: T) => boolean;
   /** Why `source` can't stand in for `target`, if it can't. */
   mismatch: (source: T, target: T) => string | undefined;
 }
@@ -329,12 +313,14 @@ function validateMapping<T>(
       source !== undefined,
       `${prefix}, whose ${field} maps from ${noun} "${authoredSource}", but ${sourceApiName} has no such ${noun}.`,
     );
+
     const targetKey = normalizeKey(authoredTarget);
     const target = targets.get(targetKey);
     invariant(
       target !== undefined,
       `${prefix}, whose ${field} maps to ${noun} "${authoredTarget}", but ${targetApiName} has no such ${noun}.`,
     );
+
     const reason = mismatch(source, target);
     invariant(
       reason === undefined,
@@ -345,8 +331,8 @@ function validateMapping<T>(
 
   for (const [key, target] of targets) {
     invariant(
-      mappedTargets.has(key) || !isRequired(key, target),
-      `${prefix}, but its ${field} does not map to ${noun} "${key}", which ${targetApiName} requires (or will require once its in-flight migrations finalize). Map a ${noun} of ${sourceApiName} to it, so that proposals produce a valid implementation.`,
+      mappedTargets.has(key) || !isRequired(target),
+      `${prefix}, but its ${field} does not map to ${noun} "${key}", which ${targetApiName} requires. Map ${sourceApiName}'s corresponding ${noun} to it, so that automatically-generated changes produce a valid implementation.`,
     );
   }
 }
@@ -356,6 +342,19 @@ function lockedTypeOf(property: InterfacePropertyType): LockedPropertyType {
     getInterfacePropertyTypeType(property),
     isInterfacePropertyArray(property),
   );
+}
+
+function checkForLinkMismatch(
+  from: OntologyIrMarketplaceInterfaceLinkType,
+  to: OntologyIrMarketplaceInterfaceLinkType,
+): string | undefined {
+  if (from.cardinality !== to.cardinality) {
+    return `cardinality ${from.cardinality} does not match ${to.cardinality}`;
+  }
+  if (!isDeepStrictEqual(from.linkedEntityTypeId, to.linkedEntityTypeId)) {
+    return `linked entity ${describeLinkedEntity(from.linkedEntityTypeId)} does not match ${describeLinkedEntity(to.linkedEntityTypeId)}`;
+  }
+  return undefined;
 }
 
 function describeLinkedEntity(linked: OntologyIrLinkedEntityTypeId): string {
@@ -381,23 +380,7 @@ function hierarchyOf(interfaceType: InterfaceType): InterfaceType[] {
   ];
 }
 
-/**
- * The in-flight instructions of `interfaceType` and the interface types it extends, since those
- * constrain its implementations too.
- */
-function instructionsOf(
-  interfaceType: InterfaceType,
-): InterfaceSchemaMigrationInstruction[] {
-  return hierarchyOf(interfaceType)
-    .flatMap((it) => it.schemaMigrations?.transitions ?? [])
-    .flatMap((transition) => transition.instructions);
-}
-
-/**
- * Every property an implementation of `interfaceType` covers, inherited ones included, keyed by the
- * authored key the declaring interface type uses (as instructions reference them).
- */
-function flattenedProperties(
+function flattenedPropertiesIncludingInherited(
   interfaceType: InterfaceType,
 ): Map<string, InterfacePropertyType> {
   return new Map(
@@ -407,7 +390,7 @@ function flattenedProperties(
   );
 }
 
-function flattenedLinks(
+function flattenedLinksIncludingInherited(
   interfaceType: InterfaceType,
 ): Map<string, OntologyIrMarketplaceInterfaceLinkType> {
   return new Map(
@@ -418,7 +401,7 @@ function flattenedLinks(
   );
 }
 
-function flattenedActionTypeConstraints(
+function flattenedActionTypeConstraintsIncludingInherited(
   interfaceType: InterfaceType,
 ): Map<string, OntologyIrInterfaceActionTypeConstraint> {
   return new Map(

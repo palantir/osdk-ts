@@ -181,9 +181,11 @@ interface InstructionContext {
 }
 
 /**
- * Checks that need only the declaring interface type. Checks against other entities (action type
- * constraints, link constraints, the replacement interface type, etc.) are deferred to
- * `validateInterfaceSchemaMigrationReferences`, since those are attached after `defineInterface`.
+ * Checks that need only the declaring interface type.
+ *
+ * Checks against other entities (action type constraints, link constraints, the replacement
+ * interface type, etc.) are deferred to `validateInterfaceSchemaMigrationReferences`, since
+ * the other entities are not necessarily available at this time.
  */
 function validateInstruction(
   interfaceApiName: string,
@@ -220,6 +222,7 @@ function validateInstruction(
             : `interface ${interfaceApiName} has ${transitionCount} transitions`
         }. A replacement must be the only instruction of the only transition on its interface, and stays declared as a tombstone; finalize or remove the other migrations first.`,
       );
+
       validateReplacementMappings(
         interfaceApiName,
         transitionId,
@@ -273,6 +276,7 @@ function validateReplacementMappings(
       ],
     ),
   ];
+
   for (const [field, mapping] of mappings) {
     const sourceByTarget = new Map<string, string>();
     for (const [source, target] of Object.entries(mapping)) {

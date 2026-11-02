@@ -64,6 +64,7 @@ function proseFor(
           : interfaceType.apiName;
       return {
         describe: `replace("${replacementApiName}")`,
+        // replace sits as a tombstone, never finalizing (short of deleting the interface type)
         finalization: undefined,
         suggestedTransition:
           `{ id: "replace", title: "Replace with ${replacementApiName}", ` +
