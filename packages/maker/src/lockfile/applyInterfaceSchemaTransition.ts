@@ -16,12 +16,12 @@
 
 import { isDeepStrictEqual } from "node:util";
 
-import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
   LockedActionTypeConstraint,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedProperty,
+  LockedPropertyType,
   LockedTransition,
 } from "./OntologySchemaLockfile.js";
 import { actionTypeConstraintsOf, own } from "./OntologySchemaLockfile.js";
