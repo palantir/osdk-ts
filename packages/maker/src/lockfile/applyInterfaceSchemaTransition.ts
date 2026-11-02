@@ -267,8 +267,15 @@ function valueAt(
   switch (element.kind) {
     case "property":
       return own(schema.properties, element.apiName);
-    case "actionTypeConstraint":
-      return own(actionTypeConstraintsOf(schema), element.apiName);
+    case "actionTypeConstraint": {
+      // No instruction asserts anything about a constraint's parameters, which are checked on their own
+      const constraint = own(actionTypeConstraintsOf(schema), element.apiName);
+      return (
+        constraint && {
+          requireImplementation: constraint.requireImplementation,
+        }
+      );
+    }
     default: {
       const unhandled: never = element;
       throw new Error(`Unknown schema element: ${JSON.stringify(unhandled)}`);

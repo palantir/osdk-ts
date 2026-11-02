@@ -162,6 +162,27 @@ describe("applyTransition", () => {
       expect(reproduces(lenient, withSendEmail(false))).toBe(true);
       expect(reproduces(lenient, withSendEmail(true))).toBe(false);
     });
+
+    it("ignores the target constraint's parameters when reproducing", () => {
+      const strict = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "strict",
+      );
+      const required = withSendEmail(true);
+      expect(
+        reproduces(strict, {
+          ...required,
+          actionTypeConstraints: {
+            ...required.actionTypeConstraints,
+            "com.example.sendEmail": {
+              requireImplementation: true,
+              parameters: { subject: { requireImplementation: true } },
+            },
+          },
+        }),
+      ).toBe(true);
+    });
   });
 });
 
