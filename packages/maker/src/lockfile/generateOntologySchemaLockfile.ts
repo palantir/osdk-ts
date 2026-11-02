@@ -22,11 +22,7 @@ import type {
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../api/common/TypeClass.js";
-import {
-  importedTypes,
-  namespace,
-  ontologyDefinition,
-} from "../api/defineOntology.js";
+import { namespace } from "../api/defineOntology.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
@@ -52,6 +48,7 @@ import {
 import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
 import { normalizePropertyType } from "../api/properties/normalizePropertyType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
+import type { OntologyValidationContext } from "../api/validateOntology.js";
 import type {
   LockedActionTypeConstraint,
   LockedActionTypeConstraintReplacement,
@@ -85,16 +82,16 @@ export interface SourceCensus {
  * Any history-dependent logic (e.g. backwards-compatibility checking) is only a validation concern.
  */
 export function generateOntologySchemaLockfile(
-  ontology: OntologyDefinition,
+  context: OntologyValidationContext,
 ): OntologySchemaLockfile {
   const interfaces: Record<string, LockedInterfaceType> = {};
   for (const interfaceType of sortedByApiName(
-    Object.values(ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]),
+    Object.values(context.ontology[OntologyEntityTypeEnum.INTERFACE_TYPE]),
   )) {
     if (!shouldLockInterface(interfaceType)) {
       continue;
     }
-    interfaces[interfaceType.apiName] = lockInterface(interfaceType);
+    interfaces[interfaceType.apiName] = lockInterface(context, interfaceType);
   }
 
   return { version: ONTOLOGY_SCHEMA_LOCKFILE_VERSION, interfaces };
@@ -115,10 +112,16 @@ export function shouldLockInterface(interfaceType: InterfaceType): boolean {
   return interfaceType.schemaMigrations !== undefined;
 }
 
-function lockInterface(interfaceType: InterfaceType): LockedInterfaceType {
+function lockInterface(
+  context: OntologyValidationContext,
+  interfaceType: InterfaceType,
+): LockedInterfaceType {
   return {
     schema: lockInterfaceSchema(interfaceType),
-    transitions: lockInterfaceSchemaMigrationTransitions(interfaceType),
+    transitions: lockInterfaceSchemaMigrationTransitions(
+      context,
+      interfaceType,
+    ),
   };
 }
 
@@ -276,6 +279,7 @@ function lockTypeClasses(
 }
 
 function lockInterfaceSchemaMigrationTransitions(
+  context: OntologyValidationContext,
   interfaceType: InterfaceType,
 ): LockedTransition[] {
   const { schemaMigrations } = interfaceType;
@@ -288,7 +292,9 @@ function lockInterfaceSchemaMigrationTransitions(
       id: transition.id,
       gracePeriod: transition.gracePeriod,
       instructions: transition.instructions
-        .map((instruction) => lockInstruction(instruction, interfaceType))
+        .map((instruction) =>
+          lockInstruction(context, instruction, interfaceType),
+        )
         // Instructions have no unique stable identifier, so JSON them instead for sort stability
         .sort((a, b) => compare(JSON.stringify(a), JSON.stringify(b))),
     }))
@@ -296,6 +302,7 @@ function lockInterfaceSchemaMigrationTransitions(
 }
 
 function lockInstruction(
+  context: OntologyValidationContext,
   instruction: InterfaceSchemaMigrationInstruction,
   interfaceType: InterfaceType,
 ): LockedInstruction {
@@ -320,7 +327,11 @@ function lockInstruction(
     case "replace":
       return {
         type: "replace",
-        replacement: lockReplacement(interfaceType, instruction.replacement),
+        replacement: lockReplacement(
+          context,
+          interfaceType,
+          instruction.replacement,
+        ),
       };
     default: {
       const unhandled: never = instruction;
@@ -334,11 +345,12 @@ function lockInstruction(
 }
 
 function lockReplacement(
+  context: OntologyValidationContext,
   interfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
 ): LockedInterfaceTypeReplacement {
   const resolved = resolveInterfaceTypeReplacement(
-    { ontology: ontologyDefinition, importedTypes },
+    context,
     interfaceType,
     replacement,
   );

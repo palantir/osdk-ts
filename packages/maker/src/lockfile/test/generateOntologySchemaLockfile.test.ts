@@ -21,12 +21,14 @@ import { defineInterface } from "../../api/defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../../api/defineInterfaceActionTypeConstraint.js";
 import {
   defineOntology,
+  getImportedTypes,
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
 import { defineSharedPropertyType } from "../../api/defineSpt.js";
 import type { InterfaceSchemaTransition } from "../../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import { defaultTypeClasses } from "../../api/propertyConversionUtils.js";
+import type { OntologyValidationContext } from "../../api/validateOntology.js";
 import {
   censusOfSource,
   generateOntologySchemaLockfile,
@@ -55,7 +57,7 @@ async function lockAddressStruct(
     },
     schemaMigrations: { transitions: [] },
   });
-  return generateOntologySchemaLockfile(getOntologyDefinition());
+  return generateOntologySchemaLockfile(definedContext());
 }
 
 async function lockNameProperty(
@@ -73,7 +75,7 @@ async function lockNameProperty(
     },
     schemaMigrations: { transitions: [] },
   });
-  return generateOntologySchemaLockfile(getOntologyDefinition());
+  return generateOntologySchemaLockfile(definedContext());
 }
 
 /** How the lockfile records `apiName` on the `Person` the test just defined. */
@@ -82,9 +84,17 @@ function lockedProperty(apiName: string): LockedProperty {
 }
 
 function lockedSchema(): LockedInterfaceSchema {
-  return generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+  return generateOntologySchemaLockfile(definedContext()).interfaces[
     "com.palantir.Person"
   ].schema;
+}
+
+/** What the DSL has registered since the last `defineOntology`. */
+function definedContext(): OntologyValidationContext {
+  return {
+    ontology: getOntologyDefinition(),
+    importedTypes: getImportedTypes(),
+  };
 }
 
 beforeEach(async () => {
@@ -668,7 +678,7 @@ describe("action type constraints", () => {
     constrain(person, "sendEmail", false);
 
     expect(
-      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+      generateOntologySchemaLockfile(definedContext()).interfaces[
         "com.palantir.Person"
       ].transitions,
     ).toEqual([
@@ -740,7 +750,7 @@ describe("replacement", () => {
     });
 
     expect(
-      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+      generateOntologySchemaLockfile(definedContext()).interfaces[
         "com.palantir.Person"
       ].transitions[0].instructions,
     ).toStrictEqual([
@@ -789,8 +799,10 @@ describe("replacement", () => {
     defineActionTypeConstraint(person, "sendEmail", ["subject", "body"]);
     defineActionTypeConstraint(person, "archive", []);
 
-    const instructions = generateOntologySchemaLockfile(getOntologyDefinition())
-      .interfaces["com.palantir.Person"].transitions[0].instructions;
+    const instructions =
+      generateOntologySchemaLockfile(definedContext()).interfaces[
+        "com.palantir.Person"
+      ].transitions[0].instructions;
     // Compared as JSON so that key order, which the lockfile sorts to avoid churn, is checked too
     expect(JSON.stringify(instructions)).toBe(
       JSON.stringify([
@@ -854,7 +866,7 @@ describe("replacement of an interface with inherited properties", () => {
     });
 
     expect(
-      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+      generateOntologySchemaLockfile(definedContext()).interfaces[
         "com.palantir.Person"
       ].transitions[0].instructions,
     ).toStrictEqual([
@@ -883,7 +895,7 @@ describe("censusOfSource", () => {
       "com.palantir.Unenrolled",
     ]);
     expect(
-      Object.keys(generateOntologySchemaLockfile(ontology).interfaces),
+      Object.keys(generateOntologySchemaLockfile(definedContext()).interfaces),
     ).toEqual(["com.palantir.Enrolled"]);
   });
 
