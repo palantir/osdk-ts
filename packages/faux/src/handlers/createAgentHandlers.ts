@@ -14,31 +14,58 @@
  * limitations under the License.
  */
 
+import type { AgentSession } from "@osdk/foundry.agents";
 import invariant from "tiny-invariant";
 
+import { InvalidRequest } from "../errors.js";
 import { Agents } from "../mock/index.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
+import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export const createAgentHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
   fauxFoundry,
-) => [
-  Agents.AgentDefinitionVersions.get(baseUrl, ({ request, params }) => {
-    const ontology = new URL(request.url).searchParams.get("ontology");
-    invariant(ontology);
-    return fauxFoundry
-      .getOntology(ontology)
-      .getAgentDef(
-        params.agentDefinitionApiName,
-        params.agentDefinitionVersionVersion,
+) => {
+  const sessions = new Map<string, AgentSession>();
+  return [
+    Agents.AgentDefinitionVersions.get(baseUrl, ({ request, params }) => {
+      const ontology = new URL(request.url).searchParams.get("ontology");
+      invariant(ontology);
+      return fauxFoundry
+        .getOntology(ontology)
+        .getAgentDef(
+          params.agentDefinitionApiName,
+          params.agentDefinitionVersionVersion,
+        );
+    }),
+    Agents.AgentSessions.create(baseUrl, async ({ request }) => {
+      const body = await request.json();
+      invariant(body.agent.type === "agentApiName");
+      const impl = fauxFoundry
+        .getOntology(body.agent.ontology)
+        .getAgentImpl(body.agent.agentApiName, body.agentVersion);
+      const dataStore = fauxFoundry.getDataStore(body.agent.ontology);
+      const session = impl.createSession(body, dataStore);
+      sessions.set(session.id, session);
+      return session;
+    }),
+    Agents.AgentSessions.sendEvent(baseUrl, async ({ params, request }) => {
+      const session = sessions.get(params.agentSessionId);
+      if (!session) {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid Agent Session"),
+        );
+      }
+      invariant(session.agentApiNameIdentifier);
+      const { ontology, agentApiName } = session.agentApiNameIdentifier;
+      const impl = fauxFoundry
+        .getOntology(ontology)
+        .getAgentImpl(agentApiName, session.agentVersion);
+      return impl.sendEvent(
+        await request.json(),
+        fauxFoundry.getDataStore(ontology),
       );
-  }),
-  Agents.AgentSessions.create(baseUrl, async ({ request }) => {
-    const body = await request.json();
-    invariant(body.agent.type === "agentApiName");
-    const impl = fauxFoundry
-      .getOntology(body.agent.ontology)
-      .getAgentImpl(body.agent.agentApiName, body.agentVersion);
-    return impl(body, fauxFoundry.getDataStore(body.agent.ontology));
-  }),
-];
+    }),
+  ];
+};

@@ -17,10 +17,19 @@
 import type {
   AgentSession,
   CreateAgentSessionRequest,
+  SendEventRequest,
+  SendEventResponse,
 } from "@osdk/foundry.agents";
 
 import type { FauxDataStore } from "./FauxDataStore.js";
 
 export interface FauxAgentImpl {
-  (req: CreateAgentSessionRequest, fauxDataStore: FauxDataStore): AgentSession;
+  createSession: (
+    req: CreateAgentSessionRequest,
+    fauxDataStore: FauxDataStore,
+  ) => AgentSession;
+  sendEvent: (
+    req: SendEventRequest,
+    fauxDataStore: FauxDataStore,
+  ) => SendEventResponse | Promise<SendEventResponse>;
 }
