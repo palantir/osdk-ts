@@ -27,6 +27,7 @@ import {
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedActionTypeConstraint,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
@@ -43,6 +44,7 @@ import {
   extensionsOf,
   nullabilityOf,
   own,
+  parametersOf,
   primaryKeyConstraintOf,
   tightensNullability,
 } from "./OntologySchemaLockfile.js";
@@ -98,6 +100,24 @@ export type LockfileBreakingChange =
       code: "requiredActionTypeConstraintAdded";
       interfaceApiName: string;
       actionTypeConstraint: string;
+    }
+  | {
+      code: "parameterBecameRequired";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
+    }
+  | {
+      code: "requiredParameterAdded";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
+    }
+  | {
+      code: "parameterBecameRequiredOnConcreteAction";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
     }
   | {
       code: "interfaceExtensionAdded";
@@ -213,6 +233,20 @@ export type LockfileWarning =
       code: "actionTypeConstraintRemoved";
       interfaceApiName: string;
       actionTypeConstraint: string;
+    }
+  /** A parameter that implementing actions had to map no longer has to be. */
+  | {
+      code: "parameterRequirementRelaxed";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
+    }
+  /** A parameter that implementing actions had to declare required no longer has to be. */
+  | {
+      code: "parameterNoLongerRequiredOnConcreteAction";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
     };
 
 export interface LockfileValidationResult {
@@ -387,19 +421,31 @@ function validateActionTypeConstraintsDiff(
   previousSchema: LockedInterfaceSchema,
   nextSchema: LockedInterfaceSchema,
   accountedFor: ReadonlySet<string>,
-  { breakingChanges, warnings }: LockfileValidationResult,
+  result: LockfileValidationResult,
 ): void {
+  const { breakingChanges, warnings } = result;
   const previousConstraints = actionTypeConstraintsOf(previousSchema);
   const nextConstraints = actionTypeConstraintsOf(nextSchema);
 
   for (const [actionTypeConstraint, previous] of Object.entries(
     previousConstraints,
   )) {
+    const next = own(nextConstraints, actionTypeConstraint);
+    // A transition only ever accounts for the constraint's own requirement, never its parameters'
+    if (next !== undefined) {
+      validateParameterConstraintsDiff(
+        interfaceApiName,
+        actionTypeConstraint,
+        previous,
+        next,
+        result,
+      );
+    }
+
     if (accountedFor.has(actionTypeConstraint)) {
       continue;
     }
 
-    const next = own(nextConstraints, actionTypeConstraint);
     if (next === undefined) {
       warnings.push({
         code: "actionTypeConstraintRemoved",
@@ -437,6 +483,56 @@ function validateActionTypeConstraintsDiff(
         code: "requiredActionTypeConstraintAdded",
         interfaceApiName,
         actionTypeConstraint,
+      });
+    }
+  }
+}
+
+/**
+ * Reports changes to the parameters of an action type constraint declared both before and after.
+ *
+ * Unlike the constraint's own requirement, these apply to every object type that implements the
+ * constraint, required or not, and no interface schema migration can phase them in.
+ */
+function validateParameterConstraintsDiff(
+  interfaceApiName: string,
+  actionTypeConstraint: string,
+  previousConstraint: LockedActionTypeConstraint,
+  nextConstraint: LockedActionTypeConstraint,
+  { breakingChanges, warnings }: LockfileValidationResult,
+): void {
+  const previousParameters = parametersOf(previousConstraint);
+  for (const [parameter, next] of Object.entries(
+    parametersOf(nextConstraint),
+  )) {
+    const where = { interfaceApiName, actionTypeConstraint, parameter };
+    const previous = own(previousParameters, parameter);
+    if (previous === undefined) {
+      // No implementing action maps a new parameter yet, so only requiring it to be mapped breaks
+      if (next.requireImplementation) {
+        breakingChanges.push({ code: "requiredParameterAdded", ...where });
+      }
+      continue;
+    }
+
+    if (!previous.requireImplementation && next.requireImplementation) {
+      breakingChanges.push({ code: "parameterBecameRequired", ...where });
+    } else if (previous.requireImplementation && !next.requireImplementation) {
+      warnings.push({ code: "parameterRequirementRelaxed", ...where });
+    }
+
+    const previousOnConcrete =
+      previous.isRequiredParameterOnConcreteAction === true;
+    const nextOnConcrete = next.isRequiredParameterOnConcreteAction === true;
+    if (!previousOnConcrete && nextOnConcrete) {
+      breakingChanges.push({
+        code: "parameterBecameRequiredOnConcreteAction",
+        ...where,
+      });
+    } else if (previousOnConcrete && !nextOnConcrete) {
+      warnings.push({
+        code: "parameterNoLongerRequiredOnConcreteAction",
+        ...where,
       });
     }
   }

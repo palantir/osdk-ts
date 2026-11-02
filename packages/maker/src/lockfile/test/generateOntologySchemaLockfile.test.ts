@@ -577,6 +577,73 @@ describe("action type constraints", () => {
       "extendsInterfaces",
     ]);
   });
+
+  it("records whether each parameter is required, and on the concrete action only when set", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    defineInterfaceActionTypeConstraint({
+      interfaceType: person,
+      apiName: "sendEmail",
+      displayName: "Send email",
+      description: "Sends the person an email",
+      requireImplementation: false,
+      parameters: [
+        {
+          apiName: "subject",
+          displayName: "Subject",
+          type: { type: "string", string: {} },
+          requireImplementation: true,
+          isRequiredParameterOnConcreteAction: true,
+        },
+        {
+          apiName: "body",
+          displayName: "Body",
+          type: { type: "string", string: {} },
+          requireImplementation: false,
+          isRequiredParameterOnConcreteAction: false,
+        },
+        {
+          apiName: "cc",
+          displayName: "CC",
+          type: { type: "string", string: {} },
+          requireImplementation: false,
+        },
+      ],
+    });
+
+    const parameters =
+      lockedSchema().actionTypeConstraints?.["com.palantir.sendEmail"]
+        ?.parameters ?? {};
+    expect(parameters).toEqual({
+      body: { requireImplementation: false },
+      cc: { requireImplementation: false },
+      subject: {
+        requireImplementation: true,
+        isRequiredParameterOnConcreteAction: true,
+      },
+    });
+    // NB: should be sorted for lockfile stability, and `false` recorded the same as absent
+    expect(Object.keys(parameters)).toStrictEqual(["body", "cc", "subject"]);
+    expect(Object.keys(parameters.body)).toStrictEqual([
+      "requireImplementation",
+    ]);
+  });
+
+  it("omits parameters for a constraint that declares none", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(person, "archive", true);
+
+    expect(
+      Object.keys(
+        lockedSchema().actionTypeConstraints?.["com.palantir.archive"] ?? {},
+      ),
+    ).toStrictEqual(["requireImplementation"]);
+  });
 });
 
 describe("censusOfSource", () => {
