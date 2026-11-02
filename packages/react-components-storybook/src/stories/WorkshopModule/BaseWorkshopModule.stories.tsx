@@ -28,7 +28,7 @@ function isFoundryUrl(value: string): boolean {
 }
 
 const meta: Meta<BaseWorkshopModuleProps> = {
-  title: "Components/WorkshopModule",
+  title: "Components/WorkshopModule/Building Blocks/BaseWorkshopModule",
   component: BaseWorkshopModule,
   args: {
     foundryUrl: "",
