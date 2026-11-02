@@ -1,5 +1,35 @@
 # @osdk/widget.client-react
 
+## 3.86.0
+
+### Patch Changes
+
+- Updated dependencies [af66ef0]
+- Updated dependencies [f7333d4]
+  - @osdk/client@2.86.0
+  - @osdk/widget.client@3.86.0
+
+## 3.85.0
+
+### Minor Changes
+
+- a3e7101: Forward hotkeys from custom widget to host
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [a3e7101]
+  - @osdk/client@2.85.0
+  - @osdk/widget.client@3.85.0
+
+## 3.84.0
+
+### Patch Changes
+
+- @osdk/client@2.84.0
+- @osdk/widget.client@3.84.0
+
 ## 3.83.0
 
 ### Patch Changes

@@ -24,6 +24,7 @@
     "---Experimental---",
     "AipAgentChat",
     "CbacPicker",
+    "WorkshopModule",
     "---Theming---",
     "StylingOverview",
     "OsdkThemeProvider",

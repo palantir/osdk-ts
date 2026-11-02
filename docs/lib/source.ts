@@ -94,6 +94,7 @@ const components = defineDocs({
       "XmlViewer.md",
       "AipAgentChat.md",
       "CbacPicker.md",
+      "WorkshopModule.md",
       "StylingOverview.md",
       "OsdkThemeProvider.md",
       "CSSVariables.md",

@@ -32,6 +32,7 @@ import { defineDeleteInterfaceObjectAction } from "../defineDeleteInterfaceObjec
 import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
+import { defineLink } from "../defineLink.js";
 import { defineModifyInterfaceObjectAction } from "../defineModifyInterfaceObjectAction.js";
 import { defineModifyObjectAction } from "../defineModifyObjectAction.js";
 import { defineObject } from "../defineObject.js";
@@ -6805,6 +6806,68 @@ describe("Action Types", () => {
         expect(paramIds).toContain("name");
         expect(paramIds).not.toContain("embedding");
       }
+    });
+
+    it("Derived properties are excluded from auto-generated action parameters", () => {
+      const personToParent = defineLink({
+        apiName: "person-to-parent",
+        manyForeignKeyProperty: "parentFk",
+        one: {
+          object: "com.palantir.person",
+          metadata: { apiName: "parent" },
+        },
+        toMany: {
+          object: "com.palantir.person",
+          metadata: { apiName: "child" },
+        },
+      });
+      const objectType = defineObject({
+        titlePropertyApiName: "pk",
+        displayName: "Person",
+        pluralDisplayName: "Persons",
+        apiName: "person",
+        primaryKeyPropertyApiName: "pk",
+        properties: {
+          pk: { type: "string" },
+          parentFk: { type: "string" },
+          siblingIds: { type: "string", array: true },
+        },
+        datasources: [
+          { type: "dataset" },
+          {
+            type: "derived",
+            linkDefinition: [
+              { linkType: personToParent, side: "TARGET" },
+              { linkType: personToParent, side: "SOURCE" },
+            ],
+            propertyMapping: {
+              siblingIds: { type: "collectList", property: "pk", limit: 100 },
+            },
+          },
+        ],
+      });
+
+      const create = defineCreateObjectAction({ objectType });
+      const modify = defineModifyObjectAction({ objectType });
+      const createOrModify = defineCreateOrModifyObjectAction({ objectType });
+
+      for (const action of [create, modify, createOrModify]) {
+        const paramIds = (action.parameters ?? []).map((p) => p.id);
+        expect(paramIds).toContain("parentFk");
+        expect(paramIds).not.toContain("siblingIds");
+      }
+      expect(modify.rules).toEqual([
+        {
+          type: "modifyObjectRule",
+          modifyObjectRule: {
+            objectToModify: MODIFY_OBJECT_PARAMETER,
+            propertyValues: {
+              parentFk: { type: "parameterId", parameterId: "parentFk" },
+            },
+            structFieldValues: {},
+          },
+        },
+      ]);
     });
 
     it("Vector properties cannot be forced into action parameters", () => {

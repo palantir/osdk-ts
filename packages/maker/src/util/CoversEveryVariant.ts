@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-export type {
-  AggregateStubBuilder,
-  FetchOneStubBuilder,
-  FetchPageStubBuilder,
-  MockClient,
-  MockOsdkObjectOptions,
-  MockWriteableClient,
-  QueryStubBuilder,
-  StubBuilderFor,
-  StubClient,
-} from "../api/index.js";
-export { createMockAttachment } from "../mock/createMockAttachment.js";
-export { createMockClient } from "../mock/createMockClient.js";
-export { createMockObjectSet } from "../mock/createMockObjectSet.js";
-export { createMockOsdkObject } from "../mock/createMockOsdkObject.js";
-export { createMockWriteableClient } from "../mock/createMockWriteableClient.js";
+/**
+ * `true` when `Covering` has a variant for every `type` of the union `Union`, otherwise `never`.
+ *
+ * Assign it to a `true` constant to fail compilation once `Union` grows a variant `Covering` lacks.
+ */
+export type CoversEveryVariant<
+  Union extends { type: string },
+  Covering extends { type: string },
+> = [Union["type"]] extends [Covering["type"]] ? true : never;

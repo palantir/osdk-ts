@@ -81,6 +81,7 @@ export type WireQueryDataTypes =
   | "date"
   | "timestamp"
   | "attachment"
+  | "geoshape"
   | "mediaReference";
 
 export type PrimitiveDataType<

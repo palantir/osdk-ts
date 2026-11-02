@@ -1,5 +1,19 @@
 # @osdk/client.unstable
 
+## 2.86.0
+
+### Minor Changes
+
+- 6b9b2c0: Preserve `isRequiredParameterOnConcreteAction` in Maker and Marketplace shapes. When the flag is true, check that mapped Action parameters are required.
+
+## 2.85.0
+
+### Minor Changes
+
+- 646d01d: Expose implementing-object reference and reference-list parameter constraints for interface action types in the generated Marketplace API.
+
+## 2.84.0
+
 ## 2.83.0
 
 ### Minor Changes

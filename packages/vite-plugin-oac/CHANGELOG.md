@@ -1,5 +1,52 @@
 # @osdk/vite-plugin-oac
 
+## 0.88.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/maker@0.85.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters.ontologyir@2.86.0
+  - @osdk/faux@0.63.0
+  - @osdk/cli@0.114.0
+
+## 0.87.0
+
+### Patch Changes
+
+- Updated dependencies [d583566]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+- Updated dependencies [050417c]
+- Updated dependencies [d0f3019]
+  - @osdk/maker@0.84.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/faux@0.62.0
+  - @osdk/api@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+  - @osdk/cli@0.113.0
+
+## 0.86.0
+
+### Patch Changes
+
+- Updated dependencies [6df3c1e]
+- Updated dependencies [e2414a2]
+- Updated dependencies [aa664cc]
+  - @osdk/maker@0.83.0
+  - @osdk/api@2.84.0
+  - @osdk/client.unstable@2.84.0
+  - @osdk/generator-converters.ontologyir@2.84.0
+  - @osdk/cli@0.112.0
+
 ## 0.85.0
 
 ### Patch Changes
