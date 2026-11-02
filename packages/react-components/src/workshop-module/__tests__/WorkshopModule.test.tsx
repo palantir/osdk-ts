@@ -51,7 +51,7 @@ describe("WorkshopModule", () => {
     );
 
     expect(screen.getByTitle("Embedded dashboard").getAttribute("src")).toBe(
-      "https://provider.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true&foundry-branch-rid=",
+      "https://provider.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true&workshopEmbed=1&foundry-branch-rid=",
     );
   });
 

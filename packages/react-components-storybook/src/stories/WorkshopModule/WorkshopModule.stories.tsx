@@ -74,6 +74,13 @@ const meta: Meta<BaseWorkshopModuleProps> = {
         "latest for the latest saved version, or published for the published version. Defaults to published.",
     },
     title: { control: "text" },
+    variables: {
+      control: "object",
+      description:
+        "Scalar inputs keyed by module-interface external ID. Changes are sent without reloading the iframe; null clears an input.",
+    },
+    onConnectionError: { action: "connectionError", control: false },
+    onVariablesChanged: { action: "variablesChanged", control: false },
     branchRid: {
       control: "text",
       description:
