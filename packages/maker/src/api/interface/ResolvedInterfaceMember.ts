@@ -16,7 +16,7 @@
 
 import type { InterfacePropertyType } from "./InterfacePropertyType.js";
 
-/** An entity (property, link type constraint, action type constraint) of an interface type. */
+/** An entity (property, link type constraint, action type constraint, etc.) of an interface type. */
 export interface ResolvedInterfaceMember {
   /** The fully-qualified API name the entity is published under. */
   apiName: string;

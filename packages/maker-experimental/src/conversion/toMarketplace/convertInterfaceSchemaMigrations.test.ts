@@ -486,7 +486,26 @@ function migrationReferences(block: InterfaceTypeBlockDataV2) {
   return references;
 }
 
-describe("addRequiredActionTypeConstraint and replace schema migrations", () => {
+async function convertShapes(body: () => void) {
+  return (await defineOntologyV2("com.palantir.", body)).shapes;
+}
+
+/** The output shape of the only migration in transition `t1`. */
+function migrationShape(
+  outputShapes: Map<ReadableId, OutputShape>,
+  interfaceApiName: string,
+) {
+  const shape = outputShapes.get(
+    ReadableIdGenerator.getForInterfaceSchemaTransition(interfaceApiName, "t1"),
+  );
+  invariant(shape?.type === "interfaceTypeSchemaTransition");
+  const [migration] = shape.interfaceTypeSchemaTransition.migrations;
+  return migration;
+}
+
+const blockId = (readableId: ReadableId) => toBlockShapeId(readableId);
+
+describe("addRequiredActionTypeConstraint schema migrations", () => {
   it("targets an action type constraint by its published rid", async () => {
     const block = await convertInterfaces(() => {
       const foo = defineInterface({
@@ -536,34 +555,9 @@ describe("addRequiredActionTypeConstraint and replace schema migrations", () => 
   });
 });
 
-describe("addRequiredActionTypeConstraint and replace output shapes", () => {
-  async function convertWithShapes(body: () => void) {
-    const { ontologyIr, shapes } = await defineOntologyV2(
-      "com.palantir.",
-      body,
-    );
-    return { ontology: ontologyIr.ontology, shapes };
-  }
-
-  function migrationShape(
-    outputShapes: Map<ReadableId, OutputShape>,
-    interfaceApiName: string,
-  ) {
-    const shape = outputShapes.get(
-      ReadableIdGenerator.getForInterfaceSchemaTransition(
-        interfaceApiName,
-        "t1",
-      ),
-    );
-    invariant(shape?.type === "interfaceTypeSchemaTransition");
-    const [migration] = shape.interfaceTypeSchemaTransition.migrations;
-    return migration;
-  }
-
-  const blockId = (readableId: ReadableId) => toBlockShapeId(readableId);
-
+describe("addRequiredActionTypeConstraint output shapes", () => {
   it("references the targeted action type constraint's output shape", async () => {
-    const { shapes } = await convertWithShapes(() => {
+    const shapes = await convertShapes(() => {
       const foo = defineInterface({
         apiName: "Foo",
         schemaMigrations: migrations({
