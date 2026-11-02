@@ -347,6 +347,39 @@ describe("describeBreakingChange", () => {
       expect(message).toContain("`requireImplementation: false`");
       expect(message).not.toContain("com.example.sendEmail");
     });
+
+    const subject = {
+      interfaceApiName: "Person",
+      actionTypeConstraint: "com.example.sendEmail",
+      parameter: "subject",
+    };
+
+    it.each<[LockfileBreakingChange, string]>([
+      [
+        { code: "parameterBecameRequired", ...subject },
+        "`requireImplementation: false`",
+      ],
+      [
+        { code: "requiredParameterAdded", ...subject },
+        "`requireImplementation: false`",
+      ],
+      [
+        { code: "parameterBecameRequiredOnConcreteAction", ...subject },
+        "`isRequiredParameterOnConcreteAction: false`",
+      ],
+    ])(
+      "names the parameter and authored constraint for $0.code, with no migration to suggest",
+      (breakingChange, fix) => {
+        const message = describeBreakingChange(breakingChange);
+        expect(message).toContain('parameter "subject"');
+        expect(message).toContain('action type constraint "sendEmail"');
+        expect(message).toContain(
+          "no currently-supported interface schema migration can phase that in",
+        );
+        expect(message).toContain(fix);
+        expect(message).not.toContain("com.example.sendEmail");
+      },
+    );
   });
 
   describe("authored names", () => {
@@ -494,6 +527,29 @@ describe("describeWarning", () => {
     actionTypeConstraint: "com.example.sendEmail",
   });
 
+  const parameterRequirementRelaxed = describeWarning({
+    code: "parameterRequirementRelaxed",
+    interfaceApiName: "Person",
+    actionTypeConstraint: "com.example.sendEmail",
+    parameter: "subject",
+  });
+
+  const parameterNoLongerRequiredOnConcreteAction = describeWarning({
+    code: "parameterNoLongerRequiredOnConcreteAction",
+    interfaceApiName: "Person",
+    actionTypeConstraint: "com.example.sendEmail",
+    parameter: "subject",
+  });
+
+  it("names the parameter and authored constraint that were relaxed", () => {
+    expect(parameterRequirementRelaxed).toContain(
+      'parameter "subject" of action type constraint "sendEmail" no longer requires implementation',
+    );
+    expect(parameterNoLongerRequiredOnConcreteAction).toContain(
+      'parameter "subject" of action type constraint "sendEmail" no longer has to be required',
+    );
+  });
+
   it("names the authored constraint that no longer requires implementation", () => {
     expect(actionTypeConstraintRequirementRelaxed).toContain(
       'action type constraint "sendEmail" no longer requires implementation',
@@ -576,6 +632,16 @@ describe("describeWarning", () => {
       name: "a removed constraint",
       message: actionTypeConstraintRemoved,
       affected: "will stop finding it",
+    },
+    {
+      name: "a parameter no longer required",
+      message: parameterRequirementRelaxed,
+      affected: "may not reach the action",
+    },
+    {
+      name: "a parameter no longer required on the concrete action",
+      message: parameterNoLongerRequiredOnConcreteAction,
+      affected: "will start finding it missing",
     },
   ])(
     "says who is affected by $name without demanding a fix",

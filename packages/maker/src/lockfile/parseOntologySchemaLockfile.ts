@@ -206,6 +206,28 @@ const propertySchema = z
   )
   .passthrough();
 
+const parameterConstraintSchema = z
+  .object(
+    {
+      requireImplementation: z.boolean({ message: "Expected a boolean." }),
+      // `false` is the absent/default case, so we don't record it in the lockfile
+      isRequiredParameterOnConcreteAction: z
+        .literal(true, {
+          errorMap: () => ({
+            message:
+              `Expected \`true\`, or no value at all for a parameter the implementing action ` +
+              `may declare optional.`,
+          }),
+        })
+        .optional(),
+    },
+    {
+      message:
+        "Expected an object recording whether the parameter constraint is required.",
+    },
+  )
+  .passthrough();
+
 const interfaceSchema = z
   .object(
     {
@@ -242,6 +264,21 @@ const interfaceSchema = z
                       requireImplementation: z.boolean({
                         message: "Expected a boolean.",
                       }),
+                      parameters: z
+                        .record(z.string(), parameterConstraintSchema, {
+                          message:
+                            "Expected an object keyed by parameter constraint api name.",
+                        })
+                        // Absent means "declares none"
+                        .refine(
+                          (parameters) => Object.keys(parameters).length > 0,
+                          {
+                            message:
+                              `Expected at least one parameter constraint, or no value at all ` +
+                              `for an action type constraint that declares none.`,
+                          },
+                        )
+                        .optional(),
                     },
                     {
                       message:

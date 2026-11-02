@@ -83,6 +83,14 @@ export interface LockedInterfaceSchema {
 
 export interface LockedActionTypeConstraint {
   requireImplementation: boolean;
+  /** The constraint's parameters, keyed by api name. Absent when it declares none. */
+  parameters?: Record<string, LockedParameterConstraint>;
+}
+
+export interface LockedParameterConstraint {
+  requireImplementation: boolean;
+  /** Present when the implementing action must declare its mapped parameter required. */
+  isRequiredParameterOnConcreteAction?: true;
 }
 
 /** Where a property's definition comes from. */
@@ -137,6 +145,12 @@ export function actionTypeConstraintsOf(
   schema: LockedInterfaceSchema,
 ): Record<string, LockedActionTypeConstraint> {
   return schema.actionTypeConstraints ?? {};
+}
+
+export function parametersOf(
+  constraint: LockedActionTypeConstraint,
+): Record<string, LockedParameterConstraint> {
+  return constraint.parameters ?? {};
 }
 
 export function primaryKeyConstraintOf(

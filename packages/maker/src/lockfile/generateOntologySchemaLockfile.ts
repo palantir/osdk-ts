@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unstable";
+import type {
+  OntologyIrInterfaceParameterConstraint,
+  OntologyIrValueTypeReferenceWithMetadata,
+} from "@osdk/client.unstable";
 
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
@@ -40,6 +43,7 @@ import type {
   LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
+  LockedParameterConstraint,
   LockedProperty,
   LockedTransition,
   LockedValueType,
@@ -135,9 +139,47 @@ function lockActionTypeConstraints(
 
   return Object.fromEntries(
     interfaceType.actionTypeConstraints
+      .map(({ metadata, requireImplementation, parameters }) => {
+        const lockedParameters = lockParameterConstraints(parameters);
+        return [
+          metadata.apiName,
+          {
+            requireImplementation,
+            ...(lockedParameters !== undefined && {
+              parameters: lockedParameters,
+            }),
+          },
+        ] as const;
+      })
+      .sort(([a], [b]) => compare(a, b)),
+  );
+}
+
+function lockParameterConstraints(
+  parameters: Record<string, OntologyIrInterfaceParameterConstraint>,
+): Record<string, LockedParameterConstraint> | undefined {
+  const entries = Object.entries(parameters);
+  if (entries.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    entries
       .map(
-        ({ metadata, requireImplementation }) =>
-          [metadata.apiName, { requireImplementation }] as const,
+        ([
+          apiName,
+          { requireImplementation, isRequiredParameterOnConcreteAction },
+        ]) =>
+          [
+            apiName,
+            {
+              requireImplementation,
+              // Absent and `false` are published identically
+              ...(isRequiredParameterOnConcreteAction === true && {
+                isRequiredParameterOnConcreteAction,
+              }),
+            },
+          ] as const,
       )
       .sort(([a], [b]) => compare(a, b)),
   );
