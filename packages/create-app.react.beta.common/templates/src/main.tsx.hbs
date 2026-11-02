@@ -3,13 +3,23 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 {{#if osdkPackage}}
 import { OsdkProvider } from "@osdk/react";
-import client from "@/client";
+import client{{#unless authless}}, { auth }{{/unless}} from "@/client";
+{{else}}
+{{#unless authless}}
+import { auth } from "@/client";
+{{/unless}}
 {{/if}}
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Loading from "@/components/Loading";
 import { router } from "@/router";
 import "./index.css";
 
+{{#unless authless}}
+auth().catch((e: unknown) => {
+  console.error("Failed to sign in", e);
+});
+
+{{/unless}}
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Root element not found");

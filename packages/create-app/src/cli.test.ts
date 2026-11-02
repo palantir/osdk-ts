@@ -243,6 +243,20 @@ async function runTest({
       "utf-8",
     );
     expect(clientTs).toContain("createAuthlessClient");
+
+    const mainTsx = fs.readFileSync(
+      path.join(process.cwd(), project, "src", "main.tsx"),
+      "utf-8",
+    );
+    expect(mainTsx).not.toMatch(/import .*\bauth\b.* from "@\/client"/u);
+    expect(mainTsx).not.toContain("auth()");
+  } else if (template.id === "template-react" && sdkVersion === "2.x") {
+    const mainTsx = fs.readFileSync(
+      path.join(process.cwd(), project, "src", "main.tsx"),
+      "utf-8",
+    );
+    expect(mainTsx).toMatch(/import .*\bauth\b.* from "@\/client"/u);
+    expect(mainTsx).toContain("auth()");
   }
 }
 
