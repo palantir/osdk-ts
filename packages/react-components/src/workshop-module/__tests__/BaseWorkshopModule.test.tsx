@@ -59,4 +59,26 @@ describe("BaseWorkshopModule", () => {
       );
     },
   );
+
+  it("keeps the initial theme while navigating to another module", () => {
+    const { rerender } = render(
+      <BaseWorkshopModule
+        foundryUrl="https://foundry.example.com"
+        moduleRid="ri.workshop.main.module.example"
+        defaultTheme="dark"
+      />,
+    );
+
+    rerender(
+      <BaseWorkshopModule
+        foundryUrl="https://foundry.example.com"
+        moduleRid="ri.workshop.main.module.other"
+        defaultTheme="light"
+      />,
+    );
+
+    expect(screen.getByTitle("Workshop module").getAttribute("src")).toBe(
+      "https://foundry.example.com/workspace/module/view/latest/ri.workshop.main.module.other?embedded=true&themeOverride=DARK_MODE",
+    );
+  });
 });
