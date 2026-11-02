@@ -43,6 +43,14 @@ const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
 function toSdkMetadata(
   previewMetadata: PreviewOntologyFullMetadata,
 ): OntologyFullMetadata {
+  const actionFunctionRids = new Set(
+    Object.values(previewMetadata.actionTypes).flatMap((action) =>
+      action.fullLogicRules.flatMap((rule) =>
+        rule.type === "function" ? [rule.functionRid] : []
+      )
+    ),
+  );
+
   return {
     ...previewMetadata,
     actionTypes: Object.fromEntries(
@@ -50,6 +58,13 @@ function toSdkMetadata(
         key,
         fullMeta.actionType,
       ]),
+    ),
+    // Local preview only needs these queries to resolve actions to functions.
+    // They should not be exposed via the package.
+    queryTypes: Object.fromEntries(
+      Object.entries(previewMetadata.queryTypes).filter(
+        ([, query]) => !actionFunctionRids.has(query.rid),
+      ),
     ),
   };
 }
