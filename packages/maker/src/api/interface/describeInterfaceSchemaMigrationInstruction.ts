@@ -81,15 +81,18 @@ export function describeFinalization(
   return proseFor(instruction).finalization;
 }
 
+/** Every instruction except `replace`, which has no phase-in: it is a permanent tombstone. */
+type PhaseInInstruction = Exclude<
+  InterfaceSchemaMigrationInstruction,
+  { type: "replace" }
+>;
+
 /**
  * The transition an author should declare to phase a newly-required entity in, as a DSL literal
  * they can paste.
  */
 export function describeSuggestedTransition(
-  instruction: Extract<
-    InterfaceSchemaMigrationInstruction,
-    { type: "addRequiredProperty" | "addRequiredActionTypeConstraint" }
-  >,
+  instruction: PhaseInInstruction,
 ): string {
   switch (instruction.type) {
     case "addRequiredProperty": {
