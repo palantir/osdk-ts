@@ -270,7 +270,8 @@ describe("validateOntologySchemaLockfile", () => {
           transitionId: "requireLastName",
           targets: [
             {
-              propertyApiName: "lastName",
+              kind: "property",
+              apiName: "lastName",
               previous: OPTIONAL_STRING,
               next: undefined,
             },
@@ -1159,7 +1160,8 @@ describe("validateOntologySchemaLockfile", () => {
           transitionId: "requireSendEmail",
           targets: [
             {
-              actionTypeConstraintApiName: SEND_EMAIL,
+              kind: "actionTypeConstraint",
+              apiName: SEND_EMAIL,
               previous: OPTIONAL,
               next: undefined,
             },

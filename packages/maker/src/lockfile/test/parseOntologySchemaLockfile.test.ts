@@ -536,6 +536,10 @@ describe("parseLockfile", () => {
 
   it.each([
     [
+      "an addRequiredProperty",
+      { type: "addRequiredProperty", property: "lastName" },
+    ],
+    [
       "an addRequiredActionTypeConstraint",
       {
         type: "addRequiredActionTypeConstraint",

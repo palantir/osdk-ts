@@ -192,16 +192,10 @@ export function applyTransition(
   const touched = new Map<string, SchemaElement>();
 
   for (const instruction of transition.instructions) {
-    for (const elementTransition of editsOf(instruction)) {
-      switch (elementTransition.kind) {
+    for (const elementEdit of editsOf(instruction)) {
+      switch (elementEdit.kind) {
         case "property":
-          if (
-            !applyEdit(
-              properties,
-              elementTransition.apiName,
-              elementTransition[mode],
-            )
-          ) {
+          if (!applyEdit(properties, elementEdit.apiName, elementEdit[mode])) {
             return undefined;
           }
           break;
@@ -209,22 +203,22 @@ export function applyTransition(
           if (
             !applyActionTypeConstraintEdit(
               actionTypeConstraints,
-              elementTransition.apiName,
-              elementTransition[mode],
+              elementEdit.apiName,
+              elementEdit[mode],
             )
           ) {
             return undefined;
           }
           break;
         default: {
-          const unhandled: never = elementTransition;
+          const unhandled: never = elementEdit;
           throw new Error(
             `Unknown schema element: ${JSON.stringify(unhandled)}`,
           );
         }
       }
 
-      const element = elementOf(elementTransition);
+      const element = elementOf(elementEdit);
       touched.set(JSON.stringify(element), element);
     }
   }
