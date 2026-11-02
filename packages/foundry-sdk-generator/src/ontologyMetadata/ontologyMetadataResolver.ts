@@ -855,6 +855,7 @@ export class OntologyMetadataResolver {
       case "date":
       case "double":
       case "float":
+      case "geoshape":
       case "integer":
       case "long":
       case "mediaReference":
@@ -975,6 +976,7 @@ export class OntologyMetadataResolver {
       case "geohash":
       case "geoshape":
       case "scenarioReference":
+      case "timeSeriesReference":
         return Result.ok({});
 
       case "vector":

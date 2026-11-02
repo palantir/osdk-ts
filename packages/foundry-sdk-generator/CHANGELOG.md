@@ -1,5 +1,42 @@
 # @osdk/foundry-sdk-generator
 
+## 2.86.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [af66ef0]
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client@2.86.0
+  - @osdk/client.unstable@2.86.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+  - @osdk/generator@2.86.0
+  - @osdk/generator-utils@2.86.0
+
+## 2.85.0
+
+### Minor Changes
+
+- 94e35b4: Propagate the generator TRACE_ID environment variable as valid B3 trace context on ontology metadata requests for log correlation.
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+  - @osdk/client@2.85.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+  - @osdk/generator@2.85.0
+  - @osdk/generator-utils@2.85.0
+
 ## 2.84.0
 
 ### Patch Changes

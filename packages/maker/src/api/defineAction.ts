@@ -899,6 +899,8 @@ export function extractAllowedValuesFromActionParameterType(
     case "geotimeSeriesReference":
     case "geotimeSeriesReferenceList":
       return { type: "geotimeSeriesReference" };
+    case "timeSeriesReference":
+      return { type: "timeSeriesReference" };
     case "attachment":
     case "attachmentList":
       return { type: "attachment" };

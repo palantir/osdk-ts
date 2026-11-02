@@ -38,6 +38,7 @@ const mockWidgetClient = {
   ready: vi.fn(),
   reload: vi.fn(),
   resize: vi.fn(),
+  hotkey: vi.fn(),
   emitEvent: mockEmitEvent,
   hostEventTarget: new FoundryHostEventTarget(),
 };

@@ -22,17 +22,35 @@ interface HostBaseMessage<T extends string, P = unknown> {
   payload: P;
 }
 
+/** Minimal definition of a hotkey for matching and replaying a keyboard event */
+interface Hotkey {
+  key: string;
+  altKey: boolean;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  shiftKey: boolean;
+}
+
 export namespace HostMessage {
   export const Version = "1.0.0";
   export type Version = typeof Version;
 
   export namespace Payload {
+    export interface SetHotkeys {
+      hotkeys: Hotkey[];
+    }
+
     export interface UpdateParameters<C extends WidgetConfig<C["parameters"]>> {
       parameters: AsyncParameterValueMap<C>;
     }
   }
 
-  export type Payload = Payload.UpdateParameters<any>;
+  export type Payload = Payload.SetHotkeys | Payload.UpdateParameters<any>;
+
+  export interface SetHotkeys extends HostBaseMessage<
+    "host.set-hotkeys",
+    Payload.SetHotkeys
+  > {}
 
   export interface UpdateParameters<
     C extends WidgetConfig<C["parameters"]>,
@@ -43,7 +61,14 @@ export namespace HostMessage {
 }
 
 export type HostMessage<C extends WidgetConfig<C["parameters"]>> =
-  HostMessage.UpdateParameters<C>;
+  | HostMessage.SetHotkeys
+  | HostMessage.UpdateParameters<C>;
+
+export function isHostSetHotkeysMessage<
+  C extends WidgetConfig<C["parameters"]>,
+>(event: HostMessage<C>): event is HostMessage.SetHotkeys {
+  return event.type === "host.set-hotkeys";
+}
 
 export function isHostParametersUpdatedMessage<
   C extends WidgetConfig<C["parameters"]>,
