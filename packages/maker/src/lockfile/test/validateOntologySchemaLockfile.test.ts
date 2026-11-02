@@ -1135,6 +1135,42 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
+    it("still checks the target constraint's parameters across a finalization", () => {
+      const subject = { requireImplementation: false };
+      const result = validate(
+        personConstrained(
+          { [SEND_EMAIL]: { ...OPTIONAL, parameters: { subject } } },
+          [requireSendEmail],
+        ),
+        personConstrained({
+          [SEND_EMAIL]: {
+            ...REQUIRED,
+            parameters: {
+              subject: {
+                ...subject,
+                isRequiredParameterOnConcreteAction: true,
+              },
+            },
+          },
+        }),
+      );
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "finalized",
+        },
+      ]);
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "parameterBecameRequiredOnConcreteAction",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+          parameter: "subject",
+        },
+      ]);
+    });
+
     it("reads the constraint staying optional as a deletion", () => {
       const result = validate(
         sendEmailInFlight,
