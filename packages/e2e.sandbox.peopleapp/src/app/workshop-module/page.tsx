@@ -61,6 +61,7 @@ export function WorkshopModulePage() {
             foundryUrl={import.meta.env.VITE_FOUNDRY_URL}
             moduleRid={module.moduleRid}
             moduleVersion={module.moduleVersion}
+            enableAuthPopup
           />
         </div>
       )}

@@ -24,15 +24,19 @@ export interface WorkshopModuleProps {
    * @default "published" */
   moduleVersion?: "latest" | "published";
 
+  /** Enables browser-session checks and a Foundry sign-in popup before loading the module, with a sign-in button if the popup is blocked. When disabled, loads the iframe without checking the session or showing sign-in UI.
+   * @default false */
+  enableAuthPopup?: boolean;
+
   /** Accessible title for the iframe.
    * @default "Workshop module" */
   title?: string;
 
-  /** Additional CSS class name for the iframe.
+  /** Additional CSS class name for the module container, including its sign-in state.
    * @default undefined */
   className?: string;
 
-  /** Inline styles for the iframe. By default, it fills its container.
+  /** Inline styles for the module container. By default, it fills its parent.
    * @default undefined */
   style?: CSSProperties;
 }

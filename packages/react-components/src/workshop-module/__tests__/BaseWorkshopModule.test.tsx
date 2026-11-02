@@ -16,16 +16,47 @@
 
 /** @vitest-environment-options {"settings":{"disableIframePageLoading":true}} */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { BaseWorkshopModule } from "../BaseWorkshopModule.js";
+import { useWorkshopAuth } from "../hooks/useWorkshopAuth.js";
 
-afterEach(cleanup);
+vi.mock("../hooks/useWorkshopAuth.js");
+
+beforeEach(() => {
+  vi.mocked(useWorkshopAuth).mockReturnValue({
+    status: "checking",
+    signIn: vi.fn(),
+  });
+});
+
+afterEach(() => {
+  cleanup();
+  vi.resetAllMocks();
+});
 
 describe("BaseWorkshopModule", () => {
+  it("loads directly with auth handling disabled by default", () => {
+    render(
+      <BaseWorkshopModule
+        foundryUrl="https://foundry.example.com"
+        moduleRid="ri.workshop.main.module.example"
+      />,
+    );
+
+    const iframe = screen.getByTitle<HTMLIFrameElement>("Workshop module");
+    expect(iframe.hidden).toBe(false);
+    expect(iframe.src).toBe(
+      "https://foundry.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true&foundry-branch-rid=",
+    );
+    expect(useWorkshopAuth).toHaveBeenLastCalledWith(undefined);
+    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.queryByRole("button")).toBeNull();
+  });
+
   it("rejects a JavaScript URL even when it accepts a relative path", () => {
     // oxlint-disable-next-line no-script-url -- exercises rejection of executable iframe URLs
     const foundryUrl = "javascript://example%0a%20alert(1)%3b%2f%2f";
@@ -107,5 +138,60 @@ describe("BaseWorkshopModule", () => {
     expect(screen.getByTitle("Workshop module")).toBe(iframe);
     // An omitted parameter would let Workshop restore its previous branch.
     expect(new URL(iframe.src).searchParams.get("foundry-branch-rid")).toBe("");
+  });
+
+  it("shows sign-in controls until ready and preserves the iframe", () => {
+    const signIn = vi.fn();
+    const props = {
+      foundryUrl: "https://foundry.example.com",
+      moduleRid: "ri.workshop.main.module.example",
+      branchRid: "ri.branch..branch.example",
+      className: "module",
+      style: { height: "24rem" },
+    };
+    const { container, rerender } = render(
+      <BaseWorkshopModule {...props} enableAuthPopup />,
+    );
+    const iframe = screen.getByTitle<HTMLIFrameElement>("Workshop module");
+    expect(iframe.hidden).toBe(true);
+    expect(iframe.hasAttribute("src")).toBe(false);
+    expect(screen.getByRole("status").textContent).toBe("Loading Workshop…");
+    expect(screen.queryByRole("button")).toBeNull();
+    expect(container.firstElementChild?.classList.contains("module")).toBe(
+      true,
+    );
+    expect((container.firstElementChild as HTMLElement).style.height).toBe(
+      "24rem",
+    );
+    expect(useWorkshopAuth).toHaveBeenLastCalledWith(
+      "https://foundry.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true&foundry-branch-rid=ri.branch..branch.example",
+    );
+
+    vi.mocked(useWorkshopAuth).mockReturnValue({ status: "required", signIn });
+    rerender(<BaseWorkshopModule {...props} enableAuthPopup />);
+    expect(iframe.hidden).toBe(true);
+    expect(iframe.hasAttribute("src")).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Sign in to Foundry" }));
+    expect(signIn).toHaveBeenCalledOnce();
+    const link = screen.getByRole("link", { name: "Open in Foundry" });
+    expect(link.getAttribute("href")).toBe(
+      "https://foundry.example.com/workspace/module/view/latest/ri.workshop.main.module.example?foundry-branch-rid=ri.branch..branch.example",
+    );
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+
+    vi.mocked(useWorkshopAuth).mockReturnValue({ status: "ready", signIn });
+    rerender(<BaseWorkshopModule {...props} enableAuthPopup />);
+    expect(screen.getByTitle("Workshop module")).toBe(iframe);
+    expect(iframe.hidden).toBe(false);
+    expect(iframe.hasAttribute("src")).toBe(true);
+    expect(screen.queryByRole("status")).toBeNull();
+    expect(screen.queryByRole("button")).toBeNull();
+
+    vi.mocked(useWorkshopAuth).mockReturnValue({ status: "checking", signIn });
+    rerender(<BaseWorkshopModule {...props} enableAuthPopup={false} />);
+    expect(useWorkshopAuth).toHaveBeenLastCalledWith(undefined);
+    expect(iframe.hidden).toBe(false);
+    expect(screen.queryByRole("status")).toBeNull();
   });
 });

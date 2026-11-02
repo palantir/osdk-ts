@@ -17,6 +17,8 @@
 import type { BaseWorkshopModuleProps } from "@osdk/react-components/experimental/workshop-module";
 import { BaseWorkshopModule } from "@osdk/react-components/experimental/workshop-module";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { http, HttpResponse } from "msw";
+import { expect, spyOn, userEvent, within } from "storybook/test";
 
 function isFoundryUrl(value: string): boolean {
   try {
@@ -34,6 +36,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
     foundryUrl: "",
     moduleRid: "ri.workshop.main.module.example",
     moduleVersion: "published",
+    enableAuthPopup: false,
     title: "Workshop module preview",
   },
   render: (args: BaseWorkshopModuleProps) => (
@@ -74,6 +77,11 @@ const meta: Meta<BaseWorkshopModuleProps> = {
         "latest for the latest saved version, or published for the published version. Defaults to published.",
     },
     title: { control: "text" },
+    enableAuthPopup: {
+      control: "boolean",
+      description:
+        "Enable Foundry session checks and sign-in popups. Defaults to false.",
+    },
     branchRid: {
       control: "text",
       description:
@@ -104,5 +112,57 @@ export const Default: Story = {
 />`,
       },
     },
+  },
+};
+
+export const SignInRequired: Story = {
+  args: {
+    foundryUrl: "https://foundry.example.com",
+    enableAuthPopup: true,
+  },
+  beforeEach: () => {
+    const open = spyOn(window, "open").mockReturnValue(null);
+    return () => open.mockRestore();
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        http.head(
+          "https://foundry.example.com/workspace/module/view/*",
+          () => new HttpResponse(null, { status: 401 }),
+        ),
+      ],
+    },
+    docs: {
+      description: {
+        story:
+          "Enables auth recovery and simulates an expired Foundry session with a blocked sign-in popup. No real sign-in window is opened in this example.",
+      },
+      source: {
+        code: `<BaseWorkshopModule
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  enableAuthPopup
+  style={{ height: "24rem" }}
+/>`,
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const signIn = await canvas.findByRole("button", {
+      name: "Sign in to Foundry",
+    });
+    await expect(
+      canvas.getByTitle("Workshop module preview"),
+    ).not.toBeVisible();
+    await expect(
+      canvas.getByRole("link", { name: "Open in Foundry" }),
+    ).toHaveAttribute(
+      "href",
+      "https://foundry.example.com/workspace/module/view/latest/ri.workshop.main.module.example?foundry-branch-rid=",
+    );
+    await userEvent.click(signIn);
+    await expect(window.open).toHaveBeenCalledTimes(2);
   },
 };

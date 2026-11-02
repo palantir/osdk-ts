@@ -28,6 +28,7 @@ const meta: Meta<WorkshopModuleStoryProps> = {
     theme: "light",
     moduleRid: "ri.workshop.main.module.example",
     moduleVersion: "published",
+    enableAuthPopup: false,
     title: "Workshop module preview",
   },
   render: (args) => <WorkshopModuleStory {...args} />,
@@ -65,6 +66,11 @@ const meta: Meta<WorkshopModuleStoryProps> = {
       options: ["latest", "published"],
     },
     title: { control: "text" },
+    enableAuthPopup: {
+      control: "boolean",
+      description:
+        "Enable Foundry session checks and sign-in popups. Defaults to false.",
+    },
     className: { control: "text" },
     style: { control: "object" },
   },

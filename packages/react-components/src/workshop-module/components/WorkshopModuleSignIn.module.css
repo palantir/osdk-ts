@@ -1,0 +1,25 @@
+.auth {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  padding: calc(var(--osdk-surface-spacing) * 4);
+  text-align: center;
+  color: var(--osdk-typography-color-default-rest);
+  background: var(--osdk-surface-background-color-default-rest);
+}
+
+.message {
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+}

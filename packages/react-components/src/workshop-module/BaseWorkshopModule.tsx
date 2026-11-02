@@ -17,14 +17,17 @@
 import classnames from "classnames";
 import React from "react";
 
+import { WorkshopModuleSignIn } from "./components/WorkshopModuleSignIn.js";
 import { getWorkshopModuleUrl } from "./getWorkshopModuleUrl.js";
 import { useInitialTheme } from "./hooks/useInitialTheme.js";
+import { useWorkshopAuth } from "./hooks/useWorkshopAuth.js";
 import type { BaseWorkshopModuleProps } from "./WorkshopModuleApi.js";
 
 import styles from "./BaseWorkshopModule.module.css";
 
 export function BaseWorkshopModule({
   defaultTheme,
+  enableAuthPopup = false,
   title = "Workshop module",
   className,
   style,
@@ -32,14 +35,26 @@ export function BaseWorkshopModule({
 }: BaseWorkshopModuleProps): React.ReactElement {
   const { theme, isLoading } = useInitialTheme(defaultTheme);
   const src = getWorkshopModuleUrl({ ...props, theme });
+  const { status, signIn } = useWorkshopAuth(
+    enableAuthPopup && !isLoading ? src : undefined,
+  );
+  const isReady = !isLoading && (!enableAuthPopup || status === "ready");
 
   return (
-    <iframe
-      src={isLoading ? undefined : src}
-      hidden={isLoading}
-      title={title}
-      className={classnames(styles.iframe, className)}
-      style={style}
-    />
+    <div className={classnames(styles.container, className)} style={style}>
+      <iframe
+        src={isReady ? src : undefined}
+        hidden={!isReady}
+        title={title}
+        className={styles.iframe}
+      />
+      {enableAuthPopup && status !== "ready" && (
+        <WorkshopModuleSignIn
+          status={status}
+          onSignIn={signIn}
+          moduleUrl={src}
+        />
+      )}
+    </div>
   );
 }

@@ -21,10 +21,13 @@ import { OsdkProvider } from "@osdk/react";
 import { act, cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { renderToString } from "react-dom/server";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { OsdkThemeProvider } from "../../theme/OsdkThemeProvider.js";
+import { useWorkshopAuth } from "../hooks/useWorkshopAuth.js";
 import { WorkshopModule } from "../WorkshopModule.js";
+
+vi.mock("../hooks/useWorkshopAuth.js");
 
 const client = createClient(
   "https://provider.example.com/",
@@ -33,9 +36,17 @@ const client = createClient(
 );
 const initialUrl = window.location.href;
 
+beforeEach(() => {
+  vi.mocked(useWorkshopAuth).mockReturnValue({
+    status: "checking",
+    signIn: vi.fn(),
+  });
+});
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.resetAllMocks();
   window.history.replaceState(null, "", initialUrl);
 });
 
@@ -51,6 +62,22 @@ describe("WorkshopModule", () => {
     );
 
     expect(screen.getByTitle("Embedded dashboard").getAttribute("src")).toBe(
+      "https://provider.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true&foundry-branch-rid=",
+    );
+    expect(useWorkshopAuth).toHaveBeenLastCalledWith(undefined);
+  });
+
+  it("forwards the auth opt-in with the client's module URL", () => {
+    render(
+      <OsdkProvider client={client}>
+        <WorkshopModule
+          moduleRid="ri.workshop.main.module.example"
+          enableAuthPopup
+        />
+      </OsdkProvider>,
+    );
+
+    expect(useWorkshopAuth).toHaveBeenLastCalledWith(
       "https://provider.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true&foundry-branch-rid=",
     );
   });
