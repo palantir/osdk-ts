@@ -31,10 +31,12 @@ const client = createClient(
   "ri.ontology.main.ontology.example",
   () => Promise.resolve("test-token"),
 );
+const initialUrl = window.location.href;
 
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  window.history.replaceState(null, "", initialUrl);
 });
 
 describe("WorkshopModule", () => {
@@ -49,9 +51,51 @@ describe("WorkshopModule", () => {
     );
 
     expect(screen.getByTitle("Embedded dashboard").getAttribute("src")).toBe(
-      "https://provider.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true",
+      "https://provider.example.com/workspace/module/view/latest/ri.workshop.main.module.example?embedded=true&foundry-branch-rid=",
     );
   });
+
+  it.each([
+    [undefined, "ri.branch..branch.from-url"],
+    ["ri.branch..branch.explicit", "ri.branch..branch.explicit"],
+    [null, ""],
+  ])(
+    "inherits the client's resolved branch with option %s",
+    (branch, expected) => {
+      window.history.replaceState(
+        null,
+        "",
+        "?foundryBranchRid=ri.branch..branch.from-url",
+      );
+      const branchClient = createClient(
+        "https://provider.example.com",
+        "ri.ontology.main.ontology.example",
+        () => Promise.resolve("test-token"),
+        { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+      );
+      window.history.replaceState(
+        null,
+        "",
+        "?foundryBranchRid=ri.branch..branch.another",
+      );
+      const workshopModule = (
+        <WorkshopModule moduleRid="ri.workshop.main.module.example" />
+      );
+      const { rerender } = render(
+        <OsdkProvider client={branchClient}>{workshopModule}</OsdkProvider>,
+      );
+      const iframe = screen.getByTitle<HTMLIFrameElement>("Workshop module");
+      expect(new URL(iframe.src).searchParams.get("foundry-branch-rid")).toBe(
+        expected,
+      );
+
+      rerender(<OsdkProvider client={client}>{workshopModule}</OsdkProvider>);
+      expect(screen.getByTitle("Workshop module")).toBe(iframe);
+      expect(new URL(iframe.src).searchParams.get("foundry-branch-rid")).toBe(
+        "",
+      );
+    },
+  );
 
   it.each(["light", "dark"] as const)(
     "inherits the initial %s theme without reloading when the provider changes",
