@@ -506,10 +506,6 @@ function toMarketplaceSchemaMigrationInstruction(
   }
 }
 
-/**
- * The replacement and its members resolve to output shapes when defined in this block, and to the
- * input shapes `ImportedShapeExtractor` emits when imported.
- */
 function toMarketplaceInterfaceTypeReplacement(
   replacement: InterfaceTypeReplacement,
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,

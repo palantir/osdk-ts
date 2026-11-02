@@ -616,6 +616,7 @@ function memberRids(ontology: OntologyBlockDataV2, apiName: string) {
     invariant(found != null, `expected ${apiName} to declare ${kind} ${name}`);
     return found[0];
   };
+
   return {
     property: (name: string) =>
       find(
@@ -744,7 +745,7 @@ describe("addRequiredActionTypeConstraint schema migrations", () => {
           interfaceTypeRid: newRid,
           propertyMappings: {
             [old.property("title")]: base.property("name"),
-            // SPT-backed properties share an rid derived from the SPT's
+            // SPT-backed properties share a rid derived from the SPT's
             [old.property("com.palantir.ownerSpt")]: replacement.property(
               "com.palantir.ownerSpt",
             ),
@@ -952,7 +953,7 @@ describe("addRequiredActionTypeConstraint output shapes", () => {
   });
 
   it("references a locally defined replacement's output shapes", async () => {
-    const { shapes } = await convertWithShapes(() => defineReplacementPair());
+    const shapes = await convertShapes(() => defineReplacementPair());
     const ids = {
       newInterface: ReadableIdGenerator.getForInterface("com.palantir.New"),
       title: ReadableIdGenerator.getForInterfaceProperty(
@@ -1024,7 +1025,7 @@ describe("addRequiredActionTypeConstraint output shapes", () => {
   });
 
   it("references an imported replacement's input shapes", async () => {
-    const { shapes } = await convertWithShapes(defineImportedReplacement);
+    const shapes = await convertShapes(defineImportedReplacement);
     const ids = {
       imported: ReadableIdGenerator.getForInterface("com.other.Imported"),
       fullName: ReadableIdGenerator.getForInterfaceProperty(

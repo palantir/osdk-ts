@@ -260,10 +260,6 @@ function convertReplacement(
   };
 }
 
-/**
- * A locally defined interface type's replacement must resolve to block shapes: outputs when it is
- * defined locally too, the inputs `ImportedShapeExtractor` emits when it is imported.
- */
 function assertReplacementHasBlockShapes(
   interfaceType: InterfaceType,
   resolved: ResolvedInterfaceTypeReplacement,
