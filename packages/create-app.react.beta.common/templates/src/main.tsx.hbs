@@ -15,9 +15,7 @@ import { router } from "@/router";
 import "./index.css";
 
 {{#unless authless}}
-auth().catch((e: unknown) => {
-  console.error("Failed to sign in", e);
-});
+void auth();
 
 {{/unless}}
 const rootElement = document.getElementById("root");

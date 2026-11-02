@@ -8,9 +8,7 @@ import Loading from "@/components/Loading";
 import { router } from "@/router";
 import "./index.css";
 
-auth().catch((e: unknown) => {
-  console.error("Failed to sign in", e);
-});
+void auth();
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
