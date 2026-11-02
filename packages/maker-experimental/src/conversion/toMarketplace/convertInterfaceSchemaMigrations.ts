@@ -24,6 +24,7 @@ import type {
   InterfaceSchemaMigrationInstruction,
   InterfaceType,
   InterfaceTypeReplacement,
+  OntologyValidationContext,
   ResolvedInterfaceMember,
   ResolvedInterfaceProperty,
   ResolvedInterfaceTypeReplacement,
@@ -31,11 +32,12 @@ import type {
 import {
   addNamespaceIfNone,
   convertInterfaceSchemaGracePeriod,
+  getImportedTypes,
   getOntologyDefinition,
   interfacePropertyWireApiName,
   isInterfaceSharedPropertyType,
   OntologyEntityTypeEnum,
-  resolveInterfaceTypeReplacementApiNames,
+  resolveInterfaceTypeReplacement,
 } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
@@ -46,8 +48,15 @@ export function convertInterfaceSchemaMigrations(
   ridGenerator: OntologyRidGenerator,
 ): InterfaceTypeSchemaMigrationBlockData | undefined {
   const { schemaMigrations } = interfaceType;
+  const context: OntologyValidationContext = {
+    ontology: getOntologyDefinition(),
+    importedTypes: getImportedTypes(),
+  };
   // Imported interface types' migrations belong to the block that defines them
-  if (schemaMigrations === undefined || !isLocal(interfaceType.apiName)) {
+  if (
+    schemaMigrations === undefined ||
+    !isLocal(context, interfaceType.apiName)
+  ) {
     return undefined;
   }
 
@@ -70,7 +79,12 @@ export function convertInterfaceSchemaMigrations(
               transition.gracePeriod,
             ),
             migrations: transition.instructions.map((instruction) =>
-              convertInstruction(instruction, interfaceType, references),
+              convertInstruction(
+                instruction,
+                interfaceType,
+                context,
+                references,
+              ),
             ),
           },
         ];
@@ -163,6 +177,7 @@ class WireReferences {
 function convertInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
   interfaceType: InterfaceType,
+  context: OntologyValidationContext,
   references: WireReferences,
 ): InterfaceTypeSchemaMigrationInstruction {
   switch (instruction.type) {
@@ -198,6 +213,7 @@ function convertInstruction(
         type: "replace",
         replace: {
           replacement: convertReplacement(
+            context,
             interfaceType,
             instruction.replacement,
             references,
@@ -216,15 +232,17 @@ function convertInstruction(
 }
 
 function convertReplacement(
+  context: OntologyValidationContext,
   interfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
   references: WireReferences,
 ): WireInterfaceTypeReplacement {
-  const resolved = resolveInterfaceTypeReplacementApiNames(
+  const resolved = resolveInterfaceTypeReplacement(
+    context,
     interfaceType,
     replacement,
   );
-  assertReplacementHasBlockShapes(interfaceType, resolved);
+  assertReplacementHasBlockShapes(context, interfaceType, resolved);
   return {
     interfaceTypeRid: references.interfaceType(resolved.interfaceTypeApiName),
     propertyMappings: Object.fromEntries(
@@ -261,6 +279,7 @@ function convertReplacement(
 }
 
 function assertReplacementHasBlockShapes(
+  context: OntologyValidationContext,
   interfaceType: InterfaceType,
   resolved: ResolvedInterfaceTypeReplacement,
 ): void {
@@ -268,7 +287,7 @@ function assertReplacementHasBlockShapes(
   const importedSptBacked = resolved.propertyMappings.find(
     ({ to }) =>
       isInterfaceSharedPropertyType(to.property) &&
-      !isLocal(to.interfaceTypeApiName),
+      !isLocal(context, to.interfaceTypeApiName),
   );
   if (importedSptBacked !== undefined) {
     throw new Error(
@@ -277,9 +296,12 @@ function assertReplacementHasBlockShapes(
   }
 }
 
-function isLocal(interfaceTypeApiName: string): boolean {
+function isLocal(
+  { ontology }: OntologyValidationContext,
+  interfaceTypeApiName: string,
+): boolean {
   return Object.hasOwn(
-    getOntologyDefinition()[OntologyEntityTypeEnum.INTERFACE_TYPE],
+    ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
     interfaceTypeApiName,
   );
 }
