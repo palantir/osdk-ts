@@ -41,8 +41,12 @@ export interface BaseWorkshopModuleProps extends WorkshopModuleProps {
   /** HTTP or HTTPS Foundry base URL, for example `https://example.palantirfoundry.com`. */
   foundryUrl: string;
 
-  /** Initial theme override. `system` resolves the browser preference once before loading the module.
-   * Uncontrolled: changes after mount are ignored. Remount to apply a different theme.
-   * @default undefined (use the module's theme) */
+  /**
+   * Sets the initial theme. `system` reads the browser's preference once before the module loads.
+   *
+   * Changes after mount are ignored. Remount to change the theme.
+   *
+   * @default undefined (uses the module's theme)
+   */
   defaultTheme?: "light" | "dark" | "system";
 }
