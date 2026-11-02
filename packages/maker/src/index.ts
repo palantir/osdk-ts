@@ -120,6 +120,8 @@ export type {
 } from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type {
+  ResolvedInterfaceActionTypeConstraint,
+  ResolvedInterfaceLinkTypeConstraint,
   ResolvedInterfaceMember,
   ResolvedInterfaceProperty,
 } from "./api/interface/ResolvedInterfaceMember.js";
@@ -129,7 +131,6 @@ export type {
   ResolvedInterfaceTypeReplacement,
 } from "./api/interface/resolveInterfaceTypeReplacement.js";
 export { resolveInterfaceTypeReplacement } from "./api/interface/resolveInterfaceTypeReplacement.js";
-export { validateInterfaceSchemaMigrationReferences } from "./api/interface/validateInterfaceSchemaMigrationReferences.js";
 export type {
   LinkType,
   OneToManyLinkTypeDefinition,
