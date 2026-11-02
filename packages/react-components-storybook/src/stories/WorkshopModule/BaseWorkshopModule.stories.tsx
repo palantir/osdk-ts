@@ -77,7 +77,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
     branchRid: {
       control: "text",
       description:
-        "Foundry branch RID. Leave blank to use main. Changing the branch reloads the module.",
+        "Global branch RID. Leave blank to use main. Changing the branch reloads the module.",
     },
     defaultTheme: {
       control: "select",

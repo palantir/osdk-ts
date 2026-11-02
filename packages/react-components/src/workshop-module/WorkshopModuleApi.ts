@@ -41,7 +41,7 @@ export interface BaseWorkshopModuleProps extends WorkshopModuleProps {
   /** HTTP or HTTPS Foundry base URL, for example `https://example.palantirfoundry.com`. */
   foundryUrl: string;
 
-  /** Foundry branch RID. Changing the branch reloads the module.
+  /** Global branch RID. Changing the branch reloads the module.
    * @default undefined (main branch) */
   branchRid?: string;
 

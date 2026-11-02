@@ -16,7 +16,7 @@
 
 import { additionalContext, type Client } from "../Client.js";
 
-/** Returns the Foundry branch resolved when the client was created, or undefined for main. */
+/** Returns the global branch resolved when the client was created, or undefined for main. */
 export function getClientBranch(client: Client): string | undefined {
   return client[additionalContext].branch;
 }
