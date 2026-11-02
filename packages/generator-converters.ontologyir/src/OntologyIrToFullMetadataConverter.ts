@@ -478,7 +478,7 @@ export class OntologyIrToFullMetadataConverter {
       projectDir,
       "functions",
       "external-imports",
-      "functions-full-metadata.json",
+      "functions-metadata.json",
     );
     if (fs.existsSync(importedFunctionsMetadataPath)) {
       const importedFunctionsMetadata = JSON.parse(
