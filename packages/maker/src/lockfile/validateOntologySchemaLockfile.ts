@@ -381,13 +381,6 @@ interface AccountedFor {
 
 /**
  * Reports changes to the action type constraints the interface declares directly.
- *
- * OMS rejects an implementing object type that lacks an implementation of a constraint with
- * `requireImplementation: true` (`InterfaceActionTypeConstraintImplementationValidator`), and
- * re-runs that for every existing implementor when the interface changes
- * (`ObjectTypeInterfaceImplementationModificationValidator.validateDeploy`), so requiring one
- * breaks untouched object types. Nothing in OMS rejects removing a constraint
- * (`InterfaceTypeModificationValidator` only guards property removal), so that is only a warning.
  */
 function validateActionTypeConstraintsDiff(
   interfaceApiName: string,

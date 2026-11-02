@@ -1000,6 +1000,20 @@ describe("validateOntologySchemaLockfile", () => {
           },
         }),
       },
+      {
+        name: "a required action type constraint",
+        unchanged: lockfile({
+          Person: {
+            schema: {
+              properties: { firstName: REQUIRED_STRING },
+              actionTypeConstraints: {
+                "com.palantir.sendEmail": { requireImplementation: true },
+              },
+            },
+            transitions: [],
+          },
+        }),
+      },
     ])("reports nothing about $name", ({ unchanged }) => {
       const result = validate(unchanged, unchanged);
       expect(result.breakingChanges).toEqual([]);
@@ -1129,7 +1143,7 @@ describe("validateOntologySchemaLockfile", () => {
       });
     });
 
-    it("warns, rather than rejects, when a constraint stops being required", () => {
+    it("warns when a constraint stops being required", () => {
       const result = validate(
         personConstrained({ [SEND_EMAIL]: REQUIRED }),
         personConstrained({ [SEND_EMAIL]: OPTIONAL }),
@@ -1144,9 +1158,12 @@ describe("validateOntologySchemaLockfile", () => {
       ]);
     });
 
-    it.each([OPTIONAL, REQUIRED])(
-      "warns, rather than rejects, when a constraint is removed (%o)",
-      (constraint) => {
+    it.each([
+      ["optional", OPTIONAL],
+      ["required", REQUIRED],
+    ] as const)(
+      "warns when a %s constraint is removed",
+      (_name, constraint) => {
         const result = validate(
           personConstrained({ [SEND_EMAIL]: constraint }),
           personConstrained({}),
