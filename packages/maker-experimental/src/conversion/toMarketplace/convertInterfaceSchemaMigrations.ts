@@ -149,7 +149,6 @@ function convertInstruction(
       return {
         type: "addRequiredActionTypeConstraint",
         addRequiredActionTypeConstraint: {
-          // Validation requires the constraint to be declared directly by this interface type
           actionTypeConstraintRid: references.actionTypeConstraint({
             apiName: addNamespaceIfNone(instruction.actionTypeConstraint),
             interfaceTypeApiName: interfaceType.apiName,
