@@ -278,7 +278,7 @@ describe("Interface schema migrations", () => {
           },
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Child references property "inherited" via addRequiredProperty, but interface com.palantir.Child does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Child declares addRequiredProperty("inherited"), but interface com.palantir.Child does not declare property "inherited". Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.]`,
       );
     });
 
@@ -499,7 +499,7 @@ describe("Interface schema migrations", () => {
           {},
         ),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo references property "missing" via addRequiredProperty, but interface com.palantir.Foo does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("missing"), but interface com.palantir.Foo does not declare property "missing". Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.]`,
       );
     });
 
@@ -514,7 +514,7 @@ describe("Interface schema migrations", () => {
           {},
         ),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo references property "toString" via addRequiredProperty, but interface com.palantir.Foo does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("toString"), but interface com.palantir.Foo does not declare property "toString". Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.]`,
       );
     });
 
@@ -522,7 +522,7 @@ describe("Interface schema migrations", () => {
       expect(
         defineTargeting("req", { required: true, type: "string" }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo targets property "req" via addRequiredProperty, but that property is required. Only properties declared required: false may be targeted.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("req"), but property "req" is required. Only properties declared \`required: false\` may be targeted.]`,
       );
     });
 
@@ -530,7 +530,7 @@ describe("Interface schema migrations", () => {
       expect(
         defineTargeting("def", { type: "string" }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo targets property "def" via addRequiredProperty, but that property is required. Only properties declared required: false may be targeted.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("def"), but property "def" is required. Only properties declared \`required: false\` may be targeted.]`,
       );
     });
 
@@ -560,7 +560,7 @@ describe("Interface schema migrations", () => {
           required: true,
         }),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo targets property "reqSpt" via addRequiredProperty, but that property is required. Only properties declared required: false may be targeted.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("reqSpt"), but property "reqSpt" is required. Only properties declared \`required: false\` may be targeted.]`,
       );
     });
 
@@ -573,7 +573,7 @@ describe("Interface schema migrations", () => {
       expect(
         defineTargeting("bareSpt", bareSpt),
       ).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo targets property "bareSpt" via addRequiredProperty, but that property is required. Only properties declared required: false may be targeted.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredProperty("bareSpt"), but property "bareSpt" is required. Only properties declared \`required: false\` may be targeted.]`,
       );
     });
   });

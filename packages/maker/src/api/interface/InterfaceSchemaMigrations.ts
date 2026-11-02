@@ -23,7 +23,7 @@ import type { InterfaceType } from "./InterfaceType.js";
  *
  * Presence of this field on an interface type definition opts the interface type into
  * stricter backwards-compatibility checks (e.g. you may not add a new required-to-be-implemented
- * property except via an interface schema migration).
+ * property or action type constraint except via an interface schema migration).
  */
 export interface InterfaceSchemaMigrations {
   /**
