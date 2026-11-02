@@ -79,8 +79,9 @@ export function describeBreakingChange(
       const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
       return (
         `${where}: action type constraint "${constraint}" became required without a schema ` +
-        `migration. Implementing object types that do not implement it yet are blocked from ` +
-        `upgrading. Keep it declared \`requireImplementation: false\` and phase it in instead ` +
+        `migration. If there's any implementing object types of this interface that do not ` +
+        `implement it already, the interface type will be blocked from upgrading. ` +
+        `Keep it declared \`requireImplementation: false\` and phase it in instead ` +
         `through a migration like:\n` +
         `  ${describeSuggestedAddRequiredActionTypeConstraintTransition(constraint)}`
       );

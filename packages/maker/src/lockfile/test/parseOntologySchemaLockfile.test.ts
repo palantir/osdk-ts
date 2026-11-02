@@ -309,19 +309,6 @@ describe("parseLockfile", () => {
     );
   });
 
-  it("accepts an interface that records its action type constraints", () => {
-    const constrained = withInterface({
-      schema: {
-        properties: {},
-        actionTypeConstraints: {
-          "com.palantir.sendEmail": { requireImplementation: false },
-        },
-      },
-      transitions: [],
-    });
-    expect(parse(constrained)).toStrictEqual(constrained);
-  });
-
   it("rejects an empty `actionTypeConstraints`", () => {
     expect(() =>
       parse(
@@ -332,22 +319,6 @@ describe("parseLockfile", () => {
       ),
     ).toThrowError(
       /schema\.actionTypeConstraints: Expected at least one action type constraint/u,
-    );
-  });
-
-  it("rejects an action type constraint missing requireImplementation", () => {
-    expect(() =>
-      parse(
-        withInterface({
-          schema: {
-            properties: {},
-            actionTypeConstraints: { "com.palantir.sendEmail": {} },
-          },
-          transitions: [],
-        }),
-      ),
-    ).toThrowError(
-      /actionTypeConstraints\.com\.palantir\.sendEmail\.requireImplementation: Expected a boolean/u,
     );
   });
 

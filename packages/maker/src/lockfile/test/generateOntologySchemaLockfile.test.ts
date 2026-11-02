@@ -542,7 +542,7 @@ describe("action type constraints", () => {
     });
   }
 
-  it("records each directly-declared constraint by api name, sorted, with whether it is required", () => {
+  it("records each directly-declared constraint by api name", () => {
     const person = defineInterface({
       apiName: "Person",
       schemaMigrations: { transitions: [] },
@@ -554,6 +554,7 @@ describe("action type constraints", () => {
       "com.palantir.archive": { requireImplementation: true },
       "com.palantir.sendEmail": { requireImplementation: false },
     });
+    // NB: should be sorted for lockfile stability
     expect(
       Object.keys(lockedSchema().actionTypeConstraints ?? {}),
     ).toStrictEqual(["com.palantir.archive", "com.palantir.sendEmail"]);

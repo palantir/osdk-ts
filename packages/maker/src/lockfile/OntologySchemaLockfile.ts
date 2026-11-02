@@ -82,12 +82,6 @@ export interface LockedInterfaceSchema {
 }
 
 export interface LockedActionTypeConstraint {
-  /**
-   * Whether implementing object types must provide an action type for this constraint.
-   *
-   * Recorded explicitly, like `LockedProperty.required`, because it is the constraint's defining
-   * attribute rather than a departure from a default.
-   */
   requireImplementation: boolean;
 }
 
