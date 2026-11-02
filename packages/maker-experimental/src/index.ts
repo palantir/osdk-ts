@@ -20,6 +20,7 @@ export {
   defineOntologyV2,
   type OntologyPackagingOptions,
 } from "./api/defineOntologyV2.js";
+export type { OntologyIrV2 } from "./api/OntologyIrV2.js";
 export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
 
 export { defineImportObject } from "./api/importObjectType.js";

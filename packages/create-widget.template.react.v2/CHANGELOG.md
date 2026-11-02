@@ -1,5 +1,17 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.86.0
+
+### Minor Changes
+
+- 65dcc11: Bump widget library versions in create-widget templates to ^3.85.0 to pick up hotkey forwarding support.
+
+## 3.85.0
+
+## 3.84.0
+
+## 3.83.0
+
 ## 3.82.0
 
 ## 3.81.0

@@ -1,5 +1,24 @@
 # @osdk/unit-testing
 
+## 1.1.0
+
+### Minor Changes
+
+- d0f3019: Upgrade the admin Platform SDK to 2.86.0 and remove the obsolete CBAC banner preview parameter.
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [a0c6e14]
+  - @osdk/client@2.85.0
+  - @osdk/api@2.85.0
+
+## 1.0.0
+
+### Major Changes
+
+- e20b58d: Make `@osdk/unit-testing` generally available with the 1.0.0 release. Remove the `@osdk/unit-testing/experimental` entry point. Replace imports from `@osdk/unit-testing/experimental` with `@osdk/unit-testing`; all mock factories and types are available from the main entry point.
+
 ## 0.27.0
 
 ### Minor Changes

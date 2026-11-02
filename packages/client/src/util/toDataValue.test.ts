@@ -347,4 +347,40 @@ describe(toDataValue, () => {
     );
     expect(converted).toBe("ri.actions..scenario.abc");
   });
+
+  it("converts a time series reference by series id to a bare series id string", async () => {
+    const converted = await toDataValue(
+      { $seriesId: "sensor-123" },
+      clientCtx,
+      "timeSeriesReference",
+    );
+    expect(converted).toEqual("sensor-123");
+  });
+
+  it("converts a time series reference qualified by a sync rid", async () => {
+    const converted = await toDataValue(
+      { $seriesId: "sensor-123", $syncRid: "ri.time-series.main.sync.abc" },
+      clientCtx,
+      "timeSeriesReference",
+    );
+    expect(converted).toEqual({
+      seriesId: "sensor-123",
+      syncRid: "ri.time-series.main.sync.abc",
+    });
+  });
+
+  it("converts a time series reference by template rid", async () => {
+    const converted = await toDataValue(
+      {
+        $templateRid: "ri.time-series.main.template.abc",
+        $templateVersion: "1",
+      },
+      clientCtx,
+      "timeSeriesReference",
+    );
+    expect(converted).toEqual({
+      templateRid: "ri.time-series.main.template.abc",
+      templateVersion: "1",
+    });
+  });
 });

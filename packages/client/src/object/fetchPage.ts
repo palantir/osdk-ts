@@ -699,6 +699,8 @@ async function applyFetchArgs<
   if (args?.$UNSTABLE_loadOntologyDefinedDerivedProperties != null) {
     body.loadOntologyDefinedDerivedProperties =
       args.$UNSTABLE_loadOntologyDefinedDerivedProperties;
+  } else if (args?.$includeAllBaseObjectProperties) {
+    body.loadOntologyDefinedDerivedProperties = true;
   }
 
   const orderBy = args?.$orderBy;
