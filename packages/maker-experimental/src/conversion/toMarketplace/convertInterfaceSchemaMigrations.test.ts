@@ -728,7 +728,9 @@ describe("addRequiredActionTypeConstraint schema migrations", () => {
       interfaceTypeRidsToApiNames: {},
     });
   });
+});
 
+describe("replace schema migrations", () => {
   it("maps a locally defined replacement's members by their published rids", async () => {
     const ontology = await convertOntology(() => defineReplacementPair());
     const { block } = blockOf(ontology, "com.palantir.Old");
@@ -951,7 +953,9 @@ describe("addRequiredActionTypeConstraint output shapes", () => {
       },
     });
   });
+});
 
+describe("replace output shapes", () => {
   it("references a locally defined replacement's output shapes", async () => {
     const shapes = await convertShapes(() => defineReplacementPair());
     const ids = {

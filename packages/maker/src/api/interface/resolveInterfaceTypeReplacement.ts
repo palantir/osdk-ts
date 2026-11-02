@@ -17,8 +17,7 @@
 import invariant from "tiny-invariant";
 
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
-import { namespace } from "../defineOntology.js";
-import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
+import { addNamespaceIfNone, namespace } from "../defineOntology.js";
 import type { OntologyContext } from "../validateOntology.js";
 import { interfacePropertyWireApiName } from "./InterfacePropertyType.js";
 import type { InterfaceTypeReplacement } from "./InterfaceSchemaMigrations.js";
@@ -30,21 +29,15 @@ import type {
   ResolvedInterfaceProperty,
 } from "./ResolvedInterfaceMember.js";
 
-interface ResolvedReplacementInterfaceType {
-  /** The fully-qualified API name the replacement is published under. */
-  apiName: string;
-  /** The replacement's definition, local when defined in this ontology and imported otherwise. */
-  definition: InterfaceType;
-}
-
 /**
- * Resolves the interface type a `replace` instruction's replacement refers to.
+ * Resolves the interface type a `replace` instruction's replacement refers to: local when defined
+ * in this ontology and imported otherwise.
  */
 function resolveReplacementInterfaceType(
   { ontology, importedTypes }: OntologyContext,
   replacedInterfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
-): ResolvedReplacementInterfaceType {
+): InterfaceType {
   const { interfaceType } = replacement;
   const localTypes = ontology[OntologyEntityTypeEnum.INTERFACE_TYPE];
   const importedInterfaceTypes =
@@ -68,15 +61,10 @@ function resolveReplacementInterfaceType(
 function findInterfaceType(
   apiName: string,
   ...interfaceTypesByApiName: Array<Record<string, InterfaceType>>
-): ResolvedReplacementInterfaceType | undefined {
-  const interfaceTypes = interfaceTypesByApiName.find((types) =>
+): InterfaceType | undefined {
+  return interfaceTypesByApiName.find((types) =>
     Object.hasOwn(types, apiName),
-  );
-  if (interfaceTypes === undefined) {
-    return undefined;
-  }
-
-  return { apiName, definition: interfaceTypes[apiName] };
+  )?.[apiName];
 }
 
 export interface ResolvedInterfaceMemberMapping<
@@ -95,8 +83,6 @@ export interface ResolvedInterfaceActionTypeConstraintMapping extends ResolvedIn
 
 /** Mappings are in the order they were authored. */
 export interface ResolvedInterfaceTypeReplacement {
-  /** The replacement's fully-qualified API name. */
-  interfaceTypeApiName: string;
   interfaceType: InterfaceType;
   propertyMappings: Array<
     ResolvedInterfaceMemberMapping<ResolvedInterfaceProperty>
@@ -120,14 +106,14 @@ export function resolveInterfaceTypeReplacement(
   replacement: InterfaceTypeReplacement,
   errorPrefix?: string,
 ): ResolvedInterfaceTypeReplacement {
-  const { apiName, definition } = resolveReplacementInterfaceType(
+  const definition = resolveReplacementInterfaceType(
     context,
     replacedInterfaceType,
     replacement,
   );
   const prefix =
     errorPrefix ??
-    `Interface ${replacedInterfaceType.apiName} declares a replacement by ${apiName}`;
+    `Interface ${replacedInterfaceType.apiName} declares a replacement by ${definition.apiName}`;
 
   function resolveMapping<M>(
     field: string,
@@ -152,11 +138,16 @@ export function resolveInterfaceTypeReplacement(
   }
 
   return {
-    interfaceTypeApiName: apiName,
     interfaceType: definition,
     propertyMappings: Object.entries(replacement.propertyMappings).map(
       ([from, to]) =>
-        resolveMapping("propertyMappings", "property", findProperty, from, to),
+        resolveMapping(
+          "propertyMappings",
+          "property",
+          resolveInterfaceProperty,
+          from,
+          to,
+        ),
     ),
     linkTypeConstraintMappings: Object.entries(
       replacement.linkTypeConstraintMappings ?? {},
@@ -202,7 +193,11 @@ function findInHierarchy<M>(
   return undefined;
 }
 
-function findProperty(
+/**
+ * Resolves the property `interfaceType` itself declares under `authoredKey`, without searching
+ * what it extends.
+ */
+export function resolveInterfaceProperty(
   interfaceType: InterfaceType,
   authoredKey: string,
 ): ResolvedInterfaceProperty | undefined {
@@ -222,7 +217,7 @@ function findLinkTypeConstraint(
   interfaceType: InterfaceType,
   authored: string,
 ): ResolvedInterfaceLinkTypeConstraint | undefined {
-  const apiName = combineApiNamespaceIfMissing(namespace, authored);
+  const apiName = addNamespaceIfNone(authored);
   const linkTypeConstraint = interfaceType.links.find(
     (link) => link.metadata.apiName === apiName,
   );
@@ -239,7 +234,7 @@ function findActionTypeConstraint(
   interfaceType: InterfaceType,
   authored: string,
 ): ResolvedInterfaceActionTypeConstraint | undefined {
-  const apiName = combineApiNamespaceIfMissing(namespace, authored);
+  const apiName = addNamespaceIfNone(authored);
   const actionTypeConstraint = interfaceType.actionTypeConstraints.find(
     (constraint) => constraint.metadata.apiName === apiName,
   );

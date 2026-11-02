@@ -130,7 +130,10 @@ export type {
   ResolvedInterfaceMemberMapping,
   ResolvedInterfaceTypeReplacement,
 } from "./api/interface/resolveInterfaceTypeReplacement.js";
-export { resolveInterfaceTypeReplacement } from "./api/interface/resolveInterfaceTypeReplacement.js";
+export {
+  resolveInterfaceProperty,
+  resolveInterfaceTypeReplacement,
+} from "./api/interface/resolveInterfaceTypeReplacement.js";
 export type {
   LinkType,
   OneToManyLinkTypeDefinition,

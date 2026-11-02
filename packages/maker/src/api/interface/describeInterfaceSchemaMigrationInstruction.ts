@@ -25,8 +25,6 @@ interface InstructionProse {
    * instruction that is never finalized.
    */
   finalization: string | undefined;
-  /** The transition an author should declare to phase the change in, as a DSL literal they can paste. */
-  suggestedTransition: string;
 }
 
 /** How each instruction variant is worded in messages to users. */
@@ -39,10 +37,6 @@ function proseFor(
       return {
         describe: `addRequiredProperty("${propertyApiName}")`,
         finalization: `set "${propertyApiName}" to \`required: true\``,
-        suggestedTransition:
-          `{ id: "require-${propertyApiName}", title: "Require ${propertyApiName}", ` +
-          `gracePeriod: { type: "afterInstall", days: 30 }, ` +
-          `instructions: [{ type: "addRequiredProperty", property: "${propertyApiName}" }] }`,
       };
     }
     case "addRequiredActionTypeConstraint": {
@@ -50,10 +44,6 @@ function proseFor(
       return {
         describe: `addRequiredActionTypeConstraint("${actionTypeConstraint}")`,
         finalization: `set "${actionTypeConstraint}" to \`requireImplementation: true\``,
-        suggestedTransition:
-          `{ id: "require-${actionTypeConstraint}", title: "Require ${actionTypeConstraint}", ` +
-          `gracePeriod: { type: "afterInstall", days: 30 }, ` +
-          `instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "${actionTypeConstraint}" }] }`,
       };
     }
     case "replace": {
@@ -66,10 +56,6 @@ function proseFor(
         describe: `replace("${replacementApiName}")`,
         // replace sits as a tombstone, never finalizing (short of deleting the interface type)
         finalization: undefined,
-        suggestedTransition:
-          `{ id: "replace", title: "Replace with ${replacementApiName}", ` +
-          `gracePeriod: { type: "afterInstall", days: 30 }, ` +
-          `instructions: [{ type: "replace", replacement: { interfaceType: "${replacementApiName}", propertyMappings: {} } }] }`,
       };
     }
     default: {
@@ -95,8 +81,40 @@ export function describeFinalization(
   return proseFor(instruction).finalization;
 }
 
+/**
+ * The transition an author should declare to phase a newly-required entity in, as a DSL literal
+ * they can paste.
+ */
 export function describeSuggestedTransition(
-  instruction: InterfaceSchemaMigrationInstruction,
+  instruction: Extract<
+    InterfaceSchemaMigrationInstruction,
+    { type: "addRequiredProperty" | "addRequiredActionTypeConstraint" }
+  >,
 ): string {
-  return proseFor(instruction).suggestedTransition;
+  switch (instruction.type) {
+    case "addRequiredProperty": {
+      const { property: propertyApiName } = instruction;
+      return (
+        `{ id: "require-${propertyApiName}", title: "Require ${propertyApiName}", ` +
+        `gracePeriod: { type: "afterInstall", days: 30 }, ` +
+        `instructions: [{ type: "addRequiredProperty", property: "${propertyApiName}" }] }`
+      );
+    }
+    case "addRequiredActionTypeConstraint": {
+      const { actionTypeConstraint } = instruction;
+      return (
+        `{ id: "require-${actionTypeConstraint}", title: "Require ${actionTypeConstraint}", ` +
+        `gracePeriod: { type: "afterInstall", days: 30 }, ` +
+        `instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "${actionTypeConstraint}" }] }`
+      );
+    }
+    default: {
+      const unhandled: never = instruction;
+      throw new Error(
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
+      );
+    }
+  }
 }

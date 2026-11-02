@@ -24,8 +24,7 @@ import type {
 import invariant from "tiny-invariant";
 
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
-import { namespace } from "../defineOntology.js";
-import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
+import { addNamespaceIfNone } from "../defineOntology.js";
 import {
   describePropertyType,
   type NormalizedPropertyType,
@@ -102,10 +101,7 @@ function validateInstructionReferences(
       // action type constraints are defined separately from defineInterface
       validateActionTypeConstraintTarget(
         context,
-        combineApiNamespaceIfMissing(
-          namespace,
-          instruction.actionTypeConstraint,
-        ),
+        addNamespaceIfNone(instruction.actionTypeConstraint),
       );
       return;
     case "replace": {
