@@ -28,7 +28,7 @@ import { defineSharedPropertyType } from "../../api/defineSpt.js";
 import type { InterfaceSchemaTransition } from "../../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import { defaultTypeClasses } from "../../api/propertyConversionUtils.js";
-import type { OntologyValidationContext } from "../../api/validateOntology.js";
+import type { OntologyContext } from "../../api/validateOntology.js";
 import {
   censusOfSource,
   generateOntologySchemaLockfile,
@@ -90,7 +90,7 @@ function lockedSchema(): LockedInterfaceSchema {
 }
 
 /** What the DSL has registered since the last `defineOntology`. */
-function definedContext(): OntologyValidationContext {
+function definedContext(): OntologyContext {
   return {
     ontology: getOntologyDefinition(),
     importedTypes: getImportedTypes(),

@@ -48,7 +48,7 @@ import {
 import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
 import { normalizePropertyType } from "../api/properties/normalizePropertyType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
-import type { OntologyValidationContext } from "../api/validateOntology.js";
+import type { OntologyContext } from "../api/validateOntology.js";
 import type {
   LockedActionTypeConstraint,
   LockedActionTypeConstraintReplacement,
@@ -82,7 +82,7 @@ export interface SourceCensus {
  * Any history-dependent logic (e.g. backwards-compatibility checking) is only a validation concern.
  */
 export function generateOntologySchemaLockfile(
-  context: OntologyValidationContext,
+  context: OntologyContext,
 ): OntologySchemaLockfile {
   const interfaces: Record<string, LockedInterfaceType> = {};
   for (const interfaceType of sortedByApiName(
@@ -113,7 +113,7 @@ export function shouldLockInterface(interfaceType: InterfaceType): boolean {
 }
 
 function lockInterface(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
 ): LockedInterfaceType {
   return {
@@ -279,7 +279,7 @@ function lockTypeClasses(
 }
 
 function lockInterfaceSchemaMigrationTransitions(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
 ): LockedTransition[] {
   const { schemaMigrations } = interfaceType;
@@ -302,7 +302,7 @@ function lockInterfaceSchemaMigrationTransitions(
 }
 
 function lockInstruction(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   instruction: InterfaceSchemaMigrationInstruction,
   interfaceType: InterfaceType,
 ): LockedInstruction {
@@ -345,7 +345,7 @@ function lockInstruction(
 }
 
 function lockReplacement(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
 ): LockedInterfaceTypeReplacement {

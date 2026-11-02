@@ -31,7 +31,7 @@ import {
   type NormalizedPropertyType,
   normalizePropertyType,
 } from "../properties/normalizePropertyType.js";
-import type { OntologyValidationContext } from "../validateOntology.js";
+import type { OntologyContext } from "../validateOntology.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
   getInterfacePropertyTypeType,
@@ -58,7 +58,7 @@ import {
  * and extending interface types are all attached after `defineInterface` returns.
  */
 export function validateInterfaceSchemaMigrationReferences(
-  validationContext: OntologyValidationContext,
+  validationContext: OntologyContext,
 ): void {
   const interfaceTypes = Object.values(
     validationContext.ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
@@ -82,7 +82,7 @@ export function validateInterfaceSchemaMigrationReferences(
 }
 
 interface ReferenceContext {
-  validationContext: OntologyValidationContext;
+  validationContext: OntologyContext;
   interfaceType: InterfaceType;
   transitionId: string;
   /** The start of every error message, naming the transition, interface, and instruction. */
