@@ -267,7 +267,7 @@ describe("agents", () => {
         .mockReturnValueOnce(notReady);
       const result = session.experimental_sendEvent(
         { LookupWeather: { city: "Paris" } },
-        { $timeoutMs: 100, pollIntervalMs: 10 },
+        { $timeoutMs: 100, $pollIntervalMs: 10 },
       );
       await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(1), {
         interval: 1,
@@ -285,7 +285,7 @@ describe("agents", () => {
       const send = vi.spyOn(agentImpl, "sendEvent").mockReturnValue(notReady);
       const result = session.experimental_sendEvent(
         { LookupWeather: { city: "Paris" } },
-        { $timeoutMs: 100, pollIntervalMs: 10 },
+        { $timeoutMs: 100, $pollIntervalMs: 10 },
       );
       const rejected = expect(result).rejects.toBeInstanceOf(
         AgentSendEventTimeoutError,
@@ -322,13 +322,13 @@ describe("agents", () => {
 
     it.each([0, -1, NaN, Infinity])(
       "rejects invalid polling interval %s",
-      async (pollIntervalMs) => {
+      async ($pollIntervalMs) => {
         const result = session.experimental_sendEvent(
           { LookupWeather: { city: "Paris" } },
-          { pollIntervalMs },
+          { $pollIntervalMs },
         );
         await expect(result).rejects.toThrow(
-          "pollIntervalMs must be a finite positive number",
+          "$pollIntervalMs must be a finite positive number",
         );
       },
     );

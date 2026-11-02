@@ -47,9 +47,9 @@ export async function sendEventToAgentSession(
   }
   const deadline = Date.now() + timeoutMs;
 
-  const pollIntervalMs = options?.pollIntervalMs ?? 1000;
+  const pollIntervalMs = options?.$pollIntervalMs ?? 1000;
   if (!Number.isFinite(pollIntervalMs) || pollIntervalMs <= 0) {
-    throw new Error("pollIntervalMs must be a finite positive number");
+    throw new Error("$pollIntervalMs must be a finite positive number");
   }
 
   const id =

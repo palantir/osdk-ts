@@ -28,7 +28,7 @@ export interface AgentSendEventOptions {
    *
    * Defaults to 1 second.
    */
-  pollIntervalMs?: number;
+  $pollIntervalMs?: number;
 }
 
 /** @beta */
