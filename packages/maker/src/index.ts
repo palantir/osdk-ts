@@ -166,7 +166,7 @@ export {
   validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
 export {
-  type OntologyValidationContext,
+  type OntologyContext,
   validateOntology,
 } from "./api/validateOntology.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";

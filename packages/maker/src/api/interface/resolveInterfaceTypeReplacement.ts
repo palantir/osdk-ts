@@ -19,7 +19,7 @@ import invariant from "tiny-invariant";
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { namespace } from "../defineOntology.js";
 import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
-import type { OntologyValidationContext } from "../validateOntology.js";
+import type { OntologyContext } from "../validateOntology.js";
 import { interfacePropertyWireApiName } from "./InterfacePropertyType.js";
 import type { InterfaceTypeReplacement } from "./InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "./InterfaceType.js";
@@ -41,7 +41,7 @@ interface ResolvedReplacementInterfaceType {
  * Resolves the interface type a `replace` instruction's replacement refers to.
  */
 function resolveReplacementInterfaceType(
-  { ontology, importedTypes }: OntologyValidationContext,
+  { ontology, importedTypes }: OntologyContext,
   replacedInterfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
 ): ResolvedReplacementInterfaceType {
@@ -115,13 +115,13 @@ export interface ResolvedInterfaceTypeReplacement {
  * `errorPrefix` starts the message thrown when a mapped entity does not exist.
  */
 export function resolveInterfaceTypeReplacement(
-  validationContext: OntologyValidationContext,
+  context: OntologyContext,
   replacedInterfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
   errorPrefix?: string,
 ): ResolvedInterfaceTypeReplacement {
   const { apiName, definition } = resolveReplacementInterfaceType(
-    validationContext,
+    context,
     replacedInterfaceType,
     replacement,
   );

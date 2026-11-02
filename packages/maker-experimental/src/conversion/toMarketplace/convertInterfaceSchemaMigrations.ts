@@ -24,7 +24,7 @@ import type {
   InterfaceSchemaMigrationInstruction,
   InterfaceType,
   InterfaceTypeReplacement,
-  OntologyValidationContext,
+  OntologyContext,
   ResolvedInterfaceMember,
   ResolvedInterfaceProperty,
   ResolvedInterfaceTypeReplacement,
@@ -48,7 +48,7 @@ export function convertInterfaceSchemaMigrations(
   ridGenerator: OntologyRidGenerator,
 ): InterfaceTypeSchemaMigrationBlockData | undefined {
   const { schemaMigrations } = interfaceType;
-  const context: OntologyValidationContext = {
+  const context: OntologyContext = {
     ontology: getOntologyDefinition(),
     importedTypes: getImportedTypes(),
   };
@@ -177,7 +177,7 @@ class WireReferences {
 function convertInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
   interfaceType: InterfaceType,
-  context: OntologyValidationContext,
+  context: OntologyContext,
   references: WireReferences,
 ): InterfaceTypeSchemaMigrationInstruction {
   switch (instruction.type) {
@@ -232,7 +232,7 @@ function convertInstruction(
 }
 
 function convertReplacement(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
   references: WireReferences,
@@ -279,7 +279,7 @@ function convertReplacement(
 }
 
 function assertReplacementHasBlockShapes(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
   resolved: ResolvedInterfaceTypeReplacement,
 ): void {
@@ -297,7 +297,7 @@ function assertReplacementHasBlockShapes(
 }
 
 function isLocal(
-  { ontology }: OntologyValidationContext,
+  { ontology }: OntologyContext,
   interfaceTypeApiName: string,
 ): boolean {
   return Object.hasOwn(
