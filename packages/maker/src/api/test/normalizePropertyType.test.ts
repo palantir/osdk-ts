@@ -16,30 +16,33 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js";
-import type { LockedPropertyType } from "../LockedPropertyType.js";
-import { describeType, normalizePropertyType } from "../LockedPropertyType.js";
+import type { NormalizedPropertyType } from "../properties/normalizePropertyType.js";
+import {
+  describePropertyType,
+  normalizePropertyType,
+} from "../properties/normalizePropertyType.js";
+import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
 
 // @ts-expect-error not a property type at all
-const _rejectsNonsense: LockedPropertyType = "not-a-property-type";
+const _rejectsNonsense: NormalizedPropertyType = "not-a-property-type";
 
-const _acceptsTheStrippedForm: LockedPropertyType = {
+const _acceptsTheStrippedForm: NormalizedPropertyType = {
   type: "struct",
   structDefinition: { zip: { fieldType: "string" } },
 };
 
-const _acceptsAnArray: LockedPropertyType = {
+const _acceptsAnArray: NormalizedPropertyType = {
   type: "array",
   subtype: "string",
 };
 
-const _rejectsNestedArrays: LockedPropertyType = {
+const _rejectsNestedArrays: NormalizedPropertyType = {
   type: "array",
   // @ts-expect-error maker's DSL has a single `array` boolean, so arrays are never nested
   subtype: { type: "array", subtype: "string" },
 };
 
-const _rejectsPresentation: LockedPropertyType = {
+const _rejectsPresentation: NormalizedPropertyType = {
   type: "struct",
   structDefinition: {
     // @ts-expect-error the recorded form has no display metadata
@@ -192,8 +195,8 @@ describe("normalizePropertyType", () => {
   });
 });
 
-describe("describeType", () => {
-  it.each<{ type: LockedPropertyType; expected: string }>([
+describe("describePropertyType", () => {
+  it.each<{ type: NormalizedPropertyType; expected: string }>([
     { type: "string", expected: '"string"' },
     { type: { type: "array", subtype: "string" }, expected: '"string"[]' },
     {
@@ -205,6 +208,6 @@ describe("describeType", () => {
       expected: '{"type":"string","isLongText":true}[]',
     },
   ])("renders $expected", ({ type, expected }) => {
-    expect(describeType(type)).toBe(expected);
+    expect(describePropertyType(type)).toBe(expected);
   });
 });

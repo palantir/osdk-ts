@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import type {
+  OntologyIrInterfaceActionTypeConstraint,
+  OntologyIrMarketplaceInterfaceLinkType,
+} from "@osdk/client.unstable";
+
 import type { InterfacePropertyType } from "./InterfacePropertyType.js";
 
 /** An entity (property, link type constraint, action type constraint, etc.) of an interface type. */
@@ -28,4 +33,12 @@ export interface ResolvedInterfaceProperty extends ResolvedInterfaceMember {
   /** The key the property is authored under on `interfaceTypeApiName`. */
   authoredKey: string;
   property: InterfacePropertyType;
+}
+
+export interface ResolvedInterfaceLinkTypeConstraint extends ResolvedInterfaceMember {
+  linkTypeConstraint: OntologyIrMarketplaceInterfaceLinkType;
+}
+
+export interface ResolvedInterfaceActionTypeConstraint extends ResolvedInterfaceMember {
+  actionTypeConstraint: OntologyIrInterfaceActionTypeConstraint;
 }

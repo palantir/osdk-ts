@@ -19,9 +19,9 @@ import { z } from "zod";
 import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
 import { isCanonicalIsoUtcDatetime } from "../api/interface/validateInterfaceSchemaMigrations.js";
 import type { CoversEveryVariant } from "../util/CoversEveryVariant.js";
-import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
   LockedInstruction,
+  LockedPropertyType,
   OntologySchemaLockfile,
 } from "./OntologySchemaLockfile.js";
 import {

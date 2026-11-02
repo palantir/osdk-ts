@@ -310,7 +310,8 @@ function getClaims(
         )}`,
       ];
     case "replace":
-      return ["replace"];
+      // Always the only instruction of the only transition, so it can never conflict
+      return [];
     default: {
       const unhandled: never = instruction;
       throw new Error(

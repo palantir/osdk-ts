@@ -23,14 +23,14 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
-import {
-  describeType,
-  type LockedPropertyType,
-  normalizePropertyType,
-} from "../../lockfile/LockedPropertyType.js";
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { namespace } from "../defineOntology.js";
 import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
+import {
+  describePropertyType,
+  type NormalizedPropertyType,
+  normalizePropertyType,
+} from "../properties/normalizePropertyType.js";
 import type { OntologyValidationContext } from "../validateOntology.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
@@ -44,7 +44,12 @@ import type {
   InterfaceTypeReplacement,
 } from "./InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "./InterfaceType.js";
-import { resolveReplacementInterfaceType } from "./resolveInterfaceTypeReplacement.js";
+import type { ResolvedInterfaceMember } from "./ResolvedInterfaceMember.js";
+import {
+  type ResolvedInterfaceActionTypeConstraintMapping,
+  type ResolvedInterfaceMemberMapping,
+  resolveInterfaceTypeReplacement,
+} from "./resolveInterfaceTypeReplacement.js";
 
 /**
  * Validates interface schema migrations against the other entities they reference.
@@ -156,11 +161,13 @@ function validateReplacement(
   replacement: InterfaceTypeReplacement,
 ): void {
   const { validationContext, interfaceType, prefix } = context;
-  const { definition: replacementType } = resolveReplacementInterfaceType(
+  const resolved = resolveInterfaceTypeReplacement(
     validationContext,
     interfaceType,
     replacement,
+    prefix,
   );
+  const replacementType = resolved.interfaceType;
 
   invariant(
     replacementType.apiName !== interfaceType.apiName,
@@ -177,20 +184,23 @@ function validateReplacement(
     context,
     interfaceType.apiName,
     replacementType.apiName,
-    replacement.propertyMappings,
+    pairsOf(
+      Object.entries(replacement.propertyMappings),
+      resolved.propertyMappings,
+      ({ property }) => property,
+      ({ authoredKey }) => authoredKey,
+    ),
     {
       field: "propertyMappings",
       noun: "property",
-      sources: flattenedPropertiesIncludingInherited(interfaceType),
       targets: flattenedPropertiesIncludingInherited(replacementType),
-      normalizeKey: (key) => key,
       isRequired: (property) => isInterfacePropertyRequired(property),
       mismatch: (from, to) => {
-        const sourceType = lockedTypeOf(from);
-        const targetType = lockedTypeOf(to);
+        const sourceType = normalizedTypeOf(from);
+        const targetType = normalizedTypeOf(to);
         return isDeepStrictEqual(sourceType, targetType)
           ? undefined
-          : `type ${describeType(sourceType)} does not match ${describeType(targetType)}`;
+          : `type ${describePropertyType(sourceType)} does not match ${describePropertyType(targetType)}`;
       },
     },
   );
@@ -198,93 +208,127 @@ function validateReplacement(
     context,
     interfaceType.apiName,
     replacementType.apiName,
-    replacement.linkTypeConstraintMappings ?? {},
+    pairsOf(
+      Object.entries(replacement.linkTypeConstraintMappings ?? {}),
+      resolved.linkTypeConstraintMappings,
+      ({ linkTypeConstraint }) => linkTypeConstraint,
+      ({ apiName }) => apiName,
+    ),
     {
       field: "linkTypeConstraintMappings",
       noun: "link type constraint",
-      sources: flattenedLinksIncludingInherited(interfaceType),
       targets: flattenedLinksIncludingInherited(replacementType),
-      normalizeKey: (key) => combineApiNamespaceIfMissing(namespace, key),
       isRequired: (link) => link.required,
       mismatch: checkForLinkMismatch,
     },
+  );
+
+  const authoredActionTypeConstraintSources = Object.keys(
+    replacement.actionTypeConstraintMappings ?? {},
   );
   validateMapping(
     context,
     interfaceType.apiName,
     replacementType.apiName,
-    Object.fromEntries(
+    pairsOf(
       Object.entries(replacement.actionTypeConstraintMappings ?? {}).map(
         ([from, { actionTypeConstraint }]) => [from, actionTypeConstraint],
       ),
+      resolved.actionTypeConstraintMappings,
+      ({ actionTypeConstraint }) => actionTypeConstraint,
+      ({ apiName }) => apiName,
     ),
     {
       field: "actionTypeConstraintMappings",
       noun: "action type constraint",
-      sources: flattenedActionTypeConstraintsIncludingInherited(interfaceType),
       targets:
         flattenedActionTypeConstraintsIncludingInherited(replacementType),
-      normalizeKey: (key) => combineApiNamespaceIfMissing(namespace, key),
       isRequired: (constraint) => constraint.requireImplementation,
       // After required-ness check above, only the parameters need compatibility
       // checking, and that happens separately in validateParameterMappings
       mismatch: () => undefined,
     },
   );
-  validateParameterMappings(context, replacement, replacementType);
+  resolved.actionTypeConstraintMappings.forEach((mapping, i) =>
+    validateParameterMappings(
+      context,
+      authoredActionTypeConstraintSources[i],
+      mapping,
+    ),
+  );
 }
 
 function validateParameterMappings(
   context: ReferenceContext,
-  replacement: InterfaceTypeReplacement,
-  replacementType: InterfaceType,
+  authoredActionTypeConstraint: string,
+  { from, to, parameterMappings }: ResolvedInterfaceActionTypeConstraintMapping,
 ): void {
-  const sources = flattenedActionTypeConstraintsIncludingInherited(
-    context.interfaceType,
+  const field = `actionTypeConstraintMappings["${authoredActionTypeConstraint}"].parameterMappings`;
+  const sources = from.actionTypeConstraint.parameters;
+  const targets = to.actionTypeConstraint.parameters;
+  const pairs = Object.entries(parameterMappings).map(
+    ([authoredSource, authoredTarget]) => {
+      invariant(
+        Object.hasOwn(sources, authoredSource),
+        `${context.prefix}, whose ${field} maps from parameter "${authoredSource}", but ${from.apiName} has no such parameter.`,
+      );
+      invariant(
+        Object.hasOwn(targets, authoredTarget),
+        `${context.prefix}, whose ${field} maps to parameter "${authoredTarget}", but ${to.apiName} has no such parameter.`,
+      );
+      return {
+        authoredSource,
+        authoredTarget,
+        source: sources[authoredSource],
+        target: targets[authoredTarget],
+        targetKey: authoredTarget,
+      };
+    },
   );
-  const targets =
-    flattenedActionTypeConstraintsIncludingInherited(replacementType);
-  for (const [
-    authoredSource,
-    { actionTypeConstraint, parameterMappings },
-  ] of Object.entries(replacement.actionTypeConstraintMappings ?? {})) {
-    const source = sources.get(
-      combineApiNamespaceIfMissing(namespace, authoredSource),
-    )!;
-    const target = targets.get(
-      combineApiNamespaceIfMissing(namespace, actionTypeConstraint),
-    )!;
 
-    validateMapping(
-      context,
-      source.metadata.apiName,
-      target.metadata.apiName,
-      parameterMappings ?? {},
-      {
-        field: `actionTypeConstraintMappings["${authoredSource}"].parameterMappings`,
-        noun: "parameter",
-        sources: new Map(Object.entries(source.parameters)),
-        targets: new Map(Object.entries(target.parameters)),
-        normalizeKey: (key) => key,
-        isRequired: (parameter) => parameter.requireImplementation,
-        mismatch: (from, to) =>
-          isDeepStrictEqual(from.type, to.type)
-            ? undefined
-            : `type ${JSON.stringify(from.type)} does not match ${JSON.stringify(to.type)}`,
-      },
-    );
-  }
+  validateMapping(context, from.apiName, to.apiName, pairs, {
+    field,
+    noun: "parameter",
+    targets: new Map(Object.entries(targets)),
+    isRequired: (parameter) => parameter.requireImplementation,
+    mismatch: (source, target) =>
+      isDeepStrictEqual(source.type, target.type)
+        ? undefined
+        : `type ${JSON.stringify(source.type)} does not match ${JSON.stringify(target.type)}`,
+  });
+}
+
+/** One authored mapping entry, with both sides already resolved. */
+interface MappedPair<T> {
+  authoredSource: string;
+  authoredTarget: string;
+  source: T;
+  target: T;
+  /** The key `target` has in `MappingSpec.targets`. */
+  targetKey: string;
+}
+
+/** Zips authored mapping entries with their resolutions, which are in the same order. */
+function pairsOf<M extends ResolvedInterfaceMember, T>(
+  authored: ReadonlyArray<[source: string, target: string]>,
+  resolved: ReadonlyArray<ResolvedInterfaceMemberMapping<M>>,
+  definitionOf: (member: M) => T,
+  keyOf: (member: M) => string,
+): Array<MappedPair<T>> {
+  return resolved.map(({ from, to }, i) => ({
+    authoredSource: authored[i][0],
+    authoredTarget: authored[i][1],
+    source: definitionOf(from),
+    target: definitionOf(to),
+    targetKey: keyOf(to),
+  }));
 }
 
 interface MappingSpec<T> {
   field: string;
   noun: string;
-  /** The replaced entity's members, keyed by normalized API name. */
-  sources: ReadonlyMap<string, T>;
-  /** The replacement entity's members, keyed by normalized API name. */
+  /** Every member of the replacement entity, keyed as `MappedPair.targetKey`. */
   targets: ReadonlyMap<string, T>;
-  /** Normalizes an authored API name to the key `sources` and `targets` use. */
-  normalizeKey: (authored: string) => string;
   /** Whether the replacement requires `target`. */
   isRequired: (target: T) => boolean;
   /** Why `source` can't stand in for `target`, if it can't. */
@@ -295,40 +339,18 @@ function validateMapping<T>(
   { prefix }: ReferenceContext,
   sourceApiName: string,
   targetApiName: string,
-  mapping: Record<string, string>,
-  {
-    field,
-    noun,
-    sources,
-    targets,
-    normalizeKey,
-    isRequired,
-    mismatch,
-  }: MappingSpec<T>,
+  pairs: ReadonlyArray<MappedPair<T>>,
+  { field, noun, targets, isRequired, mismatch }: MappingSpec<T>,
 ): void {
-  const mappedTargets = new Set<string>();
-  for (const [authoredSource, authoredTarget] of Object.entries(mapping)) {
-    const source = sources.get(normalizeKey(authoredSource));
-    invariant(
-      source !== undefined,
-      `${prefix}, whose ${field} maps from ${noun} "${authoredSource}", but ${sourceApiName} has no such ${noun}.`,
-    );
-
-    const targetKey = normalizeKey(authoredTarget);
-    const target = targets.get(targetKey);
-    invariant(
-      target !== undefined,
-      `${prefix}, whose ${field} maps to ${noun} "${authoredTarget}", but ${targetApiName} has no such ${noun}.`,
-    );
-
+  for (const { authoredSource, authoredTarget, source, target } of pairs) {
     const reason = mismatch(source, target);
     invariant(
       reason === undefined,
       `${prefix}, whose ${field} maps ${noun} "${authoredSource}" to "${authoredTarget}", but its ${reason}.`,
     );
-    mappedTargets.add(targetKey);
   }
 
+  const mappedTargets = new Set(pairs.map(({ targetKey }) => targetKey));
   for (const [key, target] of targets) {
     invariant(
       mappedTargets.has(key) || !isRequired(target),
@@ -337,7 +359,9 @@ function validateMapping<T>(
   }
 }
 
-function lockedTypeOf(property: InterfacePropertyType): LockedPropertyType {
+function normalizedTypeOf(
+  property: InterfacePropertyType,
+): NormalizedPropertyType {
   return normalizePropertyType(
     getInterfacePropertyTypeType(property),
     isInterfacePropertyArray(property),
