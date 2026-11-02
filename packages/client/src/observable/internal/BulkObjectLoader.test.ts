@@ -505,7 +505,7 @@ describe(BulkObjectLoader, () => {
       }
     });
 
-    it("refreshes a list and its cached RDP objects with two requests", async () => {
+    it("refreshes a list and its cached RDP objects with one request", async () => {
       const observableClient = new ObservableClientImpl(store);
       const observer = {
         next: vi.fn<
@@ -538,7 +538,7 @@ describe(BulkObjectLoader, () => {
 
       await observableClient.invalidateObjectType(Employee);
 
-      expect(loadRequests).toHaveLength(2);
+      expect(loadRequests).toHaveLength(1);
       const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
       for (const pk of [1, 2, 3, 4, 5]) {
         const query = store.objects.getQuery(
