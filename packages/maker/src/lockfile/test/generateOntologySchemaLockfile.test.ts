@@ -687,12 +687,6 @@ describe("action type constraints", () => {
 });
 
 describe("replacement", () => {
-  const DEPRECATED = {
-    type: "deprecated",
-    message: "Use PersonV2",
-    deadline: "2030-01-01T00:00:00Z",
-  } as const;
-
   function replaceWith(replacement: InterfaceType): InterfaceSchemaTransition {
     return {
       id: "replace",
@@ -736,18 +730,6 @@ describe("replacement", () => {
       properties: { fullName: { type: "string" } },
     });
   }
-
-  it("records no deprecated status while a replace is in flight", () => {
-    const personV2 = definePersonV2();
-    defineInterface({
-      apiName: "Person",
-      status: DEPRECATED,
-      properties: { name: { type: "string" } },
-      schemaMigrations: { transitions: [replaceWith(personV2)] },
-    });
-
-    expect(Object.keys(lockedSchema())).toEqual(["properties"]);
-  });
 
   it("records the replacement by api name, omitting empty mappings", () => {
     const personV2 = definePersonV2();

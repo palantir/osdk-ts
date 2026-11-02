@@ -91,8 +91,8 @@ function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
         },
       ];
     case "replace":
-      // The replacement only steers what proposals do to implementing object types; the
-      // interface's own schema records nothing of it
+      // replaces don't modify the declaring interface's schema (only provides mappings to steer
+      // how to comply)
       return [];
     default: {
       const unhandled: never = instruction;

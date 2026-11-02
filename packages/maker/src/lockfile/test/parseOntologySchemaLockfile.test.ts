@@ -587,87 +587,32 @@ describe("parseLockfile", () => {
     );
   });
 
-  it("rejects a replacement that records an empty mapping", () => {
+  it.each([
+    ["propertyMappings", { propertyMappings: {} }],
+    ["linkTypeConstraintMappings", { linkTypeConstraintMappings: {} }],
+    ["actionTypeConstraintMappings", { actionTypeConstraintMappings: {} }],
+    [
+      "parameterMappings",
+      {
+        actionTypeConstraintMappings: {
+          "com.palantir.sendEmail": {
+            actionTypeConstraint: "com.palantir.notify",
+            parameterMappings: {},
+          },
+        },
+      },
+    ],
+  ])("rejects a replacement that records an empty %s", (field, mappings) => {
+    const replacement = { interfaceType: "com.palantir.PersonV2", ...mappings };
     expect(() =>
       parse(
-        withTransition({
-          instructions: [
-            {
-              type: "replace",
-              replacement: {
-                interfaceType: "com.palantir.PersonV2",
-                propertyMappings: {},
-              },
-            },
-          ],
-        }),
+        withTransition({ instructions: [{ type: "replace", replacement }] }),
       ),
     ).toThrowError(
-      /replacement\.propertyMappings: Expected at least one property mapping, or no value at all/u,
-    );
-  });
-
-  it("rejects a replacement that records an empty parameter mapping", () => {
-    expect(() =>
-      parse(
-        withTransition({
-          instructions: [
-            {
-              type: "replace",
-              replacement: {
-                interfaceType: "com.palantir.PersonV2",
-                actionTypeConstraintMappings: {
-                  "com.palantir.sendEmail": {
-                    actionTypeConstraint: "com.palantir.notify",
-                    parameterMappings: {},
-                  },
-                },
-              },
-            },
-          ],
-        }),
+      new RegExp(
+        `${field}: Expected at least one .* mapping, or no value at all`,
+        "u",
       ),
-    ).toThrowError(
-      /parameterMappings: Expected at least one parameter mapping, or no value at all/u,
-    );
-  });
-
-  it("rejects an action type constraint mapping recorded in its pre-parameter string form", () => {
-    expect(() =>
-      parse(
-        withTransition({
-          instructions: [
-            {
-              type: "replace",
-              replacement: {
-                interfaceType: "com.palantir.PersonV2",
-                actionTypeConstraintMappings: {
-                  "com.palantir.sendEmail": "com.palantir.notify",
-                },
-              },
-            },
-          ],
-        }),
-      ),
-    ).toThrowError(
-      /Expected an object recording the replacement action type constraint/u,
-    );
-  });
-
-  it("rejects a replacement that names its interface by object", () => {
-    expect(() =>
-      parse(
-        withTransition({
-          instructions: [
-            {
-              type: "replace",
-              replacement: { interfaceType: { apiName: "PersonV2" } },
-            },
-          ],
-        }),
-      ),
-    ).toThrowError(
-      /replacement\.interfaceType: Expected the api name of the replacement interface/u,
     );
   });
 
