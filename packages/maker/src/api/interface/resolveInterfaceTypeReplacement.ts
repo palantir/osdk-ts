@@ -15,11 +15,8 @@
  */
 
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
-import {
-  importedTypes,
-  namespace,
-  ontologyDefinition,
-} from "../defineOntology.js";
+import { namespace } from "../defineOntology.js";
+import type { OntologyValidationContext } from "../validateOntology.js";
 import type { InterfaceTypeReplacement } from "./InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "./InterfaceType.js";
 
@@ -31,38 +28,43 @@ export interface ResolvedReplacementInterfaceType {
 }
 
 /**
- * Resolves the interface type a `replace` instruction's replacement refers to: an object returned
- * by `defineInterface`, or the API name of a locally-defined or imported interface type. Mappings
- * can only be checked and published against a definition, so a replacement known only by API name
- * is rejected.
+ * Resolves the interface type a `replace` instruction's replacement refers to.
  */
 export function resolveReplacementInterfaceType(
+  { ontology, importedTypes }: OntologyValidationContext,
   replacedInterfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
 ): ResolvedReplacementInterfaceType {
   const { interfaceType } = replacement;
-  const localTypes = ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE];
+  const localTypes = ontology[OntologyEntityTypeEnum.INTERFACE_TYPE];
   const importedInterfaceTypes =
     importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE];
 
-  const apiName =
-    typeof interfaceType !== "string"
-      ? interfaceType.apiName
-      : !Object.hasOwn(localTypes, interfaceType) &&
-          !Object.hasOwn(importedInterfaceTypes, interfaceType) &&
-          Object.hasOwn(localTypes, namespace + interfaceType)
-        ? namespace + interfaceType
-        : interfaceType;
-
-  const definition = Object.hasOwn(localTypes, apiName)
-    ? localTypes[apiName]
-    : Object.hasOwn(importedInterfaceTypes, apiName)
-      ? importedInterfaceTypes[apiName]
-      : undefined;
-  if (definition === undefined) {
+  const requestedApiName =
+    typeof interfaceType === "string" ? interfaceType : interfaceType.apiName;
+  const resolved =
+    findInterfaceType(requestedApiName, localTypes, importedInterfaceTypes) ??
+    (typeof interfaceType === "string"
+      ? findInterfaceType(namespace + interfaceType, localTypes)
+      : undefined);
+  if (resolved === undefined) {
     throw new Error(
-      `Interface ${replacedInterfaceType.apiName} is being replaced by ${apiName}, which is neither defined in this ontology nor imported. Import it with \`importOntologyEntity\` so that it becomes an input to this block.`,
+      `Interface ${replacedInterfaceType.apiName} is being replaced by ${requestedApiName}, which is neither defined in this ontology nor imported. Import it with \`importOntologyEntity\` so that it becomes an input to this block.`,
     );
   }
-  return { apiName, definition };
+  return resolved;
+}
+
+function findInterfaceType(
+  apiName: string,
+  ...interfaceTypesByApiName: Array<Record<string, InterfaceType>>
+): ResolvedReplacementInterfaceType | undefined {
+  const interfaceTypes = interfaceTypesByApiName.find((types) =>
+    Object.hasOwn(types, apiName),
+  );
+  if (interfaceTypes === undefined) {
+    return undefined;
+  }
+
+  return { apiName, definition: interfaceTypes[apiName] };
 }

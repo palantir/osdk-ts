@@ -19,10 +19,7 @@ import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
-import type {
-  InterfaceTypeDefinition,
-  SimplifiedInterfaceTypeStatus,
-} from "../defineInterface.js";
+import type { InterfaceTypeDefinition } from "../defineInterface.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
 import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
@@ -32,7 +29,6 @@ import { importOntologyEntity } from "../importOntologyEntity.js";
 import {
   describeFinalization,
   describeInstruction,
-  mapPropertyNames,
 } from "../interface/describeInterfaceSchemaMigrationInstruction.js";
 import type {
   InterfaceSchemaMigrationInstruction,
@@ -49,12 +45,6 @@ type AuthoredProperty = NonNullable<
 const OPTIONAL_STRING: AuthoredProperty = { required: false, type: "string" };
 const REQUIRED_STRING: AuthoredProperty = { required: true, type: "string" };
 const REQUIRED_INTEGER: AuthoredProperty = { required: true, type: "integer" };
-
-const DEPRECATED: SimplifiedInterfaceTypeStatus = {
-  type: "deprecated",
-  message: "Use Bar instead",
-  deadline: "2027-01-01T00:00:00Z",
-};
 
 function addRequiredProperty(
   property: string,
@@ -103,10 +93,32 @@ const STRING_PARAMETER: ParameterConstraintDefinition["type"] = {
 
 function parameter(
   apiName: string,
-  requireImplementation: boolean,
-  type = STRING_PARAMETER,
+  {
+    requireImplementation = false,
+    type = STRING_PARAMETER,
+  }: Partial<
+    Pick<ParameterConstraintDefinition, "requireImplementation" | "type">
+  > = {},
 ): ParameterConstraintDefinition {
   return { apiName, displayName: apiName, type, requireImplementation };
+}
+
+/** An interface type published by another ontology, for importing with `importOntologyEntity`. */
+function importedInterface(
+  overrides: Partial<InterfaceType> = {},
+): InterfaceType {
+  return {
+    apiName: "com.other.Imported",
+    displayMetadata: { displayName: "Imported" },
+    propertiesV2: {},
+    propertiesV3: {},
+    extendsInterfaces: [],
+    links: [],
+    actionTypeConstraints: [],
+    status: { type: "active", active: {} },
+    __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+    ...overrides,
+  };
 }
 
 /** Runs `body` as an ontology, so that the ontology-level validation runs too. */
@@ -398,17 +410,7 @@ describe("Interface schema migrations", () => {
     });
 
     it("says nothing about a parent imported from another ontology", () => {
-      const imported: InterfaceType = {
-        apiName: "com.other.Imported",
-        displayMetadata: { displayName: "Imported" },
-        propertiesV2: {},
-        propertiesV3: {},
-        extendsInterfaces: [],
-        links: [],
-        actionTypeConstraints: [],
-        status: { type: "active", active: {} },
-        __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
-      };
+      const imported = importedInterface();
       importOntologyEntity(imported);
 
       expect(() =>
@@ -642,24 +644,13 @@ describe("Interface schema migrations", () => {
   });
 
   describe("replace: local shape", () => {
-    it("accepts replacing a deprecated interface, since replace does not change its status", () => {
-      expect(() =>
-        defineReplaced(undefined, { status: DEPRECATED }),
-      ).not.toThrow();
-    });
-
     it("rejects a replacement sharing its transition with another instruction", () => {
       expect(() =>
-        defineReplaced(undefined, {
-          properties: { optional: OPTIONAL_STRING },
-          schemaMigrations: {
-            transitions: [
-              transition({
-                instructions: [replace(), addRequiredProperty("optional")],
-              }),
-            ],
-          },
-        }),
+        defineWithMigrations([
+          transition({
+            instructions: [replace(), addRequiredProperty("optional0")],
+          }),
+        ]),
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but the transition has 2 instructions. A replacement must be the only instruction of the only transition on its interface, and stays declared as a tombstone; finalize or remove the other migrations first.]`,
       );
@@ -667,18 +658,13 @@ describe("Interface schema migrations", () => {
 
     it("rejects a replacement alongside another transition", () => {
       expect(() =>
-        defineReplaced(undefined, {
-          properties: { optional: OPTIONAL_STRING },
-          schemaMigrations: {
-            transitions: [
-              transition({ id: "t1", instructions: [replace()] }),
-              transition({
-                id: "t2",
-                instructions: [addRequiredProperty("optional")],
-              }),
-            ],
-          },
-        }),
+        defineWithMigrations([
+          transition({ id: "t1", instructions: [replace()] }),
+          transition({
+            id: "t2",
+            instructions: [addRequiredProperty("optional0")],
+          }),
+        ]),
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Foo has 2 transitions. A replacement must be the only instruction of the only transition on its interface, and stays declared as a tombstone; finalize or remove the other migrations first.]`,
       );
@@ -719,14 +705,17 @@ describe("Interface schema migrations", () => {
   });
 
   describe("replace: references", () => {
-    it("resolves a replacement named by its un-namespaced API name", async () => {
+    it("accepts a fully-mapped replacement named by its un-namespaced API name", async () => {
       await expect(
         inOntology(() => {
           defineReplacement();
-          defineReplaced({ interfaceType: "Bar", propertyMappings: {} });
+          defineReplaced({
+            interfaceType: "Bar",
+            propertyMappings: { name: "fullName" },
+          });
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+        `[Error: replace schema migrations are not supported in ontology IR. Define the ontology with SuperRepo instead to use them.]`,
       );
     });
 
@@ -742,10 +731,15 @@ describe("Interface schema migrations", () => {
         `[Error: Interface com.palantir.Foo is being replaced by com.other.Unknown, which is neither defined in this ontology nor imported. Import it with \`importOntologyEntity\` so that it becomes an input to this block.]`,
       );
     });
+
     it("validates against an imported replacement's definition", async () => {
       await expect(
         inOntology(() => {
-          importOntologyEntity(importedInterface());
+          importOntologyEntity(
+            importedInterface({
+              propertiesV3: { fullName: { type: "string", required: true } },
+            }),
+          );
           defineReplaced({
             interfaceType: "com.other.Imported",
             propertyMappings: { name: "missing" },
@@ -767,7 +761,7 @@ describe("Interface schema migrations", () => {
           });
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Child extends it. An interface type may not be replaced while another interface type extends it; remove the extension first.]`,
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Bar"), but interface com.palantir.Child extends it. An interface type may not be replaced while another interface type extends it; replace or remove the extension first.]`,
       );
     });
 
@@ -797,6 +791,21 @@ describe("Interface schema migrations", () => {
         }),
       ).rejects.toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but one of com.palantir.Foo and com.palantir.Bar extends the other. The replacement must be unrelated to the interface type it replaces.]`,
+      );
+    });
+
+    // A local extender is caught by the check above, so only an imported one reaches this
+    it("rejects an imported replacement that extends the replaced interface", async () => {
+      await expect(
+        inOntology(() => {
+          const foo = defineReplaced({
+            interfaceType: "com.other.Imported",
+            propertyMappings: {},
+          });
+          importOntologyEntity(importedInterface({ extendsInterfaces: [foo] }));
+        }),
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.other.Imported"), but one of com.palantir.Foo and com.other.Imported extends the other. The replacement must be unrelated to the interface type it replaces.]`,
       );
     });
 
@@ -851,58 +860,27 @@ describe("Interface schema migrations", () => {
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
-        );
-      });
-
-      it("rejects an unmapped target the replacement is migrating to required", async () => {
-        await expect(
-          inOntology(() => {
-            defineReplaced({
-              interfaceType: defineReplacement({
-                properties: { fullName: OPTIONAL_STRING },
-                schemaMigrations: {
-                  transitions: [
-                    transition({
-                      instructions: [
-                        { type: "addRequiredProperty", property: "fullName" },
-                      ],
-                    }),
-                  ],
-                },
-              }),
-              propertyMappings: {},
-            });
-          }),
-        ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a property of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires. Map com.palantir.Foo's corresponding property to it, so that automatically-generated changes produce a valid implementation.]`,
         );
       });
     });
 
     describe("linkTypeConstraintMappings", () => {
+      /** `fooLink` on `Foo` (to one `Target`) and a required `barLink` on `Bar`. */
       function defineWithLinks(
-        barLink: { many: boolean; required: boolean; to?: string },
         mappings: Record<string, string>,
+        barLink: { many?: boolean; to?: "Target" | "Other" } = {},
       ): void {
         const target = defineInterface({ apiName: "Target" });
-        const other = defineInterface({ apiName: "Other" });
         const bar = defineReplacement();
-        const barTo = barLink.to === "Other" ? other : target;
+        const barTo =
+          barLink.to === "Other"
+            ? defineInterface({ apiName: "Other" })
+            : target;
         defineInterfaceLinkConstraint(
           barLink.many
-            ? {
-                apiName: "barLink",
-                from: bar,
-                toMany: barTo,
-                required: barLink.required,
-              }
-            : {
-                apiName: "barLink",
-                from: bar,
-                toOne: barTo,
-                required: barLink.required,
-              },
+            ? { apiName: "barLink", from: bar, toMany: barTo, required: true }
+            : { apiName: "barLink", from: bar, toOne: barTo, required: true },
         );
         const foo = defineReplaced({
           interfaceType: bar,
@@ -918,12 +896,7 @@ describe("Interface schema migrations", () => {
 
       it("rejects a target the replacement does not have", async () => {
         await expect(
-          inOntology(() =>
-            defineWithLinks(
-              { many: false, required: false },
-              { fooLink: "missing" },
-            ),
-          ),
+          inOntology(() => defineWithLinks({ fooLink: "missing" })),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose linkTypeConstraintMappings maps to link type constraint "missing", but com.palantir.Bar has no such link type constraint.]`,
         );
@@ -932,10 +905,7 @@ describe("Interface schema migrations", () => {
       it("rejects mismatched cardinality", async () => {
         await expect(
           inOntology(() =>
-            defineWithLinks(
-              { many: true, required: true },
-              { fooLink: "barLink" },
-            ),
+            defineWithLinks({ fooLink: "barLink" }, { many: true }),
           ),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose linkTypeConstraintMappings maps link type constraint "fooLink" to "barLink", but its cardinality SINGLE does not match MANY.]`,
@@ -945,10 +915,7 @@ describe("Interface schema migrations", () => {
       it("rejects a mismatched linked entity", async () => {
         await expect(
           inOntology(() =>
-            defineWithLinks(
-              { many: false, required: true, to: "Other" },
-              { fooLink: "barLink" },
-            ),
+            defineWithLinks({ fooLink: "barLink" }, { to: "Other" }),
           ),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose linkTypeConstraintMappings maps link type constraint "fooLink" to "barLink", but its linked entity interface com.palantir.Target does not match interface com.palantir.Other.]`,
@@ -957,11 +924,9 @@ describe("Interface schema migrations", () => {
 
       it("rejects an unmapped required target", async () => {
         await expect(
-          inOntology(() =>
-            defineWithLinks({ many: false, required: true }, {}),
-          ),
+          inOntology(() => defineWithLinks({})),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its linkTypeConstraintMappings does not map to link type constraint "com.palantir.barLink", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a link type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its linkTypeConstraintMappings does not map to link type constraint "com.palantir.barLink", which com.palantir.Bar requires. Map com.palantir.Foo's corresponding link type constraint to it, so that automatically-generated changes produce a valid implementation.]`,
         );
       });
     });
@@ -996,32 +961,7 @@ describe("Interface schema migrations", () => {
             });
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings does not map to action type constraint "com.palantir.barAction", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a action type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
-        );
-      });
-
-      it("rejects an unmapped target the replacement is migrating to required", async () => {
-        await expect(
-          inOntology(() => {
-            const bar = defineReplacement({
-              schemaMigrations: {
-                transitions: [
-                  transition({
-                    instructions: [
-                      addRequiredActionTypeConstraint("barAction"),
-                    ],
-                  }),
-                ],
-              },
-            });
-            defineConstraint(bar, "barAction", false);
-            defineReplaced({
-              interfaceType: bar,
-              propertyMappings: { name: "fullName" },
-            });
-          }),
-        ).rejects.toThrowErrorMatchingInlineSnapshot(
-          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings does not map to action type constraint "com.palantir.barAction", which com.palantir.Bar requires (or will require once its in-flight migrations finalize). Map a action type constraint of com.palantir.Foo to it, so that proposals produce a valid implementation.]`,
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings does not map to action type constraint "com.palantir.barAction", which com.palantir.Bar requires. Map com.palantir.Foo's corresponding action type constraint to it, so that automatically-generated changes produce a valid implementation.]`,
         );
       });
 
@@ -1050,7 +990,7 @@ describe("Interface schema migrations", () => {
         it("rejects a source the replaced constraint does not have", async () => {
           await expect(
             inOntology(() =>
-              defineWithParameters([], [parameter("target", false)], {
+              defineWithParameters([], [parameter("target")], {
                 missing: "target",
               }),
             ),
@@ -1062,7 +1002,7 @@ describe("Interface schema migrations", () => {
         it("rejects a target the replacement constraint does not have", async () => {
           await expect(
             inOntology(() =>
-              defineWithParameters([parameter("subject", false)], [], {
+              defineWithParameters([parameter("subject")], [], {
                 subject: "missing",
               }),
             ),
@@ -1075,8 +1015,12 @@ describe("Interface schema migrations", () => {
           await expect(
             inOntology(() =>
               defineWithParameters(
-                [parameter("subject", true)],
-                [parameter("target", true, { type: "integer", integer: {} })],
+                [parameter("subject")],
+                [
+                  parameter("target", {
+                    type: { type: "integer", integer: {} },
+                  }),
+                ],
                 { subject: "target" },
               ),
             ),
@@ -1089,13 +1033,13 @@ describe("Interface schema migrations", () => {
           await expect(
             inOntology(() =>
               defineWithParameters(
-                [parameter("subject", false)],
-                [parameter("target", true)],
+                [parameter("subject")],
+                [parameter("target", { requireImplementation: true })],
                 {},
               ),
             ),
           ).rejects.toThrowErrorMatchingInlineSnapshot(
-            `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings["fooAction"].parameterMappings does not map to parameter "target", which com.palantir.barAction requires (or will require once its in-flight migrations finalize). Map a parameter of com.palantir.fooAction to it, so that proposals produce a valid implementation.]`,
+            `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its actionTypeConstraintMappings["fooAction"].parameterMappings does not map to parameter "target", which com.palantir.barAction requires. Map com.palantir.fooAction's corresponding parameter to it, so that automatically-generated changes produce a valid implementation.]`,
           );
         });
       });
@@ -1105,6 +1049,7 @@ describe("Interface schema migrations", () => {
   describe("prose", () => {
     it("describes each instruction and its finalization, if any", () => {
       const instructions: InterfaceSchemaMigrationInstruction[] = [
+        addRequiredProperty("optional0"),
         addRequiredActionTypeConstraint("doThing"),
         replace(),
       ];
@@ -1116,6 +1061,10 @@ describe("Interface schema migrations", () => {
       ).toMatchInlineSnapshot(`
         [
           [
+            "addRequiredProperty("optional0")",
+            "set "optional0" to \`required: true\`",
+          ],
+          [
             "addRequiredActionTypeConstraint("doThing")",
             "set "doThing" to \`requireImplementation: true\`",
           ],
@@ -1125,25 +1074,6 @@ describe("Interface schema migrations", () => {
           ],
         ]
       `);
-    });
-
-    it("renames only the keys of a replacement's property mappings", () => {
-      expect(
-        mapPropertyNames(
-          replace({
-            interfaceType: "com.other.Bar",
-            propertyMappings: { name: "fullName" },
-            linkTypeConstraintMappings: { fooLink: "barLink" },
-          }),
-          (key) => `com.palantir.${key}`,
-        ),
-      ).toEqual(
-        replace({
-          interfaceType: "com.other.Bar",
-          propertyMappings: { "com.palantir.name": "fullName" },
-          linkTypeConstraintMappings: { fooLink: "barLink" },
-        }),
-      );
     });
   });
 
@@ -1642,17 +1572,3 @@ describe("Interface schema migrations", () => {
     });
   });
 });
-
-function importedInterface(): InterfaceType {
-  return {
-    apiName: "com.other.Imported",
-    displayMetadata: { displayName: "Imported" },
-    propertiesV2: {},
-    propertiesV3: { fullName: { type: "string", required: true } },
-    extendsInterfaces: [],
-    links: [],
-    actionTypeConstraints: [],
-    status: { type: "active", active: {} },
-    __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
-  };
-}
