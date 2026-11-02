@@ -67,14 +67,16 @@ export interface DetectedCheckpoint {
 
 /** A property a transition targets, as the lockfile records it and as the source now declares it. */
 export interface TargetPropertyState {
-  propertyApiName: string;
+  kind: "property";
+  apiName: string;
   previous: LockedProperty | undefined;
   next: LockedProperty | undefined;
 }
 
 /** An action type constraint a transition targets, as the lockfile records it and as the source now declares it. */
 export interface TargetActionTypeConstraintState {
-  actionTypeConstraintApiName: string;
+  kind: "actionTypeConstraint";
+  apiName: string;
   previous: LockedActionTypeConstraint | undefined;
   next: LockedActionTypeConstraint | undefined;
 }
@@ -617,23 +619,19 @@ function classifyDisappearance(
     kind: "ambiguous",
     targets: [
       ...targetPropertiesOf(transition).map(
-        (propertyApiName): TargetPropertyState => ({
-          propertyApiName,
-          previous: own(previousSchema.properties, propertyApiName),
-          next: own(nextSchema.properties, propertyApiName),
+        (apiName): TargetPropertyState => ({
+          kind: "property",
+          apiName,
+          previous: own(previousSchema.properties, apiName),
+          next: own(nextSchema.properties, apiName),
         }),
       ),
       ...targetActionTypeConstraintsOf(transition).map(
-        (actionTypeConstraintApiName): TargetActionTypeConstraintState => ({
-          actionTypeConstraintApiName,
-          previous: own(
-            actionTypeConstraintsOf(previousSchema),
-            actionTypeConstraintApiName,
-          ),
-          next: own(
-            actionTypeConstraintsOf(nextSchema),
-            actionTypeConstraintApiName,
-          ),
+        (apiName): TargetActionTypeConstraintState => ({
+          kind: "actionTypeConstraint",
+          apiName,
+          previous: own(actionTypeConstraintsOf(previousSchema), apiName),
+          next: own(actionTypeConstraintsOf(nextSchema), apiName),
         }),
       ),
     ],

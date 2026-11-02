@@ -54,12 +54,14 @@ describe("describeBreakingChange", () => {
         ],
         [
           {
-            propertyApiName: "lastName",
+            kind: "property",
+            apiName: "lastName",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
           {
-            propertyApiName: "email",
+            kind: "property",
+            apiName: "email",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
@@ -77,7 +79,8 @@ describe("describeBreakingChange", () => {
         [{ type: "addRequiredProperty", property: "lastName" }],
         [
           {
-            propertyApiName: "lastName",
+            kind: "property",
+            apiName: "lastName",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
@@ -391,7 +394,8 @@ describe("describeBreakingChange", () => {
         ],
         [
           {
-            actionTypeConstraintApiName: "com.example.sendEmail",
+            kind: "actionTypeConstraint",
+            apiName: "com.example.sendEmail",
             previous: { requireImplementation: false },
             next: undefined,
           },
@@ -447,7 +451,8 @@ describe("describeBreakingChange", () => {
           transitionId: "requireLastName",
           targets: [
             {
-              propertyApiName: NAMESPACED,
+              kind: "property",
+              apiName: NAMESPACED,
               previous: OPTIONAL_STRING,
               next: undefined,
             },

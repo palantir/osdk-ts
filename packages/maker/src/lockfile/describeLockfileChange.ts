@@ -55,7 +55,7 @@ export function describeBreakingChange(
       }
 
       const targets = breakingChange.targets
-        .map((target) => `"${authoredKeyOf(targetApiNameOf(target))}"`)
+        .map((target) => `"${authoredKeyOf(target.apiName)}"`)
         .join(", ");
       return (
         `${where}: schema migration "${breakingChange.transitionId}" is no longer declared, but ` +
@@ -399,12 +399,6 @@ function toAuthoredInstruction(
   }
 }
 
-function targetApiNameOf(target: TargetState): string {
-  return "propertyApiName" in target
-    ? target.propertyApiName
-    : target.actionTypeConstraintApiName;
-}
-
 function describeValueType(valueType: LockedValueType): string {
   return valueType.packageNamespace === ""
     ? valueType.apiName
@@ -464,32 +458,37 @@ function describeInstructions(
 /** Explains what actually happened to a transition's targets, for the error message. */
 function describeTargetDrift(targets: readonly TargetState[]): string {
   const descriptions = targets.map((target) => {
-    if (!("propertyApiName" in target)) {
-      const authoredConstraintName = authoredKeyOf(
-        target.actionTypeConstraintApiName,
-      );
-      return target.next === undefined
-        ? `action type constraint "${authoredConstraintName}" was removed from the interface`
-        : `"${authoredConstraintName}" is \`requireImplementation: ${target.next.requireImplementation}\``;
-    }
+    const authoredName = authoredKeyOf(target.apiName);
+    switch (target.kind) {
+      case "property": {
+        const { previous, next } = target;
+        if (next === undefined) {
+          return `"${authoredName}" was removed from the interface`;
+        }
 
-    const { propertyApiName, previous, next } = target;
-    const authoredPropertyName = authoredKeyOf(propertyApiName);
-    if (next === undefined) {
-      return `"${authoredPropertyName}" was removed from the interface`;
-    }
+        if (
+          previous !== undefined &&
+          !isDeepStrictEqual(previous.type, next.type)
+        ) {
+          return (
+            `"${authoredName}" changed type from ${describeType(previous.type)} to ` +
+            describeType(next.type)
+          );
+        }
 
-    if (
-      previous !== undefined &&
-      !isDeepStrictEqual(previous.type, next.type)
-    ) {
-      return (
-        `"${authoredPropertyName}" changed type from ${describeType(previous.type)} to ` +
-        describeType(next.type)
-      );
-    }
+        return `"${authoredName}" is \`required: ${next.required}\``;
+      }
 
-    return `"${authoredPropertyName}" is \`required: ${next.required}\``;
+      case "actionTypeConstraint":
+        return target.next === undefined
+          ? `action type constraint "${authoredName}" was removed from the interface`
+          : `"${authoredName}" is \`requireImplementation: ${target.next.requireImplementation}\``;
+
+      default: {
+        const unhandled: never = target;
+        throw new Error(`Unknown target: ${JSON.stringify(unhandled)}`);
+      }
+    }
   });
   return `Instead, ${descriptions.join(", ")}.`;
 }
