@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.69.0
+
+### Patch Changes
+
+- @osdk/faux@0.63.0
+
 ## 0.68.0
 
 ### Minor Changes

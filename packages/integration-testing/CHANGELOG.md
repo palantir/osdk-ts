@@ -1,5 +1,20 @@
 # @osdk/integration-testing
 
+## 0.15.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [af66ef0]
+- Updated dependencies [f7333d4]
+  - @osdk/client@2.86.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters.preview@0.60.0
+  - @osdk/unit-testing@1.1.0
+
 ## 0.14.0
 
 ### Patch Changes

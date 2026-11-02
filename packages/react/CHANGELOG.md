@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 2.86.0
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
 ## 2.85.0
 
 ### Minor Changes
