@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">42/42 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">42/42 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">14/194 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">43/43 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">43/43 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">14/195 story errors</a></div>
   </div>
 </header>
 <main>
@@ -6419,21 +6419,21 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseWorkshopModule</h2>
       <div class="badges">
-        <label for="c-9-components-workshopmodule-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-9-components-workshopmodule-info" class="badge info as-toggle">1 info</label>
-        <label for="c-9-components-workshopmodule-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-9-components-workshopmodule-building-blocks-baseworkshopmodule-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-9-components-workshopmodule-building-blocks-baseworkshopmodule-info" class="badge info as-toggle">1 info</label>
+        <label for="c-9-components-workshopmodule-building-blocks-baseworkshopmodule-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/WorkshopModule/WorkshopModule.stories.tsx">components-workshopmodule · ./src/stories/WorkshopModule/WorkshopModule.stories.tsx</div>
+    <div class="meta" title="./src/stories/WorkshopModule/BaseWorkshopModule.stories.tsx">components-workshopmodule-building-blocks-baseworkshopmodule · ./src/stories/WorkshopModule/BaseWorkshopModule.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-9-components-workshopmodule-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-9-components-workshopmodule-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-9-components-workshopmodule-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-components-workshopmodule-building-blocks-baseworkshopmodule-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-9-components-workshopmodule-building-blocks-baseworkshopmodule-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-9-components-workshopmodule-building-blocks-baseworkshopmodule-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -6447,11 +6447,11 @@ export const WithErrorCallback: Story = {
   29 |
 &gt; 30 | const meta: Meta&lt;BaseWorkshopModuleProps&gt; = {
      | ^
-  31 |   title: &quot;Components/WorkshopModule&quot;,
+  31 |   title: &quot;Components/WorkshopModule/Building Blocks/BaseWorkshopModule&quot;,
   32 |   component: BaseWorkshopModule,
   33 |   args: {
 
-./src/stories/WorkshopModule/WorkshopModule.stories.tsx:
+./src/stories/WorkshopModule/BaseWorkshopModule.stories.tsx:
 /*
  * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
@@ -6482,7 +6482,7 @@ function isFoundryUrl(value: string): boolean {
 }
 
 const meta: Meta&lt;BaseWorkshopModuleProps&gt; = {
-  title: &quot;Components/WorkshopModule&quot;,
+  title: &quot;Components/WorkshopModule/Building Blocks/BaseWorkshopModule&quot;,
   component: BaseWorkshopModule,
   args: {
     foundryUrl: &quot;&quot;,
@@ -6493,7 +6493,7 @@ const meta: Meta&lt;BaseWorkshopModuleProps&gt; = {
   render: (args: BaseWorkshopModuleProps) =&gt; (
     &lt;div style={{ height: &quot;24rem&quot; }}&gt;
       {isFoundryUrl(args.foundryUrl) ? (
-        &lt;BaseWorkshopModule {...args} /&gt;
+        &lt;BaseWorkshopModule key={args.defaultTheme} {...args} /&gt;
       ) : (
         &lt;p&gt;
           Set foundryUrl to your Foundry URL and moduleRid to a module you can
@@ -6528,6 +6528,12 @@ const meta: Meta&lt;BaseWorkshopModuleProps&gt; = {
         &quot;latest for the latest saved version, or published for the published version. Defaults to published.&quot;,
     },
     title: { control: &quot;text&quot; },
+    defaultTheme: {
+      control: &quot;select&quot;,
+      options: [undefined, &quot;light&quot;, &quot;dark&quot;, &quot;system&quot;],
+      description:
+        &quot;Initial theme override. System resolves the browser preference once. Changing this control remounts the preview to apply the theme.&quot;,
+    },
     className: { control: &quot;text&quot; },
     style: { control: &quot;object&quot; },
   },
@@ -6584,7 +6590,7 @@ export const Default: Story = {
               <pre><code>const Default = (args: BaseWorkshopModuleProps) =&gt; (
   &lt;div style={{ height: &quot;24rem&quot; }}&gt;
     {isFoundryUrl(args.foundryUrl) ? (
-      &lt;BaseWorkshopModule {...args} /&gt;
+      &lt;BaseWorkshopModule key={args.defaultTheme} {...args} /&gt;
     ) : (
       &lt;p&gt;
         Set foundryUrl to your Foundry URL and moduleRid to a module you can
@@ -22895,6 +22901,183 @@ export const WithErrorCallback: Story = {
         </div>
   </div>
 </article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="WorkshopModule">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> WorkshopModule</h2>
+      <div class="badges">
+        <label for="c-42-components-workshopmodule-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-42-components-workshopmodule-info" class="badge info as-toggle">1 info</label>
+        <label for="c-42-components-workshopmodule-stories" class="badge ok as-toggle">1 story</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/WorkshopModule/WorkshopModule.stories.tsx">components-workshopmodule · ./src/stories/WorkshopModule/WorkshopModule.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-42-components-workshopmodule-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-42-components-workshopmodule-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-42-components-workshopmodule-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;WorkshopModule&quot; component.
+  21 | import { WorkshopModuleStory } from &quot;./WorkshopModuleStory.js&quot;;
+  22 |
+&gt; 23 | const meta: Meta&lt;WorkshopModuleStoryProps&gt; = {
+     | ^
+  24 |   title: &quot;Components/WorkshopModule&quot;,
+  25 |   component: WorkshopModule,
+  26 |   args: {
+
+./src/stories/WorkshopModule/WorkshopModule.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { WorkshopModule } from &quot;@osdk/react-components/experimental/workshop-module&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+
+import type { WorkshopModuleStoryProps } from &quot;./WorkshopModuleStory.js&quot;;
+import { WorkshopModuleStory } from &quot;./WorkshopModuleStory.js&quot;;
+
+const meta: Meta&lt;WorkshopModuleStoryProps&gt; = {
+  title: &quot;Components/WorkshopModule&quot;,
+  component: WorkshopModule,
+  args: {
+    foundryUrl: &quot;&quot;,
+    theme: &quot;light&quot;,
+    moduleRid: &quot;ri.workshop.main.module.example&quot;,
+    moduleVersion: &quot;published&quot;,
+    title: &quot;Workshop module preview&quot;,
+  },
+  render: (args) =&gt; &lt;WorkshopModuleStory {...args} /&gt;,
+  parameters: {
+    controls: { expanded: true },
+    docs: {
+      description: {
+        component:
+          &quot;WorkshopModule reads the Foundry URL from OsdkProvider and inherits the initial theme from OsdkThemeProvider. The Provider controls configure this story&#39;s providers. No iframe loads until you supply a Foundry URL; rendering requires a signed-in Foundry session. For explicit foundryUrl and defaultTheme props, see Building Blocks / BaseWorkshopModule.&quot;,
+      },
+    },
+  },
+  argTypes: {
+    foundryUrl: {
+      name: &quot;Provider Foundry URL&quot;,
+      control: &quot;text&quot;,
+      description:
+        &quot;Base URL for the client passed to OsdkProvider. Leave blank to disable the iframe.&quot;,
+      table: { category: &quot;Provider&quot; },
+    },
+    theme: {
+      name: &quot;Provider theme&quot;,
+      control: &quot;select&quot;,
+      options: [&quot;light&quot;, &quot;dark&quot;, &quot;system&quot;],
+      description:
+        &quot;Theme supplied by OsdkThemeProvider. Changing this control remounts the module to apply its new initial theme.&quot;,
+      table: { category: &quot;Provider&quot; },
+    },
+    moduleRid: {
+      control: &quot;text&quot;,
+      description: &quot;RID of a Workshop module you can access.&quot;,
+    },
+    moduleVersion: {
+      control: &quot;select&quot;,
+      options: [&quot;latest&quot;, &quot;published&quot;],
+    },
+    title: { control: &quot;text&quot; },
+    className: { control: &quot;text&quot; },
+    style: { control: &quot;object&quot; },
+  },
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;OsdkProvider client={client}&gt;
+  &lt;OsdkThemeProvider theme=&quot;light&quot;&gt;
+    &lt;WorkshopModule
+      moduleRid=&quot;ri.workshop.main.module.example&quot;
+      style={{ height: &quot;24rem&quot; }}
+    /&gt;
+  &lt;/OsdkThemeProvider&gt;
+&lt;/OsdkProvider&gt;`,
+      },
+    },
+  },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { WorkshopModule, WorkshopModuleStory } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;WorkshopModuleStory
+    foundryUrl=&quot;&quot;
+    theme=&quot;light&quot;
+    moduleRid=&quot;ri.workshop.main.module.example&quot;
+    moduleVersion=&quot;published&quot;
+    title=&quot;Workshop module preview&quot; /&gt;;</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
     </div>
     <div class="error-groups" role="region" aria-label="Prop type error groups">
         <section class="group">
@@ -22902,7 +23085,7 @@ export const WithErrorCallback: Story = {
           <label for="no-component-import-found-toggle" class="group-header">
             <span class="caret">▸</span>
             <span class="group-title">No component import found</span>
-            <span class="group-count">33</span>
+            <span class="group-count">34</span>
           </label>
           <div class="group-cards">
 <article
@@ -28808,21 +28991,21 @@ export const WithErrorCallback: Story = {
     <div class="title">
       <h2><span class="status-dot dot-err"></span> BaseWorkshopModule</h2>
       <div class="badges">
-        <label for="c-error-9-components-workshopmodule-err" class="badge err as-toggle">prop type error</label>
-        <label for="c-error-9-components-workshopmodule-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-9-components-workshopmodule-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-error-9-components-workshopmodule-building-blocks-baseworkshopmodule-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-9-components-workshopmodule-building-blocks-baseworkshopmodule-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-9-components-workshopmodule-building-blocks-baseworkshopmodule-stories" class="badge ok as-toggle">1 story</label>
       </div>
     </div>
-    <div class="meta" title="./src/stories/WorkshopModule/WorkshopModule.stories.tsx">components-workshopmodule · ./src/stories/WorkshopModule/WorkshopModule.stories.tsx</div>
+    <div class="meta" title="./src/stories/WorkshopModule/BaseWorkshopModule.stories.tsx">components-workshopmodule-building-blocks-baseworkshopmodule · ./src/stories/WorkshopModule/BaseWorkshopModule.stories.tsx</div>
     
     
     
   </div>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  <input id="c-error-9-components-workshopmodule-err" class="tg tg-err" type="checkbox" hidden />
-  <input id="c-error-9-components-workshopmodule-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-error-9-components-workshopmodule-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-error-9-components-workshopmodule-building-blocks-baseworkshopmodule-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-9-components-workshopmodule-building-blocks-baseworkshopmodule-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-9-components-workshopmodule-building-blocks-baseworkshopmodule-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -28836,11 +29019,11 @@ export const WithErrorCallback: Story = {
   29 |
 &gt; 30 | const meta: Meta&lt;BaseWorkshopModuleProps&gt; = {
      | ^
-  31 |   title: &quot;Components/WorkshopModule&quot;,
+  31 |   title: &quot;Components/WorkshopModule/Building Blocks/BaseWorkshopModule&quot;,
   32 |   component: BaseWorkshopModule,
   33 |   args: {
 
-./src/stories/WorkshopModule/WorkshopModule.stories.tsx:
+./src/stories/WorkshopModule/BaseWorkshopModule.stories.tsx:
 /*
  * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
@@ -28871,7 +29054,7 @@ function isFoundryUrl(value: string): boolean {
 }
 
 const meta: Meta&lt;BaseWorkshopModuleProps&gt; = {
-  title: &quot;Components/WorkshopModule&quot;,
+  title: &quot;Components/WorkshopModule/Building Blocks/BaseWorkshopModule&quot;,
   component: BaseWorkshopModule,
   args: {
     foundryUrl: &quot;&quot;,
@@ -28882,7 +29065,7 @@ const meta: Meta&lt;BaseWorkshopModuleProps&gt; = {
   render: (args: BaseWorkshopModuleProps) =&gt; (
     &lt;div style={{ height: &quot;24rem&quot; }}&gt;
       {isFoundryUrl(args.foundryUrl) ? (
-        &lt;BaseWorkshopModule {...args} /&gt;
+        &lt;BaseWorkshopModule key={args.defaultTheme} {...args} /&gt;
       ) : (
         &lt;p&gt;
           Set foundryUrl to your Foundry URL and moduleRid to a module you can
@@ -28917,6 +29100,12 @@ const meta: Meta&lt;BaseWorkshopModuleProps&gt; = {
         &quot;latest for the latest saved version, or published for the published version. Defaults to published.&quot;,
     },
     title: { control: &quot;text&quot; },
+    defaultTheme: {
+      control: &quot;select&quot;,
+      options: [undefined, &quot;light&quot;, &quot;dark&quot;, &quot;system&quot;],
+      description:
+        &quot;Initial theme override. System resolves the browser preference once. Changing this control remounts the preview to apply the theme.&quot;,
+    },
     className: { control: &quot;text&quot; },
     style: { control: &quot;object&quot; },
   },
@@ -28973,7 +29162,7 @@ export const Default: Story = {
               <pre><code>const Default = (args: BaseWorkshopModuleProps) =&gt; (
   &lt;div style={{ height: &quot;24rem&quot; }}&gt;
     {isFoundryUrl(args.foundryUrl) ? (
-      &lt;BaseWorkshopModule {...args} /&gt;
+      &lt;BaseWorkshopModule key={args.defaultTheme} {...args} /&gt;
     ) : (
       &lt;p&gt;
         Set foundryUrl to your Foundry URL and moduleRid to a module you can
@@ -40481,6 +40670,183 @@ export const WithErrorCallback: Story = {
         }}
         onError={fn()} /&gt;
 &lt;/div&gt;;</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="WorkshopModule">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> WorkshopModule</h2>
+      <div class="badges">
+        <label for="c-error-33-components-workshopmodule-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-33-components-workshopmodule-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-33-components-workshopmodule-stories" class="badge ok as-toggle">1 story</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/WorkshopModule/WorkshopModule.stories.tsx">components-workshopmodule · ./src/stories/WorkshopModule/WorkshopModule.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-33-components-workshopmodule-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-33-components-workshopmodule-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-33-components-workshopmodule-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;WorkshopModule&quot; component.
+  21 | import { WorkshopModuleStory } from &quot;./WorkshopModuleStory.js&quot;;
+  22 |
+&gt; 23 | const meta: Meta&lt;WorkshopModuleStoryProps&gt; = {
+     | ^
+  24 |   title: &quot;Components/WorkshopModule&quot;,
+  25 |   component: WorkshopModule,
+  26 |   args: {
+
+./src/stories/WorkshopModule/WorkshopModule.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { WorkshopModule } from &quot;@osdk/react-components/experimental/workshop-module&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+
+import type { WorkshopModuleStoryProps } from &quot;./WorkshopModuleStory.js&quot;;
+import { WorkshopModuleStory } from &quot;./WorkshopModuleStory.js&quot;;
+
+const meta: Meta&lt;WorkshopModuleStoryProps&gt; = {
+  title: &quot;Components/WorkshopModule&quot;,
+  component: WorkshopModule,
+  args: {
+    foundryUrl: &quot;&quot;,
+    theme: &quot;light&quot;,
+    moduleRid: &quot;ri.workshop.main.module.example&quot;,
+    moduleVersion: &quot;published&quot;,
+    title: &quot;Workshop module preview&quot;,
+  },
+  render: (args) =&gt; &lt;WorkshopModuleStory {...args} /&gt;,
+  parameters: {
+    controls: { expanded: true },
+    docs: {
+      description: {
+        component:
+          &quot;WorkshopModule reads the Foundry URL from OsdkProvider and inherits the initial theme from OsdkThemeProvider. The Provider controls configure this story&#39;s providers. No iframe loads until you supply a Foundry URL; rendering requires a signed-in Foundry session. For explicit foundryUrl and defaultTheme props, see Building Blocks / BaseWorkshopModule.&quot;,
+      },
+    },
+  },
+  argTypes: {
+    foundryUrl: {
+      name: &quot;Provider Foundry URL&quot;,
+      control: &quot;text&quot;,
+      description:
+        &quot;Base URL for the client passed to OsdkProvider. Leave blank to disable the iframe.&quot;,
+      table: { category: &quot;Provider&quot; },
+    },
+    theme: {
+      name: &quot;Provider theme&quot;,
+      control: &quot;select&quot;,
+      options: [&quot;light&quot;, &quot;dark&quot;, &quot;system&quot;],
+      description:
+        &quot;Theme supplied by OsdkThemeProvider. Changing this control remounts the module to apply its new initial theme.&quot;,
+      table: { category: &quot;Provider&quot; },
+    },
+    moduleRid: {
+      control: &quot;text&quot;,
+      description: &quot;RID of a Workshop module you can access.&quot;,
+    },
+    moduleVersion: {
+      control: &quot;select&quot;,
+      options: [&quot;latest&quot;, &quot;published&quot;],
+    },
+    title: { control: &quot;text&quot; },
+    className: { control: &quot;text&quot; },
+    style: { control: &quot;object&quot; },
+  },
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;OsdkProvider client={client}&gt;
+  &lt;OsdkThemeProvider theme=&quot;light&quot;&gt;
+    &lt;WorkshopModule
+      moduleRid=&quot;ri.workshop.main.module.example&quot;
+      style={{ height: &quot;24rem&quot; }}
+    /&gt;
+  &lt;/OsdkThemeProvider&gt;
+&lt;/OsdkProvider&gt;`,
+      },
+    },
+  },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { WorkshopModule, WorkshopModuleStory } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;WorkshopModuleStory
+    foundryUrl=&quot;&quot;
+    theme=&quot;light&quot;
+    moduleRid=&quot;ri.workshop.main.module.example&quot;
+    moduleVersion=&quot;published&quot;
+    title=&quot;Workshop module preview&quot; /&gt;;</code></pre>
             </div>
         </div>
   </div>
