@@ -94,7 +94,6 @@ function mappingsSchema(what: string) {
   );
 }
 
-/** A replacement mapping, which the lockfile omits rather than records empty. */
 function nonEmptyMappingsSchema<T extends z.ZodTypeAny>(
   what: string,
   target: T,

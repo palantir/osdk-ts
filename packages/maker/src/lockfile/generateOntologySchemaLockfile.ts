@@ -333,7 +333,6 @@ function lockInstruction(
   }
 }
 
-/** The replacement under the same api names conversion publishes it with. */
 function lockReplacement(
   interfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
@@ -350,6 +349,7 @@ function lockReplacement(
   const actionTypeConstraintMappings = lockActionTypeConstraintMappings(
     resolved.actionTypeConstraintMappings,
   );
+
   return {
     interfaceType: resolved.interfaceTypeApiName,
     ...(propertyMappings !== undefined && { propertyMappings }),
@@ -375,6 +375,7 @@ function lockActionTypeConstraintMappings(
         const sortedParameterMappings = Object.entries(parameterMappings).sort(
           ([a], [b]) => compare(a, b),
         );
+
         return [
           from.apiName,
           {

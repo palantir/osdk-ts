@@ -605,8 +605,7 @@ function classifyDisappearance(
   previousSchema: LockedInterfaceSchema,
   nextSchema: LockedInterfaceSchema,
 ): Disappearance {
-  // A replace is never finalized; it stays declared as a tombstone, so it can only vanish by being
-  // deleted
+  // A replace is never finalized; it stays declared as a tombstone unless deleted
   if (transition.instructions.some(({ type }) => type === "replace")) {
     return { kind: "deleted" };
   }
