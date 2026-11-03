@@ -52,4 +52,5 @@ export interface TemplateContext {
   scopes: string[] | undefined;
   unstableFeatures: boolean;
   clientId: string | undefined;
+  authless: boolean;
 }

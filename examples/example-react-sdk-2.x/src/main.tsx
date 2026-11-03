@@ -2,11 +2,13 @@ import { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { OsdkProvider } from "@osdk/react";
-import client from "@/client";
+import client, { auth } from "@/client";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Loading from "@/components/Loading";
 import { router } from "@/router";
 import "./index.css";
+
+void auth();
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {

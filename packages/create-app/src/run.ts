@@ -140,6 +140,7 @@ export async function run({
     scopes,
     unstableFeatures,
     clientId,
+    authless: isAuthless,
   };
   const processFiles = function (dir: string) {
     fs.readdirSync(dir).forEach((file) => {
