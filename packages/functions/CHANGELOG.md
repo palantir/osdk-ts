@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.30.0
+
+### Minor Changes
+
+- 23701c5: Compile time checks for invalid batch.create operations missing a required field
+
+### Patch Changes
+
+- Updated dependencies [3677309]
+  - @osdk/client@2.81.0
+
 ## 1.29.0
 
 ### Minor Changes

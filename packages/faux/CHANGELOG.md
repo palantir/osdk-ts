@@ -1,5 +1,58 @@
 # @osdk/shared.test
 
+## 0.63.0
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+
+## 0.62.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+- d0f3019: Upgrade the admin Platform SDK to 2.86.0 and remove the obsolete CBAC banner preview parameter.
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+
+## 0.61.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+- @osdk/generator-converters@2.83.0
+
+## 0.60.0
+
+### Minor Changes
+
+- 553461f: Add client generation for agents.
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+  - @osdk/generator-converters@2.82.0
+
+## 0.59.0
+
+### Minor Changes
+
+- 3677309: Convert agent session arguments containing OSDK objects and object sets, including nested values.
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/api@2.81.0
+  - @osdk/generator-converters@2.81.0
+
 ## 0.58.0
 
 ### Patch Changes

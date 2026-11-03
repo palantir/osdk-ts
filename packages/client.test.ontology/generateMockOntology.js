@@ -22,7 +22,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
-import { LegacyFauxFoundry } from "@osdk/shared.test";
+import { LegacyFauxFoundry, stubData } from "@osdk/shared.test";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outDir = join(__dirname, "src", "generatedNoCheck");
@@ -66,6 +66,22 @@ const fullOntology = fauxFoundry
 
 const ontologyWithoutUnsupportedAction = {
   ...fullOntology,
+  agents: Object.fromEntries(
+    [
+      [stubData.weatherAgentApiName, stubData.weatherAgentVersion.version],
+      [stubData.noArgsAgentApiName, stubData.noArgsAgentVersion.version],
+      [
+        stubData.objectArgumentsAgentApiName,
+        stubData.objectArgumentsAgentVersion.version,
+      ],
+    ].map(([apiName, version]) => [
+      apiName,
+      {
+        ...fauxFoundry.getDefaultOntology().getAgentDef(apiName, version),
+        apiName,
+      },
+    ]),
+  ),
   actionTypes: {
     ...fullOntology.actionTypes,
   },

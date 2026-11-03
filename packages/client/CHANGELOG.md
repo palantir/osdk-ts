@@ -1,5 +1,85 @@
 # @osdk/client
 
+## 2.86.0
+
+### Minor Changes
+
+- af66ef0: Load ontology-defined derived properties by default when fetching all base object properties from an interface, while preserving an explicit opt-out.
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+  - @osdk/shared.test@2.58.0
+
+## 2.85.0
+
+### Minor Changes
+
+- 396ffce: Refetch observable lists and object sets when their websocket subscription reports it is out of date
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+  - @osdk/shared.test@2.57.0
+
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/client.unstable@2.84.0
+- @osdk/generator-converters@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/api@2.83.0
+  - @osdk/generator-converters@2.83.0
+  - @osdk/shared.test@2.56.0
+
+## 2.82.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+  - @osdk/generator-converters@2.82.0
+  - @osdk/shared.test@2.55.0
+  - @osdk/client.unstable@2.82.0
+
+## 2.81.0
+
+### Minor Changes
+
+- 3677309: Convert agent session arguments containing OSDK objects and object sets, including nested values.
+
+### Patch Changes
+
+- Updated dependencies [3677309]
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/shared.test@2.54.0
+  - @osdk/api@2.81.0
+  - @osdk/generator-converters@2.81.0
+  - @osdk/client.unstable@2.81.0
+
 ## 2.80.0
 
 ### Patch Changes

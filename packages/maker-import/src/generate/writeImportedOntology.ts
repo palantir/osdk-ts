@@ -61,10 +61,8 @@ export function convertOntologyFullMetadata(
 
   for (const spt of Object.values(metadata.sharedPropertyTypes)) {
     const converted = convertSharedPropertyType(spt);
-    if (converted) {
-      result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][converted.apiName] =
-        converted;
-    }
+    result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][converted.apiName] =
+      converted;
   }
   for (const iface of Object.values(metadata.interfaceTypes)) {
     const converted = convertInterfaceType(iface, metadata.interfaceTypes);

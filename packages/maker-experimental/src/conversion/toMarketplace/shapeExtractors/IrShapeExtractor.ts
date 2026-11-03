@@ -343,7 +343,6 @@ function extractInterfaceType(
       const idp = property.interfaceDefinedPropertyType;
       extractValueTypeInputShapeIfPresent(
         idp.constraints.valueType ?? undefined,
-        idp.displayMetadata.displayName,
         idp.type as unknown as Type,
         blockShapesRef,
         ridGenerator,
@@ -699,6 +698,8 @@ function getInterfaceParameterConstraintOutputShape(
     ),
     actionTypeConstraint: actionTypeConstraintRef,
     requireImplementation: paramConstraint.requireImplementation,
+    isRequiredParameterOnConcreteAction:
+      paramConstraint.isRequiredParameterOnConcreteAction,
     type: convertParameterConstraintTypeReferencesToShape(
       paramConstraint.type,
       knownMarketplaceIdentifiers,
@@ -845,7 +846,6 @@ function extractSharedPropertyType(
 
   extractValueTypeInputShapeIfPresent(
     sharedPropertyType.valueType ?? undefined,
-    sharedPropertyType.displayMetadata.displayName,
     sharedPropertyType.type,
     blockShapes,
     ridGenerator,
@@ -857,24 +857,23 @@ function extractSharedPropertyType(
  */
 export function extractValueTypeInputShapeIfPresent(
   maybeValueTypeReference: ValueTypeReference | undefined,
-  displayName: string,
   type: Type,
   blockShapes: BlockShapes,
   ridGenerator: OntologyRidGenerator,
 ): void {
   if (!maybeValueTypeReference) return;
 
+  const mappingEntry = ridGenerator.valueTypeMappingForReference(
+    maybeValueTypeReference,
+  );
   const valueTypeInput: InputShape = {
     type: "valueType",
     valueType: {
-      about: createLocalizedAbout(`Value Type Input for ${displayName}`, ""),
+      about: createLocalizedAbout(mappingEntry.input, ""),
       baseType: typeToMarketplaceBaseType(type),
     },
   };
 
-  const mappingEntry = ridGenerator.valueTypeMappingForReference(
-    maybeValueTypeReference,
-  );
   blockShapes.inputShapes.set(mappingEntry.input, valueTypeInput);
 }
 

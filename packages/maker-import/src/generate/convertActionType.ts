@@ -20,7 +20,6 @@ import {
   extractAllowedValuesFromActionParameterType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
-import { consola } from "consola";
 
 import { mapActionParameterType } from "./mapActionParameterType.js";
 
@@ -29,12 +28,6 @@ export function convertActionType(action: Ontologies.ActionTypeV2): ActionType {
 
   for (const [paramId, paramV2] of Object.entries(action.parameters)) {
     const mappedType = mapActionParameterType(paramV2.dataType);
-    if (!mappedType) {
-      consola.warn(
-        `Skipping parameter "${paramId}" on action "${action.apiName}": unsupported type "${paramV2.dataType.type}"`,
-      );
-      continue;
-    }
 
     parameters.push({
       id: paramId,

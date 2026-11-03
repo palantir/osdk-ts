@@ -91,11 +91,14 @@ function buildFieldDefinition(
         fieldComponent: "TEXT_INPUT",
         fieldComponentProps: {},
       };
+    // NUMBER_INPUT would round-trip through a JS number and lose precision.
+    case "decimal":
     case "marking":
     case "geohash":
     case "geoshape":
     case "objectType":
     case "scenarioReference":
+    case "timeSeriesReference":
       return {
         ...base,
         fieldComponent: "UNSUPPORTED",

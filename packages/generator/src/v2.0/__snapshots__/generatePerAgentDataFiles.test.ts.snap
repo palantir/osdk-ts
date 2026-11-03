@@ -1,0 +1,57 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generatePerAgentDataFiles > generates an agent with forInternalUse=false 1`] = `
+{
+  "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
+",
+  "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/client';
+import type { AgentDefinition } from '@osdk/client/experimental';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+/** @beta */
+export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+  type: 'agent';
+  apiName: 'com.example.weatherAgent';
+  version: '1.2.3';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+/** @beta */
+export const weatherAgent: weatherAgent = {
+  type: 'agent',
+  apiName: 'com.example.weatherAgent',
+  version: '1.2.3',
+  osdkMetadata: $osdkMetadata,
+};
+",
+}
+`;
+
+exports[`generatePerAgentDataFiles > generates an agent with forInternalUse=true 1`] = `
+{
+  "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
+",
+  "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/api';
+import type { AgentDefinition } from '@osdk/api/unstable';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+/** @beta */
+export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+  type: 'agent';
+  apiName: 'com.example.weatherAgent';
+  version: '1.2.3';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+/** @beta */
+export const weatherAgent: weatherAgent = {
+  type: 'agent',
+  apiName: 'com.example.weatherAgent',
+  version: '1.2.3',
+  osdkMetadata: $osdkMetadata,
+};
+",
+}
+`;

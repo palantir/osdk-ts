@@ -25,6 +25,7 @@ export interface GenerateContext {
 
   outDir: string;
   queryVersionReferences: ReadonlyMap<string, string>;
+  agentVersionReferences: ReadonlyMap<string, string>;
   ontologyApiNamespace?: string | undefined;
   apiNamespacePackageMap?: Map<string, string>;
   forInternalUse?: boolean;

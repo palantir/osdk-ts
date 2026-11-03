@@ -16,10 +16,6 @@
 
 import type {
   BaseType,
-  DataConstraint,
-  DataConstraintWrapper,
-  FailureMessage,
-  ValueTypeDataConstraint,
   ValueTypeRid,
   ValueTypeStatus,
 } from "@osdk/client.unstable";
@@ -38,41 +34,13 @@ import {
   VALUE_TYPE_DISPLAY_NAME_LIMIT,
 } from "./validateMetadataLengths.js";
 import { type ValueTypeDefinitionVersion } from "./values/ValueTypeDefinitionVersion.js";
-import { type ValueTypeType } from "./values/ValueTypeType.js";
-
-type ZipBaseAndConstraint<Base, Constraint> = {
-  [PropertyType in BaseType["type"] & DataConstraint["type"]]: Base extends {
-    type: PropertyType;
-  }
-    ? {
-        baseType: Omit<Base, "type">;
-        constraints?: Constraint extends { type: PropertyType }
-          ? {
-              constraint: Omit<Constraint, "type">;
-              failureMessage?: FailureMessage;
-            }[]
-          : undefined;
-      }
-    : never;
-};
-
-type MappedZip = ZipBaseAndConstraint<BaseType, DataConstraint>;
+import type {
+  AuthoringDataConstraint,
+  AuthoringValueTypeDataConstraint,
+  ValueTypeType,
+} from "./values/ValueTypeType.js";
 
 type TypeNames = ValueTypeType["type"];
-
-type ValueTypeDefinitionBacking = {
-  [Type in ValueTypeType["type"] & DataConstraint["type"]]: {
-    baseType: { type: Extract<ValueTypeType, { type: Type }>["value"] } & {
-      constraints: {
-        constraint: Extract<DataConstraint, { type: Type }>[keyof Omit<
-          Extract<DataConstraint, { type: Type }>,
-          "type"
-        >];
-        failureMessage?: FailureMessage;
-      }[];
-    };
-  };
-};
 
 type NewValueTypeDefinitionBacking = {
   [Type in ValueTypeType as Type["type"]]: {
@@ -86,8 +54,6 @@ type NewValueTypeDefinition =
 function convertValueTypeTypeToBaseType(
   valueType: ValueTypeType["value"],
 ): BaseType {
-  if (typeof valueType === "string") {
-  }
   switch (true) {
     case typeof valueType === "object" && valueType.type === "array":
       return {
@@ -126,6 +92,18 @@ function convertValueTypeTypeToBaseType(
     default:
       throw new Error("Invalid ValueTypeType");
   }
+}
+
+function createAuthoringDataConstraint(
+  typeName: TypeNames,
+  constraint: ValueTypeType["constraints"][number]["constraint"],
+): AuthoringDataConstraint {
+  // ValueTypeDefinition correlates the type name and constraint payload, but
+  // TypeScript cannot preserve that relationship through a computed key.
+  return {
+    type: typeName,
+    [typeName]: constraint,
+  } as AuthoringDataConstraint;
 }
 
 export type ValueTypeDefinition = {
@@ -180,15 +158,16 @@ export function defineValueType(
       : type.type.type === "struct"
         ? "structV2"
         : type.type.type;
-  // These suck but TS doesn't understand the relationship from the key of the base type to the type string
   const constraints = type.constraints
-    ? type.constraints.map<ValueTypeDataConstraint>((constraint) => {
-        const output: any = {
-          constraint: { type: typeName, [typeName]: constraint.constraint },
+    ? type.constraints.map<AuthoringValueTypeDataConstraint>((constraint) => ({
+        constraint: {
+          constraint: createAuthoringDataConstraint(
+            typeName,
+            constraint.constraint,
+          ),
           failureMessage: constraint.failureMessage,
-        };
-        return { constraint: output as DataConstraintWrapper };
-      })
+        },
+      }))
     : [];
 
   const baseType: BaseType = convertValueTypeTypeToBaseType(type.type);

@@ -1365,41 +1365,111 @@ describe("Interfaces", () => {
   });
 
   describe("Action Type Constraints", () => {
-    it("can define an action type constraint with parameter constraints", () => {
+    it("preserves implementing-object parameter markers in ontology IR", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
       defineInterfaceActionTypeConstraint({
         interfaceType: iface,
         apiName: "myConstraint",
         displayName: "My Constraint",
-        description: "A test constraint",
+        description: "A constraint on implementing objects",
         requireImplementation: false,
         parameters: [
           {
-            apiName: "booleanParam",
-            displayName: "Boolean Param",
-            type: { type: "boolean", boolean: {} },
+            apiName: "objectParam",
+            displayName: "Object Param",
+            type: {
+              type: "implementingObjectReference",
+              implementingObjectReference: {},
+            },
+            requireImplementation: false,
+          },
+          {
+            apiName: "objectsParam",
+            displayName: "Objects Param",
+            type: {
+              type: "implementingObjectReferenceList",
+              implementingObjectReferenceList: {},
+            },
             requireImplementation: false,
           },
         ],
       });
 
-      expect(iface.actionTypeConstraints).toHaveLength(1);
-      const constraint = iface.actionTypeConstraints[0];
-      expect(constraint.metadata.apiName).toBe("com.palantir.myConstraint");
-      expect(constraint.metadata.displayName).toBe("My Constraint");
-      expect(constraint.metadata.description).toBe("A test constraint");
-      expect(constraint.requireImplementation).toBe(false);
-      expect(Object.keys(constraint.parameters)).toHaveLength(1);
-
-      const paramKey = Object.keys(constraint.parameters)[0];
-      expect(paramKey).toBe("booleanParam");
-      const param = constraint.parameters[paramKey];
-      expect(param.displayMetadata.displayName).toBe("Boolean Param");
-      expect(param.displayMetadata.apiName).toBe("booleanParam");
-      expect(param.type).toEqual({ type: "boolean", boolean: {} });
-      expect(param.requireImplementation).toBe(false);
+      const parameters =
+        dumpOntologyFullMetadata().ontology.interfaceTypes[
+          "com.palantir.MyInterface"
+        ].interfaceType.actionTypeConstraints[0].parameters;
+      expect(parameters.objectParam.type).toStrictEqual({
+        type: "implementingObjectReference",
+        implementingObjectReference: {},
+      });
+      expect(parameters.objectsParam.type).toStrictEqual({
+        type: "implementingObjectReferenceList",
+        implementingObjectReferenceList: {},
+      });
     });
+
+    it.each([
+      {
+        state: "absent",
+        parameterRequirement: {},
+        requireImplementation: true,
+        expected: undefined,
+      },
+      {
+        state: "false",
+        parameterRequirement: { isRequiredParameterOnConcreteAction: false },
+        requireImplementation: true,
+        expected: false,
+      },
+      {
+        state: "true",
+        parameterRequirement: { isRequiredParameterOnConcreteAction: true },
+        requireImplementation: false,
+        expected: true,
+      },
+    ])(
+      "preserves $state concrete-parameter requirement in authored IR independently of implementation",
+      ({ parameterRequirement, requireImplementation, expected }) => {
+        const iface = defineInterface({ apiName: "MyInterface" });
+
+        defineInterfaceActionTypeConstraint({
+          interfaceType: iface,
+          apiName: "myConstraint",
+          displayName: "My Constraint",
+          description: "A test constraint",
+          requireImplementation: false,
+          parameters: [
+            {
+              apiName: "booleanParam",
+              displayName: "Boolean Param",
+              type: { type: "boolean", boolean: {} },
+              requireImplementation,
+              ...parameterRequirement,
+            },
+          ],
+        });
+
+        expect(iface.actionTypeConstraints).toHaveLength(1);
+        const constraint = iface.actionTypeConstraints[0];
+        expect(constraint.metadata.apiName).toBe("com.palantir.myConstraint");
+        expect(constraint.metadata.displayName).toBe("My Constraint");
+        expect(constraint.metadata.description).toBe("A test constraint");
+        expect(constraint.requireImplementation).toBe(false);
+        expect(constraint.parameters).toEqual({
+          booleanParam: {
+            displayMetadata: {
+              displayName: "Boolean Param",
+              apiName: "booleanParam",
+            },
+            type: { type: "boolean", boolean: {} },
+            requireImplementation,
+            isRequiredParameterOnConcreteAction: expected,
+          },
+        });
+      },
+    );
 
     it("doesn't let you define duplicate action type constraints", () => {
       const iface = defineInterface({ apiName: "MyInterface" });

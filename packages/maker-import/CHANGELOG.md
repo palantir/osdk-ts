@@ -1,5 +1,61 @@
 # @osdk/maker-import
 
+## 0.50.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/maker@0.85.0
+
+## 0.49.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [d583566]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [050417c]
+  - @osdk/maker@0.84.0
+  - @osdk/client.unstable@2.85.0
+
+## 0.48.0
+
+### Minor Changes
+
+- 8818fcf: Correctly map vector types, error on impossible type conversion instead of silent failure
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [2089ca9]
+  - @osdk/maker@0.81.0
+  - @osdk/client.unstable@2.82.0
+
+## 0.46.0
+
+### Patch Changes
+
+- Updated dependencies [d9eb929]
+- Updated dependencies [1ab9e14]
+  - @osdk/maker@0.80.0
+  - @osdk/client.unstable@2.81.0
+
 ## 0.45.0
 
 ### Patch Changes

@@ -1,5 +1,84 @@
 # @osdk/maker
 
+## 0.85.0
+
+### Minor Changes
+
+- 6b9b2c0: Preserve `isRequiredParameterOnConcreteAction` in Maker and Marketplace shapes. When the flag is true, check that mapped Action parameters are required.
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters.ontologyir@2.86.0
+
+## 0.84.0
+
+### Minor Changes
+
+- d583566: Emit derived `avg`, `sum`, `min`, `max`, `approximateCardinality` and `exactCardinality` aggregations with the property type identifier directly under the aggregation key, so packaging no longer fails with "missing field `type`".
+- a0c6e14: New TimeSeriesReference action parameter
+- 050417c: Exclude derived properties from auto-generated modify object action parameters and logic rule, matching create and create-or-modify actions
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+  - @osdk/api@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+
+## 0.83.0
+
+### Minor Changes
+
+- 6df3c1e: Support folder structure in OAC
+- e2414a2: Deduplicate marking input group names when building an object's datasource marking constraint, so properties that share a group no longer create a separate repeated-name Marketplace input such as `group/group`.
+- aa664cc: Introduce defineFolder to clean up maker folder api
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/generator-converters.ontologyir@2.84.0
+
+## 0.82.0
+
+### Minor Changes
+
+- 4c59807: Support authored value type references in struct constraints, including inline constraints on struct and array-of-struct object properties, and package their Marketplace dependencies with consistent value type input titles and descriptions across blocks. Move `OntologyIrV2` from `@osdk/client.unstable` to `@osdk/maker-experimental` and include value type dependencies in its `valueTypes` entries.
+
+### Patch Changes
+
+- @osdk/generator-converters.ontologyir@2.83.0
+- @osdk/api@2.83.0
+
+## 0.81.0
+
+### Minor Changes
+
+- 2089ca9: Extend link validation to match upstream
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+  - @osdk/generator-converters.ontologyir@2.82.0
+
+## 0.80.0
+
+### Minor Changes
+
+- d9eb929: Resolve derived property traversal directions consistently during validation and generation, and reference the final linked object's property RIDs. Allow derived datasources alongside empty backing datasets and exclude derived properties from generated backing columns.
+- 1ab9e14: Enforce the interface schema migration lockfile in `maker-experimental` before writing block data, with `--lockfile`, `--write-locks`, and `--yes` options matching `maker`.
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+- Updated dependencies [f28586c]
+- Updated dependencies [8bc6e4a]
+  - @osdk/api@2.81.0
+  - @osdk/generator-converters.ontologyir@2.81.0
+
 ## 0.79.0
 
 ### Minor Changes

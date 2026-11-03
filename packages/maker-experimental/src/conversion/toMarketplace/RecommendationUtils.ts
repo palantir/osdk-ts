@@ -154,6 +154,62 @@ function externalRecsForInterfaceLinks(
   return results;
 }
 
+function externalRecsForInterfaceActionTypeConstraints(
+  importedOntology: OntologyBlockDataV2,
+): GeneratedBlockExternalRecommendations[] {
+  const results: GeneratedBlockExternalRecommendations[] = [];
+
+  for (const interfaceBlock of Object.values(importedOntology.interfaceTypes)) {
+    const interfaceApiName = interfaceBlock.interfaceType.apiName;
+    const constraints =
+      interfaceBlock.interfaceType.actionTypeConstraints ?? [];
+
+    results.push(
+      ...getExternalRecommendationsForType(
+        constraints,
+        (constraint) => constraint.metadata.apiName,
+        (constraintApiName) =>
+          ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+            interfaceApiName,
+            constraintApiName,
+          ),
+        getPackage(interfaceApiName),
+      ),
+    );
+  }
+
+  return results;
+}
+
+function externalRecsForInterfaceParameterConstraints(
+  importedOntology: OntologyBlockDataV2,
+): GeneratedBlockExternalRecommendations[] {
+  const results: GeneratedBlockExternalRecommendations[] = [];
+
+  for (const interfaceBlock of Object.values(importedOntology.interfaceTypes)) {
+    const interfaceApiName = interfaceBlock.interfaceType.apiName;
+
+    for (const constraint of interfaceBlock.interfaceType
+      .actionTypeConstraints ?? []) {
+      results.push(
+        ...getExternalRecommendationsForType(
+          Object.values(constraint.parameters ?? {}),
+          (parameter) => parameter.displayMetadata.apiName!,
+          (parameterApiName) =>
+            ReadableIdGenerator.getForInterfaceParameterConstraint(
+              interfaceApiName,
+              constraint.metadata.apiName,
+              parameterApiName,
+            ),
+          getPackage(interfaceApiName),
+        ),
+      );
+    }
+  }
+
+  return results;
+}
+
 function externalRecsForSpts(
   importedOntology: OntologyBlockDataV2,
 ): GeneratedBlockExternalRecommendations[] {
@@ -318,15 +374,14 @@ function getConsumedValueTypes(
   }
 
   for (const versions of Object.values(importedTypes.VALUE_TYPE)) {
-    if (versions.length === 0) continue;
-    const firstVersion = versions[0];
-    const consumedId = ReadableIdGenerator.getForConsumedValueType(
-      firstVersion.apiName,
-      firstVersion.version,
-    );
-    if (!inputShapes.has(consumedId)) continue;
     for (const valueType of versions) {
-      addReference(valueType);
+      const consumedId = ReadableIdGenerator.getForConsumedValueType(
+        valueType.apiName,
+        valueType.version,
+      );
+      if (inputShapes.has(consumedId)) {
+        addReference(valueType);
+      }
     }
   }
 
@@ -351,7 +406,7 @@ function getConsumedValueTypes(
   return consumed;
 }
 
-function externalRecsForValueTypes(
+export function getValueTypeExternalRecommendations(
   producedValueTypes: ValueTypeBlockData[],
   importedTypes: OntologyDefinition,
   inputShapes: Map<string, InputShape>,
@@ -367,7 +422,14 @@ function externalRecsForValueTypes(
   for (const [apiName, versions] of consumed) {
     if (producedApiNames.has(apiName)) continue;
 
-    const mappings: ReadableIdMappingPair[] = versions.map((v) => ({
+    const consumedVersions = versions.filter((version) =>
+      inputShapes.has(
+        ReadableIdGenerator.getForConsumedValueType(apiName, version.version),
+      ),
+    );
+    if (consumedVersions.length === 0) continue;
+
+    const mappings: ReadableIdMappingPair[] = consumedVersions.map((v) => ({
       targetInputReadableId: ReadableIdGenerator.getForConsumedValueType(
         apiName,
         v.version,
@@ -379,7 +441,7 @@ function externalRecsForValueTypes(
     }));
 
     results.push({
-      upstreamPackageName: versions[0].packageNamespace,
+      upstreamPackageName: consumedVersions[0].packageNamespace,
       upstreamVersionCompatibility: DEFAULT_VERSION_RANGE,
       mappings,
     });
@@ -402,13 +464,15 @@ export function getExternalRecommendations(
     ...externalRecsForInterfaces(importedOntology),
     ...externalRecsForInterfaceProperties(importedOntology),
     ...externalRecsForInterfaceLinks(importedOntology),
+    ...externalRecsForInterfaceActionTypeConstraints(importedOntology),
+    ...externalRecsForInterfaceParameterConstraints(importedOntology),
     ...externalRecsForSpts(importedOntology),
     ...externalRecsForObjects(importedOntology),
     ...externalRecsForProperties(importedOntology),
     ...externalRecsForLinks(importedOntology),
     ...externalRecsForActions(importedOntology),
     ...externalRecsForActionParams(importedOntology),
-    ...externalRecsForValueTypes(
+    ...getValueTypeExternalRecommendations(
       producedValueTypes,
       importedTypes,
       inputShapes,

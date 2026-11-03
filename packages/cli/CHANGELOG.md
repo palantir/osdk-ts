@@ -1,5 +1,44 @@
 # @osdk/cli
 
+## 0.114.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.86.0
+
+## 0.113.0
+
+### Patch Changes
+
+- Updated dependencies [a3e7101]
+  - @osdk/widget.api@3.85.0
+
+## 0.112.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.84.0
+
+## 0.111.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.83.0
+
+## 0.110.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.82.0
+
+## 0.109.0
+
+### Patch Changes
+
+- Updated dependencies [c7d3f6c]
+  - @osdk/foundry-config-json@1.14.0
+  - @osdk/widget.api@3.81.0
+
 ## 0.108.0
 
 ### Minor Changes

@@ -17,21 +17,14 @@
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { SharedPropertyType } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
-import { consola } from "consola";
 
 import { mapPropertyType } from "./mapPropertyType.js";
 import { withoutNamespace } from "./utils.js";
 
 export function convertSharedPropertyType(
   spt: Ontologies.SharedPropertyType,
-): SharedPropertyType | undefined {
+): SharedPropertyType {
   const mapped = mapPropertyType(spt.dataType);
-  if (!mapped) {
-    consola.warn(
-      `Skipping shared property type "${spt.apiName}": unsupported type "${spt.dataType.type}"`,
-    );
-    return undefined;
-  }
 
   return {
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,

@@ -76,21 +76,24 @@ export type {
   OntologyIrValueTypeBlockDataEntry,
 } from "./generated/type-registry-marketplace/__components.js";
 export type { ValueTypeBlockData } from "./generated/type-registry-marketplace/__components.js";
+export type { ArrayTypeElementsUniqueConstraint } from "./generated/type-registry/api/ArrayTypeElementsUniqueConstraint.js";
+export type { ArrayTypeSizeConstraint } from "./generated/type-registry/api/ArrayTypeSizeConstraint.js";
 export type { BaseType } from "./generated/type-registry/api/BaseType.js";
 export type { DataConstraint } from "./generated/type-registry/api/DataConstraint.js";
 export type { DataConstraintWrapper } from "./generated/type-registry/api/DataConstraintWrapper.js";
 export type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
 export type { FailureMessage } from "./generated/type-registry/api/FailureMessage.js";
+export type { MapUniqueValuesConstraint } from "./generated/type-registry/api/MapUniqueValuesConstraint.js";
 export type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
 export type { ValueTypeDataConstraint } from "./generated/type-registry/api/ValueTypeDataConstraint.js";
 export type { ValueTypeDisplayMetadata } from "./generated/type-registry/api/ValueTypeDisplayMetadata.js";
+export type { ValueTypeReference as ValueTypeDataConstraintReference } from "./generated/type-registry/api/ValueTypeReference.js";
 export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeStatus.js";
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type {
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
-  OntologyIrV2,
 } from "./blockDataIr.js";
 
 export type {

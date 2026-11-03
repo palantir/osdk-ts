@@ -1,5 +1,50 @@
 # @osdk/widget.api
 
+## 3.86.0
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+
+## 3.85.0
+
+### Minor Changes
+
+- a3e7101: Forward hotkeys from custom widget to host
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/api@2.85.0
+
+## 3.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+
+## 3.83.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+
+## 3.82.0
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+
+## 3.81.0
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/api@2.81.0
+
 ## 3.80.0
 
 ### Patch Changes

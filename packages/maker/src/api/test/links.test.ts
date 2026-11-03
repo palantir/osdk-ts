@@ -27,13 +27,291 @@ import {
   getOntologyDefinition,
   sanitizeTypes,
 } from "../defineOntology.js";
+import { importOntologyEntity } from "../importOntologyEntity.js";
 import { type InterfaceType } from "../interface/InterfaceType.js";
+import type { UserLinkTypeStatus } from "../links/LinkType.js";
+import type { ObjectType } from "../object/ObjectType.js";
+import type { ObjectTypeStatus } from "../object/ObjectTypeStatus.js";
 
 describe("Link Types", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
   });
   describe("Object Links", () => {
+    describe("status compatibility", () => {
+      const deprecatedObject = {
+        type: "deprecated",
+        message: "Replace this object",
+        deadline: "2027-01-01",
+      } as const;
+      const deprecatedLink = {
+        type: "deprecated",
+        message: "Replace this link",
+        deadline: "2027-02-01",
+      } as const;
+
+      function defineEndpoint(apiName: string, status?: ObjectTypeStatus) {
+        return defineObject({
+          apiName,
+          displayName: apiName,
+          pluralDisplayName: `${apiName}s`,
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: { id: { type: "string" } },
+          status,
+        });
+      }
+
+      describe.each(["local", "imported object", "imported string"])(
+        "%s endpoints",
+        (origin) => {
+          function endpoint(apiName: string, status?: ObjectTypeStatus) {
+            if (origin === "local") {
+              return defineEndpoint(apiName, status);
+            }
+            const object: ObjectType = {
+              __type: OntologyEntityTypeEnum.OBJECT_TYPE,
+              apiName: `com.imported.${apiName}`,
+              displayName: apiName,
+              pluralDisplayName: `${apiName}s`,
+              primaryKeyPropertyApiName: "id",
+              titlePropertyApiName: "id",
+              properties: [
+                { apiName: "id", displayName: "Id", type: "string", status },
+              ],
+              status,
+            };
+            importOntologyEntity(object);
+            return origin === "imported string"
+              ? object.apiName
+              : { ...object, status: "active" as const };
+          }
+
+          describe.each(["oneToMany", "manyToMany"])("%s", (kind) => {
+            function defineStatusLink(
+              sourceStatus: ObjectTypeStatus | undefined,
+              targetStatus: ObjectTypeStatus | undefined,
+              status: UserLinkTypeStatus | undefined,
+            ) {
+              const source = {
+                object: endpoint("source", sourceStatus),
+                metadata: { apiName: "targets" },
+              };
+              const target = {
+                object: endpoint("target", targetStatus),
+                metadata: { apiName: "sources" },
+              };
+              return defineLink({
+                apiName: "sourceToTarget",
+                ...(kind === "oneToMany"
+                  ? { one: source, manyForeignKeyProperty: "id" }
+                  : { many: source }),
+                toMany: target,
+                status,
+              });
+            }
+
+            it.each([
+              ["experimental", "active", undefined, "source", "experimental"],
+              ["active", "experimental", undefined, "target", "experimental"],
+              ["example", "active", undefined, "source", "example"],
+              ["active", "example", "active", "target", "example"],
+              ["experimental", "active", "active", "source", "experimental"],
+              [
+                "experimental",
+                "example",
+                deprecatedLink,
+                "source",
+                "experimental",
+              ],
+              ["example", "active", deprecatedLink, "source", "example"],
+              [deprecatedObject, "active", undefined, "source", "deprecated"],
+              ["active", deprecatedObject, "active", "target", "deprecated"],
+              [
+                deprecatedObject,
+                "experimental",
+                "experimental",
+                "source",
+                "deprecated",
+              ],
+              [
+                "experimental",
+                deprecatedObject,
+                "example",
+                "target",
+                "deprecated",
+              ],
+              ["example", deprecatedObject, "active", "target", "deprecated"],
+              [deprecatedObject, "example", "example", "source", "deprecated"],
+            ] as const)(
+              "rejects endpoints %j / %j with link status %j",
+              (
+                sourceStatus,
+                targetStatus,
+                status,
+                incompatibleEndpoint,
+                endpointStatus,
+              ) => {
+                defineStatusLink(sourceStatus, targetStatus, status);
+                const namespace =
+                  origin === "local" ? "com.palantir" : "com.imported";
+                const linkStatus =
+                  typeof status === "object"
+                    ? status.type
+                    : (status ?? "active");
+                const correction =
+                  endpointStatus === "deprecated"
+                    ? '{ type: "deprecated", message, deadline } with an explicit message and deadline'
+                    : '"experimental" or "example"';
+                expect(() => dumpOntologyFullMetadata()).toThrowError(
+                  `Link "sourceToTarget" has "${linkStatus}" status, but endpoint object "${namespace}.${incompatibleEndpoint}" has "${endpointStatus}" status. Set the link status to ${correction}.`,
+                );
+              },
+            );
+
+            it.each([
+              [undefined, undefined, undefined, "active"],
+              ["active", "active", "active", "active"],
+              ["active", "active", "experimental", "experimental"],
+              ["active", "active", "example", "example"],
+              ["experimental", "active", "experimental", "experimental"],
+              ["experimental", "active", "example", "example"],
+              ["active", "example", "experimental", "experimental"],
+              ["active", "example", "example", "example"],
+              ["experimental", "example", "experimental", "experimental"],
+              ["example", "experimental", "example", "example"],
+              ["active", "active", deprecatedLink, "deprecated"],
+              [deprecatedObject, "experimental", deprecatedLink, "deprecated"],
+              ["example", deprecatedObject, deprecatedLink, "deprecated"],
+              [
+                deprecatedObject,
+                deprecatedObject,
+                deprecatedLink,
+                "deprecated",
+              ],
+            ] as const)(
+              "preserves compatible link status %j / %j / %j",
+              (sourceStatus, targetStatus, status, expected) => {
+                const link = defineStatusLink(
+                  sourceStatus,
+                  targetStatus,
+                  status,
+                );
+                expect(
+                  dumpOntologyFullMetadata().ontology.linkTypes[
+                    "source-to-target"
+                  ].linkType.status,
+                ).toEqual({
+                  type: expected,
+                  [expected]:
+                    expected === "deprecated"
+                      ? { message: "Replace this link", deadline: "2027-02-01" }
+                      : {},
+                });
+                expect(link.status).toEqual(status);
+              },
+            );
+          });
+        },
+      );
+
+      it("rejects an omitted status on an experimental forward reference during ontology definition", async () => {
+        await expect(
+          defineOntology(
+            "com.palantir.",
+            () => {
+              defineLink({
+                apiName: "sourceToTarget",
+                one: {
+                  object: "com.palantir.source",
+                  metadata: { apiName: "targets" },
+                },
+                toMany: {
+                  object: "com.palantir.target",
+                  metadata: { apiName: "sources" },
+                },
+                manyForeignKeyProperty: "id",
+              });
+              defineEndpoint("source", "experimental");
+              defineEndpoint("target");
+            },
+            undefined,
+          ),
+        ).rejects.toThrowError(
+          'Link "sourceToTarget" has "active" status, but endpoint object "com.palantir.source" has "experimental" status. Set the link status to "experimental" or "example".',
+        );
+      });
+
+      it("uses the registered local endpoint status", () => {
+        const source = defineEndpoint("source", "experimental");
+        source.status = "active";
+        defineLink({
+          apiName: "sourceToTarget",
+          many: { object: source, metadata: { apiName: "targets" } },
+          toMany: {
+            object: defineEndpoint("target"),
+            metadata: { apiName: "sources" },
+          },
+        });
+        expect(() => dumpOntologyFullMetadata()).toThrowError(
+          'endpoint object "com.palantir.source" has "experimental" status',
+        );
+      });
+
+      it.each([undefined, "example", deprecatedLink] as const)(
+        "validates intermediary link status %j against its endpoints",
+        (status) => {
+          const source = defineEndpoint("source", deprecatedObject);
+          const target = defineEndpoint("target");
+          const intermediary = defineEndpoint("intermediary");
+          const sourceLink = defineLink({
+            apiName: "sourceToIntermediary",
+            one: { object: source, metadata: { apiName: "intermediaries" } },
+            toMany: { object: intermediary, metadata: { apiName: "sources" } },
+            manyForeignKeyProperty: "id",
+            status: deprecatedLink,
+          });
+          const targetLink = defineLink({
+            apiName: "targetToIntermediary",
+            one: { object: target, metadata: { apiName: "intermediaries" } },
+            toMany: { object: intermediary, metadata: { apiName: "targets" } },
+            manyForeignKeyProperty: "id",
+          });
+          defineLink({
+            apiName: "sourceToTarget",
+            many: {
+              object: source,
+              metadata: { apiName: "targets" },
+              linkToIntermediary: sourceLink,
+            },
+            toMany: {
+              object: target,
+              metadata: { apiName: "sources" },
+              linkToIntermediary: targetLink,
+            },
+            intermediaryObjectType: intermediary,
+            status,
+          });
+          if (status === deprecatedLink) {
+            expect(
+              dumpOntologyFullMetadata().ontology.linkTypes["source-to-target"]
+                .linkType.status,
+            ).toEqual({
+              type: "deprecated",
+              deprecated: {
+                message: "Replace this link",
+                deadline: "2027-02-01",
+              },
+            });
+          } else {
+            expect(() => dumpOntologyFullMetadata()).toThrowError(
+              `Link "sourceToTarget" has "${status ?? "active"}" status, but endpoint object "com.palantir.source" has "deprecated" status.`,
+            );
+          }
+        },
+      );
+    });
+
     it("does not allow duplicate link API names", () => {
       const sourceObject = defineObject({
         titlePropertyApiName: "id",

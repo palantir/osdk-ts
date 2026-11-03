@@ -711,6 +711,8 @@ function extractImportedInterfaceTypes(
           actionTypeConstraint:
             ridGenerator.toBlockInternalId(constraintReadableId),
           requireImplementation: paramConstraint.requireImplementation,
+          isRequiredParameterOnConcreteAction:
+            paramConstraint.isRequiredParameterOnConcreteAction,
           type: convertParameterConstraintTypeReferencesToShape(
             paramConstraint.type,
             knownIdentifiers,
@@ -770,7 +772,6 @@ function extractImportedSharedPropertyTypes(
 
     extractValueTypeInputShapeIfPresent(
       spt.valueType ?? undefined,
-      spt.displayMetadata.displayName,
       spt.type,
       blockShapes,
       ridGenerator,

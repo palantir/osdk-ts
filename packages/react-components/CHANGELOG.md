@@ -1,5 +1,46 @@
 # @osdk/react-components
 
+## 0.68.0
+
+### Minor Changes
+
+- c804188: Add an experimental WorkshopModule component to embed the latest or published version of a Workshop module by RID.
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 0.67.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 0.66.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 0.65.0
+
+### Minor Changes
+
+- 9755094: add `includeDeleted` option to `useMarkings`/`useMarkingCategories` and an `includeDeleted` prop to `CbacPicker`, `CbacPickerDialog`, and `CbacBannerPopover` (default `true`, matching the platform API)
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
 ## 0.64.0
 
 ### Minor Changes

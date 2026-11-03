@@ -1,5 +1,67 @@
 # @osdk/generator-converters.preview
 
+## 0.60.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/foundry-sdk-generator@2.86.0
+  - @osdk/generator-converters.ontologyir@2.86.0
+
+## 0.59.0
+
+### Minor Changes
+
+- 34c76cd: Emit `createOrModifyObjectV2` logic rules with `objectToModify` and converted property arguments so the local preview can apply create-or-modify actions.
+
+### Patch Changes
+
+- Updated dependencies [94e35b4]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+  - @osdk/foundry-sdk-generator@2.85.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+
+## 0.58.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/foundry-sdk-generator@2.83.0
+  - @osdk/generator-converters.ontologyir@2.83.0
+
+## 0.57.0
+
+### Patch Changes
+
+- Updated dependencies [553461f]
+  - @osdk/foundry-sdk-generator@2.82.0
+  - @osdk/client.unstable@2.82.0
+  - @osdk/generator-converters.ontologyir@2.82.0
+
+## 0.56.0
+
+### Minor Changes
+
+- bc63bd9: Include imported action types in preview
+
+### Patch Changes
+
+- Updated dependencies [f28586c]
+- Updated dependencies [8bc6e4a]
+  - @osdk/generator-converters.ontologyir@2.81.0
+  - @osdk/foundry-sdk-generator@2.81.0
+  - @osdk/client.unstable@2.81.0
+
 ## 0.55.0
 
 ### Patch Changes

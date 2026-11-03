@@ -44,6 +44,7 @@ export function defineFunctionBackedAction(
     apiName: def.apiName ?? `${def.functionApiName.toLowerCase()}-action`,
     displayName: def.displayName ?? `Function action ${def.functionApiName}`,
     description: def.description,
+    ...(def.permission !== undefined && { permission: def.permission }),
     rules: [
       {
         type: "functionRule",
@@ -77,7 +78,6 @@ export function defineFunctionBackedAction(
     ...(def.submissionMetadata && {
       submissionMetadata: def.submissionMetadata,
     }),
-    ...(def.permission && { permission: def.permission }),
     ...(def.icon && { icon: def.icon }),
   });
 }

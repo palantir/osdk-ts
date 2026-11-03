@@ -1,5 +1,34 @@
 # @osdk/api
 
+## 2.86.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+## 2.85.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+## 2.84.0
+
+## 2.83.0
+
+## 2.82.0
+
+### Minor Changes
+
+- 9f97981: Support decimal and decimal list action parameters in generated SDKs and serialize numeric decimal action arguments as strings.
+
+## 2.81.0
+
+### Minor Changes
+
+- 24630ae: Document `$applyModifiers` on `FetchPageArgs` and `AsyncIterArgs`.
+- 23701c5: Compile time checks for invalid batch.create operations missing a required field
+
 ## 2.80.0
 
 ## 2.79.0

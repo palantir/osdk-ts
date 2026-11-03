@@ -88,6 +88,7 @@ export async function generatePackage(
     [],
     options.exportOntologyMetadata,
     ontologyInfo.queryVersionReferences,
+    ontologyInfo.agentVersionReferences,
   );
 
   // actually write file plus save contents

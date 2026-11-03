@@ -27,6 +27,7 @@ import {
   ActionCreatesInterface,
   ActionTakesAnotherInterface,
   ActionTakesAttachment,
+  ActionTakesDecimal,
   ActionTakesGeoshape,
   ActionTakesInterface,
   ActionTakesMedia,
@@ -231,6 +232,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
   fauxOntology.registerActionType(PromoteEmployee);
   fauxOntology.registerActionType(ActionTakesAnotherInterface);
   fauxOntology.registerActionType(PromoteEmployeeObject);
+  fauxOntology.registerActionType(ActionTakesDecimal);
 
   // junk implementations!
 
