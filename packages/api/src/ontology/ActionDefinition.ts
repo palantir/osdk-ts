@@ -20,6 +20,7 @@ import type {
   ObjectTypeDefinition,
   ReleaseStatus,
 } from "./ObjectTypeDefinition.js";
+import type { QueryDataTypeDefinition } from "./QueryDefinition.js";
 
 export interface ActionMetadata {
   type: "action";
@@ -39,6 +40,11 @@ export interface ActionMetadata {
   >;
   status: ReleaseStatus | undefined;
   rid: string;
+  /**
+   * The type of the value returned when the action is applied. Omitted when the
+   * action does not return a value or returns a type the OSDK cannot represent.
+   */
+  returnType?: QueryDataTypeDefinition;
 }
 
 export namespace ActionMetadata {

@@ -37,6 +37,17 @@ type actionParam_structType =
   & { name: string; age: number; joined: string }
   & {};
 
+/** applyAction's resolved value for an action that returns a string. */
+type actionReturnType_withReturnValue = ActionReturnValueResponse<string>;
+
+/** applyAction's resolved value for an action that returns a string, with $returnEdits: true. */
+type actionReturnType_withReturnValueAndEdits =
+  & ActionResults
+  & ActionReturnValueResponse<string>;
+
+/** The payload carrying an action's return value. */
+type actionReturnValueResponse = ActionReturnValueResponse<string>;
+
 /** The validation-only response returned when $validateOnly: true. */
 type actionValidationResponse = ValidateActionResponseV2;
 
