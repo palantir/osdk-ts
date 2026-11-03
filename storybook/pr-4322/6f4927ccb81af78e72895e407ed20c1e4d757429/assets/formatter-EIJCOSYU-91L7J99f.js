@@ -1,1 +1,0 @@
-import{d as m,r as o}from"./blocks-B_U-Agnz.js";import{k as t}from"./iframe-BvgKvBTT.js";import"./preload-helper-dVfNiIKn.js";import"./index-yqy4XRqT.js";import"./index-BzjqKOq7.js";import"./index-CbHQFypX.js";var e=t(o(),1),c=(0,e.default)(2)(async(i,r)=>i===!1?r:m(r));export{c as formatter};
