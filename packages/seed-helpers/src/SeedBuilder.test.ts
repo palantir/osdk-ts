@@ -16,7 +16,7 @@
 
 import { Employee, Office } from "@osdk/client.test.ontology";
 import type * as Ontology from "@osdk/foundry.ontologies";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { createSeedWithMetadata, SeedBuilder } from "./SeedBuilder.js";
 import type { SeedRef } from "./types.js";
@@ -128,6 +128,19 @@ describe("SeedBuilder", () => {
         sb.create(Employee, { employeeId: 1, fullName: "Bob" }),
       ).toThrow("Employee with primary key 1 already exists.");
     });
+
+    it.each([undefined, null])(
+      "creates an object with an empty property set to %s",
+      (fullName) => {
+        const sb = newBuilder();
+        const ref = sb.create(Employee, { employeeId: 1, fullName });
+
+        expectTypeOf(ref.fullName).toEqualTypeOf<string | undefined>();
+        expect(ref.fullName).toBeUndefined();
+        expect(ref.$title).toBeUndefined();
+        expect(sb.build().objects.Employee).toStrictEqual([{ employeeId: 1 }]);
+      },
+    );
   });
 
   describe("ref", () => {
@@ -148,6 +161,37 @@ describe("SeedBuilder", () => {
   });
 
   describe("update", () => {
+    it.each([undefined, null])(
+      "rejects unknown properties set to %s without changing the seed",
+      (value) => {
+        const sb = newBuilder();
+        const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+
+        expect(() => sb.update(ref, { badProp: value } as never)).toThrow(
+          "Property 'badProp' on 'Employee' object (primary key 1) is not defined in the ontology",
+        );
+        expect(sb.build().objects.Employee).toStrictEqual([
+          { employeeId: 1, fullName: "Alice" },
+        ]);
+      },
+    );
+
+    it.each([undefined, null])(
+      "preserves omitted properties and clears properties set to %s",
+      (fullName) => {
+        const sb = newBuilder();
+        const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+
+        sb.update(ref, {});
+        expect(sb.ref(Employee, 1)?.fullName).toBe("Alice");
+
+        sb.update(ref, { fullName });
+        expect(sb.ref(Employee, 1)?.fullName).toBeUndefined();
+        expect(sb.ref(Employee, 1)?.$title).toBeUndefined();
+        expect(sb.build().objects.Employee).toStrictEqual([{ employeeId: 1 }]);
+      },
+    );
+
     it("merges props into the existing object, preserving the primary key, and returns the same ref", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });

@@ -89,6 +89,66 @@ describe("validateSeedObject", () => {
     );
   });
 
+  it.each<WireType>([
+    "string",
+    "marking",
+    "timestamp",
+    "date",
+    "long",
+    "decimal",
+    "integer",
+    "byte",
+    "short",
+    "double",
+    "float",
+    "boolean",
+    "attachment",
+    "mediaReference",
+    "geopoint",
+    "geoshape",
+    "vector",
+    "array",
+    "struct",
+    "cipherText",
+    "timeseries",
+    "geotimeSeriesReference",
+  ])("accepts null and undefined for a %s property", (wireType) => {
+    const objectType = makeObjectType("Example", "id", {
+      id: "string",
+      value: wireType,
+    });
+
+    expect(() =>
+      validateSeedObject({ id: "example-1", value: undefined }, objectType),
+    ).not.toThrow();
+    expect(() =>
+      validateSeedObject({ id: "example-1", value: null }, objectType),
+    ).not.toThrow();
+  });
+
+  it.each([undefined, null])(
+    "rejects an unknown property set to %s",
+    (value) => {
+      expect(() =>
+        validateSeedObject(
+          { employeeId: "emp-001", badProp: value },
+          employeeType,
+        ),
+      ).toThrow(
+        "Property 'badProp' on 'Employee' object (primary key emp-001) is not defined in the ontology",
+      );
+    },
+  );
+
+  it.each([{}, { employeeId: undefined }, { employeeId: null }])(
+    "rejects an absent primary key in %j",
+    (props) => {
+      expect(() => validateSeedObject(props, employeeType)).toThrow(
+        "Primary key 'employeeId' on 'Employee' object is null or undefined",
+      );
+    },
+  );
+
   it("collects every string-format error and reports them together", () => {
     try {
       validateSeedObject(

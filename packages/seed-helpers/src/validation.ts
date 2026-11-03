@@ -90,9 +90,10 @@ const WIRE_TYPE_FORMAT: Record<string, { pattern: RegExp; example: string }> = {
 /**
  * Validates a single seed object's properties against its schema.
  *
- * Structural violations (unknown property name, null/undefined value, wrong JS
- * type) throw immediately. String-format violations (e.g. a timestamp that
- * doesn't match the wire format regex) are collected across the object's
+ * Structural violations (unknown property name, absent primary key, wrong JS
+ * type) throw immediately. Null and undefined non-primary-key properties are
+ * allowed. String-format violations (e.g. a timestamp that doesn't match the
+ * wire format regex) are collected across the object's
  * properties and reported together in one error so a user can fix every
  * content mistake on the object in a single pass.
  *
@@ -110,6 +111,12 @@ export function validateSeedObject(
   const identity = pkIdentity(props, objectType);
   const formatErrors: string[] = [];
 
+  invariant(
+    props[objectType.primaryKey] != null,
+    () =>
+      `Primary key '${objectType.primaryKey}' on '${apiName}' object is null or undefined`,
+  );
+
   for (const [key, value] of Object.entries(props)) {
     const wireType = objectType.properties[key]?.dataType.type;
     invariant(
@@ -118,6 +125,8 @@ export function validateSeedObject(
         `Property '${key}' on '${apiName}' object` +
         ` (primary key ${identity}) is not defined in the ontology`,
     );
+
+    if (value == null) continue;
 
     const expectedJsType = EXPECTED_JS_TYPE[wireType];
     invariant(
