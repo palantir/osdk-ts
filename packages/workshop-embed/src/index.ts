@@ -14,5 +14,15 @@
  * limitations under the License.
  */
 
-// oxlint-disable-next-line unicorn/require-module-specifiers -- API Extractor requires a module entry point.
-export {};
+export { connectToWorkshopModule } from "./connectToWorkshopModule.js";
+export type { ConnectToWorkshopModuleOptions } from "./connectToWorkshopModule.js";
+export type {
+  WorkshopModuleConnection,
+  WorkshopModuleConnectHandler,
+} from "./connection.js";
+export { listenForWorkshopModuleEmbedMessages } from "./listenForWorkshopModuleEmbedMessages.js";
+export type { ListenForWorkshopModuleEmbedMessagesOptions } from "./listenForWorkshopModuleEmbedMessages.js";
+export {
+  WORKSHOP_EMBED_QUERY_PARAM,
+  WORKSHOP_EMBED_QUERY_VALUE,
+} from "./protocol.js";
