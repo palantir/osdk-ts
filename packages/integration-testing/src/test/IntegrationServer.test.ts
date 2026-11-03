@@ -44,8 +44,9 @@ describe("createIntegrationServer", () => {
     );
 
   it("writes the transformed metadata into its own run directory", async () => {
+    const metadata: unknown = EMPTY_ONTOLOGY_METADATA;
     await createIntegrationServer({
-      metadata: EMPTY_ONTOLOGY_METADATA,
+      metadata,
       projectPath,
     });
 
