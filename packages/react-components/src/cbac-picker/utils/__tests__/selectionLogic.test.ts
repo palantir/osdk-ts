@@ -199,6 +199,55 @@ describe("groupMarkingsByCategory", () => {
     expect(groups[1].category.id).toBe("a");
   });
 
+  describe("ordering", () => {
+    it("sorts categories by priority and their markings by prominence and priority", () => {
+      const categories = [
+        { ...categoryA, priority: "2" },
+        { ...categoryB, priority: "10" },
+      ];
+      const unsortedMarkings = [
+        { id: "a1", categoryId: "a", name: "A1" },
+        { id: "b-missing", categoryId: "b", name: "Missing", priority: "100" },
+        {
+          id: "b-uncommon",
+          categoryId: "b",
+          name: "Uncommon",
+          priority: "50",
+          prominence: "UNCOMMON" as const,
+        },
+        {
+          id: "b-low",
+          categoryId: "b",
+          name: "Low",
+          priority: "2",
+          prominence: "COMMON" as const,
+        },
+        {
+          id: "b-high",
+          categoryId: "b",
+          name: "High",
+          priority: "10",
+          prominence: "COMMON" as const,
+        },
+      ];
+
+      const groups = groupMarkingsByCategory(unsortedMarkings, categories);
+
+      expect(
+        groups.map(({ category, markings: categoryMarkings }) => ({
+          categoryId: category.id,
+          markingIds: categoryMarkings.map((marking) => marking.id),
+        })),
+      ).toEqual([
+        {
+          categoryId: "b",
+          markingIds: ["b-high", "b-low", "b-uncommon", "b-missing"],
+        },
+        { categoryId: "a", markingIds: ["a1"] },
+      ]);
+    });
+  });
+
   it("excludes categories with no markings", () => {
     const groups = groupMarkingsByCategory(markings, [
       categoryA,

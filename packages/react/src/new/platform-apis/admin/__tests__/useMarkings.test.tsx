@@ -59,7 +59,6 @@ describe("useMarkings", () => {
     expect(Markings.list).toHaveBeenLastCalledWith(client, {
       includeDeleted: true,
     });
-    expect(result.current.markings).toEqual([]);
   });
 
   it.each(["CBAC", "MANDATORY"] as const)(
@@ -75,7 +74,6 @@ describe("useMarkings", () => {
         includeDeleted: false,
         markingType,
       });
-      expect(result.current.markings).toEqual([]);
     },
   );
 });

@@ -32,8 +32,6 @@ import { EMPTY_ARRAY, resolveRequiredGroups } from "./utils/cbacPickerUtils.js";
 import {
   computeMarkingStates,
   groupMarkingsByCategory,
-  sortCategoriesByPriority,
-  sortMarkingsByProminenceAndPriority,
 } from "./utils/selectionLogic.js";
 
 const EMPTY_GROUPS: string[][] = [];
@@ -141,10 +139,7 @@ export function useCbacPickerState(
     if (rawCategories === undefined || rawMarkings === undefined) {
       return [];
     }
-    return groupMarkingsByCategory(
-      sortMarkingsByProminenceAndPriority(rawMarkings),
-      sortCategoriesByPriority(rawCategories),
-    );
+    return groupMarkingsByCategory(rawMarkings, rawCategories);
   }, [rawMarkings, rawCategories]);
 
   const markingStates = React.useMemo(
