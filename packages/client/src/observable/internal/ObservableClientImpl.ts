@@ -93,7 +93,11 @@ export class ObservableClientImpl implements ObservableClient {
   constructor(store: Store) {
     this.__experimentalStore = store;
 
-    this.applyAction = store.applyAction.bind(store);
+    // The store returns the action's edits and any `returnValue` the action
+    // produced; the public overloads only add the precise return value type.
+    this.applyAction = store.applyAction.bind(
+      store,
+    ) as ObservableClient["applyAction"];
     this.validateAction = store.validateAction.bind(store);
   }
 
@@ -255,11 +259,7 @@ export class ObservableClientImpl implements ObservableClient {
         );
   };
 
-  public applyAction: <Q extends ActionDefinition<any>>(
-    action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
-    opts?: ObservableClient.ApplyActionOptions,
-  ) => Promise<ActionEditResponse>;
+  public applyAction: ObservableClient["applyAction"];
 
   public validateAction: <Q extends ActionDefinition<any>>(
     action: Q,

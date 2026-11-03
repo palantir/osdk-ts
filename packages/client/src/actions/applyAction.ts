@@ -85,6 +85,33 @@ export type ActionSignatureFromDef<T extends ActionDefinition<any>> = {
     : CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"];
 };
 
+/**
+ * The type of the value returned by applying the action, or `never` if the
+ * action does not return a value.
+ *
+ * `ReturnType` cannot be used here: it does not resolve a generic signature
+ * whose return type is conditional on its type parameter. Matching against a
+ * generic signature lets TypeScript unify `OP` and infer `R` directly. The
+ * no-return case is checked first because inferring from `never` yields
+ * `unknown`.
+ */
+export type ActionReturnValueFromDef<T extends ActionDefinition<any>> =
+  ActionSignatureFromDef<T>["applyAction"] extends <
+    OP extends ApplyActionOptions,
+  >(
+    args: any,
+    options?: OP,
+  ) => Promise<ActionReturnTypeForOptions<OP>>
+    ? never
+    : ActionSignatureFromDef<T>["applyAction"] extends <
+          OP extends ApplyActionOptions,
+        >(
+          args: any,
+          options?: OP,
+        ) => Promise<ActionReturnTypeForOptions<OP, infer R>>
+      ? R
+      : never;
+
 type ActionParametersDefinition = Record<any, ActionMetadata.Parameter<any>>;
 
 export type ActionSignature<

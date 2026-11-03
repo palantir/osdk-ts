@@ -17,10 +17,12 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  ActionReturnValueResponse,
   ActionValidationResponse,
 } from "@osdk/client";
 import { ActionValidationError } from "@osdk/client";
 import type {
+  ActionReturnValueFromDef,
   ActionSignatureFromDef,
   ObservableClient,
 } from "@osdk/client/observable";
@@ -35,10 +37,33 @@ type ApplyActionParams<Q extends ActionDefinition<any>> = Parameters<
   [K in keyof ObservableClient.ApplyActionOptions as `$${K}`]: ObservableClient.ApplyActionOptions[K];
 };
 
+/**
+ * The result of the last applied action. `returnValue` is only present when the
+ * last call applied a single action that returns a value.
+ */
+export type UseOsdkActionData<Q extends ActionDefinition<any>> = [
+  ActionReturnValueFromDef<Q>,
+] extends [never]
+  ? ActionEditResponse
+  : ActionEditResponse &
+      Partial<ActionReturnValueResponse<ActionReturnValueFromDef<Q>>>;
+
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
-  applyAction: (
-    args: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
-  ) => Promise<ActionEditResponse | undefined>;
+  /**
+   * Applies the action. A single action that returns a value resolves with its
+   * `returnValue` alongside the edits; batches never include a return value.
+   */
+  applyAction: {
+    (
+      args: Array<ApplyActionParams<Q>>,
+    ): Promise<ActionEditResponse | undefined>;
+    (
+      args: ApplyActionParams<Q>,
+    ): Promise<ObservableClient.ApplyActionResult<Q> | undefined>;
+    (
+      args: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
+    ): Promise<ActionEditResponse | undefined>;
+  };
 
   error:
     | undefined
@@ -46,7 +71,7 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
         actionValidation: ActionValidationError;
         unknown: unknown;
       }>;
-  data: ActionEditResponse | undefined;
+  data: UseOsdkActionData<Q> | undefined;
 
   isPending: boolean;
   isValidating: boolean;
@@ -71,7 +96,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   const { observableClient, devtoolsEnabled } = React.useContext(OsdkContext);
   useDevToolsMetadata(devtoolsEnabled, "useOsdkAction", actionDef.apiName);
   const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
-  const [data, setData] = React.useState<ActionEditResponse | undefined>();
+  const [data, setData] = React.useState<UseOsdkActionData<Q> | undefined>();
   const [isPending, setPending] = React.useState(false);
   const [isValidating, setValidating] = React.useState(false);
   const [validationResult, setValidationResult] = React.useState<
@@ -198,7 +223,8 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
 
   return React.useMemo(
     () => ({
-      applyAction,
+      // A single implementation backs the single, batch and union overloads.
+      applyAction: applyAction as UseOsdkActionResult<Q>["applyAction"],
       validateAction,
       error,
       data,
