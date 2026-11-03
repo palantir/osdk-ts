@@ -45,7 +45,24 @@ Values may be strings, finite numbers, booleans, or `null` to request clearing a
 
 This API provides the messaging layer. Applying inputs requires a Workshop integration that checks module readiness, external IDs, variable types, and whether each variable can be set. Handshake-only deployments ignore variable messages. A successful `setVariables` call does not acknowledge that Workshop received or applied the update.
 
-Connections expose `onVariablesSet(listener)` for receiving validated input messages for the current session. The returned function unsubscribes the listener, and disconnecting removes all listeners. Calling either variable method on a closed connection throws. Output subscriptions and notifications of variable state changes are not implemented yet.
+Both ends use `setVariables(values)` to send and `onVariablesSet((values) => ...)` to receive validated updates for the current session. Every update uses the same `setVariables` message type; the receiver decides how to apply it.
+
+## Receiving Workshop variable changes
+
+Subscribe before sending inputs:
+
+```ts
+const unsubscribe = connection.onVariablesSet((changes) => {
+  // Merge this partial update into the application's current variable values.
+});
+connection.setVariables({ maxResults: 25 });
+```
+
+The Workshop integration publishes current values with `connection.setVariables(values)` when the module becomes ready and when its interface values change. Input updates and change notifications are independent events, without per-update acknowledgments or conflict resolution for concurrent edits.
+
+Use `null` for cleared values. The transport validates envelopes and scalar values; the Workshop integration restricts notifications to the module interface. Input-only deployments continue accepting inputs but do not publish changes. Receiving outputs requires this publisher integration in Workshop.
+
+`onVariablesSet` returns an unsubscribe function, and disconnecting removes all listeners. All variable methods throw on a closed connection.
 
 ## Declaring variable types
 
@@ -73,7 +90,7 @@ connection.setVariables({ searchText: null }); // Request clearing a value.
 // connection.setVariables({ unknownVariable: true });
 ```
 
-The type also determines the values received by `onVariablesSet`. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, the connection accepts any non-empty external ID with a supported scalar value.
+The type determines the values sent by `setVariables` and received by `onVariablesSet` in either direction. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, the connection accepts any non-empty external ID with a supported scalar value.
 
 This declaration provides compile-time checking only. The transport validates the message envelope and supported scalar values, but does not check values against the declared variable names or types. Incoming values are typed using the caller's declaration.
 

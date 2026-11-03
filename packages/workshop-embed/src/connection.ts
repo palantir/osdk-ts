@@ -35,9 +35,9 @@ export interface WorkshopModuleConnection<
   readonly sessionId: string;
   /** Dedicated transport. Add listeners with addEventListener; use disconnect to close it. */
   readonly port: MessagePort;
-  /** Sends scalar inputs to the peer. Throws for invalid values or a closed connection. Does not acknowledge application. */
+  /** Sends scalar variable updates to the peer. Throws for invalid values or a closed connection. Does not acknowledge application. */
   setVariables: (values: WorkshopVariableValues<TVariables>) => void;
-  /** Receives scalar inputs for this session. Returns an unsubscribe function; disconnect removes all listeners. Throws if closed. */
+  /** Receives scalar variable updates from the peer for this session. Returns an unsubscribe function; disconnect removes all listeners. Throws if closed. */
   onVariablesSet: (
     listener: (values: WorkshopVariableValues<TVariables>) => void,
   ) => () => void;
