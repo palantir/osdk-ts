@@ -21,6 +21,8 @@ import {
 } from "./protocol.js";
 import type { WorkshopEmbedMessage } from "./protocol.js";
 
+const RESERVED_EXTERNAL_IDS = ["_open_rebase_dialog", "_kiosk_mode_session_id"];
+
 /** A scalar variable value. Numbers must be finite; null represents a cleared value. @public */
 export type WorkshopVariableValue = string | number | boolean | null;
 
@@ -47,7 +49,7 @@ export function createSetVariablesMessage(
 ): SetVariablesMessage {
   if (!isVariableValues(values)) {
     throw new TypeError(
-      "Variable values must map non-empty external IDs to strings, finite numbers, booleans, or null.",
+      "Variable values must map non-empty, non-reserved external IDs that are unique ignoring case to strings, finite numbers, booleans, or null.",
     );
   }
   return {
@@ -77,8 +79,22 @@ function isVariableValues(
   value: unknown,
 ): value is Readonly<WorkshopVariableMap> {
   if (!isRecord(value)) return false;
+
+  const seenExternalIds = new Set(RESERVED_EXTERNAL_IDS);
+
   return Object.entries(value).every(([externalId, input]) => {
-    if (externalId.length === 0 || input === undefined) return false;
+    const normalizedId = externalId.toLowerCase();
+
+    if (
+      normalizedId.length === 0 ||
+      seenExternalIds.has(normalizedId) ||
+      input === undefined
+    ) {
+      return false;
+    }
+
+    seenExternalIds.add(normalizedId);
+
     if (
       input != null &&
       typeof input !== "string" &&
