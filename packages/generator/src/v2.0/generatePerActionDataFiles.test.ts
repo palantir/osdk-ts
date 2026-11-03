@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionTypeV2, QueryDataType } from "@osdk/foundry.ontologies";
 import * as path from "node:path";
 import { describe, expect, it } from "vitest";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
@@ -65,5 +66,152 @@ describe(generatePerActionDataFiles, () => {
     expect(helper.getFiles()[`${BASE_PATH}/deleteTodos.ts`]).toContain(
       "import type { Todo } from '../objects/Todo';\n",
     );
+  });
+
+  describe("return values", () => {
+    function actionReturning(
+      apiName: string,
+      returnType: QueryDataType,
+    ): ActionTypeV2 & { returnType: QueryDataType } {
+      return {
+        apiName,
+        parameters: {},
+        rid: `ri.actions.main.action-type.${apiName}`,
+        status: "ACTIVE",
+        operations: [],
+        returnType,
+      };
+    }
+
+    async function generateActions(
+      actionTypes: Record<string, ActionTypeV2>,
+    ): Promise<Record<string, string>> {
+      const helper = createMockMinimalFiles();
+      await generatePerActionDataFiles({
+        fs: helper.minimalFiles,
+        outDir: "/foo",
+        ontology: enhanceOntology({
+          sanitized: { ...TodoWireOntology, actionTypes },
+          importExt: "",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
+      });
+      return helper.getFiles();
+    }
+
+    it("types applyAction with the action's return type", async () => {
+      const files = await generateActions({
+        returnsName: actionReturning("returnsName", { type: "string" }),
+      });
+
+      expect(files["/foo/ontology/actions/returnsName.ts"])
+        .toMatchInlineSnapshot(`
+          "import type {
+            ActionDefinition,
+            ActionMetadata,
+            ActionParam,
+            ActionReturnTypeForOptions,
+            ApplyActionOptions,
+            ApplyBatchActionOptions,
+            QueryResult,
+          } from '@osdk/client';
+          import { $osdkMetadata } from '../../OntologyMetadata';
+
+          export namespace returnsName {
+            // Represents the definition of the parameters for the action
+            export type ParamsDefinition = Record<string, never>;
+
+            export interface Params {}
+
+            export type ReturnType = QueryResult.PrimitiveType<'string'>;
+
+            // Represents a fqn of the action
+            export interface Signatures {
+              applyAction<OP extends ApplyActionOptions>(
+                args: returnsName.Params,
+                options?: OP,
+              ): Promise<ActionReturnTypeForOptions<OP, returnsName.ReturnType>>;
+
+              batchApplyAction<OP extends ApplyBatchActionOptions>(
+                args: ReadonlyArray<returnsName.Params>,
+                options?: OP,
+              ): Promise<ActionReturnTypeForOptions<OP>>;
+            }
+          }
+
+          /**
+           */
+          export interface returnsName extends ActionDefinition<returnsName.Signatures> {
+            __DefinitionMetadata?: {
+              apiName: 'returnsName';
+              modifiedEntities: {};
+              parameters: returnsName.ParamsDefinition;
+              returnType: {
+                type: 'string';
+                nullable: false;
+              };
+              rid: 'ri.actions.main.action-type.returnsName';
+              status: 'ACTIVE';
+              type: 'action';
+              unsanitizedApiName: 'returnsName';
+
+              signatures: returnsName.Signatures;
+            };
+            apiName: 'returnsName';
+            type: 'action';
+            unsanitizedApiName: 'returnsName';
+            osdkMetadata: typeof $osdkMetadata;
+          }
+
+          export const returnsName: returnsName = {
+            apiName: 'returnsName',
+            type: 'action',
+            unsanitizedApiName: 'returnsName',
+            osdkMetadata: $osdkMetadata,
+          };
+          "
+        `);
+    });
+
+    it("generates optional, struct and map return types", async () => {
+      const files = await generateActions({
+        returnsOptional: actionReturning("returnsOptional", {
+          type: "union",
+          unionTypes: [{ type: "integer" }, { type: "null" }],
+        }),
+        returnsStruct: actionReturning("returnsStruct", {
+          type: "struct",
+          fields: [{ name: "name", fieldType: { type: "string" } }],
+        }),
+        returnsMap: actionReturning("returnsMap", {
+          type: "entrySet",
+          keyType: { type: "string" },
+          valueType: { type: "long" },
+        }),
+      });
+
+      expect(files["/foo/ontology/actions/returnsOptional.ts"]).toContain(
+        "export type ReturnType = QueryResult.PrimitiveType<'integer'> | undefined;",
+      );
+      expect(files["/foo/ontology/actions/returnsStruct.ts"]).toMatch(
+        /export interface ReturnType \{\s+name: QueryResult.PrimitiveType<'string'>;\s+\}/,
+      );
+      expect(files["/foo/ontology/actions/returnsMap.ts"]).toMatch(
+        /export type ReturnType = Partial<\s*Record<QueryResult.PrimitiveType<'string'>,\s*QueryResult.PrimitiveType<'long'>>\s*>;/,
+      );
+    });
+
+    it("leaves actions without a return type unchanged", async () => {
+      const files = await generateActions(TodoWireOntology.actionTypes);
+      const generated = files["/foo/ontology/actions/markTodoCompleted.ts"];
+
+      expect(generated).not.toContain("export type ReturnType");
+      expect(generated).not.toContain("QueryResult");
+      expect(generated).toContain(
+        "Promise<ActionReturnTypeForOptions<OP>>",
+      );
+    });
   });
 });
