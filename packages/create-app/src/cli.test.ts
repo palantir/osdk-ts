@@ -243,6 +243,17 @@ async function runTest({
       "utf-8",
     );
     expect(clientTs).toContain("createAuthlessClient");
+    expect(clientTs).toContain(
+      'const foundryUrl = getMetaTagContent("osdk-foundryUrl");',
+    );
+    expect(clientTs).not.toContain("import.meta.env");
+    if (skipOsdk) {
+      expect(clientTs).not.toContain("osdk-ontologyRid");
+    } else {
+      expect(clientTs).toContain(
+        'const ontologyRid = getMetaTagContent("osdk-ontologyRid");',
+      );
+    }
   }
 }
 
