@@ -266,7 +266,7 @@ function validateReplacementMappings(
     ...propertyMappings.map(
       ([source, { structFieldMappings }]): [string, Record<string, string>] => [
         `propertyMappings["${source}"].structFieldMappings`,
-        structFieldMappings ?? {},
+        structFieldMappings,
       ],
     ),
     [

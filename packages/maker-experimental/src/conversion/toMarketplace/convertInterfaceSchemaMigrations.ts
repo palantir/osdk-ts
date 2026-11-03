@@ -136,9 +136,12 @@ class WireReferences {
     return rid;
   }
 
-  /** Struct field API names are scoped to `property`, which keys their rids. */
-  structField(property: ResolvedInterfaceProperty, apiName: string): string {
-    const propertyRid = this.property(property);
+  /** Struct field API names are scoped to `property`, whose rid keys their rids. */
+  structField(
+    property: ResolvedInterfaceProperty,
+    propertyRid: string,
+    apiName: string,
+  ): string {
     const rid = interfaceStructFieldWireRid(
       property.property,
       property.authoredKey,
@@ -266,10 +269,9 @@ function convertReplacement(
   return {
     interfaceTypeRid: references.interfaceType(resolved.interfaceTypeApiName),
     propertyMappings: Object.fromEntries(
-      resolved.propertyMappings.map((mapping) => [
-        references.property(mapping.from),
+      resolved.propertyMappings.map((mapping) =>
         convertPropertyReplacement(mapping, references),
-      ]),
+      ),
     ),
     linkTypeConstraintMappings: Object.fromEntries(
       resolved.linkTypeConstraintMappings.map(({ from, to }) => [
@@ -301,16 +303,21 @@ function convertReplacement(
 function convertPropertyReplacement(
   { from, to, structFieldMappings }: ResolvedInterfacePropertyMapping,
   references: WireReferences,
-): WireInterfacePropertyTypeReplacement {
-  return {
-    interfacePropertyTypeRid: references.property(to),
-    structFieldMappings: Object.fromEntries(
-      Object.entries(structFieldMappings).map(([fromField, toField]) => [
-        references.structField(from, fromField),
-        references.structField(to, toField),
-      ]),
-    ),
-  };
+): [fromRid: string, WireInterfacePropertyTypeReplacement] {
+  const fromRid = references.property(from);
+  const toRid = references.property(to);
+  return [
+    fromRid,
+    {
+      interfacePropertyTypeRid: toRid,
+      structFieldMappings: Object.fromEntries(
+        Object.entries(structFieldMappings).map(([fromField, toField]) => [
+          references.structField(from, fromRid, fromField),
+          references.structField(to, toRid, toField),
+        ]),
+      ),
+    },
+  ];
 }
 
 function assertReplacementHasBlockShapes(
