@@ -37,6 +37,10 @@ import type {
 } from "../interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../interface/InterfaceType.js";
 import type { ParameterConstraintDefinition } from "../InterfaceActionTypeConstraintDefinition.js";
+import type {
+  PropertyTypeTypeStruct,
+  StructPropertyType,
+} from "../properties/PropertyTypeType.js";
 
 type AuthoredProperty = NonNullable<
   InterfaceTypeDefinition["properties"]
@@ -149,6 +153,57 @@ function defineReplacement(
     properties: { fullName: REQUIRED_STRING },
     ...overrides,
   });
+}
+
+type StructDefinition = PropertyTypeTypeStruct["structDefinition"];
+
+function optionalStringField(apiName: string): StructPropertyType {
+  return {
+    fieldType: "string",
+    displayMetadata: { displayName: apiName },
+    requireImplementation: false,
+  };
+}
+
+/**
+ * `Foo.address` (`{ street, zip }` by default) replaced by `Bar.location` (`{ postcode, line1 }` by
+ * default), mapped with `structFieldMappings`.
+ */
+function defineWithStructs(
+  structFieldMappings: Record<string, string> | undefined,
+  {
+    sourceFields = { street: "string", zip: "string" },
+    targetFields = { postcode: "string", line1: "string" },
+    targetArray = false,
+  }: {
+    sourceFields?: StructDefinition;
+    targetFields?: StructDefinition;
+    targetArray?: boolean;
+  } = {},
+): void {
+  defineReplaced(
+    {
+      interfaceType: defineReplacement({
+        properties: {
+          location: {
+            type: { type: "struct", structDefinition: targetFields },
+            array: targetArray,
+          },
+        },
+      }),
+      propertyMappings: {
+        address:
+          structFieldMappings === undefined
+            ? "location"
+            : { property: "location", structFieldMappings },
+      },
+    },
+    {
+      properties: {
+        address: { type: { type: "struct", structDefinition: sourceFields } },
+      },
+    },
+  );
 }
 
 /**
@@ -686,6 +741,22 @@ describe("Interface schema migrations", () => {
       );
     });
 
+    it("rejects two struct fields mapped to the same target", () => {
+      expect(() =>
+        defineReplaced({
+          interfaceType: "com.palantir.Bar",
+          propertyMappings: {
+            address: {
+              property: "location",
+              structFieldMappings: { street: "line1", zip: "line1" },
+            },
+          },
+        }),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings["address"].structFieldMappings maps both "street" and "zip" to "line1". Each target may be mapped from at most one source.]`,
+      );
+    });
+
     it("rejects two parameters mapped to the same target", () => {
       expect(() =>
         defineReplaced({
@@ -861,6 +932,155 @@ describe("Interface schema migrations", () => {
           }),
         ).rejects.toThrowErrorMatchingInlineSnapshot(
           `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its propertyMappings does not map to property "fullName", which com.palantir.Bar requires. Map com.palantir.Foo's corresponding property to it, so that automatically-generated changes produce a valid implementation.]`,
+        );
+      });
+    });
+
+    describe("structFieldMappings", () => {
+      it("accepts renamed and reordered fields, leaving optional targets unmapped", async () => {
+        await expect(
+          inOntology(() =>
+            defineWithStructs(
+              { street: "line1", zip: "postcode" },
+              {
+                targetFields: {
+                  postcode: "string",
+                  note: optionalStringField("note"),
+                  line1: "string",
+                },
+              },
+            ),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: replace schema migrations are not supported in ontology IR. Define the ontology with SuperRepo instead to use them.]`,
+        );
+      });
+
+      it("rejects a source the replaced property does not have", async () => {
+        await expect(
+          inOntology(() =>
+            defineWithStructs({
+              street: "line1",
+              zip: "postcode",
+              missing: "other",
+            }),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings["address"].structFieldMappings maps from struct field "missing", but property "address" has no such struct field.]`,
+        );
+      });
+
+      it("rejects a target the replacement property does not have", async () => {
+        await expect(
+          inOntology(() =>
+            defineWithStructs({ street: "line1", zip: "missing" }),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings["address"].structFieldMappings maps to struct field "missing", but property "location" has no such struct field.]`,
+        );
+      });
+
+      it("rejects mismatched field types", async () => {
+        await expect(
+          inOntology(() =>
+            defineWithStructs(
+              { street: "line1", zip: "postcode" },
+              { targetFields: { postcode: "integer", line1: "string" } },
+            ),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings["address"].structFieldMappings maps struct field "zip" to "postcode", but its type "string" does not match "integer".]`,
+        );
+      });
+
+      it("rejects mismatched field type classes", async () => {
+        await expect(
+          inOntology(() =>
+            defineWithStructs(
+              { street: "line1", zip: "postcode" },
+              {
+                targetFields: {
+                  postcode: {
+                    fieldType: "string",
+                    displayMetadata: { displayName: "postcode" },
+                    typeClasses: [{ kind: "render_hint", name: "sortable" }],
+                  },
+                  line1: "string",
+                },
+              },
+            ),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings["address"].structFieldMappings maps struct field "zip" to "postcode", but its type classes [] do not match [{"kind":"render_hint","name":"sortable"}].]`,
+        );
+      });
+
+      it("rejects an optional field mapped to a required one", async () => {
+        await expect(
+          inOntology(() =>
+            defineWithStructs(
+              { street: "line1", zip: "postcode" },
+              {
+                sourceFields: {
+                  street: "string",
+                  zip: optionalStringField("zip"),
+                },
+              },
+            ),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings["address"].structFieldMappings maps struct field "zip" to "postcode", but its source is optional while its target is required, and implementations may omit the source.]`,
+        );
+      });
+
+      it("rejects an unmapped required target", async () => {
+        await expect(
+          inOntology(() => defineWithStructs({ street: "line1" })),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its propertyMappings["address"].structFieldMappings does not map to struct field "postcode", which property "location" requires. Map property "address"'s corresponding struct field to it, so that automatically-generated changes produce a valid implementation.]`,
+        );
+      });
+
+      it("does not match fields by API name", async () => {
+        await expect(
+          inOntology(() =>
+            defineWithStructs(undefined, {
+              targetFields: { street: "string", zip: "string" },
+            }),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), but its propertyMappings["address"].structFieldMappings does not map to struct field "street", which property "location" requires. Map property "address"'s corresponding struct field to it, so that automatically-generated changes produce a valid implementation.]`,
+        );
+      });
+
+      it("rejects a struct mapped to an array of structs", async () => {
+        await expect(
+          inOntology(() =>
+            defineWithStructs(
+              { street: "line1", zip: "postcode" },
+              { targetArray: true },
+            ),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings maps property "address" to "location", but its type {"type":"struct","structDefinition":{"street":"string","zip":"string"}} does not match {"type":"struct","structDefinition":{"postcode":"string","line1":"string"}}[].]`,
+        );
+      });
+
+      it("rejects struct field mappings on a non-struct property", async () => {
+        await expect(
+          inOntology(() =>
+            defineReplaced({
+              interfaceType: defineReplacement(),
+              propertyMappings: {
+                name: {
+                  property: "fullName",
+                  structFieldMappings: { street: "line1" },
+                },
+              },
+            }),
+          ),
+        ).rejects.toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares replace("com.palantir.Bar"), whose propertyMappings["name"].structFieldMappings maps struct fields, but property "name" is not a struct.]`,
         );
       });
     });

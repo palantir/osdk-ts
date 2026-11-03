@@ -118,6 +118,7 @@ export {
 export { getFlattenedInterfaceProperties } from "./api/interface/getFlattenedInterfaceProperties.js";
 export type {
   InterfaceActionTypeConstraintReplacement,
+  InterfacePropertyTypeReplacement,
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaMigrations,
@@ -134,6 +135,7 @@ export type {
 export type {
   ResolvedInterfaceActionTypeConstraintMapping,
   ResolvedInterfaceMemberMapping,
+  ResolvedInterfacePropertyMapping,
   ResolvedInterfaceTypeReplacement,
 } from "./api/interface/resolveInterfaceTypeReplacement.js";
 export {

@@ -421,6 +421,7 @@ function extractInterfaceType(
           knownMarketplaceIdentifiers,
           interfaceType,
           transition,
+          schemaMigrations?.interfaceStructFieldRidsToApiNames ?? {},
         ),
       },
     );
@@ -437,6 +438,7 @@ function getInterfaceSchemaTransitionOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   interfaceType: MarketplaceInterfaceType,
   transition: InterfaceTypeSchemaTransition,
+  structFieldApiNames: StructFieldApiNames,
 ): InterfaceTypeSchemaTransitionOutputShape {
   return {
     transitionId: transition.id,
@@ -453,14 +455,19 @@ function getInterfaceSchemaTransitionOutputShape(
       toMarketplaceSchemaMigrationInstruction(
         instruction,
         knownMarketplaceIdentifiers,
+        structFieldApiNames,
       ),
     ),
   };
 }
 
+/** Interface property rid -> struct field rid -> struct field API name. */
+type StructFieldApiNames = Record<string, Record<string, string>>;
+
 function toMarketplaceSchemaMigrationInstruction(
   instruction: InterfaceTypeSchemaMigrationInstruction,
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  structFieldApiNames: StructFieldApiNames,
 ): MarketplaceInterfaceTypeSchemaMigrationInstruction {
   switch (instruction.type) {
     case "addRequiredProperty":
@@ -492,6 +499,7 @@ function toMarketplaceSchemaMigrationInstruction(
           replacement: toMarketplaceInterfaceTypeReplacement(
             instruction.replace.replacement,
             knownMarketplaceIdentifiers,
+            structFieldApiNames,
           ),
         },
       };
@@ -509,6 +517,7 @@ function toMarketplaceSchemaMigrationInstruction(
 function toMarketplaceInterfaceTypeReplacement(
   replacement: InterfaceTypeReplacement,
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  structFieldApiNames: StructFieldApiNames,
 ): MarketplaceInterfaceTypeReplacement {
   const toReferences = (
     mappings: Record<string, string>,
@@ -527,10 +536,40 @@ function toMarketplaceInterfaceTypeReplacement(
       replacement.interfaceTypeRid,
       "interface type",
     ),
-    propertyMappings: toReferences(
-      replacement.propertyMappings,
-      knownMarketplaceIdentifiers.interfacePropertyTypes,
-      "interface property type",
+    propertyMappings: Object.fromEntries(
+      Object.entries(replacement.propertyMappings).map(
+        ([from, { interfacePropertyTypeRid, structFieldMappings }]) => [
+          requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfacePropertyTypes,
+            from,
+            "interface property type",
+          ),
+          {
+            interfaceProperty: requireKnownIdentifier(
+              knownMarketplaceIdentifiers.interfacePropertyTypes,
+              interfacePropertyTypeRid,
+              "interface property type",
+            ),
+            // Struct fields have no shapes of their own, so are referenced by API name
+            structFieldMappings: Object.fromEntries(
+              Object.entries(structFieldMappings).map(
+                ([fromField, toField]) => [
+                  requireKnownIdentifier(
+                    structFieldApiNames[from],
+                    fromField,
+                    "interface struct field",
+                  ),
+                  requireKnownIdentifier(
+                    structFieldApiNames[interfacePropertyTypeRid],
+                    toField,
+                    "interface struct field",
+                  ),
+                ],
+              ),
+            ),
+          },
+        ],
+      ),
     ),
     linkTypeConstraintMappings: toReferences(
       replacement.linkTypeConstraintMappings,
