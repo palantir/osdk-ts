@@ -26,8 +26,7 @@ import type {
 
 /** An established transport connection; this does not imply module readiness. @public */
 export interface WorkshopModuleConnection<
-  TVariables extends WorkshopVariableMap<keyof TVariables> =
-    WorkshopVariableMap,
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 > {
   /** Identifies this connection attempt. */
   readonly sessionId: string;
@@ -45,13 +44,10 @@ export interface WorkshopModuleConnection<
 
 /** Callback invoked when a connection is established. Its returned cleanup runs on disposal. @public */
 export type WorkshopModuleConnectHandler<
-  TVariables extends WorkshopVariableMap<keyof TVariables> =
-    WorkshopVariableMap,
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 > = (connection: WorkshopModuleConnection<TVariables>) => void | (() => void);
 
-interface ManagedConnection<
-  TVariables extends WorkshopVariableMap<keyof TVariables>,
-> {
+interface ManagedConnection<TVariables extends WorkshopVariableMap> {
   connection: WorkshopModuleConnection<TVariables>;
   dispose: (notifyPeer: boolean) => void;
   activate: (
@@ -60,8 +56,7 @@ interface ManagedConnection<
 }
 
 export function createConnection<
-  TVariables extends WorkshopVariableMap<keyof TVariables> =
-    WorkshopVariableMap,
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 >(
   port: MessagePort,
   sessionId: string,

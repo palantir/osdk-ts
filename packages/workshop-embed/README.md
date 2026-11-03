@@ -66,7 +66,7 @@ Use `null` for cleared values. The transport validates envelopes and scalar valu
 
 ## Declaring variable types
 
-Declare the module's external IDs and their value types with a TypeScript type:
+Declare the module's external IDs and their value types with a TypeScript type alias:
 
 ```ts
 import { connectToWorkshopModule } from "@osdk/workshop-embed";

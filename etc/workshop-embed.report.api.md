@@ -5,7 +5,7 @@
 ```ts
 
 // @public
-export function connectToWorkshopModule<TVariables extends WorkshopVariableMap<keyof TVariables> = WorkshopVariableMap>({ targetWindow, targetOrigin, signal, timeoutMs, hostWindow }: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection<TVariables>>;
+export function connectToWorkshopModule<TVariables extends WorkshopVariableMap = WorkshopVariableMap>({ targetWindow, targetOrigin, signal, timeoutMs, hostWindow }: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection<TVariables>>;
 
 // @public
 export interface ConnectToWorkshopModuleOptions {
@@ -17,10 +17,10 @@ export interface ConnectToWorkshopModuleOptions {
 }
 
 // @public
-export function listenForWorkshopModuleEmbedMessages<TVariables extends WorkshopVariableMap<keyof TVariables> = WorkshopVariableMap>({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions<TVariables>): () => void;
+export function listenForWorkshopModuleEmbedMessages<TVariables extends WorkshopVariableMap = WorkshopVariableMap>({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions<TVariables>): () => void;
 
 // @public
-export interface ListenForWorkshopModuleEmbedMessagesOptions<TVariables extends WorkshopVariableMap<keyof TVariables> = WorkshopVariableMap> {
+export interface ListenForWorkshopModuleEmbedMessagesOptions<TVariables extends WorkshopVariableMap = WorkshopVariableMap> {
     	hostWindow?: Window;
     	onConnect?: WorkshopModuleConnectHandler<TVariables>;
 }
@@ -32,10 +32,10 @@ export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 export const WORKSHOP_EMBED_QUERY_VALUE = "1";
 
 // @public
-export type WorkshopModuleConnectHandler<TVariables extends WorkshopVariableMap<keyof TVariables> = WorkshopVariableMap> = (connection: WorkshopModuleConnection<TVariables>) => void | (() => void);
+export type WorkshopModuleConnectHandler<TVariables extends WorkshopVariableMap = WorkshopVariableMap> = (connection: WorkshopModuleConnection<TVariables>) => void | (() => void);
 
 // @public
-export interface WorkshopModuleConnection<TVariables extends WorkshopVariableMap<keyof TVariables> = WorkshopVariableMap> {
+export interface WorkshopModuleConnection<TVariables extends WorkshopVariableMap = WorkshopVariableMap> {
     	disconnect: () => void;
     	onVariablesSet: (listener: (values: WorkshopVariableValues<TVariables>) => void) => () => void;
     	readonly port: MessagePort;
@@ -44,13 +44,15 @@ export interface WorkshopModuleConnection<TVariables extends WorkshopVariableMap
 }
 
 // @public
-export type WorkshopVariableMap<TKey extends PropertyKey = string> = Record<TKey, WorkshopVariableValue>;
+export type WorkshopVariableMap = {
+    	[externalId: string]: WorkshopVariableValue
+};
 
 // @public
 export type WorkshopVariableValue = string | number | boolean | null;
 
 // @public
-export type WorkshopVariableValues<TVariables extends WorkshopVariableMap<keyof TVariables> = WorkshopVariableMap> = { readonly [Name in keyof TVariables]? : TVariables[Name] | null };
+export type WorkshopVariableValues<TVariables extends WorkshopVariableMap = WorkshopVariableMap> = { readonly [Name in keyof TVariables]? : TVariables[Name] | null };
 
 // (No @packageDocumentation comment for this package)
 

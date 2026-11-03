@@ -40,8 +40,7 @@ export interface ConnectToWorkshopModuleOptions {
  * @public
  */
 export function connectToWorkshopModule<
-  TVariables extends WorkshopVariableMap<keyof TVariables> =
-    WorkshopVariableMap,
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 >({
   targetWindow,
   targetOrigin,

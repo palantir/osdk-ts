@@ -180,11 +180,11 @@ describe("scalar variables", () => {
 });
 
 describe("declared variable types", () => {
-  interface ModuleVariables {
+  type ModuleVariables = {
     searchText: string;
     count: number;
     enabled: boolean;
-  }
+  };
   const appOrigin = "https://app.example.com";
   const workshopOrigin = "https://workshop.example.com";
   let parent: TestWindow;
@@ -297,9 +297,7 @@ describe("declared variable types", () => {
   });
 });
 
-function nextVariables<
-  TVariables extends WorkshopVariableMap<keyof TVariables>,
->(
+function nextVariables<TVariables extends WorkshopVariableMap>(
   connection: WorkshopModuleConnection<TVariables>,
 ): Promise<WorkshopVariableValues<TVariables>> {
   return new Promise((resolve) => {
