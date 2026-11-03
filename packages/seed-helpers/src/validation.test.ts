@@ -140,6 +140,52 @@ describe("validateSeedObject", () => {
     },
   );
 
+  it.each([{}, { value: undefined }, { value: null }])(
+    "rejects an empty non-nullable property in %j",
+    (props) => {
+      const objectType = makeObjectType("Example", "id", {
+        id: "string",
+        value: "string",
+      });
+      objectType.properties.value.dataConstraints = {
+        nullability: "NOT_NULLABLE",
+      };
+
+      expect(() =>
+        validateSeedObject({ id: "example-1", ...props }, objectType),
+      ).toThrow(
+        "Required property 'value' on 'Example' object (primary key example-1) is null or undefined",
+      );
+    },
+  );
+
+  it("allows empty nullable properties and falsy non-nullable properties", () => {
+    const objectType = makeObjectType("Example", "id", {
+      id: "string",
+      name: "string",
+      age: "integer",
+      active: "boolean",
+      optional: "string",
+    });
+    for (const key of ["name", "age", "active"]) {
+      objectType.properties[key].dataConstraints = {
+        nullability: "NOT_NULLABLE",
+      };
+    }
+    objectType.properties.optional.dataConstraints = {
+      nullability: "NULLABLE",
+    };
+
+    for (const optional of [undefined, null]) {
+      expect(() =>
+        validateSeedObject(
+          { id: "example-1", name: "", age: 0, active: false, optional },
+          objectType,
+        ),
+      ).not.toThrow();
+    }
+  });
+
   it.each([{}, { employeeId: undefined }, { employeeId: null }])(
     "rejects an absent primary key in %j",
     (props) => {

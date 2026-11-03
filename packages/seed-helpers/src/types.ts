@@ -20,19 +20,25 @@ import type {
   OsdkBase,
 } from "@osdk/api";
 
-type PartialForOptionalProperties<T, Empty = undefined> = {
+type PartialForOptionalProperties<T> = {
   [K in keyof T as undefined extends T[K] ? K : never]?:
     | NonNullable<T[K]>
-    | Empty;
+    | undefined;
 } & {
   [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
 };
 
+type RequiredSeedProperties<T extends ObjectTypeDefinition> =
+  CompileTimeMetadata<T> extends { requiredProps: infer P }
+    ? Extract<P, keyof CompileTimeMetadata<T>["props"]>
+    : never;
+
 export type SeedProps<T extends ObjectTypeDefinition> =
-  PartialForOptionalProperties<
-    CompileTimeMetadata<T>["props"],
-    null | undefined
-  >;
+  PartialForOptionalProperties<CompileTimeMetadata<T>["props"]> & {
+    [P in RequiredSeedProperties<T>]-?: NonNullable<
+      CompileTimeMetadata<T>["props"][P]
+    >;
+  };
 
 export type SeedRef<Q extends ObjectTypeDefinition> = Readonly<
   OsdkBase<Q> & PartialForOptionalProperties<CompileTimeMetadata<Q>["props"]>

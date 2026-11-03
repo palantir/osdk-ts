@@ -221,7 +221,7 @@ export class SeedBuilder {
 
   /**
    * Merges the given props into the referenced object, keeping its primary key.
-   * Omitted properties are left unchanged; null or undefined clears a property.
+   * Omitted properties are left unchanged; undefined clears a nullable property.
    * If the object does not yet exist it is created from `props`.
    * @param ref Reference to the object to update
    * @param props Partial object properties to merge in, excluding the primary key
