@@ -122,6 +122,7 @@ describe("interface type schema migrations", () => {
       interfaceLinkTypeRidsToApiNames: {},
       interfaceParameterConstraintRidsToApiNames: {},
       interfacePropertyTypeRidsToApiNames: {},
+      interfaceStructFieldRidsToApiNames: {},
       interfaceTypeRidsToApiNames: {},
       schemaTransitions: {},
     });
@@ -587,6 +588,47 @@ function defineImportedReplacement(): void {
   defineActionTypeConstraint(old, "oldAction", true, ["subject"]);
 }
 
+/**
+ * Replaces `Old` with `New`, renaming and reordering the fields of `Old`'s interface-defined `address`
+ * as those of `New`'s SPT-backed `location`.
+ */
+function defineStructReplacementPair(): void {
+  const location = defineSharedPropertyType({
+    apiName: "location",
+    type: {
+      type: "struct",
+      structDefinition: { postcode: "string", line1: "string" },
+    },
+  });
+  defineInterface({
+    apiName: "New",
+    properties: { location: { sharedPropertyType: location, required: true } },
+  });
+  defineInterface({
+    apiName: "Old",
+    properties: {
+      address: {
+        type: {
+          type: "struct",
+          structDefinition: { street: "string", zip: "string" },
+        },
+      },
+    },
+    schemaMigrations: migrations({
+      type: "replace",
+      replacement: {
+        interfaceType: "New",
+        propertyMappings: {
+          address: {
+            property: "location",
+            structFieldMappings: { street: "line1", zip: "postcode" },
+          },
+        },
+      },
+    }),
+  });
+}
+
 function blockOf(
   ontology: OntologyBlockDataV2,
   apiName: string,
@@ -596,6 +638,17 @@ function blockOf(
   );
   invariant(found != null, `expected an interface ${apiName}`);
   return { rid: found[0], block: found[1] };
+}
+
+function wireStructFields(
+  property: MarketplaceInterfacePropertyType,
+): Array<{ structFieldRid: string; apiName: string }> {
+  const type =
+    property.type === "interfaceDefinedPropertyType"
+      ? property.interfaceDefinedPropertyType.type
+      : property.sharedPropertyBasedPropertyType.sharedPropertyType.type;
+  invariant(type.type === "struct", "expected a struct property");
+  return type.struct.structFields;
 }
 
 function wirePropertyApiName(property: MarketplaceInterfacePropertyType) {
@@ -625,6 +678,15 @@ function memberRids(ontology: OntologyBlockDataV2, apiName: string) {
           wirePropertyApiName(property),
         ]),
         "property",
+        name,
+      ),
+    structField: (propertyName: string, name: string) =>
+      find(
+        Object.values(interfaceType.propertiesV3)
+          .filter((property) => wirePropertyApiName(property) === propertyName)
+          .flatMap(wireStructFields)
+          .map(({ structFieldRid, apiName }) => [structFieldRid, apiName]),
+        `struct field of ${propertyName}`,
         name,
       ),
     link: (name: string) =>
@@ -725,6 +787,7 @@ describe("addRequiredActionTypeConstraint schema migrations", () => {
       interfaceLinkTypeRidsToApiNames: {},
       interfaceParameterConstraintRidsToApiNames: {},
       interfacePropertyTypeRidsToApiNames: {},
+      interfaceStructFieldRidsToApiNames: {},
       interfaceTypeRidsToApiNames: {},
     });
   });
@@ -744,11 +807,17 @@ describe("addRequiredActionTypeConstraint schema migrations", () => {
         replacement: {
           interfaceTypeRid: newRid,
           propertyMappings: {
-            [old.property("title")]: base.property("name"),
+            [old.property("title")]: {
+              interfacePropertyTypeRid: base.property("name"),
+              structFieldMappings: {},
+            },
             // SPT-backed properties share a rid derived from the SPT's
-            [old.property("com.palantir.ownerSpt")]: replacement.property(
-              "com.palantir.ownerSpt",
-            ),
+            [old.property("com.palantir.ownerSpt")]: {
+              interfacePropertyTypeRid: replacement.property(
+                "com.palantir.ownerSpt",
+              ),
+              structFieldMappings: {},
+            },
           },
           linkTypeConstraintMappings: {
             [old.link("com.palantir.oldTarget")]: replacement.link(
@@ -789,6 +858,7 @@ describe("addRequiredActionTypeConstraint schema migrations", () => {
         [base.property("name")]: "name",
         [old.property("com.palantir.ownerSpt")]: "com.palantir.ownerSpt",
       },
+      interfaceStructFieldRidsToApiNames: {},
       interfaceTypeRidsToApiNames: { [newRid]: "com.palantir.New" },
     });
   });
@@ -827,7 +897,10 @@ describe("addRequiredActionTypeConstraint schema migrations", () => {
         replacement: {
           interfaceTypeRid: importedRid,
           propertyMappings: {
-            [old.property("title")]: imported.property("fullName"),
+            [old.property("title")]: {
+              interfacePropertyTypeRid: imported.property("fullName"),
+              structFieldMappings: {},
+            },
           },
           linkTypeConstraintMappings: {},
           actionTypeConstraintMappings: {
@@ -846,6 +919,43 @@ describe("addRequiredActionTypeConstraint schema migrations", () => {
     });
     expect(block.schemaMigrations?.interfaceTypeRidsToApiNames).toEqual({
       [importedRid]: "com.other.Imported",
+    });
+  });
+
+  it("maps struct fields by the rids their properties publish", async () => {
+    const ontology = await convertOntology(defineStructReplacementPair);
+    const { block } = blockOf(ontology, "com.palantir.Old");
+    const old = memberRids(ontology, "com.palantir.Old");
+    const replacement = memberRids(ontology, "com.palantir.New");
+    const location = replacement.property("com.palantir.location");
+
+    const migration = onlyMigration(block);
+    invariant(migration.type === "replace");
+    expect(migration.replace.replacement.propertyMappings).toEqual({
+      [old.property("address")]: {
+        interfacePropertyTypeRid: location,
+        structFieldMappings: {
+          [old.structField("address", "street")]: replacement.structField(
+            "com.palantir.location",
+            "line1",
+          ),
+          [old.structField("address", "zip")]: replacement.structField(
+            "com.palantir.location",
+            "postcode",
+          ),
+        },
+      },
+    });
+    expect(block.schemaMigrations?.interfaceStructFieldRidsToApiNames).toEqual({
+      [old.property("address")]: {
+        [old.structField("address", "street")]: "street",
+        [old.structField("address", "zip")]: "zip",
+      },
+      [location]: {
+        [replacement.structField("com.palantir.location", "line1")]: "line1",
+        [replacement.structField("com.palantir.location", "postcode")]:
+          "postcode",
+      },
     });
   });
 
@@ -1005,8 +1115,14 @@ describe("addRequiredActionTypeConstraint output shapes", () => {
         replacement: {
           interfaceType: blockId(ids.newInterface),
           propertyMappings: {
-            [blockId(ids.title)]: blockId(ids.name),
-            [blockId(ids.ownerSpt)]: blockId(ids.ownerSpt),
+            [blockId(ids.title)]: {
+              interfaceProperty: blockId(ids.name),
+              structFieldMappings: {},
+            },
+            [blockId(ids.ownerSpt)]: {
+              interfaceProperty: blockId(ids.ownerSpt),
+              structFieldMappings: {},
+            },
           },
           linkTypeConstraintMappings: {
             [blockId(ids.oldTarget)]: blockId(ids.newTarget),
@@ -1058,7 +1174,10 @@ describe("addRequiredActionTypeConstraint output shapes", () => {
                 "com.palantir.Old",
                 "title",
               ),
-            )]: blockId(ids.fullName),
+            )]: {
+              interfaceProperty: blockId(ids.fullName),
+              structFieldMappings: {},
+            },
           },
           linkTypeConstraintMappings: {},
           actionTypeConstraintMappings: {
@@ -1080,6 +1199,40 @@ describe("addRequiredActionTypeConstraint output shapes", () => {
               },
             },
           },
+        },
+      },
+    });
+  });
+
+  it("references struct fields by API name", async () => {
+    const shapes = await convertShapes(defineStructReplacementPair);
+
+    expect(migrationShape(shapes.outputShapes, "com.palantir.Old")).toEqual({
+      type: "replace",
+      replace: {
+        replacement: {
+          interfaceType: blockId(
+            ReadableIdGenerator.getForInterface("com.palantir.New"),
+          ),
+          propertyMappings: {
+            [blockId(
+              ReadableIdGenerator.getForInterfaceProperty(
+                "com.palantir.Old",
+                "address",
+              ),
+            )]: {
+              // `location` backs a property of only one interface
+              interfaceProperty: blockId(
+                ReadableIdGenerator.getForInterfaceProperty(
+                  "com.palantir.New",
+                  "com.palantir.location",
+                ),
+              ),
+              structFieldMappings: { street: "line1", zip: "postcode" },
+            },
+          },
+          linkTypeConstraintMappings: {},
+          actionTypeConstraintMappings: {},
         },
       },
     });

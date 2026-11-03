@@ -241,6 +241,10 @@ export interface InterfaceTypeSchemaMigrationBlockData {
     _api_InterfacePropertyTypeRid,
     _api_InterfacePropertyTypeApiName
   >;
+  interfaceStructFieldRidsToApiNames: Record<
+    _api_InterfacePropertyTypeRid,
+    Record<_api_StructFieldRid, _api_ObjectTypeFieldApiName>
+  >;
   schemaTransitions: Record<
     _api_InterfaceTypeSchemaTransitionRid,
     _api_schemamigrations_InterfaceTypeSchemaTransition

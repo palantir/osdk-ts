@@ -13573,8 +13573,12 @@ export interface InterfaceTypeReplacement {
   >;
   propertyMappings: Record<
     InterfacePropertyTypeReference,
-    InterfacePropertyTypeReference
+    InterfacePropertyTypeReplacement
   >;
+}
+export interface InterfacePropertyTypeReplacement {
+  interfaceProperty: InterfacePropertyTypeReference;
+  structFieldMappings: Record<ObjectTypeFieldApiName, ObjectTypeFieldApiName>;
 }
 
 export type InterfaceTypeSchemaTransitionId = string;

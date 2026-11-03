@@ -21,7 +21,10 @@ import { namespace } from "../defineOntology.js";
 import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
 import type { OntologyValidationContext } from "../validateOntology.js";
 import { interfacePropertyWireApiName } from "./InterfacePropertyType.js";
-import type { InterfaceTypeReplacement } from "./InterfaceSchemaMigrations.js";
+import type {
+  InterfacePropertyTypeReplacement,
+  InterfaceTypeReplacement,
+} from "./InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "./InterfaceType.js";
 import type {
   ResolvedInterfaceActionTypeConstraint,
@@ -88,6 +91,11 @@ export interface ResolvedInterfaceMemberMapping<
   to: M;
 }
 
+export interface ResolvedInterfacePropertyMapping extends ResolvedInterfaceMemberMapping<ResolvedInterfaceProperty> {
+  /** Struct field API names on `from` to those on `to`. Fields are scoped to their property, so never namespaced. */
+  structFieldMappings: Record<string, string>;
+}
+
 export interface ResolvedInterfaceActionTypeConstraintMapping extends ResolvedInterfaceMemberMapping<ResolvedInterfaceActionTypeConstraint> {
   /** Parameter API names on `from` to those on `to`. Parameters are scoped to their constraint, so never namespaced. */
   parameterMappings: Record<string, string>;
@@ -98,9 +106,7 @@ export interface ResolvedInterfaceTypeReplacement {
   /** The replacement's fully-qualified API name. */
   interfaceTypeApiName: string;
   interfaceType: InterfaceType;
-  propertyMappings: Array<
-    ResolvedInterfaceMemberMapping<ResolvedInterfaceProperty>
-  >;
+  propertyMappings: Array<ResolvedInterfacePropertyMapping>;
   linkTypeConstraintMappings: Array<
     ResolvedInterfaceMemberMapping<ResolvedInterfaceLinkTypeConstraint>
   >;
@@ -155,8 +161,19 @@ export function resolveInterfaceTypeReplacement(
     interfaceTypeApiName: apiName,
     interfaceType: definition,
     propertyMappings: Object.entries(replacement.propertyMappings).map(
-      ([from, to]) =>
-        resolveMapping("propertyMappings", "property", findProperty, from, to),
+      ([from, to]) => {
+        const { property, structFieldMappings } = asPropertyReplacement(to);
+        return {
+          ...resolveMapping(
+            "propertyMappings",
+            "property",
+            findProperty,
+            from,
+            property,
+          ),
+          structFieldMappings: structFieldMappings ?? {},
+        };
+      },
     ),
     linkTypeConstraintMappings: Object.entries(
       replacement.linkTypeConstraintMappings ?? {},
@@ -182,6 +199,13 @@ export function resolveInterfaceTypeReplacement(
       parameterMappings: parameterMappings ?? {},
     })),
   };
+}
+
+/** A `propertyMappings` value in its long form. */
+export function asPropertyReplacement(
+  mapping: string | InterfacePropertyTypeReplacement,
+): InterfacePropertyTypeReplacement {
+  return typeof mapping === "string" ? { property: mapping } : mapping;
 }
 
 /** Searches `interfaceType`, then everything it extends, depth-first. */

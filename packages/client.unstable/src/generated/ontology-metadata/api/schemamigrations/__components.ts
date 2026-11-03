@@ -328,11 +328,27 @@ export interface InterfaceParameterConstraintMappingModification {
   target: _api_InterfaceParameterConstraintRidOrIdInRequest;
 }
 /**
- * Maps a property of the replaced interface to a property of the replacement interface.
+ * See InterfacePropertyTypeReplacement.
  */
 export interface InterfacePropertyTypeMappingModification {
   source: _api_InterfacePropertyTypeRidOrIdInRequest;
+  structFieldMappings: Array<InterfaceStructFieldMappingModification>;
   target: _api_InterfacePropertyTypeRidOrIdInRequest;
+}
+/**
+ * The replacement interface's property that the replaced interface's property maps to. For struct properties,
+ * how struct fields carry over: only mapped struct fields carry over; there is no implicit matching by api name.
+ */
+export interface InterfacePropertyTypeReplacement {
+  interfacePropertyTypeRid: _api_InterfacePropertyTypeRid;
+  structFieldMappings: Record<_api_StructFieldRid, _api_StructFieldRid>;
+}
+/**
+ * Maps a struct field of the source property to a struct field of the target property.
+ */
+export interface InterfaceStructFieldMappingModification {
+  source: _api_StructFieldApiNameOrRid;
+  target: _api_StructFieldApiNameOrRid;
 }
 /**
  * An interface replacing another one, and how to carry implementations over to it.
@@ -352,7 +368,7 @@ export interface InterfaceTypeReplacement {
   >;
   propertyMappings: Record<
     _api_InterfacePropertyTypeRid,
-    _api_InterfacePropertyTypeRid
+    InterfacePropertyTypeReplacement
   >;
 }
 export interface InterfaceTypeReplacementMappingReference_property {
@@ -1000,8 +1016,16 @@ export interface OntologyIrInterfaceTypeReplacement {
   >;
   propertyMappings: Record<
     _api_InterfacePropertyTypeApiName,
-    _api_InterfacePropertyTypeApiName
+    OntologyIrInterfacePropertyTypeReplacement
   >;
+}
+/**
+ * The replacement interface's property that the replaced interface's property maps to. For struct properties,
+ * how struct fields carry over: only mapped struct fields carry over; there is no implicit matching by api name.
+ */
+export interface OntologyIrInterfacePropertyTypeReplacement {
+  interfacePropertyTypeRid: _api_InterfacePropertyTypeApiName;
+  structFieldMappings: Record<_api_StructFieldRid, _api_StructFieldRid>;
 }
 /**
  * Migration to add a required property to an interface

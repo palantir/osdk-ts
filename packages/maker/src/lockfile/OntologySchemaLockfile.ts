@@ -138,8 +138,11 @@ export type LockedInstruction =
 export interface LockedInterfaceTypeReplacement {
   /** The replacement's fully-qualified api name. */
   interfaceType: string;
-  /** Replaced interface's property api name -> replacement's. Absent when empty. */
-  propertyMappings?: Record<string, string>;
+  /**
+   * Replaced interface's property api name -> replacement's, or the replacement and its struct field
+   * mappings when it has any. Absent when empty.
+   */
+  propertyMappings?: Record<string, string | LockedPropertyReplacement>;
   /** Same as `propertyMappings`, for link type constraints. Absent when empty. */
   linkTypeConstraintMappings?: Record<string, string>;
   /** Replaced interface's action type constraint api name -> replacement's. Absent when empty. */
@@ -147,6 +150,13 @@ export interface LockedInterfaceTypeReplacement {
     string,
     LockedActionTypeConstraintReplacement
   >;
+}
+
+export interface LockedPropertyReplacement {
+  /** The replacement's property api name. */
+  property: string;
+  /** Replaced struct property's field api name -> replacement's. Never empty. */
+  structFieldMappings: Record<string, string>;
 }
 
 export interface LockedActionTypeConstraintReplacement {

@@ -1251,6 +1251,7 @@ export type {
   InterfaceTypeReferenceUnresolvable,
   InterfaceTypeRid,
   InterfaceTypeReplacement,
+  InterfacePropertyTypeReplacement,
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransitionId,
   InterfaceTypeSchemaTransitionOutputShape,

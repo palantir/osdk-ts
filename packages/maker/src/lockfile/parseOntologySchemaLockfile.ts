@@ -114,7 +114,26 @@ const replacementSchema = z
       interfaceType: z.string({
         message: "Expected the api name of the replacement interface.",
       }),
-      propertyMappings: mappingsSchema("property"),
+      propertyMappings: nonEmptyMappingsSchema(
+        "property",
+        z.union(
+          [
+            z.string(),
+            z
+              .object({
+                property: z.string({
+                  message: "Expected the api name of the property to map to.",
+                }),
+                structFieldMappings: mappingsSchema("struct field").unwrap(),
+              })
+              .passthrough(),
+          ],
+          {
+            message:
+              "Expected the property api name to map to, or an object recording the replacement property and its struct field mappings.",
+          },
+        ),
+      ),
       linkTypeConstraintMappings: mappingsSchema("link type constraint"),
       actionTypeConstraintMappings: nonEmptyMappingsSchema(
         "action type constraint",

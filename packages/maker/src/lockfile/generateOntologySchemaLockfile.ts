@@ -43,6 +43,7 @@ import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import {
   type ResolvedInterfaceActionTypeConstraintMapping,
   type ResolvedInterfaceMemberMapping,
+  type ResolvedInterfacePropertyMapping,
   resolveInterfaceTypeReplacement,
 } from "../api/interface/resolveInterfaceTypeReplacement.js";
 import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
@@ -58,6 +59,7 @@ import type {
   LockedInterfaceTypeReplacement,
   LockedParameterConstraint,
   LockedProperty,
+  LockedPropertyReplacement,
   LockedTransition,
   LockedValueType,
   OntologySchemaLockfile,
@@ -354,7 +356,7 @@ function lockReplacement(
     interfaceType,
     replacement,
   );
-  const propertyMappings = lockMappings(resolved.propertyMappings);
+  const propertyMappings = lockPropertyMappings(resolved.propertyMappings);
   const linkTypeConstraintMappings = lockMappings(
     resolved.linkTypeConstraintMappings,
   );
@@ -372,6 +374,36 @@ function lockReplacement(
       actionTypeConstraintMappings,
     }),
   };
+}
+
+function lockPropertyMappings(
+  mappings: readonly ResolvedInterfacePropertyMapping[],
+): Record<string, string | LockedPropertyReplacement> | undefined {
+  if (mappings.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    mappings
+      .map(({ from, to, structFieldMappings }) => {
+        const sortedStructFieldMappings = Object.entries(
+          structFieldMappings,
+        ).sort(([a], [b]) => compare(a, b));
+
+        return [
+          from.apiName,
+          sortedStructFieldMappings.length > 0
+            ? {
+                property: to.apiName,
+                structFieldMappings: Object.fromEntries(
+                  sortedStructFieldMappings,
+                ),
+              }
+            : to.apiName,
+        ] as const;
+      })
+      .sort(([a], [b]) => compare(a, b)),
+  );
 }
 
 function lockActionTypeConstraintMappings(

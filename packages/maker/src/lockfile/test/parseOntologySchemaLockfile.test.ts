@@ -552,7 +552,13 @@ describe("parseLockfile", () => {
         type: "replace",
         replacement: {
           interfaceType: "com.palantir.PersonV2",
-          propertyMappings: { name: "fullName" },
+          propertyMappings: {
+            name: "fullName",
+            address: {
+              property: "location",
+              structFieldMappings: { street: "line1" },
+            },
+          },
           actionTypeConstraintMappings: {
             "com.palantir.sendEmail": {
               actionTypeConstraint: "com.palantir.notify",
@@ -591,6 +597,14 @@ describe("parseLockfile", () => {
     ["propertyMappings", { propertyMappings: {} }],
     ["linkTypeConstraintMappings", { linkTypeConstraintMappings: {} }],
     ["actionTypeConstraintMappings", { actionTypeConstraintMappings: {} }],
+    [
+      "structFieldMappings",
+      {
+        propertyMappings: {
+          address: { property: "location", structFieldMappings: {} },
+        },
+      },
+    ],
     [
       "parameterMappings",
       {

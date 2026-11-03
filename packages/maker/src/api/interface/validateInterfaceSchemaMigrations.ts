@@ -30,6 +30,7 @@ import type {
   InterfaceSchemaTransition,
   InterfaceTypeReplacement,
 } from "./InterfaceSchemaMigrations.js";
+import { asPropertyReplacement } from "./resolveInterfaceTypeReplacement.js";
 
 // Constants enforced by OMS at installation-time.
 const MAX_TRANSITIONS = 20;
@@ -249,11 +250,25 @@ function validateReplacementMappings(
   description: string,
   replacement: InterfaceTypeReplacement,
 ): void {
+  const propertyMappings = Object.entries(replacement.propertyMappings).map(
+    ([source, mapping]) => [source, asPropertyReplacement(mapping)] as const,
+  );
   const actionTypeConstraintMappings = Object.entries(
     replacement.actionTypeConstraintMappings ?? {},
   );
   const mappings: Array<[field: string, mapping: Record<string, string>]> = [
-    ["propertyMappings", replacement.propertyMappings],
+    [
+      "propertyMappings",
+      Object.fromEntries(
+        propertyMappings.map(([source, { property }]) => [source, property]),
+      ),
+    ],
+    ...propertyMappings.map(
+      ([source, { structFieldMappings }]): [string, Record<string, string>] => [
+        `propertyMappings["${source}"].structFieldMappings`,
+        structFieldMappings ?? {},
+      ],
+    ),
     [
       "linkTypeConstraintMappings",
       replacement.linkTypeConstraintMappings ?? {},
