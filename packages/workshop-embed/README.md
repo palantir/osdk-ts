@@ -41,7 +41,9 @@ connection.setVariables({
 });
 ```
 
-Values may be strings, finite numbers, booleans, or `null` to request clearing a variable. Each message is a partial update; omitted variables remain unchanged. Arrays and object-set values are not supported yet. Invalid input values or empty external IDs throw a `TypeError` before sending.
+Values may be strings, finite numbers, booleans, or `null` to request clearing a variable. Each message is a partial update; omitted variables remain unchanged. Arrays and object-set values are not supported yet.
+
+External IDs must be non-empty and unique ignoring case within each update. `_open_rebase_dialog` and `_kiosk_mode_session_id` are reserved, including capitalization variants. Original key capitalization is preserved. Invalid updates throw a `TypeError` before sending; malformed incoming updates are ignored.
 
 This API provides the messaging layer. Applying inputs requires a Workshop integration that checks module readiness, external IDs, variable types, and whether each variable can be set. Handshake-only deployments ignore variable messages. A successful `setVariables` call does not acknowledge that Workshop received or applied the update.
 
@@ -60,7 +62,7 @@ connection.setVariables({ maxResults: 25 });
 
 The Workshop integration publishes current values with `connection.setVariables(values)` when the module becomes ready and when its interface values change. Input updates and change notifications are independent events, without per-update acknowledgments or conflict resolution for concurrent edits.
 
-Use `null` for cleared values. The transport validates envelopes and scalar values; the Workshop integration restricts notifications to the module interface. Input-only deployments continue accepting inputs but do not publish changes. Receiving outputs requires this publisher integration in Workshop.
+Use `null` for cleared values. The transport validates envelopes, external ID constraints, and scalar values; the Workshop integration restricts notifications to the module interface. Input-only deployments continue accepting inputs but do not publish changes. Receiving outputs requires this publisher integration in Workshop.
 
 `onVariablesSet` returns an unsubscribe function, and disconnecting removes all listeners. All variable methods throw on a closed connection.
 
@@ -90,8 +92,8 @@ connection.setVariables({ searchText: null }); // Request clearing a value.
 // connection.setVariables({ unknownVariable: true });
 ```
 
-The type determines the values sent by `setVariables` and received by `onVariablesSet` in either direction. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, the connection accepts any non-empty external ID with a supported scalar value.
+The type determines the values sent by `setVariables` and received by `onVariablesSet` in either direction. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, the connection accepts any valid external ID with a supported scalar value.
 
-This declaration provides compile-time checking only. The transport validates the message envelope and supported scalar values, but does not check values against the declared variable names or types. Incoming values are typed using the caller's declaration.
+This declaration provides compile-time checking only. The transport validates the message envelope, external ID constraints, and supported scalar values, but does not check values against the declared variable names or types. Incoming values are typed using the caller's declaration.
 
 The type can be authored manually or emitted by future code generation. It describes the app's expectations; it does not discover or verify the actual Workshop module's variables. The Workshop integration must still validate the module interface and apply inputs when the module is ready.
