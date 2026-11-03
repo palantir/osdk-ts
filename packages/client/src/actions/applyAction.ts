@@ -20,10 +20,12 @@ import type {
   ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
+  ActionReturnValueResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
   CompileTimeMetadata as CompileTimeActionMetadata,
   DataValueClientToWire,
+  QueryDataTypeDefinition,
 } from "@osdk/api";
 import type {
   BatchApplyActionResponseV2,
@@ -34,12 +36,17 @@ import * as Actions from "@osdk/foundry.ontologies/Action";
 import invariant from "tiny-invariant";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
+import {
+  getRequiredDefinitions,
+  remapQueryResponse,
+} from "../queries/applyQuery.js";
 import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialBy } from "../util/partialBy.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
+import type { SyncApplyActionResponseWithReturnValue } from "./SyncApplyActionResponseWithReturnValue.js";
 
 type BaseType<APD extends Pick<ActionMetadata.Parameter<any>, "type">> =
   APD["type"] extends ActionMetadata.DataType.Object<infer TTargetType>
@@ -112,7 +119,9 @@ export async function applyAction<
   action: AD,
   parameters?: P,
   options: Op = {} as Op,
-): Promise<ActionReturnTypeForOptions<Op>> {
+): Promise<
+  ActionReturnTypeForOptions<Op> | ActionReturnValueResponse<unknown>
+> {
   const clientWithHeaders = addUserAgentHeader(client, action);
   if (Array.isArray(parameters)) {
     invariant(
@@ -153,37 +162,37 @@ export async function applyAction<
         : undefined
     ) as ActionReturnTypeForOptions<Op>;
   } else {
-    const response = await Actions.apply(
-      clientWithHeaders,
-      await client.ontologyRid,
+    const actionMetadata = await client.ontologyProvider.getActionDefinition(
       action.unsanitizedApiName ?? action.apiName,
-      {
-        parameters: await remapActionParams(
-          parameters as OsdkActionParameters<
-            CompileTimeActionMetadata<AD>["parameters"]
-          >,
-          client,
-          // We make this call because, at the time of writing this,
-          // decimal parameters require knowing the parameter type to
-          // serialize their data over the wire. We can remove this call
-          // if we allow the wire to accept JSON Numbers directly.
-          await client.ontologyProvider.getActionDefinition(
-            action.unsanitizedApiName ?? action.apiName,
-          ),
-        ),
-        options: {
-          mode: (options as ApplyActionOptions)?.$validateOnly
-            ? "VALIDATE_ONLY"
-            : "VALIDATE_AND_EXECUTE",
-          returnEdits: options?.$returnEdits ? "ALL_V2_WITH_DELETIONS" : "NONE",
-        },
-      },
-      {
-        branch: client.branch,
-        transactionId: client.transactionId,
-        scenarioRid: client.scenarioRid,
-      },
     );
+    const response: SyncApplyActionResponseWithReturnValue =
+      await Actions.apply(
+        clientWithHeaders,
+        await client.ontologyRid,
+        action.unsanitizedApiName ?? action.apiName,
+        {
+          parameters: await remapActionParams(
+            parameters as OsdkActionParameters<
+              CompileTimeActionMetadata<AD>["parameters"]
+            >,
+            client,
+            actionMetadata,
+          ),
+          options: {
+            mode: (options as ApplyActionOptions)?.$validateOnly
+              ? "VALIDATE_ONLY"
+              : "VALIDATE_AND_EXECUTE",
+            returnEdits: options?.$returnEdits
+              ? "ALL_V2_WITH_DELETIONS"
+              : "NONE",
+          },
+        },
+        {
+          branch: client.branch,
+          transactionId: client.transactionId,
+          scenarioRid: client.scenarioRid,
+        },
+      );
 
     if ((options as ApplyActionOptions)?.$validateOnly) {
       return response.validation as ActionReturnTypeForOptions<Op>;
@@ -195,13 +204,53 @@ export async function applyAction<
     }
 
     const edits = response.edits;
-    return (
-      options?.$returnEdits
-        ? edits?.type === "edits"
-          ? remapActionResponse(response)
-          : edits
-        : undefined
-    ) as ActionReturnTypeForOptions<Op>;
+    const editsResult = options?.$returnEdits
+      ? edits?.type === "edits"
+        ? remapActionResponse(response)
+        : edits
+      : undefined;
+
+    if (actionMetadata.returnType == null) {
+      return editsResult as ActionReturnTypeForOptions<Op>;
+    }
+
+    return {
+      ...editsResult,
+      returnValue: await remapActionReturnValue(
+        client,
+        actionMetadata.returnType,
+        response.returnValue,
+      ),
+    };
+  }
+}
+
+/**
+ * Resolves to undefined rather than throwing when the return value is missing
+ * or cannot be converted, since the action has already been applied. The server
+ * also omits return values it cannot convert.
+ */
+async function remapActionReturnValue(
+  client: MinimalClient,
+  returnType: QueryDataTypeDefinition,
+  returnValue: DataValue | undefined,
+): Promise<unknown> {
+  if (returnValue === undefined) {
+    return undefined;
+  }
+  try {
+    return await remapQueryResponse(
+      client,
+      returnType,
+      returnValue,
+      await getRequiredDefinitions(returnType, client),
+    );
+  } catch (e) {
+    client.logger?.warn(
+      { error: e },
+      "Omitting action return value that could not be converted",
+    );
+    return undefined;
   }
 }
 
