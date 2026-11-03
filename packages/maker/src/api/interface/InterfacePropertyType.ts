@@ -21,10 +21,10 @@ import type {
 
 import type { TypeClass } from "../common/TypeClass.js";
 import type { Nullability } from "../properties/Nullability.js";
-import type {
-  PropertyTypeType,
-  PropertyTypeTypesWithoutStruct,
-  StructPropertyType,
+import {
+  isStruct,
+  type PropertyTypeType,
+  type PropertyTypeTypesWithoutStruct,
 } from "../properties/PropertyTypeType.js";
 import type {
   PropertyType,
@@ -68,7 +68,6 @@ export function getInterfacePropertyTypeType(
 /** A struct field of an interface property, as implementing object types must satisfy it. */
 export interface InterfaceStructField {
   fieldType: PropertyTypeTypesWithoutStruct;
-  typeClasses: NonNullable<StructPropertyType["typeClasses"]>;
   /** Whether implementing object types must provide this field. */
   requireImplementation: boolean;
 }
@@ -81,7 +80,7 @@ export function interfacePropertyStructFields(
   interfacePropertyType: InterfacePropertyType,
 ): Record<string, InterfaceStructField> | undefined {
   const type = getInterfacePropertyTypeType(interfacePropertyType);
-  if (typeof type !== "object" || type.type !== "struct") {
+  if (!isStruct(type)) {
     return undefined;
   }
 
@@ -92,14 +91,12 @@ export function interfacePropertyStructFields(
       typeof definition === "object" && "fieldType" in definition
         ? {
             fieldType: definition.fieldType,
-            typeClasses: definition.typeClasses ?? [],
             requireImplementation:
               // SPT-backed struct properties are mandated to all be required
               sptBacked || (definition.requireImplementation ?? true),
           }
         : {
             fieldType: definition,
-            typeClasses: [],
             requireImplementation: true,
           },
     ]),

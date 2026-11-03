@@ -156,7 +156,7 @@ export function resolveInterfaceTypeReplacement(
             from,
             property,
           ),
-          structFieldMappings: structFieldMappings ?? {},
+          structFieldMappings,
         };
       },
     ),
@@ -190,7 +190,9 @@ export function resolveInterfaceTypeReplacement(
 export function asPropertyReplacement(
   mapping: string | InterfacePropertyTypeReplacement,
 ): InterfacePropertyTypeReplacement {
-  return typeof mapping === "string" ? { property: mapping } : mapping;
+  return typeof mapping === "string"
+    ? { property: mapping, structFieldMappings: {} }
+    : mapping;
 }
 
 /** Searches `interfaceType`, then everything it extends, depth-first. */
