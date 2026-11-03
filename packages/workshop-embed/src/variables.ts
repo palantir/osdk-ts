@@ -21,10 +21,10 @@ import {
 } from "./protocol.js";
 import type { WorkshopEmbedMessage } from "./protocol.js";
 
-/** A scalar variable input. Numbers must be finite; null requests clearing the value. @public */
+/** A scalar variable value. Numbers must be finite; null represents a cleared value. @public */
 export type WorkshopVariableValue = string | number | boolean | null;
 
-/** Variable inputs keyed by non-empty external IDs. Omitted variables are unchanged. @public */
+/** Variable updates keyed by non-empty external IDs. Omitted variables are unchanged. @public */
 export type WorkshopVariableValues<
   TVariables extends Record<keyof TVariables, WorkshopVariableValue> = Record<
     string,
@@ -45,7 +45,7 @@ export function createSetVariablesMessage(
 ): SetVariablesMessage {
   if (!isVariableValues(values)) {
     throw new TypeError(
-      "Variable inputs must map non-empty external IDs to strings, finite numbers, booleans, or null.",
+      "Variable values must map non-empty external IDs to strings, finite numbers, booleans, or null.",
     );
   }
   return {

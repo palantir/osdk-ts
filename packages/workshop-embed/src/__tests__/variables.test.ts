@@ -38,7 +38,7 @@ import type {
 } from "../index.js";
 import { createTestWindow, type TestWindow } from "./testUtils.js";
 
-describe("scalar variable inputs", () => {
+describe("scalar variables", () => {
   let sender: WorkshopModuleConnection;
   let receiver: WorkshopModuleConnection;
 
@@ -58,7 +58,7 @@ describe("scalar variable inputs", () => {
     const values: unknown = runInNewContext(
       '({ searchText: "Ada", count: 0, enabled: false, selectedName: null })',
     );
-    const received = nextInputs(receiver);
+    const received = nextVariables(receiver);
     sender.setVariables(values as WorkshopVariableValues);
     const result = await received;
     expect(result).toEqual(values);
@@ -81,15 +81,61 @@ describe("scalar variable inputs", () => {
       { ...valid, channel: "another-protocol" },
       { ...valid, version: 2 },
       { ...valid, sessionId: "old-session" },
-      { ...valid, type: "variablesChanged" },
+      { ...valid, type: "unknown" },
       ...invalidInputs.map((values) => ({ ...valid, values })),
     ]) {
       port.postMessage(data);
     }
-    const received = nextInputs(receiver);
+    const received = nextVariables(receiver);
     sender.setVariables(valid.values);
     await received;
     expect(listener).toHaveBeenCalledExactlyOnceWith({ count: 1 });
+  });
+
+  it("delivers updates in both directions without echoing them to the sender", async () => {
+    const listener = vi.fn();
+    sender.onVariablesSet(listener);
+    const initial = nextVariables(sender);
+    receiver.setVariables({ count: 0, searchText: "Ada" });
+    await expect(initial).resolves.toEqual({ count: 0, searchText: "Ada" });
+
+    const inputs = nextVariables(receiver);
+    sender.setVariables({ count: 50 });
+    await expect(inputs).resolves.toEqual({ count: 50 });
+    expect(listener).toHaveBeenCalledOnce();
+
+    const changed = nextVariables(sender);
+    receiver.setVariables({ count: 25, searchText: "Grace" });
+    await expect(changed).resolves.toEqual({ count: 25, searchText: "Grace" });
+
+    const cleared = nextVariables(sender);
+    receiver.setVariables({ searchText: null });
+    await expect(cleared).resolves.toEqual({ searchText: null });
+    expect(listener.mock.calls).toEqual([
+      [{ count: 0, searchText: "Ada" }],
+      [{ count: 25, searchText: "Grace" }],
+      [{ searchText: null }],
+    ]);
+  });
+
+  it("keeps receiving current outputs after a failed input send", async () => {
+    const postMessage = vi.spyOn(sender.port, "postMessage");
+    const error = new Error("Send failed");
+    postMessage.mockImplementationOnce(() => {
+      throw error;
+    });
+    expect(() => sender.setVariables({ count: 1 })).toThrow(error);
+    expect(() => sender.setVariables({ count: Number.NaN })).toThrow(TypeError);
+    const initial = nextVariables(sender);
+    receiver.setVariables({ count: 0 });
+    await expect(initial).resolves.toEqual({ count: 0 });
+
+    const listener = vi.fn();
+    receiver.onVariablesSet(listener);
+    const received = nextVariables(receiver);
+    sender.setVariables({ count: 2 });
+    await received;
+    expect(listener).toHaveBeenCalledExactlyOnceWith({ count: 2 });
   });
 
   it("rejects unsupported inputs before posting a message", () => {
@@ -114,13 +160,13 @@ describe("scalar variable inputs", () => {
       unsubscribe();
       receiver.onVariablesSet(replacement);
     });
-    const received = nextInputs(receiver);
+    const received = nextVariables(receiver);
     sender.setVariables({ count: 2 });
     await expect(received).resolves.toEqual({ count: 2 });
     expect(replacement).not.toHaveBeenCalled();
 
     unsubscribe();
-    const next = nextInputs(receiver);
+    const next = nextVariables(receiver);
     sender.setVariables({ count: 3 });
     await next;
     expect(listener).toHaveBeenCalledExactlyOnceWith({ count: 2 });
@@ -221,6 +267,15 @@ describe("declared variable types", () => {
       // @ts-expect-error Undeclared variable IDs are not available to listeners.
       expectTypeOf(values.unknownVariable);
     });
+    sender.onVariablesSet((values) => {
+      expectTypeOf(values).toEqualTypeOf<
+        WorkshopVariableValues<ModuleVariables>
+      >();
+    });
+    expectTypeOf(receiver.setVariables).toBeCallableWith({
+      // @ts-expect-error Count is declared as a number for outputs, too.
+      count: "one",
+    });
     // @ts-expect-error Count is declared as a number.
     expectTypeOf(sender.setVariables).toBeCallableWith({ count: "one" });
     expectTypeOf(sender.setVariables).toBeCallableWith({
@@ -228,20 +283,20 @@ describe("declared variable types", () => {
       unknownVariable: true,
     });
 
-    const received = nextInputs(receiver);
+    const received = nextVariables(receiver);
     sender.setVariables({ searchText: "Ada", count: 0, enabled: false });
     await expect(received).resolves.toEqual({
       searchText: "Ada",
       count: 0,
       enabled: false,
     });
-    const cleared = nextInputs(receiver);
+    const cleared = nextVariables(receiver);
     sender.setVariables({ searchText: null });
     await expect(cleared).resolves.toEqual({ searchText: null });
   });
 });
 
-function nextInputs<
+function nextVariables<
   TVariables extends Record<keyof TVariables, WorkshopVariableValue>,
 >(
   connection: WorkshopModuleConnection<TVariables>,
