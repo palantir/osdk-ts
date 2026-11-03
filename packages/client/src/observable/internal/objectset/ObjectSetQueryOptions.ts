@@ -20,6 +20,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   PropertyKeys,
+  SimplePropertyDef,
   WhereClause,
   WirePropertyTypes,
 } from "@osdk/api";
@@ -89,9 +90,26 @@ export interface ObserveObjectSetOptions<
   $loadPropertySecurityMetadata?: boolean;
 }
 
+export type ObserveObjectSetV2Options<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = Pick<
+  ObserveObjectSetOptions<Q, RDPs>,
+  | "pageSize"
+  | "autoFetchMore"
+  | "streamUpdates"
+  | "$loadPropertySecurityMetadata"
+  | "mode"
+  | "dedupeInterval"
+> & {
+  orderBy?: { [K in PropertyKeys<Q> | keyof RDPs]?: "asc" | "desc" };
+  select?: readonly (PropertyKeys<Q> | (keyof RDPs & string))[];
+};
+
 export interface ObjectSetQueryOptions extends ObserveObjectSetOptions<
   any,
   any
 > {
   baseObjectSet: ObjectSet<any>;
+  experimentalV2?: true;
 }

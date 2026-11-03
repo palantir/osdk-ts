@@ -40,14 +40,16 @@ import type {
 // For now we are keeping things conservative and just invalidating A either way,
 // but we can make this better.
 
-export async function getObjectTypesThatInvalidate(
-  mc: MinimalClient,
-  objectSet: WireObjectSet,
-): Promise<{
+export interface ObjectSetDependencies {
   resultType: FetchedObjectTypeDefinition | InterfaceMetadata;
   counts: Record<string, number>;
   invalidationSet: Set<string>;
-}> {
+}
+
+export async function getObjectTypesThatInvalidate(
+  mc: MinimalClient,
+  objectSet: WireObjectSet,
+): Promise<ObjectSetDependencies> {
   const counts: Record<string, number> = {};
 
   const resultType = await calcObjectSet(objectSet, {

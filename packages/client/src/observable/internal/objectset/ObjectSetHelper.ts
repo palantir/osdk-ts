@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { hasWithProperties } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
@@ -71,7 +73,11 @@ export class ObjectSetHelper extends AbstractHelper<
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
-      if (options.pivotTo) {
+      if (
+        options.pivotTo ||
+        (options.experimentalV2 &&
+          hasPivot(getWireObjectSet(options.baseObjectSet)))
+      ) {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
           console.warn(
@@ -108,6 +114,7 @@ export class ObjectSetHelper extends AbstractHelper<
       "objectSet",
       baseObjectSetWire,
       operations,
+      options.experimentalV2 ? 2 : undefined,
     );
 
     return this.store.queries.get(objectSetCacheKey, () => {
@@ -181,4 +188,15 @@ export class ObjectSetHelper extends AbstractHelper<
 
     return operations as Canonical<ObjectSetOperations>;
   }
+}
+
+function hasPivot(objectSet: WireObjectSet): boolean {
+  if (
+    objectSet.type === "searchAround" ||
+    objectSet.type === "interfaceLinkSearchAround"
+  )
+    return true;
+  if ("objectSet" in objectSet) return hasPivot(objectSet.objectSet);
+  if ("objectSets" in objectSet) return objectSet.objectSets.some(hasPivot);
+  return false;
 }

@@ -41,7 +41,10 @@ import { createClientFromContext } from "../createClient.js";
 import type { QueryReturnType } from "../queries/types.js";
 import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
 import type { Canonical } from "./internal/Canonical.js";
-import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
+import type {
+  ObserveObjectSetOptions,
+  ObserveObjectSetV2Options,
+} from "./internal/objectset/ObjectSetQueryOptions.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
 import type {
@@ -458,6 +461,21 @@ export interface ObservableClient extends ObserveLinks {
   >(
     baseObjectSet: ObjectSet<T>,
     options: ObserveObjectSetOptions<T, RDPs>,
+    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
+  ): Unsubscribable;
+
+  /**
+   * Observe a fully constructed ObjectSet with recursive dependency tracking.
+   * Apply filters, derived properties, set operations, and pivots to the set
+   * before observing it. Nested queries refetch when a known dependency changes.
+   * @experimental
+   */
+  EXPERIMENTAL__observeObjectSetV2<
+    T extends ObjectOrInterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    objectSet: ObjectSet<T, RDPs>,
+    options: ObserveObjectSetV2Options<T, RDPs>,
     subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
   ): Unsubscribable;
 
