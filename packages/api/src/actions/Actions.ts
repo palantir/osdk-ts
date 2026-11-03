@@ -119,4 +119,12 @@ export namespace ActionParam {
 }
 
 export type ActionEditResponse = ActionResults;
+
+/**
+ * Carries the value returned by an action whose function declares a return type.
+ */
+export interface ActionReturnValueResponse<R> {
+  /** The value returned by the function backing the action. */
+  returnValue: R;
+}
 export type ActionValidationResponse = ValidateActionResponseV2;

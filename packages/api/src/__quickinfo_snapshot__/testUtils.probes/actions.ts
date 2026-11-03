@@ -20,9 +20,11 @@
 // (`ActionParam.ObjectType` etc.), the options bag, and the two non-trivial
 // return branches (edits-bearing and validation-only).
 
+import type { ActionReturnTypeForOptions } from "../../actions/ActionReturnTypeForOptions.js";
 import type {
   ActionEditResponse,
   ActionParam,
+  ActionReturnValueResponse,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
@@ -72,3 +74,18 @@ declare const actionEditResponse: ActionEditResponse;
 
 /** The validation-only response returned when $validateOnly: true. */
 declare const actionValidationResponse: ActionValidationResponse;
+
+/** The payload carrying an action's return value. */
+declare const actionReturnValueResponse: ActionReturnValueResponse<string>;
+
+/** applyAction's resolved value for an action that returns a string. */
+declare const actionReturnType_withReturnValue: ActionReturnTypeForOptions<
+  {},
+  string
+>;
+
+/** applyAction's resolved value for an action that returns a string, with $returnEdits: true. */
+declare const actionReturnType_withReturnValueAndEdits: ActionReturnTypeForOptions<
+  { $returnEdits: true },
+  string
+>;

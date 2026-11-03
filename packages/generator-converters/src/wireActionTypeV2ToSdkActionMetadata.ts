@@ -18,8 +18,10 @@ import type { ActionMetadata } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
-  ActionTypeV2,
+  QueryDataType,
 } from "@osdk/foundry.ontologies";
+
+import type { ActionTypeV2WithReturnType } from "./ActionTypeV2WithReturnType.js";
 
 import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
@@ -27,9 +29,10 @@ import {
   ensureStringEnumSupportedOrUndefined,
   supportedReleaseStatus,
 } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
+import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(
-  input: ActionTypeV2,
+  input: ActionTypeV2WithReturnType,
   unsanitizedApiName?: string,
 ): ActionMetadata {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
@@ -56,7 +59,25 @@ export function wireActionTypeV2ToSdkActionMetadata(
       input.status,
       supportedReleaseStatus,
     ),
+    ...(input.returnType != null
+      ? { returnType: wireActionReturnTypeToSdkReturnType(input.returnType) }
+      : {}),
   };
+}
+
+/**
+ * Returns undefined for return types the OSDK cannot represent (for example,
+ * `unsupported` types reported by the server) so the action stays usable; the
+ * server omits those return values from the apply response anyway.
+ */
+function wireActionReturnTypeToSdkReturnType(
+  returnType: QueryDataType,
+): ActionMetadata["returnType"] {
+  try {
+    return wireQueryDataTypeToQueryDataTypeDefinition(returnType);
+  } catch {
+    return undefined;
+  }
 }
 
 function wireActionParameterV2ToSdkParameterDefinition(
