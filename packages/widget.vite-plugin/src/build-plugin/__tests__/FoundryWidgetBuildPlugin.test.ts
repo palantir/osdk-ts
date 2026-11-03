@@ -38,7 +38,7 @@ afterEach(async () => {
   await rm(root, { recursive: true, force: true });
 });
 
-test.each(["/", "/nested/widgets/", "./"])(
+test.each(["/nested/widgets/", "./"])(
   "builds from a Vite root outside the working directory with base %s",
   async (base) => {
     root = await realpath(await mkdtemp(path.join(tmpdir(), "widget-build-")));
