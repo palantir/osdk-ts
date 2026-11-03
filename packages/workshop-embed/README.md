@@ -20,13 +20,32 @@ const connection = await connectToWorkshopModule({
 controller.abort(); // Also closes a connection that has already resolved.
 ```
 
-Start a fresh attempt on each iframe `load`, URL change, and parent `pageshow`. Abort the old attempt first. The handshake retries until Workshop responds and times out after 10 seconds by default (`timeoutMs` overrides this). The promise rejects on cancellation, timeout, or handshake failure. An older Workshop deployment can still render without completing the handshake. Pass `hostWindow` if the iframe belongs to a document other than the current window.
+Start a fresh attempt on each iframe `load`, URL change, and parent `pageshow`. Abort the old attempt first. The handshake retries until Workshop responds. The attempt has a 10-second timeout covering both the port acknowledgement and module schema (`timeoutMs` overrides this). The promise rejects on cancellation, timeout, or handshake failure. An older Workshop deployment can still render without completing the handshake. Pass `hostWindow` if the iframe belongs to a document other than the current window.
 
 ## Connection lifecycle
 
-The promise resolves after Workshop acknowledges a dedicated `MessagePort`. This confirms that the transport is connected; it does not indicate that the module has loaded or supports variable inputs.
+The promise resolves after Workshop acknowledges a dedicated `MessagePort` and supplies the loaded module's supported variable schema. You can then subscribe to updates and call `setVariables` without managing schema readiness. Older integrations that only acknowledge the port time out waiting for the schema.
 
 The connection exposes its `sessionId`, `port`, and `disconnect()` method. Add port listeners with `addEventListener`. Call `connection.disconnect()` or abort the signal to notify Workshop and close the connection, rather than closing the port directly. Dispose the connection when the embedding application unmounts or navigates to another module.
+
+## Validating the module interface
+
+The connection keeps Workshop's schema internally. Every `setVariables` call validates the entire partial update before sending it. Unknown external IDs or incompatible types throw a `TypeError`; values are not coerced. For a number variable, `{ count: "25" }` fails, `{ count: 25 }` succeeds, and `{ count: null }` clears it. Omitted fields remain unchanged. External IDs are matched exactly.
+
+Incoming updates are checked against the same schema before `onVariablesSet` listeners run. Invalid updates are ignored. Subsequent schemas update validation automatically; the parent does not need to subscribe to schema changes or call a separate validator.
+
+On the Workshop side, the listener's `onConnect` callback runs as soon as the port is established. It receives a `WorkshopModuleHostConnection`, which extends `WorkshopModuleConnection` with `setModuleSchema`. The parent connection does not expose this method. Once the module loads, Workshop publishes its supported interface:
+
+```ts
+connection.setModuleSchema({
+  count: { type: "number", isList: false },
+  searchText: { type: "string", isList: false },
+});
+```
+
+Workshop must derive this schema from the loaded module's exposed variable definitions. Publish it on each connection and again if the interface changes, before sending values for the new interface. Schemas currently support scalar strings, numbers, and booleans. Unsupported or excluded variables must not be advertised.
+
+`setModuleSchema` installs validation on Workshop's connection and sends a `moduleSchema` message to the parent. Only Workshop can publish schemas; schemas sent by the parent are ignored. Until a schema is available, sending variables throws and incoming updates are ignored. Invalid schema messages and messages for other sessions are ignored. Disconnecting clears the schema.
 
 ## Sending scalar variable inputs
 
@@ -45,7 +64,7 @@ Values may be strings, finite numbers, booleans, or `null` to request clearing a
 
 External IDs must be non-empty and unique ignoring case within each update. `_open_rebase_dialog` and `_kiosk_mode_session_id` are reserved, including capitalization variants. Original key capitalization is preserved. Invalid updates throw a `TypeError` before sending; malformed incoming updates are ignored.
 
-This API provides the messaging layer. Applying inputs requires a Workshop integration that checks module readiness, external IDs, variable types, and whether each variable can be set. Handshake-only deployments ignore variable messages. A successful `setVariables` call does not acknowledge that Workshop received or applied the update.
+This API provides the messaging layer and schema validation. Applying inputs requires a Workshop integration that publishes the authoritative schema and checks whether each variable can be set. A successful `setVariables` call does not acknowledge that Workshop received or applied the update.
 
 Both ends use `setVariables(values)` to send and `onVariablesSet((values) => ...)` to receive validated updates for the current session. Every update uses the same `setVariables` message type; the receiver decides how to apply it.
 
@@ -62,7 +81,7 @@ connection.setVariables({ maxResults: 25 });
 
 The Workshop integration publishes current values with `connection.setVariables(values)` when the module becomes ready and when its interface values change. Input updates and change notifications are independent events, without per-update acknowledgments or conflict resolution for concurrent edits.
 
-Use `null` for cleared values. The transport validates envelopes, external ID constraints, and scalar values; the Workshop integration restricts notifications to the module interface. Input-only deployments continue accepting inputs but do not publish changes. Receiving outputs requires this publisher integration in Workshop.
+Use `null` for cleared values. The connection validates envelopes, external IDs, and values against the module schema in both directions. Input-only deployments continue accepting inputs but do not publish changes. Receiving outputs requires this publisher integration in Workshop.
 
 `onVariablesSet` returns an unsubscribe function, and disconnecting removes all listeners. All variable methods throw on a closed connection.
 
@@ -92,8 +111,8 @@ connection.setVariables({ searchText: null }); // Request clearing a value.
 // connection.setVariables({ unknownVariable: true });
 ```
 
-The type determines the values sent by `setVariables` and received by `onVariablesSet` in either direction. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, the connection accepts any valid external ID with a supported scalar value.
+The type determines the values sent by `setVariables` and received by `onVariablesSet` in either direction. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, TypeScript allows any valid external ID with a supported scalar value; runtime validation still checks the actual module schema.
 
-This declaration provides compile-time checking only. The transport validates the message envelope, external ID constraints, and supported scalar values, but does not check values against the declared variable names or types. Incoming values are typed using the caller's declaration.
+This declaration provides compile-time checking only. Runtime validation uses the actual schema supplied by Workshop; it cannot verify the caller's erased TypeScript declaration. Incoming values are typed using that declaration, so it must match the module interface.
 
-The type can be authored manually or emitted by future code generation. It describes the app's expectations; it does not discover or verify the actual Workshop module's variables. The Workshop integration must still validate the module interface and apply inputs when the module is ready.
+The type can be authored manually or emitted by future code generation. It describes the app's expectations; it does not discover or verify the actual Workshop module's variables. The Workshop integration supplies the authoritative schema and applies inputs when the module is ready.
