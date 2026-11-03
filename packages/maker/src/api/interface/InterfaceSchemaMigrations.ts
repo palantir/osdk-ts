@@ -150,10 +150,10 @@ export interface InterfacePropertyTypeReplacement {
    */
   property: string;
   /**
-   * Maps this struct property's field API names to the replacement property's. Only mapped fields
-   * carry over: fields are never matched by API name. Every field that is
-   * `requireImplementation: true` on the replacement property must be a target, and each mapped pair
-   * must have the same type and type classes.
+   * Maps this struct property's field API names to the replacement property's.
+   *
+   * Every field that is `requireImplementation: true` on the replacement property's struct
+   * definition must be a target, and each mapped pair must be compatible types.
    */
   structFieldMappings?: Record<string, string>;
 }

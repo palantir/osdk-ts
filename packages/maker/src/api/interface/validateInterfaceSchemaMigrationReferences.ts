@@ -200,7 +200,7 @@ function validateReplacement(
       targets: flattenedPropertiesIncludingInherited(replacementType),
       isRequired: (property) => isInterfacePropertyRequired(property),
       mismatch: (from, to) => {
-        // Struct fields carry over only as mapped, so validateStructFieldMappings checks them instead
+        // Struct fields are checked by validateStructFieldMappings (since we have to compare field-by-field)
         if (
           interfacePropertyStructFields(from) !== undefined &&
           interfacePropertyStructFields(to) !== undefined &&
@@ -208,6 +208,7 @@ function validateReplacement(
         ) {
           return undefined;
         }
+
         const sourceType = normalizedTypeOf(from);
         const targetType = normalizedTypeOf(to);
         return isDeepStrictEqual(sourceType, targetType)
@@ -219,6 +220,7 @@ function validateReplacement(
   resolved.propertyMappings.forEach((mapping, i) =>
     validateStructFieldMappings(context, authoredPropertySources[i], mapping),
   );
+
   validateMapping(
     context,
     interfaceType.apiName,
@@ -301,6 +303,7 @@ function validateStructFieldMappings(
         Object.hasOwn(targets, authoredTarget),
         `${context.prefix}, whose ${field} maps to struct field "${authoredTarget}", but property "${to.apiName}" has no such struct field.`,
       );
+
       return {
         authoredSource,
         authoredTarget,
@@ -335,6 +338,7 @@ function checkForStructFieldMismatch(
   if (!isDeepStrictEqual(sourceType, targetType)) {
     return `type ${describePropertyType(sourceType)} does not match ${describePropertyType(targetType)}`;
   }
+
   if (
     source.typeClasses.length !== target.typeClasses.length ||
     !source.typeClasses.every((typeClass) =>
@@ -345,9 +349,11 @@ function checkForStructFieldMismatch(
   ) {
     return `type classes ${JSON.stringify(source.typeClasses)} do not match ${JSON.stringify(target.typeClasses)}`;
   }
+
   if (target.requireImplementation && !source.requireImplementation) {
     return "source is optional while its target is required, and implementations may omit the source";
   }
+
   return undefined;
 }
 

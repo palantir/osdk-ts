@@ -84,7 +84,7 @@ export function interfacePropertyStructFields(
   if (typeof type !== "object" || type.type !== "struct") {
     return undefined;
   }
-  // OMS requires every field of an SPT-backed struct property
+
   const sptBacked = isInterfaceSharedPropertyType(interfacePropertyType);
   return Object.fromEntries(
     Object.entries(type.structDefinition).map(([apiName, definition]) => [
@@ -94,6 +94,7 @@ export function interfacePropertyStructFields(
             fieldType: definition.fieldType,
             typeClasses: definition.typeClasses ?? [],
             requireImplementation:
+              // SPT-backed struct properties are mandated to all be required
               sptBacked || (definition.requireImplementation ?? true),
           }
         : {
