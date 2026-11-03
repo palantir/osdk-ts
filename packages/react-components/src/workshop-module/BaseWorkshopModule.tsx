@@ -18,21 +18,25 @@ import classnames from "classnames";
 import React from "react";
 
 import { getWorkshopModuleUrl } from "./getWorkshopModuleUrl.js";
+import { useInitialTheme } from "./hooks/useInitialTheme.js";
 import type { BaseWorkshopModuleProps } from "./WorkshopModuleApi.js";
 
 import styles from "./BaseWorkshopModule.module.css";
 
 export function BaseWorkshopModule({
+  defaultTheme,
   title = "Workshop module",
   className,
   style,
   ...props
 }: BaseWorkshopModuleProps): React.ReactElement {
-  const src = getWorkshopModuleUrl(props);
+  const { theme, isLoading } = useInitialTheme(defaultTheme);
+  const src = getWorkshopModuleUrl({ ...props, theme });
 
   return (
     <iframe
-      src={src}
+      src={isLoading ? undefined : src}
+      hidden={isLoading}
       title={title}
       className={classnames(styles.iframe, className)}
       style={style}

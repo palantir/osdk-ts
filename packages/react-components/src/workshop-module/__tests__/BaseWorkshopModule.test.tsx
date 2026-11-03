@@ -51,12 +51,61 @@ describe("BaseWorkshopModule", () => {
           foundryUrl="https://foundry.example.com/api/v2/?ignored=true#ignored"
           moduleRid="ri.workshop.main.module.example"
           moduleVersion={moduleVersion}
+          branchRid="ri.branch..branch.example"
         />,
       );
 
       expect(screen.getByTitle("Workshop module").getAttribute("src")).toBe(
-        `https://foundry.example.com/workspace/module/view/${pathVersion}/ri.workshop.main.module.example?embedded=true`,
+        `https://foundry.example.com/workspace/module/view/${pathVersion}/ri.workshop.main.module.example?embedded=true&foundry-branch-rid=ri.branch..branch.example`,
       );
     },
   );
+
+  it("keeps the initial theme while navigating to another module", () => {
+    const { rerender } = render(
+      <BaseWorkshopModule
+        foundryUrl="https://foundry.example.com"
+        moduleRid="ri.workshop.main.module.example"
+        defaultTheme="dark"
+      />,
+    );
+
+    rerender(
+      <BaseWorkshopModule
+        foundryUrl="https://foundry.example.com"
+        moduleRid="ri.workshop.main.module.other"
+        defaultTheme="light"
+      />,
+    );
+
+    expect(screen.getByTitle("Workshop module").getAttribute("src")).toBe(
+      "https://foundry.example.com/workspace/module/view/latest/ri.workshop.main.module.other?embedded=true&foundry-branch-rid=&themeOverride=DARK_MODE",
+    );
+  });
+
+  it("navigates between branches and explicitly returns to main", () => {
+    const props = {
+      foundryUrl: "https://foundry.example.com",
+      moduleRid: "ri.workshop.main.module.example",
+    };
+    const { rerender } = render(
+      <BaseWorkshopModule {...props} branchRid="ri.branch..branch.first" />,
+    );
+    const iframe = screen.getByTitle<HTMLIFrameElement>("Workshop module");
+    expect(new URL(iframe.src).searchParams.get("foundry-branch-rid")).toBe(
+      "ri.branch..branch.first",
+    );
+
+    rerender(
+      <BaseWorkshopModule {...props} branchRid="ri.branch..branch.second" />,
+    );
+    expect(new URL(iframe.src).searchParams.get("foundry-branch-rid")).toBe(
+      "ri.branch..branch.second",
+    );
+
+    rerender(<BaseWorkshopModule {...props} />);
+    expect(screen.getByTitle("Workshop module")).toBe(iframe);
+    // An omitted parameter would let Workshop restore its previous branch.
+    expect(new URL(iframe.src).searchParams.get("foundry-branch-rid")).toBe("");
+  });
 });
