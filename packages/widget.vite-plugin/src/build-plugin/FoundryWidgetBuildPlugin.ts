@@ -68,6 +68,7 @@ export function FoundryWidgetBuildPlugin(
      */
     async writeBundle(_, bundle) {
       const buildContext = await getWidgetBuildContext(config.root);
+      const outDir = path.resolve(config.root, config.build.outDir);
 
       // Create a Vite server to evaluate widget config modules
       const server = await createModuleEvaluationServer(config);
@@ -76,12 +77,7 @@ export function FoundryWidgetBuildPlugin(
         // Build widget set manifest
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
-            getWidgetBuildOutputs(
-              bundle,
-              input,
-              path.resolve(config.root, config.build.outDir),
-              server,
-            ),
+            getWidgetBuildOutputs(bundle, input, outDir, server),
           ),
         );
         const widgetSetManifest = buildWidgetSetManifest(
@@ -93,10 +89,7 @@ export function FoundryWidgetBuildPlugin(
         );
 
         // Write the manifest to the dist directory
-        writeManifest(
-          widgetSetManifest,
-          path.resolve(config.root, config.build.outDir),
-        );
+        writeManifest(widgetSetManifest, outDir);
       } finally {
         await server.close();
       }

@@ -46,7 +46,7 @@ export async function getWidgetBuildOutputs(
   const resolveAsset = (src: string): string => {
     const url = new URL(src, `http://widget.local/${htmlPath}`);
     const base = server.config.base;
-    if (src.startsWith("/") && base !== "./" && url.pathname.startsWith(base)) {
+    if (src.startsWith("/") && url.pathname.startsWith(base)) {
       return `/${url.pathname.slice(base.length)}`;
     }
     return url.pathname;
