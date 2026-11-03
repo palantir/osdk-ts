@@ -26,3 +26,8 @@ export {
   WORKSHOP_EMBED_QUERY_PARAM,
   WORKSHOP_EMBED_QUERY_VALUE,
 } from "./protocol.js";
+export type {
+  WorkshopVariableMap,
+  WorkshopVariableValue,
+  WorkshopVariableValues,
+} from "./variables.js";

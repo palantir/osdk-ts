@@ -22,11 +22,15 @@ import {
   WORKSHOP_EMBED_QUERY_PARAM,
   WORKSHOP_EMBED_QUERY_VALUE,
 } from "./protocol.js";
+import type { WorkshopVariableMap } from "./variables.js";
 
 /** Options for the Workshop-side listener. @public */
-export interface ListenForWorkshopModuleEmbedMessagesOptions {
+export interface ListenForWorkshopModuleEmbedMessagesOptions<
+  TVariables extends WorkshopVariableMap<keyof TVariables> =
+    WorkshopVariableMap,
+> {
   /** Called for each accepted connection. Return a function to clean up per-connection resources. */
-  onConnect?: WorkshopModuleConnectHandler;
+  onConnect?: WorkshopModuleConnectHandler<TVariables>;
   /** Workshop's window. Defaults to the current window. */
   hostWindow?: Window;
 }
@@ -37,10 +41,13 @@ export interface ListenForWorkshopModuleEmbedMessagesOptions {
  * Returns an idempotent cleanup that removes listeners and closes the active port.
  * @public
  */
-export function listenForWorkshopModuleEmbedMessages({
+export function listenForWorkshopModuleEmbedMessages<
+  TVariables extends WorkshopVariableMap<keyof TVariables> =
+    WorkshopVariableMap,
+>({
   onConnect,
   hostWindow = window,
-}: ListenForWorkshopModuleEmbedMessagesOptions = {}): () => void {
+}: ListenForWorkshopModuleEmbedMessagesOptions<TVariables> = {}): () => void {
   if (
     hostWindow.parent === hostWindow ||
     new URLSearchParams(hostWindow.location.search).get(
@@ -50,7 +57,9 @@ export function listenForWorkshopModuleEmbedMessages({
     return () => {};
 
   let pendingHandshake: { sessionId: string; origin: string } | undefined;
-  let activeConnection: ReturnType<typeof createConnection> | undefined;
+  let activeConnection:
+    | ReturnType<typeof createConnection<TVariables>>
+    | undefined;
 
   function disconnect() {
     pendingHandshake = undefined;
@@ -103,7 +112,7 @@ export function listenForWorkshopModuleEmbedMessages({
     }
 
     const previous = activeConnection;
-    const next = createConnection(port, sessionId, () => {
+    const next = createConnection<TVariables>(port, sessionId, () => {
       if (activeConnection === next) activeConnection = undefined;
     });
     pendingHandshake = undefined;

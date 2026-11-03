@@ -15,35 +15,63 @@
  */
 
 import { createMessage, isWorkshopEmbedMessage } from "./protocol.js";
+import {
+  createSetVariablesMessage,
+  isSetVariablesMessage,
+} from "./variables.js";
+import type {
+  WorkshopVariableMap,
+  WorkshopVariableValues,
+} from "./variables.js";
 
 /** An established transport connection; this does not imply module readiness. @public */
-export interface WorkshopModuleConnection {
+export interface WorkshopModuleConnection<
+  TVariables extends WorkshopVariableMap<keyof TVariables> =
+    WorkshopVariableMap,
+> {
   /** Identifies this connection attempt. */
   readonly sessionId: string;
   /** Dedicated transport. Add listeners with addEventListener; use disconnect to close it. */
   readonly port: MessagePort;
+  /** Sends scalar variable updates to the peer. Throws for invalid values or a closed connection. Does not acknowledge application. */
+  setVariables: (values: WorkshopVariableValues<TVariables>) => void;
+  /** Receives scalar variable updates from the peer for this session. Returns an unsubscribe function; disconnect removes all listeners. Throws if closed. */
+  onVariablesSet: (
+    listener: (values: WorkshopVariableValues<TVariables>) => void,
+  ) => () => void;
   /** Notifies the peer, closes the port, and runs connection cleanup. Idempotent. */
   disconnect: () => void;
 }
 
 /** Callback invoked when a connection is established. Its returned cleanup runs on disposal. @public */
-export type WorkshopModuleConnectHandler = (
-  connection: WorkshopModuleConnection,
-) => void | (() => void);
+export type WorkshopModuleConnectHandler<
+  TVariables extends WorkshopVariableMap<keyof TVariables> =
+    WorkshopVariableMap,
+> = (connection: WorkshopModuleConnection<TVariables>) => void | (() => void);
 
-interface ManagedConnection {
-  connection: WorkshopModuleConnection;
+interface ManagedConnection<
+  TVariables extends WorkshopVariableMap<keyof TVariables>,
+> {
+  connection: WorkshopModuleConnection<TVariables>;
   dispose: (notifyPeer: boolean) => void;
-  activate: (handler: WorkshopModuleConnectHandler | undefined) => void;
+  activate: (
+    handler: WorkshopModuleConnectHandler<TVariables> | undefined,
+  ) => void;
 }
 
-export function createConnection(
+export function createConnection<
+  TVariables extends WorkshopVariableMap<keyof TVariables> =
+    WorkshopVariableMap,
+>(
   port: MessagePort,
   sessionId: string,
   onDispose: () => void,
-): ManagedConnection {
+): ManagedConnection<TVariables> {
   let disposed = false;
   let cleanup: void | (() => void);
+  const variableListeners = new Set<
+    (values: WorkshopVariableValues<TVariables>) => void
+  >();
 
   function dispose(notifyPeer: boolean) {
     if (disposed) return;
@@ -51,6 +79,7 @@ export function createConnection(
     if (notifyPeer) port.postMessage(createMessage("disconnect", sessionId));
     port.removeEventListener("message", handleMessage);
     port.removeEventListener("messageerror", disconnect);
+    variableListeners.clear();
     port.close();
     try {
       cleanup?.();
@@ -70,10 +99,40 @@ export function createConnection(
       event.data.type === "disconnect"
     ) {
       dispose(false);
+    } else if (
+      isSetVariablesMessage(event.data) &&
+      event.data.sessionId === sessionId
+    ) {
+      // The caller declares the variable types; only scalar values are checked at runtime.
+      const values = event.data.values as WorkshopVariableValues<TVariables>;
+      // Defer listeners added by a callback until the next message.
+      const listeners = [...variableListeners];
+      for (const listener of listeners) {
+        if (variableListeners.has(listener)) listener(values);
+      }
     }
   }
 
-  const connection: WorkshopModuleConnection = { port, sessionId, disconnect };
+  function assertOpen() {
+    if (disposed) throw new Error("Workshop connection is closed.");
+  }
+
+  const connection: WorkshopModuleConnection<TVariables> = {
+    port,
+    sessionId,
+    disconnect,
+    setVariables(values) {
+      assertOpen();
+      port.postMessage(createSetVariablesMessage(sessionId, values));
+    },
+    onVariablesSet(listener) {
+      assertOpen();
+      variableListeners.add(listener);
+      return () => {
+        variableListeners.delete(listener);
+      };
+    },
+  };
   port.addEventListener("message", handleMessage);
   port.addEventListener("messageerror", disconnect);
   port.start();
