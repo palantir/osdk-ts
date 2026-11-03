@@ -235,6 +235,7 @@ describe("generatePerQueryDataFiles", () => {
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: {
+            agents: {},
             actionTypes: {},
             actionTypesFullMetadata: {},
             interfaceTypes: {},
@@ -306,6 +307,7 @@ describe("generatePerQueryDataFiles", () => {
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: {
+            agents: {},
             actionTypes: {},
             actionTypesFullMetadata: {},
             interfaceTypes: {},
@@ -615,6 +617,7 @@ describe("generatePerQueryDataFiles", () => {
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: {
+            agents: {},
             actionTypes: {},
             actionTypesFullMetadata: {},
             interfaceTypes: {},
@@ -772,6 +775,7 @@ describe("generatePerQueryDataFiles", () => {
         fs: helper.minimalFiles,
         ontology: enhanceOntology({
           sanitized: {
+            agents: {},
             actionTypes: {},
             actionTypesFullMetadata: {},
             interfaceTypes: {},

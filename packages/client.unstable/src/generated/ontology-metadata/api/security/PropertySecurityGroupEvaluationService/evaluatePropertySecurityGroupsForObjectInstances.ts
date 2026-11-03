@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  EvaluatePsgForObjectInstancesRequest as _api_security_EvaluatePsgForObjectInstancesRequest,
-  EvaluatePsgForObjectInstancesResponse as _api_security_EvaluatePsgForObjectInstancesResponse,
-} from "../__components.js";
+import type { EvaluatePsgForObjectInstancesRequest as _api_security_EvaluatePsgForObjectInstancesRequest } from "../__components.js";
+import type { EvaluatePsgForObjectInstancesResponse as _api_security_EvaluatePsgForObjectInstancesResponse } from "../__components.js";
 
 /**
  * Evaluates Property Security Group (PSG) visibility for hypothetical object instances against a given PSG

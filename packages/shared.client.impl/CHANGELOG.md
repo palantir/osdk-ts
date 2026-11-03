@@ -1,5 +1,11 @@
 # @osdk/shared.client.impl
 
+## 1.15.0
+
+### Minor Changes
+
+- 0c09251: Report active OSDK client HTTP attempt concurrency through the OSDK request-context header.
+
 ## 1.14.0
 
 ### Minor Changes

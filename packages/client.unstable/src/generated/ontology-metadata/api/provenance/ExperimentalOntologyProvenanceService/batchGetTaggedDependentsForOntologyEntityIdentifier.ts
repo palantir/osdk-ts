@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  BatchGetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest,
-  BatchGetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse,
-} from "../__components.js";
+import type { BatchGetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest } from "../__components.js";
+import type { BatchGetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse } from "../__components.js";
 
 /**
  * Batch endpoint of #getTaggedDependentsForOntologyEntityIdentifier

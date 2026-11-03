@@ -35,8 +35,12 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
+import {
+  convertActionParameterValidation,
+  isActionParameterRequired,
+} from "./convertActionParameterValidation.js";
 import { convertValueType } from "./convertValueType.js";
-import { toStructFieldRid } from "./ridUtils.js";
+import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
 
 export class OntologyBlockDataToFullMetadataConverter {
   static getFullMetadataFromBlockData(
@@ -88,8 +92,6 @@ export class OntologyBlockDataToFullMetadataConverter {
     );
     const convertedObjectTypes = this.getOsdkObjectTypesFromBlockData(
       blockData.objectTypes,
-      blockData.linkTypes,
-      objectTypeLookup,
       interfacePropertyApiNames,
       valueTypes,
     );
@@ -101,7 +103,44 @@ export class OntologyBlockDataToFullMetadataConverter {
       ...convertedObjectTypes,
       ...importedTypes?.objectTypes,
     };
+    const propRidToApiName: Record<string, string> = {};
+    for (
+      const properties of Object.values(
+        blockData.knownIdentifiers.objectPropertyTypeIdsToRids ?? {},
+      )
+    ) {
+      for (const [apiName, rid] of Object.entries(properties)) {
+        propRidToApiName[rid] = apiName;
+      }
+    }
+    for (const { objectType } of Object.values(objectTypes)) {
+      for (const [apiName, property] of Object.entries(objectType.properties)) {
+        if (property.rid != null) {
+          propRidToApiName[property.rid] = apiName;
+        }
+      }
+    }
+    const linkMappings = this.getLinkMappingsFromBlockData(
+      Object.values(blockData.linkTypes),
+      propRidToApiName,
+      objectTypeLookup,
+    );
     for (const [objectApiName, objectType] of Object.entries(objectTypes)) {
+      const linkTypes = linkMappings[objectType.objectType.rid];
+      if (linkTypes != null) {
+        objectTypes[objectApiName] = {
+          ...objectType,
+          linkTypes: [
+            ...objectType.linkTypes,
+            ...linkTypes.filter(link =>
+              !objectType.linkTypes.some(existing =>
+                existing.linkTypeRid === link.linkTypeRid
+                && existing.apiName === link.apiName
+              )
+            ),
+          ],
+        };
+      }
       for (
         const interfaceApiName of Object.keys(
           objectType.implementsInterfaces2 ?? {},
@@ -118,6 +157,7 @@ export class OntologyBlockDataToFullMetadataConverter {
       blockData,
       objectTypeLookup,
       interfaceTypeLookup,
+      valueTypes,
     );
 
     return {
@@ -148,8 +188,6 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkObjectTypesFromBlockData(
     objects: Record<string, ObjectTypeBlockDataV2>,
-    links: Record<string, LinkTypeBlockDataV2>,
-    objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfacePropertyApiNames: Record<string, ApiName> = {},
     valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<ApiName, Ontologies.ObjectTypeFullMetadata> {
@@ -304,19 +342,13 @@ export class OntologyBlockDataToFullMetadataConverter {
         };
       }
 
-      const linkMappings = this.getLinkMappingsFromBlockData(
-        Object.values(links),
-        propRidToApiName,
-        objectTypeLookup,
-      );
-
       const objectApiName = object.apiName!;
       result[objectApiName] = {
         objectType: objectTypeV2,
         implementsInterfaces: Object.keys(implementsInterfaces2),
         implementsInterfaces2,
         sharedPropertyTypeMapping: sharedPropertyTypeMappings,
-        linkTypes: linkMappings[object.rid] || [],
+        linkTypes: [],
       };
     }
 
@@ -338,8 +370,11 @@ export class OntologyBlockDataToFullMetadataConverter {
 
       let mappings: Record<string, Ontologies.LinkTypeSideV2[]>;
       switch (linkType.definition.type) {
-        case "manyToMany": {
-          const linkDef = linkType.definition.manyToMany;
+        case "manyToMany":
+        case "intermediary": {
+          const linkDef = linkType.definition.type === "manyToMany"
+            ? linkType.definition.manyToMany
+            : linkType.definition.intermediary;
           const sideA: Ontologies.LinkTypeSideV2 = {
             apiName: linkDef.objectTypeAToBLinkMetadata.apiName ?? "",
             displayName: linkDef.objectTypeAToBLinkMetadata
@@ -445,6 +480,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     blockData: OntologyBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<ApiName, Ontologies.ActionTypeV2> {
     const result: Record<ApiName, Ontologies.ActionTypeV2> = {};
 
@@ -459,6 +495,7 @@ export class OntologyBlockDataToFullMetadataConverter {
           action,
           objectTypeLookup,
           interfaceTypeLookup,
+          valueTypes,
         ),
         operations: this.getOsdkActionOperationsFromBlockData(
           action,
@@ -616,6 +653,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     action: ActionTypeBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<string, Ontologies.ActionParameterV2> {
     const result: Record<string, Ontologies.ActionParameterV2> = {};
 
@@ -839,12 +877,19 @@ export class OntologyBlockDataToFullMetadataConverter {
           throw new Error("Unknown parameter type");
       }
 
+      const { validation } = action.actionType.actionTypeLogic.validation
+        .parameterValidations[paramKey].defaultValidation;
+      const convertedValidation = convertActionParameterValidation(
+        validation,
+        valueTypes,
+      );
       result[paramKey] = {
         displayName: irParameter.displayMetadata.displayName,
         description: irParameter.displayMetadata.description,
-        required: isBlockDataParameterRequired(action, paramKey),
+        required: isActionParameterRequired(validation.required),
         dataType,
         typeClasses: [],
+        ...(convertedValidation && { validation: convertedValidation }),
       };
     }
 
@@ -1148,80 +1193,7 @@ export class OntologyBlockDataToFullMetadataConverter {
   static getOsdkPropertyTypeFromBlockData(
     type: Type | InterfacePropertyTypeType,
   ): Ontologies.ObjectPropertyType | null {
-    switch (type.type) {
-      case "array": {
-        const value = type.array;
-        const subType = this.getOsdkPropertyTypeFromBlockData(value.subtype);
-        return subType ? { type: "array", subType, reducers: [] } : null;
-      }
-      case "boolean":
-        return { type: "boolean" };
-      case "byte":
-        return { type: "byte" };
-      case "date":
-        return { type: "date" };
-      case "decimal":
-        return { type: "decimal" };
-      case "double":
-        return { type: "double" };
-      case "float":
-        return { type: "float" };
-      case "geohash":
-        return { type: "geopoint" };
-      case "geoshape":
-        return { type: "geoshape" };
-      case "integer":
-        return { type: "integer" };
-      case "long":
-        return { type: "long" };
-      case "short":
-        return { type: "short" };
-      case "string":
-        return { type: "string" };
-      case "experimentalTimeDependentV1":
-        return null;
-      case "timestamp":
-        return { type: "timestamp" };
-      case "attachment":
-        return { type: "attachment" };
-      case "marking":
-        return { type: "marking" };
-      case "cipherText":
-        return { type: "cipherText" };
-      case "mediaReference":
-        return { type: "mediaReference" };
-      case "vector":
-        return null;
-      case "geotimeSeriesReference":
-        return { type: "geotimeSeriesReference" };
-      case "timestamp":
-        return { type: "timestamp" };
-      case "struct": {
-        const value = type.struct;
-        const structIdentity = JSON.stringify(type);
-        return {
-          type: "struct",
-          structFieldTypes: value.structFields.map(field => {
-            const fieldDataType = this.getOsdkPropertyTypeFromBlockData(
-              field.fieldType,
-            );
-            if (!fieldDataType) {
-              throw new Error(
-                `Unsupported field type in struct: ${field.apiName}`,
-              );
-            }
-            return {
-              apiName: field.apiName,
-              rid: toStructFieldRid(structIdentity, field.apiName),
-              dataType: fieldDataType,
-              typeClasses: [],
-            };
-          }),
-        };
-      }
-      default:
-        return null;
-    }
+    return OntologyIrToFullMetadataConverter.getOsdkPropertyType(type);
   }
 
   private static convertObjectTypeStatusFromBlockData(
@@ -1316,15 +1288,6 @@ function getAllAncestorInterfaceTypes(
   return ancestors;
 }
 
-function isBlockDataParameterRequired(
-  action: ActionTypeBlockDataV2,
-  paramKey: string,
-): boolean {
-  return action.actionType.actionTypeLogic.validation
-    .parameterValidations[paramKey].defaultValidation.validation.required.type
-    === "required";
-}
-
 function getOsdkActionStructFieldsFromBlockData(
   action: ActionTypeBlockDataV2,
   paramKey: string,
@@ -1389,10 +1352,10 @@ function isBlockDataStructFieldRequired(
   paramKey: string,
   fieldApiName: string,
 ): boolean {
-  return action.actionType.actionTypeLogic.validation.parameterValidations[
-    paramKey
-  ]?.structFieldValidations[fieldApiName]?.defaultValidation.validation.required
-    .type === "required";
+  const required = action.actionType.actionTypeLogic.validation
+    .parameterValidations[paramKey]?.structFieldValidations[fieldApiName]
+    ?.defaultValidation.validation.required;
+  return required != null && isActionParameterRequired(required);
 }
 
 export interface BlockDataApiNameLookup {

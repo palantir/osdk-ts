@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../../api/__components.js";
-import type {
-  CreateOntologyBranchRequest as _branch_api_CreateOntologyBranchRequest,
-  CreateOntologyBranchResponse as _branch_api_CreateOntologyBranchResponse,
-} from "../__components.js";
+import type { CreateOntologyBranchRequest as _branch_api_CreateOntologyBranchRequest } from "../__components.js";
+import type { CreateOntologyBranchResponse as _branch_api_CreateOntologyBranchResponse } from "../__components.js";
 
 /**
  * Endpoint to create a new branch in an existing ontology. Users need to have access to

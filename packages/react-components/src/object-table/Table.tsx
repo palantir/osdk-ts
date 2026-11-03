@@ -365,6 +365,7 @@ function BaseTableInner<TData extends RowData>({
             )}
           </table>
           {!hasData &&
+            !isLoading &&
             error == null &&
             (renderEmptyState != null ? (
               renderEmptyState()

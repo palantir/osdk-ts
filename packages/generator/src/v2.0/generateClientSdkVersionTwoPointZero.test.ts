@@ -20,6 +20,7 @@ import type {
   ActionParameterType,
   ObjectPropertyType,
   QueryDataType,
+  ValueTypeConstraint,
 } from "@osdk/foundry.ontologies";
 import { consola } from "consola";
 import * as immer from "immer";
@@ -110,6 +111,7 @@ function changeNames(
     spts: Record<string, string>;
     interfaces: Record<string, string>;
     actions: Record<string, string>;
+    agents: Record<string, string>;
     queries: Record<string, string>;
   },
 ) {
@@ -145,6 +147,18 @@ function changeNames(
       },
       true,
     );
+
+    // Handle agent renames
+    if (draft.agents) {
+      changeEachEntry(
+        draft.agents,
+        newNames.agents,
+        (agent, oldAgentName, newAgentName) => {
+          changeValue(agent, "apiName", oldAgentName, newAgentName);
+        },
+        true,
+      );
+    }
 
     // Handle interface renames
     changeEachEntry(
@@ -231,6 +245,7 @@ function changeNames(
 }
 
 const referencedOntology = {
+  agents: {},
   ontology: {
     apiName: "dep",
     rid: "ri.ontology.main.ontology.dep",
@@ -351,6 +366,7 @@ const referencedOntology = {
 } satisfies WireOntologyDefinition;
 
 const referencingOntology: WireOntologyDefinition = {
+  agents: {},
   ontology: TodoWireOntology.ontology,
   actionTypes: {
     setTaskBody: {
@@ -504,6 +520,9 @@ const fooBarTodoWireOntology = changeNames(TodoWireOntology, {
     markTodoCompleted: "foo.bar.markTodoCompleted",
     deleteTodos: "foo.bar.deleteTodos",
   },
+  agents: {
+    weatherAgent: "foo.bar.weatherAgent",
+  },
   interfaces: {
     SomeInterface: "foo.bar.SomeInterface",
   },
@@ -522,6 +541,259 @@ describe("generator", () => {
   let helper: ReturnType<typeof createMockMinimalFiles>;
   beforeEach(async () => {
     helper = createMockMinimalFiles();
+  });
+
+  describe("value type constraints", () => {
+    const enumConstraint: ValueTypeConstraint = {
+      type: "enum",
+      options: ["A", "B"],
+    };
+    const lengthConstraint: ValueTypeConstraint = {
+      type: "length",
+      maximumLength: 10,
+    };
+    const emptyEnum: ValueTypeConstraint = { type: "enum", options: [] };
+
+    it.each<{
+      name: string;
+      constraints: ValueTypeConstraint[];
+      expectedType: string;
+    }>([
+      {
+        name: "enum before length",
+        constraints: [enumConstraint, lengthConstraint],
+        expectedType: "'A' | 'B'",
+      },
+      {
+        name: "enum after length",
+        constraints: [lengthConstraint, enumConstraint],
+        expectedType: "'A' | 'B'",
+      },
+      {
+        name: "no enum",
+        constraints: [lengthConstraint, {
+          type: "regex",
+          pattern: "[A-Z]+",
+          partialMatch: false,
+        }],
+        expectedType: "$PropType['string']",
+      },
+      {
+        name: "no constraints",
+        constraints: [],
+        expectedType: "$PropType['string']",
+      },
+      {
+        name: "one enum",
+        constraints: [enumConstraint],
+        expectedType: "'A' | 'B'",
+      },
+      {
+        name: "empty enum",
+        constraints: [emptyEnum, lengthConstraint],
+        expectedType: "never",
+      },
+      {
+        name: "empty enum before another enum",
+        constraints: [emptyEnum, enumConstraint],
+        expectedType: "never",
+      },
+      {
+        name: "empty enum after another enum",
+        constraints: [enumConstraint, emptyEnum],
+        expectedType: "never",
+      },
+      {
+        name: "overlapping enums",
+        constraints: [enumConstraint, { type: "enum", options: ["B", "C"] }],
+        expectedType: "'B'",
+      },
+      {
+        name: "overlapping enums in reverse order",
+        constraints: [{ type: "enum", options: ["B", "C"] }, enumConstraint],
+        expectedType: "'B'",
+      },
+      {
+        name: "an enum and a superset",
+        constraints: [enumConstraint, {
+          type: "enum",
+          options: ["A", "B", "C"],
+        }],
+        expectedType: "'A' | 'B'",
+      },
+      {
+        name: "disjoint enums",
+        constraints: [enumConstraint, { type: "enum", options: ["C", "D"] }],
+        expectedType: "never",
+      },
+      {
+        name: "an empty intersection followed by another enum",
+        constraints: [
+          enumConstraint,
+          { type: "enum", options: ["C", "D"] },
+          enumConstraint,
+        ],
+        expectedType: "never",
+      },
+    ])("generates string properties with $name", async ({
+      constraints,
+      expectedType,
+    }) => {
+      const ontology = immer.produce(TodoWireOntology, draft => {
+        draft.valueTypes.emailValueType.constraints = constraints;
+      });
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+      expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Person.ts`])
+        .toContain(`readonly email: ${expectedType};`);
+    });
+
+    it.each<{
+      name: string;
+      constraints: ValueTypeConstraint[];
+      expectedType: string;
+    }>([
+      {
+        name: "enum after an unsupported constraint",
+        constraints: [
+          { type: "unsupported", unsupportedType: "custom", params: {} },
+          { type: "enum", options: [true, null] },
+        ],
+        expectedType: "true",
+      },
+      {
+        name: "overlapping enums",
+        constraints: [
+          { type: "enum", options: [true, false] },
+          { type: "enum", options: [false, null] },
+        ],
+        expectedType: "false",
+      },
+      {
+        name: "disjoint enums",
+        constraints: [
+          { type: "enum", options: [true] },
+          { type: "enum", options: [false] },
+        ],
+        expectedType: "never",
+      },
+      {
+        name: "null-only enum",
+        constraints: [
+          { type: "enum", options: [null] },
+          { type: "enum", options: [false] },
+        ],
+        expectedType: "never",
+      },
+    ])(
+      "generates nullable boolean properties with $name",
+      async ({ constraints, expectedType }) => {
+        const ontology = immer.produce(TodoWireOntology, draft => {
+          draft.objectTypes.Todo.objectType.properties.complete
+            .valueTypeApiName = "completeValueType";
+          draft.valueTypes.completeValueType = {
+            apiName: "completeValueType",
+            displayName: "Complete Value Type",
+            rid: "completeValueTypeRid",
+            version: "1.0.0",
+            fieldType: { type: "boolean" },
+            constraints,
+          };
+        });
+        await generateClientSdkVersionTwoPointZero(
+          ontology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+        );
+        expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+          .toContain(`readonly complete: ${expectedType} | undefined;`);
+      },
+    );
+
+    it.each([false, true])(
+      "generates array enums with size constraint first %s",
+      async (sizeFirst) => {
+        const ontology = immer.produce(TodoWireOntology, draft => {
+          const constraints = draft.valueTypes.arrayValueType.constraints;
+          constraints.push({
+            type: "array",
+            uniqueValues: false,
+            minimumSize: 1,
+          });
+          if (sizeFirst) {
+            constraints.reverse();
+          }
+        });
+        await generateClientSdkVersionTwoPointZero(
+          ontology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+        );
+        expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+          .toContain(`readonly array: ('a' | 'b"c' | "d'e")[] | undefined;`);
+      },
+    );
+
+    it.each([
+      { options: ["a", "b\"c"], expectedType: `('a' | 'b"c')[]` },
+      { options: ["C", "D"], expectedType: "never[]" },
+    ])(
+      "intersects array enums as $expectedType",
+      async ({ options, expectedType }) => {
+        const ontology = immer.produce(TodoWireOntology, draft => {
+          draft.valueTypes.arrayValueType.constraints.push({
+            type: "array",
+            valueConstraint: { type: "enum", options },
+            uniqueValues: false,
+          });
+        });
+        await generateClientSdkVersionTwoPointZero(
+          ontology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+        );
+        expect(helper.getFiles()[`${BASE_PATH}/ontology/objects/Todo.ts`])
+          .toContain(`readonly array: ${expectedType} | undefined;`);
+      },
+    );
+
+    it("intersects interface property enums", async () => {
+      const ontology = immer.produce(TodoWireOntology, draft => {
+        draft.valueTypes.interfaceValueType = {
+          ...draft.valueTypes.emailValueType,
+          apiName: "interfaceValueType",
+          rid: "interfaceValueTypeRid",
+          constraints: [lengthConstraint, enumConstraint, {
+            type: "enum",
+            options: ["B", "C"],
+          }],
+        };
+        const interfaceType = draft.interfaceTypes.SomeInterface;
+        interfaceType.properties.SomeProperty.valueTypeApiName =
+          "interfaceValueType";
+        interfaceType.allProperties.SomeProperty.valueTypeApiName =
+          "interfaceValueType";
+        draft.sharedPropertyTypes.SomeProperty.valueTypeApiName =
+          "interfaceValueType";
+      });
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+      );
+      expect(
+        helper.getFiles()[`${BASE_PATH}/ontology/interfaces/SomeInterface.ts`],
+      )
+        .toContain("readonly SomeProperty: 'B' | undefined;");
+    });
   });
 
   test(
@@ -570,6 +842,8 @@ describe("generator", () => {
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
+        export { weatherAgent } from './ontology/agents.js';
+        export * as $Agents from './ontology/agents.js';
         export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
         export { Person, Todo } from './ontology/objects.js';
@@ -757,6 +1031,29 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
+          "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
+        ",
+          "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/client';
+        import type { AgentDefinition } from '@osdk/client/experimental';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        /** @beta */
+        export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+          type: 'agent';
+          apiName: 'weatherAgent';
+          version: '1.2.3';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        /** @beta */
+        export const weatherAgent: weatherAgent = {
+          type: 'agent',
+          apiName: 'weatherAgent',
+          version: '1.2.3',
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
           "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
@@ -897,6 +1194,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
+            requiredProps: 'email';
             apiName: 'Person';
             description: 'A person';
             displayName: 'Person';
@@ -1010,6 +1308,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
+            requiredProps: 'id';
             apiName: 'Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -1194,7 +1493,7 @@ describe("generator", () => {
         };
         ",
         }
-      `);
+        `);
     },
   );
 
@@ -1272,6 +1571,8 @@ describe("generator", () => {
         ",
           "/foo/index.ts": "export { deleteTodos, markTodoCompleted } from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
+        export { weatherAgent } from './ontology/agents.js';
+        export * as $Agents from './ontology/agents.js';
         export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
         export { Person, Todo } from './ontology/objects.js';
@@ -1459,6 +1760,29 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
         };
         ",
+          "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
+        ",
+          "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/api';
+        import type { AgentDefinition } from '@osdk/api/unstable';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        /** @beta */
+        export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+          type: 'agent';
+          apiName: 'foo.bar.weatherAgent';
+          version: '1.2.3';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        /** @beta */
+        export const weatherAgent: weatherAgent = {
+          type: 'agent',
+          apiName: 'foo.bar.weatherAgent',
+          version: '1.2.3',
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
           "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
           "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
@@ -1599,6 +1923,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
+            requiredProps: 'email';
             apiName: 'foo.bar.Person';
             description: 'A person';
             displayName: 'Person';
@@ -1712,6 +2037,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
+            requiredProps: 'id';
             apiName: 'foo.bar.Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -1903,6 +2229,7 @@ describe("generator", () => {
     await generateClientSdkVersionTwoPointZero(
       {
         ontology: TodoWireOntology.ontology,
+        agents: {},
         actionTypes: {},
         actionTypesFullMetadata: {},
         interfaceTypes: {},
@@ -2202,6 +2529,7 @@ describe("generator", () => {
               props: UsesForeignSpt.Props;
               linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
+              requiredProps: 'id';
               apiName: 'UsesForeignSpt';
               description: undefined;
               displayName: 'Uses Foreign Spt';
@@ -2361,6 +2689,7 @@ describe("generator", () => {
       await generateClientSdkVersionTwoPointZero(
         {
           ontology: TodoWireOntology.ontology,
+          agents: {},
           actionTypes: {},
           actionTypesFullMetadata: {},
           interfaceTypes: {},
@@ -2405,6 +2734,8 @@ describe("generator", () => {
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
+        export {} from './ontology/agents.js';
+        export * as $Agents from './ontology/agents.js';
         export {} from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
         export { Person, Todo } from './ontology/objects.js';
@@ -2415,6 +2746,8 @@ describe("generator", () => {
         export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
+        ",
+          "/foo/ontology/agents.ts": "export {};
         ",
           "/foo/ontology/interfaces.ts": "export {};
         ",
@@ -2478,6 +2811,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
+            requiredProps: 'email';
             apiName: 'Person';
             description: 'A person';
             displayName: 'Person';
@@ -2591,6 +2925,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
+            requiredProps: 'id';
             apiName: 'Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -2775,13 +3110,14 @@ describe("generator", () => {
         };
         ",
         }
-      `);
+        `);
     });
 
     it("preserves fixed query versions supplied through the legacy API", async () => {
       await generateClientSdkVersionTwoPointZero(
         {
           ontology: TodoWireOntology.ontology,
+          agents: {},
           actionTypes: {},
           actionTypesFullMetadata: {},
           interfaceTypes: {},
@@ -2815,6 +3151,7 @@ describe("generator", () => {
       await expect(generateClientSdkVersionTwoPointZero(
         {
           ontology: TodoWireOntology.ontology,
+          agents: {},
           actionTypes: {},
           actionTypesFullMetadata: {},
           interfaceTypes: {},
@@ -2873,6 +3210,8 @@ describe("generator", () => {
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
+        export {} from './ontology/agents.js';
+        export * as $Agents from './ontology/agents.js';
         export { SomeInterface } from './ontology/interfaces.js';
         export * as $Interfaces from './ontology/interfaces.js';
         export { Task } from './ontology/objects.js';
@@ -2883,6 +3222,8 @@ describe("generator", () => {
         export { $branch, $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
+        ",
+          "/foo/ontology/agents.ts": "export {};
         ",
           "/foo/ontology/interfaces.ts": "export { SomeInterface } from './interfaces/SomeInterface.js';
         ",
@@ -3028,6 +3369,7 @@ describe("generator", () => {
             props: Task.Props;
             linksType: Task.Links;
             strictProps: Task.StrictProps;
+            requiredProps: 'taskId';
             apiName: 'com.example.dep.Task';
             description: undefined;
             displayName: 'Task';

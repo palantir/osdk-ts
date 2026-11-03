@@ -4,6 +4,7 @@
 
 ```ts
 
+import { AnyEdit } from '@osdk/functions/internal';
 import type { Attachment } from '@osdk/api';
 import type { AttachmentMetadata } from '@osdk/api';
 import type { Client } from '@osdk/client';
@@ -17,6 +18,7 @@ import type { ObjectTypeDefinition } from '@osdk/api';
 import type { Osdk } from '@osdk/api';
 import type { PageResult } from '@osdk/api';
 import type { QueryDefinition } from '@osdk/api';
+import type { WriteableClient } from '@osdk/functions/experimental';
 
 // @public (undocumented)
 export interface AggregateStubBuilder<T> {
@@ -35,6 +37,9 @@ export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(objec
 
 // @public
 export function createMockOsdkObject<Q extends ObjectTypeDefinition>(objectType: Q, properties?: Partial<CompileTimeMetadata<Q>["props"]>, options?: MockOsdkObjectOptions<Q>): Osdk.Instance<Q>;
+
+// @public (undocumented)
+export function createMockWriteableClient<X extends AnyEdit = never>(): MockWriteableClient<X>;
 
 // @public (undocumented)
 export interface FetchOneStubBuilder<T> {
@@ -76,6 +81,14 @@ export interface MockOsdkObjectOptions<Q extends ObjectTypeDefinition = ObjectTy
     	// Warning: (ae-forgotten-export) The symbol "LinkStubs" needs to be exported by the entry point index.d.ts
     links?: LinkStubs<Q>;
     	titlePropertyApiName?: string;
+}
+
+// @public (undocumented)
+export interface MockWriteableClient<X extends AnyEdit = never> extends MockClient, WriteableClient<X> {
+    	// (undocumented)
+    clearEdits(): void;
+    	// (undocumented)
+    getEdits(): X[];
 }
 
 // @public (undocumented)

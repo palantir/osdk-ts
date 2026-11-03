@@ -67,6 +67,7 @@ export interface NihalbCastingObjectTypeC extends $ObjectTypeDefinition {
     props: NihalbCastingObjectTypeC.Props;
     linksType: NihalbCastingObjectTypeC.Links;
     strictProps: NihalbCastingObjectTypeC.StrictProps;
+    requiredProps: 'primaryKey_';
     apiName: 'NihalbCastingObjectTypeC';
     description: '';
     displayName: '(nihalb) Casting Object Type C';

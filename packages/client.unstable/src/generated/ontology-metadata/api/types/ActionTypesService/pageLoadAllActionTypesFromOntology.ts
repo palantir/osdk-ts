@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAllActionTypesPageRequest as _api_LoadAllActionTypesPageRequest,
-  LoadAllActionTypesPageResponse as _api_LoadAllActionTypesPageResponse,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-} from "../../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../../__components.js";
+import type { LoadAllActionTypesPageRequest as _api_LoadAllActionTypesPageRequest } from "../../__components.js";
+import type { LoadAllActionTypesPageResponse as _api_LoadAllActionTypesPageResponse } from "../../__components.js";
 
 /**
  * Endpoint to load a paged collection of all ActionTypes visible to the user from the specified Ontology and

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetOntologySummaryRequest as _api_GetOntologySummaryRequest,
-  GetOntologySummaryResponse as _api_GetOntologySummaryResponse,
-  OntologyRid as _api_OntologyRid,
-} from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { GetOntologySummaryRequest as _api_GetOntologySummaryRequest } from "../__components.js";
+import type { GetOntologySummaryResponse as _api_GetOntologySummaryResponse } from "../__components.js";
 
 /**
  * Endpoint to load a summary of an Ontology including the number of entities of each type visible to the user.

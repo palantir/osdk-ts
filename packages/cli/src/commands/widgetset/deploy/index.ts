@@ -53,8 +53,17 @@ const command: CommandModule<CommonWidgetSetArgs, WidgetSetDeployArgs> = {
           description:
             "Code repository resource identifier (rid) publishing the widget set",
         },
+        branchName: {
+          type: "string",
+          description:
+            "Git branch name used to publish the widget set (defaults to the current git branch).",
+          coerce: (branchName: string) => {
+            const trimmed = branchName.trim();
+            return trimmed === "" ? undefined : trimmed;
+          },
+        },
       })
-      .group(["directory", "repository"], "Deploy Options")
+      .group(["directory", "repository", "branchName"], "Deploy Options")
       .middleware((args) =>
         logWidgetSetDeployCommandConfigFileOverride(args, widgetSetConfig),
       );

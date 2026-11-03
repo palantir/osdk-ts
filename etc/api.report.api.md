@@ -64,7 +64,7 @@ export namespace ActionMetadata {
     	// (undocumented)
     export namespace DataType {
         		// (undocumented)
-        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "objectType" | "geoshape" | "geohash";
+        export type BaseActionParameterTypes = "boolean" | "string" | "integer" | "long" | "double" | "decimal" | "datetime" | "timestamp" | "attachment" | "marking" | "mediaReference" | "scenarioReference" | "timeSeriesReference" | "objectType" | "geoshape" | "geohash";
         		// (undocumented)
         export interface Interface<T_Target extends InterfaceDefinition = never> {
             			// (undocumented)
@@ -303,8 +303,7 @@ export interface AsyncIterArgs<
 	PROPERTY_SECURITIES extends boolean = false,
 	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
-    	// (undocumented)
-    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    	$applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	// (undocumented)
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
@@ -318,7 +317,7 @@ export interface Attachment {
 
 // @public (undocumented)
 export interface AttachmentMetadata {
-    	// (undocumented)
+	// (undocumented)
     filename: string;
     	// (undocumented)
     mediaType: string;
@@ -518,6 +517,8 @@ export interface DataValueClientToWire {
             		}[]
         	}[];
     	// (undocumented)
+    timeSeriesReference: TimeSeriesReference;
+    	// (undocumented)
     timestamp: string;
     	// (undocumented)
     twoDimensionalAggregation: {
@@ -578,6 +579,8 @@ export interface DataValueWireToClient {
             			value: AllowedBucketTypes
             		}[]
         	}[];
+    	// (undocumented)
+    timeSeriesReference: TimeSeriesReference;
     	// (undocumented)
     timestamp: string;
     	// (undocumented)
@@ -870,13 +873,11 @@ export interface FetchPageArgs<
 	MODIFIERS extends ApplyModifiersArg<Q> = {},
 	DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = PropertyModifierValue
 > extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES, MODIFIERS> {
-    	// (undocumented)
-    $applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
+    	$applyModifiers?: ApplyModifiersArg<Q> & MODIFIERS & { [P in Exclude<keyof MODIFIERS, PropertyKeys<Q>>] : never };
     	$EXPERIMENTAL_defaultLoadLevel?: DEFAULT_LOAD_LEVEL;
     	// (undocumented)
     $nextPageToken?: string;
-    	// (undocumented)
-    $pageSize?: number;
+    	$pageSize?: number;
     	// Warning: (tsdoc-undefined-tag) The TSDoc tag "@default" is not defined in this configuration
     $snapshot?: boolean;
 }
@@ -2249,8 +2250,7 @@ export interface SelectArg<
     $includeRid?: R;
     	// (undocumented)
     $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
-    	// (undocumented)
-    $select?: readonly L[];
+    	$select?: readonly L[];
     	// (undocumented)
     $UNSTABLE_loadOntologyDefinedDerivedProperties?: boolean;
 }
@@ -2423,6 +2423,19 @@ export type TimeSeriesQuery = {
     	$before?: never
     	$after?: never
     	$unit?: never
+};
+
+// @public
+export type TimeSeriesReference = {
+    	$seriesId: string
+    	$syncRid?: string
+    	$templateRid?: never
+    	$templateVersion?: never
+} | {
+    	$templateRid: string
+    	$templateVersion?: string
+    	$seriesId?: never
+    	$syncRid?: never
 };
 
 // @public (undocumented)

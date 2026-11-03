@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfacePropertyTypeType,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
   OntologyIrInterfaceTypeBlockDataV2,
@@ -26,6 +27,7 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrType,
+  Type,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
@@ -39,6 +41,10 @@ import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
+import {
+  convertActionParameterValidation,
+  isActionParameterRequired,
+} from "./convertActionParameterValidation.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
@@ -462,40 +468,50 @@ export class OntologyIrToFullMetadataConverter {
       fs.writeFileSync(irOutputFile, JSON.stringify(functions));
     }
 
-    return tsFunctions.map((func: IDiscoveredFunction) => {
+    return tsFunctions.flatMap((func: IDiscoveredFunction) => {
       const functionName = func.locator.typescript!.functionName;
-      return {
-        apiName: functionName,
-        rid: `ri.function-registry.main.function.${functionName}`,
-        version: "0.0.0",
-        parameters: func.inputs.reduce<
-          Record<ApiName, Ontologies.QueryParameterV2>
-        >((acc, input, index) => {
-          // Discovery emits diagnostics requiring injected context to be the
-          // first function argument, so only strip it from that position.
-          if (index === 0 && isInjectedRuntimeInput(input.dataType)) {
-            return acc;
-          }
+      try {
+        return [
+          {
+            apiName: functionName,
+            rid: `ri.function-registry.main.function.${functionName}`,
+            version: "0.0.0",
+            parameters: func.inputs.reduce<
+              Record<ApiName, Ontologies.QueryParameterV2>
+            >((acc, input, index) => {
+              // Discovery emits diagnostics requiring injected context to be the
+              // first function argument, so only strip it from that position.
+              if (index === 0 && isInjectedRuntimeInput(input.dataType)) {
+                return acc;
+              }
 
-          acc[input.name] = {
-            dataType: convertDataType(
-              input.dataType,
-              func.customTypes,
-              interfaceRidToApiName,
-            ),
-            required: input.required ?? true,
-          };
-          return acc;
-        }, {}),
-        output: "single" in func.output
-          ? convertDataType(
-            func.output.single.dataType,
-            func.customTypes,
-            interfaceRidToApiName,
-          )
-          : { type: "void" },
-        typeReferences: {},
-      } satisfies Ontologies.QueryTypeV2;
+              acc[input.name] = {
+                dataType: convertDataType(
+                  input.dataType,
+                  func.customTypes,
+                  interfaceRidToApiName,
+                ),
+                required: input.required ?? true,
+              };
+              return acc;
+            }, {}),
+            output: "single" in func.output
+              ? convertDataType(
+                func.output.single.dataType,
+                func.customTypes,
+                interfaceRidToApiName,
+              )
+              : { type: "void" },
+            typeReferences: {},
+          } satisfies Ontologies.QueryTypeV2,
+        ];
+      } catch (error) {
+        consola.warn(
+          `Skipping TypeScript function "${functionName}" in OSDK generation because of an error:`,
+          error,
+        );
+        return [];
+      }
     });
   }
 
@@ -849,8 +865,11 @@ export class OntologyIrToFullMetadataConverter {
 
       let mappings: Record<string, Ontologies.LinkTypeSideV2[]>;
       switch (linkType.definition.type) {
-        case "manyToMany": {
-          const linkDef = linkType.definition.manyToMany;
+        case "manyToMany":
+        case "intermediary": {
+          const linkDef = linkType.definition.type === "manyToMany"
+            ? linkType.definition.manyToMany
+            : linkType.definition.intermediary;
           const sideA: Ontologies.LinkTypeSideV2 = {
             apiName: linkDef.objectTypeAToBLinkMetadata.apiName ?? "",
             displayName: linkDef.objectTypeAToBLinkMetadata
@@ -1273,12 +1292,16 @@ export class OntologyIrToFullMetadataConverter {
           throw new Error("Unknown parameter type");
       }
 
+      const { validation } = action.actionType.actionTypeLogic.validation
+        .parameterValidations[paramKey].defaultValidation;
+      const convertedValidation = convertActionParameterValidation(validation);
       result[paramKey] = {
         displayName: irParameter.displayMetadata.displayName,
         description: irParameter.displayMetadata.description,
-        required: isParameterRequired(action, paramKey),
+        required: isActionParameterRequired(validation.required),
         dataType,
         typeClasses: [],
+        ...(convertedValidation && { validation: convertedValidation }),
       };
     }
 
@@ -1438,7 +1461,7 @@ export class OntologyIrToFullMetadataConverter {
    * Convert property types from IR to OSDK format
    */
   static getOsdkPropertyType(
-    type: OntologyIrType,
+    type: OntologyIrType | Type | InterfacePropertyTypeType,
   ): Ontologies.ObjectPropertyType | null {
     switch (type.type) {
       case "array": {
@@ -1453,7 +1476,11 @@ export class OntologyIrToFullMetadataConverter {
       case "date":
         return { type: "date" };
       case "decimal":
-        return { type: "decimal" };
+        return {
+          type: "decimal",
+          precision: type.decimal.precision ?? undefined,
+          scale: type.decimal.scale ?? undefined,
+        };
       case "double":
         return { type: "double" };
       case "float":
@@ -1483,7 +1510,13 @@ export class OntologyIrToFullMetadataConverter {
       case "mediaReference":
         return { type: "mediaReference" };
       case "vector":
-        return null;
+        return {
+          type: "vector",
+          dimension: type.vector.dimension,
+          supportsSearchWith: type.vector.supportsSearchWith.map(value => ({
+            value,
+          })),
+        };
       case "geotimeSeriesReference":
         return { type: "geotimeSeriesReference" };
       case "struct": {
@@ -1587,13 +1620,4 @@ function discoverComponentRoot(
     tsConfigPath: tsConfigPath.replace(/\\/g, "/"),
     projectDir: projectDir.replace(/\\/g, "/"),
   };
-}
-
-function isParameterRequired(
-  action: OntologyIrActionTypeBlockDataV2,
-  paramKey: string,
-): boolean {
-  return action.actionType.actionTypeLogic.validation
-    .parameterValidations[paramKey].defaultValidation.validation.required.type
-    === "required";
 }

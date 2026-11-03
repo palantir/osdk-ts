@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  TypeGroupSearchRequest as _api_search_TypeGroupSearchRequest,
-  TypeGroupSearchResponse as _api_search_TypeGroupSearchResponse,
-} from "../search/__components.js";
+import type { TypeGroupSearchRequest as _api_search_TypeGroupSearchRequest } from "../search/__components.js";
+import type { TypeGroupSearchResponse as _api_search_TypeGroupSearchResponse } from "../search/__components.js";
 
 /**
  * Endpoint to search TypeGroups based on various filters. Endpoint allows to return results based on

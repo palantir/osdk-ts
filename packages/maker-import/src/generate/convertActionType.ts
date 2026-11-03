@@ -16,8 +16,10 @@
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { ActionParameter, ActionType } from "@osdk/maker";
-import { OntologyEntityTypeEnum } from "@osdk/maker";
-import { consola } from "consola";
+import {
+  extractAllowedValuesFromActionParameterType,
+  OntologyEntityTypeEnum,
+} from "@osdk/maker";
 
 import { mapActionParameterType } from "./mapActionParameterType.js";
 
@@ -26,12 +28,6 @@ export function convertActionType(action: Ontologies.ActionTypeV2): ActionType {
 
   for (const [paramId, paramV2] of Object.entries(action.parameters)) {
     const mappedType = mapActionParameterType(paramV2.dataType);
-    if (!mappedType) {
-      consola.warn(
-        `Skipping parameter "${paramId}" on action "${action.apiName}": unsupported type "${paramV2.dataType.type}"`,
-      );
-      continue;
-    }
 
     parameters.push({
       id: paramId,
@@ -39,6 +35,7 @@ export function convertActionType(action: Ontologies.ActionTypeV2): ActionType {
       description: paramV2.description,
       type: mappedType,
       validation: {
+        allowedValues: extractAllowedValuesFromActionParameterType(mappedType),
         required: paramV2.required,
       },
     });

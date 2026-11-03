@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetRelationsForObjectTypesRequest as _api_GetRelationsForObjectTypesRequest,
-  GetRelationsForObjectTypesResponse as _api_GetRelationsForObjectTypesResponse,
-} from "../__components.js";
+import type { GetRelationsForObjectTypesRequest as _api_GetRelationsForObjectTypesRequest } from "../__components.js";
+import type { GetRelationsForObjectTypesResponse as _api_GetRelationsForObjectTypesResponse } from "../__components.js";
 
 /**
  * Endpoint to batch load relations associated to given objectTypeIds. The GetRelationsForObjectTypesResponse

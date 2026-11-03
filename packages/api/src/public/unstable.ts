@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+export type { AgentDefinition } from "../agents/AgentDefinition.js";
+export { AgentSendEventTimeoutError } from "../agents/AgentSendEventTimeoutError.js";
+export type {
+  AgentSendEventOptions,
+  AgentSession,
+} from "../agents/AgentSession.js";
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "../experimental/executeStreamingFunction.js";

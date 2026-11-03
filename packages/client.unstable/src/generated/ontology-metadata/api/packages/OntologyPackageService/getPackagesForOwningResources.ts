@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetPackagesForOwningResourcesRequest as _api_packages_GetPackagesForOwningResourcesRequest,
-  GetPackagesForOwningResourcesResponse as _api_packages_GetPackagesForOwningResourcesResponse,
-} from "../__components.js";
+import type { GetPackagesForOwningResourcesRequest as _api_packages_GetPackagesForOwningResourcesRequest } from "../__components.js";
+import type { GetPackagesForOwningResourcesResponse as _api_packages_GetPackagesForOwningResourcesResponse } from "../__components.js";
 
 /**
  * Gets all packages owned by the specified resources. Resources which have no package associated will not have

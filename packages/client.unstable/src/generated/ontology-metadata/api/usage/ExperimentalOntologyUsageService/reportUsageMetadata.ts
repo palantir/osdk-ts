@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  ReportUsageMetadataRequest as _api_usage_ReportUsageMetadataRequest,
-  ReportUsageMetadataResponse as _api_usage_ReportUsageMetadataResponse,
-} from "../__components.js";
+import type { ReportUsageMetadataRequest as _api_usage_ReportUsageMetadataRequest } from "../__components.js";
+import type { ReportUsageMetadataResponse as _api_usage_ReportUsageMetadataResponse } from "../__components.js";
 
 /**
  * Endpoint to report usage of ontology entities. The reported usage will be stored and made available for

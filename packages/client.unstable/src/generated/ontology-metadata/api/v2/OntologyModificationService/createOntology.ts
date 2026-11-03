@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  OntologyCreateRequest as _api_modification_OntologyCreateRequest,
-  OntologyCreateResponse as _api_modification_OntologyCreateResponse,
-} from "../../modification/__components.js";
+import type { OntologyCreateRequest as _api_modification_OntologyCreateRequest } from "../../modification/__components.js";
+import type { OntologyCreateResponse as _api_modification_OntologyCreateResponse } from "../../modification/__components.js";
 
 /**
  * Endpoint to create an Ontology. This should be a one time action when a new

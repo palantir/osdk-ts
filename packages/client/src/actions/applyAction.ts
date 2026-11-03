@@ -34,8 +34,7 @@ import * as Actions from "@osdk/foundry.ontologies/Action";
 import invariant from "tiny-invariant";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
-import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialBy } from "../util/partialBy.js";
@@ -114,10 +113,7 @@ export async function applyAction<
   parameters?: P,
   options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
-  const clientWithHeaders = addUserAgentAndRequestContextHeaders(
-    augmentRequestContext(client, (_) => ({ finalMethodCall: "applyAction" })),
-    action,
-  );
+  const clientWithHeaders = addUserAgentHeader(client, action);
   if (Array.isArray(parameters)) {
     invariant(
       client.transactionId == null,
@@ -132,6 +128,10 @@ export async function applyAction<
           ? await remapBatchActionParams(
               parameters,
               client,
+              // We make this call because, at the time of writing this,
+              // decimal parameters require knowing the parameter type to
+              // serialize their data over the wire. We can remove this call
+              // if we allow the wire to accept JSON Numbers directly.
               await client.ontologyProvider.getActionDefinition(
                 action.unsanitizedApiName ?? action.apiName,
               ),
@@ -163,6 +163,10 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
+          // We make this call because, at the time of writing this,
+          // decimal parameters require knowing the parameter type to
+          // serialize their data over the wire. We can remove this call
+          // if we allow the wire to accept JSON Numbers directly.
           await client.ontologyProvider.getActionDefinition(
             action.unsanitizedApiName ?? action.apiName,
           ),
@@ -214,7 +218,11 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client, actionMetadata);
+    parameterMap[key] = await toDataValue(
+      value,
+      client,
+      actionMetadata.parameters[key].type,
+    );
   }
 
   return parameterMap;

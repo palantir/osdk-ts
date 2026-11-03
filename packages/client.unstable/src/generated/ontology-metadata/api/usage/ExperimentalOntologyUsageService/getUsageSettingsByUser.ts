@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetUsageSettingsByUserRequest as _api_usage_GetUsageSettingsByUserRequest,
-  GetUsageSettingsByUserResponse as _api_usage_GetUsageSettingsByUserResponse,
-} from "../__components.js";
+import type { GetUsageSettingsByUserRequest as _api_usage_GetUsageSettingsByUserRequest } from "../__components.js";
+import type { GetUsageSettingsByUserResponse as _api_usage_GetUsageSettingsByUserResponse } from "../__components.js";
 
 /**
  * Endpoint to load Ontology Usage settings for the user sending the request based on the user's membership

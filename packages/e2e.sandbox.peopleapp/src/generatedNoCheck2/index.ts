@@ -35,6 +35,8 @@ export {
   modifyWorker,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
+export {} from './ontology/agents.js';
+export * as $Agents from './ontology/agents.js';
 export { ExampleInterface, Person, TodoLike, Worker } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {

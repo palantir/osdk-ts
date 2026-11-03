@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { randomUUID } from "node:crypto";
+
 import type { RequestHandler } from "msw";
 
 import { aggregateObjects } from "../FauxFoundry/aggregateObjects.js";
@@ -25,6 +27,20 @@ export const createObjectSetHandlers = (
   baseUrl: string,
   fauxFoundry: FauxFoundry,
 ): Array<RequestHandler> => [
+  /**
+   * Creates a temporary object set.
+   */
+  OntologiesV2.OntologyObjectSets.createTemporary(
+    baseUrl,
+    async ({ request, params }) => {
+      const { objectSet } = await request.json();
+      const ds = fauxFoundry.getDataStore(params.ontologyApiName);
+      const objectSetRid = `ri.object-set.main.object-set.${randomUUID()}`;
+      ds.registerObjectSet(objectSetRid, objectSet);
+      return { objectSetRid };
+    },
+  ),
+
   /**
    * Load ObjectSet Objects
    */

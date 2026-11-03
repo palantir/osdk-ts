@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
-import type {
-  CreatePackageRequest as _api_packages_CreatePackageRequest,
-  CreatePackageResponse as _api_packages_CreatePackageResponse,
-} from "../__components.js";
+import type { CreatePackageRequest as _api_packages_CreatePackageRequest } from "../__components.js";
+import type { CreatePackageResponse as _api_packages_CreatePackageResponse } from "../__components.js";
 
 /**
  * Creates a new package in the specified ontology. Requires the privileged operation `ontology:service-create-package`

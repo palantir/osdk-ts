@@ -56,12 +56,11 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
 /** A read-only map tile layer selected by the host. */
 export interface MapTileLayerParameterValue {
   type: "mapTileLayer";
-  /** A loaded value provides the URL; the widget's renderer loads the style. */
   value: AsyncValue<{
     /**
-     * URL of a Mapbox/Maplibre style JSON document.
+     * The selected tile source ID that can be used in requests to the Tiles Foundry APIs.
      */
-    styleJsonUrl: string;
+    tileSourceId: string;
   }>;
 }
 

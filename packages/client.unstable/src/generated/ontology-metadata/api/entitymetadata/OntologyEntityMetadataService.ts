@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export { getStreamingProfileConfigs } from "./OntologyEntityMetadataService/getStreamingProfileConfigs.js";
 export { loadEntityMetadata } from "./OntologyEntityMetadataService/loadEntityMetadata.js";
 export { modifySystemEntityMetadata } from "./OntologyEntityMetadataService/modifySystemEntityMetadata.js";
+export { getStreamingProfileConfigs } from "./OntologyEntityMetadataService/getStreamingProfileConfigs.js";

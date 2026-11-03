@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
+import type {
+  AgentApiName,
+  AgentDefinitionVersion,
+} from "@osdk/foundry.agents";
 import type * as gateway from "@osdk/foundry.ontologies";
 
+// TODO(mhogberg): Update APIs to include apiName in AgentDefinitionVersion,
+// remove WireAgentDefinitionVersion from here.
+/** @beta */
+export interface WireAgentDefinitionVersion extends AgentDefinitionVersion {
+  apiName: AgentApiName;
+}
+
 export interface WireOntologyDefinition extends gateway.OntologyFullMetadata {
+  /** @beta */
+  agents?: Record<AgentApiName, WireAgentDefinitionVersion>;
 }

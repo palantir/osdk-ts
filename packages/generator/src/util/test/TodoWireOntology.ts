@@ -23,6 +23,18 @@ export const TodoWireOntology: WireOntologyDefinition = {
     displayName: "",
     description: "",
   },
+  agents: {
+    weatherAgent: {
+      apiName: "weatherAgent",
+      version: "1.2.3",
+      createdTime: "2026-01-01T00:00:00Z",
+      createdBy: "user",
+      argumentDefinitions: [{ name: "city", dataType: { type: "string" } }],
+      eventDefinitions: [],
+      agentStateType: { type: "struct", fields: [] },
+      contextItemDefinitions: [],
+    },
+  },
   actionTypes: {
     "markTodoCompleted": {
       apiName: "markTodoCompleted",

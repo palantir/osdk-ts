@@ -1,5 +1,68 @@
 # @osdk/react-components-storybook
 
+## 0.69.0
+
+### Patch Changes
+
+- @osdk/faux@0.63.0
+
+## 0.68.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+- Updated dependencies [d0f3019]
+  - @osdk/faux@0.62.0
+
+## 0.67.0
+
+### Patch Changes
+
+- @osdk/faux@0.61.0
+
+## 0.66.0
+
+### Patch Changes
+
+- Updated dependencies [553461f]
+  - @osdk/faux@0.60.0
+
+## 0.65.0
+
+### Patch Changes
+
+- Updated dependencies [3677309]
+  - @osdk/faux@0.59.0
+
+## 0.64.0
+
+### Patch Changes
+
+- @osdk/faux@0.58.0
+
+## 0.63.0
+
+### Patch Changes
+
+- Updated dependencies [75a8f07]
+  - @osdk/faux@0.57.0
+
+## 0.62.0
+
+### Patch Changes
+
+- @osdk/faux@0.56.0
+
+## 0.61.0
+
+### Patch Changes
+
+- @osdk/faux@0.55.0
+
 ## 0.60.0
 
 ### Minor Changes

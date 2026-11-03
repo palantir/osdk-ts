@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { GetStreamingProfileConfigsResponse as _api_entitymetadata_GetStreamingProfileConfigsResponse } from "../__components.js";
 

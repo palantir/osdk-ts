@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  CheckActionTypeProvenanceStatusRequest as _api_usage_CheckActionTypeProvenanceStatusRequest,
-  CheckActionTypeProvenanceStatusResponse as _api_usage_CheckActionTypeProvenanceStatusResponse,
-} from "../__components.js";
+import type { CheckActionTypeProvenanceStatusRequest as _api_usage_CheckActionTypeProvenanceStatusRequest } from "../__components.js";
+import type { CheckActionTypeProvenanceStatusResponse as _api_usage_CheckActionTypeProvenanceStatusResponse } from "../__components.js";
 
 /**
  * Checks the provenance reporting status for action types.

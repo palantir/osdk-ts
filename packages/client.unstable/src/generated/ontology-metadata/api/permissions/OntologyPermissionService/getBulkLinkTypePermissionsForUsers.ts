@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetBulkLinkTypePermissionsForUsersRequest as _api_permissions_GetBulkLinkTypePermissionsForUsersRequest,
-  GetBulkLinkTypePermissionsForUsersResponse as _api_permissions_GetBulkLinkTypePermissionsForUsersResponse,
-} from "../__components.js";
+import type { GetBulkLinkTypePermissionsForUsersRequest as _api_permissions_GetBulkLinkTypePermissionsForUsersRequest } from "../__components.js";
+import type { GetBulkLinkTypePermissionsForUsersResponse as _api_permissions_GetBulkLinkTypePermissionsForUsersResponse } from "../__components.js";
 
 /**
  * Returns permissions that other users have on the LinkTypes provided. The result is scoped down to the

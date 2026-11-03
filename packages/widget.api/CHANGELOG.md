@@ -1,5 +1,105 @@
 # @osdk/widget.api
 
+## 3.86.0
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+
+## 3.85.0
+
+### Minor Changes
+
+- a3e7101: Forward hotkeys from custom widget to host
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/api@2.85.0
+
+## 3.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+
+## 3.83.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+
+## 3.82.0
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/api@2.82.0
+
+## 3.81.0
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [23701c5]
+  - @osdk/api@2.81.0
+
+## 3.80.0
+
+### Patch Changes
+
+- @osdk/api@2.80.0
+
+## 3.79.0
+
+### Patch Changes
+
+- Updated dependencies [86c708b]
+  - @osdk/api@2.79.0
+
+## 3.78.0
+
+### Minor Changes
+
+- 630e179: Show the mapTileLayer parameter type in autocomplete suggestions.
+
+### Patch Changes
+
+- @osdk/api@2.78.0
+
+## 3.77.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+  - @osdk/api@2.77.0
+
+## 3.76.0
+
+### Minor Changes
+
+- 52fecd0: [widgets] replace styleJsonUrl with tileSourceId
+
+## 3.75.0
+
+### Patch Changes
+
+- @osdk/api@2.76.0
+
+## 3.74.0
+
+### Patch Changes
+
+- @osdk/api@2.75.0
+
+## 3.73.0
+
+### Patch Changes
+
+- @osdk/api@2.74.0
+
 ## 3.72.0
 
 ### Minor Changes

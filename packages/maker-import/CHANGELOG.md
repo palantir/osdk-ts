@@ -1,5 +1,110 @@
 # @osdk/maker-import
 
+## 0.50.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/maker@0.85.0
+
+## 0.49.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [d583566]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [050417c]
+  - @osdk/maker@0.84.0
+  - @osdk/client.unstable@2.85.0
+
+## 0.48.0
+
+### Minor Changes
+
+- 8818fcf: Correctly map vector types, error on impossible type conversion instead of silent failure
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+
+## 0.47.0
+
+### Patch Changes
+
+- Updated dependencies [2089ca9]
+  - @osdk/maker@0.81.0
+  - @osdk/client.unstable@2.82.0
+
+## 0.46.0
+
+### Patch Changes
+
+- Updated dependencies [d9eb929]
+- Updated dependencies [1ab9e14]
+  - @osdk/maker@0.80.0
+  - @osdk/client.unstable@2.81.0
+
+## 0.45.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+- Updated dependencies [d63eb64]
+- Updated dependencies [5b15676]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/maker@0.79.0
+
+## 0.44.0
+
+### Minor Changes
+
+- e365fc1: Preserve imported marking and struct properties in generated Marketplace input shapes.
+
+### Patch Changes
+
+- @osdk/maker@0.78.0
+- @osdk/client.unstable@2.77.0
+
+## 0.43.0
+
+### Minor Changes
+
+- c11669e: Fix incomplete Marketplace mappings for SPTs imported ontology objects
+
+### Patch Changes
+
+- Updated dependencies [dec2ee4]
+- Updated dependencies [c11669e]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/maker@0.76.0
+  - @osdk/client.unstable@2.76.0
+
+## 0.42.0
+
+### Minor Changes
+
+- 47cf6a2: Preserve interface links on import
+
+## 0.41.0
+
+### Patch Changes
+
+- @osdk/maker@0.75.0
+- @osdk/client.unstable@2.74.0
+
 ## 0.40.0
 
 ### Patch Changes

@@ -21,7 +21,6 @@ import type {
   SharedPropertyType,
 } from "@osdk/maker";
 import { OntologyEntityTypeEnum } from "@osdk/maker";
-import { consola } from "consola";
 
 import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
 import { mapPropertyType } from "./mapPropertyType.js";
@@ -48,29 +47,21 @@ export function convertInterfaceType(
   for (const [_propApiName, prop] of Object.entries(iface.propertiesV2)) {
     if (prop.type === "interfaceSharedPropertyType") {
       const converted = convertSharedPropertyType(prop);
-      if (converted) {
-        const entry = {
-          sharedPropertyType: converted,
-          required: prop.required,
-        };
-        propertiesV2[prop.apiName] = entry;
-        propertiesV3[withoutNamespace(prop.apiName)] = entry;
-      }
+      const entry = {
+        sharedPropertyType: converted,
+        required: prop.required,
+      };
+      propertiesV2[prop.apiName] = entry;
+      propertiesV3[withoutNamespace(prop.apiName)] = entry;
     } else if (prop.type === "interfaceDefinedPropertyType") {
       const mapped = mapPropertyType(prop.dataType);
-      if (mapped) {
-        propertiesV3[withoutNamespace(prop.apiName)] = {
-          type: mapped.type,
-          array: mapped.array,
-          displayName: prop.displayName,
-          description: prop.description,
-          required: prop.requireImplementation,
-        };
-      } else {
-        consola.warn(
-          `Skipping interface-defined property "${prop.apiName}": unsupported type "${prop.dataType.type}"`,
-        );
-      }
+      propertiesV3[withoutNamespace(prop.apiName)] = {
+        type: mapped.type,
+        array: mapped.array,
+        displayName: prop.displayName,
+        description: prop.description,
+        required: prop.requireImplementation,
+      };
     }
   }
 
@@ -91,11 +82,30 @@ export function convertInterfaceType(
       description: iface.description ?? "",
     },
     extendsInterfaces,
-    links: [],
-    actionTypeConstraints: [],
+    links: Object.values(iface.links).map(convertInterfaceLinkType),
+    actionTypeConstraints: [], // these don't exist on the gateway type
     status: { type: "active", active: {} },
     propertiesV2,
     propertiesV3,
     searchable: true,
+  };
+}
+
+function convertInterfaceLinkType(
+  link: Ontologies.InterfaceLinkType,
+): InterfaceType["links"][number] {
+  const destination = link.linkedEntityApiName;
+  return {
+    cardinality: link.cardinality === "ONE" ? "SINGLE" : "MANY",
+    linkedEntityTypeId:
+      destination.type === "interfaceTypeApiName"
+        ? { type: "interfaceType", interfaceType: destination.apiName }
+        : { type: "objectType", objectType: destination.apiName },
+    metadata: {
+      apiName: link.apiName,
+      displayName: link.displayName,
+      description: link.description ?? "",
+    },
+    required: link.required,
   };
 }

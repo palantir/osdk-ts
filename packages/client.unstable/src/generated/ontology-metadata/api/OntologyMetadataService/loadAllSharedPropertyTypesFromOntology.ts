@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAllSharedPropertyTypesPageRequest as _api_LoadAllSharedPropertyTypesPageRequest,
-  LoadAllSharedPropertyTypesPageResponse as _api_LoadAllSharedPropertyTypesPageResponse,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-} from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { LoadAllSharedPropertyTypesPageRequest as _api_LoadAllSharedPropertyTypesPageRequest } from "../__components.js";
+import type { LoadAllSharedPropertyTypesPageResponse as _api_LoadAllSharedPropertyTypesPageResponse } from "../__components.js";
 
 /**
  * Endpoint to load a paged collection of all SharedPropertyTypes visible to the user from the specified Ontology and

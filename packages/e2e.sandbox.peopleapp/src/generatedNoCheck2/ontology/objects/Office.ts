@@ -75,6 +75,7 @@ export interface Office extends $ObjectTypeDefinition {
     props: Office.Props;
     linksType: Office.Links;
     strictProps: Office.StrictProps;
+    requiredProps: 'primaryKey_';
     apiName: 'Office';
     description: '';
     displayName: 'Office';

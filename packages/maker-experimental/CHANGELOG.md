@@ -1,5 +1,243 @@
 # @osdk/maker-experimental
 
+## 0.81.0
+
+### Minor Changes
+
+- 6b9b2c0: Preserve `isRequiredParameterOnConcreteAction` in Maker and Marketplace shapes. When the flag is true, check that mapped Action parameters are required.
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/maker@0.85.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters.ontologyir@2.86.0
+  - @osdk/generator-converters.preview@0.60.0
+  - @osdk/maker-import@0.50.0
+
+## 0.80.0
+
+### Minor Changes
+
+- d583566: Emit derived `avg`, `sum`, `min`, `max`, `approximateCardinality` and `exactCardinality` aggregations with the property type identifier directly under the aggregation key, so packaging no longer fails with "missing field `type`".
+- c34a294: Validate interface action constraint references are valid
+- d53bef9: Add external recommendations for interface action type constraints
+
+### Patch Changes
+
+- Updated dependencies [d583566]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+- Updated dependencies [050417c]
+- Updated dependencies [34c76cd]
+  - @osdk/maker@0.84.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/maker-import@0.49.0
+  - @osdk/api@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+  - @osdk/generator-converters.preview@0.59.0
+
+## 0.79.0
+
+### Minor Changes
+
+- 6df3c1e: Support folder structure in OAC
+- e2414a2: Deduplicate marking input group names when building an object's datasource marking constraint, so properties that share a group no longer create a separate repeated-name Marketplace input such as `group/group`.
+- aa664cc: Introduce defineFolder to clean up maker folder api
+
+### Patch Changes
+
+- Updated dependencies [6df3c1e]
+- Updated dependencies [e2414a2]
+- Updated dependencies [aa664cc]
+  - @osdk/maker@0.83.0
+  - @osdk/api@2.84.0
+  - @osdk/client.unstable@2.84.0
+  - @osdk/generator-converters.ontologyir@2.84.0
+
+## 0.78.0
+
+### Minor Changes
+
+- 4c59807: Support authored value type references in struct constraints, including inline constraints on struct and array-of-struct object properties, and package their Marketplace dependencies with consistent value type input titles and descriptions across blocks. Move `OntologyIrV2` from `@osdk/client.unstable` to `@osdk/maker-experimental` and include value type dependencies in its `valueTypes` entries.
+
+### Patch Changes
+
+- Updated dependencies [8818fcf]
+- Updated dependencies [4c59807]
+  - @osdk/maker-import@0.48.0
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+  - @osdk/generator-converters.ontologyir@2.83.0
+  - @osdk/generator-converters.preview@0.58.0
+  - @osdk/api@2.83.0
+
+## 0.77.0
+
+### Patch Changes
+
+- Updated dependencies [2089ca9]
+- Updated dependencies [9f97981]
+  - @osdk/maker@0.81.0
+  - @osdk/api@2.82.0
+  - @osdk/maker-import@0.47.0
+  - @osdk/generator-converters.preview@0.57.0
+  - @osdk/client.unstable@2.82.0
+  - @osdk/generator-converters.ontologyir@2.82.0
+
+## 0.76.0
+
+### Minor Changes
+
+- d9eb929: Resolve derived property traversal directions consistently during validation and generation, and reference the final linked object's property RIDs. Allow derived datasources alongside empty backing datasets and exclude derived properties from generated backing columns.
+- 1ab9e14: Enforce the interface schema migration lockfile in `maker-experimental` before writing block data, with `--lockfile`, `--write-locks`, and `--yes` options matching `maker`.
+
+### Patch Changes
+
+- Updated dependencies [24630ae]
+- Updated dependencies [d9eb929]
+- Updated dependencies [1ab9e14]
+- Updated dependencies [23701c5]
+- Updated dependencies [bc63bd9]
+- Updated dependencies [f28586c]
+- Updated dependencies [8bc6e4a]
+  - @osdk/api@2.81.0
+  - @osdk/maker@0.80.0
+  - @osdk/generator-converters.preview@0.56.0
+  - @osdk/generator-converters.ontologyir@2.81.0
+  - @osdk/client.unstable@2.81.0
+  - @osdk/maker-import@0.46.0
+
+## 0.75.0
+
+### Minor Changes
+
+- e9bf2de: Add edge packaging to oac
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+  - @osdk/api@2.80.0
+  - @osdk/generator-converters.ontologyir@2.80.0
+
+## 0.74.0
+
+### Minor Changes
+
+- 533f264: Emit relevant interface schema migration output shapes when converting DSL to block-data/shapes in maker-experimental.
+- 5b15676: Support explicit and conditional struct field defaults in Marketplace actions, and automatically prefill struct and struct-array fields in modify and create-or-modify object actions.
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+- Updated dependencies [d63eb64]
+- Updated dependencies [5b15676]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/maker@0.79.0
+  - @osdk/generator-converters.ontologyir@2.78.0
+  - @osdk/generator-converters.preview@0.55.0
+  - @osdk/maker-import@0.45.0
+  - @osdk/api@2.78.0
+
+## 0.73.0
+
+### Patch Changes
+
+- Updated dependencies [2ab4d7c]
+- Updated dependencies [75a8f07]
+- Updated dependencies [e365fc1]
+- Updated dependencies [6f2b7e6]
+  - @osdk/api@2.77.0
+  - @osdk/maker-import@0.44.0
+  - @osdk/generator-converters.preview@0.54.0
+  - @osdk/maker@0.78.0
+  - @osdk/client.unstable@2.77.0
+  - @osdk/generator-converters.ontologyir@2.77.0
+
+## 0.72.0
+
+### Minor Changes
+
+- de4d83e: Add phonetic search support to string properties.
+
+### Patch Changes
+
+- Updated dependencies [de4d83e]
+  - @osdk/maker@0.77.0
+
+## 0.71.0
+
+### Minor Changes
+
+- 13ad212: Fix imported object and property mappings being written under an `undefined` key in Marketplace packages.
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [dec2ee4]
+- Updated dependencies [a9fafd0]
+- Updated dependencies [c11669e]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/maker@0.76.0
+  - @osdk/generator-converters.preview@0.53.0
+  - @osdk/maker-import@0.43.0
+  - @osdk/client.unstable@2.76.0
+  - @osdk/api@2.76.0
+
+## 0.70.0
+
+### Minor Changes
+
+- 3e47b21: Fix empty backing dataset generation for geopoint and geoshape properties, including arrays, by using string columns.
+
+## 0.69.0
+
+### Minor Changes
+
+- e5da515: Set `includeData: false` for generated empty object and link backing datasets.
+
+### Patch Changes
+
+- @osdk/api@2.75.0
+- @osdk/client.unstable@2.75.0
+- @osdk/generator-converters.ontologyir@2.75.0
+
+## 0.68.0
+
+### Minor Changes
+
+- c25e568: Fix primitive paramType matching for lists
+- 60fdae9: Include group dependencies from raw security policy comparisons in Marketplace packages.
+- 4f9768f: Use resolved shape presets for imported ontology parent shapes
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [e316cb7]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/generator-converters.preview@0.52.0
+  - @osdk/maker@0.75.0
+  - @osdk/api@2.74.0
+  - @osdk/client.unstable@2.74.0
+  - @osdk/maker-import@0.41.0
+
+## 0.67.0
+
+### Patch Changes
+
+- Updated dependencies [2c60601]
+- Updated dependencies [5e1b2c7]
+- Updated dependencies [9fa9a26]
+  - @osdk/maker@0.74.0
+  - @osdk/generator-converters.preview@0.51.0
+
 ## 0.66.0
 
 ### Minor Changes

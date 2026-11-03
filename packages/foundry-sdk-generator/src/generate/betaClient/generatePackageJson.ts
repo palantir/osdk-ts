@@ -26,6 +26,7 @@ import {
 export async function generatePackageJson(options: {
   packageName: string;
   packageVersion: string;
+  scripts?: Record<string, string>;
   packagePath: string;
   dependencies?: Array<{ dependencyName: string; dependencyVersion: string }>;
   peerDependencies?: Array<{
@@ -50,6 +51,7 @@ export async function generatePackageJson(options: {
   const packageJson = {
     name: options.packageName,
     version: options.packageVersion,
+    scripts: options.scripts,
     main: "./cjs/index.js",
     types: "./cjs/index.d.ts",
     osdk: { packageRid: options.packageRid, branch: options.branch },

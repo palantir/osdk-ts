@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAllTypeGroupsPageRequest as _api_LoadAllTypeGroupsPageRequest,
-  LoadAllTypeGroupsPageResponse as _api_LoadAllTypeGroupsPageResponse,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-} from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { LoadAllTypeGroupsPageRequest as _api_LoadAllTypeGroupsPageRequest } from "../__components.js";
+import type { LoadAllTypeGroupsPageResponse as _api_LoadAllTypeGroupsPageResponse } from "../__components.js";
 
 /**
  * Endpoint to load a paged collection of all type groups visible to the user from the specified ontology and

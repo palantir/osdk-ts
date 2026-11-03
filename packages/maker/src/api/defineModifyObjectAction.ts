@@ -36,7 +36,7 @@ import {
   getPropertyKeys,
   toPropertyMap,
 } from "./object/objectPropertyHelpers.js";
-import { isStruct } from "./properties/PropertyTypeType.js";
+import { setObjectPropertyDefaults } from "./setObjectPropertyDefaults.js";
 
 export function defineModifyObjectAction(
   defInput: ActionTypeUserDefinition,
@@ -44,10 +44,15 @@ export function defineModifyObjectAction(
   const def = cloneDefinition(defInput);
   const propertyKeys = getPropertyKeys(def.objectType);
   validateActionParameters(def, propertyKeys, def.objectType.apiName);
+  const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
+    .filter((ds) => ds.type === "derived")
+    .flatMap((ds) => Object.keys(ds.propertyMapping));
+
   const propertyParameters = propertyKeys.filter(
     (id) =>
       isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!) &&
-      id !== def.objectType.primaryKeyPropertyApiName,
+      id !== def.objectType.primaryKeyPropertyApiName &&
+      !propertiesWithDerivedDatasources.includes(id),
   );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach((param) =>
@@ -74,19 +79,11 @@ export function defineModifyObjectAction(
     toPropertyMap(def.objectType),
     parameterNames,
   );
-  parameters.forEach((p) => {
-    // create prefilled parameters for object type properties unless overridden
-    const property = getProperty(def.objectType, p.id);
-    if (property && !isStruct(property.type) && p.defaultValue === undefined) {
-      p.defaultValue = {
-        type: "objectParameterPropertyValue",
-        objectParameterPropertyValue: {
-          parameterId: MODIFY_OBJECT_PARAMETER,
-          propertyTypeId: p.id,
-        },
-      };
-    }
-  });
+  setObjectPropertyDefaults(
+    parameters,
+    def.objectType,
+    MODIFY_OBJECT_PARAMETER,
+  );
 
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map(([id, value]) => [

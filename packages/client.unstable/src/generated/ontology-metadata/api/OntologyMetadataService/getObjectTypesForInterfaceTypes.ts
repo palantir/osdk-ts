@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetObjectTypesForInterfaceTypesRequest as _api_GetObjectTypesForInterfaceTypesRequest,
-  GetObjectTypesForInterfaceTypesResponse as _api_GetObjectTypesForInterfaceTypesResponse,
-} from "../__components.js";
+import type { GetObjectTypesForInterfaceTypesRequest as _api_GetObjectTypesForInterfaceTypesRequest } from "../__components.js";
+import type { GetObjectTypesForInterfaceTypesResponse as _api_GetObjectTypesForInterfaceTypesResponse } from "../__components.js";
 
 /**
  * Gets a map of interfaces to the set of object types that implement the interface. At most 50 interfaces can be

@@ -16,10 +16,10 @@
 
 export { getObjectTypeSemanticSearchStatus } from "./OntologyMetadataSearchService/getObjectTypeSemanticSearchStatus.js";
 export { objectTypes } from "./OntologyMetadataSearchService/objectTypes.js";
-export { searchActionTypes } from "./OntologyMetadataSearchService/searchActionTypes.js";
-export { searchInterfaceTypes } from "./OntologyMetadataSearchService/searchInterfaceTypes.js";
-export { searchLinkTypes } from "./OntologyMetadataSearchService/searchLinkTypes.js";
 export { searchObjectTypes } from "./OntologyMetadataSearchService/searchObjectTypes.js";
+export { searchActionTypes } from "./OntologyMetadataSearchService/searchActionTypes.js";
+export { searchLinkTypes } from "./OntologyMetadataSearchService/searchLinkTypes.js";
 export { searchSharedPropertyTypes } from "./OntologyMetadataSearchService/searchSharedPropertyTypes.js";
-export { searchTitleInCombinedEntityType } from "./OntologyMetadataSearchService/searchTitleInCombinedEntityType.js";
+export { searchInterfaceTypes } from "./OntologyMetadataSearchService/searchInterfaceTypes.js";
 export { searchTypeGroups } from "./OntologyMetadataSearchService/searchTypeGroups.js";
+export { searchTitleInCombinedEntityType } from "./OntologyMetadataSearchService/searchTitleInCombinedEntityType.js";

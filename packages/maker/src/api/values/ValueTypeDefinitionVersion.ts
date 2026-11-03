@@ -18,7 +18,6 @@ import type {
   BaseType,
   ExampleValue,
   ValueTypeApiName,
-  ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
   ValueTypeStatus,
   ValueTypeVersion,
@@ -26,6 +25,7 @@ import type {
 
 import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
+import type { AuthoringValueTypeDataConstraint } from "./ValueTypeType.js";
 
 export type ValueTypeDefinitionVersion = OntologyEntityBase & {
   apiName: ValueTypeApiName;
@@ -34,7 +34,7 @@ export type ValueTypeDefinitionVersion = OntologyEntityBase & {
   status: ValueTypeStatus;
   version: ValueTypeVersion;
   baseType: BaseType;
-  constraints: ValueTypeDataConstraint[];
+  constraints: AuthoringValueTypeDataConstraint[];
   exampleValues: ExampleValue[];
   __type: OntologyEntityTypeEnum.VALUE_TYPE;
 };

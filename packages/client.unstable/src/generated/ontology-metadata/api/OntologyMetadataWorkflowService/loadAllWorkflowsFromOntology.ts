@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAllWorkflowsPageRequest as _workflow_api_LoadAllWorkflowsPageRequest,
-  LoadAllWorkflowsPageResponse as _workflow_api_LoadAllWorkflowsPageResponse,
-} from "../../workflow/api/__components.js";
-import type {
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-} from "../__components.js";
+import type { LoadAllWorkflowsPageRequest as _workflow_api_LoadAllWorkflowsPageRequest } from "../../workflow/api/__components.js";
+import type { LoadAllWorkflowsPageResponse as _workflow_api_LoadAllWorkflowsPageResponse } from "../../workflow/api/__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
 
 /**
  * Endpoint to get all the Workflows a user has access to. There are no guarantees that the Workflow will have
