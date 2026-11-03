@@ -104,12 +104,8 @@ export function groupMarkingsByCategory(
 ): CategoryMarkingGroup[] {
   const markingsByCategoryId = new Map<string, PickerMarking[]>();
 
-  const sortedMarkings = sortMarkingsByProminenceAndPriority<
-    PickerMarking & { priority?: string; prominence?: MarkingProminence }
-  >(markings);
-  const sortedCategories = sortCategoriesByPriority<
-    PickerMarkingCategory & { priority?: string }
-  >(categories);
+  const sortedMarkings = sortMarkingsByProminenceAndPriority(markings);
+  const sortedCategories = sortCategoriesByPriority(categories);
 
   for (const marking of sortedMarkings) {
     const existing = markingsByCategoryId.get(marking.categoryId);

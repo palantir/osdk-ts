@@ -201,11 +201,11 @@ describe("groupMarkingsByCategory", () => {
 
   describe("ordering", () => {
     it("sorts categories by priority and their markings by prominence and priority", () => {
-      const categories = [
+      const categories: PickerMarkingCategory[] = [
         { ...categoryA, priority: "2" },
         { ...categoryB, priority: "10" },
       ];
-      const unsortedMarkings = [
+      const unsortedMarkings: PickerMarking[] = [
         { id: "a1", categoryId: "a", name: "A1" },
         { id: "b-missing", categoryId: "b", name: "Missing", priority: "100" },
         {
