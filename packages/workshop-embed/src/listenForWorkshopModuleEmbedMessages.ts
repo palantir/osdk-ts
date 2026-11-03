@@ -26,8 +26,7 @@ import type { WorkshopVariableMap } from "./variables.js";
 
 /** Options for the Workshop-side listener. @public */
 export interface ListenForWorkshopModuleEmbedMessagesOptions<
-  TVariables extends WorkshopVariableMap<keyof TVariables> =
-    WorkshopVariableMap,
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 > {
   /** Called for each accepted connection. Return a function to clean up per-connection resources. */
   onConnect?: WorkshopModuleConnectHandler<TVariables>;
@@ -42,8 +41,7 @@ export interface ListenForWorkshopModuleEmbedMessagesOptions<
  * @public
  */
 export function listenForWorkshopModuleEmbedMessages<
-  TVariables extends WorkshopVariableMap<keyof TVariables> =
-    WorkshopVariableMap,
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 >({
   onConnect,
   hostWindow = window,

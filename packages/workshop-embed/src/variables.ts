@@ -24,16 +24,14 @@ import type { WorkshopEmbedMessage } from "./protocol.js";
 /** A scalar variable value. Numbers must be finite; null represents a cleared value. @public */
 export type WorkshopVariableValue = string | number | boolean | null;
 
-/** A map from variable keys to supported scalar values. @public */
-export type WorkshopVariableMap<TKey extends PropertyKey = string> = Record<
-  TKey,
-  WorkshopVariableValue
->;
+/** A map from external IDs to supported scalar values. @public */
+export type WorkshopVariableMap = {
+  [externalId: string]: WorkshopVariableValue;
+};
 
 /** Variable updates keyed by non-empty external IDs. Omitted variables are unchanged. @public */
 export type WorkshopVariableValues<
-  TVariables extends WorkshopVariableMap<keyof TVariables> =
-    WorkshopVariableMap,
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 > = {
   readonly [Name in keyof TVariables]?: TVariables[Name] | null;
 };
