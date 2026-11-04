@@ -118,6 +118,15 @@ const whereClauses = {
       },
     },
   },
+  notGeopointIntersects: {
+    $not: {
+      geoPoint: {
+        $intersects: {
+          $bbox: [5, 3, 3, 2],
+        },
+      },
+    },
+  },
   titleStartsWithHi: {
     $title: { $startsWith: "Hi" },
   },
@@ -178,6 +187,7 @@ const cases = [
   ["fauxObject", "mediaReferenceIsNull", true, true],
   ["fauxObject", "mediaReferenceNotIsNull", false, false],
   ["fauxObject", "geopointIntersects", false, true],
+  ["fauxObject", "notGeopointIntersects", false, true],
   ["fauxObjectWithIdentifiers", "titleStartsWithHi", true, true],
   ["fauxObjectWithIdentifiers", "titleStartsWithBye", false, false],
   ["fauxObjectWithIdentifiers", "primaryKeyEquals", true, true],
