@@ -30,6 +30,7 @@ import {
   ontologies,
   startNodeApiServer,
 } from "@osdk/shared.test";
+import pDefer from "p-defer";
 import type { Mock } from "vitest";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -250,8 +251,7 @@ describe(BulkObjectLoader, () => {
     };
 
     it("loads interface objects by querying implementing types", async () => {
-      const loader = new BulkObjectLoader(client, 25, 100);
-      vi.useFakeTimers();
+      const loader = new BulkObjectLoader(client, 25, 2);
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
       vi.mocked(client.fetchMetadata)
@@ -275,13 +275,22 @@ describe(BulkObjectLoader, () => {
         $primaryKey: 1,
       };
 
-      client.mockReturnValueOnce(mockObjectSet([fullObj]));
+      const laterPage = pDefer();
+      const objectSet = mockObjectSet([]);
+      objectSet.fetchPage = vi
+        .fn()
+        .mockResolvedValueOnce({ data: [fullObj], nextPageToken: "second" })
+        .mockReturnValueOnce(laterPage.promise);
+      client.mockReturnValueOnce(objectSet);
 
       const loadPromise = loader.fetch("FooInterface", 1, "interface");
-      vi.advanceTimersByTime(26);
+      const missingPromise = loader.fetch("FooInterface", 2, "interface");
+      const laterFailure =
+        expect(missingPromise).rejects.toThrow("page failed");
 
       await expect(loadPromise).resolves.toMatchObject({ $primaryKey: 1 });
-      vi.useRealTimers();
+      laterPage.reject(new Error("page failed"));
+      await laterFailure;
     });
 
     it("rejects when interface object is not found in any implementing type", async () => {
@@ -564,6 +573,7 @@ describe(BulkObjectLoader, () => {
 
     it("batches RDP objects by definition, selection, and security options", async () => {
       const loader = new BulkObjectLoader(rdpClient);
+      const continuePage = pDefer<void>();
       const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
       const officeId = store.rdpCanonicalizer.canonicalize({
         officeName: (base) =>
@@ -577,6 +587,9 @@ describe(BulkObjectLoader, () => {
           };
           if (!body.loadPropertySecurities) {
             return;
+          }
+          if (body.pageToken) {
+            await continuePage.promise;
           }
           return msw.HttpResponse.json({
             data: [
@@ -594,16 +607,16 @@ describe(BulkObjectLoader, () => {
         }),
       );
 
-      const objects = await Promise.all([
-        loader.fetch(
-          "Employee",
-          1,
-          "object",
-          ["officeName"],
-          true,
-          undefined,
-          rdpConfig,
-        ),
+      const firstObject = loader.fetch(
+        "Employee",
+        1,
+        "object",
+        ["officeName"],
+        true,
+        undefined,
+        rdpConfig,
+      );
+      const remainingObjects = Promise.all([
         loader.fetch(
           "Employee",
           2,
@@ -641,6 +654,10 @@ describe(BulkObjectLoader, () => {
           officeId,
         ),
       ]);
+
+      const first = await firstObject;
+      continuePage.resolve();
+      const objects = [first, ...(await remainingObjects)];
 
       expect(loadRequests).toHaveLength(5);
       expect(objects).toMatchObject([
