@@ -43,6 +43,7 @@ import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
   ClientRef,
+  DerivedPropertiesRef,
   ObjectDefRef,
   PropertySecuritiesRef,
   UnderlyingOsdkObject,
@@ -179,6 +180,10 @@ export function createOsdkObject(
     },
     [ObjectDefRef]: { value: objectDef, enumerable: false }, // TODO: Potentially update when GA metadata field
     [ClientRef]: { value: client, enumerable: false },
+    [DerivedPropertiesRef]: {
+      enumerable: false,
+      value: Object.keys(derivedPropertyTypeByName),
+    },
     ...basePropDefs,
   } satisfies Record<keyof ObjectHolder, PropertyDescriptor>);
 

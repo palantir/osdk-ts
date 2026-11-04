@@ -24,6 +24,7 @@ import type {
 import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatter.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
 import type {
+  DerivedPropertiesRef,
   PropertySecuritiesRef,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
@@ -36,6 +37,7 @@ export interface BaseHolder {
   readonly [PropertySecuritiesRef]:
     | { [propName: string]: PropertySecurity[] }
     | undefined;
+  readonly [DerivedPropertiesRef]?: ReadonlyArray<string>;
 
   readonly $apiName: string;
   readonly $objectType: string;
