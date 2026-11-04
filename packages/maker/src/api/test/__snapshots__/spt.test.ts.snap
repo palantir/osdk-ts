@@ -89,7 +89,7 @@ exports[`SPTs > Custom decimal fields properly set 1`] = `
         "type": {
           "decimal": {
             "precision": 10,
-            "scale": undefined,
+            "scale": 2,
           },
           "type": "decimal",
         },
@@ -121,7 +121,7 @@ exports[`SPTs > Custom decimal fields properly set 1`] = `
         "indexedForSearch": true,
         "type": {
           "decimal": {
-            "precision": undefined,
+            "precision": 5,
             "scale": 5,
           },
           "type": "decimal",
