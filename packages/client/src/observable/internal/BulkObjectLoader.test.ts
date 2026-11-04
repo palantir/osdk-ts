@@ -237,6 +237,101 @@ describe(BulkObjectLoader, () => {
     vi.useRealTimers();
   });
 
+  describe.each(["object", "interface"] as const)(
+    "%s pagination",
+    (defType) => {
+      const fetchPage = vi.fn();
+      const objectSet = {
+        where: vi.fn(() => objectSet),
+        fetchPage,
+      } as Pick<
+        ObjectSet<ObjectTypeDefinition>,
+        "fetchPage" | "where"
+      > as ObjectSet<ObjectTypeDefinition>;
+
+      beforeEach(() => {
+        fetchPage.mockReset();
+        vi.mocked(objectSet.where).mockClear();
+        if (defType === "interface") {
+          vi.mocked(client.fetchMetadata).mockResolvedValueOnce({
+            type: "interface",
+            implementedBy: ["Employee"],
+            links: {},
+            apiName: "FooInterface",
+            displayName: "FooInterface",
+            description: undefined,
+            properties: {},
+            rid: "ri.test",
+          } satisfies InterfaceMetadata);
+        }
+        client.mockReturnValueOnce(objectSet);
+      });
+
+      const apiName = defType === "object" ? "Employee" : "FooInterface";
+
+      it("follows short and empty pages before rejecting missing objects", async () => {
+        fetchPage
+          .mockResolvedValueOnce({
+            data: [employees[0]],
+            nextPageToken: "second",
+          })
+          .mockResolvedValueOnce({ data: [], nextPageToken: "third" })
+          .mockResolvedValueOnce({ data: [employees[1]] });
+        const loader = new BulkObjectLoader(client, 25, 3);
+
+        const results = await Promise.allSettled(
+          [0, 1, 999].map((pk) =>
+            loader.fetch(apiName, pk, defType, ["id"], true, true),
+          ),
+        );
+
+        expect(results).toMatchObject([
+          { status: "fulfilled", value: employees[0] },
+          { status: "fulfilled", value: employees[1] },
+          {
+            status: "rejected",
+            reason: expect.objectContaining({
+              message:
+                defType === "object"
+                  ? "Object not found: 999"
+                  : "Interface FooInterface object not found: 999",
+            }),
+          },
+        ]);
+        expect(objectSet.where).toHaveBeenCalledExactlyOnceWith({
+          id: { $in: [0, 1, 999] },
+        });
+        const options = {
+          $pageSize: 3,
+          $select: ["id"],
+          $loadPropertySecurityMetadata: true,
+          ...(defType === "object"
+            ? { $includeRid: true }
+            : { $includeAllBaseObjectProperties: true }),
+        };
+        expect(fetchPage.mock.calls).toEqual([
+          [{ ...options, $nextPageToken: undefined }],
+          [{ ...options, $nextPageToken: "second" }],
+          [{ ...options, $nextPageToken: "third" }],
+        ]);
+      });
+
+      it("reports a later page failure instead of a missing object", async () => {
+        fetchPage
+          .mockResolvedValueOnce({
+            data: [employees[0]],
+            nextPageToken: "second",
+          })
+          .mockRejectedValueOnce(new Error("page failed"));
+        const loader = new BulkObjectLoader(client, 25, 2);
+
+        await expect(
+          Promise.all([0, 1].map((pk) => loader.fetch(apiName, pk, defType))),
+        ).rejects.toThrow("page failed");
+      });
+    },
+  );
+
   describe("interface loading", () => {
     const mockObjectSet = (data: unknown[]) => {
       const os: ObjectSet<ObjectTypeDefinition> = {
@@ -573,6 +668,7 @@ describe(BulkObjectLoader, () => {
         msw.http.post("*/objectSets/loadObjects", async ({ request }) => {
           const body = (await request.clone().json()) as {
             loadPropertySecurities?: boolean;
+            pageToken?: string;
           };
           if (!body.loadPropertySecurities) {
             return;
@@ -581,17 +677,12 @@ describe(BulkObjectLoader, () => {
             data: [
               {
                 __apiName: "Employee",
-                __primaryKey: 1,
-                employeeId: 1,
-                officeName: "Original Office",
-              },
-              {
-                __apiName: "Employee",
-                __primaryKey: 2,
-                employeeId: 2,
+                __primaryKey: body.pageToken ? 2 : 1,
+                employeeId: body.pageToken ? 2 : 1,
                 officeName: "Original Office",
               },
             ],
+            nextPageToken: body.pageToken ? undefined : "second",
             totalCount: "2",
             propertySecurities: [],
           });
@@ -646,7 +737,7 @@ describe(BulkObjectLoader, () => {
         ),
       ]);
 
-      expect(loadRequests).toHaveLength(4);
+      expect(loadRequests).toHaveLength(5);
       expect(objects).toMatchObject([
         { $primaryKey: 1, officeName: "Original Office" },
         { $primaryKey: 2, officeName: "Original Office" },
@@ -660,6 +751,13 @@ describe(BulkObjectLoader, () => {
       ]);
       expect(objects[0]).not.toHaveProperty("fullName");
       expect(objects[1]).not.toHaveProperty("fullName");
+      const securedRequests = (
+        await Promise.all(loadRequests.map((request) => request.clone().json()))
+      ).filter((body) => body.loadPropertySecurities);
+      expect(securedRequests).toEqual([
+        expect.objectContaining({ pageSize: 2 }),
+        { ...securedRequests[0], pageToken: "second" },
+      ]);
       expect(
         await Promise.all(loadRequests.map((request) => request.json())),
       ).toEqual(
