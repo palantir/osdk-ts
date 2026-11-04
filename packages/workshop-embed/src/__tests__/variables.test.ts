@@ -41,7 +41,7 @@ import type {
 import { isModuleSchemaMessage } from "../schema.js";
 import { createTestWindow, type TestWindow } from "./testUtils.js";
 
-describe("scalar variables", () => {
+describe("variable values", () => {
   let sender: WorkshopModuleConnection;
   let receiver: WorkshopModuleHostConnection;
 
@@ -68,6 +68,9 @@ describe("scalar variables", () => {
       count: { type: "number", isList: false },
       enabled: { type: "boolean", isList: false },
       selectedName: { type: "string", isList: false },
+      names: { type: "string", isList: true },
+      counts: { type: "number", isList: true },
+      flags: { type: "boolean", isList: true },
     });
     await received;
   });
@@ -87,6 +90,23 @@ describe("scalar variables", () => {
     const result = await received;
     expect(result).toEqual(values);
     expect(result).not.toBe(values);
+  });
+
+  it("delivers arrays from another realm and distinguishes empty lists from cleared variables", async () => {
+    const values: unknown = runInNewContext(
+      '({ names: ["Ada", "Grace"], counts: [0, 25], flags: [false, true] })',
+    );
+    const received = nextVariables(receiver);
+    sender.setVariables(values as WorkshopVariableValues);
+    await expect(received).resolves.toEqual(values);
+
+    const emptied = nextVariables(sender);
+    receiver.setVariables({ names: [] });
+    await expect(emptied).resolves.toEqual({ names: [] });
+
+    const cleared = nextVariables(sender);
+    receiver.setVariables({ names: null });
+    await expect(cleared).resolves.toEqual({ names: null });
   });
 
   it("ignores malformed and foreign-session messages before delivering a valid update", async () => {
@@ -207,6 +227,7 @@ describe("declared variable types", () => {
     searchText: string;
     count: number;
     enabled: boolean;
+    names: readonly string[];
   };
   const appOrigin = "https://app.example.com";
   const workshopOrigin = "https://workshop.example.com";
@@ -254,6 +275,7 @@ describe("declared variable types", () => {
               searchText: { type: "string", isList: false },
               count: { type: "number", isList: false },
               enabled: { type: "boolean", isList: false },
+              names: { type: "string", isList: true },
             });
             connection.setVariables({ count: 0 });
             resolve(connection);
@@ -289,8 +311,15 @@ describe("declared variable types", () => {
     expectTypeOf<WorkshopVariableValues<CountVariables>>().toEqualTypeOf<{
       readonly count?: number | null;
     }>();
-    // @ts-expect-error Arrays are not supported variable types.
-    expectTypeOf<WorkshopVariableValues<{ names: string[] }>>();
+    expectTypeOf<
+      WorkshopVariableValues<{ names: readonly string[] }>
+    >().toEqualTypeOf<{ readonly names?: readonly string[] | null }>();
+    // @ts-expect-error Mixed-element arrays are not supported variable types.
+    expectTypeOf<WorkshopVariableValues<{ values: (string | number)[] }>>();
+    // @ts-expect-error Nested arrays are not supported variable types.
+    expectTypeOf<WorkshopVariableValues<{ values: string[][] }>>();
+    // @ts-expect-error Null clears the whole variable, not individual elements.
+    expectTypeOf<WorkshopVariableValues<{ values: (string | null)[] }>>();
     // @ts-expect-error Objects are not supported variable types.
     expectTypeOf<WorkshopVariableValues<{ employee: { name: string } }>>();
     receiver.onVariablesSet((values) => {
@@ -299,6 +328,9 @@ describe("declared variable types", () => {
       >();
       expectTypeOf(values.count).toEqualTypeOf<number | null | undefined>();
       expectTypeOf(values.enabled).toEqualTypeOf<boolean | null | undefined>();
+      expectTypeOf(values.names).toEqualTypeOf<
+        readonly string[] | null | undefined
+      >();
       // @ts-expect-error Undeclared variable IDs are not available to listeners.
       expectTypeOf(values.unknownVariable);
     });
@@ -316,6 +348,13 @@ describe("declared variable types", () => {
     expectTypeOf(sender.setVariables).toBeCallableWith({
       // @ts-expect-error Only declared variable IDs can be set.
       unknownVariable: true,
+    });
+    expectTypeOf(sender.setVariables).toBeCallableWith({
+      names: ["Ada"] as const,
+    });
+    expectTypeOf(sender.setVariables).toBeCallableWith({
+      // @ts-expect-error Names is declared as a string array.
+      names: [1],
     });
 
     const received = nextVariables(receiver);
@@ -356,6 +395,14 @@ const invalidInputs: unknown[] = [
   { count: Number.NaN },
   { count: Number.POSITIVE_INFINITY },
   { count: undefined },
-  { names: ["Ada"] },
+  { values: ["Ada", 1] },
+  { values: [true, "true"] },
+  { values: [null] },
+  { values: [undefined] },
+  { values: [["Ada"]] },
+  { values: [{ name: "Ada" }] },
+  { values: [0, Number.NaN] },
+  { values: [Number.POSITIVE_INFINITY] },
+  { values: new Array<number>(1) },
   { employees: { objectSetRid: "ri.object-set.main.object-set.example" } },
 ];

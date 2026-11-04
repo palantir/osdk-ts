@@ -96,7 +96,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
     variables: {
       control: "object",
       description:
-        "Scalar values keyed by module-interface external ID. Workshop edits update these controls.",
+        "Scalar or array values keyed by module-interface external ID. Workshop edits update these controls.",
     },
     onVariablesChanged: { control: false },
     branchRid: {
@@ -146,6 +146,40 @@ export const Variables: Story = {
         code: `const [variables, setVariables] = useState<WorkshopVariableValues>({ count: 25 });
 
 <BaseWorkshopModule
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  variables={variables}
+  onVariablesChanged={(changes) =>
+    setVariables((previous) => ({ ...previous, ...changes }))
+  }
+  style={{ height: "24rem" }}
+/>`,
+      },
+    },
+  },
+};
+
+export const Arrays: Story = {
+  args: {
+    variables: {
+      selectedNames: ["Ada", "Grace"],
+      thresholds: [10, 25],
+      enabledFlags: [true, false],
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Arrays replace the whole list. Use [] for an empty list and null to clear the variable. Requires a Foundry deployment with list-variable support in the Workshop embed integration.",
+      },
+      source: {
+        code: `type ModuleVariables = { selectedNames: readonly string[] };
+const [variables, setVariables] = useState<WorkshopVariableValues<ModuleVariables>>({
+  selectedNames: ["Ada", "Grace"],
+});
+
+<BaseWorkshopModule<ModuleVariables>
   foundryUrl="https://example.palantirfoundry.com"
   moduleRid="ri.workshop.main.module.example"
   variables={variables}

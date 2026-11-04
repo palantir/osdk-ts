@@ -31,17 +31,21 @@ type ModuleVariables = {
   count: number;
   searchText: string;
   includeArchived: boolean;
+  names: readonly string[];
 };
 
 const moduleRid = "ri.workshop.main.module.example";
 const props: WorkshopModuleProps<ModuleVariables> = {
   moduleRid,
-  variables: { count: 25, searchText: null },
+  variables: { count: 25, searchText: null, names: ["Ada"] as const },
   onVariablesChanged: (changes) => {
     expectTypeOf(changes.count).toEqualTypeOf<number | null | undefined>();
     expectTypeOf(changes.searchText).toEqualTypeOf<string | null | undefined>();
     expectTypeOf(changes.includeArchived).toEqualTypeOf<
       boolean | null | undefined
+    >();
+    expectTypeOf(changes.names).toEqualTypeOf<
+      readonly string[] | null | undefined
     >();
     // @ts-expect-error callbacks only expose declared external IDs
     void changes.unknownVariable;
@@ -84,8 +88,8 @@ void (
     variables={{ unknownVariable: true }}
   />
 );
-// @ts-expect-error arrays are not supported scalar variable types
-void ({} satisfies WorkshopModuleProps<{ names: string[] }>);
+// @ts-expect-error nested arrays are not supported variable types
+void ({} satisfies WorkshopModuleProps<{ names: string[][] }>);
 
 // Existing callers can omit the contract and all variable props.
 void (<WorkshopModule moduleRid={moduleRid} />);
