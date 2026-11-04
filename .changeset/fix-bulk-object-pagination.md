@@ -2,4 +2,4 @@
 "@osdk/client": patch
 ---
 
-Follow all pages when loading batched objects, including RDP and interface object loads.
+Follow all pages and resolve batched objects as each page arrives, including RDP and interface object loads.
