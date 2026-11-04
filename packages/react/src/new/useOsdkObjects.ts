@@ -28,6 +28,10 @@ import type {
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/observable";
 import React from "react";
 
+import type {
+  ExtractHookPropertySecurityOption,
+  OsdkInstanceWithPropertySecurities,
+} from "./HookPropertySecurities.js";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
@@ -44,11 +48,14 @@ export type ResolveToObjectTypeOption<T extends ObjectOrInterfaceDefinition> =
 export type UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> = UseOsdkObjectsBaseOptions<T, RDPs> & ResolveToObjectTypeOption<T>;
+  PROPERTY_SECURITIES extends boolean = boolean,
+> = UseOsdkObjectsBaseOptions<T, RDPs, PROPERTY_SECURITIES> &
+  ResolveToObjectTypeOption<T>;
 
 interface UseOsdkObjectsBaseOptions<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  PROPERTY_SECURITIES extends boolean = boolean,
 > {
   /**
    * Fetch objects by their RIDs (Resource Identifiers).
@@ -169,8 +176,12 @@ interface UseOsdkObjectsBaseOptions<
    * When true, loads per-property security metadata (marking requirements)
    * alongside each object. The returned objects will have `$propertySecurities`
    * populated with conjunctive/disjunctive marking requirements per property.
+   *
+   * `$propertySecurities` is typed as possibly `undefined`: metadata is only
+   * valid for the value it was loaded with, and another query that loads the
+   * same object without metadata can replace the cached value.
    */
-  $loadPropertySecurityMetadata?: boolean;
+  $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
 
   /**
    * When true, includes all properties of the underlying concrete object type
@@ -182,7 +193,7 @@ interface UseOsdkObjectsBaseOptions<
 export interface UseOsdkListResult<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  EXTRA_OPTIONS extends never | "$rid" = never,
+  EXTRA_OPTIONS extends never | "$rid" | "$propertySecurities" = never,
 > {
   /**
    * Function to fetch more pages (undefined if no more pages)
@@ -193,12 +204,18 @@ export interface UseOsdkListResult<
    * The fetched data with derived properties
    */
   data:
-    | Osdk.Instance<
-        T,
-        "$allBaseProperties" | EXTRA_OPTIONS,
-        PropertyKeys<T>,
-        RDPs
-      >[]
+    | ("$propertySecurities" extends EXTRA_OPTIONS
+        ? OsdkInstanceWithPropertySecurities<
+            T,
+            "$allBaseProperties" | Extract<EXTRA_OPTIONS, "$rid">,
+            RDPs
+          >[]
+        : Osdk.Instance<
+            T,
+            "$allBaseProperties" | EXTRA_OPTIONS,
+            PropertyKeys<T>,
+            RDPs
+          >[])
     | undefined;
 
   /**
@@ -237,46 +254,58 @@ export interface UseOsdkListResult<
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
+  S extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, {}> & {
+  options: UseOsdkObjectsOptions<Q, {}, S> & {
     pivotTo: L;
     rids: readonly string[];
     streamUpdates?: never;
   },
-): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
+): UseOsdkListResult<
+  LinkedType<Q, L>,
+  {},
+  "$rid" | ExtractHookPropertySecurityOption<S>
+>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
+  S extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, {}> & {
+  options: UseOsdkObjectsOptions<Q, {}, S> & {
     pivotTo: L;
     streamUpdates?: never;
   },
-): UseOsdkListResult<LinkedType<Q, L>, {}>;
+): UseOsdkListResult<
+  LinkedType<Q, L>,
+  {},
+  ExtractHookPropertySecurityOption<S>
+>;
 
 // Non-pivotTo overloads: pivotTo is forbidden to prevent fallthrough from the
 // pivotTo overloads above (which would give the wrong return type).
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  S extends boolean = false,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q, RDPs> & {
+  options: UseOsdkObjectsOptions<Q, RDPs, S> & {
     rids: readonly string[];
     pivotTo?: never;
   },
-): UseOsdkListResult<Q, RDPs, "$rid">;
+): UseOsdkListResult<Q, RDPs, "$rid" | ExtractHookPropertySecurityOption<S>>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  S extends boolean = false,
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs> & { pivotTo?: never },
-): UseOsdkListResult<Q, RDPs>;
+  options?: UseOsdkObjectsOptions<Q, RDPs, S> & { pivotTo?: never },
+): UseOsdkListResult<Q, RDPs, ExtractHookPropertySecurityOption<S>>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,

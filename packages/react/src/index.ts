@@ -36,6 +36,10 @@ export type {
   UseOsdkFunctionsProps,
   UseOsdkFunctionsResult,
 } from "./new/useOsdkFunctions.js";
+export type {
+  HookPropertySecurities,
+  OsdkInstanceWithPropertySecurities,
+} from "./new/HookPropertySecurities.js";
 export { useOsdkObject } from "./new/useOsdkObject.js";
 export type {
   UseOsdkListResult,
