@@ -201,7 +201,7 @@ describe("agents", () => {
       expectTypeOf<[{ city: string }]>().toMatchTypeOf<
         Parameters<typeof clientBoundCreateSession>
       >();
-      expectTypeOf<[{ city: null }]>().not.toMatchTypeOf<
+      expectTypeOf<[{ city: null }]>().toMatchTypeOf<
         Parameters<typeof clientBoundCreateSession>
       >();
       expectTypeOf<[{ city: number }]>().not.toMatchTypeOf<
@@ -267,6 +267,13 @@ describe("agents", () => {
       ).experimental_createSession;
 
       type InferredParamType = Parameters<typeof clientBoundCreateSession>[0];
+
+      expectTypeOf<InferredParamType["nested"]["label"]>().toEqualTypeOf<
+        string | null
+      >();
+      expectTypeOf<
+        Omit<InferredParamType["nested"], "label">
+      >().not.toMatchTypeOf<InferredParamType["nested"]>();
 
       const employee = await client(Employee).fetchOne(50030);
       const parameters = {

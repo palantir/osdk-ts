@@ -161,10 +161,7 @@ function agentFields(
         const optional = topLevel && dataType.type === "nullable";
         return [
           `readonly ${JSON.stringify(name)}${optional ? "?" : ""}`,
-          getAgentArgType(
-            ontology,
-            optional ? dataType.wrappedType : dataType,
-          ),
+          getAgentArgType(ontology, dataType),
         ];
       },
     },

@@ -176,7 +176,7 @@ export namespace optionalArgumentsAgent {
   }
 
   export interface CreateSessionArguments {
-    readonly city?: string;
+    readonly city?: string | null;
   }
 }
 
@@ -232,7 +232,7 @@ export namespace structuredArgumentsAgent {
       readonly tags: ReadonlyArray<string>;
       readonly timestamp: string;
     };
-    readonly optionalText?: string;
+    readonly optionalText?: string | null;
     readonly requiredText: string;
     readonly selection:
       | { readonly kind: 'employee'; readonly employee: AgentParam.ObjectType<Employee> }
