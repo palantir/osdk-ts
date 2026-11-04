@@ -15,16 +15,23 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { ActionMetadata } from "./ActionDefinition.js";
 import type {
   ObjectInterfaceBaseMetadata,
   ObjectInterfaceCompileDefinition,
   ObjectTypeDefinition,
+  ReleaseStatus,
 } from "./ObjectTypeDefinition.js";
 
 export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
   type: "interface";
   implementedBy?: ReadonlyArray<string>;
   links: Record<string, InterfaceMetadata.Link<any, any>>;
+  actionTypeConstraints?: Record<
+    string,
+    InterfaceMetadata.ActionTypeConstraint
+  >;
+  actions?: Record<string, InterfaceMetadata.ActionTypeConstraint>;
 }
 
 export interface InterfaceDefinition {
@@ -35,6 +42,35 @@ export interface InterfaceDefinition {
 }
 
 export namespace InterfaceMetadata {
+  export interface ActionTypeConstraint {
+    apiName: string;
+    displayName?: string;
+    description?: string;
+    parameters?: Record<string, ActionTypeConstraint.Parameter>;
+    requireImplementation?: boolean;
+    status?: ReleaseStatus;
+    rid?: string;
+  }
+
+  export namespace ActionTypeConstraint {
+    export interface Parameter {
+      type:
+        | ActionMetadata.DataType.BaseActionParameterTypes
+        | ActionMetadata.DataType.Object<any>
+        | ActionMetadata.DataType.ObjectSet<any>
+        | ActionMetadata.DataType.Interface<any>
+        | ActionMetadata.DataType.Struct<any>
+        | string;
+      description?: string;
+      displayName?: string;
+      multiplicity?: boolean;
+      nullable?: boolean;
+      requireImplementation?: boolean;
+    }
+  }
+
+  export type Action = ActionTypeConstraint;
+
   export interface Link<
     Q extends ObjectTypeDefinition | InterfaceDefinition,
     M extends boolean,
