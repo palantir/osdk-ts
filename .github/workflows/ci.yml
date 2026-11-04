@@ -496,7 +496,9 @@ jobs:
     needs: changes
     if: needs.changes.outputs.storybook == 'true'
     timeout-minutes: 20
-    runs-on: ubuntu-latest
+    # Playwright 1.60 can't install Chromium deps on ubuntu-26.04 (now
+    # ubuntu-latest). Unpin once Playwright supports it.
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
 
