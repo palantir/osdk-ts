@@ -313,6 +313,86 @@ describe("WidgetConfig", () => {
       >().toEqualTypeOf<Record<string, never>>();
     });
 
+    it("should construct type safe maps of struct parameter values", () => {
+      const test = defineConfig({
+        id: "widgetId",
+        name: "Widget Name",
+        description: "Widget Description",
+        type: "workshop",
+        parameters: {
+          myStruct: {
+            displayName: "My Struct",
+            type: "struct",
+            fields: {
+              name: { displayName: "Name", type: "string" },
+              count: { displayName: "Count", type: "number" },
+              isActive: { displayName: "Is Active", type: "boolean" },
+              startDate: { displayName: "Start Date", type: "date" },
+            },
+          },
+          myStructArray: {
+            displayName: "My Struct Array",
+            type: "array",
+            subType: "struct",
+            fields: {
+              updatedAt: { displayName: "Updated At", type: "timestamp" },
+            },
+          },
+        },
+        events: {
+          updateStructs: {
+            displayName: "Update Structs",
+            parameterUpdateIds: ["myStruct", "myStructArray"],
+          },
+        },
+      });
+      type ExpectedStruct = {
+        name?: string;
+        count?: number;
+        isActive?: boolean;
+        startDate?: string;
+      };
+      type ExpectedStructArray = Array<{ updatedAt?: string }>;
+
+      expectTypeOf<AsyncParameterValueMap<typeof test>>().toEqualTypeOf<{
+        myStruct: { type: "struct"; value: AsyncValue<ExpectedStruct> };
+        myStructArray: {
+          type: "array";
+          subType: "struct";
+          value: AsyncValue<ExpectedStructArray>;
+        };
+      }>();
+      expectTypeOf<ParameterValueMap<typeof test>>().toEqualTypeOf<{
+        myStruct: ExpectedStruct;
+        myStructArray: ExpectedStructArray;
+      }>();
+      expectTypeOf<
+        EventParameterValueMap<typeof test, "updateStructs">
+      >().toEqualTypeOf<{
+        myStruct: ExpectedStruct;
+        myStructArray: ExpectedStructArray;
+      }>();
+    });
+
+    it("should reject struct parameters with unsupported field types", () => {
+      defineConfig({
+        id: "widgetId",
+        name: "Widget Name",
+        type: "workshop",
+        parameters: {
+          myStruct: {
+            displayName: "My Struct",
+            type: "struct",
+            fields: {
+              // @ts-expect-error Nested structs are not supported.
+              nested: { displayName: "Nested", type: "struct" },
+            },
+          },
+        },
+        events: {},
+      });
+    });
+
     it("should support objectSet parameter types with generic object type", () => {
       const Employee = {
         type: "object",
