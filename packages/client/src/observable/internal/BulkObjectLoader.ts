@@ -201,7 +201,8 @@ export class BulkObjectLoader {
     }
 
     objectSet = objectSet.where(whereClause);
-    const data = await loadAllPages(($nextPageToken) =>
+    const pending = new Set(arr);
+    const pages = loadPages(($nextPageToken) =>
       objectSet.fetchPage({
         $nextPageToken,
         $pageSize: pks.length,
@@ -216,24 +217,19 @@ export class BulkObjectLoader {
           : {}),
       }),
     );
-
-    for (const { primaryKey, deferred } of arr) {
-      const object = data.find((x) => x.$primaryKey === primaryKey) as
-        | ObjectHolder
-        | undefined;
-      if (object) {
-        deferred.resolve(object);
-      } else {
-        deferred.reject(
-          new PalantirApiError(`Object not found: ${primaryKey}`),
-        );
+    for await (const data of pages) {
+      resolveObjectsFromPage(pending, data as ObjectHolder[]);
+      if (pending.size === 0) {
+        return;
       }
+    }
+
+    for (const { primaryKey, deferred } of pending) {
+      deferred.reject(new PalantirApiError(`Object not found: ${primaryKey}`));
     }
   }
 
   async #loadInterfaceObjects(arr: InternalValue[], params: LoadParams) {
-    const pks = arr.map((x) => x.primaryKey);
-
     const interfaceDef = {
       type: "interface",
       apiName: params.apiName,
@@ -242,7 +238,7 @@ export class BulkObjectLoader {
     const interfaceMetadata = await this.#client.fetchMetadata(interfaceDef);
     const implementingTypes = interfaceMetadata.implementedBy ?? [];
 
-    const foundObjects = new Map<string | number, ObjectHolder>();
+    const pending = new Set(arr);
 
     for (const objectTypeName of implementingTypes) {
       const objectDef = {
@@ -251,7 +247,7 @@ export class BulkObjectLoader {
       } as ObjectTypeDefinition;
       const objMetadata = await this.#client.fetchMetadata(objectDef);
 
-      const remainingPks = pks.filter((pk) => !foundObjects.has(pk));
+      const remainingPks = Array.from(pending, (entry) => entry.primaryKey);
       if (remainingPks.length === 0) {
         break;
       }
@@ -262,7 +258,7 @@ export class BulkObjectLoader {
           : { [objMetadata.primaryKeyApiName]: { $in: remainingPks } };
 
       const objectSet = this.#client(objectDef).where(whereClause);
-      const data = await loadAllPages(($nextPageToken) =>
+      const pages = loadPages(($nextPageToken) =>
         objectSet.fetchPage({
           $nextPageToken,
           $pageSize: remainingPks.length,
@@ -276,36 +272,44 @@ export class BulkObjectLoader {
             : {}),
         }),
       );
-
-      for (const obj of data) {
-        foundObjects.set(obj.$primaryKey, obj as ObjectHolder);
+      for await (const data of pages) {
+        resolveObjectsFromPage(pending, data as ObjectHolder[]);
+        if (pending.size === 0) {
+          return;
+        }
       }
     }
 
-    for (const { primaryKey, deferred } of arr) {
-      const object = foundObjects.get(primaryKey);
-      if (object) {
-        deferred.resolve(object);
-      } else {
-        deferred.reject(
-          new PalantirApiError(
-            `Interface ${params.apiName} object not found: ${primaryKey}`,
-          ),
-        );
-      }
+    for (const { primaryKey, deferred } of pending) {
+      deferred.reject(
+        new PalantirApiError(
+          `Interface ${params.apiName} object not found: ${primaryKey}`,
+        ),
+      );
     }
   }
 }
 
-async function loadAllPages<T>(
+async function* loadPages<T>(
   fetchPage: (nextPageToken: string | undefined) => Promise<PageResult<T>>,
-): Promise<T[]> {
-  const objects: T[] = [];
+): AsyncGenerator<readonly T[]> {
   let nextPageToken: string | undefined;
   do {
     const page = await fetchPage(nextPageToken);
-    objects.push(...page.data);
+    yield page.data;
     nextPageToken = page.nextPageToken;
   } while (nextPageToken != null);
-  return objects;
+}
+
+function resolveObjectsFromPage(
+  pending: Set<InternalValue>,
+  data: readonly ObjectHolder[],
+) {
+  for (const entry of pending) {
+    const object = data.find((obj) => obj.$primaryKey === entry.primaryKey);
+    if (object) {
+      entry.deferred.resolve(object);
+      pending.delete(entry);
+    }
+  }
 }
