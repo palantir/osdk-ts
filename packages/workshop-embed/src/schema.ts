@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isValid, parseISO } from "date-fns";
+
 import {
   isRecord,
   WORKSHOP_EMBED_CHANNEL,
@@ -31,7 +33,7 @@ import type { WorkshopVariableValues } from "./variables.js";
 export type WorkshopVariableSchema =
   | {
       /** Element type declared by Workshop. */
-      readonly type: "string" | "number" | "boolean";
+      readonly type: "string" | "number" | "boolean" | "timestamp";
       /** Whether the variable contains an array of the declared type. */
       readonly isList: boolean;
     }
@@ -91,6 +93,7 @@ function isModuleSchema(value: unknown): value is WorkshopModuleSchema {
       (schema.type === "string" ||
         schema.type === "number" ||
         schema.type === "boolean" ||
+        schema.type === "timestamp" ||
         (schema.type === "objectSet" && schema.isList === false)),
   );
 }
@@ -135,5 +138,11 @@ function isValueOfType(
   value: unknown,
   type: WorkshopVariableSchema["type"],
 ): boolean {
-  return type === "objectSet" ? isObjectSetValue(value) : typeof value === type;
+  if (type === "objectSet") return isObjectSetValue(value);
+  if (type === "timestamp") return isTimestampValue(value);
+  return typeof value === type;
+}
+
+function isTimestampValue(value: unknown): value is string {
+  return typeof value === "string" && isValid(parseISO(value));
 }
