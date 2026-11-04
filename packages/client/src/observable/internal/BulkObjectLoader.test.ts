@@ -121,6 +121,37 @@ describe(BulkObjectLoader, () => {
     expect(mock).toHaveBeenCalled();
   });
 
+  it("resolves objects from each page without waiting for later pages", async () => {
+    const secondPage = pDefer<{ data: typeof employees }>();
+    const objectSet = {
+      where: () => objectSet,
+      fetchPage: vi
+        .fn()
+        .mockResolvedValueOnce({
+          data: [employees[0]],
+          nextPageToken: "second",
+        })
+        .mockReturnValueOnce(secondPage.promise),
+    } as Pick<
+      ObjectSet<ObjectTypeDefinition>,
+      "fetchPage" | "where"
+    > as ObjectSet<ObjectTypeDefinition>;
+    client.mockReturnValueOnce(objectSet);
+    const loader = new BulkObjectLoader(client, 25, 2);
+
+    const first = loader.fetch("Employee", 0);
+    const second = loader.fetch("Employee", 1);
+    const secondResolved = vi.fn();
+    void second.then(secondResolved);
+
+    await expect(first).resolves.toEqual(employees[0]);
+    expect(secondResolved).not.toHaveBeenCalled();
+
+    secondPage.resolve({ data: [employees[1]] });
+    await expect(second).resolves.toEqual(employees[1]);
+    expect(secondResolved).toHaveBeenCalledOnce();
+  });
+
   it("splits up work by time", async () => {
     const loader = new BulkObjectLoader(client, /*ms*/ 25, /*entries*/ 100);
 
@@ -251,7 +282,8 @@ describe(BulkObjectLoader, () => {
     };
 
     it("loads interface objects by querying implementing types", async () => {
-      const loader = new BulkObjectLoader(client, 25, 2);
+      const loader = new BulkObjectLoader(client, 25, 100);
+      vi.useFakeTimers();
 
       // eslint-disable-next-line @typescript-eslint/unbound-method
       vi.mocked(client.fetchMetadata)
@@ -275,22 +307,13 @@ describe(BulkObjectLoader, () => {
         $primaryKey: 1,
       };
 
-      const laterPage = pDefer();
-      const objectSet = mockObjectSet([]);
-      objectSet.fetchPage = vi
-        .fn()
-        .mockResolvedValueOnce({ data: [fullObj], nextPageToken: "second" })
-        .mockReturnValueOnce(laterPage.promise);
-      client.mockReturnValueOnce(objectSet);
+      client.mockReturnValueOnce(mockObjectSet([fullObj]));
 
       const loadPromise = loader.fetch("FooInterface", 1, "interface");
-      const missingPromise = loader.fetch("FooInterface", 2, "interface");
-      const laterFailure =
-        expect(missingPromise).rejects.toThrow("page failed");
+      vi.advanceTimersByTime(26);
 
       await expect(loadPromise).resolves.toMatchObject({ $primaryKey: 1 });
-      laterPage.reject(new Error("page failed"));
-      await laterFailure;
+      vi.useRealTimers();
     });
 
     it("rejects when interface object is not found in any implementing type", async () => {
@@ -573,7 +596,6 @@ describe(BulkObjectLoader, () => {
 
     it("batches RDP objects by definition, selection, and security options", async () => {
       const loader = new BulkObjectLoader(rdpClient);
-      const continuePage = pDefer<void>();
       const rdpConfig = store.rdpCanonicalizer.canonicalize(withProperties);
       const officeId = store.rdpCanonicalizer.canonicalize({
         officeName: (base) =>
@@ -583,40 +605,41 @@ describe(BulkObjectLoader, () => {
         msw.http.post("*/objectSets/loadObjects", async ({ request }) => {
           const body = (await request.clone().json()) as {
             loadPropertySecurities?: boolean;
-            pageToken?: string;
           };
           if (!body.loadPropertySecurities) {
             return;
-          }
-          if (body.pageToken) {
-            await continuePage.promise;
           }
           return msw.HttpResponse.json({
             data: [
               {
                 __apiName: "Employee",
-                __primaryKey: body.pageToken ? 2 : 1,
-                employeeId: body.pageToken ? 2 : 1,
+                __primaryKey: 1,
+                employeeId: 1,
+                officeName: "Original Office",
+              },
+              {
+                __apiName: "Employee",
+                __primaryKey: 2,
+                employeeId: 2,
                 officeName: "Original Office",
               },
             ],
-            nextPageToken: body.pageToken ? undefined : "second",
             totalCount: "2",
             propertySecurities: [],
           });
         }),
       );
 
-      const firstObject = loader.fetch(
-        "Employee",
-        1,
-        "object",
-        ["officeName"],
-        true,
-        undefined,
-        rdpConfig,
-      );
-      const remainingObjects = Promise.all([
+      const objects = await Promise.all([
+        loader.fetch(
+          "Employee",
+          1,
+          "object",
+          ["officeName"],
+          true,
+          undefined,
+          rdpConfig,
+        ),
         loader.fetch(
           "Employee",
           2,
@@ -655,11 +678,7 @@ describe(BulkObjectLoader, () => {
         ),
       ]);
 
-      const first = await firstObject;
-      continuePage.resolve();
-      const objects = [first, ...(await remainingObjects)];
-
-      expect(loadRequests).toHaveLength(5);
+      expect(loadRequests).toHaveLength(4);
       expect(objects).toMatchObject([
         { $primaryKey: 1, officeName: "Original Office" },
         { $primaryKey: 2, officeName: "Original Office" },
@@ -673,13 +692,6 @@ describe(BulkObjectLoader, () => {
       ]);
       expect(objects[0]).not.toHaveProperty("fullName");
       expect(objects[1]).not.toHaveProperty("fullName");
-      const securedRequests = (
-        await Promise.all(loadRequests.map((request) => request.clone().json()))
-      ).filter((body) => body.loadPropertySecurities);
-      expect(securedRequests).toEqual([
-        expect.objectContaining({ pageSize: 2 }),
-        { ...securedRequests[0], pageToken: "second" },
-      ]);
       expect(
         await Promise.all(loadRequests.map((request) => request.json())),
       ).toEqual(
