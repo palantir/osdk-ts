@@ -19,6 +19,7 @@ import type {
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
+  PageResult,
 } from "@osdk/api";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { DeferredPromise } from "p-defer";
@@ -199,18 +200,22 @@ export class BulkObjectLoader {
       );
     }
 
-    const { data } = await objectSet.where(whereClause).fetchPage({
-      $pageSize: pks.length,
-      $includeRid: true,
-      ...(params.select && params.select.length > 0
-        ? { $select: params.select }
-        : {}),
-      $loadPropertySecurityMetadata:
-        params.loadPropertySecurityMetadata ?? false,
-      ...(params.includeAllBaseObjectProperties
-        ? { $includeAllBaseObjectProperties: true }
-        : {}),
-    });
+    objectSet = objectSet.where(whereClause);
+    const data = await loadAllPages(($nextPageToken) =>
+      objectSet.fetchPage({
+        $nextPageToken,
+        $pageSize: pks.length,
+        $includeRid: true,
+        ...(params.select && params.select.length > 0
+          ? { $select: params.select }
+          : {}),
+        $loadPropertySecurityMetadata:
+          params.loadPropertySecurityMetadata ?? false,
+        ...(params.includeAllBaseObjectProperties
+          ? { $includeAllBaseObjectProperties: true }
+          : {}),
+      }),
+    );
 
     for (const { primaryKey, deferred } of arr) {
       const object = data.find((x) => x.$primaryKey === primaryKey) as
@@ -256,9 +261,10 @@ export class BulkObjectLoader {
           ? { [objMetadata.primaryKeyApiName]: { $eq: remainingPks[0] } }
           : { [objMetadata.primaryKeyApiName]: { $in: remainingPks } };
 
-      const { data } = await this.#client(objectDef)
-        .where(whereClause)
-        .fetchPage({
+      const objectSet = this.#client(objectDef).where(whereClause);
+      const data = await loadAllPages(($nextPageToken) =>
+        objectSet.fetchPage({
+          $nextPageToken,
           $pageSize: remainingPks.length,
           ...(params.select && params.select.length > 0
             ? { $select: params.select }
@@ -268,7 +274,8 @@ export class BulkObjectLoader {
           ...(params.includeAllBaseObjectProperties
             ? { $includeAllBaseObjectProperties: true }
             : {}),
-        });
+        }),
+      );
 
       for (const obj of data) {
         foundObjects.set(obj.$primaryKey, obj as ObjectHolder);
@@ -288,4 +295,17 @@ export class BulkObjectLoader {
       }
     }
   }
+}
+
+async function loadAllPages<T>(
+  fetchPage: (nextPageToken: string | undefined) => Promise<PageResult<T>>,
+): Promise<T[]> {
+  const objects: T[] = [];
+  let nextPageToken: string | undefined;
+  do {
+    const page = await fetchPage(nextPageToken);
+    objects.push(...page.data);
+    nextPageToken = page.nextPageToken;
+  } while (nextPageToken != null);
+  return objects;
 }
