@@ -87,21 +87,29 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const parameters = metadata?.parameters;
 
-  const formContent = useMemo((): ReadonlyArray<FormContentItem> => {
-    const convert = (def: FormFieldDefinition<Q>): RendererFieldDefinition =>
-      toRendererDef(def, parameters);
+  const extractFieldDefinition = useCallback(
+    (def: FormFieldDefinition<Q>): RendererFieldDefinition =>
+      toRendererDef(def, parameters),
+    [parameters],
+  );
 
+  const customFieldDefinitions = useMemo(():
+    | ReadonlyArray<FormContentItem>
+    | undefined => {
     if (formContentDefinitions != null) {
       return formContentDefinitions.map(
         (item): FormContentItem =>
           item.type === "field"
-            ? { type: "field", definition: convert(item.definition) }
+            ? {
+                type: "field",
+                definition: extractFieldDefinition(item.definition),
+              }
             : {
                 type: "section",
                 key: item.key,
                 definition: {
                   ...item.definition,
-                  fields: item.definition.fields.map(convert),
+                  fields: item.definition.fields.map(extractFieldDefinition),
                 },
               },
       );
@@ -110,11 +118,17 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       return formFieldDefinitions.map(
         (def): FormContentItem => ({
           type: "field",
-          definition: convert(def),
+          definition: extractFieldDefinition(def),
         }),
       );
     }
-    if (metadata != null) {
+    return undefined;
+  }, [formContentDefinitions, formFieldDefinitions, extractFieldDefinition]);
+
+  const rendererFieldDefinitions = useMemo(():
+    | ReadonlyArray<FormContentItem>
+    | undefined => {
+    if (metadata != null && customFieldDefinitions == null) {
       const defaults = getDefaultFieldDefinitions(metadata);
       return defaults.length === 0
         ? EMPTY_FORM_CONTENT
@@ -122,8 +136,11 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
             (def): FormContentItem => ({ type: "field", definition: def }),
           );
     }
-    return EMPTY_FORM_CONTENT;
-  }, [formContentDefinitions, formFieldDefinitions, metadata, parameters]);
+    return undefined;
+  }, [metadata, customFieldDefinitions]);
+
+  const formContent =
+    customFieldDefinitions ?? rendererFieldDefinitions ?? EMPTY_FORM_CONTENT;
 
   const coerceFormState = useCallback(
     (rawState: Record<string, unknown>): Record<string, unknown> => {
