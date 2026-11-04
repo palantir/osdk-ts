@@ -529,6 +529,66 @@ describe("aggregate", () => {
     >(false); // subselect should hide unused keys
   });
 
+  it("forwards $accuracy to the request body", async () => {
+    await aggregate(
+      clientCtx,
+      objectTypeWithAllPropertyTypes,
+      {
+        type: "base",
+        objectType: "ToDo",
+      },
+      {
+        $select: {
+          $count: "unordered",
+        },
+        $accuracy: "ALLOW_APPROXIMATE",
+      }
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://host.com/api/v2/ontologies/ri.a.b.c.d/objectSets/aggregate",
+      {
+        body: JSON.stringify({
+          objectSet: { type: "base", objectType: "ToDo" },
+          groupBy: [],
+          aggregation: [{ type: "count", name: "count" }],
+          accuracy: "ALLOW_APPROXIMATE",
+        }),
+        method: "POST",
+        headers: expect.anything(),
+      }
+    );
+  });
+
+  it("omits accuracy from the request body when $accuracy is not provided", async () => {
+    await aggregate(
+      clientCtx,
+      objectTypeWithAllPropertyTypes,
+      {
+        type: "base",
+        objectType: "ToDo",
+      },
+      {
+        $select: {
+          $count: "unordered",
+        },
+      }
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://host.com/api/v2/ontologies/ri.a.b.c.d/objectSets/aggregate",
+      {
+        body: JSON.stringify({
+          objectSet: { type: "base", objectType: "ToDo" },
+          groupBy: [],
+          aggregation: [{ type: "count", name: "count" }],
+        }),
+        method: "POST",
+        headers: expect.anything(),
+      }
+    );
+  });
+
   it("prohibits ordered select with multiple groupBy", async () => {
     await client(Todo).aggregate({
       $select: {

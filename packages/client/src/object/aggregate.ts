@@ -53,6 +53,7 @@ export async function aggregate<
     aggregation: modernToLegacyAggregationClause<AO["$select"]>(req.$select),
     groupBy: [],
     where: undefined,
+    accuracy: req.$accuracy,
   };
 
   if (req.$groupBy) {
@@ -75,6 +76,7 @@ export async function aggregate<
       objectSet: normalizedObjectSet,
       groupBy: body.groupBy,
       aggregation: body.aggregation,
+      accuracy: body.accuracy,
     },
     {
       branch: clientCtx.branch,
