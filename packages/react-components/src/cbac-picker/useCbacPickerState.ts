@@ -37,6 +37,7 @@ import {
 const EMPTY_GROUPS: string[][] = [];
 
 export interface UseCbacPickerStateOptions {
+  autoFetchMore?: boolean | number;
   includeDeleted?: boolean;
 }
 
@@ -136,11 +137,25 @@ export function useCbacPickerState(
   }, [refetchCategories, refetchMarkings, refetchBanner, refetchRestrictions]);
 
   const categoryGroups = React.useMemo((): CategoryMarkingGroup[] => {
-    if (rawCategories === undefined || rawMarkings === undefined) {
+    if (
+      rawCategories === undefined ||
+      rawMarkings === undefined ||
+      categoriesLoading ||
+      markingsLoading ||
+      categoriesError ||
+      markingsError
+    ) {
       return [];
     }
     return groupMarkingsByCategory(rawMarkings, rawCategories);
-  }, [rawMarkings, rawCategories]);
+  }, [
+    rawMarkings,
+    rawCategories,
+    categoriesLoading,
+    markingsLoading,
+    categoriesError,
+    markingsError,
+  ]);
 
   const markingStates = React.useMemo(
     () =>

@@ -17,54 +17,16 @@
 import React from "react";
 
 import { BaseCbacPicker } from "./base/BaseCbacPicker.js";
+import type { CbacPickerProps } from "./CbacPickerApi.js";
 import { ConstraintCallout } from "./ConstraintCallout.js";
-import type { MaxClassificationConstraint } from "./types.js";
 import { useCbacSelection } from "./useCbacSelection.js";
 import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
 import { toggleMarking } from "./utils/selectionLogic.js";
 
-export interface CbacPickerProps {
-  /**
-   * Initial set of selected marking IDs.
-   *
-   * @default []
-   */
-  initialMarkingIds?: string[];
-
-  /**
-   * Called when the selection changes.
-   *
-   * @param markingIds The currently selected marking IDs
-   */
-  onChange: (markingIds: string[]) => void;
-
-  /**
-   * Optional constraint capping the maximum classification a user may select.
-   * When set, the picker surfaces a callout if the selection exceeds it.
-   */
-  maxClassificationConstraint?: MaxClassificationConstraint;
-
-  /**
-   * Disables marking toggle interactions.
-   *
-   * @default false
-   */
-  readOnly?: boolean;
-
-  /**
-   * Whether deleted markings and marking categories are shown.
-   *
-   * @default true
-   */
-  includeDeleted?: boolean;
-
-  /**
-   * CSS class for the picker container.
-   */
-  className?: string;
-}
+export type { CbacPickerProps } from "./CbacPickerApi.js";
 
 export function CbacPicker({
+  autoFetchMore,
   initialMarkingIds,
   onChange,
   maxClassificationConstraint,
@@ -82,7 +44,7 @@ export function CbacPicker({
     isValid,
     isLoading,
     error,
-  } = useCbacSelection(initialMarkingIds, { includeDeleted });
+  } = useCbacSelection(initialMarkingIds, { includeDeleted, autoFetchMore });
 
   const handleMarkingToggle = React.useCallback(
     (markingId: string) => {
