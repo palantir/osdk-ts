@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import type { ActionParameterRequirementConstraint } from "@osdk/maker";
 import {
   defineCreateObjectAction,
   defineInterface,
   defineInterfaceActionTypeConstraint,
   defineObject,
+  getImportedTypes,
   getOntologyDefinition,
   importOntologyEntity,
   initializeOntologyState,
@@ -26,9 +28,14 @@ import {
 } from "@osdk/maker";
 import { describe, expect, it } from "vitest";
 
-import { ReadableIdGenerator } from "../util/generateRid.js";
+import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
+import {
+  OntologyRidGeneratorImpl,
+  ReadableIdGenerator,
+} from "../util/generateRid.js";
 import { defineFunctionBackedAction } from "./defineFunctionBackedAction.js";
 import { defineInterfaceImplementation } from "./defineInterfaceImplementation.js";
+import type { FunctionsIr } from "./defineOntologyV2.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 
 const NAMESPACE = "com.palantir.";
@@ -288,4 +295,349 @@ describe("interface action type constraints", () => {
       ).toBe(true);
     });
   });
+
+  describe("required concrete Action parameters", () => {
+    it("rejects an optional mapped parameter when the IPC requires it", async () => {
+      await expect(
+        defineOntologyV2(NAMESPACE, () => {
+          defineTaskImplementation({
+            isRequiredParameterOnConcreteAction: true,
+            required: false,
+          });
+        }),
+      ).rejects.toThrow(
+        `Action parameter "id" on action "${NAMESPACE}${ACTION_NAME}" mapped to parameter constraint "taskId" of action type constraint "${CONSTRAINT_NAME}" on interface "${NAMESPACE}Task" for object "${NAMESPACE}task" must be required`,
+      );
+    });
+
+    it.each([false, true])(
+      "accepts a required parameter with requireImplementation=%s",
+      async (requireImplementation) => {
+        await expect(
+          defineOntologyV2(NAMESPACE, () => {
+            defineTaskImplementation({
+              isRequiredParameterOnConcreteAction: true,
+              requireImplementation,
+              required: true,
+            });
+          }),
+        ).resolves.toBeDefined();
+      },
+    );
+
+    it.each([
+      {
+        name: "absent flag and optional mapping",
+        isRequiredParameterOnConcreteAction: undefined,
+        requireImplementation: false,
+      },
+      {
+        name: "absent flag and required mapping",
+        isRequiredParameterOnConcreteAction: undefined,
+        requireImplementation: true,
+      },
+      {
+        name: "false flag and optional mapping",
+        isRequiredParameterOnConcreteAction: false,
+        requireImplementation: false,
+      },
+      {
+        name: "false flag and required mapping",
+        isRequiredParameterOnConcreteAction: false,
+        requireImplementation: true,
+      },
+    ])(
+      "allows an optional parameter with $name",
+      async ({
+        isRequiredParameterOnConcreteAction,
+        requireImplementation,
+      }) => {
+        await expect(
+          defineOntologyV2(NAMESPACE, () => {
+            defineTaskImplementation({
+              isRequiredParameterOnConcreteAction,
+              requireImplementation,
+              required: false,
+            });
+          }),
+        ).resolves.toBeDefined();
+      },
+    );
+
+    it("does not require a mapping just because the flag is true", async () => {
+      await expect(
+        defineOntologyV2(NAMESPACE, () => {
+          defineTaskImplementation({
+            isRequiredParameterOnConcreteAction: true,
+            parameterMapping: {},
+          });
+        }),
+      ).resolves.toBeDefined();
+    });
+
+    it("checks mappings supplied directly on the object", async () => {
+      await expect(
+        defineOntologyV2(NAMESPACE, () => {
+          defineTaskImplementation({
+            isRequiredParameterOnConcreteAction: true,
+            inline: true,
+          });
+        }),
+      ).rejects.toThrow("must be required");
+    });
+
+    it("checks inherited constraints", async () => {
+      await expect(
+        defineOntologyV2(NAMESPACE, () => {
+          defineTaskImplementation({
+            isRequiredParameterOnConcreteAction: true,
+            inherits: true,
+          });
+        }),
+      ).rejects.toThrow(`on interface "${NAMESPACE}ChildTask"`);
+    });
+
+    it("checks imported interfaces", async () => {
+      await expect(
+        defineOntologyV2(NAMESPACE, () => {
+          defineTaskImplementation({
+            isRequiredParameterOnConcreteAction: true,
+            importsInterface: true,
+          });
+        }),
+      ).rejects.toThrow('on interface "com.external.Task"');
+    });
+
+    it("checks imported Actions", async () => {
+      await expect(
+        defineOntologyV2(NAMESPACE, () => {
+          defineTaskImplementation({
+            isRequiredParameterOnConcreteAction: true,
+            importsAction: true,
+          });
+        }),
+      ).rejects.toThrow('on action "com.external.create-task"');
+    });
+
+    it("accepts a required parameter on an imported Action", async () => {
+      await expect(
+        defineOntologyV2(NAMESPACE, () => {
+          defineTaskImplementation({
+            isRequiredParameterOnConcreteAction: true,
+            importsAction: true,
+            required: true,
+          });
+        }),
+      ).resolves.toBeDefined();
+    });
+
+    it.each([
+      { name: "zero minimum", listLength: { min: 0 } },
+      { name: "no minimum", listLength: {} },
+      { name: "maximum only", listLength: { max: 5 } },
+    ])(
+      "rejects a list that permits empty values: $name",
+      async ({ listLength }) => {
+        await expect(
+          defineOntologyV2(NAMESPACE, () => {
+            defineTaskImplementation({
+              isRequiredParameterOnConcreteAction: true,
+              list: true,
+              required: { listLength },
+            });
+          }),
+        ).rejects.toThrow("must be required");
+      },
+    );
+
+    it("accepts a list with a positive minimum length", async () => {
+      await expect(
+        defineOntologyV2(NAMESPACE, () => {
+          defineTaskImplementation({
+            isRequiredParameterOnConcreteAction: true,
+            list: true,
+            required: { listLength: { min: 1 } },
+          });
+        }),
+      ).resolves.toBeDefined();
+    });
+
+    it("reports invalid mappings across objects together", async () => {
+      const result = defineOntologyV2(NAMESPACE, () => {
+        const objectType = defineTaskImplementation({
+          isRequiredParameterOnConcreteAction: true,
+        });
+        defineObject({ ...objectType, apiName: "otherTask" });
+      });
+      await expect(result).rejects.toThrow(
+        `for object "${NAMESPACE}task" must be required`,
+      );
+      await expect(result).rejects.toThrow(
+        `for object "${NAMESPACE}otherTask" must be required`,
+      );
+    });
+
+    it("allows function-backed Actions before function discovery", () => {
+      initializeOntologyState(NAMESPACE);
+      defineTaskImplementation({
+        isRequiredParameterOnConcreteAction: true,
+        functionBacked: true,
+      });
+      expect(() =>
+        convertOntologyDefinition(
+          getOntologyDefinition(),
+          new OntologyRidGeneratorImpl(getImportedTypes()),
+        ),
+      ).not.toThrow();
+    });
+
+    it("rejects optional function parameters after function discovery", () => {
+      expect(() =>
+        convertFunctionWithParameterRequirement({ required: false }),
+      ).toThrow("must be required");
+    });
+
+    it("accepts required function parameters after function discovery", () => {
+      expect(() =>
+        convertFunctionWithParameterRequirement({ required: true }),
+      ).not.toThrow();
+    });
+  });
 });
+
+function defineTaskImplementation({
+  isRequiredParameterOnConcreteAction,
+  requireImplementation = false,
+  required = false,
+  parameterMapping = { taskId: "id" },
+  list = false,
+  inherits = false,
+  importsInterface = false,
+  importsAction = false,
+  inline = false,
+  functionBacked = false,
+}: {
+  isRequiredParameterOnConcreteAction: boolean | undefined;
+  requireImplementation?: boolean;
+  required?: ActionParameterRequirementConstraint;
+  parameterMapping?: Record<string, string>;
+  list?: boolean;
+  inherits?: boolean;
+  importsInterface?: boolean;
+  importsAction?: boolean;
+  inline?: boolean;
+  functionBacked?: boolean;
+}) {
+  let interfaceType = defineInterface({ apiName: "Task" });
+  defineInterfaceActionTypeConstraint({
+    interfaceType,
+    apiName: "createTask",
+    displayName: "Create Task",
+    description: "Create a task",
+    requireImplementation: false,
+    parameters: [
+      {
+        apiName: "taskId",
+        displayName: "Task ID",
+        type: list
+          ? { type: "stringList", stringList: {} }
+          : { type: "string", string: {} },
+        requireImplementation,
+        isRequiredParameterOnConcreteAction,
+      },
+    ],
+  });
+  if (importsInterface) {
+    interfaceType = { ...interfaceType, apiName: "com.external.Task" };
+    importOntologyEntity(interfaceType);
+  }
+  if (inherits) {
+    interfaceType = defineInterface({
+      apiName: "ChildTask",
+      extends: [interfaceType],
+    });
+  }
+  const objectType = defineObject({
+    apiName: "task",
+    displayName: "Task",
+    pluralDisplayName: "Tasks",
+    primaryKeyPropertyApiName: "pk",
+    titlePropertyApiName: "pk",
+    properties: { pk: { type: "string" }, id: { type: "string", array: list } },
+    ...(inline
+      ? {
+          implementsInterfaces: [
+            {
+              implements: interfaceType,
+              propertyMapping: [],
+              actionTypeImplementations: {
+                [CONSTRAINT_NAME]: {
+                  actionTypeApiName: `${NAMESPACE}${ACTION_NAME}`,
+                  parameterMapping,
+                },
+              },
+            },
+          ],
+        }
+      : {}),
+  });
+  let action = functionBacked
+    ? defineFunctionBackedAction({
+        apiName: ACTION_NAME,
+        functionApiName: "createTask",
+      })
+    : defineCreateObjectAction({
+        objectType,
+        apiName: ACTION_NAME,
+        parameterConfiguration: { id: { required } },
+      });
+  if (importsAction) {
+    action = { ...action, apiName: "com.external.create-task" };
+    importOntologyEntity(action);
+  }
+  if (!inline) {
+    defineInterfaceImplementation({
+      objectType,
+      interfaceType,
+      actionTypeImplementations: {
+        [CONSTRAINT_NAME]: { actionType: action, parameterMapping },
+      },
+    });
+  }
+  return objectType;
+}
+
+function convertFunctionWithParameterRequirement({
+  required,
+}: {
+  required: boolean;
+}) {
+  initializeOntologyState(NAMESPACE);
+  defineTaskImplementation({
+    isRequiredParameterOnConcreteAction: true,
+    functionBacked: true,
+  });
+  const functionsIr: FunctionsIr = {
+    discoveredFunctions: [
+      {
+        locator: {
+          type: "typescript",
+          typescript: { functionName: "createTask" },
+        },
+        inputs: [{ name: "id", dataType: { type: "string" }, required }],
+        output: { type: "void" },
+        customTypes: {},
+        ontologyProvenance: {
+          editedObjects: { [`${NAMESPACE}task`]: {} },
+          editedLinks: {},
+          editedInterfaces: {},
+        },
+      },
+    ],
+  };
+  return convertOntologyDefinition(
+    getOntologyDefinition(),
+    new OntologyRidGeneratorImpl(getImportedTypes()),
+    functionsIr,
+  );
+}

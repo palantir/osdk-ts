@@ -1,5 +1,18 @@
 # @osdk/unit-testing
 
+## 1.1.0
+
+### Minor Changes
+
+- d0f3019: Upgrade the admin Platform SDK to 2.86.0 and remove the obsolete CBAC banner preview parameter.
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [a0c6e14]
+  - @osdk/client@2.85.0
+  - @osdk/api@2.85.0
+
 ## 1.0.0
 
 ### Major Changes

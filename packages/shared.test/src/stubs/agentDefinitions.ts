@@ -77,7 +77,16 @@ export const objectArgumentsAgentVersion: AgentDefinitionVersion = {
       },
     },
   ],
-  eventDefinitions: [],
+  eventDefinitions: [
+    {
+      eventType: "SelectEmployees",
+      payloadType: {
+        type: "objectSet",
+        ontologyApiName: defaultOntologyMetadata.apiName,
+        objectTypeApiName: "Employee",
+      },
+    },
+  ],
   agentStateType: { type: "struct", fields: [] },
   contextItemDefinitions: [],
 };

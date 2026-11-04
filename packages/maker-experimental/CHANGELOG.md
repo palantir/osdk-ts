@@ -1,5 +1,46 @@
 # @osdk/maker-experimental
 
+## 0.81.0
+
+### Minor Changes
+
+- 6b9b2c0: Preserve `isRequiredParameterOnConcreteAction` in Maker and Marketplace shapes. When the flag is true, check that mapped Action parameters are required.
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/maker@0.85.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters.ontologyir@2.86.0
+  - @osdk/generator-converters.preview@0.60.0
+  - @osdk/maker-import@0.50.0
+
+## 0.80.0
+
+### Minor Changes
+
+- d583566: Emit derived `avg`, `sum`, `min`, `max`, `approximateCardinality` and `exactCardinality` aggregations with the property type identifier directly under the aggregation key, so packaging no longer fails with "missing field `type`".
+- c34a294: Validate interface action constraint references are valid
+- d53bef9: Add external recommendations for interface action type constraints
+
+### Patch Changes
+
+- Updated dependencies [d583566]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+- Updated dependencies [050417c]
+- Updated dependencies [34c76cd]
+  - @osdk/maker@0.84.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/maker-import@0.49.0
+  - @osdk/api@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+  - @osdk/generator-converters.preview@0.59.0
+
 ## 0.79.0
 
 ### Minor Changes
