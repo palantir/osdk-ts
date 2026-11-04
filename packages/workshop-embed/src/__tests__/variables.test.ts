@@ -34,6 +34,7 @@ import {
 import type {
   WorkshopModuleConnection,
   WorkshopModuleHostConnection,
+  WorkshopObjectSetValue,
   WorkshopVariableMap,
   WorkshopVariableValue,
   WorkshopVariableValues,
@@ -71,6 +72,7 @@ describe("variable values", () => {
       names: { type: "string", isList: true },
       counts: { type: "number", isList: true },
       flags: { type: "boolean", isList: true },
+      employees: { type: "objectSet", isList: false },
     });
     await received;
   });
@@ -107,6 +109,24 @@ describe("variable values", () => {
     const cleared = nextVariables(sender);
     receiver.setVariables({ names: null });
     await expect(cleared).resolves.toEqual({ names: null });
+  });
+
+  it("exchanges object-set references in both directions and clears them", async () => {
+    const values: unknown = runInNewContext(
+      '({ employees: { objectSetRid: "ri.object-set.main.temporary-object-set.initial" } })',
+    );
+    const received = nextVariables(receiver);
+    sender.setVariables(values as WorkshopVariableValues);
+    await expect(received).resolves.toEqual(values);
+
+    const updated = nextVariables(sender);
+    const employees = { objectSetRid: "ri.object-set..object-set.updated" };
+    receiver.setVariables({ employees });
+    await expect(updated).resolves.toEqual({ employees });
+
+    const cleared = nextVariables(receiver);
+    sender.setVariables({ employees: null });
+    await expect(cleared).resolves.toEqual({ employees: null });
   });
 
   it("ignores malformed and foreign-session messages before delivering a valid update", async () => {
@@ -228,6 +248,7 @@ describe("declared variable types", () => {
     count: number;
     enabled: boolean;
     names: readonly string[];
+    employees: WorkshopObjectSetValue;
   };
   const appOrigin = "https://app.example.com";
   const workshopOrigin = "https://workshop.example.com";
@@ -276,6 +297,7 @@ describe("declared variable types", () => {
               count: { type: "number", isList: false },
               enabled: { type: "boolean", isList: false },
               names: { type: "string", isList: true },
+              employees: { type: "objectSet", isList: false },
             });
             connection.setVariables({ count: 0 });
             resolve(connection);
@@ -320,8 +342,12 @@ describe("declared variable types", () => {
     expectTypeOf<WorkshopVariableValues<{ values: string[][] }>>();
     // @ts-expect-error Null clears the whole variable, not individual elements.
     expectTypeOf<WorkshopVariableValues<{ values: (string | null)[] }>>();
-    // @ts-expect-error Objects are not supported variable types.
+    // @ts-expect-error Arbitrary objects are not supported variable types.
     expectTypeOf<WorkshopVariableValues<{ employee: { name: string } }>>();
+    expectTypeOf<
+      // @ts-expect-error Object-set arrays are not supported variable types.
+      WorkshopVariableValues<{ employees: WorkshopObjectSetValue[] }>
+    >();
     receiver.onVariablesSet((values) => {
       expectTypeOf(values.searchText).toEqualTypeOf<
         string | null | undefined
@@ -330,6 +356,9 @@ describe("declared variable types", () => {
       expectTypeOf(values.enabled).toEqualTypeOf<boolean | null | undefined>();
       expectTypeOf(values.names).toEqualTypeOf<
         readonly string[] | null | undefined
+      >();
+      expectTypeOf(values.employees).toEqualTypeOf<
+        WorkshopObjectSetValue | null | undefined
       >();
       // @ts-expect-error Undeclared variable IDs are not available to listeners.
       expectTypeOf(values.unknownVariable);
@@ -355,6 +384,13 @@ describe("declared variable types", () => {
     expectTypeOf(sender.setVariables).toBeCallableWith({
       // @ts-expect-error Names is declared as a string array.
       names: [1],
+    });
+    expectTypeOf(sender.setVariables).toBeCallableWith({
+      employees: { objectSetRid: "ri.object-set.main.object-set.example" },
+    });
+    expectTypeOf(sender.setVariables).toBeCallableWith({
+      // @ts-expect-error An object-set reference requires a string RID.
+      employees: { objectSetRid: 1 },
     });
 
     const received = nextVariables(receiver);
@@ -404,5 +440,12 @@ const invalidInputs: unknown[] = [
   { values: [0, Number.NaN] },
   { values: [Number.POSITIVE_INFINITY] },
   { values: new Array<number>(1) },
-  { employees: { objectSetRid: "ri.object-set.main.object-set.example" } },
+  { employees: {} },
+  { employees: { objectSetRid: "" } },
+  { employees: { objectSetRid: 1 } },
+  { employees: { objectSetRid: null } },
+  { employees: { objectSetRid: "ri.workshop.main.module.example" } },
+  { employees: { objectSetRid: "ri.object-set.main.object-set." } },
+  { employees: { objectSetRid: "ri.object-set.main.object-set.not a rid" } },
+  { employees: [{ objectSetRid: "ri.object-set.main.object-set.example" }] },
 ];

@@ -52,7 +52,12 @@ export interface WorkshopModuleHostConnection<TVariables extends WorkshopVariabl
 export type WorkshopModuleSchema = Readonly<Record<string, WorkshopVariableSchema>>;
 
 // @public
-export type WorkshopSingleVariableValue = string | number | boolean;
+export interface WorkshopObjectSetValue {
+    	readonly objectSetRid: string;
+}
+
+// @public
+export type WorkshopSingleVariableValue = string | number | boolean | WorkshopObjectSetValue;
 
 // @public
 export type WorkshopVariableMap = {
@@ -60,10 +65,13 @@ export type WorkshopVariableMap = {
 };
 
 // @public
-export interface WorkshopVariableSchema {
-    	readonly isList: boolean;
-    	readonly type: "string" | "number" | "boolean";
-}
+export type WorkshopVariableSchema = {
+    	readonly type: "string" | "number" | "boolean"
+    	readonly isList: boolean
+} | {
+    	readonly type: "objectSet"
+    	readonly isList: false
+};
 
 // @public
 export type WorkshopVariableValue = WorkshopSingleVariableValue | readonly string[] | readonly number[] | readonly boolean[] | null;

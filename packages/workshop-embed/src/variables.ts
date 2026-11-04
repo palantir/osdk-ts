@@ -22,9 +22,22 @@ import {
 import type { WorkshopEmbedMessage } from "./protocol.js";
 
 const RESERVED_EXTERNAL_IDS = ["_open_rebase_dialog", "_kiosk_mode_session_id"];
+// Resource identifier syntax, restricted to the object-set service.
+const OBJECT_SET_RID_PATTERN =
+  /^ri\.object-set\.(?:[a-z0-9][a-z0-9-]*)?\.[a-z][a-z0-9-]*\.[a-zA-Z0-9_.-]+$/u;
+
+/** An object-set reference. The RID must be accessible to the receiving application. @public */
+export interface WorkshopObjectSetValue {
+  /** RID of the referenced object set. */
+  readonly objectSetRid: string;
+}
 
 /** A single variable value. Numbers must be finite. @public */
-export type WorkshopSingleVariableValue = string | number | boolean;
+export type WorkshopSingleVariableValue =
+  | string
+  | number
+  | boolean
+  | WorkshopObjectSetValue;
 
 /** A single value or array. Arrays must be homogeneous; null clears the whole variable. @public */
 export type WorkshopVariableValue =
@@ -57,7 +70,7 @@ export function createSetVariablesMessage(
 ): SetVariablesMessage {
   if (!isVariableValues(values)) {
     throw new TypeError(
-      "Variable values must map non-empty, non-reserved external IDs that are unique ignoring case to strings, finite numbers, booleans, homogeneous arrays of those values, or null.",
+      "Variable values must map non-empty, non-reserved external IDs that are unique ignoring case to strings, finite numbers, booleans, homogeneous arrays of those primitives, object-set references, or null.",
     );
   }
   return {
@@ -112,7 +125,9 @@ export function isVariableRecord(
 
 function isVariableValue(value: unknown): value is WorkshopVariableValue {
   if (value == null) return value !== undefined;
-  if (!Array.isArray(value)) return isScalarValue(value);
+  if (!Array.isArray(value)) {
+    return isScalarValue(value) || isObjectSetValue(value);
+  }
 
   const elementType = typeof value[0];
   // Iteration also checks sparse entries, which Array.prototype.every skips.
@@ -122,10 +137,20 @@ function isVariableValue(value: unknown): value is WorkshopVariableValue {
   return true;
 }
 
-function isScalarValue(value: unknown): value is WorkshopSingleVariableValue {
+function isScalarValue(value: unknown): value is string | number | boolean {
   return (
     typeof value === "string" ||
     typeof value === "boolean" ||
     (typeof value === "number" && Number.isFinite(value))
+  );
+}
+
+export function isObjectSetValue(
+  value: unknown,
+): value is WorkshopObjectSetValue {
+  return (
+    isRecord(value) &&
+    typeof value.objectSetRid === "string" &&
+    OBJECT_SET_RID_PATTERN.test(value.objectSetRid)
   );
 }
