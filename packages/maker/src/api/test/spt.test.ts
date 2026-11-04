@@ -119,6 +119,17 @@ describe("SPTs", () => {
 
     expect(dumpOntologyFullMetadata().ontology).toMatchSnapshot();
   });
+  it("Decimal fields default precision and scale", () => {
+    defineSharedPropertyType({ apiName: "bare", type: "decimal" });
+    defineSharedPropertyType({ apiName: "empty", type: { type: "decimal" } });
+
+    const spts = dumpOntologyFullMetadata().ontology.sharedPropertyTypes;
+    const expected = { type: "decimal", decimal: { precision: 5, scale: 2 } };
+    expect(spts["com.palantir.bare"].sharedPropertyType.type).toEqual(expected);
+    expect(spts["com.palantir.empty"].sharedPropertyType.type).toEqual(
+      expected,
+    );
+  });
   it("Vector shared property type properly set", () => {
     defineSharedPropertyType({
       apiName: "embedding",

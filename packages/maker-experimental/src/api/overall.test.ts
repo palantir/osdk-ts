@@ -2554,4 +2554,69 @@ describe("Experimental Test Suite", () => {
       );
     });
   });
+
+  describe("Decimal properties", () => {
+    const defaultedIr = {
+      type: "decimal",
+      decimal: { precision: 5, scale: 2 },
+    };
+
+    it("defaults precision and scale on an object property", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject({
+          apiName: "foo",
+          displayName: "Foo",
+          pluralDisplayName: "Foos",
+          titlePropertyApiName: "bar",
+          primaryKeyPropertyApiName: "bar",
+          properties: {
+            bar: { type: "string" },
+            amount: { type: "decimal" },
+          },
+        });
+      });
+
+      const objectType = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      )[0].objectType;
+      const amount = Object.values(objectType.propertyTypes).find(
+        (p) => p.apiName === "amount",
+      )!;
+      expect(amount.type).toEqual(defaultedIr);
+    });
+
+    it("defaults only the missing field on a shared property type", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineSharedPropertyType({
+          apiName: "amount",
+          type: { type: "decimal", precision: 10 },
+        });
+      });
+
+      const spt = Object.values(
+        result.ontologyIr.ontology.sharedPropertyTypes,
+      )[0].sharedPropertyType;
+      expect(spt.type).toEqual({
+        type: "decimal",
+        decimal: { precision: 10, scale: 2 },
+      });
+    });
+
+    it("defaults precision and scale on an interface-defined property", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineInterface({
+          apiName: "bar",
+          displayName: "Bar",
+          properties: { amount: { type: { type: "decimal" } } },
+        });
+      });
+
+      const interfaceType = Object.values(
+        result.ontologyIr.ontology.interfaceTypes,
+      )[0].interfaceType;
+      const prop = Object.values(interfaceType.propertiesV3)[0];
+      invariant(prop.type === "interfaceDefinedPropertyType");
+      expect(prop.interfaceDefinedPropertyType.type).toEqual(defaultedIr);
+    });
+  });
 });
