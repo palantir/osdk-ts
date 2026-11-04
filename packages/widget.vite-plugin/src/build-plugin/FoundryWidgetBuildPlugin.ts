@@ -126,7 +126,7 @@ async function createModuleEvaluationServer(
     configFile: config.configFile,
     // Custom mode to prevent dev plugin execution
     mode: MODULE_EVALUATION_MODE,
-    server: { middlewareMode: true, hmr: false, watch: null },
+    server: { middlewareMode: true, watch: null },
   });
 }
 
