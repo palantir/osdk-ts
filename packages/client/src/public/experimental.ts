@@ -16,6 +16,7 @@
 
 export type {
   AgentDefinition,
+  AgentParam,
   AgentSendEventOptions,
   AgentSession,
 } from "@osdk/api/unstable";
