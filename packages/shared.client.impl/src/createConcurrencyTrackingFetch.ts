@@ -14,38 +14,57 @@
  * limitations under the License.
  */
 
+import pLimit from "p-limit";
+
 import type {
   ClientMetrics,
   OsdkRequestContext,
 } from "./OsdkRequestContext.js";
 
 export const OSDK_REQUEST_CONTEXT_HEADER = "X-OSDK-Request-Context";
+const MAX_CONCURRENT_REQUESTS = 150;
 
 export function createConcurrencyTrackingFetch(
   fetchFn: typeof globalThis.fetch,
 ): typeof globalThis.fetch {
+  const limit = pLimit(MAX_CONCURRENT_REQUESTS);
   let activeHttpAttempts = 0;
 
-  return async function concurrencyTrackingFetch(input, init) {
-    const headers = new Headers(
-      input instanceof Request ? input.headers : undefined,
+  return function concurrencyTrackingFetch(input, init) {
+    const queuedAt = Date.now();
+    const queueSize = Math.max(
+      0,
+      limit.activeCount + limit.pendingCount + 1 - MAX_CONCURRENT_REQUESTS,
     );
-    if (init?.headers != null) {
-      new Headers(init.headers).forEach((value, name) => {
-        headers.set(name, value);
-      });
-    }
 
-    activeHttpAttempts++;
-    try {
-      const clientMetrics: ClientMetrics = { concurrency: activeHttpAttempts };
-      const requestContext: OsdkRequestContext = {
-        clientMetrics,
-      };
-      headers.set(OSDK_REQUEST_CONTEXT_HEADER, JSON.stringify(requestContext));
-      return await fetchFn(input, { ...init, headers });
-    } finally {
-      activeHttpAttempts--;
-    }
+    return limit(async () => {
+      activeHttpAttempts++;
+      try {
+        const headers = new Headers(
+          input instanceof Request ? input.headers : undefined,
+        );
+        if (init?.headers != null) {
+          new Headers(init.headers).forEach((value, name) => {
+            headers.set(name, value);
+          });
+        }
+
+        const clientMetrics: ClientMetrics = {
+          concurrency: activeHttpAttempts,
+          queueSize,
+          queueWaitTimeMs: queueSize === 0 ? 0 : Date.now() - queuedAt,
+        };
+        const requestContext: OsdkRequestContext = {
+          clientMetrics,
+        };
+        headers.set(
+          OSDK_REQUEST_CONTEXT_HEADER,
+          JSON.stringify(requestContext),
+        );
+        return await fetchFn(input, { ...init, headers });
+      } finally {
+        activeHttpAttempts--;
+      }
+    });
   };
 }
