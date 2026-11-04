@@ -4,15 +4,19 @@ exports[`generatePerAgentDataFiles > escapes field names and discriminator strin
 {
   "/foo/ontology/agents.ts": "export { escapingAgent } from './agents/escapingAgent.js';
 ",
-  "/foo/ontology/agents/escapingAgent.ts": "import type { VersionBound } from '@osdk/client';
-import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/client/experimental';
+  "/foo/ontology/agents/escapingAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentSession as $AgentSession,
+} from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 /** @beta */
 export namespace escapingAgent {
   export interface Signatures {
-    experimental_createSession(args: escapingAgent.CreateSessionArguments): Promise<AgentSession>;
+    experimental_createSession(args: escapingAgent.CreateSessionArguments): Promise<$AgentSession>;
   }
 
   export interface CreateSessionArguments {
@@ -21,7 +25,9 @@ export namespace escapingAgent {
 }
 
 /** @beta */
-export interface escapingAgent extends AgentDefinition<escapingAgent.Signatures>, VersionBound<$ExpectedClientVersion> {
+export interface escapingAgent
+  extends $AgentDefinition<escapingAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
   type: 'agent';
   apiName: 'escapingAgent';
   version: '1.2.3';
@@ -43,15 +49,19 @@ exports[`generatePerAgentDataFiles > generates an agent with forInternalUse=fals
 {
   "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
 ",
-  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound } from '@osdk/client';
-import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/client/experimental';
+  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentSession as $AgentSession,
+} from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 /** @beta */
 export namespace noArgumentsAgent {
   export interface Signatures {
-    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<AgentSession>;
+    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<$AgentSession>;
   }
 
   export type CreateSessionArguments = Record<string, never>;
@@ -59,8 +69,8 @@ export namespace noArgumentsAgent {
 
 /** @beta */
 export interface noArgumentsAgent
-  extends AgentDefinition<noArgumentsAgent.Signatures>,
-    VersionBound<$ExpectedClientVersion> {
+  extends $AgentDefinition<noArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
   type: 'agent';
   apiName: 'noArgumentsAgent';
   version: '1.2.3';
@@ -82,15 +92,19 @@ exports[`generatePerAgentDataFiles > generates an agent with forInternalUse=true
 {
   "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
 ",
-  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound } from '@osdk/api';
-import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/api/unstable';
+  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/api';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentSession as $AgentSession,
+} from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 /** @beta */
 export namespace noArgumentsAgent {
   export interface Signatures {
-    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<AgentSession>;
+    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<$AgentSession>;
   }
 
   export type CreateSessionArguments = Record<string, never>;
@@ -98,8 +112,8 @@ export namespace noArgumentsAgent {
 
 /** @beta */
 export interface noArgumentsAgent
-  extends AgentDefinition<noArgumentsAgent.Signatures>,
-    VersionBound<$ExpectedClientVersion> {
+  extends $AgentDefinition<noArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
   type: 'agent';
   apiName: 'noArgumentsAgent';
   version: '1.2.3';
@@ -121,8 +135,12 @@ exports[`generatePerAgentDataFiles > generates definitions for objectArgumentsAg
 {
   "/foo/ontology/agents.ts": "export { objectArgumentsAgent } from './agents/objectArgumentsAgent.js';
 ",
-  "/foo/ontology/agents/objectArgumentsAgent.ts": "import type { VersionBound } from '@osdk/api';
-import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/api/unstable';
+  "/foo/ontology/agents/objectArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/api';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentSession as $AgentSession,
+} from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
@@ -130,19 +148,19 @@ import type { Employee } from '../objects/Employee.js';
 /** @beta */
 export namespace objectArgumentsAgent {
   export interface Signatures {
-    experimental_createSession(args: objectArgumentsAgent.CreateSessionArguments): Promise<AgentSession>;
+    experimental_createSession(args: objectArgumentsAgent.CreateSessionArguments): Promise<$AgentSession>;
   }
 
   export interface CreateSessionArguments {
-    readonly employee: AgentParam.ObjectType<Employee>;
-    readonly employees: AgentParam.ObjectSetType<Employee>;
+    readonly employee: $AgentParam.ObjectType<Employee>;
+    readonly employees: $AgentParam.ObjectSetType<Employee>;
   }
 }
 
 /** @beta */
 export interface objectArgumentsAgent
-  extends AgentDefinition<objectArgumentsAgent.Signatures>,
-    VersionBound<$ExpectedClientVersion> {
+  extends $AgentDefinition<objectArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
   type: 'agent';
   apiName: 'objectArgumentsAgent';
   version: '1.2.3';
@@ -164,15 +182,19 @@ exports[`generatePerAgentDataFiles > generates definitions for optionalArguments
 {
   "/foo/ontology/agents.ts": "export { optionalArgumentsAgent } from './agents/optionalArgumentsAgent.js';
 ",
-  "/foo/ontology/agents/optionalArgumentsAgent.ts": "import type { VersionBound } from '@osdk/api';
-import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/api/unstable';
+  "/foo/ontology/agents/optionalArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/api';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentSession as $AgentSession,
+} from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 /** @beta */
 export namespace optionalArgumentsAgent {
   export interface Signatures {
-    experimental_createSession(args?: optionalArgumentsAgent.CreateSessionArguments): Promise<AgentSession>;
+    experimental_createSession(args?: optionalArgumentsAgent.CreateSessionArguments): Promise<$AgentSession>;
   }
 
   export interface CreateSessionArguments {
@@ -182,8 +204,8 @@ export namespace optionalArgumentsAgent {
 
 /** @beta */
 export interface optionalArgumentsAgent
-  extends AgentDefinition<optionalArgumentsAgent.Signatures>,
-    VersionBound<$ExpectedClientVersion> {
+  extends $AgentDefinition<optionalArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
   type: 'agent';
   apiName: 'optionalArgumentsAgent';
   version: '1.2.3';
@@ -205,8 +227,12 @@ exports[`generatePerAgentDataFiles > generates definitions for structuredArgumen
 {
   "/foo/ontology/agents.ts": "export { structuredArgumentsAgent } from './agents/structuredArgumentsAgent.js';
 ",
-  "/foo/ontology/agents/structuredArgumentsAgent.ts": "import type { VersionBound } from '@osdk/api';
-import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/api/unstable';
+  "/foo/ontology/agents/structuredArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/api';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentSession as $AgentSession,
+} from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
@@ -214,7 +240,7 @@ import type { Employee } from '../objects/Employee.js';
 /** @beta */
 export namespace structuredArgumentsAgent {
   export interface Signatures {
-    experimental_createSession(args: structuredArgumentsAgent.CreateSessionArguments): Promise<AgentSession>;
+    experimental_createSession(args: structuredArgumentsAgent.CreateSessionArguments): Promise<$AgentSession>;
   }
 
   export interface CreateSessionArguments {
@@ -235,15 +261,15 @@ export namespace structuredArgumentsAgent {
     readonly optionalText?: string | null;
     readonly requiredText: string;
     readonly selection:
-      | { readonly kind: 'employee'; readonly employee: AgentParam.ObjectType<Employee> }
-      | { readonly kind: 'employees'; readonly employees: AgentParam.ObjectSetType<Employee> };
+      | { readonly kind: 'employee'; readonly employee: $AgentParam.ObjectType<Employee> }
+      | { readonly kind: 'employees'; readonly employees: $AgentParam.ObjectSetType<Employee> };
   }
 }
 
 /** @beta */
 export interface structuredArgumentsAgent
-  extends AgentDefinition<structuredArgumentsAgent.Signatures>,
-    VersionBound<$ExpectedClientVersion> {
+  extends $AgentDefinition<structuredArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
   type: 'agent';
   apiName: 'structuredArgumentsAgent';
   version: '1.2.3';
@@ -265,15 +291,19 @@ exports[`generatePerAgentDataFiles > preserves requested version references 1`] 
 {
   "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
 ",
-  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound } from '@osdk/client';
-import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/client/experimental';
+  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentSession as $AgentSession,
+} from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 /** @beta */
 export namespace noArgumentsAgent {
   export interface Signatures {
-    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<AgentSession>;
+    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<$AgentSession>;
   }
 
   export type CreateSessionArguments = Record<string, never>;
@@ -281,8 +311,8 @@ export namespace noArgumentsAgent {
 
 /** @beta */
 export interface noArgumentsAgent
-  extends AgentDefinition<noArgumentsAgent.Signatures>,
-    VersionBound<$ExpectedClientVersion> {
+  extends $AgentDefinition<noArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
   type: 'agent';
   apiName: 'noArgumentsAgent';
   version: '^1.0.0';

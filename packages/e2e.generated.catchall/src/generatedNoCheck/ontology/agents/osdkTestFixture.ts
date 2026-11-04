@@ -1,12 +1,16 @@
-import type { VersionBound } from '@osdk/client';
-import type { AgentDefinition, AgentParam, AgentSession } from '@osdk/client/experimental';
+import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentSession as $AgentSession,
+} from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 /** @beta */
 export namespace osdkTestFixture {
   export interface Signatures {
-    experimental_createSession(args: osdkTestFixture.CreateSessionArguments): Promise<AgentSession>;
+    experimental_createSession(args: osdkTestFixture.CreateSessionArguments): Promise<$AgentSession>;
   }
 
   export interface CreateSessionArguments {
@@ -16,8 +20,8 @@ export namespace osdkTestFixture {
 
 /** @beta */
 export interface osdkTestFixture
-  extends AgentDefinition<osdkTestFixture.Signatures>,
-    VersionBound<$ExpectedClientVersion> {
+  extends $AgentDefinition<osdkTestFixture.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
   type: 'agent';
   apiName: 'osdkTestFixture';
   version: '0.5.0';

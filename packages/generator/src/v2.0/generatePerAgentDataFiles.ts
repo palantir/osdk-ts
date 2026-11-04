@@ -102,10 +102,10 @@ async function generateAgentFile(
   await fs.writeFile(
     path.join(outDir, `${name}.ts`),
     await formatTs(`
-      import type { VersionBound } from "${
+      import type { VersionBound as $VersionBound } from "${
       forInternalUse ? "@osdk/api" : "@osdk/client"
     }";
-      import type { AgentDefinition, AgentParam, AgentSession } from "${
+      import type { AgentDefinition as $AgentDefinition, AgentParam as $AgentParam, AgentSession as $AgentSession } from "${
       forInternalUse ? "@osdk/api/unstable" : "@osdk/client/experimental"
     }";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
@@ -117,7 +117,7 @@ async function generateAgentFile(
         export interface Signatures {
           experimental_createSession(args${
       optional ? "?" : ""
-    }: ${name}.CreateSessionArguments): Promise<AgentSession>;
+    }: ${name}.CreateSessionArguments): Promise<$AgentSession>;
         }
 
         ${
@@ -130,7 +130,7 @@ async function generateAgentFile(
       }
 
       /** @beta */
-      export interface ${name} extends AgentDefinition<${name}.Signatures>, VersionBound<$ExpectedClientVersion> {
+      export interface ${name} extends $AgentDefinition<${name}.Signatures>, $VersionBound<$ExpectedClientVersion> {
         type: "agent";
         apiName: ${apiName};
         version: ${version};
@@ -205,7 +205,7 @@ export function getAgentArgType(
       ).join(" | ") || "never";
     case "object":
     case "objectSet":
-      return `AgentParam.${
+      return `$AgentParam.${
         input.type === "object" ? "ObjectType" : "ObjectSetType"
       }<${
         ontology.requireObjectType(input.objectTypeApiName)
