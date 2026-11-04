@@ -58,6 +58,20 @@ describe("aggregation ObjectSet support", () => {
     store = new Store(client);
   });
 
+  it("returns the same query for equivalent aggregation options", () => {
+    const q1 = store.aggregations.getQuery({
+      type: Employee,
+      aggregate: { $select: { $count: "unordered" } },
+    });
+    const q2 = store.aggregations.getQuery({
+      type: Employee,
+      aggregate: { $select: { $count: "unordered" } },
+    });
+
+    expect(q1).toBe(q2);
+    expect(q1.cacheKey).toBe(q2.cacheKey);
+  });
+
   it("includes wireObjectSet in cache key when provided", () => {
     const pivotedSet = client(Employee).pivotTo("officeLink");
 
