@@ -4,41 +4,25 @@ name: Storybook Preview Comment
 # commit status. This turns a successful status into a PR comment linking the
 # preview. `status` workflows always run main's copy of this file, so PR code
 # never runs next to the write token.
-# TEMP: pull_request trigger to test from the PR; revert before merge.
-on: [status, pull_request]
+on: status
 
 permissions: {}
 
 jobs:
   comment:
     name: Comment with the Storybook preview link
-    if: "github.event_name == 'pull_request' || github.event.context == 'ci/circleci: build-storybook' && github.event.state == 'success'"
-    timeout-minutes: 45
+    if: "github.event.context == 'ci/circleci: build-storybook' && github.event.state == 'success'"
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
     steps:
-      # TEMP: pull_request has no CircleCI URL, so wait for build-storybook's status on the PR head.
-      - name: TEMP wait for the CircleCI build-storybook status
-        id: temp
-        if: github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          for _ in $(seq 80); do
-            url=$(gh api "repos/$REPO/commits/$SHA/statuses" --jq '[.[] | select(.context == "ci/circleci: build-storybook" and .state == "success")][0].target_url // empty')
-            if [ -n "$url" ]; then echo "target_url=$url" >> "$GITHUB_OUTPUT"; exit 0; fi
-            sleep 30
-          done
-          exit 1
       - name: Comment with the preview link
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          SHA: ${{ github.event.sha || github.event.pull_request.head.sha }}
-          TARGET_URL: ${{ github.event.target_url || steps.temp.outputs.target_url }}
+          SHA: ${{ github.event.sha }}
+          TARGET_URL: ${{ github.event.target_url }}
         run: |
           set -euo pipefail
 
