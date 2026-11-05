@@ -116,11 +116,11 @@ export function createFoundryWidgetClient<
       "host.set-hotkeys": (payload) => {
         hostEventTarget.dispatchEventMessage("host.set-hotkeys", payload);
       },
-      "host.update-parameters": (payload) => {
-        hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
-      },
       "host.set-theme": (payload) => {
         hostEventTarget.dispatchEventMessage("host.set-theme", payload);
+      },
+      "host.update-parameters": (payload) => {
+        hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
       },
       _unknown: () => {
         // Do nothing

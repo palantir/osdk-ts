@@ -86,7 +86,6 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   client: osdkClient,
 }: FoundryWidgetProps<C>): React.ReactElement<FoundryWidgetProps<C>> => {
   const client = useMemo(() => createFoundryWidgetClient<C>(), []);
-  const [theme, setTheme] = React.useState<unknown>();
   const [asyncParameterValues, setAsyncParameterValues] = React.useState<
     ExtendedAsyncParameterValueMap<C>
   >(initialValues ?? initializeParameters(config, "not-started"));
@@ -95,6 +94,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   >({
     type: "not-started",
   });
+  const [theme, setTheme] = React.useState<unknown>();
 
   const objectSetCache = useRef<
     Map<string, { objectSetRid: string; objectSet: ObjectSet }>
@@ -146,15 +146,12 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
 
   useEffect(() => {
     let hostHotkeys: HostMessage.Payload.SetHotkeys["hotkeys"] = [];
-    const handleSetTheme = (
-      event: CustomEvent<HostMessage.Payload.SetTheme>,
-    ) => {
-      setTheme(event.detail.theme);
-    };
-    client.hostEventTarget.addEventListener("host.set-theme", handleSetTheme);
     client.subscribe();
     client.hostEventTarget.addEventListener("host.set-hotkeys", (payload) => {
       hostHotkeys = payload.detail.hotkeys;
+    });
+    client.hostEventTarget.addEventListener("host.set-theme", (payload) => {
+      setTheme(payload.detail.theme);
     });
     client.hostEventTarget.addEventListener(
       "host.update-parameters",
@@ -304,10 +301,6 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
 
     return () => {
       client.unsubscribe();
-      client.hostEventTarget.removeEventListener(
-        "host.set-theme",
-        handleSetTheme,
-      );
       resizeObserver.disconnect();
       if (import.meta.hot?.off) {
         import.meta.hot.off("vite:beforeFullReload", handleFullReload);
@@ -321,13 +314,13 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
       value={
         {
           emitEvent,
-          theme,
           hostEventTarget: client.hostEventTarget,
           asyncParameterValues,
           parameters: {
             values: allParameterValues.value ?? {},
             state: allParameterValues.type,
           },
+          theme,
           // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
         } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
       }

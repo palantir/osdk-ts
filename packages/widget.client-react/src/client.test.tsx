@@ -90,20 +90,21 @@ describe("FoundryWidget emitEvent race condition handling", () => {
     themeRef,
   }: {
     emitEventRef: { current: EmitEventFn };
-    themeRef?: { current: unknown };
+    themeRef: { current: unknown };
   }) {
     const context = useFoundryWidgetContext<typeof config>();
     emitEventRef.current = context.emitEvent as EmitEventFn;
-    if (themeRef) themeRef.current = context.theme;
+    themeRef.current = context.theme;
     return null;
   }
 
-  const mountWidget = async (themeRef?: { current: unknown }) => {
+  const mountWidget = async () => {
     container = document.createElement("div");
     document.body.append(container);
     root = createRoot(container);
 
     const emitEventRef = { current: null as unknown as EmitEventFn };
+    const themeRef = { current: undefined as unknown };
 
     act(() => {
       root.render(
@@ -117,7 +118,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
       await vi.runAllTimersAsync();
     });
 
-    return emitEventRef.current;
+    return { emitEventRef, themeRef };
   };
 
   const unmountWidget = () => {
@@ -181,7 +182,8 @@ describe("FoundryWidget emitEvent race condition handling", () => {
 
   it("should emit both events when different events are called", async () => {
     const deferred = createDeferredTransformMock();
-    const emit = await mountWidget();
+    const { emitEventRef } = await mountWidget();
+    const emit = emitEventRef.current;
 
     act(() => {
       emit("eventA", { parameterUpdates: { myParam: "valueA" } });
@@ -207,7 +209,8 @@ describe("FoundryWidget emitEvent race condition handling", () => {
 
   it("should only emit the last call even when transforms resolve out of order", async () => {
     const deferred = createDeferredTransformMock();
-    const emit = await mountWidget();
+    const { emitEventRef } = await mountWidget();
+    const emit = emitEventRef.current;
 
     // Call emitEvent 3 times rapidly
     act(() => {
@@ -250,7 +253,8 @@ describe("FoundryWidget emitEvent race condition handling", () => {
 
   it("should emit all calls when they complete sequentially", async () => {
     const deferred = createDeferredTransformMock();
-    const emit = await mountWidget();
+    const { emitEventRef } = await mountWidget();
+    const emit = emitEventRef.current;
 
     // First call
     act(() => {
@@ -294,7 +298,8 @@ describe("FoundryWidget emitEvent race condition handling", () => {
       }),
     );
 
-    const emit = await mountWidget();
+    const { emitEventRef } = await mountWidget();
+    const emit = emitEventRef.current;
 
     // Emit 5 events rapidly - all should go through synchronously
     act(() => {
@@ -325,8 +330,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
   });
 
   it("exposes the latest host theme through context", async () => {
-    const themeRef = { current: undefined as unknown };
-    await mountWidget(themeRef);
+    const { themeRef } = await mountWidget();
     expect(themeRef.current).toBeUndefined();
 
     const theme = { custom: "value" };

@@ -40,23 +40,28 @@ export namespace HostMessage {
       hotkeys: Hotkey[];
     }
 
-    export interface UpdateParameters<C extends WidgetConfig<C["parameters"]>> {
-      parameters: AsyncParameterValueMap<C>;
-    }
-
     export interface SetTheme {
       theme: unknown;
+    }
+
+    export interface UpdateParameters<C extends WidgetConfig<C["parameters"]>> {
+      parameters: AsyncParameterValueMap<C>;
     }
   }
 
   export type Payload =
     | Payload.SetHotkeys
-    | Payload.UpdateParameters<any>
-    | Payload.SetTheme;
+    | Payload.SetTheme
+    | Payload.UpdateParameters<any>;
 
   export interface SetHotkeys extends HostBaseMessage<
     "host.set-hotkeys",
     Payload.SetHotkeys
+  > {}
+
+  export interface SetTheme extends HostBaseMessage<
+    "host.set-theme",
+    Payload.SetTheme
   > {}
 
   export interface UpdateParameters<
@@ -65,22 +70,23 @@ export namespace HostMessage {
     "host.update-parameters",
     Payload.UpdateParameters<C>
   > {}
-
-  export interface SetTheme extends HostBaseMessage<
-    "host.set-theme",
-    Payload.SetTheme
-  > {}
 }
 
 export type HostMessage<C extends WidgetConfig<C["parameters"]>> =
   | HostMessage.SetHotkeys
-  | HostMessage.UpdateParameters<C>
-  | HostMessage.SetTheme;
+  | HostMessage.SetTheme
+  | HostMessage.UpdateParameters<C>;
 
 export function isHostSetHotkeysMessage<
   C extends WidgetConfig<C["parameters"]>,
 >(event: HostMessage<C>): event is HostMessage.SetHotkeys {
   return event.type === "host.set-hotkeys";
+}
+
+export function isHostSetThemeMessage<C extends WidgetConfig<C["parameters"]>>(
+  event: HostMessage<C>,
+): event is HostMessage.SetTheme {
+  return event.type === "host.set-theme";
 }
 
 export function isHostParametersUpdatedMessage<
