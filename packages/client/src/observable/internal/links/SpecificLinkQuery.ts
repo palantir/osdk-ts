@@ -279,9 +279,6 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     const response = await linkQuery.fetchPage(queryParams);
 
-    // Store the next page token for pagination
-    this.nextPageToken = response.nextPageToken;
-
     // Honor resolveToObjectType only when the link target is an interface —
     // for concrete object targets the data is already in object form.
     if (this.#resolveToObjectType && target?.kind === "interface") {
@@ -334,10 +331,10 @@ export class SpecificLinkQuery extends BaseListQuery<
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   maybeUpdateAndRevalidate = async (
     changes: Changes,
-    _optimisticId: OptimisticId | undefined,
+    optimisticId: OptimisticId | undefined,
   ): Promise<void> => {
     if (changes.modified.has(this.cacheKey)) {
-      return this.revalidate(true);
+      return this.revalidateAfterUpdate(optimisticId);
     }
 
     return Promise.resolve();

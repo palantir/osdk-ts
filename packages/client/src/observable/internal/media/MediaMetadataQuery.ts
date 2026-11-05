@@ -113,7 +113,7 @@ export class MediaMetadataQuery extends Query<
     );
   }
 
-  async _fetchAndStore(): Promise<void> {
+  async _fetchAndStore(signal: AbortSignal): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "_fetchAndStore" })
@@ -140,6 +140,8 @@ export class MediaMetadataQuery extends Query<
           },
         );
 
+      if (signal.aborted) return;
+      this.completeRequest(signal);
       const metadata: MediaMetadata = {
         path: String(response.path),
         sizeBytes: Number(response.sizeBytes),
@@ -150,6 +152,8 @@ export class MediaMetadataQuery extends Query<
         this.writeToStore(metadata, "loaded", batch);
       });
     } catch (error) {
+      if (signal.aborted) return;
+      this.completeRequest(signal);
       if (process.env.NODE_ENV !== "production") {
         this.logger
           ?.child({ methodName: "_fetchAndStore" })
@@ -209,7 +213,7 @@ export class MediaMetadataQuery extends Query<
             ?.child({ methodName: "maybeUpdateAndRevalidate" })
             .debug("Parent object changed, revalidating metadata");
         }
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
     }
 
@@ -220,7 +224,7 @@ export class MediaMetadataQuery extends Query<
             ?.child({ methodName: "maybeUpdateAndRevalidate" })
             .debug("Parent object changed, revalidating metadata");
         }
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
     }
 

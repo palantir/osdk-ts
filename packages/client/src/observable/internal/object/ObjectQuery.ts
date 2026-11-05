@@ -118,7 +118,7 @@ export class ObjectQuery extends Query<
     );
   }
 
-  async _fetchAndStore(): Promise<void> {
+  async _fetchAndStore(signal: AbortSignal): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "_fetchAndStore" })
@@ -167,6 +167,8 @@ export class ObjectQuery extends Query<
       );
     }
 
+    if (signal.aborted) return;
+    this.completeRequest(signal);
     this.store.batch({}, (batch) => {
       this.writeToStore(
         obj,

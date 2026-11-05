@@ -24,13 +24,8 @@ import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
-import {
-  getListMembershipChanges,
-  type ListObjectChanges,
-  reconcileListChanges,
-} from "../base-list/reconcileListChanges.js";
+import type { ListObjectChanges } from "../base-list/reconcileListChanges.js";
 import type { BatchContext } from "../BatchContext.js";
-import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
@@ -267,8 +262,6 @@ export class ObjectSetQuery extends BaseListQuery<
       throw new Error("Aborted");
     }
 
-    this.nextPageToken = resp.nextPageToken;
-
     return resp;
   }
 
@@ -316,9 +309,19 @@ export class ObjectSetQuery extends BaseListQuery<
 
     try {
       if (this.#requiresServerEvaluation) {
-        return this.#handleServerRevalidation(changes);
+        return this.#handleServerRevalidation(changes, optimisticId);
       }
-      return this.#handleLocalUpdate(changes, optimisticId);
+      const relevant = this.#getRelevantChanges(changes);
+      if (relevant) {
+        return this.updateListFromChanges(
+          changes,
+          optimisticId,
+          relevant,
+          (this.#operations.where as SimpleWhereClause | undefined) ?? {
+            $and: [],
+          },
+        );
+      }
     } finally {
       if (process.env.NODE_ENV !== "production") {
         this.logger
@@ -328,12 +331,15 @@ export class ObjectSetQuery extends BaseListQuery<
     }
   };
 
-  #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
+  #handleServerRevalidation(
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
+  ): Promise<void> | undefined {
     for (const objectType of this.#objectTypes) {
       const added = changes.addedObjects.get(objectType);
       const modified = changes.modifiedObjects.get(objectType);
       if ((added && added.length > 0) || (modified && modified.length > 0)) {
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
     }
 
@@ -342,7 +348,7 @@ export class ObjectSetQuery extends BaseListQuery<
         deletedKey.type === "object" &&
         this.#objectTypes.has(deletedKey.otherKeys[OBJECT_API_NAME_IDX])
       ) {
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
     }
 
@@ -374,78 +380,6 @@ export class ObjectSetQuery extends BaseListQuery<
     }
 
     return { added: addedObjects, modified: modifiedObjects };
-  }
-
-  #handleLocalUpdate(
-    changes: Changes,
-    optimisticId: OptimisticId | undefined,
-  ): Promise<void> | undefined {
-    const whereClause = this.#operations.where as
-      | Canonical<SimpleWhereClause>
-      | undefined;
-    const effectiveWhere =
-      whereClause ?? this.store.whereCanonicalizer.canonicalize({ $and: [] });
-
-    const relevant = this.#getRelevantChanges(changes);
-    if (!relevant) {
-      return undefined;
-    }
-
-    const { retVal: needsRevalidation } = this.store.batch(
-      { optimisticId, changes },
-      (batch) => {
-        const membership = getListMembershipChanges(
-          relevant,
-          effectiveWhere,
-          batch.optimisticWrite,
-        );
-        const existingEntry = batch.read(this.cacheKey);
-        const existingKeys = new Set(existingEntry?.value?.data);
-        const { keys, hasMissingObjects } =
-          this.store.objects.getAvailableCacheKeys(
-            [...membership.added, ...membership.modified],
-            this.rdpConfig,
-            batch,
-          );
-        const keysToRemove = new Set<CacheKey>(changes.deleted);
-        for (const obj of membership.removed) {
-          keysToRemove.add(this.store.objects.getCacheKey(obj, this.rdpConfig));
-        }
-        const newList = reconcileListChanges(existingKeys, {
-          keysToInsert: Array.from(keys).filter(
-            (key) => !existingKeys.has(key),
-          ),
-          keysToRemove,
-        });
-        const requiresRefresh =
-          membership.needsRevalidation || hasMissingObjects;
-
-        const isPendingFetchLoading =
-          this.pendingFetch != null && existingEntry?.status === "loading";
-        const shouldBeLoading =
-          isPendingFetchLoading ||
-          requiresRefresh ||
-          optimisticId != null ||
-          membership.hasUncertainMatches;
-        const status = shouldBeLoading ? "loading" : "loaded";
-
-        const existingTotalCount = existingEntry?.value?.totalCount;
-        this._updateList(
-          newList,
-          status,
-          batch,
-          { type: "clientOrdered" },
-          existingTotalCount,
-        );
-
-        return requiresRefresh;
-      },
-    );
-
-    if (needsRevalidation && !optimisticId) {
-      return this.revalidate(true);
-    }
-    return undefined;
   }
 
   async #computeInvalidationTypes(
