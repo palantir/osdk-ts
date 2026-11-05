@@ -48,6 +48,9 @@ type actionReturnType_withReturnValueAndEdits =
 /** The payload carrying an action's return value. */
 type actionReturnValueResponse = ActionReturnValueResponse<string>;
 
+/** An action's return value, which is undefined if the OSDK could not convert it. */
+type actionReturnValueResponse_returnValue = string | undefined;
+
 /** The validation-only response returned when $validateOnly: true. */
 type actionValidationResponse = ValidateActionResponseV2;
 
