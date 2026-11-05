@@ -276,7 +276,7 @@ describe("useLinks pagination", () => {
 
   afterEach(cleanup);
 
-  it("keeps links filtered through manual pagination and refresh", async () => {
+  it("loads, paginates, and refreshes links", async () => {
     const { result } = renderHook(
       () =>
         useLinks(sources[0], "peeps", {
