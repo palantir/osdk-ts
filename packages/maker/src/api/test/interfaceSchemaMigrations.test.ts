@@ -86,7 +86,11 @@ function defineWithMigrations(
   properties: Record<string, AuthoredProperty> = Object.fromEntries(
     transitions
       .flatMap((t) => t.instructions)
-      .map((instruction) => [instruction.property, OPTIONAL_STRING]),
+      .flatMap((instruction) =>
+        instruction.type === "addRequiredProperty"
+          ? [[instruction.property, OPTIONAL_STRING]]
+          : [],
+      ),
   ),
 ): InterfaceType {
   return defineInterface({
