@@ -100,3 +100,52 @@ test.each(["/nested/widgets/", "./"])(
     expect(html).toContain(`href="${base}${widget.entrypointCss?.[0].path}"`);
   },
 );
+
+test("uses the build's base and keeps non-ASCII and external asset paths", async () => {
+  root = await realpath(await mkdtemp(path.join(tmpdir(), "widget-build-")));
+  await mkdir(path.join(root, "src"));
+  await writeFile(
+    path.join(root, "foundry.config.json"),
+    JSON.stringify({
+      foundryUrl: "https://example.com",
+      widgetSet: { rid: "ri.widget-set", directory: "dist" },
+    }),
+  );
+  await writeFile(
+    path.join(root, "package.json"),
+    JSON.stringify({ version: "1.0.0" }),
+  );
+  await writeFile(
+    path.join(root, "vite.config.mjs"),
+    `export default ({ command }) => ({ base: command === "build" ? "/" : "/assets/" });`,
+  );
+  await writeFile(
+    path.join(root, "café.html"),
+    `<script type="module" src="/src/widget.ts"></script><script src="https://cdn.example.com/lib.js"></script>`,
+  );
+  await writeFile(
+    path.join(root, "src/widget.ts"),
+    `import config from "./widget.config"; document.title = config.name;`,
+  );
+  await writeFile(
+    path.join(root, "src/widget.config.ts"),
+    `export default { id: "widget", name: "widget", type: "workshop", parameters: {}, events: {} };`,
+  );
+
+  await build({
+    root,
+    configFile: path.join(root, "vite.config.mjs"),
+    logLevel: "silent",
+    plugins: [FoundryWidgetPlugin()],
+    build: { rollupOptions: { input: path.join(root, "café.html") } },
+  });
+
+  const manifest = JSON.parse(
+    await readFile(path.join(root, "dist", MANIFEST_FILE_LOCATION), "utf8"),
+  ) as WidgetSetManifest;
+  const html = await readFile(path.join(root, "dist/café.html"), "utf8");
+  const [script, external] = manifest.widgetSet.widgets.widget.entrypointJs;
+  expect(script.path).toMatch(/^assets\/café-.*\.js$/u);
+  expect(html).toContain(`src="/${script.path}"`);
+  expect(external.path).toBe("https://cdn.example.com/lib.js");
+});
