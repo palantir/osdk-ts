@@ -60,22 +60,28 @@ export function wireActionTypeV2ToSdkActionMetadata(
       supportedReleaseStatus,
     ),
     ...(input.returnType != null
-      ? { returnType: wireActionReturnTypeToSdkReturnType(input.returnType) }
+      ? {
+        returnType: tryConvertActionReturnTypeToSdkReturnType(
+          input.apiName,
+          input.returnType,
+        ),
+      }
       : {}),
   };
 }
 
-/**
- * Returns undefined for return types the OSDK cannot represent (for example,
- * `unsupported` types reported by the server) so the action stays usable; the
- * server omits those return values from the apply response anyway.
- */
-function wireActionReturnTypeToSdkReturnType(
+function tryConvertActionReturnTypeToSdkReturnType(
+  actionApiName: string,
   returnType: QueryDataType,
 ): ActionMetadata["returnType"] {
   try {
     return wireQueryDataTypeToQueryDataTypeDefinition(returnType);
-  } catch {
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Action "${actionApiName}" has a return type the OSDK cannot represent, so returnType was left out of its metadata.`,
+      e,
+    );
     return undefined;
   }
 }

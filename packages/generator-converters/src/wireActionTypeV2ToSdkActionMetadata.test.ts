@@ -15,7 +15,7 @@
  */
 
 import type { QueryDataType } from "@osdk/foundry.ontologies";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { ActionTypeV2WithReturnType } from "./ActionTypeV2WithReturnType.js";
 import { wireActionTypeV2ToSdkActionMetadata } from "./wireActionTypeV2ToSdkActionMetadata.js";
 
@@ -80,7 +80,8 @@ describe(wireActionTypeV2ToSdkActionMetadata, () => {
     });
   });
 
-  it("drops return types the OSDK cannot represent", () => {
+  it("drops and warns about return types the OSDK cannot represent", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const result = wireActionTypeV2ToSdkActionMetadata(
       actionType({
         type: "array",
@@ -92,5 +93,19 @@ describe(wireActionTypeV2ToSdkActionMetadata, () => {
       }),
     );
     expect(result.returnType).toBeUndefined();
+    expect(result.apiName).toBe("returnsValue");
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn).toHaveBeenCalledWith(
+      `Action "returnsValue" has a return type the OSDK cannot represent, so returnType was left out of its metadata.`,
+      expect.any(Error),
+    );
+    warn.mockRestore();
+  });
+
+  it("does not warn when the return type converts", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    wireActionTypeV2ToSdkActionMetadata(actionType({ type: "string" }));
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });
