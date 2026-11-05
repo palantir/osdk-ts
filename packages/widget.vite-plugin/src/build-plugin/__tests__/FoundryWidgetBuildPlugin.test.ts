@@ -74,6 +74,10 @@ test.each(["/nested/widgets/", "/my widgets/", "./"])(
       path.join(root, "src/widget.css"),
       ".widget { color: red; }",
     );
+    await writeFile(
+      path.join(root, "vite.config.mjs"),
+      `throw new Error("configFile: false should skip vite.config.mjs");`,
+    );
 
     await build({
       root,
