@@ -32,8 +32,6 @@ export async function extractWidgetDeclarations(
   const server = await createServer({
     ...config,
     mode: MODULE_EVALUATION_MODE,
-    server: { middlewareMode: true, hmr: false, watch: null },
-    optimizeDeps: { noDiscovery: true, include: [] },
   });
   try {
     return await getWidgetDeclarations(server);

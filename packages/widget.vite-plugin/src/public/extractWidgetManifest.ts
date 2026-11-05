@@ -34,8 +34,6 @@ export async function extractWidgetManifest(
   const server = await createServer({
     ...config,
     mode: MODULE_EVALUATION_MODE,
-    server: { middlewareMode: true, hmr: false, watch: null },
-    optimizeDeps: { noDiscovery: true, include: [] },
   });
   try {
     const root = server.config.root;

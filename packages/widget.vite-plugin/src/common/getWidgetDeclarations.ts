@@ -73,8 +73,13 @@ export async function getWidgetDeclarations(
       }
     };
     for (const script of moduleScripts(parse(html))) {
-      const scriptUrl = new URL(script, `http://widget.local${entrypointUrl}`);
-      if (scriptUrl.origin === "http://widget.local") {
+      // Resolves script relative to entrypointUrl, e.g. if entrypointUrl = "/widgets/index.html", then ./src/main.ts -> /widgets/src/main.ts
+      // Scripts with their own host, e.g. https://cdn.example.com/lib.js, keep that origin and are skipped
+      const scriptUrl = new URL(
+        script,
+        `http://widget.invalid${entrypointUrl}`,
+      );
+      if (scriptUrl.origin === "http://widget.invalid") {
         await visit(`${scriptUrl.pathname}${scriptUrl.search}`);
       }
     }
