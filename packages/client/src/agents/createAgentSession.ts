@@ -22,21 +22,14 @@ import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import { toDataValueAgents } from "../util/toDataValueAgents.js";
 import { createAgentSessionHandle } from "./createAgentSessionHandle.js";
 import type { AgentSignatureFromDef } from "./types.js";
+import { validateAgentSessionClient } from "./validateAgentSessionClient.js";
 
 export async function createAgentSession<D extends AgentDefinition<unknown>>(
   client: MinimalClient,
   agent: D,
   args?: Parameters<AgentSignatureFromDef<D>["experimental_createSession"]>[0],
 ): Promise<AgentSession> {
-  if (client.scenarioRid != null) {
-    throw new Error("Agent sessions are not supported in scenarios");
-  }
-  if (client.transactionId != null) {
-    throw new Error("Agent sessions are not supported in transactions");
-  }
-  if (client.branch != null) {
-    throw new Error("Agent sessions are not supported on branches");
-  }
+  validateAgentSessionClient(client);
   const clientWithHeaders = addUserAgentHeader(client, agent);
   const ontologyRid = await client.ontologyRid;
   const agentDefinition = await client.ontologyProvider.getAgentDefinition(
