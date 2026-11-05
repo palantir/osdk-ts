@@ -23,7 +23,7 @@ import type {
   LockedProperty,
   LockedTransition,
 } from "./OntologySchemaLockfile.js";
-import { own } from "./OntologySchemaLockfile.js";
+import { actionTypeConstraintsOf, own } from "./OntologySchemaLockfile.js";
 
 /**
  * Whether a transition's instructions are being enforced.
@@ -132,7 +132,9 @@ export function applyTransition(
   schema: LockedInterfaceSchema,
   mode: ApplyMode,
 ): AppliedTransition | undefined {
+  const { actionTypeConstraints: _actionTypeConstraints, ...rest } = schema;
   const properties = { ...schema.properties };
+  const actionTypeConstraints = { ...actionTypeConstraintsOf(schema) };
   const touched = new Set<string>();
 
   for (const instruction of transition.instructions) {
@@ -144,7 +146,17 @@ export function applyTransition(
     }
   }
 
-  return { schema: { ...schema, properties }, touched: [...touched] };
+  return {
+    schema: {
+      ...rest,
+      properties,
+      // NB: spread rather than assigned `undefined`, to keep the same shape as a generated schema
+      ...(Object.keys(actionTypeConstraints).length > 0 && {
+        actionTypeConstraints,
+      }),
+    },
+    touched: [...touched],
+  };
 }
 
 /** Every property a transition could touch, in either mode. */

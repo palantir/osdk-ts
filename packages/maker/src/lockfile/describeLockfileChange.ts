@@ -75,6 +75,61 @@ export function describeBreakingChange(
         `declare a new one with a different id instead.`
       );
 
+    case "actionTypeConstraintBecameRequired": {
+      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      return (
+        `${where}: action type constraint "${constraint}" became required without a schema ` +
+        `migration. If there's any implementing object types of this interface that do not ` +
+        `implement it already, the interface type will be blocked from upgrading. ` +
+        `Keep it declared \`requireImplementation: false\` and phase it in instead ` +
+        `through a migration like:\n` +
+        `  ${describeSuggestedAddRequiredActionTypeConstraintTransition(constraint)}`
+      );
+    }
+
+    case "requiredActionTypeConstraintAdded": {
+      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      return (
+        `${where}: action type constraint "${constraint}" was added as required. Existing ` +
+        `implementing object types do not implement it yet, so this is a breaking change. ` +
+        `Declare it \`requireImplementation: false\` and phase it in instead through a ` +
+        `migration like:\n` +
+        `  ${describeSuggestedAddRequiredActionTypeConstraintTransition(constraint)}`
+      );
+    }
+
+    case "parameterBecameRequired": {
+      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      return (
+        `${where}: parameter "${breakingChange.parameter}" of action type constraint ` +
+        `"${constraint}" became required. Object types whose implementing action does not map it ` +
+        `already are blocked from upgrading, and no currently-supported interface schema ` +
+        `migration can phase that in. Declare it \`requireImplementation: false\` again.`
+      );
+    }
+
+    case "requiredParameterAdded": {
+      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      return (
+        `${where}: parameter "${breakingChange.parameter}" was added to action type constraint ` +
+        `"${constraint}" as required. Existing implementing actions do not map it yet, so object ` +
+        `types implementing "${constraint}" are blocked from upgrading, and no currently-supported ` +
+        `interface schema migration can phase that in. Declare it ` +
+        `\`requireImplementation: false\` instead.`
+      );
+    }
+
+    case "parameterBecameRequiredOnConcreteAction": {
+      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      return (
+        `${where}: parameter "${breakingChange.parameter}" of action type constraint ` +
+        `"${constraint}" must now be required on the implementing action. Object types whose ` +
+        `implementing action maps it to an optional parameter are blocked from upgrading, and no ` +
+        `currently-supported interface schema migration can phase that in. Declare it ` +
+        `\`isRequiredParameterOnConcreteAction: false\` again.`
+      );
+    }
+
     case "interfaceExtensionAdded": {
       const extended = breakingChange.extendedInterfaceApiName;
       return (
@@ -270,6 +325,49 @@ export function describeWarning(warning: LockfileWarning): string {
         `again if it was not.`
       );
     }
+
+    case "actionTypeConstraintRequirementRelaxed": {
+      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      return (
+        `Interface ${warning.interfaceApiName}: action type constraint "${constraint}" no ` +
+        `longer requires implementation. Implementing object types need not implement it from ` +
+        `this release on, so clients that expect it to always be available will start finding ` +
+        `it missing. Nothing to do if that was intended; declare it ` +
+        `\`requireImplementation: true\` again if it was not.`
+      );
+    }
+
+    case "actionTypeConstraintRemoved": {
+      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      return (
+        `Interface ${warning.interfaceApiName}: action type constraint "${constraint}" was ` +
+        `removed. Clients that apply actions through it will stop finding it. Nothing to do if ` +
+        `that was intended; restore it if it was not.`
+      );
+    }
+
+    case "parameterRequirementRelaxed": {
+      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      return (
+        `Interface ${warning.interfaceApiName}: parameter "${warning.parameter}" of action type ` +
+        `constraint "${constraint}" no longer requires implementation. Implementing actions need ` +
+        `not map it from this release on, so a value clients pass for it may not reach the action. ` +
+        `Nothing to do if that was intended; declare it \`requireImplementation: true\` again if ` +
+        `it was not.`
+      );
+    }
+
+    case "parameterNoLongerRequiredOnConcreteAction": {
+      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      return (
+        `Interface ${warning.interfaceApiName}: parameter "${warning.parameter}" of action type ` +
+        `constraint "${constraint}" no longer has to be required on the implementing action. ` +
+        `Implementing actions may declare it optional from this release on, so clients that ` +
+        `expect it to always be validated as present will start finding it missing. Nothing to do ` +
+        `if that was intended; declare it \`isRequiredParameterOnConcreteAction: true\` again if ` +
+        `it was not.`
+      );
+    }
   }
 }
 
@@ -388,4 +486,14 @@ function describeSuggestedAddRequiredPropertyTransition(
   property: string,
 ): string {
   return describeSuggestedTransition({ type: "addRequiredProperty", property });
+}
+
+/** The transition an author should have declared to make `actionTypeConstraint` required. */
+function describeSuggestedAddRequiredActionTypeConstraintTransition(
+  actionTypeConstraint: string,
+): string {
+  return describeSuggestedTransition({
+    type: "addRequiredActionTypeConstraint",
+    actionTypeConstraint,
+  });
 }

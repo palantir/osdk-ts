@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unstable";
+import type {
+  OntologyIrInterfaceParameterConstraint,
+  OntologyIrValueTypeReferenceWithMetadata,
+} from "@osdk/client.unstable";
 
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
@@ -36,9 +39,11 @@ import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedActionTypeConstraint,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
+  LockedParameterConstraint,
   LockedProperty,
   LockedTransition,
   LockedValueType,
@@ -114,13 +119,70 @@ function lockInterfaceSchema(
     )
     .sort(([a], [b]) => compare(a, b));
   const extendsInterfaces = lockExtensions(interfaceType);
+  const actionTypeConstraints = lockActionTypeConstraints(interfaceType);
 
   return {
     properties: Object.fromEntries(locked),
     // NB: spread rather than assigned `undefined` so a lockfile read back from disk (where absents
     // have no key at all) still compare equal.
     ...(extendsInterfaces !== undefined && { extendsInterfaces }),
+    ...(actionTypeConstraints !== undefined && { actionTypeConstraints }),
   };
+}
+
+function lockActionTypeConstraints(
+  interfaceType: InterfaceType,
+): Record<string, LockedActionTypeConstraint> | undefined {
+  if (interfaceType.actionTypeConstraints.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    interfaceType.actionTypeConstraints
+      .map(({ metadata, requireImplementation, parameters }) => {
+        const lockedParameters = lockParameterConstraints(parameters);
+        return [
+          metadata.apiName,
+          {
+            requireImplementation,
+            ...(lockedParameters !== undefined && {
+              parameters: lockedParameters,
+            }),
+          },
+        ] as const;
+      })
+      .sort(([a], [b]) => compare(a, b)),
+  );
+}
+
+function lockParameterConstraints(
+  parameters: Record<string, OntologyIrInterfaceParameterConstraint>,
+): Record<string, LockedParameterConstraint> | undefined {
+  const entries = Object.entries(parameters);
+  if (entries.length === 0) {
+    return undefined;
+  }
+
+  return Object.fromEntries(
+    entries
+      .map(
+        ([
+          apiName,
+          { requireImplementation, isRequiredParameterOnConcreteAction },
+        ]) =>
+          [
+            apiName,
+            {
+              requireImplementation,
+              // Absent and `false` are published identically
+              ...(isRequiredParameterOnConcreteAction === true && {
+                isRequiredParameterOnConcreteAction,
+              }),
+            },
+          ] as const,
+      )
+      .sort(([a], [b]) => compare(a, b)),
+  );
 }
 
 function lockExtensions(interfaceType: InterfaceType): string[] | undefined {

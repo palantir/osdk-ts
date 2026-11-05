@@ -23,6 +23,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import main from "../../cli/main.js";
 import type {
+  LockedInterfaceSchema,
   LockedProperty,
   OntologySchemaLockfile,
 } from "../OntologySchemaLockfile.js";
@@ -69,11 +70,12 @@ describe("maker CLI", () => {
   async function writeBaselineLockfile(
     apiName: string,
     properties: Record<string, LockedProperty>,
+    schema: Omit<LockedInterfaceSchema, "properties"> = {},
   ): Promise<void> {
     const baseline: OntologySchemaLockfile = {
       version: 1,
       interfaces: {
-        [apiName]: { schema: { properties }, transitions: [] },
+        [apiName]: { schema: { properties, ...schema }, transitions: [] },
       },
     };
     await fs.writeFile(lockfile, JSON.stringify(baseline, undefined, 2) + "\n");
@@ -202,5 +204,28 @@ describe("maker CLI", () => {
       },
     });
     expect(await exists(output)).toBe(true);
+  });
+
+  describe("an action type constraint phased in to required", () => {
+    it("does not write an ontology when the constraint is required without a migration", async () => {
+      await writeBaselineLockfile(
+        "Person",
+        { firstName: { type: "string", required: true } },
+        {
+          actionTypeConstraints: {
+            sendEmail: { requireImplementation: false },
+          },
+        },
+      );
+      const baseline = await fs.readFile(lockfile, "utf-8");
+
+      await expect(
+        runMaker("personSendEmailRequired", "--write-locks", "--yes"),
+      ).rejects.toThrowError(
+        /action type constraint "sendEmail" became required without a schema migration[\s\S]*type: "addRequiredActionTypeConstraint", actionTypeConstraint: "sendEmail"/u,
+      );
+      expect(await exists(output)).toBe(false);
+      expect(await fs.readFile(lockfile, "utf-8")).toBe(baseline);
+    });
   });
 });
