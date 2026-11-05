@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import path from "node:path";
+
+import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { createServer, type InlineConfig } from "vite";
 
 import { buildWidgetSetManifest } from "../build-plugin/buildWidgetSetManifest.js";
+import { getWidgetSetInputSpec } from "../build-plugin/getWidgetSetInputSpec.js";
 import { MODULE_EVALUATION_MODE } from "../common/constants.js";
-import { getWidgetBuildContext } from "../common/getWidgetBuildContext.js";
 import { getWidgetDeclarations } from "../common/getWidgetDeclarations.js";
 import type { FoundryWidgetPluginOptions } from "../index.js";
 
@@ -35,17 +38,27 @@ export async function extractWidgetManifest(
     optimizeDeps: { noDiscovery: true, include: [] },
   });
   try {
-    const context = await getWidgetBuildContext(server.config.root);
+    const root = server.config.root;
+    const foundryConfig = await loadFoundryConfig("widgetSet", { cwd: root });
+    if (foundryConfig == null) {
+      throw new Error("foundry.config.json file not found.");
+    }
+    const { widgetSet } = foundryConfig.foundryConfig;
     const declarations = await getWidgetDeclarations(server);
     return buildWidgetSetManifest(
-      context.widgetSetRid,
-      context.version,
+      widgetSet.rid,
+      await autoVersion(widgetSet.autoVersion ?? { type: "package-json" }, {
+        cwd: root,
+      }),
       declarations.map(({ config: widgetConfig }) => ({
         widgetConfig,
         scripts: [],
         stylesheets: [],
       })),
-      context.inputSpec,
+      await getWidgetSetInputSpec(
+        path.resolve(root, "package.json"),
+        path.resolve(root, "resources.json"),
+      ),
       options,
     );
   } finally {
