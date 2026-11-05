@@ -16,8 +16,13 @@
 
 export type { AgentParam } from "../agents/AgentParam.js";
 export type { AgentDefinition } from "../agents/AgentDefinition.js";
+export { AgentGetStateTimeoutError } from "../agents/AgentGetStateTimeoutError.js";
 export { AgentSendEventTimeoutError } from "../agents/AgentSendEventTimeoutError.js";
 export type {
+  AgentContextItem,
+  AgentGetStateOptions,
+  AgentSessionState,
+  AgentSessionStatus,
   AgentSendEventOptions,
   AgentSession,
 } from "../agents/AgentSession.js";
