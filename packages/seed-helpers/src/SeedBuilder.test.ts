@@ -16,10 +16,10 @@
 
 import { Employee, Office } from "@osdk/client.test.ontology";
 import type * as Ontology from "@osdk/foundry.ontologies";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { createSeedWithMetadata, SeedBuilder } from "./SeedBuilder.js";
-import type { SeedRef } from "./types.js";
+import type { SeedProps, SeedRef } from "./types.js";
 
 type WireType = Ontology.ObjectPropertyType["type"];
 
@@ -29,22 +29,25 @@ type WireType = Ontology.ObjectPropertyType["type"];
  * metadata, so it must list the properties the tests set (`fullName`) alongside
  * the primary keys.
  */
-function newBuilder(): SeedBuilder {
-  return new SeedBuilder(
-    makeMetadata({
-      [Employee.apiName]: makeObjectType(
-        Employee.apiName,
-        Employee.primaryKeyApiName,
-        { employeeId: "integer", fullName: "string" },
-        "fullName",
-      ),
-      [Office.apiName]: makeObjectType(
-        Office.apiName,
-        Office.primaryKeyApiName,
-        { officeId: "string" },
-      ),
+function newBuilder(fullNameRequired = false): SeedBuilder {
+  const metadata = makeMetadata({
+    [Employee.apiName]: makeObjectType(
+      Employee.apiName,
+      Employee.primaryKeyApiName,
+      { employeeId: "integer", fullName: "string" },
+      "fullName",
+    ),
+    [Office.apiName]: makeObjectType(Office.apiName, Office.primaryKeyApiName, {
+      officeId: "string",
     }),
-  );
+  });
+  if (fullNameRequired) {
+    metadata.objectTypes.Employee.objectType.properties.fullName.dataConstraints =
+      {
+        nullability: "NOT_NULLABLE",
+      };
+  }
+  return new SeedBuilder(metadata);
 }
 
 /** A hand-built ref for exercising code paths that don't go through `create`. */
@@ -128,6 +131,54 @@ describe("SeedBuilder", () => {
         sb.create(Employee, { employeeId: 1, fullName: "Bob" }),
       ).toThrow("Employee with primary key 1 already exists.");
     });
+
+    it("creates an object with an empty property set to undefined", () => {
+      const sb = newBuilder();
+      const ref = sb.create(Employee, { employeeId: 1, fullName: undefined });
+
+      expectTypeOf(ref.fullName).toEqualTypeOf<string | undefined>();
+      expect(ref.fullName).toBeUndefined();
+      expect(ref.$title).toBeUndefined();
+      expect(sb.build().objects.Employee).toStrictEqual([{ employeeId: 1 }]);
+    });
+
+    it("accepts null properties at runtime but excludes null from create input types", () => {
+      const sb = newBuilder();
+      const ref = sb.create(Employee, {
+        employeeId: 1,
+        // @ts-expect-error null is only accepted at runtime
+        fullName: null,
+      });
+
+      expect(ref.fullName).toBeUndefined();
+      expect(ref.$title).toBeUndefined();
+      expect(sb.build().objects.Employee).toStrictEqual([{ employeeId: 1 }]);
+    });
+
+    it("requires properties marked non-nullable in metadata", () => {
+      type RequiredEmployee = Omit<Employee, "__DefinitionMetadata"> & {
+        __DefinitionMetadata: Omit<
+          NonNullable<Employee["__DefinitionMetadata"]>,
+          "requiredProps"
+        > & { requiredProps: "employeeId" | "fullName" };
+      };
+      const requiredEmployee = Employee as RequiredEmployee;
+      const sb = newBuilder(true);
+
+      expectTypeOf<
+        SeedProps<RequiredEmployee>["fullName"]
+      >().toEqualTypeOf<string>();
+      expect(() =>
+        // @ts-expect-error fullName is required by metadata
+        sb.create(requiredEmployee, { employeeId: 1 }),
+      ).toThrow("Required property 'fullName'");
+      expect(sb.build().objects.Employee ?? []).toEqual([]);
+
+      sb.create(requiredEmployee, { employeeId: 1, fullName: "Alice" });
+      expect(sb.build().objects.Employee).toEqual([
+        { employeeId: 1, fullName: "Alice" },
+      ]);
+    });
   });
 
   describe("ref", () => {
@@ -148,6 +199,66 @@ describe("SeedBuilder", () => {
   });
 
   describe("update", () => {
+    it.each([undefined, null])(
+      "rejects unknown properties set to %s without changing the seed",
+      (value) => {
+        const sb = newBuilder();
+        const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+
+        expect(() => sb.update(ref, { badProp: value } as never)).toThrow(
+          "Property 'badProp' on 'Employee' object (primary key 1) is not defined in the ontology",
+        );
+        expect(sb.build().objects.Employee).toStrictEqual([
+          { employeeId: 1, fullName: "Alice" },
+        ]);
+      },
+    );
+
+    it("preserves omitted properties and clears properties set to undefined", () => {
+      const sb = newBuilder();
+      const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+
+      sb.update(ref, {});
+      expect(sb.ref(Employee, 1)?.fullName).toBe("Alice");
+
+      sb.update(ref, { fullName: undefined });
+      expect(sb.ref(Employee, 1)?.fullName).toBeUndefined();
+      expect(sb.ref(Employee, 1)?.$title).toBeUndefined();
+      expect(sb.build().objects.Employee).toStrictEqual([{ employeeId: 1 }]);
+    });
+
+    it("clears null properties at runtime but excludes null from update input types", () => {
+      const sb = newBuilder();
+      const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+
+      sb.update(ref, {
+        // @ts-expect-error null is only accepted at runtime
+        fullName: null,
+      });
+      expect(sb.ref(Employee, 1)?.fullName).toBeUndefined();
+      expect(sb.ref(Employee, 1)?.$title).toBeUndefined();
+      expect(sb.build().objects.Employee).toStrictEqual([{ employeeId: 1 }]);
+    });
+
+    it.each([undefined, null])(
+      "preserves omitted non-nullable properties and rejects clearing with %s",
+      (fullName) => {
+        const sb = newBuilder(true);
+        const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
+
+        sb.update(ref, {});
+        expect(sb.ref(Employee, 1)?.fullName).toBe("Alice");
+
+        expect(() => sb.update(ref, { fullName } as never)).toThrow(
+          "Required property 'fullName'",
+        );
+        expect(sb.ref(Employee, 1)?.fullName).toBe("Alice");
+        expect(sb.build().objects.Employee).toStrictEqual([
+          { employeeId: 1, fullName: "Alice" },
+        ]);
+      },
+    );
+
     it("merges props into the existing object, preserving the primary key, and returns the same ref", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });

@@ -89,6 +89,112 @@ describe("validateSeedObject", () => {
     );
   });
 
+  it.each<WireType>([
+    "string",
+    "marking",
+    "timestamp",
+    "date",
+    "long",
+    "decimal",
+    "integer",
+    "byte",
+    "short",
+    "double",
+    "float",
+    "boolean",
+    "attachment",
+    "mediaReference",
+    "geopoint",
+    "geoshape",
+    "vector",
+    "array",
+    "struct",
+    "cipherText",
+    "timeseries",
+    "geotimeSeriesReference",
+  ])("accepts null and undefined for a %s property", (wireType) => {
+    const objectType = makeObjectType("Example", "id", {
+      id: "string",
+      value: wireType,
+    });
+
+    expect(() =>
+      validateSeedObject({ id: "example-1", value: undefined }, objectType),
+    ).not.toThrow();
+    expect(() =>
+      validateSeedObject({ id: "example-1", value: null }, objectType),
+    ).not.toThrow();
+  });
+
+  it.each([undefined, null])(
+    "rejects an unknown property set to %s",
+    (value) => {
+      expect(() =>
+        validateSeedObject(
+          { employeeId: "emp-001", badProp: value },
+          employeeType,
+        ),
+      ).toThrow(
+        "Property 'badProp' on 'Employee' object (primary key emp-001) is not defined in the ontology",
+      );
+    },
+  );
+
+  it.each([{}, { value: undefined }, { value: null }])(
+    "rejects an empty non-nullable property in %j",
+    (props) => {
+      const objectType = makeObjectType("Example", "id", {
+        id: "string",
+        value: "string",
+      });
+      objectType.properties.value.dataConstraints = {
+        nullability: "NOT_NULLABLE",
+      };
+
+      expect(() =>
+        validateSeedObject({ id: "example-1", ...props }, objectType),
+      ).toThrow(
+        "Required property 'value' on 'Example' object (primary key example-1) is null or undefined",
+      );
+    },
+  );
+
+  it("allows empty nullable properties and falsy non-nullable properties", () => {
+    const objectType = makeObjectType("Example", "id", {
+      id: "string",
+      name: "string",
+      age: "integer",
+      active: "boolean",
+      optional: "string",
+    });
+    for (const key of ["name", "age", "active"]) {
+      objectType.properties[key].dataConstraints = {
+        nullability: "NOT_NULLABLE",
+      };
+    }
+    objectType.properties.optional.dataConstraints = {
+      nullability: "NULLABLE",
+    };
+
+    for (const optional of [undefined, null]) {
+      expect(() =>
+        validateSeedObject(
+          { id: "example-1", name: "", age: 0, active: false, optional },
+          objectType,
+        ),
+      ).not.toThrow();
+    }
+  });
+
+  it.each([{}, { employeeId: undefined }, { employeeId: null }])(
+    "rejects an absent primary key in %j",
+    (props) => {
+      expect(() => validateSeedObject(props, employeeType)).toThrow(
+        "Primary key 'employeeId' on 'Employee' object is null or undefined",
+      );
+    },
+  );
+
   it("collects every string-format error and reports them together", () => {
     try {
       validateSeedObject(

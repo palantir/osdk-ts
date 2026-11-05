@@ -100,8 +100,9 @@ export type SeedClient = {
     props: SeedProps<Q>,
   ): Promise<SeedRef<Q>>;
   /**
-   * Merges `props` into the referenced object and applies the seed. Properties not
-   * included are left unchanged; the object is created if it does not yet exist.
+   * Merges `props` into the referenced object and applies the seed. Properties
+   * omitted are left unchanged; undefined clears a nullable property.
+   * The object is created if it does not yet exist.
    * @param ref Reference to the object to update
    * @param props Partial object properties to merge in, excluding the primary key
    * @returns The same reference passed in

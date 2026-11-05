@@ -201,24 +201,28 @@ export class SeedBuilder {
       `${o.apiName} with primary key ${stringPrimaryKeyValue} already exists.`,
     );
     validateSeedObject(props as Record<string, unknown>, objectType);
-    this.#getObjectTypeMap(o.apiName).set(stringPrimaryKeyValue, props);
+    const definedProps = Object.fromEntries(
+      Object.entries(props).filter(([, value]) => value != null),
+    );
+    this.#getObjectTypeMap(o.apiName).set(stringPrimaryKeyValue, definedProps);
     const base: OsdkBase<Q> = {
       $apiName: o.apiName,
       $objectSpecifier: createObjectSpecifierFromPrimaryKey(o, primaryKeyValue),
       $objectType: o.apiName,
       $primaryKey: primaryKeyValue,
-      $title: props[objectType.titleProperty as keyof typeof props],
+      $title:
+        props[objectType.titleProperty as keyof typeof props] ?? undefined,
     };
     return Object.freeze({
       ...base,
-      ...props,
+      ...definedProps,
     }) as SeedRef<Q>;
   }
 
   /**
    * Merges the given props into the referenced object, keeping its primary key.
-   * Properties not included in `props` are left unchanged; if the object does
-   * not yet exist it is created from `props`.
+   * Omitted properties are left unchanged; undefined clears a nullable property.
+   * If the object does not yet exist it is created from `props`.
    * @param ref Reference to the object to update
    * @param props Partial object properties to merge in, excluding the primary key
    * @returns The same reference passed in
@@ -250,7 +254,12 @@ export class SeedBuilder {
       [objectType.primaryKey]: $primaryKey,
     };
     validateSeedObject(merged as Record<string, unknown>, objectType);
-    this.#getObjectTypeMap($apiName).set(stringPrimaryKeyValue, merged);
+    this.#getObjectTypeMap($apiName).set(
+      stringPrimaryKeyValue,
+      Object.fromEntries(
+        Object.entries(merged).filter(([, value]) => value != null),
+      ),
+    );
     return ref;
   }
 

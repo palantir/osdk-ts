@@ -26,11 +26,20 @@ type PartialForOptionalProperties<T> = {
   [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
 };
 
+type RequiredSeedProperties<T extends ObjectTypeDefinition> =
+  CompileTimeMetadata<T> extends { requiredProps: infer P }
+    ? Extract<P, keyof CompileTimeMetadata<T>["props"]>
+    : never;
+
 export type SeedProps<T extends ObjectTypeDefinition> =
-  PartialForOptionalProperties<CompileTimeMetadata<T>["props"]>;
+  PartialForOptionalProperties<CompileTimeMetadata<T>["props"]> & {
+    [P in RequiredSeedProperties<T>]-?: NonNullable<
+      CompileTimeMetadata<T>["props"][P]
+    >;
+  };
 
 export type SeedRef<Q extends ObjectTypeDefinition> = Readonly<
-  OsdkBase<Q> & SeedProps<Q>
+  OsdkBase<Q> & PartialForOptionalProperties<CompileTimeMetadata<Q>["props"]>
 >;
 
 /** A link entry in the seed output. */
