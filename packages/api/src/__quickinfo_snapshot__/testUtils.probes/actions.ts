@@ -78,6 +78,9 @@ declare const actionValidationResponse: ActionValidationResponse;
 /** The payload carrying an action's return value. */
 declare const actionReturnValueResponse: ActionReturnValueResponse<string>;
 
+/** An action's return value, which is undefined if the OSDK could not convert it. */
+declare const actionReturnValueResponse_returnValue: ActionReturnValueResponse<string>["returnValue"];
+
 /** applyAction's resolved value for an action that returns a string. */
 declare const actionReturnType_withReturnValue: ActionReturnTypeForOptions<
   {},
