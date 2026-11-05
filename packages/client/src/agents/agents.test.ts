@@ -505,14 +505,13 @@ describe("agents", () => {
         expectTypeOf(state).toEqualTypeOf<AgentSessionState>();
         expect(state).toEqual({
           arguments: { city: "London" },
-          status: { type },
+          status: type,
           agentState: { data: { temperature: 20 } },
           contextItems: {
             first: { type: "weather-result", data: "Warm" },
             second: { type: "weather-result", data: "Sunny" },
             unknown: {
-              type: "$unknown",
-              contextItemType: "future-result",
+              type: "future-result",
               data: { value: "Future" },
             },
           },

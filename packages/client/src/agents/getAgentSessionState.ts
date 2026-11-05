@@ -19,7 +19,6 @@ import {
   AgentGetStateTimeoutError,
   type AgentSessionState,
 } from "@osdk/api/unstable";
-import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
 import * as Sessions from "@osdk/foundry.agents/AgentSession";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -27,7 +26,6 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 export async function getAgentSessionState(
   client: MinimalClient,
   sessionId: string,
-  agentDefinition: AgentDefinitionVersion,
   consistencyKey: string | undefined,
   options?: AgentGetStateOptions,
 ): Promise<{ state: AgentSessionState; consistencyKey: string }> {
@@ -42,13 +40,6 @@ export async function getAgentSessionState(
     throw new Error("$pollIntervalMs must be a finite positive number");
   }
 
-  // We use the agent definition for the _client_ agent version when considering what is known/unknown.
-  // This guarantees that the client will never see an unknown context item type outside of the
-  // special $unknown case.
-  const knownContextItemTypes = new Set(
-    agentDefinition.contextItemDefinitions.map((item) => item.contextItemType),
-  );
-
   for (;;) {
     const response = await Sessions.getSessionState(client, sessionId, {
       consistencyKey,
@@ -56,23 +47,16 @@ export async function getAgentSessionState(
     });
 
     if (response.type === "available") {
-      // Tag unknown context items with a special "$unknown" type.
       const contextItems = Object.fromEntries(
         Object.entries(response.contextItems).map(([id, item]) => [
           id,
-          knownContextItemTypes.has(item.contextItemType)
-            ? { type: item.contextItemType, data: item.data }
-            : {
-                type: "$unknown",
-                contextItemType: item.contextItemType,
-                data: item.data,
-              },
+          { type: item.contextItemType, data: item.data },
         ]),
       );
 
       const state: AgentSessionState = {
         arguments: response.arguments,
-        status: response.status,
+        status: response.status.type,
         agentState: {
           data: response.agentState.data,
         },

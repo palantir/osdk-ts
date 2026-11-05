@@ -60,11 +60,7 @@ export interface AgentGetStateOptions {
 }
 
 /** @beta */
-export type AgentSessionStatus =
-  | { type: "live" }
-  | { type: "completed" }
-  | { type: "failed" }
-  | { type: "canceled" };
+export type AgentSessionStatus = "live" | "completed" | "failed" | "canceled";
 
 /** @beta */
 export interface AgentContextItem {
@@ -73,17 +69,11 @@ export interface AgentContextItem {
 }
 
 /** @beta */
-export interface UnknownAgentContextItem extends AgentContextItem {
-  type: "$unknown";
-  contextItemType: string;
-}
-
-/** @beta */
 export interface AgentSessionState {
   arguments: Record<string, unknown>;
   status: AgentSessionStatus;
   agentState: { data: unknown };
-  contextItems: Record<string, AgentContextItem | UnknownAgentContextItem>;
+  contextItems: Record<string, AgentContextItem>;
   contextItemOrder: string[];
 }
 

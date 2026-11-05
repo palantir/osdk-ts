@@ -21,7 +21,6 @@ export type {
   AgentGetStateOptions,
   AgentSessionState,
   AgentSessionStatus,
-  UnknownAgentContextItem,
   AgentSendEventOptions,
   AgentSession,
 } from "@osdk/api/unstable";

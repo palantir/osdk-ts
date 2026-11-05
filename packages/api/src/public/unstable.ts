@@ -23,7 +23,6 @@ export type {
   AgentGetStateOptions,
   AgentSessionState,
   AgentSessionStatus,
-  UnknownAgentContextItem,
   AgentSendEventOptions,
   AgentSession,
 } from "../agents/AgentSession.js";

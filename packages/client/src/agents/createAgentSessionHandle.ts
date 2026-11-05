@@ -46,7 +46,6 @@ export function createAgentSessionHandle(
       const result = await getAgentSessionState(
         client,
         id,
-        agentDefinition,
         consistencyKey,
         options,
       );
