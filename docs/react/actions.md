@@ -115,7 +115,7 @@ Return values use the same TypeScript types as [function](./advanced-queries.md#
 - **Batches don't return values.** When you pass an array to `applyAction`, the result only contains the edits.
 - **Validation doesn't return a value.** With `$validateOnly: true`, the action doesn't run, so there's nothing to return.
 - **Some types aren't returned.** Return types such as objects, object sets and attachments aren't supported yet. Actions that return them behave as if they don't return a value.
-- **An optional return value can be `undefined`.** This happens when the function returns nothing for an optional return type. The value is also `undefined` if the server can't convert it; the action has still been applied.
+- **An optional return value can be `undefined`.** This happens when the function returns nothing for an optional return type. The value is also `undefined` if the OSDK can't convert it, and a warning goes to the client's `logger` if you set one. The action has still been applied.
 - **Mismatches are reported as errors.** If the function was republished with a different return type (`ReturnValueTypeMismatch`), or didn't return a required value (`ActionDidNotReturnValue`), the action fails and no edits are applied.
 
 ---
