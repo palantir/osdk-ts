@@ -267,8 +267,6 @@ export class ObjectSetQuery extends BaseListQuery<
       throw new Error("Aborted");
     }
 
-    this.nextPageToken = resp.nextPageToken;
-
     return resp;
   }
 
@@ -316,7 +314,7 @@ export class ObjectSetQuery extends BaseListQuery<
 
     try {
       if (this.#requiresServerEvaluation) {
-        return this.#handleServerRevalidation(changes);
+        return this.#handleServerRevalidation(changes, optimisticId);
       }
       return this.#handleLocalUpdate(changes, optimisticId);
     } finally {
@@ -328,12 +326,15 @@ export class ObjectSetQuery extends BaseListQuery<
     }
   };
 
-  #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
+  #handleServerRevalidation(
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
+  ): Promise<void> | undefined {
     for (const objectType of this.#objectTypes) {
       const added = changes.addedObjects.get(objectType);
       const modified = changes.modifiedObjects.get(objectType);
       if ((added && added.length > 0) || (modified && modified.length > 0)) {
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
     }
 
@@ -342,7 +343,7 @@ export class ObjectSetQuery extends BaseListQuery<
         deletedKey.type === "object" &&
         this.#objectTypes.has(deletedKey.otherKeys[OBJECT_API_NAME_IDX])
       ) {
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
     }
 
@@ -420,14 +421,10 @@ export class ObjectSetQuery extends BaseListQuery<
         const requiresRefresh =
           membership.needsRevalidation || hasMissingObjects;
 
-        const isPendingFetchLoading =
-          this.pendingFetch != null && existingEntry?.status === "loading";
-        const shouldBeLoading =
-          isPendingFetchLoading ||
-          requiresRefresh ||
-          optimisticId != null ||
-          membership.hasUncertainMatches;
-        const status = shouldBeLoading ? "loading" : "loaded";
+        const status = this.getLocalUpdateStatus(
+          batch,
+          requiresRefresh || membership.hasUncertainMatches,
+        );
 
         const existingTotalCount = existingEntry?.value?.totalCount;
         this._updateList(
@@ -442,8 +439,8 @@ export class ObjectSetQuery extends BaseListQuery<
       },
     );
 
-    if (needsRevalidation && !optimisticId) {
-      return this.revalidate(true);
+    if (needsRevalidation) {
+      return this.revalidateAfterUpdate(optimisticId);
     }
     return undefined;
   }

@@ -140,54 +140,6 @@ describe("ObjectSetQuery cache reconciliation", () => {
     });
   });
 
-  it("keeps an RDP query loading while its own fetch is pending", () => {
-    const query = getRdpQuery();
-    const employee = createEmployee();
-    const targetObjectQuery = store.objects.getQuery(
-      { apiName: Employee, pk: employee.$primaryKey },
-      query.rdpConfig,
-    );
-    store.batch({}, (batch) => {
-      batch.write(targetObjectQuery.cacheKey, employee, "loaded");
-      batch.write(query.cacheKey, { data: [] }, "loading");
-    });
-    query.pendingFetch = Promise.resolve();
-    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
-
-    query.maybeUpdateAndRevalidate(createChanges(employee), undefined);
-
-    expect(revalidate).not.toHaveBeenCalled();
-    expect(store.getValue(query.cacheKey)).toMatchObject({
-      status: "loading",
-      value: { data: [targetObjectQuery.cacheKey] },
-    });
-    query.pendingFetch = undefined;
-  });
-
-  it("does not restore loading after a pending fetch has written its result", () => {
-    const query = getRdpQuery();
-    const employee = createEmployee();
-    const targetObjectQuery = store.objects.getQuery(
-      { apiName: Employee, pk: employee.$primaryKey },
-      query.rdpConfig,
-    );
-    store.batch({}, (batch) => {
-      batch.write(targetObjectQuery.cacheKey, employee, "loaded");
-      batch.write(query.cacheKey, { data: [] }, "loaded");
-    });
-    query.pendingFetch = Promise.resolve();
-    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
-
-    query.maybeUpdateAndRevalidate(createChanges(employee), undefined);
-
-    expect(revalidate).not.toHaveBeenCalled();
-    expect(store.getValue(query.cacheKey)).toMatchObject({
-      status: "loaded",
-      value: { data: [targetObjectQuery.cacheKey] },
-    });
-    query.pendingFetch = undefined;
-  });
-
   it("does not revalidate a missing RDP cache variant during an optimistic update", () => {
     const query = getRdpQuery();
     store.batch({}, (batch) =>

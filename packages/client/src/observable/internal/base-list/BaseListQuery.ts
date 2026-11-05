@@ -352,15 +352,25 @@ export abstract class BaseListQuery<
    * Handles pending request management and loading states
    */
   fetchMore = (): Promise<void> => {
+    if (this.disposed) return Promise.resolve();
     if (this.pendingPageFetch) {
       return this.pendingPageFetch;
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = this.pendingFetch.then(() => {
-        this.pendingPageFetch = undefined;
-        return this.fetchMore();
-      });
+      if (this.pendingRequestKind === "pagination" && this.isRequestPending) {
+        return this.pendingFetch;
+      }
+      this.pendingPageFetch = this.pendingFetch.then(
+        () => {
+          this.pendingPageFetch = undefined;
+          return this.fetchMore();
+        },
+        (error: unknown) => {
+          this.pendingPageFetch = undefined;
+          throw error;
+        },
+      );
       return this.pendingPageFetch;
     }
 
@@ -368,19 +378,9 @@ export abstract class BaseListQuery<
       return Promise.resolve(undefined);
     }
 
-    this.store.batch({}, (batch) => {
-      this.setStatus("loading", batch);
+    return this.runRequest("pagination", async (signal) => {
+      await this.fetchPageAndUpdate("loaded", signal);
     });
-
-    this.pendingFetch = this.fetchPageAndUpdate(
-      "loaded",
-      this.abortController?.signal,
-    )
-      .then(() => void 0)
-      .finally(() => {
-        this.pendingFetch = undefined;
-      });
-    return this.pendingFetch;
   };
 
   /**
@@ -449,7 +449,7 @@ export abstract class BaseListQuery<
    * Uses fetchPageAndUpdate to load the initial set of data
    * Will load multiple pages if necessary to reach minResultsToLoad
    */
-  protected async _fetchAndStore(): Promise<void> {
+  protected async _fetchAndStore(signal: AbortSignal): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "_fetchAndStore" })
@@ -457,10 +457,7 @@ export abstract class BaseListQuery<
     }
 
     while (true) {
-      const entry = await this.fetchPageAndUpdate(
-        "loading",
-        this.abortController?.signal,
-      );
+      const entry = await this.fetchPageAndUpdate("loading", signal);
 
       if (!entry) {
         return;
@@ -484,7 +481,7 @@ export abstract class BaseListQuery<
    */
   protected async fetchPageAndUpdate(
     status: Status,
-    signal: AbortSignal | undefined,
+    signal: AbortSignal,
   ): Promise<Entry<KEY> | undefined> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
@@ -503,12 +500,14 @@ export abstract class BaseListQuery<
       // Call the subclass-specific implementation to fetch data
       const result = await this.fetchPageData(signal);
 
-      this.currentTotalCount = result.totalCount;
-
       // Check for abort again after fetch
       if (signal?.aborted) {
         return undefined;
       }
+
+      this.currentTotalCount = result.totalCount;
+      // Store the next page token for pagination
+      this.nextPageToken = result.nextPageToken;
 
       // Store the fetched data using batch operations
       const { retVal } = this.store.batch({}, (batch) => {
@@ -526,6 +525,9 @@ export abstract class BaseListQuery<
           }
         }
 
+        if (finalStatus === "loaded") {
+          this.completeRequest(signal);
+        }
         const objectKeys = this.store.objects.storeOsdkInstances(
           result.data,
           batch,
@@ -546,7 +548,7 @@ export abstract class BaseListQuery<
       return retVal;
     } catch (error: unknown) {
       // Log any errors that occur
-      if (process.env.NODE_ENV !== "production") {
+      if (process.env.NODE_ENV !== "production" && !signal.aborted) {
         this.logger
           ?.child({ methodName: "fetchPageAndUpdate" })
           .error("Error fetching data", error);
@@ -554,6 +556,7 @@ export abstract class BaseListQuery<
 
       // For unexpected errors, write error status if not aborted
       if (!signal?.aborted) {
+        this.completeRequest(signal);
         const { retVal } = this.store.batch({}, (batch) => {
           return this.handleFetchError(error, status, batch);
         });

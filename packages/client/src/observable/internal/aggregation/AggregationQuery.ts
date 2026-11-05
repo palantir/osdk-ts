@@ -190,7 +190,7 @@ export abstract class AggregationQuery extends Query<
     );
   }
 
-  async _fetchAndStore(): Promise<void> {
+  async _fetchAndStore(signal: AbortSignal): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "_fetchAndStore" })
@@ -200,10 +200,14 @@ export abstract class AggregationQuery extends Query<
     try {
       const result = await this._fetchAggregation();
 
+      if (signal.aborted) return;
+      this.completeRequest(signal);
       this.store.batch({}, (batch) => {
         this.writeToStore(result, "loaded", batch);
       });
     } catch (err) {
+      if (signal.aborted) return;
+      this.completeRequest(signal);
       this.store.batch({}, (batch) => {
         this.writeToStore(undefined, "error", batch);
       });

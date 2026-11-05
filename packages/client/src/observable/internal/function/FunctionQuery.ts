@@ -92,7 +92,7 @@ export class FunctionQuery extends Query<
     if (objectSetTypesPromise) {
       objectSetTypesPromise
         .then((types) => {
-          if (this.abortController?.signal.aborted) return;
+          if (this.disposed) return;
 
           let addedNewTypes = false;
           for (const type of types) {
@@ -110,7 +110,7 @@ export class FunctionQuery extends Query<
           }
         })
         .catch((error: unknown) => {
-          if (this.abortController?.signal.aborted) return;
+          if (this.disposed) return;
 
           if (process.env.NODE_ENV !== "production") {
             this.logger?.error("Failed to extract ObjectSet types", error);
@@ -145,7 +145,7 @@ export class FunctionQuery extends Query<
     );
   }
 
-  async _fetchAndStore(): Promise<void> {
+  async _fetchAndStore(signal: AbortSignal): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "_fetchAndStore" })
@@ -166,10 +166,14 @@ export class FunctionQuery extends Query<
 
       const executedAt = Date.now();
 
+      if (signal.aborted) return;
+      this.completeRequest(signal);
       this.store.batch({}, (batch) => {
         this.writeToStore({ result, executedAt }, "loaded", batch);
       });
     } catch (e) {
+      if (signal.aborted) return;
+      this.completeRequest(signal);
       if (process.env.NODE_ENV !== "production") {
         this.logger
           ?.child({ methodName: "_fetchAndStore" })
@@ -223,7 +227,7 @@ export class FunctionQuery extends Query<
    */
   maybeUpdateAndRevalidate = (
     changes: Changes,
-    _optimisticId: OptimisticId | undefined,
+    optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined => {
     if (!this.#dependsOnObjects?.length) {
       return undefined;
@@ -232,11 +236,11 @@ export class FunctionQuery extends Query<
     for (const dep of this.#dependsOnObjects) {
       const modifiedObjects = changes.modifiedObjects.get(dep.$apiName);
       if (modifiedObjects?.some((obj) => obj.$primaryKey === dep.$primaryKey)) {
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
       const addedObjects = changes.addedObjects.get(dep.$apiName);
       if (addedObjects?.some((obj) => obj.$primaryKey === dep.$primaryKey)) {
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
     }
 

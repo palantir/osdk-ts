@@ -343,7 +343,6 @@ export abstract class ListQuery extends BaseListQuery<
       throw new Error("Aborted");
     }
 
-    this.nextPageToken = resp.nextPageToken;
     const fetchedData = await this.postProcessFetchedData(resp.data);
 
     return {
@@ -447,14 +446,14 @@ export abstract class ListQuery extends BaseListQuery<
         (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0 ||
         (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
       ) {
-        return this.revalidate(true);
+        return this.revalidateAfterUpdate(optimisticId);
       }
       for (const key of changes.deleted) {
         if (
           key.type === "object" &&
           key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType
         ) {
-          return this.revalidate(true);
+          return this.revalidateAfterUpdate(optimisticId);
         }
       }
     }
@@ -507,14 +506,10 @@ export abstract class ListQuery extends BaseListQuery<
           // If we got purely strict matches we can just update the list and move
           // on with our lives. But if we got sorta matches, then we need to revalidate
           // the list so we preemptively set it to loading to avoid thrashing the store.
-          const status =
-            (this.pendingFetch != null &&
-              existingEntry?.status === "loading") ||
-            requiresRefresh ||
-            optimisticId ||
-            membership.hasUncertainMatches
-              ? "loading"
-              : "loaded";
+          const status = this.getLocalUpdateStatus(
+            batch,
+            requiresRefresh || membership.hasUncertainMatches,
+          );
 
           // while we only push updates for the strict matches, we still need to
           // trigger the list updating if some of our objects changed
@@ -529,8 +524,8 @@ export abstract class ListQuery extends BaseListQuery<
         },
       );
 
-      if (needsRevalidation && !optimisticId) {
-        return this.revalidate(true);
+      if (needsRevalidation) {
+        return this.revalidateAfterUpdate(optimisticId);
       }
       return undefined;
     } finally {

@@ -37,18 +37,28 @@ import type { OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";
 import type { SubjectPayload } from "./SubjectPayload.js";
 
+type RequestKind = "revalidation" | "pagination";
+
+interface PendingRequest {
+  kind: RequestKind;
+  promise: Promise<void>;
+  controller: AbortController;
+  completed: boolean;
+}
+
 export abstract class Query<
   KEY extends KnownCacheKey,
   PAYLOAD,
   O extends CommonObserveOptions,
 > implements Subscribable<PAYLOAD> {
   lastFetchStarted?: number;
-  pendingFetch?: Promise<void>;
+  #pendingRequest?: PendingRequest;
+  protected disposed = false;
+
   retainCount: number = 0;
   options: O;
   cacheKey: KEY;
   store: Store;
-  abortController?: AbortController;
   #connectable?: Connectable<PAYLOAD>;
   #subscription?: Subscription;
   #subject: Observable<SubjectPayload<KEY>>;
@@ -87,6 +97,18 @@ export abstract class Query<
                   : "Query",
             },
           ));
+  }
+
+  get pendingFetch(): Promise<void> | undefined {
+    return this.#pendingRequest?.promise;
+  }
+
+  get pendingRequestKind(): RequestKind | undefined {
+    return this.#pendingRequest?.kind;
+  }
+
+  protected get isRequestPending(): boolean {
+    return this.#pendingRequest != null && !this.#pendingRequest.completed;
   }
 
   protected abstract _createConnectable(
@@ -160,20 +182,20 @@ export abstract class Query<
         ? this.logger?.child({ methodName: "revalidate" })
         : this.logger;
 
-    if (force) {
-      this.abortController?.abort();
-    }
+    if (this.disposed) return;
 
     // n.b. I think this isn't quite right since we may require multiple
     // pages to properly "revalidate" for someone. This only really works if you
     // have a single page/object. It needs to be redone. FIXME
 
     // if we are pending the first page/object we can just ignore this
-    if (this.pendingFetch) {
+    if (this.pendingFetch && !force) {
       if (process.env.NODE_ENV !== "production") {
         logger?.debug("Fetch is already pending, using it");
       }
+      const kind = this.pendingRequestKind;
       await this.pendingFetch;
+      if (kind === "pagination") return this.revalidate();
       return;
     }
 
@@ -196,6 +218,45 @@ export abstract class Query<
       logger?.debug("Starting actual revalidate");
     }
 
+    this.#pendingRequest?.controller.abort();
+    this.lastFetchStarted = Date.now();
+    await this.runRequest("revalidation", (signal) => {
+      this._preFetch();
+      return this._fetchAndStore(signal);
+    });
+  }
+
+  protected runRequest(
+    kind: RequestKind,
+    fetch: (signal: AbortSignal) => Promise<void>,
+  ): Promise<void> {
+    const controller = new AbortController();
+    const { signal } = controller;
+    let onAbort: () => void;
+    const aborted = new Promise<void>((resolve) => {
+      onAbort = resolve;
+      signal.addEventListener("abort", onAbort, { once: true });
+    });
+    const work = Promise.resolve().then(async () => {
+      if (signal.aborted) return;
+      try {
+        await fetch(signal);
+      } catch (error) {
+        if (!signal.aborted) throw error;
+      }
+    });
+    const request: PendingRequest = {
+      kind,
+      controller,
+      completed: false,
+      promise: Promise.race([work, aborted]).finally(() => {
+        signal.removeEventListener("abort", onAbort);
+        if (this.#pendingRequest === request) {
+          this.#pendingRequest = undefined;
+        }
+      }),
+    };
+    this.#pendingRequest = request;
     this.store.batch({}, (batch) => {
       // make sure the truth layer knows we are loading
 
@@ -203,26 +264,41 @@ export abstract class Query<
       // update of a list either. This may not be the behavior we want.
       this.setStatus("loading", batch);
     });
+    return request.promise;
+  }
 
-    this._preFetch();
-
-    this.lastFetchStarted = Date.now();
-
-    if (process.env.NODE_ENV !== "production") {
-      logger?.debug("calling _fetchAndStore()");
+  protected completeRequest(signal: AbortSignal): void {
+    if (this.#pendingRequest?.controller.signal === signal) {
+      this.#pendingRequest.completed = true;
     }
-    this.pendingFetch = this._fetchAndStore().finally(() => {
-      logger?.debug("promise's finally for _fetchAndStore()");
-      this.pendingFetch = undefined;
-    });
+  }
 
-    await this.pendingFetch;
-    return;
+  protected getLocalUpdateStatus(
+    batch: BatchContext,
+    requiresRefresh: boolean,
+  ): Status {
+    return batch.optimisticWrite || requiresRefresh || this.isRequestPending
+      ? "loading"
+      : "loaded";
+  }
+
+  protected revalidateAfterUpdate(
+    optimisticId: OptimisticId | undefined,
+  ): Promise<void> | undefined {
+    if (optimisticId) return;
+    if (
+      this.#pendingRequest &&
+      (this.#pendingRequest.kind === "revalidation" ||
+        this.#pendingRequest.completed)
+    ) {
+      return this.#pendingRequest.promise;
+    }
+    return this.revalidate(true);
   }
 
   protected _preFetch(): void {}
 
-  protected abstract _fetchAndStore(): Promise<void>;
+  protected abstract _fetchAndStore(signal: AbortSignal): Promise<void>;
 
   /**
    * Sets the status of the query in the store (but does not store that in `changes`).
@@ -256,9 +332,8 @@ export abstract class Query<
   }
 
   dispose(): void {
-    if (this.abortController) {
-      this.abortController.abort();
-    }
+    this.disposed = true;
+    this.#pendingRequest?.controller.abort();
     this.#subscription?.unsubscribe();
     this._dispose();
   }
