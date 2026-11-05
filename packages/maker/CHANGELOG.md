@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.86.0
+
+### Minor Changes
+
+- e837c76: Default decimal properties to precision 5 and scale 2 when unspecified, matching OMS defaults.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/generator-converters.ontologyir@2.87.0
+
 ## 0.85.0
 
 ### Minor Changes
