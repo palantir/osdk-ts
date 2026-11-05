@@ -32,7 +32,6 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import type { SyncApplyActionResponseWithReturnValue } from "./SyncApplyActionResponseWithReturnValue.js";
 
-// Mirrors the signatures the generator emits for an action with a return type.
 interface ReturnsValueSignatures<R> {
   applyAction<OP extends ApplyActionOptions>(
     args: Record<string, never>,
@@ -53,6 +52,10 @@ function actionDefinition<R>(
 
 const returnsName = actionDefinition<string>("returnsName");
 const returnsMap = actionDefinition<Record<string, number>>("returnsMap");
+const returnsStructWithMap = actionDefinition<{
+  name: string;
+  scores: Record<string, number>;
+}>("returnsStructWithMap");
 const returnsOptional = actionDefinition<number | undefined>("returnsOptional");
 const returnsOmitted = actionDefinition<string>("returnsOmitted");
 const returnsInvalid = actionDefinition<string>("returnsInvalid");
@@ -119,6 +122,31 @@ describe("action return values", () => {
       ],
     );
     registerAction(
+      "returnsStructWithMap",
+      {
+        type: "struct",
+        fields: [
+          { name: "name", fieldType: { type: "string" }, required: true },
+          {
+            name: "scores",
+            fieldType: {
+              type: "entrySet",
+              keyType: { type: "string" },
+              valueType: { type: "integer" },
+            },
+            required: true,
+          },
+        ],
+      },
+      {
+        name: "Anna Smith-Doe",
+        scores: [
+          { key: "a", value: 1 },
+          { key: "b", value: 2 },
+        ],
+      },
+    );
+    registerAction(
       "returnsOptional",
       { type: "union", unionTypes: [{ type: "integer" }, { type: "null" }] },
       null,
@@ -172,6 +200,13 @@ describe("action return values", () => {
   it("remaps return values the same way as query results", async () => {
     const result = await client(returnsMap).applyAction({});
     expect(result).toEqual({ returnValue: { a: 1, b: 2 } });
+  });
+
+  it("remaps a map nested in a struct", async () => {
+    const result = await client(returnsStructWithMap).applyAction({});
+    expect(result).toEqual({
+      returnValue: { name: "Anna Smith-Doe", scores: { a: 1, b: 2 } },
+    });
   });
 
   it("returns undefined for an empty optional return value", async () => {
