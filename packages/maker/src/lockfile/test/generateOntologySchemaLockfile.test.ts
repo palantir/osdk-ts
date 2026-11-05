@@ -644,6 +644,45 @@ describe("action type constraints", () => {
       ),
     ).toStrictEqual(["requireImplementation"]);
   });
+
+  it("records an addRequiredActionTypeConstraint instruction by fully-qualified api name", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: {
+        transitions: [
+          {
+            id: "requireSendEmail",
+            title: "Require send email",
+            gracePeriod: { type: "afterInstall", days: 30 },
+            instructions: [
+              {
+                type: "addRequiredActionTypeConstraint",
+                actionTypeConstraint: "sendEmail",
+              },
+            ],
+          },
+        ],
+      },
+    });
+    constrain(person, "sendEmail", false);
+
+    expect(
+      generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+        "com.palantir.Person"
+      ].transitions,
+    ).toEqual([
+      {
+        id: "requireSendEmail",
+        gracePeriod: { type: "afterInstall", days: 30 },
+        instructions: [
+          {
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "com.palantir.sendEmail",
+          },
+        ],
+      },
+    ]);
+  });
 });
 
 describe("censusOfSource", () => {
