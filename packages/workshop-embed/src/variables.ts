@@ -78,7 +78,7 @@ export function isSetVariablesMessage(
 function isVariableValues(
   value: unknown,
 ): value is Readonly<WorkshopVariableMap> {
-  if (!isRecord(value)) return false;
+  if (!isPlainRecord(value)) return false;
 
   const seenExternalIds = new Set(RESERVED_EXTERNAL_IDS);
 
@@ -105,4 +105,14 @@ function isVariableValues(
     }
     return typeof input !== "number" || Number.isFinite(input);
   });
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  if (!isRecord(value)) return false;
+
+  const prototype: unknown = Object.getPrototypeOf(value);
+  return (
+    prototype == null ||
+    (isRecord(prototype) && Object.getPrototypeOf(prototype) == null)
+  );
 }
