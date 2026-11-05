@@ -200,6 +200,40 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
     expect(await fs.readFile(lockfile, "utf-8")).toBe(contents);
   });
 
+  describe("addRequiredActionTypeConstraint", () => {
+    const IN_FLIGHT = {
+      version: 1,
+      interfaces: {
+        Person: {
+          schema: {
+            properties: { firstName: { type: "string", required: true } },
+            actionTypeConstraints: {
+              sendEmail: { requireImplementation: false },
+            },
+          },
+          transitions: [
+            {
+              id: "requireSendEmail",
+              gracePeriod: { type: "afterInstall", days: 30 },
+              instructions: [
+                {
+                  type: "addRequiredActionTypeConstraint",
+                  actionTypeConstraint: "sendEmail",
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    it("locks the in-flight migration with the lenient constraint", async () => {
+      await run("personSendEmailInFlight", "--write-locks");
+
+      expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
+    });
+  });
+
   describe("function-backed second pass", () => {
     const blockDataFile = () =>
       path.join(workDir, "build", "temp_block_data", "ontology.json");
