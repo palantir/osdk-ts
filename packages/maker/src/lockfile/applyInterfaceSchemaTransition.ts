@@ -90,6 +90,10 @@ function editsOf(instruction: LockedInstruction): readonly ElementTransition[] {
           strict: { op: "patch", requireImplementation: true },
         },
       ];
+    case "replace":
+      // replaces don't modify the declaring interface's schema (only provides mappings to steer
+      // how to comply)
+      return [];
     default: {
       const unhandled: never = instruction;
       throw new Error(

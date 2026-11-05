@@ -58,7 +58,10 @@ import type {
 import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
 import type { ObjectType } from "./object/ObjectType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
-import { validateOntology } from "./validateOntology.js";
+import {
+  type OntologyValidationContext,
+  validateOntology,
+} from "./validateOntology.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -105,7 +108,7 @@ export async function defineOntology(
   snippetFileOutputDir?: string,
   randomnessKey?: string,
   /** Runs once the ontology is fully registered, but before anything is written to disk. */
-  beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
+  beforeWrite?: (context: OntologyValidationContext) => void | Promise<void>,
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -132,8 +135,9 @@ export async function defineOntology(
     consola.debug("Unexpected error while processing the body of the ontology");
     throw e;
   }
-  validateOntology({ ontology: ontologyDefinition, importedTypes });
-  await beforeWrite?.(ontologyDefinition);
+  const context = { ontology: ontologyDefinition, importedTypes };
+  validateOntology(context);
+  await beforeWrite?.(context);
   if (outputDir) {
     writeStaticObjects(outputDir);
   }

@@ -388,6 +388,16 @@ function toAuthoredInstruction(
         type: "addRequiredActionTypeConstraint",
         actionTypeConstraint: authoredKeyOf(instruction.actionTypeConstraint),
       };
+    case "replace": {
+      const { replacement } = instruction;
+      return {
+        type: "replace",
+        replacement: {
+          ...replacement,
+          propertyMappings: replacement.propertyMappings ?? {},
+        },
+      };
+    }
     default: {
       const unhandled: never = instruction;
       throw new Error(

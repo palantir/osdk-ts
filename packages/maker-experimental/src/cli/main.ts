@@ -27,7 +27,7 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
-import type { OntologyDefinition } from "@osdk/maker";
+import type { OntologyValidationContext } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
   DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
@@ -330,9 +330,9 @@ export default async function main(
     { targetEnvironment: commandLineOpts.targetEnvironment },
     // An ontology that fails lockfile checks would fail at installation-time, so its block data
     // should never reach disk at all.
-    (ontology) =>
+    (context) =>
       reconcileOntologySchemaLockfile({
-        ontology,
+        context,
         lockfilePath,
         writeLocks: commandLineOpts.writeLocks ?? false,
         assumeYes: commandLineOpts.yes ?? false,
@@ -647,7 +647,7 @@ async function loadOntology(
   importedLinkTypeIdsByApiName: LinkTypeIdsByApiName | undefined,
   externalImportedMetadata: ExternalImportedOntologyMetadata | undefined,
   packagingOptions: OntologyPackagingOptions,
-  beforeWrite: (ontology: OntologyDefinition) => Promise<void>,
+  beforeWrite: (context: OntologyValidationContext) => Promise<void>,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,
