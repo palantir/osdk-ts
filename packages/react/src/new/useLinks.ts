@@ -42,6 +42,12 @@ interface UseLinksBaseOptions<T extends ObjectOrInterfaceDefinition> {
    */
   pageSize?: number;
 
+  /**
+   * Fetch all pages when true, or at least this many linked objects per source
+   * when a number is provided. Defaults to manual pagination.
+   */
+  autoFetchMore?: boolean | number;
+
   /** Sorting options for the linked objects */
   orderBy?: {
     [K in PropertyKeys<T>]?: "asc" | "desc";
@@ -202,6 +208,7 @@ export function useLinks<
             linkName,
             where: canonOptions.where,
             pageSize: otherOptions.pageSize,
+            autoFetchMore: otherOptions.autoFetchMore,
             orderBy: canonOptions.orderBy,
             mode: otherOptions.mode,
             dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
@@ -225,6 +232,7 @@ export function useLinks<
     linkName,
     canonOptions.where,
     otherOptions.pageSize,
+    otherOptions.autoFetchMore,
     canonOptions.orderBy,
     otherOptions.mode,
     otherOptions.dedupeIntervalMs,

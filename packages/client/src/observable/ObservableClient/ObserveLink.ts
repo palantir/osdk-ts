@@ -46,6 +46,11 @@ export namespace ObserveLinks {
     where?: WhereClause<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     select?: readonly string[];
     pageSize?: number;
+    /**
+     * Fetch all pages when true, or at least this many linked objects per source
+     * when a number is provided. Defaults to manual pagination.
+     */
+    autoFetchMore?: boolean | number;
     orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
