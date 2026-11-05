@@ -103,10 +103,18 @@ function convertInstruction(
           ),
         },
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint":
+    case "replace":
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `${instruction.type} schema migrations are not supported in ontology IR. Define the ontology with SuperRepo instead to use them.`,
       );
+    default: {
+      const unhandled: never = instruction;
+      throw new Error(
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
+      );
+    }
   }
 }

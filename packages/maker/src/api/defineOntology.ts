@@ -58,6 +58,7 @@ import type {
 import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
 import type { ObjectType } from "./object/ObjectType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
+import { validateOntology } from "./validateOntology.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -131,6 +132,7 @@ export async function defineOntology(
     consola.debug("Unexpected error while processing the body of the ontology");
     throw e;
   }
+  validateOntology({ ontology: ontologyDefinition, importedTypes });
   await beforeWrite?.(ontologyDefinition);
   if (outputDir) {
     writeStaticObjects(outputDir);
