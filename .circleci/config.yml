@@ -367,6 +367,7 @@ jobs:
           command: pnpm publish -r --no-git-checks
 
   # Built once and stored as a navigable artifact, which is the PR preview.
+  # .github/workflows/storybook-preview-comment.yml links it from the PR.
   build-storybook:
     executor:
       name: node
@@ -389,20 +390,6 @@ jobs:
       - store_artifacts:
           path: packages/react-components-storybook/storybook-static
           destination: storybook-static
-      - run:
-          name: Comment with the Storybook preview link
-          command: |
-            # Artifact URLs are deterministic, so no CircleCI API token is needed to look them up.
-            url="https://output.circle-artifacts.com/output/job/$CIRCLE_WORKFLOW_JOB_ID/artifacts/${CIRCLE_NODE_INDEX:-0}/storybook-static/index.html"
-            # The invisible marker line lets pr-comment.sh edit this comment on later pushes.
-            cat > /tmp/storybook-preview.md \<<EOF
-            <!-- storybook-preview -->
-            <h3>$(git --no-pager log --pretty=format:%s -1)</h3>
-            Build artifact links for this commit: <strong><a href="$url">storybook</a></strong>
-
-            <em>This is an automated comment from the build-storybook CircleCI job.</em>
-            EOF
-            .circleci/scripts/pr-comment.sh "<!-- storybook-preview -->" /tmp/storybook-preview.md
       - save-turbo-cache:
           scope: storybook
 
@@ -460,56 +447,6 @@ jobs:
           path: /tmp/test-results
       - verify-working-tree-clean
 
-  bundle-size:
-    executor:
-      name: node
-      resource-class: xlarge
-    steps:
-      - prepare
-      - restore-turbo-cache:
-          scope: build
-      - run:
-          name: Build and measure this PR
-          command: |
-            pnpm exec turbo transpile
-            npx size-limit --json > /tmp/current.json || cat /tmp/current.json
-      - run:
-          # The base checkout below replaces the working tree with a commit that
-          # predates these scripts.
-          name: Stash the CI scripts
-          command: cp -R .circleci /tmp/ci
-      - run:
-          name: Resolve the base commit
-          command: |
-            .circleci/scripts/base-ref.sh > /tmp/base-sha
-            echo "Comparing against $(cat /tmp/base-sha)"
-      - restore_cache:
-          name: Restore the base-branch measurement
-          keys:
-            - v3-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
-      - run:
-          name: Build and measure the base branch
-          command: |
-            if [ -s /tmp/base.json ]; then
-              echo "Base measurement restored from cache; skipping the base build."
-              exit 0
-            fi
-            git checkout --detach --force "$(cat /tmp/base-sha)"
-            pnpm exec turbo clean
-            pnpm install --frozen-lockfile
-            pnpm exec turbo transpile
-            npx size-limit --json > /tmp/base.json || { cat /tmp/base.json; rm -f /tmp/base.json; }
-      - save_cache:
-          name: Save the base-branch measurement
-          key: v3-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
-          paths:
-            - /tmp/base.json
-      - run:
-          name: Comment with the comparison
-          command: |
-            node /tmp/ci/scripts/bundle-size-comment.mjs /tmp/current.json /tmp/base.json > /tmp/bundle-size.md
-            /tmp/ci/scripts/pr-comment.sh "## size-limit report" /tmp/bundle-size.md
-
   ci-all:
     executor:
       name: node
@@ -536,14 +473,6 @@ workflows:
           requires: [install]
       - e2e:
           requires: [build]
-      - bundle-size:
-          requires: [build]
-          filters:
-            branches:
-              ignore:
-                - main
-                - next
-                - /release\/.*/
       - storybook-interaction-tests:
           requires: [install]
       - build:
