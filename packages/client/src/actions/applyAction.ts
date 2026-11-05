@@ -252,11 +252,6 @@ export async function applyAction<
   }
 }
 
-/**
- * Resolves to undefined rather than throwing when the return value is missing
- * or cannot be converted, since the action has already been applied. The server
- * also omits return values it cannot convert.
- */
 async function remapActionReturnValue(
   client: MinimalClient,
   returnType: QueryDataTypeDefinition,
