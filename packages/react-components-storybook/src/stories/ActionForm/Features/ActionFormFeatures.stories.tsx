@@ -26,6 +26,7 @@ import React, { useCallback, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import {
+  submissionCriteriaStoryAction,
   unsupportedFieldsStoryAction,
   updateEmployeeStoryAction,
 } from "../../../mocks/fauxFoundry.js";
@@ -868,3 +869,85 @@ function ControlledActionFormStory(): React.ReactElement {
     </FormStoryLayout>
   );
 }
+
+const submissionCriteriaActionDefinition =
+  submissionCriteriaStoryAction.actionDefinition;
+
+function SubmissionCriteriaActionFormStory(): React.ReactElement {
+  const [submission, setSubmission] = useState<StorySubmissionSnapshot>({
+    status: "idle",
+  });
+
+  const handleSuccess = useCallback(
+    (result: ActionEditResponse | undefined) => {
+      setSubmission({
+        status: "success",
+        submittedValues: {},
+        response: result,
+      });
+      successSpy(result);
+    },
+    [],
+  );
+
+  const handleError = useCallback((error: { type: string; error: unknown }) => {
+    setSubmission((prev) => ({ ...prev, status: "error", error }));
+    errorSpy(error);
+  }, []);
+
+  return (
+    <FormStoryLayout
+      output={
+        <SubmissionOutputPanel
+          idleMessage="Submit the form to see the validation response."
+          snapshot={submission}
+        />
+      }
+    >
+      <ActionForm
+        actionDefinition={submissionCriteriaActionDefinition}
+        onError={handleError}
+        onSuccess={handleSuccess}
+        showFormTitle={true}
+      />
+    </FormStoryLayout>
+  );
+}
+
+export const SubmissionCriteriaFailure: Story = {
+  render: () => <SubmissionCriteriaActionFormStory />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const fullNameInput = await canvas.findByRole("textbox", {
+      name: /^fullName/u,
+    });
+    const submitButton = await canvas.findByRole("button", {
+      name: /submit/iu,
+    });
+
+    await userEvent.type(fullNameInput, "Ada Lovelace");
+    await userEvent.click(submitButton);
+
+    await waitFor(() =>
+      expect(canvas.getByText("2 issues")).toBeInTheDocument(),
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates server-side submission criteria validation. The action's validate endpoint returns INVALID submission criteria, which appear in the footer error indicator without applying the action.",
+      },
+      source: {
+        code: `// When the action has submission criteria configured in Foundry,
+// ActionForm validates before applying. Failed criteria appear in the
+// footer error indicator alongside any field-level errors.
+<ActionForm
+  actionDefinition={submissionCriteriaStoryAction}
+  onError={(error) => console.log("Error", error)}
+  onSuccess={(result) => console.log("Applied", result)}
+/>`,
+      },
+    },
+  },
+};

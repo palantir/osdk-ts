@@ -36,6 +36,9 @@ export type FormContentItem = Stable.FormContentItem;
 export type FormError = Stable.FormError;
 
 /** @deprecated Import from `@osdk/react-components/action-form` instead. */
+export type FormErrorEntry = Stable.FormErrorEntry;
+
+/** @deprecated Import from `@osdk/react-components/action-form` instead. */
 export type FormSectionDefinition = Stable.FormSectionDefinition;
 
 /** @deprecated Import from `@osdk/react-components/action-form` instead. */
