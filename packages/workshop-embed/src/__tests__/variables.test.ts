@@ -89,6 +89,16 @@ describe("scalar variables", () => {
     expect(result).not.toBe(values);
   });
 
+  it.each([
+    {},
+    Object.create(null),
+    Object.assign(Object.create(null), { count: 1 }),
+  ])("delivers plain and null-prototype variable maps: %j", async (values) => {
+    const received = nextVariables(receiver);
+    sender.setVariables(values);
+    await expect(received).resolves.toEqual(values);
+  });
+
   it("ignores malformed and foreign-session messages before delivering a valid update", async () => {
     const listener = vi.fn();
     receiver.onVariablesSet(listener);
@@ -174,6 +184,45 @@ describe("scalar variables", () => {
       );
     }
     expect(postMessage).not.toHaveBeenCalled();
+  });
+
+  it("rejects MessagePorts on send and ignores transferred ports on receive", async () => {
+    const channel = new MessageChannel();
+    try {
+      const postMessage = vi.spyOn(sender.port, "postMessage");
+      expect(() =>
+        sender.setVariables(channel.port1 as unknown as WorkshopVariableValues),
+      ).toThrow(TypeError);
+      expect(postMessage).not.toHaveBeenCalled();
+
+      const listener = vi.fn();
+      receiver.onVariablesSet(listener);
+      receiver.port.addEventListener(
+        "message",
+        (event) => {
+          for (const port of event.ports) port.close();
+        },
+        { once: true },
+      );
+      sender.port.postMessage(
+        {
+          channel: "workshop-module-embed",
+          version: 1,
+          sessionId: "session",
+          type: "setVariables",
+          values: channel.port1,
+        },
+        [channel.port1],
+      );
+
+      const received = nextVariables(receiver);
+      sender.setVariables({ count: 1 });
+      await received;
+      expect(listener).toHaveBeenCalledExactlyOnceWith({ count: 1 });
+    } finally {
+      channel.port1.close();
+      channel.port2.close();
+    }
   });
 
   it("handles subscription changes during delivery and rejects operations after disconnect", async () => {
@@ -346,6 +395,13 @@ const invalidInputs: unknown[] = [
   undefined,
   null,
   [],
+  new Date(),
+  new Map(),
+  new Set(),
+  new ArrayBuffer(8),
+  new DataView(new ArrayBuffer(8)),
+  new Uint8Array(),
+  new Uint8Array([1, 2]),
   { date: new Date() },
   { "": 1 },
   { name: "Ada", NAME: "Grace" },
