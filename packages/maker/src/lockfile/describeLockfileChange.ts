@@ -24,8 +24,8 @@ import {
 } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
+import { describePropertyType } from "../api/properties/normalizePropertyType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
-import { describeType } from "./LockedPropertyType.js";
 import type {
   LockedInstruction,
   LockedValueType,
@@ -178,10 +178,10 @@ export function describeBreakingChange(
       const property = authoredKeyOf(breakingChange.property);
       return (
         `${where}: property "${property}" changed type from ` +
-        `${describeType(breakingChange.previousType)} to ${describeType(breakingChange.nextType)}. Changing a ` +
+        `${describePropertyType(breakingChange.previousType)} to ${describePropertyType(breakingChange.nextType)}. Changing a ` +
         `property's type is a breaking change, and no currently-supported interface schema ` +
         `migration can phase it in. Restore "${property}" to ` +
-        `${describeType(breakingChange.previousType)}; to publish the new type, declare it as a new ` +
+        `${describePropertyType(breakingChange.previousType)}; to publish the new type, declare it as a new ` +
         `property under a different api name.`
       );
     }
@@ -471,8 +471,8 @@ function describeTargetDrift(targets: readonly TargetState[]): string {
           !isDeepStrictEqual(previous.type, next.type)
         ) {
           return (
-            `"${authoredName}" changed type from ${describeType(previous.type)} to ` +
-            describeType(next.type)
+            `"${authoredName}" changed type from ${describePropertyType(previous.type)} to ` +
+            describePropertyType(next.type)
           );
         }
 
@@ -498,8 +498,9 @@ function describeFinalizations(
   instructions: readonly LockedInstruction[],
 ): string {
   return instructions
-    .map((instruction) =>
-      describeFinalization(toAuthoredInstruction(instruction)),
+    .flatMap(
+      (instruction) =>
+        describeFinalization(toAuthoredInstruction(instruction)) ?? [],
     )
     .join(", and ");
 }
