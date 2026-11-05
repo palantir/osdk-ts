@@ -122,8 +122,6 @@ async function createModuleEvaluationServer(
   return await createServer({
     ...config.inlineConfig,
     root: config.root,
-    // Reference the existing config file in order to respect any custom config
-    configFile: config.configFile,
     // Custom mode to prevent dev plugin execution
     mode: MODULE_EVALUATION_MODE,
   });
