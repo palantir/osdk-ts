@@ -159,14 +159,15 @@ export class BulkObjectLoader {
   #loadObjects(arr: InternalValue[], params: LoadParams) {
     this.#m.delete(this.#buildSelectKey(params));
 
+    const pending = new Set(arr);
     const loadFn =
       params.defType === "interface"
-        ? this.#loadInterfaceObjects(arr, params)
-        : this.#loadObjectTypeObjects(arr, params);
+        ? this.#loadInterfaceObjects(pending, params)
+        : this.#loadObjectTypeObjects(pending, params);
 
     loadFn.catch((e: unknown) => {
       this.#logger?.error("Unhandled exception", e);
-      for (const { primaryKey, deferred } of arr) {
+      for (const { primaryKey, deferred } of pending) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         deferred.reject(
           new PalantirApiError(
@@ -177,14 +178,17 @@ export class BulkObjectLoader {
     });
   }
 
-  async #loadObjectTypeObjects(arr: InternalValue[], params: LoadParams) {
+  async #loadObjectTypeObjects(
+    pending: Set<InternalValue>,
+    params: LoadParams,
+  ) {
     const objectDef = {
       type: "object",
       apiName: params.apiName,
     } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(objectDef);
 
-    const pks = arr.map((x) => x.primaryKey);
+    const pks = Array.from(pending, (x) => x.primaryKey);
 
     // Use $eq for single object fetches (this is for public app compatibility)
     // Use $in for batch fetches
@@ -201,7 +205,6 @@ export class BulkObjectLoader {
     }
 
     objectSet = objectSet.where(whereClause);
-    const pending = new Set(arr);
     const pages = loadPages(($nextPageToken) =>
       objectSet.fetchPage({
         $nextPageToken,
@@ -229,7 +232,7 @@ export class BulkObjectLoader {
     }
   }
 
-  async #loadInterfaceObjects(arr: InternalValue[], params: LoadParams) {
+  async #loadInterfaceObjects(pending: Set<InternalValue>, params: LoadParams) {
     const interfaceDef = {
       type: "interface",
       apiName: params.apiName,
@@ -237,8 +240,6 @@ export class BulkObjectLoader {
 
     const interfaceMetadata = await this.#client.fetchMetadata(interfaceDef);
     const implementingTypes = interfaceMetadata.implementedBy ?? [];
-
-    const pending = new Set(arr);
 
     for (const objectTypeName of implementingTypes) {
       const objectDef = {
