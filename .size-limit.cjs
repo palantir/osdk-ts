@@ -87,10 +87,13 @@ module.exports = TRACKED_PACKAGES.flatMap((pkg) => {
   for (const [exportPath, exportConfig] of Object.entries(pkgJson.exports)) {
     // Skip non-JS exports (e.g. ./styles.css)
     if (!exportConfig?.import?.default) continue;
+    // Measure what browser bundlers resolve; import.default is the Node build,
+    // which may contain Node-only imports (e.g. node:crypto).
+    const entryPath = exportConfig.browser ?? exportConfig.import.default;
 
     // Resolve wildcard exports by scanning the filesystem
     if (exportPath.includes("*")) {
-      const pattern = exportConfig.import.default; // e.g. "./build/esm/public/*.js"
+      const pattern = entryPath; // e.g. "./build/browser/public/*.js"
       const globDir = join(pkgDir, pattern.replace(/\/\*\.js$/, ""));
       let files;
       try {
@@ -126,7 +129,7 @@ module.exports = TRACKED_PACKAGES.flatMap((pkg) => {
       continue;
     }
 
-    const esmPath = exportConfig.import.default;
+    const esmPath = entryPath;
     const name = exportPath === "."
       ? pkgJson.name
       : `${pkgJson.name}/${exportPath.slice(2)}`;
