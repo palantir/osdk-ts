@@ -15,7 +15,11 @@
  */
 
 import { Errors, type FauxAgentImpl, OpenApiCallError } from "@osdk/faux";
-import type { AgentSession, SendEventResponse } from "@osdk/foundry.agents";
+import type {
+  AgentSession,
+  GetStateResponse,
+  SendEventResponse,
+} from "@osdk/foundry.agents";
 import { z } from "zod/v4";
 
 const eventIdSchema = z.uuid({ version: "v4" });
@@ -23,8 +27,22 @@ const eventIdSchema = z.uuid({ version: "v4" });
 export function createLazyAgentImpl(
   createSession: Record<string, AgentSession> | FauxAgentImpl["createSession"],
   sendEvent: Record<string, SendEventResponse> | FauxAgentImpl["sendEvent"],
+  getState: Record<string, GetStateResponse> | FauxAgentImpl["getState"],
 ): FauxAgentImpl {
   return {
+    getState(req, dataStore) {
+      if (typeof getState === "function") {
+        return getState(req, dataStore);
+      }
+      const response = getState[req.sessionId];
+      if (!response) {
+        throw new OpenApiCallError(
+          400,
+          Errors.InvalidRequest("Invalid Agent Session"),
+        );
+      }
+      return response;
+    },
     createSession(req, dataStore) {
       if (typeof createSession === "function") {
         return createSession(req, dataStore);

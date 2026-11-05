@@ -19,6 +19,7 @@ import { Errors, OpenApiCallError } from "@osdk/faux";
 import type {
   AgentSession,
   CreateAgentSessionRequest,
+  SessionStateAvailable,
   SendEventResponse,
 } from "@osdk/foundry.agents";
 import deepEqual from "fast-deep-equal";
@@ -214,6 +215,9 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         [JSON.stringify(weatherAgentRequest)]: weatherAgentResponse,
       },
       weatherEventResponses,
+      {
+        [weatherAgentResponse.id]: weatherAgentState,
+      },
     ),
   );
 
@@ -226,6 +230,9 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
           weatherAgentOtherVersionResponse,
       },
       weatherEventResponses,
+      {
+        [weatherAgentOtherVersionResponse.id]: weatherAgentState,
+      },
     ),
   );
 
@@ -237,6 +244,9 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         [JSON.stringify(noArgumentsAgentRequest)]: noArgumentsAgentResponse,
       },
       {},
+      {
+        [noArgumentsAgentResponse.id]: { ...weatherAgentState, arguments: {} },
+      },
     ),
   );
 
@@ -248,6 +258,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         [JSON.stringify(noArgumentsAgentOtherVersionRequest)]:
           noArgumentsAgentOtherVersionResponse,
       },
+      {},
       {},
     ),
   );
@@ -263,6 +274,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
           optionalArgumentsAgentResponse,
       },
       {},
+      {},
     ),
   );
 
@@ -274,6 +286,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         [JSON.stringify(structuredArgumentsAgentRequest)]:
           structuredArgumentsAgentResponse,
       },
+      {},
       {},
     ),
   );
@@ -317,6 +330,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         }
         return acceptedAgentEvent;
       },
+      {},
     ),
   );
 }
@@ -333,3 +347,21 @@ const weatherEventResponses: Record<string, SendEventResponse> = {
     event: { eventType: "unknownEvent", payload: { raw: [1, null, "value"] } },
   })]: acceptedAgentEvent,
 };
+
+export const weatherAgentState: SessionStateAvailable & { type: "available" } =
+  {
+    type: "available",
+    arguments: { city: "London" },
+    status: { type: "live" },
+    consistencyKey: "weather-state",
+    agentState: { data: { temperature: 20 } },
+    contextItems: {
+      second: { contextItemType: "weather-result", data: "Sunny" },
+      first: { contextItemType: "weather-result", data: "Warm" },
+      unknown: {
+        contextItemType: "future-result",
+        data: { value: "Future" },
+      },
+    },
+    contextItemOrder: ["first", "second", "unknown"],
+  };

@@ -19,6 +19,7 @@ import type {
   AgentDefinition,
   AgentParam,
   AgentSession,
+  AgentSessionState,
 } from "@osdk/api/unstable";
 import {
   $Agents,
@@ -30,7 +31,7 @@ import {
   structuredArgumentsAgent,
   weatherAgent,
 } from "@osdk/client.test.ontology";
-import type { SendEventResponse } from "@osdk/foundry.agents";
+import type { GetStateResponse, SendEventResponse } from "@osdk/foundry.agents";
 import {
   type FauxAgentImpl,
   LegacyFauxFoundry,
@@ -38,6 +39,7 @@ import {
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
+import pDefer from "p-defer";
 import {
   afterEach,
   beforeAll,
@@ -51,7 +53,10 @@ import {
 
 import type { Client } from "../Client.js";
 import { createClient, createClientWithTransaction } from "../createClient.js";
-import { AgentSendEventTimeoutError } from "../public/experimental.js";
+import {
+  AgentGetStateTimeoutError,
+  AgentSendEventTimeoutError,
+} from "../public/experimental.js";
 import { withScenario } from "../scenarios/withScenario.js";
 
 describe("agents", () => {
@@ -474,5 +479,181 @@ describe("agents", () => {
         );
       },
     );
+  });
+
+  describe("state reading", () => {
+    let session: AgentSession;
+    let agentImpl: FauxAgentImpl;
+
+    beforeEach(async () => {
+      session = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+      agentImpl = fauxFoundry
+        .getOntology(fauxFoundry.defaultOntologyRid)
+        .getAgentImpl(weatherAgent.apiName, weatherAgent.version);
+    });
+
+    it.each(["live", "completed", "failed", "canceled"] as const)(
+      "reads %s session state and preserves context item order",
+      async (type) => {
+        vi.spyOn(agentImpl, "getState").mockReturnValue({
+          ...stubData.weatherAgentState,
+          status: { type },
+        });
+        const state = await session.experimental_getState();
+        expectTypeOf(state).toEqualTypeOf<AgentSessionState>();
+        expect(state).toEqual({
+          arguments: { city: "London" },
+          status: { type },
+          agentState: { data: { temperature: 20 } },
+          contextItems: {
+            first: { type: "weather-result", data: "Warm" },
+            second: { type: "weather-result", data: "Sunny" },
+            unknown: {
+              type: "$unknown",
+              contextItemType: "future-result",
+              data: { value: "Future" },
+            },
+          },
+          contextItemOrder: ["first", "second", "unknown"],
+        });
+      },
+    );
+
+    it("supports a detached experimental_getState method", async () => {
+      const { experimental_getState } = session;
+      const state = await experimental_getState();
+      expect(state.agentState.data).toEqual({ temperature: 20 });
+    });
+
+    it("tracks accepted sends and successful reads", async () => {
+      const read = vi.spyOn(agentImpl, "getState");
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      await session.experimental_getState();
+      expect(read.mock.calls[0][0]).toEqual({
+        sessionId: session.id,
+        consistencyKey: "accepted-event",
+      });
+      await session.experimental_getState();
+      expect(read.mock.calls[1][0].consistencyKey).toBe("weather-state");
+    });
+
+    it("does not share consistency keys between handles", async () => {
+      const otherSession = await client(
+        weatherAgent,
+      ).experimental_createSession({
+        city: "London",
+      });
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      const read = vi.spyOn(agentImpl, "getState");
+      await otherSession.experimental_getState();
+      expect(read.mock.calls[0][0].consistencyKey).toBeUndefined();
+    });
+
+    it("keeps a read's captured key while another send completes", async () => {
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      const first = pDefer<GetStateResponse>();
+      const read = vi
+        .spyOn(agentImpl, "getState")
+        .mockReturnValueOnce(first.promise);
+      const result = session.experimental_getState({ $pollIntervalMs: 10 });
+      await vi.waitFor(() => expect(read).toHaveBeenCalledTimes(1));
+      vi.spyOn(agentImpl, "sendEvent").mockReturnValue({
+        result: { type: "accepted", consistencyKey: "later-send" },
+      });
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      first.resolve({ type: "behind" });
+      await result;
+      expect(read.mock.calls[1][0].consistencyKey).toBe("accepted-event");
+    });
+
+    it.each(["notReady", "behind"] as const)(
+      "retries %s until state is available",
+      async (type) => {
+        vi.useFakeTimers();
+        const read = vi
+          .spyOn(agentImpl, "getState")
+          .mockReturnValueOnce({ type });
+        const result = session.experimental_getState({
+          $timeoutMs: 100,
+          $pollIntervalMs: 10,
+        });
+        await vi.waitFor(() => expect(read).toHaveBeenCalledTimes(1), {
+          interval: 1,
+        });
+        await vi.advanceTimersByTimeAsync(5);
+        expect(read).toHaveBeenCalledTimes(1);
+        await vi.advanceTimersByTimeAsync(5);
+        const state = await result;
+        expect(state.agentState.data).toEqual({ temperature: 20 });
+        expect(read).toHaveBeenCalledTimes(2);
+        expect(read.mock.calls[0][0]).toEqual(read.mock.calls[1][0]);
+      },
+    );
+
+    it("times out when state remains behind", async () => {
+      vi.useFakeTimers();
+      const read = vi
+        .spyOn(agentImpl, "getState")
+        .mockReturnValue({ type: "behind" });
+      const result = session.experimental_getState({
+        $timeoutMs: 100,
+        $pollIntervalMs: 10,
+      });
+      const rejected = expect(result).rejects.toBeInstanceOf(
+        AgentGetStateTimeoutError,
+      );
+      await vi.waitFor(() => expect(read).toHaveBeenCalledTimes(1), {
+        interval: 1,
+      });
+      await vi.advanceTimersByTimeAsync(100);
+      await rejected;
+    });
+
+    it("does not retry with a zero timeout", async () => {
+      const read = vi
+        .spyOn(agentImpl, "getState")
+        .mockReturnValue({ type: "notReady" });
+      const result = session.experimental_getState({ $timeoutMs: 0 });
+      await expect(result).rejects.toBeInstanceOf(AgentGetStateTimeoutError);
+      expect(read).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([-1, NaN, Infinity])(
+      "rejects invalid timeout %s",
+      async ($timeoutMs) => {
+        const result = session.experimental_getState({ $timeoutMs });
+        await expect(result).rejects.toThrow(
+          "$timeoutMs must be a finite non-negative number",
+        );
+      },
+    );
+
+    it.each([0, -1, NaN, Infinity])(
+      "rejects invalid polling interval %s",
+      async ($pollIntervalMs) => {
+        const result = session.experimental_getState({ $pollIntervalMs });
+        await expect(result).rejects.toThrow(
+          "$pollIntervalMs must be a finite positive number",
+        );
+      },
+    );
+
+    it("propagates API failures", async () => {
+      vi.spyOn(agentImpl, "getState").mockRejectedValueOnce(
+        new Error("State read failed"),
+      );
+      const result = session.experimental_getState();
+      await expect(result).rejects.toThrow("State read failed");
+    });
   });
 });

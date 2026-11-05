@@ -49,6 +49,29 @@ export const createAgentHandlers: FauxFoundryHandlersFactory = (
       sessions.set(session.id, session);
       return session;
     }),
+    Agents.AgentSessions.getSessionState(baseUrl, ({ params, request }) => {
+      const session = sessions.get(params.agentSessionId);
+      if (!session) {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid Agent Session"),
+        );
+      }
+      invariant(session.agentApiNameIdentifier);
+      const { ontology, agentApiName } = session.agentApiNameIdentifier;
+      const impl = fauxFoundry
+        .getOntology(ontology)
+        .getAgentImpl(agentApiName, session.agentVersion);
+      return impl.getState(
+        {
+          sessionId: session.id,
+          consistencyKey:
+            new URL(request.url).searchParams.get("consistencyKey") ??
+            undefined,
+        },
+        fauxFoundry.getDataStore(ontology),
+      );
+    }),
     Agents.AgentSessions.sendEvent(baseUrl, async ({ params, request }) => {
       const session = sessions.get(params.agentSessionId);
       if (!session) {
