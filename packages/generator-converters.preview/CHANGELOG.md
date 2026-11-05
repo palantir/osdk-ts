@@ -1,5 +1,17 @@
 # @osdk/generator-converters.preview
 
+## 0.61.0
+
+### Minor Changes
+
+- ef3e772: Do not expose query types backing FBAs
+
+### Patch Changes
+
+- @osdk/foundry-sdk-generator@2.87.0
+- @osdk/client.unstable@2.87.0
+- @osdk/generator-converters.ontologyir@2.87.0
+
 ## 0.60.0
 
 ### Minor Changes
