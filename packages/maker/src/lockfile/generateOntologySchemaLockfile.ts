@@ -22,7 +22,7 @@ import type {
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../api/common/TypeClass.js";
-import { namespace } from "../api/defineOntology.js";
+import { addNamespaceIfNone } from "../api/defineOntology.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
@@ -43,12 +43,12 @@ import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import {
   type ResolvedInterfaceActionTypeConstraintMapping,
   type ResolvedInterfaceMemberMapping,
+  resolveInterfaceProperty,
   resolveInterfaceTypeReplacement,
 } from "../api/interface/resolveInterfaceTypeReplacement.js";
-import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
 import { normalizePropertyType } from "../api/properties/normalizePropertyType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
-import type { OntologyValidationContext } from "../api/validateOntology.js";
+import type { OntologyContext } from "../api/validateOntology.js";
 import type {
   LockedActionTypeConstraint,
   LockedActionTypeConstraintReplacement,
@@ -82,7 +82,7 @@ export interface SourceCensus {
  * Any history-dependent logic (e.g. backwards-compatibility checking) is only a validation concern.
  */
 export function generateOntologySchemaLockfile(
-  context: OntologyValidationContext,
+  context: OntologyContext,
 ): OntologySchemaLockfile {
   const interfaces: Record<string, LockedInterfaceType> = {};
   for (const interfaceType of sortedByApiName(
@@ -113,7 +113,7 @@ export function shouldLockInterface(interfaceType: InterfaceType): boolean {
 }
 
 function lockInterface(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
 ): LockedInterfaceType {
   return {
@@ -279,7 +279,7 @@ function lockTypeClasses(
 }
 
 function lockInterfaceSchemaMigrationTransitions(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
 ): LockedTransition[] {
   const { schemaMigrations } = interfaceType;
@@ -302,7 +302,7 @@ function lockInterfaceSchemaMigrationTransitions(
 }
 
 function lockInstruction(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   instruction: InterfaceSchemaMigrationInstruction,
   interfaceType: InterfaceType,
 ): LockedInstruction {
@@ -310,17 +310,12 @@ function lockInstruction(
     case "addRequiredProperty":
       return {
         type: "addRequiredProperty",
-        property: wireApiNameOf(
-          instruction.type,
-          instruction.property,
-          interfaceType.propertiesV3,
-        ),
+        property: wireApiNameOf(interfaceType, instruction.property),
       };
     case "addRequiredActionTypeConstraint":
       return {
         type: "addRequiredActionTypeConstraint",
-        actionTypeConstraint: combineApiNamespaceIfMissing(
-          namespace,
+        actionTypeConstraint: addNamespaceIfNone(
           instruction.actionTypeConstraint,
         ),
       };
@@ -345,7 +340,7 @@ function lockInstruction(
 }
 
 function lockReplacement(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
 ): LockedInterfaceTypeReplacement {
@@ -363,7 +358,7 @@ function lockReplacement(
   );
 
   return {
-    interfaceType: resolved.interfaceTypeApiName,
+    interfaceType: resolved.interfaceType.apiName,
     ...(propertyMappings !== undefined && { propertyMappings }),
     ...(linkTypeConstraintMappings !== undefined && {
       linkTypeConstraintMappings,
@@ -421,17 +416,16 @@ function lockMappings(
  * ontology-ir carries.
  */
 function wireApiNameOf(
-  instructionType: string,
+  interfaceType: InterfaceType,
   propertyApiName: string,
-  propertiesV3: Record<string, InterfacePropertyType>,
 ): string {
-  const property = propertiesV3[propertyApiName];
-  if (property === undefined) {
+  const resolved = resolveInterfaceProperty(interfaceType, propertyApiName);
+  if (resolved === undefined) {
     throw new Error(
-      `Schema migration instruction ${instructionType} references property "${propertyApiName}", which the interface does not declare.`,
+      `Schema migration instruction addRequiredProperty references property "${propertyApiName}", which the interface does not declare.`,
     );
   }
-  return interfacePropertyWireApiName(property, propertyApiName);
+  return resolved.apiName;
 }
 
 function sortedByApiName(interfaceTypes: InterfaceType[]): InterfaceType[] {

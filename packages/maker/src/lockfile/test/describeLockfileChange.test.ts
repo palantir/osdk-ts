@@ -94,7 +94,7 @@ describe("describeBreakingChange", () => {
   it("says a transition targeting no property cannot be read either way", () => {
     expect(
       ambiguous([{ type: "addRequiredProperty", property: "x" }], []),
-    ).toContain("it targets no property");
+    ).toContain("it targets nothing in the interface's schema");
   });
 
   describe("remediation", () => {
@@ -108,7 +108,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyRemoved",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
         expected: 'Restore "lastName" to the interface.',
       },
@@ -126,7 +126,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousType: "string",
           nextType: "integer",
         },
@@ -139,7 +139,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
-          property: "nicknames",
+          propertyApiName: "nicknames",
           previousType: "string",
           nextType: { type: "array", subtype: "string" },
         },
@@ -151,7 +151,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousDeclaration: "interface",
           nextDeclaration: "sharedPropertyType",
         },
@@ -164,7 +164,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousDeclaration: "sharedPropertyType",
           nextDeclaration: "interface",
         },
@@ -175,8 +175,8 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyNamespaceChanged",
           interfaceApiName: "Person",
-          previousApiName: "com.palantir.lastName",
-          nextApiName: "com.example.lastName",
+          previousPropertyApiName: "com.palantir.lastName",
+          nextPropertyApiName: "com.example.lastName",
         },
         expected:
           'property "lastName" is now backed by shared property type ' +
@@ -187,8 +187,8 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyNamespaceChanged",
           interfaceApiName: "Person",
-          previousApiName: "com.palantir.lastName",
-          nextApiName: "com.example.lastName",
+          previousPropertyApiName: "com.palantir.lastName",
+          nextPropertyApiName: "com.example.lastName",
         },
         expected: 'Back "lastName" with "com.palantir.lastName" again.',
       },
@@ -197,7 +197,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
-          property: "name",
+          propertyApiName: "name",
           previousNullability: { noNulls: false, noEmptyCollections: false },
           nextNullability: { noNulls: true, noEmptyCollections: false },
         },
@@ -209,7 +209,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
-          property: "name",
+          propertyApiName: "name",
           previousNullability: { noNulls: true, noEmptyCollections: false },
           nextNullability: { noNulls: true, noEmptyCollections: true },
         },
@@ -220,7 +220,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
-          property: "ssn",
+          propertyApiName: "ssn",
           previousValueType: undefined,
           nextValueType: {
             packageNamespace: "com.example",
@@ -235,7 +235,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
-          property: "ssn",
+          propertyApiName: "ssn",
           previousValueType: {
             packageNamespace: "com.example",
             apiName: "Ssn",
@@ -252,7 +252,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousTypeClasses: [],
           nextTypeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
         },
@@ -265,7 +265,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousTypeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
           nextTypeClasses: [],
         },
@@ -276,7 +276,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
-          property: "id",
+          propertyApiName: "id",
           previousConstraint: "NO_RESTRICTION",
           nextConstraint: "MUST_BE_PK",
         },
@@ -288,7 +288,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
-          property: "id",
+          propertyApiName: "id",
           previousConstraint: "MUST_BE_PK",
           nextConstraint: "CANNOT_BE_PK",
         },
@@ -307,7 +307,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       },
       {
@@ -315,7 +315,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       },
     ])("suggests a transition for $name", ({ breakingChange }) => {
@@ -337,12 +337,12 @@ describe("describeBreakingChange", () => {
       {
         code: "actionTypeConstraintBecameRequired",
         interfaceApiName: "Person",
-        actionTypeConstraint: "com.example.sendEmail",
+        actionTypeConstraintApiName: "com.example.sendEmail",
       },
       {
         code: "requiredActionTypeConstraintAdded",
         interfaceApiName: "Person",
-        actionTypeConstraint: "com.example.sendEmail",
+        actionTypeConstraintApiName: "com.example.sendEmail",
       },
     ])("suggests the transition to declare for $code", (breakingChange) => {
       const message = describeBreakingChange(breakingChange);
@@ -353,8 +353,8 @@ describe("describeBreakingChange", () => {
 
     const subject = {
       interfaceApiName: "Person",
-      actionTypeConstraint: "com.example.sendEmail",
-      parameter: "subject",
+      actionTypeConstraintApiName: "com.example.sendEmail",
+      parameterApiName: "subject",
     };
 
     it.each<[LockfileBreakingChange, string]>([
@@ -449,7 +449,7 @@ describe("describeBreakingChange", () => {
         describeBreakingChange({
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
-          property: NAMESPACED,
+          propertyApiName: NAMESPACED,
         }),
       ).toContain(
         '{ id: "require-lastName", title: "Require lastName", ' +
@@ -462,7 +462,7 @@ describe("describeBreakingChange", () => {
       const message = describeBreakingChange({
         code: "propertyRemoved",
         interfaceApiName: "Person",
-        property: NAMESPACED,
+        propertyApiName: NAMESPACED,
       });
 
       expect(message).toContain('Restore "lastName" to the interface.');
@@ -542,13 +542,13 @@ describe("describeWarning", () => {
   const requirementRelaxed = describeWarning({
     code: "requirementRelaxed",
     interfaceApiName: "Person",
-    property: "com.example.lastName",
+    propertyApiName: "com.example.lastName",
   });
 
   const valueTypeRemoved = describeWarning({
     code: "valueTypeRemoved",
     interfaceApiName: "Person",
-    property: "com.example.ssn",
+    propertyApiName: "com.example.ssn",
     previousValueType: { packageNamespace: "com.example", apiName: "Ssn" },
   });
 
@@ -561,7 +561,7 @@ describe("describeWarning", () => {
   const nullabilityRelaxed = describeWarning({
     code: "nullabilityRelaxed",
     interfaceApiName: "Person",
-    property: "com.example.name",
+    propertyApiName: "com.example.name",
     previousNullability: { noNulls: true, noEmptyCollections: true },
     nextNullability: { noNulls: false, noEmptyCollections: false },
   });
@@ -569,34 +569,34 @@ describe("describeWarning", () => {
   const primaryKeyConstraintRelaxed = describeWarning({
     code: "primaryKeyConstraintRelaxed",
     interfaceApiName: "Person",
-    property: "com.example.id",
+    propertyApiName: "com.example.id",
     previousConstraint: "MUST_BE_PK",
   });
 
   const actionTypeConstraintRequirementRelaxed = describeWarning({
     code: "actionTypeConstraintRequirementRelaxed",
     interfaceApiName: "Person",
-    actionTypeConstraint: "com.example.sendEmail",
+    actionTypeConstraintApiName: "com.example.sendEmail",
   });
 
   const actionTypeConstraintRemoved = describeWarning({
     code: "actionTypeConstraintRemoved",
     interfaceApiName: "Person",
-    actionTypeConstraint: "com.example.sendEmail",
+    actionTypeConstraintApiName: "com.example.sendEmail",
   });
 
   const parameterRequirementRelaxed = describeWarning({
     code: "parameterRequirementRelaxed",
     interfaceApiName: "Person",
-    actionTypeConstraint: "com.example.sendEmail",
-    parameter: "subject",
+    actionTypeConstraintApiName: "com.example.sendEmail",
+    parameterApiName: "subject",
   });
 
   const parameterNoLongerRequiredOnConcreteAction = describeWarning({
     code: "parameterNoLongerRequiredOnConcreteAction",
     interfaceApiName: "Person",
-    actionTypeConstraint: "com.example.sendEmail",
-    parameter: "subject",
+    actionTypeConstraintApiName: "com.example.sendEmail",
+    parameterApiName: "subject",
   });
 
   it("names the parameter and authored constraint that were relaxed", () => {
