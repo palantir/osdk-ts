@@ -37,10 +37,6 @@ type ApplyActionParams<Q extends ActionDefinition<any>> = Parameters<
   [K in keyof ObservableClient.ApplyActionOptions as `$${K}`]: ObservableClient.ApplyActionOptions[K];
 };
 
-/**
- * The result of the last applied action. `returnValue` is only present when the
- * last call applied a single action that returns a value.
- */
 export type UseOsdkActionData<Q extends ActionDefinition<any>> = [
   ActionReturnValueFromDef<Q>,
 ] extends [never]
@@ -223,7 +219,6 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
 
   return React.useMemo(
     () => ({
-      // A single implementation backs the single, batch and union overloads.
       applyAction: applyAction as UseOsdkActionResult<Q>["applyAction"],
       validateAction,
       error,

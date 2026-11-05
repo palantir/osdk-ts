@@ -31,7 +31,6 @@ import { createClient } from "../createClient.js";
 import type { ObservableClient } from "./ObservableClient.js";
 import { createObservableClient } from "./ObservableClient.js";
 
-// Mirrors the signatures the generator emits for an action returning a string.
 interface ReturnsNameSignatures {
   applyAction<OP extends ApplyActionOptions>(
     args: { name: string },

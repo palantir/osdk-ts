@@ -888,7 +888,6 @@ export class ObservableClientMonitor {
   private wrapApplyAction(
     original: ObservableClient["applyAction"],
   ): ObservableClient["applyAction"] {
-    // A single wrapper backs the single, batch and union overloads.
     return (async (actionDef, args, options) => {
       const actionName =
         typeof actionDef === "string" ? actionDef : actionDef.apiName;
