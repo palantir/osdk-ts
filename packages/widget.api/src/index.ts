@@ -37,6 +37,7 @@ export { MANIFEST_FILE_LOCATION } from "./manifest.js";
 export {
   HostMessage,
   isHostSetHotkeysMessage,
+  isHostSetThemeMessage,
   isHostParametersUpdatedMessage,
   visitHostMessage,
 } from "./messages/hostMessages.js";

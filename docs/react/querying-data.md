@@ -164,14 +164,29 @@ const { data } = useOsdkObjects(Document, {
 
 #### Search Filter Comparison
 
-| Filter                     | Match Requirement             | Fuzzy | Use Case                     |
-| -------------------------- | ----------------------------- | ----- | ---------------------------- |
-| `$startsWith`              | Begins with prefix            | no    | Autocomplete, prefix search  |
-| `$containsAnyTerm`         | Any term present              | yes   | Broad keyword search         |
-| `$containsAllTerms`        | All terms present (any order) | yes   | Precise multi-keyword search |
-| `$containsAllTermsInOrder` | All terms in exact order      | no    | Phrase / exact match search  |
+| Filter                     | Match Requirement             | Fuzzy | Phonetic | Use Case                     |
+| -------------------------- | ----------------------------- | ----- | -------- | ---------------------------- |
+| `$startsWith`              | Begins with prefix            | no    | yes      | Autocomplete, prefix search  |
+| `$containsAnyTerm`         | Any term present              | yes   | yes      | Broad keyword search         |
+| `$containsAllTerms`        | All terms present (any order) | yes   | yes      | Precise multi-keyword search |
+| `$containsAllTermsInOrder` | All terms in exact order      | no    | yes      | Phrase / exact match search  |
 
 Fuzzy search is unavailable for `$containsAllTermsInOrder` because phrase matching requires exact token order.
+
+All four text search filters support phonetic matching when the property is configured for phonetic search:
+
+```ts
+const { data } = useOsdkObjects(Employee, {
+  where: {
+    fullName: {
+      $containsAnyTerm: { term: "Jon", phoneticSearch: true },
+    },
+  },
+});
+// Can match similarly pronounced values such as "Jon" and "John"
+```
+
+`phoneticSearch: true` cannot be combined with `fuzzySearch: true` in the same filter. Use an `$or` clause with separate fuzzy and phonetic filters when both matching strategies are needed.
 
 #### Search Example: Building a Search Box
 

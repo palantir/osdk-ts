@@ -1,5 +1,24 @@
 # @osdkkit/react
 
+## 2.87.0
+
+### Minor Changes
+
+- a0703ee: Add markingType filtering to marking hooks and request only CBAC markings and categories in CbacPicker and CbacPickerDialog, ordering categories by descending priority and markings by common, uncommon, then unspecified prominence with descending priority within each group. Apply the same ordering to CbacBannerPopover. Honor markingType filters in FauxFoundry's marking and category handlers.
+- 960ecf0: Restore workspace-derived OSDK peer requirements and stop release tooling from replacing them with older versions inferred from changelog history. Published peer ranges now require at least the workspace versions used to build these packages.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [3c3014d]
+- Updated dependencies [e674a83]
+- Updated dependencies [8300415]
+- Updated dependencies [9c93e57]
+  - @osdk/api@2.87.0
+  - @osdk/client@2.87.0
+  - @osdk/aip-core@0.13.0
+
 ## 2.86.0
 
 ### Patch Changes

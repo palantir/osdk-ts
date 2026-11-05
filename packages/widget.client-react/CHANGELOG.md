@@ -1,5 +1,23 @@
 # @osdk/widget.client-react
 
+## 3.87.0
+
+### Minor Changes
+
+- 1fd9dc4: Forward host theme updates to widgets and expose the theme through the React provider.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [3c3014d]
+- Updated dependencies [e674a83]
+- Updated dependencies [8300415]
+- Updated dependencies [1fd9dc4]
+- Updated dependencies [9c93e57]
+  - @osdk/client@2.87.0
+  - @osdk/widget.client@3.87.0
+
 ## 3.86.0
 
 ### Patch Changes

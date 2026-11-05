@@ -82,7 +82,7 @@ export async function generateWithMockOntology(): Promise<void> {
         ],
         agents: [
           `${stubData.weatherAgentApiName}:${stubData.weatherAgentVersion.version}`,
-          `${stubData.noArgsAgentApiName}:${stubData.noArgsAgentVersion.version}`,
+          `${stubData.noArgumentsAgentApiName}:${stubData.noArgumentsAgentVersion.version}`,
         ],
         interfaceTypes: ["FooInterface", "BarInterface"],
         linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],
