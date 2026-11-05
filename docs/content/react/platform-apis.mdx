@@ -1,0 +1,295 @@
+---
+title: Users and markings
+description: Load Foundry users, markings, and CBAC classification banners in React with the hooks in @osdk/react/platform-apis.
+foundryDocs:
+  - title: Foundry REST APIs
+    path: api/v2/general/overview/introduction
+---
+
+{/* cspell:ignore CBAC cbac refetch refetches */}
+
+The hooks in `@osdk/react/platform-apis` call Foundry platform APIs for users and markings with the client from `OsdkProvider`. Use them to show who is signed in, look up other users, list markings, and render classification banners.
+
+## Install the platform packages
+
+The hooks depend on two optional peer packages. Install them before importing from `@osdk/react/platform-apis`:
+
+```npm
+npm install @osdk/foundry.admin @osdk/foundry.core
+```
+
+Without them, the bundler fails with `Rollup failed to resolve import "@osdk/foundry.admin"` or a similar error. The rest of `@osdk/react` works without these packages.
+
+Every hook needs an `OsdkProvider` above it. The signed-in user's token must allow the platform API you call; a missing permission comes back as an `error`.
+
+## Show the signed-in user
+
+`useCurrentFoundryUser` loads the user the client's token belongs to:
+
+```tsx title="src/CurrentUserBadge.tsx"
+import { useCurrentFoundryUser } from "@osdk/react/platform-apis";
+
+export function CurrentUserBadge() {
+  const { currentUser, isLoading, error } = useCurrentFoundryUser();
+
+  return (
+    <span>
+      {currentUser && `Signed in as ${currentUser.givenName ?? currentUser.username}`}
+      {isLoading && !error && "Loading…"}
+      {error && "Could not load your profile"}
+    </span>
+  );
+}
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `enabled` | `boolean` | `true` | When `false`, no request is made. |
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `currentUser` | `User \| undefined` | The user, with `id`, `username`, `givenName`, `familyName`, `email`, `realm`, `organization`, `status`, and `attributes`. |
+| `isLoading` | `boolean` | `true` while the request runs. |
+| `error` | `Error \| undefined` | Set when the request failed. |
+| `refetch` | `() => void` | Requests the user again. |
+
+## Look up a user
+
+`useFoundryUser` takes the user ID as its first argument and options second:
+
+```tsx title="src/UserName.tsx"
+import { useFoundryUser } from "@osdk/react/platform-apis";
+
+export function UserName({ userId }: { userId: string }) {
+  const { user, error } = useFoundryUser(userId);
+  const fullName = [user?.givenName, user?.familyName].filter(Boolean).join(" ");
+
+  return (
+    <span title={error?.message}>
+      {error ? "Unknown user" : user ? fullName || user.username : "…"}
+    </span>
+  );
+}
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `enabled` | `boolean` | `true` | When `false`, no request is made. |
+| `status` | `"ACTIVE" \| "DELETED"` | `"ACTIVE"` | Status of the user to look up. Pass `"DELETED"` to resolve users who have been removed. |
+
+The result has `user`, `isLoading`, `error`, and `refetch`. A new `userId` triggers a new request.
+
+## List users
+
+`useFoundryUsersList` returns one page of users. Pass the previous page's `nextPageToken` as `pageToken` to load the next one:
+
+```tsx title="src/UserDirectory.tsx"
+import { useFoundryUsersList } from "@osdk/react/platform-apis";
+import { useState } from "react";
+
+export function UserDirectory() {
+  const [pageToken, setPageToken] = useState<string | undefined>();
+  const { users, nextPageToken, isLoading, error } = useFoundryUsersList({
+    pageSize: 50,
+    pageToken,
+  });
+
+  return (
+    <div>
+      {error && <p role="alert">Could not load users.</p>}
+      {isLoading && !error && <p>Loading…</p>}
+      <ul>
+        {users?.map((user) => (
+          <li key={user.id}>{user.username}</li>
+        ))}
+      </ul>
+      <button
+        disabled={nextPageToken == null || isLoading}
+        onClick={() => setPageToken(nextPageToken)}
+      >
+        Next page
+      </button>
+    </div>
+  );
+}
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `enabled` | `boolean` | `true` | When `false`, no request is made. |
+| `include` | `"ACTIVE" \| "DELETED"` | `"ACTIVE"` | Which users to list. |
+| `pageSize` | `number` | `1000` | Preferred page size. The server can return more or fewer. |
+| `pageToken` | `string` | `undefined` | Token for the page to load. Omit for the first page. |
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `users` | `User[] \| undefined` | The users on this page. |
+| `nextPageToken` | `string \| undefined` | Token for the next page. `undefined` on the last page. |
+| `isLoading`, `error`, `refetch` | | As for `useCurrentFoundryUser`. |
+
+Each page replaces the previous one. To show every page loaded so far, keep the users you have received in state.
+
+## List markings
+
+`useMarkings` lists the markings the user can see, and `useMarkingCategories` lists the categories they belong to. Join them on `marking.categoryId`:
+
+```tsx title="src/MarkingList.tsx"
+import { useMarkingCategories, useMarkings } from "@osdk/react/platform-apis";
+
+export function MarkingList() {
+  const { markings, error: markingsError } = useMarkings({ includeDeleted: false });
+  const { categories, error: categoriesError } = useMarkingCategories({
+    includeDeleted: false,
+  });
+
+  const categoryName = new Map(categories?.map((c) => [c.id, c.name] as const));
+
+  return (
+    <div>
+      {(markingsError ?? categoriesError) && <p role="alert">Could not load markings.</p>}
+      <ul>
+        {markings?.map((marking) => (
+          <li key={marking.id}>
+            {categoryName.get(marking.categoryId) ?? "Other"}: {marking.name}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+| Hook | Option | Default | Returns |
+| --- | --- | --- | --- |
+| `useMarkings` | `includeDeleted` | `true` | `markings`: `Marking[]`, each with `id`, `categoryId`, `name`, `description`, and `deleted`. |
+| `useMarkingCategories` | `includeDeleted` | `true` | `categories`: `MarkingCategory[]`, each with `id`, `name`, `description`, `markings` (marking IDs), and `deleted`. |
+
+Both accept `enabled` and return `isLoading`, `error`, and `refetch`. Deleted entries are included unless you pass `includeDeleted: false`.
+
+## Get a user's markings
+
+`useUserViewMarkings` returns the IDs of the markings a user can view. Without `userId`, it uses the signed-in user:
+
+```tsx title="src/useCanView.ts"
+import { useUserViewMarkings } from "@osdk/react/platform-apis";
+
+export function useCanView(requiredMarkingIds: string[]) {
+  const { markingIds, isLoading, error } = useUserViewMarkings();
+  const viewable = new Set(markingIds);
+
+  return {
+    canView: markingIds != null && requiredMarkingIds.every((id) => viewable.has(id)),
+    isLoading,
+    error,
+  };
+}
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `userId` | `string` | Signed-in user | The user to look up. |
+| `enabled` | `boolean` | `true` | When `false`, no request is made. |
+
+The result has `markingIds` (`string[] | undefined`), `isLoading`, `error`, and `refetch`.
+
+## Show a classification banner
+
+For classification-based access control (CBAC), `useCbacBanner` returns the banner text and colors for a set of marking IDs:
+
+```tsx title="src/ClassificationBanner.tsx"
+import { useCbacBanner } from "@osdk/react/platform-apis";
+
+export function ClassificationBanner({ markingIds }: { markingIds: string[] }) {
+  const { banner, error } = useCbacBanner({ markingIds });
+
+  if (error != null || banner == null) {
+    return null;
+  }
+  const [first, ...rest] = banner.backgroundColors;
+  const background =
+    rest.length > 0 ? `linear-gradient(90deg, ${banner.backgroundColors.join(", ")})` : first;
+
+  return (
+    <div role="banner" style={{ background, color: banner.textColor, textAlign: "center" }}>
+      {banner.classificationString}
+    </div>
+  );
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `banner.classificationString` | `string` | The banner text. |
+| `banner.textColor` | `string` | Text color. |
+| `banner.backgroundColors` | `string[]` | One or more background colors. |
+| `banner.markingIds` | `string[]` | The markings the banner represents. |
+
+`useCbacMarkingRestrictions` checks a proposed set of marking IDs before you apply it, for example in a marking picker:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `restrictions.isValid` | `boolean` | Whether the markings form a valid classification: none are disallowed and every required constraint is met. |
+| `restrictions.userSatisfiesMarkings` | `boolean` | Whether the signed-in user satisfies the markings. |
+| `restrictions.impliedMarkings` | `string[]` | Markings that the selection implies. |
+| `restrictions.disallowedMarkings` | `string[]` | Markings that are disallowed with the selection. |
+| `restrictions.requiredMarkings` | `string[][]` | Required marking constraints, as groups of marking IDs. |
+
+Both hooks take `{ markingIds, enabled? }`, return `isLoading`, `error`, and `refetch`, and make no request while `markingIds` is empty. They call preview CBAC endpoints, which must be available on your Foundry stack. For a ready-made picker, see the [CbacPicker component](/components/cbac-picker).
+
+## How these hooks load data
+
+These hooks do not use the object cache that powers `useOsdkObjects` and the other ontology hooks:
+
+- Each mounted hook makes its own request. Two components that call `useCurrentFoundryUser` make two requests. Call the hook once and pass the result down when that matters.
+- A hook requests again when an option changes. `refetch` requests again on demand.
+- While a request runs, the previous result is cleared and the data field is `undefined`.
+- When a request fails, `isLoading` stays `true` next to `error`. Check `error` before `isLoading`, as the examples on this page do.
+
+## Handle errors
+
+All hooks return failures as an `Error`. When the failure comes from a Foundry API, it is a `PalantirApiError`, exported from `@osdk/client`. Narrow with `instanceof` to read its fields, all of which are optional:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `errorName` | `string` | Stable identifier, such as `UserNotFound`. Switch on this. |
+| `errorCode` | `string` | Error category, such as `NOT_FOUND` or `PERMISSION_DENIED`. |
+| `errorDescription` | `string` | Human-readable description. |
+| `statusCode` | `number` | HTTP status. |
+| `errorInstanceId` | `string` | Server-side ID for this occurrence. Include it in bug reports. |
+| `parameters` | `object` | Extra context from the server, such as `{ userId }`. |
+
+```tsx title="src/describePlatformError.ts"
+import { PalantirApiError } from "@osdk/client";
+
+export function describePlatformError(error: Error): string {
+  if (!(error instanceof PalantirApiError)) {
+    return error.message;
+  }
+  if (error.errorName === "UserNotFound") {
+    return "We couldn't find that user.";
+  }
+  if (error.errorCode === "PERMISSION_DENIED") {
+    return "You don't have permission to see this.";
+  }
+  return `${error.errorDescription ?? error.message} (error ID: ${error.errorInstanceId ?? "unknown"})`;
+}
+```
+
+Use it with any hook on this page:
+
+```tsx title="src/UserCard.tsx"
+import { useFoundryUser } from "@osdk/react/platform-apis";
+import { describePlatformError } from "./describePlatformError";
+
+export function UserCard({ userId }: { userId: string }) {
+  const { user, error } = useFoundryUser(userId);
+
+  return (
+    <article>
+      {error && <p role="alert">{describePlatformError(error)}</p>}
+      {user && <h2>{user.username}</h2>}
+      {user?.email && <p>{user.email}</p>}
+    </article>
+  );
+}
+```

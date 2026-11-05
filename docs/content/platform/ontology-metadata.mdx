@@ -1,0 +1,224 @@
+---
+title: Ontology metadata
+description: List ontologies, object types, link types, action types, and query types at runtime with @osdk/foundry.ontologies, and know when the OSDK is the better fit.
+foundryDocs:
+  - title: Ontology API
+    path: api/v2/ontologies-v2-resources/ontologies/ontology-basics
+---
+
+`@osdk/foundry.ontologies` reads the schema of any Ontology at runtime: its object types, properties, link types, action types, and query types. Use it for tools that work across object types you do not know at build time, such as schema browsers, admin pages, and code generators.
+
+```npm
+npm install @osdk/client @osdk/oauth @osdk/foundry.ontologies
+```
+
+Every sample takes a `client` from `createClient` or `createPlatformClient`; see [Set up](./setup.mdx). Metadata reads need the `api:ontologies-read` scope.
+
+## When to use the OSDK instead
+
+Your generated SDK already contains the schema of every type it includes, checked at compile time. For those types, `client.fetchMetadata` returns runtime metadata without the Platform SDK:
+
+```ts title="src/employeeMetadata.ts"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+
+export async function describeEmployee(client: Client) {
+  const objectMetadata = await client.fetchMetadata(Employee);
+  const actionMetadata = await client.fetchMetadata(modifyEmployee);
+  return {
+    title: objectMetadata.pluralDisplayName,
+    properties: Object.keys(objectMetadata.properties),
+    links: Object.keys(objectMetadata.links),
+    actionParameters: Object.keys(actionMetadata.parameters),
+  };
+}
+```
+
+| Need | Use |
+| --- | --- |
+| Display names, descriptions, and properties of types in your SDK | `client.fetchMetadata` from `@osdk/client` |
+| Load, filter, or aggregate objects | The OSDK. See [Objects](../sdk/objects.mdx). |
+| Discover object types, actions, or queries that are not in your SDK | `@osdk/foundry.ontologies` |
+| List the ontologies a user can see | `OntologiesV2.list` |
+| Datasources, release status, and other fields `fetchMetadata` does not return | `@osdk/foundry.ontologies` |
+
+`@osdk/foundry.ontologies` also contains the raw object, link, action, and query endpoints that the OSDK calls. Prefer the OSDK for those: it adds types, pagination helpers, caching in React, and result conversion.
+
+## Identify the Ontology
+
+Every function after `OntologiesV2.list` takes the Ontology as its first path parameter: its API name or its RID. With a generated SDK, pass `$ontologyRid`:
+
+```ts title="src/ontologies.ts"
+import type { Client } from "@osdk/client";
+import { OntologiesV2 } from "@osdk/foundry.ontologies";
+
+export async function listOntologies(client: Client) {
+  const { data } = await OntologiesV2.list(client);
+  return data.map((ontology) => ({
+    apiName: ontology.apiName,
+    displayName: ontology.displayName,
+    rid: ontology.rid,
+  }));
+}
+```
+
+`OntologiesV2.get(client, ontology)` returns one Ontology's `apiName`, `displayName`, `description`, and `rid`.
+
+## List object types
+
+`ObjectTypesV2.list` returns one page of object types:
+
+```ts title="src/objectTypes.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+import { ObjectTypesV2, type ObjectTypeV2 } from "@osdk/foundry.ontologies";
+
+export async function listObjectTypes(client: Client): Promise<ObjectTypeV2[]> {
+  const objectTypes: ObjectTypeV2[] = [];
+  let pageToken: string | undefined;
+  do {
+    const page = await ObjectTypesV2.list(client, $ontologyRid, { pageSize: 500, pageToken });
+    objectTypes.push(...page.data);
+    pageToken = page.nextPageToken;
+  } while (pageToken != null);
+  return objectTypes;
+}
+```
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `pageSize`, `pageToken` | | Pagination. See [Paginate](./calling-apis.mdx#paginate). |
+| `includeDatasources` | `boolean` | Include each type's backing `datasources`. |
+| `branch` | `string` | Read the schema on a Foundry branch. |
+
+The list endpoint leaves `aliases` empty. Call `ObjectTypesV2.get` to read them.
+
+## Get an object type
+
+`ObjectTypesV2.get` takes the object type's API name:
+
+```ts title="src/employeeSchema.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+import { ObjectTypesV2 } from "@osdk/foundry.ontologies";
+
+export async function propertyTypes(client: Client, objectTypeApiName: string) {
+  const objectType = await ObjectTypesV2.get(client, $ontologyRid, objectTypeApiName);
+  return {
+    primaryKey: objectType.primaryKey,
+    titleProperty: objectType.titleProperty,
+    properties: Object.entries(objectType.properties).map(([apiName, property]) => ({
+      apiName,
+      displayName: property.displayName ?? apiName,
+      type: property.dataType.type,
+    })),
+  };
+}
+```
+
+| `ObjectTypeV2` field | Description |
+| --- | --- |
+| `apiName`, `displayName`, `pluralDisplayName`, `description` | Names and description. |
+| `rid` | The object type RID. |
+| `primaryKey` | API name of the primary key property. |
+| `titleProperty` | API name of the property used as the object's title. |
+| `properties` | Map from property API name to `PropertyV2`: `dataType` (discriminated by `type`, such as `"string"`, `"integer"`, `"date"`, `"array"`), `displayName`, `description`, `rid`, and `typeClasses`. |
+| `status` | `"ACTIVE"`, `"ENDORSED"`, `"EXPERIMENTAL"`, or `"DEPRECATED"`. |
+| `icon`, `visibility` | Display hints. |
+| `aliases` | Alternative names. |
+| `datasources` | Backing datasources, when requested with `includeDatasources`. |
+
+## List link types
+
+`ObjectTypesV2.listOutgoingLinkTypes` returns the links from an object type to other types:
+
+```ts title="src/links.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+import { ObjectTypesV2 } from "@osdk/foundry.ontologies";
+
+export async function describeLinks(client: Client) {
+  const { data } = await ObjectTypesV2.listOutgoingLinkTypes(client, $ontologyRid, "Employee");
+  return data.map(
+    (link) => `${link.apiName} → ${link.objectTypeApiName} (${link.cardinality === "ONE" ? "one" : "many"})`,
+  );
+}
+```
+
+For the example `Employee`, this lists `lead`, `reports`, and `office`. Each `LinkTypeSideV2` has `apiName`, `displayName`, `objectTypeApiName` (the target type), `cardinality` (`"ONE"` or `"MANY"`), `foreignKeyPropertyApiName` when the link is backed by a foreign key, `status`, and `linkTypeRid`. `ObjectTypesV2.getOutgoingLinkType` returns one link by API name.
+
+## List action types
+
+`ActionTypesV2.list` returns one page of action types, and `ActionTypesV2.get` returns one by API name:
+
+```ts title="src/actionParameters.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+import { ActionTypesV2 } from "@osdk/foundry.ontologies";
+
+export async function requiredParameters(client: Client, actionApiName: string) {
+  const actionType = await ActionTypesV2.get(client, $ontologyRid, actionApiName);
+  return Object.entries(actionType.parameters)
+    .filter(([, parameter]) => parameter.required)
+    .map(([id, parameter]) => ({ id, displayName: parameter.displayName, type: parameter.dataType.type }));
+}
+```
+
+An `ActionTypeV2` has `apiName`, `displayName`, `description`, `status`, `rid`, `parameters` (a map from parameter ID to `{ displayName, description, dataType, required, typeClasses }`), and `operations`, which describe the objects and links the action creates, modifies, or deletes. `ActionTypesV2.getByRid` looks one up by RID.
+
+## List query types
+
+`QueryTypes.list` and `QueryTypes.get` return functions registered in the Ontology. Each `QueryTypeV2` has `apiName`, `displayName`, `description`, `parameters`, `output`, `rid`, and `version`. `list` returns each query at its latest version; pass `{ version }` to `get` for a specific one:
+
+```ts title="src/queries.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+import { QueryTypes } from "@osdk/foundry.ontologies";
+
+export async function listQueries(client: Client) {
+  const { data } = await QueryTypes.list(client, $ontologyRid, { pageSize: 100 });
+  return data.map((query) => `${query.apiName}@${query.version}`);
+}
+```
+
+## Interfaces and full metadata
+
+Interface types and full-Ontology metadata are preview endpoints, so pass `preview: true`:
+
+```ts title="src/interfaces.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+import { OntologiesV2, OntologyInterfaces } from "@osdk/foundry.ontologies";
+
+export async function describeOntology(client: Client) {
+  const worker = await OntologyInterfaces.get(client, $ontologyRid, "Worker", { preview: true });
+  const full = await OntologiesV2.getFullMetadata(client, $ontologyRid, { preview: true });
+  return {
+    workerImplementedBy: worker.implementedByObjectTypes,
+    objectTypeCount: Object.keys(full.objectTypes).length,
+  };
+}
+```
+
+`OntologiesV2.getFullMetadata` returns objects, links, actions, queries, and interfaces in one response. It may omit entities rather than fail, so do not treat a missing type as proof that it does not exist.
+
+## Reference
+
+| Function | Endpoint | Status |
+| --- | --- | --- |
+| `OntologiesV2.list(client)` | `GET /v2/ontologies` | Stable |
+| `OntologiesV2.get(client, ontology)` | `GET /v2/ontologies/{ontology}` | Stable |
+| `OntologiesV2.getFullMetadata(client, ontology, query?)` | `GET /v2/ontologies/{ontology}/fullMetadata` | Beta |
+| `ObjectTypesV2.list(client, ontology, query?)` | `GET /v2/ontologies/{ontology}/objectTypes` | Stable |
+| `ObjectTypesV2.get(client, ontology, objectType, query?)` | `GET /v2/ontologies/{ontology}/objectTypes/{objectType}` | Stable |
+| `ObjectTypesV2.listOutgoingLinkTypes(client, ontology, objectType, query?)` | `GET .../objectTypes/{objectType}/outgoingLinkTypes` | Stable |
+| `ObjectTypesV2.getOutgoingLinkType(client, ontology, objectType, linkType, query?)` | `GET .../outgoingLinkTypes/{linkType}` | Stable |
+| `ActionTypesV2.list(client, ontology, query?)` | `GET /v2/ontologies/{ontology}/actionTypes` | Stable |
+| `ActionTypesV2.get(client, ontology, actionType, query?)` | `GET /v2/ontologies/{ontology}/actionTypes/{actionType}` | Stable |
+| `ActionTypesV2.getByRid(client, ontology, actionTypeRid, query?)` | `GET .../actionTypes/byRid/{actionTypeRid}` | Stable |
+| `QueryTypes.list(client, ontology, query?)` | `GET /v2/ontologies/{ontology}/queryTypes` | Stable |
+| `QueryTypes.get(client, ontology, queryApiName, query?)` | `GET /v2/ontologies/{ontology}/queryTypes/{queryApiName}` | Stable |
+| `OntologyInterfaces.list(client, ontology, query?)` | `GET /v2/ontologies/{ontology}/interfaceTypes` | Beta |
+| `OntologyInterfaces.get(client, ontology, interfaceType, query?)` | `GET /v2/ontologies/{ontology}/interfaceTypes/{interfaceType}` | Beta |
+
+All of these need `api:ontologies-read`.

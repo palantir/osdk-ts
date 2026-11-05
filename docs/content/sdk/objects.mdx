@@ -1,0 +1,286 @@
+---
+title: Load objects
+description: Load one object by primary key, page through object sets, iterate over every object, select properties, sort, and read the Osdk.Instance shape.
+foundryDocs:
+  - title: Object types
+    path: object-link-types/object-types-overview
+---
+
+An object set from `client(Employee)` loads objects in three ways: one object by primary key, one page at a time, or every object with an async iterator. This page covers each method, its options, and the shape of the objects it returns.
+
+The samples import a client from `./client`. See [Create a client](../(docs)/client.mdx) to set one up.
+
+## Load one object
+
+`fetchOne` takes a primary key and resolves to the object:
+
+```ts title="src/getEmployee.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(12345, {
+  $select: ["fullName", "jobTitle", "department"],
+});
+
+console.log(employee.$primaryKey, employee.fullName, employee.jobTitle);
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `$select` | `PropertyKeys[]` | The API's default property set | Properties to load. The primary key is always returned. |
+| `$includeRid` | `boolean` | `false` | Adds `$rid` to the returned object. |
+
+`fetchOne` rejects when no object has that primary key, or when you cannot see it. The error is a `PalantirApiError` with the message `Expected a single result but got 0 instead` and no `statusCode` or `errorName`.
+
+`fetchOne` exists only on object types. Interface object sets do not have it; see [Interfaces](./interfaces.mdx).
+
+### Without exceptions
+
+`fetchOneWithErrors` takes the same arguments and resolves to a `Result` instead of rejecting. Narrow it with `isOk`:
+
+```ts title="src/getEmployee.ts"
+import { Employee } from "@my-app/sdk";
+import { isOk } from "@osdk/client";
+import { client } from "./client";
+
+const result = await client(Employee).fetchOneWithErrors(12345, {
+  $select: ["fullName"],
+});
+
+if (isOk(result)) {
+  console.log(result.value.fullName);
+} else {
+  console.error("Could not load employee", result.error.message);
+}
+```
+
+A `Result` is either `{ value }` or `{ error }`, where `error` is an `Error`. See [Errors](./errors.mdx) for the error types.
+
+## Load a page
+
+`fetchPage` resolves to one page of objects:
+
+```ts title="src/listEngineers.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .where({ department: "Engineering" })
+  .fetchPage({
+    $select: ["fullName", "jobTitle", "startDate"],
+    $orderBy: { startDate: "desc" },
+    $pageSize: 50,
+  });
+
+for (const employee of page.data) {
+  console.log(employee.fullName, employee.jobTitle);
+}
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `$select` | `PropertyKeys[]` | The API's default property set | Properties to load. See [Select properties](#select-properties). |
+| `$orderBy` | `{ [property]: "asc" \| "desc" } \| "relevance"` | Unordered | Sort order. See [Sort](#sort). |
+| `$pageSize` | `number` | Server default | Objects in this page. It does not limit the total; continue with `nextPageToken`. |
+| `$nextPageToken` | `string` | | The `nextPageToken` from the previous page. |
+| `$snapshot` | `boolean` | `false` | Pages through one consistent view of the data. See [Paging and consistency](#paging-and-consistency). |
+| `$includeRid` | `boolean` | `false` | Adds `$rid` to each object. |
+| `$includeAllBaseObjectProperties` | `boolean` | `false` | Interface object sets only. Loads every property of the underlying object type. See [Interfaces](./interfaces.mdx). |
+
+The page has three fields:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `Osdk.Instance[]` | The objects in this page. |
+| `nextPageToken` | `string \| undefined` | Pass as `$nextPageToken` to load the next page. `undefined` on the last page. |
+| `totalCount` | `string` | The number of objects in the set, as a string. |
+
+`fetchPageWithErrors` takes the same options and resolves to a `Result` of the page instead of rejecting.
+
+### Page through results
+
+Pass each page's `nextPageToken` into the next request until it is `undefined`:
+
+```ts title="src/allEngineers.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const engineers = client(Employee).where({ department: "Engineering" });
+
+let nextPageToken: string | undefined;
+do {
+  const page = await engineers.fetchPage({
+    $select: ["fullName"],
+    $pageSize: 100,
+    $nextPageToken: nextPageToken,
+    $snapshot: true,
+  });
+  for (const employee of page.data) {
+    console.log(employee.fullName);
+  }
+  nextPageToken = page.nextPageToken;
+} while (nextPageToken != null);
+```
+
+Keep the other options the same on every page. Only `$nextPageToken` changes.
+
+## Load every object
+
+`asyncIter` loads page after page until it has every object in the set, and yields them one at a time:
+
+```ts title="src/countSkills.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const skillCounts = new Map<string, number>();
+
+for await (const employee of client(Employee).asyncIter({ $select: ["skills"] })) {
+  for (const skill of employee.skills ?? []) {
+    skillCounts.set(skill, (skillCounts.get(skill) ?? 0) + 1);
+  }
+}
+```
+
+`asyncIter` accepts `$select`, `$orderBy`, `$includeRid`, and `$includeAllBaseObjectProperties`. It requests pages of 10,000 objects and always requests a snapshot.
+
+Before you iterate over a large object type:
+
+- Pass `$select` with only the properties you read. Loading unused properties costs bandwidth and server time, and reading fewer properties afterwards does not undo it.
+- Handle each object as it arrives. Collecting every object into an array makes memory grow with the size of the set.
+- For counts, sums, and group-bys, use [`aggregate`](./aggregations.mdx). It runs on the server and loads no objects.
+- For a sample or the first N objects, use `fetchPage` with `$pageSize`.
+
+## Paging and consistency
+
+| Method | Loads | Snapshot |
+| --- | --- | --- |
+| `fetchPage({ $pageSize })` | One page. Continue with `nextPageToken`. | Only with `$snapshot: true`, passed on every page. |
+| `asyncIter()` | Every matching object, page after page. | Always. |
+| `aggregate({ ... })` | Counts, sums, and groups only. | Not applicable. |
+
+Without a snapshot, later pages can repeat or skip objects if objects are added, removed, or edited between requests. A snapshot configured for a function run still applies, whatever you pass.
+
+With a snapshot, every page of a non-stream-backed object type reflects the same point in time, so a completed traversal returns each object exactly once. Paging fails if the snapshot expires or the server detects a paging inconsistency (`PagingInconsistencyDetected`). Stream-backed object types do not keep a snapshot across pages: changes during a traversal can make it fail, and exactly-once traversal is not guaranteed.
+
+If an `asyncIter` traversal of a frequently updated object type fails:
+
+1. Aggregate instead, if you only need a summary.
+2. Select fewer properties and filter the set so the traversal finishes sooner.
+3. Loop over `fetchPage` without a snapshot and de-duplicate by `$primaryKey`. De-duplication removes repeated objects but cannot recover skipped ones.
+
+## Select properties
+
+Without `$select`, the server returns its default property set for the object type. Vector properties, for example, are not in it. With `$select`, the result type narrows to the properties you asked for, so reading anything else is a type error:
+
+```ts title="src/names.ts"
+import { Employee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+import { client } from "./client";
+
+const page = await client(Employee).fetchPage({ $select: ["fullName", "department"] });
+
+const first: Osdk.Instance<Employee, never, "fullName" | "department"> = page.data[0];
+console.log(first.fullName, first.department);
+```
+
+Rules for `$select`:
+
+- The primary key is always returned, as a property and as `$primaryKey`.
+- Ontology-defined derived properties are not returned by default. Name them in `$select`.
+- Derived properties you add with [`withProperties`](./derived-properties.mdx) are returned when `$select` is omitted. If you pass `$select`, name them in it too.
+
+## Sort
+
+`$orderBy` maps property names to `"asc"` or `"desc"`. With several keys, the first key sorts first and later keys break ties:
+
+```ts title="src/directory.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee).fetchPage({
+  $select: ["department", "fullName"],
+  $orderBy: { department: "asc", fullName: "asc" },
+  $pageSize: 100,
+});
+```
+
+When you pass `$select`, every `$orderBy` key must also be in `$select`. Otherwise the call does not typecheck.
+
+`$orderBy: "relevance"` sorts by how well each object matches the text filters in your `where` clause, and adds a numeric `$score` to each object:
+
+```ts title="src/search.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .where({ jobTitle: { $containsAnyTerm: "staff engineer" } })
+  .fetchPage({ $orderBy: "relevance", $pageSize: 10 });
+
+for (const employee of page.data) {
+  console.log(employee.$score, employee.jobTitle);
+}
+```
+
+## The object shape
+
+Each object is an `Osdk.Instance`: its properties plus a few `$` fields. Objects are frozen, so assigning to a property throws in strict mode.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `$primaryKey` | The primary key type | The object's primary key, such as `12345`. |
+| `$apiName` | `string` | The API name of the type you queried: the object type, or the interface for interface queries. |
+| `$objectType` | `string` | The API name of the object's concrete object type. Differs from `$apiName` on interface objects. |
+| `$title` | `string \| undefined` | The value of the object type's title property. |
+| `$rid` | `string` | The object's RID. Present only when you pass `$includeRid: true`. |
+| `$objectSpecifier` | `string` | A string that identifies the object across types. |
+| `$link` | `object` | Accessors for linked objects. See [Links](./links.mdx). |
+| `$as` | `(type) => Osdk.Instance` | Views the object as an interface it implements, or an interface object as its object type. See [Interfaces](./interfaces.mdx). |
+| `$clone` | `(changes?) => Osdk.Instance` | Returns a copy, optionally with some property values replaced. |
+
+Nullable properties are typed `T | undefined`. Property values use these TypeScript types:
+
+| Property type | TypeScript type |
+| --- | --- |
+| `string` | `string` |
+| `integer`, `short`, `byte`, `float`, `double` | `number` |
+| `long`, `decimal` | `string` |
+| `boolean` | `boolean` |
+| `date`, `timestamp` | `string`, in ISO 8601 format |
+| Array properties | `T[]` |
+| `geopoint` | GeoJSON `Point` |
+| `geoshape` | GeoJSON geometry |
+| `attachment` | `Attachment`. See [Attachments and media](./media.mdx). |
+| `mediaReference` | `Media`. See [Attachments and media](./media.mdx). |
+
+### Copy with changes
+
+`$clone` builds a new local object. It does not write to Foundry; use an [action](./actions.mdx) for that. It throws if the changes include a different primary key:
+
+```ts title="src/preview.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(12345);
+const preview = employee.$clone({ jobTitle: "Senior Engineer" });
+
+console.log(employee.jobTitle, "->", preview.jobTitle);
+```
+
+### Type objects in your code
+
+Use `Osdk.Instance<Employee>` from `@osdk/client`, or the generated alias `Employee.OsdkInstance`. Narrow the properties with the third type argument, and add `"$rid"` as the second to include the RID:
+
+```ts title="src/types.ts"
+import type { Employee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+
+type FullEmployee = Osdk.Instance<Employee>;
+type EmployeeName = Osdk.Instance<Employee, never, "fullName">;
+type EmployeeWithRid = Osdk.Instance<Employee, "$rid", "fullName" | "jobTitle">;
+
+function label(employee: EmployeeName): string {
+  return employee.fullName ?? String(employee.$primaryKey);
+}
+```
+
+A function that takes `Osdk.Instance<Employee, never, "fullName">` accepts any `Employee` loaded with at least `fullName`.

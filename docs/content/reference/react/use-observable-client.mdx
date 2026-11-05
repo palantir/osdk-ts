@@ -1,0 +1,44 @@
+---
+title: useObservableClient
+description: Return the ObservableClient that backs the shared cache of the nearest OsdkProvider.
+---
+
+```ts
+import { useObservableClient } from "@osdk/react";
+
+function useObservableClient(): ObservableClient;
+```
+
+Returns the `ObservableClient` that `OsdkProvider` builds from its `client`. Use it to invalidate cached data after changes that do not go through an action, such as an update from an external system or a background job.
+
+## Returns
+
+`ObservableClient` from `@osdk/client/observable`. The methods you are most likely to need:
+
+| Method | Description |
+| --- | --- |
+| `invalidateObjects(objects)` | Reloads one object instance or an array of them. Interface instances refetch their backing object. |
+| `invalidateObjectType(type)` | Reloads every cached query for an object type, by definition or API name. |
+| `invalidateFunction(queryDef, params?)` | Reloads a function's cached result for `params`, or every cached call when `params` is omitted. |
+| `invalidateAll()` | Reloads everything in the cache. |
+
+## Example
+
+```tsx title="src/RefreshButton.tsx"
+import { Employee } from "@my-app/sdk";
+import { useObservableClient } from "@osdk/react";
+
+export function RefreshButton({ employee }: { employee: Employee.OsdkInstance }) {
+  const observableClient = useObservableClient();
+
+  return (
+    <button onClick={() => void observableClient.invalidateObjects(employee)}>
+      Refresh
+    </button>
+  );
+}
+```
+
+## See also
+
+- [Cache invalidation](/react/cache-invalidation)

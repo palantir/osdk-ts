@@ -1,0 +1,254 @@
+---
+title: Filter objects
+description: Reference for where clauses in @osdk/client, covering comparison, set, null, text, array, date, geospatial, and logical operators, with examples.
+---
+
+{/* cspell:ignore geospatial enginer */}
+
+`where` narrows an object set on the server. It takes a clause object and returns a new object set, so you can chain it with other `where` calls, [links](./links.mdx), [aggregations](./aggregations.mdx), and any load method.
+
+```ts title="src/seniorEngineers.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .where({
+    department: "Engineering",
+    salary: { $gte: 150_000 },
+    jobTitle: { $containsAnyTerm: "senior staff" },
+  })
+  .fetchPage({ $select: ["fullName", "jobTitle", "salary"] });
+```
+
+`where` sends no request by itself. The filter runs when you call `fetchPage`, `asyncIter`, `aggregate`, or another method that loads data.
+
+## How a clause combines
+
+- Each key of the clause is a property name, `$title`, `$primaryKey`, or one of `$and`, `$or`, `$not`.
+- Several keys in one clause must all match. `{ department: "Engineering", salary: { $gte: 150_000 } }` is an AND.
+- A bare value means equality. `{ department: "Engineering" }` is the same as `{ department: { $eq: "Engineering" } }`.
+- Each property takes one operator. `{ salary: { $gte: 100_000, $lt: 200_000 } }` does not typecheck, and throws at runtime. Use `$and` for a range.
+- Chained `where` calls also combine with AND.
+- The value must not be `null` or `undefined`. The client throws `Cannot filter on property "<name>" with an undefined or null value`. To match missing values, use `$isNull: true`.
+
+## Operator reference
+
+| Operator | Property types | Value | Matches |
+| --- | --- | --- | --- |
+| `$eq` | Non-array, non-geo | A value of the property's type | Equal values. Also written as the bare value. |
+| `$ne` | Non-array, non-geo | A value of the property's type | Values that are not equal. |
+| `$in` | Non-array, non-geo | An array of values | Any value in the array. An empty array matches every object. |
+| `$isNull` | All | `boolean` | `true`: the property has no value. `false`: it has one. |
+| `$gt`, `$gte`, `$lt`, `$lte` | Numbers, strings, dates, timestamps | A value of the property's type | Greater than, greater or equal, less than, less or equal. Strings compare lexicographically. |
+| `$startsWith` | `string` | `string` | Values that contain the terms adjacent and in order, with the last term matched as a prefix. The match can start anywhere in the value. |
+| `$containsAnyTerm` | `string` | `string`, or `{ term, fuzzySearch? }` | Values that contain any of the whitespace-separated terms. |
+| `$containsAllTerms` | `string` | `string`, or `{ term, fuzzySearch? }` | Values that contain all the terms, in any order. |
+| `$containsAllTermsInOrder` | `string` | `string` | Values that contain all the terms, adjacent and in order. |
+| `$interval` | `string` | An interval rule | Term proximity, ordering, prefix, and fuzzy matches. See [Interval rules](#interval-rules). |
+| `$matchesRegex` | `string` | `string` | Beta. Values that match the regular expression, in the Foundry search syntax. |
+| `$contains` | Array properties | An element value, or a filter on elements | Arrays with at least one element that matches. |
+| `$within` | `geopoint`, `geoshape` | Distance, bounding box, or polygon | Shapes inside the area. See [Geospatial filters](#geospatial-filters). |
+| `$intersects` | `geopoint`, `geoshape` | Bounding box or polygon | Shapes that overlap the area. |
+| `$and` | Clause | An array of clauses | Objects that match every clause. |
+| `$or` | Clause | An array of clauses | Objects that match at least one clause. |
+| `$not` | Clause | One clause | Objects that do not match the clause. |
+
+Boolean properties accept `$eq`, `$ne`, `$in`, and `$isNull`. Array properties accept only `$contains` and `$isNull`.
+
+<Callout type="warn">
+`$in: []` matches every object, not none. When the array comes from user input, check for an empty array before you add the filter.
+</Callout>
+
+## Comparison and sets
+
+```ts title="src/comparisons.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const notSales = client(Employee).where({ department: { $ne: "Sales" } });
+
+const team = client(Employee).where({ employeeId: { $in: [101, 102, 103] } });
+
+const noTitle = client(Employee).where({ jobTitle: { $isNull: true } });
+
+const midBand = client(Employee).where({
+  $and: [{ salary: { $gte: 100_000 } }, { salary: { $lt: 200_000 } }],
+});
+```
+
+## Text
+
+The text operators match whole terms, the whitespace-separated words of the value, rather than raw substrings. `$startsWith` is a term match too: `{ fullName: { $startsWith: "ada lov" } }` matches `Ada Lovelace`, and also `Countess Ada Lovelace`.
+
+```ts title="src/text.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const typeahead = client(Employee).where({ fullName: { $startsWith: "ada lov" } });
+
+const anyTerm = client(Employee).where({ jobTitle: { $containsAnyTerm: "designer researcher" } });
+
+const allTerms = client(Employee).where({ jobTitle: { $containsAllTerms: "senior engineer" } });
+
+const phrase = client(Employee).where({ jobTitle: { $containsAllTermsInOrder: "staff engineer" } });
+```
+
+### Fuzzy matching
+
+`$containsAnyTerm` and `$containsAllTerms` also take `{ term, fuzzySearch: true }`, which matches terms within a small edit distance, such as a typo:
+
+```ts title="src/fuzzy.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const engineers = client(Employee).where({
+  jobTitle: { $containsAnyTerm: { term: "enginer", fuzzySearch: true } },
+});
+```
+
+### Interval rules
+
+`$interval` takes one rule. Rules nest through `$and` and `$or`:
+
+| Rule | Fields | Matches |
+| --- | --- | --- |
+| Match | `$match: string`, `$ordered: boolean`, `$maxGaps?: number` | The terms of `$match`. `$ordered: true` requires them in order. `$maxGaps` limits the number of words between them. |
+| Prefix | `$match: string`, `$prefixOnLastTerm: true` | The terms in order, with the last term matched as a prefix. |
+| Fuzzy | `$fuzzy: string`, `$fuzziness?: number` | A term within `$fuzziness` edits (0, 1, or 2; default 2). |
+| All | `$and: IntervalRule[]`, `$ordered: boolean`, `$maxGaps?: number` | Every sub-rule. |
+| Any | `$or: IntervalRule[]` | At least one sub-rule. |
+
+```ts title="src/interval.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const typeahead = client(Employee).where({
+  jobTitle: { $interval: { $match: "staff eng", $prefixOnLastTerm: true } },
+});
+
+const nearby = client(Employee).where({
+  jobTitle: { $interval: { $match: "principal engineer", $ordered: true, $maxGaps: 1 } },
+});
+```
+
+## Arrays
+
+On an array property, `$contains` matches objects where at least one element matches. Pass an element value, or a filter that each element is tested against. `$isNull` is the only other operator:
+
+```ts title="src/skills.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const typescript = client(Employee).where({ skills: { $contains: "TypeScript" } });
+
+const anyType = client(Employee).where({ skills: { $contains: { $startsWith: "Type" } } });
+
+const noSkills = client(Employee).where({ skills: { $isNull: true } });
+```
+
+To require several elements, combine `$contains` filters with `$and`.
+
+## Dates and timestamps
+
+Date and timestamp properties take ISO 8601 strings: `"2024-01-31"` for dates and `"2024-01-31T09:00:00Z"` for timestamps. They accept `$eq`, `$ne`, `$in`, `$isNull`, and the range operators:
+
+```ts title="src/recentHires.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const hired2024 = client(Employee).where({
+  $and: [{ startDate: { $gte: "2024-01-01" } }, { startDate: { $lt: "2025-01-01" } }],
+});
+```
+
+## Geospatial filters
+
+Coordinates are `[longitude, latitude]`, as in GeoJSON. The samples assume `Office` has a `geopoint` property named `location`.
+
+| Filter | Value | Matches |
+| --- | --- | --- |
+| `$within: { $distance, $of }` | `$distance: [number, unit]`, `$of: [lon, lat]` or a GeoJSON `Point` | Points within the distance of the center. |
+| `$within: { $bbox }` or `$within: bbox` | `[west, south, east, north]` | Shapes inside the bounding box. |
+| `$within: { $polygon }` | Polygon coordinates: an array of rings, each closed | Shapes inside the polygon. |
+| `$within: polygon` | A GeoJSON `Polygon` | Shapes inside the polygon. |
+| `$intersects: { $bbox }` or `$intersects: bbox` | `[west, south, east, north]` | Shapes that overlap the bounding box. |
+| `$intersects: { $polygon }` or `$intersects: polygon` | Polygon coordinates, or a GeoJSON `Polygon` | Shapes that overlap the polygon. |
+
+Distance units are `"m"`, `"meter"`, `"meters"`, `"km"`, `"kilometer"`, `"kilometers"`, `"cm"`, `"centimeter"`, `"centimeters"`, `"mile"`, `"miles"`, `"foot"`, `"feet"`, `"inch"`, `"inches"`, `"yard"`, `"yards"`, `"nautical_mile"`, `"nauticalMile"`, and `"nautical miles"`.
+
+```ts title="src/nearbyOffices.ts"
+import { Office } from "@my-app/sdk";
+import { client } from "./client";
+
+const nearNewYork = client(Office).where({
+  location: { $within: { $distance: [25, "km"], $of: [-74.006, 40.7128] } },
+});
+
+const inManhattan = client(Office).where({
+  location: { $within: { $bbox: [-74.02, 40.7, -73.93, 40.88] } },
+});
+
+const inArea = client(Office).where({
+  location: {
+    $intersects: {
+      type: "Polygon",
+      coordinates: [[[-74.02, 40.7], [-73.93, 40.7], [-73.93, 40.88], [-74.02, 40.7]]],
+    },
+  },
+});
+```
+
+## Combine clauses
+
+`$and`, `$or`, and `$not` take clauses and nest to any depth:
+
+```ts title="src/combined.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const result = client(Employee).where({
+  $or: [
+    { department: "Engineering", salary: { $gte: 200_000 } },
+    { $not: { jobTitle: { $isNull: true } }, startDate: { $gte: "2025-01-01" } },
+  ],
+});
+```
+
+## Title and primary key
+
+`$title` filters on the object type's title property and `$primaryKey` on its primary key, without naming them. Both are useful in code that works across object types:
+
+```ts title="src/special.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const byTitle = client(Employee).where({ $title: { $startsWith: "Ada" } });
+
+const byKey = client(Employee).where({ $primaryKey: { $in: [101, 102] } });
+```
+
+## Struct properties
+
+A struct property filters on one field at a time: `{ address: { city: "Denver" } }` applies the field's own operators to `address.city`. To filter on two fields, combine two clauses with `$and`. On an array of structs, wrap the field filter in `$contains`: `{ addresses: { $contains: { city: "Denver" } } }`.
+
+## Vector search
+
+`nearestNeighbors(query, numNeighbors, property)` returns an object set of the objects whose vector property is closest to the query. `query` is text, which the server embeds with the property's model, or a vector with the property's dimension. `numNeighbors` is between 1 and 500. To get the closest first, and a `$score` on each object, load the result with `$orderBy: "relevance"`.
+
+## Type a clause
+
+Build a clause outside the call with the `WhereClause` type from `@osdk/client`:
+
+```ts title="src/highEarners.ts"
+import { Employee } from "@my-app/sdk";
+import type { WhereClause } from "@osdk/client";
+import { client } from "./client";
+
+function highEarnersIn(department: string, minSalary: number): WhereClause<Employee> {
+  return { department, salary: { $gte: minSalary } };
+}
+
+const page = await client(Employee)
+  .where(highEarnersIn("Engineering", 150_000))
+  .fetchPage({ $select: ["fullName", "department"] });
+```

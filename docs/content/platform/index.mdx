@@ -1,0 +1,125 @@
+---
+title: Platform SDK overview
+description: The @osdk/foundry packages wrap Foundry platform REST APIs for users, datasets, media sets, builds, and more, alongside the Ontology SDK.
+foundryDocs:
+  - title: Foundry REST APIs
+    path: api/v2/general/overview/introduction
+---
+
+{/* cspell:ignore aipagents datahealth geojson languagemodels mediasets publicapis sqlqueries thirdpartyapplications CBAC */}
+
+The Platform SDK is a set of `@osdk/foundry.*` packages, one per area of the Foundry API. Use it to call the parts of Foundry that are not Ontology data: users and groups, datasets, media sets, builds, folders, and Ontology metadata.
+
+## OSDK and Platform SDK
+
+The Ontology SDK (OSDK) and the Platform SDK can share one client and one token provider. They cover different parts of Foundry.
+
+| | Ontology SDK | Platform SDK |
+| --- | --- | --- |
+| Use it for | Reading and editing your Ontology: objects, links, actions, functions. | Foundry platform resources: users, groups, markings, datasets, media sets, builds, files, Ontology metadata. |
+| Packages | `@osdk/client` plus an SDK generated for your Ontology, such as `@my-app/sdk`. | Fixed packages published by Palantir, such as `@osdk/foundry.admin`. The same package works on every Foundry stack. |
+| Types | Generated from your object types, so `Employee` has `fullName` and `startDate`. | Generic request and response types from the public API, such as `User` and `Dataset`. |
+| Call style | `client(Employee).fetchPage()` | `Users.getCurrent(client)` |
+| Client | `createClient(baseUrl, ontologyRid, auth)` | The same client, or `createPlatformClient(baseUrl, auth)` when there is no Ontology. |
+
+```ts title="src/whoami.ts"
+import { Employee } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+
+export async function loadDashboard(client: Client) {
+  const [me, employees] = await Promise.all([
+    Users.getCurrent(client),
+    client(Employee).fetchPage({ $pageSize: 10 }),
+  ]);
+  return { username: me.username, employees: employees.data };
+}
+```
+
+Use the Platform SDK when the OSDK has no equivalent. To read objects, apply actions, or upload media to an object property, use the OSDK.
+
+## Packages
+
+Each package exports one namespace per resource. Install only the packages you call.
+
+| Package | Namespaces | Purpose |
+| --- | --- | --- |
+| `@osdk/foundry.admin` | `Users`, `Groups`, `GroupMembers`, `GroupMemberships`, `Markings`, `MarkingCategories`, `MarkingMembers`, `Organizations`, `Roles`, `CbacBanners`, and more | Users, groups, memberships, markings, organizations, and classification banners. |
+| `@osdk/foundry.aipagents` | `Agents`, `AgentVersions`, `Sessions`, `Contents`, `SessionTraces` | Start and read conversations with AIP Agents. |
+| `@osdk/foundry.agents` | `AgentDefinitionVersions`, `AgentSessions` | Agent definitions and sessions. Published from version 2.83.0. |
+| `@osdk/foundry.audit` | `LogFiles` | List and download audit log files. |
+| `@osdk/foundry.checkpoints` | `Records` | Read checkpoint records. |
+| `@osdk/foundry.connectivity` | `Connections`, `FileImports`, `TableImports`, `VirtualTables` | Data Connection sources, imports, and virtual tables. |
+| `@osdk/foundry.core` | Types only | Shared types, such as `PageSize`, `PageToken`, `UserId`, and `PreviewMode`, used by every other package. |
+| `@osdk/foundry.datahealth` | `Checks`, `CheckReports` | Data health checks and their reports. |
+| `@osdk/foundry.datasets` | `Datasets`, `Branches`, `Files`, `Transactions`, `Views` | Create datasets, read and upload files, read tables, and manage branches and transactions. |
+| `@osdk/foundry.filesystem` | `Folders`, `Projects`, `Resources`, `ResourceRoles`, `Spaces`, and more | Folders, projects, and resource permissions in the Foundry filesystem. |
+| `@osdk/foundry.functions` | `Queries`, `Executions`, `ValueTypes`, `VersionIds` | Function metadata, execution, and value types. |
+| `@osdk/foundry.geo` | Types only | Types for geographic data. |
+| `@osdk/foundry.geojson` | Types only | GeoJSON types. |
+| `@osdk/foundry.languagemodels` | `Anthropic`, `OpenAi` | Call language models hosted in Foundry. |
+| `@osdk/foundry.mediasets` | `MediaSets` | Upload media items, read their content and metadata, and run transformations. |
+| `@osdk/foundry.models` | `Models`, `ModelVersions`, `LiveDeployments`, `Experiments`, and more | Models, versions, deployments, and experiments. |
+| `@osdk/foundry.notepad` | `Templates`, `GenerationJobs`, `ExportJobs`, `Files` | Generate and export Notepad documents. |
+| `@osdk/foundry.ontologies` | `OntologiesV2`, `ObjectTypesV2`, `ActionTypesV2`, `QueryTypes`, `OntologyInterfaces`, and more | Ontology metadata and the raw object, action, and query endpoints that the OSDK is built on. |
+| `@osdk/foundry.operations` | `AsyncOperations` | Poll long-running operations. |
+| `@osdk/foundry.orchestration` | `Builds`, `Jobs`, `Schedules`, `ScheduleVersions` | Start and monitor builds, and manage schedules. |
+| `@osdk/foundry.pack` | `Documents`, `DocumentTypes` | PACK documents and document types. |
+| `@osdk/foundry.publicapis` | `ApiDefinitions`, `OpenApiDefinitions` | Fetch API specifications. |
+| `@osdk/foundry.sqlqueries` | `SqlQueries` | Run SQL queries and read their results. |
+| `@osdk/foundry.streams` | `Datasets`, `Streams`, `Subscribers` | Streaming datasets, streams, and subscribers. |
+| `@osdk/foundry.thirdpartyapplications` | `ThirdPartyApplications`, `Versions`, `Websites` | Developer Console applications and hosted website versions. |
+| `@osdk/foundry.widgets` | `WidgetSets`, `Releases`, `Repositories`, `WidgetsDevModeSettings`, `WidgetsDevModeSettingsV2` | Custom widget sets, releases, and dev mode. |
+
+`@osdk/foundry` re-exports every package as a namespace, such as `Admin` and `Datasets`. Prefer the individual packages: they version independently and keep your bundle small.
+
+```ts
+import { Admin } from "@osdk/foundry";
+
+const me = await Admin.Users.getCurrent(client);
+```
+
+## Stable and preview endpoints
+
+Every function's JSDoc carries a release tag:
+
+| Tag | Meaning | How to call it |
+| --- | --- | --- |
+| `@public` | Stable. | Call it normally. |
+| `@beta` | Preview. The shape can change between versions. | Pass `preview: true` in the query parameters. |
+| `@alpha` | Early preview. Expect changes, and the endpoint may not be enabled on every stack. | Pass `preview: true` in the query parameters. |
+
+Preview endpoints take an optional `preview` query parameter of type `PreviewMode` (a `boolean`). Without it, the server rejects the request with an `ApiFeaturePreviewUsageOnly` error:
+
+```ts
+import { Groups } from "@osdk/foundry.admin";
+
+const { data: myGroups } = await Groups.listCurrent(client, { preview: true });
+```
+
+The [calling convention](./calling-apis.mdx#preview-endpoints) page covers where `preview` goes when an endpoint has a body.
+
+## Next steps
+
+<Cards>
+  <Card href="/platform/setup" title="Set up">
+    Install packages, create a client, and request the scopes each API needs.
+  </Card>
+  <Card href="/platform/calling-apis" title="Call platform APIs">
+    Argument order, pagination, errors, and binary responses.
+  </Card>
+  <Card href="/platform/users-and-groups" title="Users and groups">
+    Look up users, list groups and members, and read markings.
+  </Card>
+  <Card href="/platform/datasets" title="Datasets">
+    Read files and tables, and upload in transactions.
+  </Card>
+  <Card href="/platform/media-sets" title="Media sets">
+    Upload media items and read their content and metadata.
+  </Card>
+  <Card href="/platform/ontology-metadata" title="Ontology metadata">
+    List object types and action types at runtime.
+  </Card>
+</Cards>
+
+For React hooks that call the admin APIs, see [Users and markings in React](/react/platform-apis).

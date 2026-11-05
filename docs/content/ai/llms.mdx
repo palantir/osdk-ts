@@ -1,0 +1,70 @@
+---
+title: Use these docs with AI
+description: Give coding assistants accurate OSDK context with llms.txt, per-page Markdown, and the package AGENTS.md files.
+---
+
+Every page on this site is also published as plain Markdown, so you can hand OSDK documentation to ChatGPT, Claude, Cursor, or your own agent without scraping HTML.
+
+## From any page
+
+Each page header has two controls:
+
+| Control | What it does |
+| --- | --- |
+| **Copy Markdown** | Copies the page as Markdown, ready to paste into a chat or prompt. |
+| **Open** menu | Opens the page in ChatGPT, Claude, or Cursor with a prompt that points at the Markdown version, or opens the source on GitHub. |
+
+## Markdown for every URL
+
+Append `.md` to any docs URL to get the Markdown version:
+
+```txt
+https://palantir.github.io/osdk-ts/react/actions
+https://palantir.github.io/osdk-ts/react/actions.md
+```
+
+## llms.txt
+
+The site follows the [llms.txt](https://llmstxt.org) convention:
+
+| File | Contents | Use it when |
+| --- | --- | --- |
+| [`/llms.txt`](https://palantir.github.io/osdk-ts/llms.txt) | An index of every page, grouped by section, with a one-line summary and a link to its Markdown. | Your tool fetches pages on demand. |
+| [`/llms-full.txt`](https://palantir.github.io/osdk-ts/llms-full.txt) | Every page, concatenated. | You want the whole SDK in a single context window. |
+
+<Tabs items={["Cursor", "Claude Code", "Any agent"]}>
+  <Tab value="Cursor">
+    In chat, type `@Docs`, choose **Add new doc**, and enter `https://palantir.github.io/osdk-ts/llms-full.txt`. Mention it with `@Docs` in later prompts.
+  </Tab>
+  <Tab value="Claude Code">
+    Add the index to your project's `CLAUDE.md` so Claude fetches the pages it needs:
+
+    ```md title="CLAUDE.md"
+    OSDK documentation: https://palantir.github.io/osdk-ts/llms.txt
+    Fetch the linked .md pages before writing OSDK code.
+    ```
+  </Tab>
+  <Tab value="Any agent">
+    Fetch `https://palantir.github.io/osdk-ts/llms.txt`, pick the relevant pages, then fetch their `.md` links. Use `llms-full.txt` when the agent can't make follow-up requests.
+  </Tab>
+</Tabs>
+
+## Docs inside your node_modules
+
+The React packages ship agent instructions and documentation in their npm tarballs, so assistants working in your repository can read docs that match your installed version:
+
+| Package | Files |
+| --- | --- |
+| `@osdk/react` | `AGENTS.md` (install rules, version matching, correct and incorrect patterns) and `docs/` (the React guides on this site) |
+| `@osdk/react-components` | `AGENTS.md` and `docs/` (one page per component, including generated prop tables) |
+
+Point your assistant at them directly:
+
+```md title="AGENTS.md"
+Before using @osdk/react, read node_modules/@osdk/react/AGENTS.md.
+Before using @osdk/react-components, read node_modules/@osdk/react-components/AGENTS.md.
+```
+
+<Callout type="info">
+  The files in `node_modules` match the version you have installed. This site always documents the latest release.
+</Callout>

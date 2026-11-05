@@ -1,0 +1,40 @@
+---
+title: Components
+description: Use the Components tab in OSDK Devtools to find which React components call OSDK hooks and what objects, actions, and properties they use.
+---
+
+The Components tab maps `@osdk/react` hooks to the React components that mounted them. Use it to find the component that owns a query, compare components that read the same object type, or trace an overfetching recommendation back to its source.
+
+![Components tab](/img/react-devtools/components.png)
+
+## What appears
+
+Only components that call an `@osdk/react` hook, such as `useOsdkObject` or `useOsdkObjects`, appear. A component that only renders an OSDK-aware child like `ObjectTable`, or receives objects through props, does not appear; look for the child that owns the hook instead. Data loaded with raw network calls or another state library is not tracked.
+
+Component attribution relies on the Fiber hook that the Vite plugin installs before React loads. If the panel shows a notice that component inspection is unavailable, see [Troubleshooting](./index.mdx#troubleshooting).
+
+## Find a component
+
+- **Search ontology** matches component names and the object types and actions they use.
+- The summary line counts mounted components, object types, and action types.
+- The filter chips narrow the list to one object type or action. Select **All** to clear the filter.
+
+## Component cards
+
+Each card groups what the monitor observed for one component:
+
+| Section | Contents |
+| --- | --- |
+| Related objects | Object types the component loads, with primary keys. |
+| Related actions | Actions the component applies through `@osdk/react`. |
+| Related properties | Fields that the component's descendants read. |
+| React props | Props captured from the mounted component. |
+
+## Health badge
+
+A card shows **Healthy** unless the monitor detects a problem. After a component has rendered more than five times, the monitor flags:
+
+- Wasted renders: renders in which the component read no tracked property.
+- Properties the component accessed in fewer than 10% of its renders.
+
+An unhealthy card replaces the badge with a summary of what it found.

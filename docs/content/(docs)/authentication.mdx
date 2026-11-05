@@ -1,0 +1,320 @@
+---
+title: Authentication
+description: Sign users in with @osdk/oauth, handle the OAuth redirect, authenticate servers with client credentials, and pass the token provider to createClient.
+foundryDocs:
+  - title: Developer Console permissions
+    path: developer-console/permissions
+  - title: API authentication
+    path: api/v2/general/overview/authentication
+---
+
+Every OSDK request needs a Foundry bearer token. `@osdk/oauth` creates token providers that sign users in, store and refresh tokens, and plug straight into `createClient`.
+
+## Choose a token provider
+
+| Provider | Use it for | Grant |
+| --- | --- | --- |
+| `createPublicOauthClient` | Browser apps where each user signs in with their own Foundry account. | Authorization code with PKCE |
+| `createConfidentialOauthClient` | Servers, scheduled jobs, and backends that act as a service user. | Client credentials |
+| `createAuthlessClient` | Public apps that read Foundry data without a signed-in user, such as those from the **React (Public)** template of `@osdk/create-app`. | None |
+| Your own function | Scripts and tests that already have a token. | None |
+
+A token provider is any function that returns `Promise<string>`. The OAuth clients are callable, so you pass them to `createClient` directly:
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+export const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth);
+```
+
+The client calls `auth()` before each request. You can call it yourself: `await auth()` resolves to the current access token and starts sign-in when there is none.
+
+## Sign users in from a browser
+
+`createPublicOauthClient` runs the OAuth authorization code flow with PKCE against Foundry. Create it once, at module scope, next to your client.
+
+```ts
+createPublicOauthClient(clientId, url, redirectUrl, options?)
+```
+
+| Argument | Type | Description |
+| --- | --- | --- |
+| `clientId` | `string` | The client ID from **OAuth & scopes** in Developer Console. |
+| `url` | `string` | The base URL of your Foundry stack, such as `https://example.palantirfoundry.com`. |
+| `redirectUrl` | `string` | The URL Foundry sends the user back to after sign-in. It must exactly match a redirect URL on **OAuth & scopes**. |
+| `options` | `PublicOauthClientOptions` | Optional settings, listed below. |
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `scopes` | `string[]` | `["api:read-data", "api:write-data", "api:use-ontologies-read", "api:use-ontologies-write"]` | OAuth scopes to request. See [Scopes](#scopes). |
+| `tokenStorage` | `"localStorage" \| "sessionStorage" \| "none"` | `"localStorage"` | Where to keep the refresh token. See [Token storage](#token-storage). |
+| `postLoginPage` | `string` | The page URL when the client is created | Used with `loginPage`: the page to return to after sign-in. Without `loginPage`, the client returns to the page the user was on. |
+| `loginPage` | `string` | | A page in your app to show before redirecting to Foundry, such as `/login`. When set, the client navigates there instead of redirecting straight to Foundry. |
+| `useHistory` | `boolean` | `true` | Navigate within your app, to `loginPage` or back to the original page after sign-in, with `history.replaceState()` instead of `window.location.assign()`, so the page does not reload. |
+| `refreshTokenMarker` | `string` | | An extra value stored with the refresh token. Change it to invalidate stored refresh tokens and make every user sign in again. |
+| `fetchFn` | `typeof fetch` | `globalThis.fetch` | The `fetch` used for token requests. |
+| `ctxPath` | `string` | `"multipass"` | The path of Foundry's authorization server under `url`. |
+| `logger` | `OauthLogger` | | Receives warnings, such as a failed refresh. Without it, warnings are dropped. Compatible with the `Logger` from `@osdk/api`. |
+
+```ts title="src/client.ts"
+export const auth = createPublicOauthClient(clientId, foundryUrl, redirectUrl, {
+  scopes: ["api:read-data", "api:use-ontologies-read"],
+  tokenStorage: "sessionStorage",
+});
+```
+
+<Callout type="info">
+  The fourth argument can also be the older positional form, `useHistory, loginPage, postLoginPage, scopes, fetchFn, ctxPath`. Pass either an options object or positional arguments, not both. `tokenStorage`, `refreshTokenMarker`, and `logger` are only available in the options object.
+</Callout>
+
+### How the flow works
+
+1. The first time your app needs a token, the client looks for a stored refresh token and uses it if it is valid.
+2. Without one, it saves a PKCE verifier and the current URL in `sessionStorage`, then redirects to Foundry's sign-in page.
+3. Foundry redirects to `redirectUrl` with an authorization code.
+4. On that page, your app asks for a token again. The client exchanges the code, stores the refresh token, and navigates back to the page the user started on.
+5. The client refreshes the access token one minute before it expires. You do not schedule refreshes yourself.
+
+Concurrent token requests share one sign-in, so several components asking for data at once trigger a single redirect.
+
+### Handle the redirect callback
+
+Render a route at your redirect URL's path that calls `auth.signIn()`. This completes step 4. The React template from `@osdk/create-app` uses this component, which then navigates to `/`; navigate elsewhere if your app needs to:
+
+```tsx title="src/AuthCallback.tsx"
+import { auth } from "@/client";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+function AuthCallback(): React.ReactElement {
+  const [error, setError] = useState<string | undefined>(undefined);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    auth
+      .signIn()
+      .then(() => navigate("/", { replace: true }))
+      .catch((e: unknown) => {
+        setError(e instanceof Error ? e.message : String(e));
+      });
+  }, [navigate]);
+
+  return <div>{error != null ? error : "Authenticating…"}</div>;
+}
+
+export default AuthCallback;
+```
+
+Register it at the same path as `redirectUrl`:
+
+```tsx title="src/router.tsx"
+import AuthCallback from "@/AuthCallback";
+import Home from "@/Home";
+import { createBrowserRouter } from "react-router-dom";
+
+export const router = createBrowserRouter(
+  [
+    { path: "/", element: <Home /> },
+    { path: "/auth/callback", element: <AuthCallback /> },
+  ],
+  { basename: import.meta.env.BASE_URL },
+);
+```
+
+If the redirect URL in your code, in `.env` files, and on **OAuth & scopes** differ in any character, including the port and a trailing slash, Foundry rejects the sign-in.
+
+### Require sign-in before rendering
+
+The client starts sign-in on the first request, so pages that load OSDK data trigger it automatically. To keep a route from rendering until the user is signed in, check for a token first. `getTokenOrUndefined()` returns the current access token synchronously, or `undefined` if there is none or it has expired:
+
+```tsx title="src/AuthenticatedRoute.tsx"
+import { auth } from "@/client";
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+
+export function AuthenticatedRoute() {
+  const [token, setToken] = useState(auth.getTokenOrUndefined());
+
+  useEffect(() => {
+    auth()
+      .then(setToken)
+      .catch((e: unknown) => {
+        console.error("Sign-in failed", e);
+        setToken(undefined);
+      });
+  }, []);
+
+  return token == null ? null : <Outlet />;
+}
+```
+
+### Scopes
+
+Scopes limit what the token can do. Both OAuth clients default to `api:read-data`, `api:write-data`, `api:use-ontologies-read`, and `api:use-ontologies-write`. Request only what your app needs, and make sure each scope is allowed for your application on **OAuth & scopes** in Developer Console. A read-only app can drop the two `write` scopes.
+
+The defaults only cover the Ontology. Add the scopes for anything else your app calls: each Platform SDK endpoint lists its required scopes (see [Platform SDK setup](../platform/setup.mdx)), and the AI packages need `api:use-language-models-execute` (see [AI](../ai/index.mdx)).
+
+The public client also requests `offline_access` so Foundry issues a refresh token, unless `tokenStorage` is `"none"`. A stored refresh token is only reused when it was issued for the same set of scopes, so changing `scopes` signs users in again.
+
+### Token storage
+
+| `tokenStorage` | Refresh token kept | Trade-off |
+| --- | --- | --- |
+| `"localStorage"` | Across browser sessions | Fewest sign-ins. Anyone with access to the browser profile stays signed in. |
+| `"sessionStorage"` | Until the tab or browser closes | Recommended for shared devices. |
+| `"none"` | Never | Users sign in on every page load. No `offline_access` scope is requested. |
+
+The refresh token is stored under the key `@osdk/oauth : refresh : <clientId>`. Access tokens stay in memory.
+
+### Sign out
+
+`signOut()` revokes the access token with Foundry, deletes the stored refresh token, and emits a `signOut` event. It does not navigate, so redirect the user yourself:
+
+```tsx title="src/SignOutButton.tsx"
+import { auth } from "@/client";
+
+export function SignOutButton() {
+  async function handleClick() {
+    try {
+      await auth.signOut();
+    } finally {
+      window.location.assign("/");
+    }
+  }
+
+  return (
+    <button type="button" onClick={handleClick}>
+      Sign out
+    </button>
+  );
+}
+```
+
+`signOut()` throws if nobody is signed in. The next token request after sign-out starts a new sign-in.
+
+### Listen for auth events
+
+The public client emits `signIn`, `refresh`, and `signOut` events. `signIn` and `refresh` carry the new token in `event.detail`:
+
+```ts
+import { auth } from "./client";
+
+function handleSignOut() {
+  console.info("Signed out");
+}
+
+auth.addEventListener("signIn", (event) => {
+  console.info("Signed in; token expires at", new Date(event.detail.expires_at));
+});
+auth.addEventListener("signOut", handleSignOut);
+
+auth.removeEventListener("signOut", handleSignOut);
+```
+
+| Member | Description |
+| --- | --- |
+| `auth()` | Resolves to a valid access token, refreshing or signing in when needed. |
+| `auth.signIn()` | Runs sign-in: refreshes from a stored token, completes a redirect callback, or redirects to Foundry. Resolves to the token object. |
+| `auth.refresh()` | Refreshes the access token with the stored refresh token. |
+| `auth.signOut()` | Revokes the token and clears stored state. |
+| `auth.getTokenOrUndefined()` | Returns the current access token, or `undefined` if there is none or it has expired. |
+| `auth.addEventListener(type, listener)` | Listens for `signIn`, `refresh`, or `signOut`. |
+| `auth.removeEventListener(type, listener)` | Removes a listener. |
+
+## Authenticate a server or service
+
+`createConfidentialOauthClient` uses the client credentials grant with a client ID and secret from a confidential application in Developer Console. Requests run as that application's service user, not as a person.
+
+```ts
+createConfidentialOauthClient(clientId, clientSecret, url, scopes?, fetchFn?, ctxPath?)
+```
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `clientId` | `string` | | The confidential application's client ID. |
+| `clientSecret` | `string` | | The client secret. |
+| `url` | `string` | | The base URL of your Foundry stack. |
+| `scopes` | `string[]` | `["api:read-data", "api:write-data", "api:use-ontologies-read", "api:use-ontologies-write"]` | Scopes to request. |
+| `fetchFn` | `typeof fetch` | `globalThis.fetch` | The `fetch` used for token requests. |
+| `ctxPath` | `string` | `"multipass"` | The path of Foundry's authorization server under `url`. |
+
+```ts title="server/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createConfidentialOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+const clientId = process.env.FOUNDRY_CLIENT_ID;
+const clientSecret = process.env.FOUNDRY_CLIENT_SECRET;
+
+if (clientId == null || clientSecret == null) {
+  throw new Error("Set FOUNDRY_CLIENT_ID and FOUNDRY_CLIENT_SECRET");
+}
+
+const auth = createConfidentialOauthClient(clientId, clientSecret, foundryUrl, [
+  "api:read-data",
+  "api:use-ontologies-read",
+]);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth);
+```
+
+The client requests a new token when the current one expires. There is no refresh token or browser storage. It supports `signIn()`, `signOut()`, `getTokenOrUndefined()`, and `signIn` and `signOut` events, but not `refresh()`.
+
+<Callout type="error">
+  Never use `createConfidentialOauthClient` in browser code. Anything you ship to a browser, including environment variables inlined by your bundler, is readable by users, and the client secret lets anyone act as your application.
+</Callout>
+
+## Public apps without sign-in
+
+`createAuthlessClient()` returns a token provider that sends a fixed public token, for apps that let anyone view data without a Foundry account:
+
+```ts title="src/client.ts"
+import { createClient } from "@osdk/client";
+import { createAuthlessClient } from "@osdk/oauth";
+
+const foundryUrl = import.meta.env.VITE_FOUNDRY_API_URL;
+const ontologyRid = import.meta.env.VITE_FOUNDRY_ONTOLOGY_RID;
+
+export const client = createClient(foundryUrl, ontologyRid, createAuthlessClient());
+```
+
+The **React (Public)** template of `@osdk/create-app` sets this up, including the request proxy it relies on.
+
+## Use an existing token
+
+For scripts, tests, and one-off tools, pass a function that returns a token you already have, such as one from an environment variable:
+
+```ts title="scripts/countEngineers.ts"
+import { $ontologyRid, Employee } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+
+const token = process.env.FOUNDRY_TOKEN;
+if (token == null) {
+  throw new Error("Set FOUNDRY_TOKEN");
+}
+
+const client = createClient(
+  "https://example.palantirfoundry.com",
+  $ontologyRid,
+  () => Promise.resolve(token),
+);
+
+const result = await client(Employee)
+  .where({ department: "Engineering" })
+  .aggregate({ $select: { $count: "unordered" } });
+
+console.log(result.$count);
+```
+
+The client does not refresh a static token. When it expires, requests fail with `401` until you supply a new one.

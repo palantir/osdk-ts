@@ -1,0 +1,238 @@
+---
+title: CLI reference
+description: Every @osdk/cli command and flag for deploying sites and widget sets, managing versions, syncing branched SDKs, and generating SDKs locally.
+foundryDocs:
+  - title: Application hosting
+    path: developer-console/deploy-custom-application-on-foundry
+---
+
+{/* cspell:ignore widgetset */}
+
+`@osdk/cli` deploys your app to Foundry website hosting, manages its versions, publishes widget sets, keeps branched SDKs in sync, and generates SDKs from an Ontology. This page lists every command and flag.
+
+## Run the CLI
+
+Run it with `npx`, or install it as a dev dependency to get the `osdk` binary:
+
+```sh
+npx @osdk/cli@latest site deploy
+```
+
+```npm
+npm install --save-dev @osdk/cli
+```
+
+```sh
+npx osdk site deploy
+```
+
+| Command | Description |
+| --- | --- |
+| [`osdk site deploy`](#osdk-site-deploy) | Upload a new version of your site and, by default, make it live. |
+| [`osdk site version`](#osdk-site-version) | List, get, set, unset, and delete site versions. |
+| [`osdk widgetset deploy`](#osdk-widgetset-deploy) | Publish a new widget set version. |
+| [`osdk widgetset version`](#osdk-widgetset-version) | List, inspect, and delete widget set versions. |
+| [`osdk branch sync`](#osdk-branch-sync) | Install the SDK versions published for your current branch. |
+| [`osdk unstable typescript generate`](#osdk-unstable-typescript-generate) | Generate SDK source files from an Ontology. Unstable. |
+| [`osdk unstable auth login`](#osdk-unstable-auth-login) | Test an OAuth sign-in from the terminal. Unstable. |
+
+`osdk experimental` is an alias for `osdk unstable`. Commands under it can change or be removed in any release.
+
+## Global options
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `--verbose`, `-v` | count | Debug logging. Pass `-vv` for trace logging, which includes every HTTP request. |
+| `--help` | boolean | Print the commands and options available at that level, such as `osdk site version --help`. |
+
+Each option also accepts its kebab-case form: `--foundryUrl` and `--foundry-url` are the same option.
+
+## Configuration
+
+Options come from three places. The first one set wins:
+
+1. The command-line flag.
+2. An environment variable named `OSDK_` plus the option in upper snake case, such as `OSDK_FOUNDRY_URL`, `OSDK_APPLICATION`, or `OSDK_DIRECTORY`.
+3. `foundry.config.json`, for the options it covers.
+
+The CLI looks for `foundry.config.json` in the current directory and then each parent, and uses the first one it finds. A file holds either a `site` block or a `widgetSet` block, not both. The full schema is in [Host on Foundry](./hosting.mdx#foundryconfigjson).
+
+### Tokens
+
+Every `site` and `widgetset` command needs a Foundry token. The CLI uses the first of:
+
+1. `--token <token>`
+2. `--tokenFile <path>`, a file whose contents are the token
+3. The `FOUNDRY_TOKEN` environment variable
+4. The `FOUNDRY_SDK_AUTH_TOKEN` environment variable, which is deprecated and logs a warning
+
+`--token` and `--tokenFile` cannot be used together. The token must be a JWT. Without one, the command exits with `No token found.`
+
+```sh
+export FOUNDRY_TOKEN=<token>
+npx @osdk/cli@latest site version list
+```
+
+## `osdk site`
+
+Manages the website hosted for a Developer Console application. Run it with a subcommand: `deploy` or `version`.
+
+These options apply to every `site` subcommand:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--application` | `string` | `site.application` | The application RID, such as `ri.third-party-applications.main.application.<id>`. Required. |
+| `--foundryUrl` | `string` | `foundryUrl` | The Foundry stack URL. Must start with `https://`. Required. |
+| `--token` | `string` | | A Foundry token. Conflicts with `--tokenFile`. |
+| `--tokenFile` | `string` | | A path to a file containing a Foundry token. Conflicts with `--token`. |
+
+### `osdk site deploy`
+
+Zips the contents of a directory, uploads it as a new site version, and makes that version live.
+
+```sh
+npx @osdk/cli@latest site deploy --directory ./dist --version 1.2.0
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--directory` | `string` | `site.directory` | The directory to upload, usually your build output. Required. Everything in it is zipped, with the directory itself as the root. |
+| `--version` | `string` | | The version to create. Must be valid SemVer. Conflicts with `--autoVersion`; when `site.autoVersion` is set in the config file, `--version` overrides it. |
+| `--autoVersion` | `"git-describe" \| "package-json"` | `site.autoVersion.type` | Compute the version instead of passing `--version`. See [Automatic versions](./hosting.mdx#automatic-versions). |
+| `--gitTagPrefix` | `string` | `site.autoVersion.tagPrefix` | With `git-describe`, match only tags that start with this prefix, and strip it from the version. Without it, every tag matches and a leading `v` is stripped. Only valid with `git-describe`. |
+| `--uploadOnly` | `boolean` | `site.uploadOnly`, else `false` | Upload the version without making it live. The CLI prints a preview link instead. |
+| `--snapshot` | `boolean` | `false` | Upload a snapshot version with automatic retention. The CLI never makes a snapshot live. Cannot be combined with `--uploadOnly`. |
+| `--snapshotId` | `string` | | An alias to attach to the snapshot version. Requires `--snapshot`. |
+
+You must pass `--version` or `--autoVersion`, or set `site.autoVersion` in `foundry.config.json`. When the deploy succeeds, the CLI prints the live URL, `https://<subdomain>`. With `--uploadOnly`, it prints `https://<subdomain>/.system/preview?previewVersion=<version>` instead.
+
+### `osdk site version`
+
+Manages existing versions. Run it with a subcommand.
+
+| Command | Description |
+| --- | --- |
+| `osdk site version list` | Lists every version that is valid SemVer, newest first, and marks the live one `(deployed)`. |
+| `osdk site version get` | Prints the live version, or `No live site version set`. |
+| `osdk site version set <version>` | Makes `<version>` live. Use it to roll back or to publish a version uploaded with `--uploadOnly`. |
+| `osdk site version unset` | Clears the live version after a confirmation prompt. The site is unreachable until you set a version again. |
+| `osdk site version delete <version>` | Deletes a version after a confirmation prompt. You cannot delete the live version, and deletion cannot be undone. |
+
+| Option | Applies to | Type | Description |
+| --- | --- | --- | --- |
+| `--yes`, `-y` | `unset`, `delete` | `boolean` | Skip the confirmation prompt. |
+
+```sh
+npx @osdk/cli@latest site version set 1.1.0
+npx @osdk/cli@latest site version delete 1.0.0 --yes
+```
+
+### Site errors
+
+The CLI turns Foundry errors into these messages:
+
+| Message | Cause | What to do |
+| --- | --- | --- |
+| `The site version already exists` | A version with that number was uploaded before. | Use a new version. Versions are immutable. |
+| `The site version is invalid and must be a valid SemVer string` | The version is not SemVer. | Fix `--version`, or the tag or `package.json` version that `--autoVersion` reads. |
+| `The site contains too many versions` | The application reached its version limit, shown in the message. | Delete old versions with `osdk site version delete`. |
+| `The .zip file contains too many files` | The build output has more files than the limit. | Reduce the number of files in the build. |
+| `The .zip file contains a file ... that is too large` | One file exceeds the size limit. | Shrink or split that file. |
+| `The website version is being scanned for vulnerabilities and cannot be deployed yet` | Foundry is still scanning the upload. | Deploy with `--uploadOnly`, then make the version live after the scan, with `osdk site version set` or from **Website hosting** in Developer Console. |
+| `The site version to delete is live and cannot be deleted` | You tried to delete the live version. | Set another version live first. |
+| `The site version could not be found` | The version does not exist. | Check `osdk site version list`. |
+
+A `401` means the token is invalid or expired; a `403` means it lacks the permission or scopes for the request.
+
+## `osdk widgetset`
+
+Publishes and manages widget sets for Workshop custom widgets. Run it with a subcommand: `deploy` or `version`. [Publish a widget set](../widgets/publish.mdx) covers the build and the manifest.
+
+These options apply to every `widgetset` subcommand:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--widgetSet` | `string` | `widgetSet.rid` | The widget set RID. Required. |
+| `--foundryUrl` | `string` | `foundryUrl` | The Foundry stack URL. Must start with `https://`. Required. |
+| `--token` | `string` | | A Foundry token. Conflicts with `--tokenFile`. |
+| `--tokenFile` | `string` | | A path to a file containing a Foundry token. Conflicts with `--token`. |
+
+### `osdk widgetset deploy`
+
+Zips a directory and publishes it as a new widget set version. The version comes from the manifest at `.palantir/widgets.config.json` inside the directory; there is no version flag.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--directory` | `string` | `widgetSet.directory` | The directory to upload. Required. |
+| `--repository` | `string` | `widgetSet.repository` | A code repository RID to publish through. The repository must be authorized to publish the widget set. |
+| `--branchName` | `string` | The current git branch | The git branch to publish from. |
+
+### `osdk widgetset version`
+
+| Command | Description |
+| --- | --- |
+| `osdk widgetset version list` | Lists published versions for the current git branch. Accepts `--branchName`. |
+| `osdk widgetset version info <version>` | Prints the details of one version. |
+| `osdk widgetset version delete <version>` | Deletes a version after a confirmation prompt. `--yes` or `-y` skips the prompt. |
+
+## `osdk branch sync`
+
+Installs the version of each generated SDK that matches your current branch: the newest prerelease published for that branch, or the stable `latest` release when you are on `main`. [Develop on Foundry branches](./branches.mdx) explains the workflow.
+
+```sh
+npx @osdk/cli@latest branch sync
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--branchName` | `string` | The current git branch | The branch to sync to. `main`, `master`, and a detached `HEAD` mean the default branch. |
+| `--packageName` | `string` | | Sync only this SDK instead of every SDK found. |
+| `--dryRun` | `boolean` | `false` | Print what would be installed without changing anything. |
+
+`osdk unstable branch sync` is the same command under its earlier name.
+
+## `osdk unstable typescript generate`
+
+Generates SDK source files from an Ontology, either by signing in to Foundry or from a saved Ontology metadata file. [Generate an SDK](./generate-sdk.mdx#generate-locally) shows when to use it.
+
+```sh
+npx @osdk/cli@latest unstable typescript generate \
+  --foundryUrl https://example.palantirfoundry.com \
+  --clientId <your-client-id> \
+  --outDir src/generatedNoCheck \
+  --version dev
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `--outDir` | `string` | | Where to write the generated files. Required. |
+| `--version` | `string` | | The SDK version: `dev` or a SemVer string. Sent in the request user agent, and used as the package version with `--asPackage`. Required. |
+| `--foundryUrl` | `string` | | Load the Ontology from this stack. Requires `--clientId`. Alias: `--stack`. |
+| `--clientId` | `string` | | The OAuth client ID to sign in with. Requires `--foundryUrl`. |
+| `--ontologyRid` | `string` | | With `--foundryUrl`, use this Ontology. Needed when the client can see more than one. |
+| `--branch` | `string` | | With `--foundryUrl`, the Foundry branch RID to load the Ontology from. |
+| `--ontologyWritePath` | `string` | | With `--foundryUrl`, also save the loaded Ontology metadata as JSON at this path. |
+| `--ontologyPath` | `string` | | Generate from an Ontology metadata JSON file instead of Foundry. Conflicts with `--foundryUrl` and `--clientId`. |
+| `--packageType` | `"commonjs" \| "module"` | `"commonjs"` | The module format of the project you generate into. |
+| `--clean` | `boolean` | | Delete `--outDir` before generating. |
+| `--skipPackageJsonUpdate` | `boolean` | `false` | Do not add `@osdk/api` and `@osdk/client` to the nearest `package.json`. |
+| `--externalObjects` | `string` | | Import these object types from another generated SDK instead of generating them, as `ApiName:@scope/package` pairs separated by commas. |
+| `--externalInterfaces` | `string` | | The same, for interfaces. |
+| `--experimentalOntologyMetadata` | `boolean` | `false` | Also emit the raw Ontology metadata as an `./experimental/ontology-metadata` export. May change or be removed. |
+| `--asPackage` | `boolean` | | Generate a standalone package with its own `package.json`. Requires `--packageName` and `--beta`. |
+| `--packageName` | `string` | | The package name when using `--asPackage`. |
+| `--beta` | `boolean` | | Required with `--asPackage`. |
+| `--internal` | `boolean` | `false` | For the `osdk-ts` repository only. Writes `workspace:` dependency versions. |
+
+Pass either `--ontologyPath`, or `--foundryUrl` and `--clientId`.
+
+## `osdk unstable auth login`
+
+Runs the OAuth authorization code flow in your browser, to check that a client ID and redirect URL work. It does not save or print the token.
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `--foundryUrl` | `string` | The Foundry stack URL. Required. Alias: `--baseUrl`. |
+| `--clientId` | `string` | The OAuth client ID. Required. Alias: `--applicationId`. |
+
+The CLI listens on port 8080 and uses `http://localhost:8080/auth/callback` as the redirect URL, so that URL must be allowed on **OAuth & scopes** in Developer Console and port 8080 must be free. It requests the `offline_access`, `api:read-data`, and `api:use-ontologies-read` scopes. `osdk unstable typescript generate --foundryUrl` uses the same sign-in.

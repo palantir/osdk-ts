@@ -1,0 +1,489 @@
+---
+title: Links and actions
+description: Relate object types with defineLink and define action types with the create, modify, and delete helpers from @osdk/maker.
+foundryDocs:
+  - title: Link types
+    path: object-link-types/link-types-overview
+  - title: Action types
+    path: action-types/overview
+---
+
+Link types connect object types, so that an `Employee` can reach its `Office`. Action types describe the edits users can make, such as changing an employee's job title. Define both with `@osdk/maker` in your `.ontology/ontology.mts` file.
+
+## Link types
+
+`defineLink` supports three kinds of link, chosen by the keys you pass:
+
+| Kind | Keys | Joined on |
+| --- | --- | --- |
+| One-to-many | `one`, `toMany`, `manyForeignKeyProperty` | A foreign key property on the "many" object type. |
+| Many-to-many | `many`, `toMany` | A link dataset of primary key pairs. |
+| Intermediary | `many`, `toMany`, `intermediaryObjectType` | An object type that sits between the two, joined by two one-to-many links. |
+
+`defineLink` records the link without looking up its object types, so a link can refer to an object type that is defined later in the file. Maker checks the link when it compiles the ontology.
+
+### One-to-many
+
+Each side's `metadata.apiName` is the name of the link as seen from that side's object type. The `one` side's name leads to many objects, and the `toMany` side's name leads to one:
+
+```ts title=".ontology/ontology.mts"
+import { defineLink, defineObject } from "@osdk/maker";
+
+export const office = defineObject({
+  apiName: "Office",
+  displayName: "Office",
+  pluralDisplayName: "Offices",
+  primaryKeyPropertyApiName: "officeId",
+  titlePropertyApiName: "name",
+  properties: {
+    officeId: { type: "string" },
+    name: { type: "string" },
+    city: { type: "string" },
+  },
+});
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "fullName",
+  properties: {
+    employeeId: { type: "integer" },
+    fullName: { type: "string" },
+    leadId: { type: "integer" },
+    officeId: { type: "string" },
+  },
+});
+
+export const officeOccupants = defineLink({
+  apiName: "office-occupants",
+  one: {
+    object: office,
+    metadata: { apiName: "occupants", displayName: "Occupant", pluralDisplayName: "Occupants" },
+  },
+  toMany: { object: employee, metadata: { apiName: "office" } },
+  manyForeignKeyProperty: "officeId",
+});
+
+export const employeeReports = defineLink({
+  apiName: "employee-reports",
+  one: { object: employee, metadata: { apiName: "reports" } },
+  toMany: { object: employee, metadata: { apiName: "lead" } },
+  manyForeignKeyProperty: "leadId",
+});
+```
+
+These two links give the generated SDK the following link names:
+
+| Object type | Link | Leads to |
+| --- | --- | --- |
+| `Office` | `occupants` | Many `Employee` objects whose `officeId` is the office's primary key. |
+| `Employee` | `office` | The one `Office` named by `officeId`. |
+| `Employee` | `reports` | Many `Employee` objects whose `leadId` is this employee's primary key. |
+| `Employee` | `lead` | The one `Employee` named by `leadId`. |
+
+`manyForeignKeyProperty` must be a property of the `toMany` object type, with the same type as the `one` object type's primary key. Set `cardinality: "OneToOne"` when each object on the `one` side links to at most one object on the `toMany` side; the default is `"OneToMany"`.
+
+### Many-to-many
+
+```ts title=".ontology/ontology.mts"
+import { defineLink, defineObject } from "@osdk/maker";
+
+export const project = defineObject({
+  apiName: "Project",
+  displayName: "Project",
+  pluralDisplayName: "Projects",
+  primaryKeyPropertyApiName: "projectId",
+  titlePropertyApiName: "projectId",
+  properties: { projectId: { type: "string" } },
+});
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "employeeId",
+  properties: { employeeId: { type: "integer" } },
+});
+
+export const projectMembers = defineLink({
+  apiName: "project-members",
+  many: {
+    object: project,
+    metadata: { apiName: "members", displayName: "Member", pluralDisplayName: "Members" },
+  },
+  toMany: { object: employee, metadata: { apiName: "projects" } },
+});
+```
+
+Maker backs a many-to-many link with a dataset named `link-<apiName>` that has one column per primary key. When both object types use the same primary key name, the columns get `_from` and `_to` suffixes.
+
+### Intermediary
+
+An intermediary link connects two object types through a third. Define the intermediary object type and a one-to-many link from each side to it, then pass those links as `linkToIntermediary`:
+
+```ts title=".ontology/ontology.mts"
+import { defineLink, defineObject } from "@osdk/maker";
+
+export const project = defineObject({
+  apiName: "Project",
+  displayName: "Project",
+  pluralDisplayName: "Projects",
+  primaryKeyPropertyApiName: "projectId",
+  titlePropertyApiName: "projectId",
+  properties: { projectId: { type: "string" } },
+});
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "employeeId",
+  properties: { employeeId: { type: "integer" } },
+});
+
+export const assignment = defineObject({
+  apiName: "Assignment",
+  displayName: "Assignment",
+  pluralDisplayName: "Assignments",
+  primaryKeyPropertyApiName: "assignmentId",
+  titlePropertyApiName: "assignmentId",
+  properties: {
+    assignmentId: { type: "string" },
+    projectId: { type: "string" },
+    employeeId: { type: "integer" },
+  },
+});
+
+export const projectAssignments = defineLink({
+  apiName: "project-assignments",
+  one: { object: project, metadata: { apiName: "assignments" } },
+  toMany: { object: assignment, metadata: { apiName: "project" } },
+  manyForeignKeyProperty: "projectId",
+});
+
+export const employeeAssignments = defineLink({
+  apiName: "employee-assignments",
+  one: { object: employee, metadata: { apiName: "assignments" } },
+  toMany: { object: assignment, metadata: { apiName: "employee" } },
+  manyForeignKeyProperty: "employeeId",
+});
+
+export const projectStaff = defineLink({
+  apiName: "project-staff",
+  many: {
+    object: project,
+    metadata: { apiName: "staff" },
+    linkToIntermediary: projectAssignments,
+  },
+  toMany: {
+    object: employee,
+    metadata: { apiName: "staffedProjects" },
+    linkToIntermediary: employeeAssignments,
+  },
+  intermediaryObjectType: assignment,
+});
+```
+
+### Link options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiName` | `string` | | Required. Converted to a lowercase, hyphenated link type ID. Not prefixed by `--apiNamespace`. |
+| `one`, `many`, `toMany` | `{ object, metadata }` | | The two sides. `object` is a definition from `defineObject`, an imported object type, or an object type API name. |
+| `manyForeignKeyProperty` | `string` | | One-to-many only. The foreign key property on the `toMany` object type. |
+| `cardinality` | `"OneToMany" \| "OneToOne"` | `"OneToMany"` | One-to-many only. |
+| `intermediaryObjectType` | `ObjectTypeDefinition \| string` | | Intermediary only. |
+| `description` | `string` | | A description shown in Foundry. |
+| `status` | `LinkStatus` | `"active"` | See [Status](#status). |
+| `editsEnabled` | `boolean` | `false` | Whether users can edit the link. |
+| `permission` | `"roles" \| "publicProject" \| { type: "ontologyPackage"; ontologyPackageRid: string }` | | The permission model for the link. |
+
+Each side's `metadata`:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiName` | `string` | | Required. The link name on this side's object type. Starts with a letter, then letters, digits, and `_`. |
+| `displayName` | `string` | `apiName` with its first letter capitalized | The singular name shown in Foundry. |
+| `pluralDisplayName` | `string` | `apiName` capitalized, with an `s` added unless it ends in `s` | The plural name shown in Foundry. |
+| `visibility` | `"PROMINENT" \| "NORMAL" \| "HIDDEN"` | `"NORMAL"` | How prominently Foundry shows the link. |
+| `groupDisplayName` | `string` | `""` | A group to show the link under. |
+| `typeClasses` | `Array<{ kind: string; name: string }>` | `[]` | Type classes. |
+
+### Status
+
+A link's `status` is `"active"`, `"experimental"`, `"example"`, or `{ type: "deprecated", message, deadline, replacedBy? }`. It must agree with the object types it connects: if either side is deprecated, the link must be deprecated, and if either side is experimental or example, the link must be experimental or example.
+
+## Action types
+
+Most actions create, change, or delete one object. The helpers below generate an action type from an object type: one parameter per property, the logic rule, and a default parameter order.
+
+| Helper | Default API name | Parameters | Rule |
+| --- | --- | --- | --- |
+| `defineCreateObjectAction` | `create-object-<object>` | Every property, including the primary key | Adds an object. |
+| `defineModifyObjectAction` | `modify-object-<object>` | `objectToModifyParameter`, then every property except the primary key | Modifies the chosen object. Each parameter defaults to the object's current value. |
+| `defineCreateOrModifyObjectAction` | `create-or-modify-<object>` | `objectToCreateOrModifyParameter`, then every property except the primary key | Modifies the chosen object, or creates one. Each parameter defaults to the object's current value. |
+| `defineDeleteObjectAction` | `delete-object-<object>` | `objectToDeleteParameter` | Deletes the chosen object. |
+
+`<object>` is the object type's API name in lowercase with hyphens, so `Employee` gives `modify-object-employee`. Parameters skip vector properties, properties in `excludedProperties`, and properties set by `nonParameterMappings`; create and create-or-modify also skip derived properties. For interfaces, see [Interface actions](./interfaces.mdx#interface-actions).
+
+```ts title=".ontology/ontology.mts"
+import {
+  defineCreateObjectAction,
+  defineDeleteObjectAction,
+  defineModifyObjectAction,
+  defineObject,
+} from "@osdk/maker";
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "fullName",
+  properties: {
+    employeeId: { type: "integer" },
+    fullName: { type: "string" },
+    jobTitle: { type: "string" },
+    department: { type: "string" },
+    salary: { type: "double" },
+  },
+});
+
+export const createEmployee = defineCreateObjectAction({
+  apiName: "create-employee",
+  objectType: employee,
+});
+
+export const modifyEmployee = defineModifyObjectAction({
+  apiName: "modify-employee",
+  objectType: employee,
+});
+
+export const deleteEmployee = defineDeleteObjectAction({
+  apiName: "delete-employee",
+  objectType: employee,
+});
+```
+
+Action API names must contain lowercase letters and digits in segments separated by `-` or `.`. The SDK generator converts them to camelCase, so `modify-employee` is `modifyEmployee` in your generated SDK.
+
+The parameter IDs of the chosen object are exported as constants:
+
+| Constant | Value |
+| --- | --- |
+| `MODIFY_OBJECT_PARAMETER` | `"objectToModifyParameter"` |
+| `CREATE_OR_MODIFY_OBJECT_PARAMETER` | `"objectToCreateOrModifyParameter"` |
+| `DELETE_OBJECT_PARAMETER` | `"objectToDeleteParameter"` |
+| `CREATE_INTERFACE_OBJECT_PARAMETER` | `"objectTypeParameter"` |
+| `MODIFY_INTERFACE_OBJECT_PARAMETER` | `"interfaceObjectToModifyParameter"` |
+
+### Helper options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `objectType` | `ObjectTypeDefinition` | | Required. The object type to act on. |
+| `apiName` | `string` | See the table above | The action's API name. |
+| `displayName` | `string` | `Create`, `Modify`, `Create or Modify`, or `Delete`, then the object's display name | The name shown in Foundry. |
+| `description` | `string` | | A description shown in Foundry. |
+| `status` | `"active" \| "experimental" \| "example" \| deprecated` | `"active"` | The action's status. |
+| `excludedProperties` | `Array<string>` | | Properties that do not get a parameter. |
+| `parameterConfiguration` | `Record<string, ParameterConfiguration>` | | Per-parameter settings. See [Configure parameters](#configure-parameters). |
+| `nonParameterMappings` | `Record<string, MappingValue>` | | Properties set without a parameter. See [Set properties without a parameter](#set-properties-without-a-parameter). |
+| `actionLevelValidation` | `Array<{ condition; displayMetadata? }>` | | Conditions that must all pass to submit the action. See [Who can submit](#who-can-submit). |
+| `parameterOrdering` | `Array<string>` | Configured parameters first, then properties in definition order | The form's parameter order. Must list every parameter; the chosen-object parameter is added first if you leave it out. |
+| `sections` | `Array<ActionSection>` | | Group parameters into form sections. See [Form sections](#form-sections). |
+| `defaultFormat` | `"FORM" \| "TABLE"` | | The form's default layout. |
+| `enableLayoutSwitch` | `boolean` | | Let users switch between form and table layouts. |
+| `tableConfiguration` | `{ columnWidthByParameterRid; enableFileImport; ... }` | | Settings for the table layout. |
+| `submissionMetadata` | `{ successMessage: string; submitButtonDisplayMetadata?; undoButtonConfiguration?: boolean }` | | The submit button and the message shown after it succeeds. |
+| `icon` | `{ locator: BlueprintIcon; color: string }` | | The action's icon. |
+| `permission` | `"roles" \| "publicProject" \| { type: "ontologyPackage"; ontologyPackageRid: string }` | | The permission model for the action. |
+
+`defineDeleteObjectAction` reads only `objectType`, `apiName`, `displayName`, `description`, `status`, `actionLevelValidation`, `icon`, and `permission`.
+
+### Configure parameters
+
+`parameterConfiguration` is keyed by parameter ID, which for property parameters is the property's API name. A key that is not a property adds a new parameter, and needs `customParameterType`.
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `displayName` | `string` | The parameter's label. Defaults to the property's display name. |
+| `description` | `string` | Help text under the parameter. |
+| `required` | `boolean \| { listLength: { min?: number; max?: number } }` | Whether a value is required. Defaults to `true` when the property sets `nullability.noNulls`, and for arrays to a minimum length of 1 when it sets `noEmptyCollections`. |
+| `allowedValues` | `AllowedValues` | The values the parameter accepts, such as `{ type: "oneOf", oneOf }`, `{ type: "range", min?, max? }`, or `{ type: "text", minLength?, maxLength?, regex? }`. Defaults to what the property type allows. |
+| `defaultValue` | `OntologyIrParameterPrefill` | A prefilled value. |
+| `defaultVisibility` | `"editable" \| "disabled" \| "hidden"` | How the parameter starts. |
+| `conditionalOverrides` | `Array<ConditionalOverride>` | Change the visibility, whether a value is required, the default, or the allowed values when a condition passes. |
+| `renderHint` | `ParameterRenderHint` | Which input control to use. |
+| `structFieldValidations` | `Record<string, StructFieldConfiguration>` | For struct parameters, per-field settings, including `defaultValue`. Set a field's `defaultValue` to `null` to turn off the default that modify helpers infer. |
+| `customParameterType` | `ActionParameterType` | The type of a parameter that is not a property, such as `"string"` or `"booleanList"`. |
+
+A conditional override is one of:
+
+| Override | Effect when `condition` passes |
+| --- | --- |
+| `{ type: "visibility", condition, then? }` | Sets visibility to `then`: `"editable"`, `"disabled"`, or `"hidden"`. |
+| `{ type: "disabled", condition, then? }` | Disables the parameter. |
+| `{ type: "required", condition }` | Makes the parameter required. |
+| `{ type: "defaultValue", condition, defaultValue }` | Uses a different default. |
+| `{ type: "constraint", condition, constraint }` | Uses different allowed values. |
+
+### Conditions
+
+Validation rules and overrides take a `ConditionDefinition`:
+
+| Condition | Passes when |
+| --- | --- |
+| `{ type: "group", name }` | The user is in the group chosen for the input `name` when the ontology is installed. |
+| `{ type: "parameter", parameterId, matches }` | The parameter's value equals `matches`, such as `{ type: "staticValue", staticValue: { type: "string", string: "Engineering" } }`. |
+| `{ type: "and" \| "or", conditions }` | All or any of `conditions` pass. |
+
+### Who can submit
+
+`actionLevelValidation` is a list of rules that must all pass before a user can submit. `displayMetadata.failureMessage` is shown when a rule fails.
+
+This action can only be submitted by members of the HR group, shows `skills` only when the department is Engineering, limits `department` to two values, and records who made the edit:
+
+```ts title=".ontology/ontology.mts"
+import {
+  type ConditionDefinition,
+  defineModifyObjectAction,
+  defineObject,
+} from "@osdk/maker";
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "fullName",
+  properties: {
+    employeeId: { type: "integer" },
+    fullName: { type: "string" },
+    jobTitle: { type: "string" },
+    department: { type: "string" },
+    salary: { type: "double" },
+    skills: { type: "string", array: true },
+    leadId: { type: "integer" },
+    lastModifiedBy: { type: "string" },
+  },
+});
+
+const isHr: ConditionDefinition = { type: "group", name: "hrGroup" };
+
+const isEngineering: ConditionDefinition = {
+  type: "parameter",
+  parameterId: "department",
+  matches: {
+    type: "staticValue",
+    staticValue: { type: "string", string: "Engineering" },
+  },
+};
+
+export const modifyEmployee = defineModifyObjectAction({
+  apiName: "modify-employee",
+  objectType: employee,
+  excludedProperties: ["leadId"],
+  nonParameterMappings: {
+    lastModifiedBy: { type: "currentUser" },
+  },
+  actionLevelValidation: [
+    {
+      condition: isHr,
+      displayMetadata: { failureMessage: "Only HR can edit employees.", typeClasses: [] },
+    },
+  ],
+  parameterConfiguration: {
+    department: {
+      required: true,
+      allowedValues: {
+        type: "oneOf",
+        oneOf: [
+          { label: "Engineering", value: { type: "string", string: "Engineering" } },
+          { label: "Research", value: { type: "string", string: "Research" } },
+        ],
+      },
+    },
+    skills: {
+      defaultVisibility: "hidden",
+      conditionalOverrides: [{ type: "visibility", condition: isEngineering, then: "editable" }],
+    },
+    salary: { displayName: "Annual salary", description: "Gross salary in USD." },
+  },
+});
+```
+
+### Set properties without a parameter
+
+`nonParameterMappings` sets a property from something other than user input. The property gets no parameter.
+
+| Value | Sets the property to |
+| --- | --- |
+| `{ type: "currentUser" }` | The ID of the user who submits the action. |
+| `{ type: "currentTime" }` | The time the action is submitted. |
+| `{ type: "uuid", linkId? }` | A new UUID. Properties that share a `linkId` get the same UUID. |
+| `{ type: "staticValue", staticValue }` | A fixed value. |
+| `{ type: "parameterId", parameterId }` | The value of another parameter, such as a custom parameter. |
+
+### Form sections
+
+Each entry in `sections` has an `id`, a `displayName`, and the `parameters` it holds, plus optional `description`, `defaultVisibility` (`"visible"` or `"hidden"`), `columnCount` (`1` or `2`), `showTitleBar`, `collapsedByDefault`, `style` (`"box"` or `"minimal"`), and `conditionalOverrides`.
+
+### Define an action from rules
+
+`defineAction` takes the parameters and logic rules directly, for actions the helpers do not cover. The rules use the Ontology IR rule types, such as `addObjectRule`, `modifyObjectRule`, `deleteObjectRule`, `addOrModifyObjectRuleV2`, and `addInterfaceRule`.
+
+```ts title=".ontology/ontology.mts"
+import { defineAction, defineObject } from "@osdk/maker";
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "fullName",
+  properties: {
+    employeeId: { type: "integer" },
+    fullName: { type: "string" },
+    jobTitle: { type: "string" },
+  },
+});
+
+export const promoteEmployee = defineAction({
+  apiName: "promote-employee",
+  displayName: "Promote employee",
+  status: "active",
+  parameters: [
+    {
+      id: "employee",
+      displayName: "Employee",
+      type: { type: "objectReference", objectReference: { objectTypeId: employee.apiName } },
+      validation: { required: true, allowedValues: { type: "objectQuery" } },
+    },
+    {
+      id: "newTitle",
+      displayName: "New title",
+      type: "string",
+      validation: { required: true, allowedValues: { type: "text" } },
+    },
+  ],
+  rules: [
+    {
+      type: "modifyObjectRule",
+      modifyObjectRule: {
+        objectToModify: "employee",
+        propertyValues: {
+          jobTitle: { type: "parameterId", parameterId: "newTitle" },
+        },
+        structFieldValues: {},
+      },
+    },
+  ],
+});
+```
+
+`defineAction` throws when there are no rules, when parameter IDs repeat, or when a rule or section references a parameter that is not defined.

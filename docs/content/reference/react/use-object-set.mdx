@@ -1,0 +1,65 @@
+---
+title: useObjectSet
+description: Load a live, paged list from an ObjectSet, with filters, set operations, pivots, and derived properties applied on top.
+---
+
+```ts
+import { useObjectSet } from "@osdk/react";
+
+function useObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  BaseRDPs extends Record<string, SimplePropertyDef> = never,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
+  options?: UseObjectSetOptions<Q, RDPs>,
+): UseObjectSetResult<Q, RDPs>;
+```
+
+Starts from an `ObjectSet` you build with the client and applies `options` before fetching. Pass `undefined` to wait; the hook does not fetch until it has a set. The hook keys the query on the set's wire definition, so a new `ObjectSet` instance with the same definition does not refetch.
+
+## Options
+
+<auto-type-table path="../../../../packages/react/src/new/useObjectSet.tsx" name="UseObjectSetOptions" />
+
+## Returns
+
+<auto-type-table path="../../../../packages/react/src/new/useObjectSet.tsx" name="UseObjectSetResult" />
+
+While a new query loads, `data` keeps the last completed result for the same object type, so the list does not flash empty between filters.
+
+## Example
+
+```tsx title="src/OfficeOccupants.tsx"
+import { Office } from "@my-app/sdk";
+import { useObjectSet, useOsdkClient } from "@osdk/react";
+import { useMemo } from "react";
+
+export function OfficeOccupants({ city }: { city: string }) {
+  const client = useOsdkClient();
+  const occupants = useMemo(
+    () => client(Office).where({ city }).pivotTo("occupants"),
+    [client, city],
+  );
+  const { data, isLoading, error } = useObjectSet(occupants, {
+    orderBy: { fullName: "asc" },
+  });
+
+  return (
+    <section aria-busy={isLoading}>
+      {error && <p role="alert">{error.message}</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>{employee.fullName}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+```
+
+## See also
+
+- [Object sets](/react/object-sets)
+- [useStableObjectSet](./use-stable-object-set.mdx)
+- [ObjectSet](../client/object-set.mdx)

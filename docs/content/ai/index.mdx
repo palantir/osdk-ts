@@ -1,0 +1,110 @@
+---
+title: AI overview
+description: Packages for adding LLM features to OSDK apps with Foundry's Language Model Service, what each one does, and what you need before you start.
+foundryDocs:
+  - title: AIP
+    path: aip/overview
+---
+
+{/* cspell:ignore llms */}
+
+Add text generation, tool calling, chat UIs, and agents to an OSDK app using models hosted by Foundry's Language Model Service (LMS). Requests run with the signed-in user's permissions and Foundry's governance and usage tracking, so you never ship a provider API key.
+
+<Callout type="warn">
+  These packages are pre-release. `@osdk/aip-core`, `@osdk/language-models`, and `@osdk/agents` are at version 0.x, and the React APIs ship from `/experimental` entry points. Expect breaking changes in minor releases.
+</Callout>
+
+## Packages
+
+| Package | Import | What it does | Maturity |
+| --- | --- | --- | --- |
+| `@osdk/aip-core` | `@osdk/aip-core` | `foundryModel`, `generateText`, `streamText`, tool definitions, and the `LmsChatTransport` chat transport. | 0.x |
+| `@osdk/aip-core` | `@osdk/aip-core/ai-sdk` | `createFoundryAI`, a Foundry provider for the [AI SDK](https://ai-sdk.dev) version 6. | 0.x |
+| `@osdk/language-models` | `@osdk/language-models` | Proxy base URLs and an authenticated `fetch` for the OpenAI, Anthropic, and Google SDKs. `@osdk/aip-core` is built on it. | 0.x |
+| `@osdk/react` | `@osdk/react/experimental/aip` | `useChat`, a hook that streams a conversation into React state. | Experimental |
+| `@osdk/react-components` | `@osdk/react-components/experimental/aip-agent-chat` | [`AipAgentChat`](/components/aip-agent-chat), a prebuilt chat panel built on `useChat`. | Experimental |
+| `@osdk/foundry.aipagents` | `@osdk/foundry.aipagents` | Platform SDK for agents built in AIP Agent Studio: sessions, blocking and streaming replies. | Beta endpoints |
+| `@osdk/agents` | `@osdk/agents`, `@osdk/agents/experimental` | `AgentConfig` and the injected `getClient` and `getPlatformClient` for code that runs inside an agent. | 0.x |
+
+## Which to use
+
+| Goal | Start with |
+| --- | --- |
+| Summarize, classify, or draft text from a script or server | [`generateText`](./chat.mdx) in Node.js |
+| Show an answer token by token | [`streamText`](./chat.mdx#stream-text) |
+| Let the model look up Ontology data or propose actions | [Tool calling](./tools.mdx) |
+| Add a chat panel to a React app with no custom UI | [`AipAgentChat`](/components/aip-agent-chat) |
+| Build your own chat UI | [`useChat`](./react.mdx) |
+| Use the AI SDK's helpers, Zod tools, and multi-step loop | [`@osdk/aip-core/ai-sdk`](./chat.mdx#use-the-ai-sdk) |
+| Call an OpenAI, Anthropic, or Google SDK feature that `@osdk/aip-core` lacks | [`@osdk/language-models`](./chat.mdx#call-a-provider-sdk-directly) |
+| Talk to an agent configured in AIP Agent Studio | [Agents](./agents.mdx) |
+
+`@osdk/language-models` is not superseded: `@osdk/aip-core` depends on it for the proxy URL. Use `@osdk/aip-core` for a provider-neutral API, and `@osdk/language-models` when you want a provider's own SDK.
+
+## Prerequisites
+
+| Requirement | Details |
+| --- | --- |
+| AIP on your enrollment | AIP must be enabled, and your users need permission to use AIP builder capabilities. |
+| OAuth scope | Third-party applications must request `api:use-language-models-execute`. The default scopes of `createPublicOauthClient` do not include it. Agents need `api:aip-agents-read` and `api:aip-agents-write`, or `api:agents-read` and `api:agents-write` for generated agents. |
+| A `PlatformClient` | `foundryModel`, `createFoundryAI`, and `AipAgentChat` take a client from `createPlatformClient`, not the Ontology `Client`. Create it with the same token provider. |
+| A model | Use a model API name, such as `"gpt-4o"`, or a registered model RID. Available models vary by enrollment; look them up in Model Catalog. |
+
+```ts title="src/model.ts"
+import { foundryModel } from "@osdk/aip-core";
+import { createPlatformClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+  {
+    scopes: [
+      "api:read-data",
+      "api:write-data",
+      "api:use-ontologies-read",
+      "api:use-ontologies-write",
+      "api:use-language-models-execute",
+    ],
+  },
+);
+
+export const platformClient = createPlatformClient(foundryUrl, auth);
+export const model = foundryModel({ client: platformClient, model: "gpt-4o" });
+```
+
+## Current limits
+
+| Limit | Applies to |
+| --- | --- |
+| One model call per request; you run the tool loop yourself. | `generateText`, `streamText` |
+| Tool `inputSchema` must be JSON Schema; Zod schemas are not converted. | `generateText`, `streamText` |
+| Text only: image and file parts are dropped with a warning. | `@osdk/aip-core`, `useChat` |
+| No structured JSON output, no `topK`. | `@osdk/aip-core`, `@osdk/aip-core/ai-sdk` |
+| No tools, multi-step loops, or stream resume. | `useChat`, `AipAgentChat` |
+
+The AI SDK provider lifts the first two: the AI SDK runs the loop and converts Zod schemas.
+
+<Cards>
+  <Card href="/ai/chat" title="Generate and stream text">
+    `generateText`, `streamText`, models, messages, and usage.
+  </Card>
+  <Card href="/ai/tools" title="Tool calling">
+    Query the Ontology and propose actions from model tool calls.
+  </Card>
+  <Card href="/ai/react" title="React chat UIs">
+    `useChat`, custom transports, and streaming rendering.
+  </Card>
+  <Card href="/ai/agents" title="Agents">
+    AIP Agents, generated agent sessions, and `@osdk/agents`.
+  </Card>
+  <Card href="/components/aip-agent-chat" title="AipAgentChat">
+    A prebuilt chat panel for React.
+  </Card>
+  <Card href="/ai/llms" title="Use these docs with AI">
+    `llms.txt`, per-page Markdown, and AGENTS.md for coding assistants.
+  </Card>
+</Cards>

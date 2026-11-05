@@ -4,6 +4,7 @@ consola
 dprint
 Emittery
 execa
+fumadocs
 genai
 immer
 jiti
@@ -28,5 +29,6 @@ trivago
 tsgolint
 tsup
 timecode
+turbopack
 ultracite
 utif

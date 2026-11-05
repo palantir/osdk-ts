@@ -1,0 +1,83 @@
+---
+title: useOsdkAggregation
+description: Run a server-side aggregation, such as counts or averages grouped by a property, and keep the result cached.
+---
+
+```ts
+import { useOsdkAggregation } from "@osdk/react";
+
+function useOsdkAggregation<
+  Q extends ObjectOrInterfaceDefinition,
+  const A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options: UseOsdkAggregationOptions<Q, A, RDPs>,
+): UseOsdkAggregationResult<Q, A>;
+
+function useOsdkAggregation<
+  Q extends ObjectTypeDefinition,
+  const A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
+): UseOsdkAggregationResult<Q, A>;
+```
+
+Aggregates every object of `type` that matches `where`, or the objects in `objectSet` when you pass one. `aggregate` takes the same `$select` and `$groupBy` clauses as `ObjectSet.aggregate`.
+
+## Options
+
+<auto-type-table path="../../../../packages/react/src/new/useOsdkAggregation.ts" name="UseOsdkAggregationOptions" />
+
+The second overload (`UseOsdkAggregationOptionsWithObjectSet`) adds a required `objectSet: ObjectSet<Q>` to aggregate a pivoted, filtered, or composed set. It accepts object types only, not interfaces.
+
+## Returns
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `data` | `AggregationsResults<Q, A> \| undefined` | The aggregation result. An array of groups when `$groupBy` is set, otherwise one object of metrics. |
+| `isLoading` | `boolean` | `true` while enabled and the result has not loaded. |
+| `error` | `Error \| undefined` | The error from the last run, if any. |
+| `refetch` | `() => Promise<void>` | Invalidates cached data for `type` and reruns the aggregation. No-op while disabled. |
+
+## Example
+
+```tsx title="src/HeadcountByDepartment.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkAggregation } from "@osdk/react";
+
+export function HeadcountByDepartment() {
+  const { data, isLoading, error } = useOsdkAggregation(Employee, {
+    aggregate: {
+      $select: { $count: "unordered", "salary:avg": "unordered" },
+      $groupBy: { department: "exact" },
+    },
+  });
+
+  return (
+    <table aria-busy={isLoading}>
+      <tbody>
+        {error && (
+          <tr>
+            <td role="alert">{error.message}</td>
+          </tr>
+        )}
+        {data?.map((group) => (
+          <tr key={group.$group.department}>
+            <td>{group.$group.department}</td>
+            <td>{group.$count}</td>
+            <td>{group.salary.avg}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## See also
+
+- [Aggregations](/react/aggregations)
+- [Aggregations in `@osdk/client`](/sdk/aggregations)

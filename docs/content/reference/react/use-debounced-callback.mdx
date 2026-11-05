@@ -1,0 +1,65 @@
+---
+title: useDebouncedCallback
+description: Debounce a callback, such as an action call from a text input, with cancel and flush controls.
+---
+
+```ts
+import { useDebouncedCallback } from "@osdk/react";
+
+function useDebouncedCallback<TArgs extends readonly unknown[]>(
+  callback: (...args: TArgs) => void | Promise<void>,
+  delay: number,
+): DebouncedCallback<TArgs>;
+```
+
+Returns a function that calls `callback` once `delay` milliseconds pass without another call. The latest `callback` is always used, and a pending call is cancelled when the component unmounts.
+
+## Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `callback` | `(...args: TArgs) => void \| Promise<void>` | The function to debounce. A returned promise is not awaited, so handle its errors inside `callback`. |
+| `delay` | `number` | Milliseconds to wait after the last call. |
+
+## Returns
+
+`DebouncedCallback<TArgs>`, a function with the same arguments as `callback` and two methods:
+
+| Member | Type | Description |
+| --- | --- | --- |
+| `(...args)` | `(...args: TArgs) => void` | Schedules `callback` with these arguments and cancels any pending call. |
+| `cancel` | `() => void` | Drops the pending call. |
+| `flush` | `() => void` | Runs the pending call immediately. |
+
+## Example
+
+```tsx title="src/JobTitleInput.tsx"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { useDebouncedCallback, useOsdkAction } from "@osdk/react";
+
+export function JobTitleInput({ employee }: { employee: Employee.OsdkInstance }) {
+  const { applyAction, error } = useOsdkAction(modifyEmployee);
+
+  const save = useDebouncedCallback(async (jobTitle: string) => {
+    try {
+      await applyAction({ employee, jobTitle });
+    } catch {
+      // The hook result exposes the failure as error.
+    }
+  }, 500);
+
+  return (
+    <>
+      <input
+        defaultValue={employee.jobTitle}
+        onChange={(e) => save(e.target.value)}
+      />
+      {error && <p role="alert">Could not save.</p>}
+    </>
+  );
+}
+```
+
+## See also
+
+- [Actions](/react/actions)

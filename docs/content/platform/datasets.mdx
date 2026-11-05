@@ -1,0 +1,281 @@
+---
+title: Datasets
+description: Read dataset files and tables, upload files in transactions, and manage branches with @osdk/foundry.datasets.
+foundryDocs:
+  - title: Datasets
+    path: data-integration/datasets
+  - title: Dataset API
+    path: api/v2/datasets-v2-resources/datasets/dataset-basics
+---
+
+`@osdk/foundry.datasets` reads and writes Foundry datasets. Use it to download a file, export a table as CSV or Arrow, upload files, and group several uploads into one transaction.
+
+```npm
+npm install @osdk/client @osdk/oauth @osdk/foundry.datasets
+```
+
+Every sample takes a `client` from `createClient` or `createPlatformClient`; see [Set up](./setup.mdx). Reads need the `api:datasets-read` scope and writes need `api:datasets-write`. A dataset is identified by its RID, such as `ri.foundry.main.dataset.<id>`.
+
+<Callout type="info">
+  This page describes version 2.78 of `@osdk/foundry.datasets`. In older versions, such as 2.5, `Files.content` and `Datasets.readTable` resolve to a `Blob` instead of a `Response`.
+</Callout>
+
+## Get a dataset
+
+`Datasets.get` returns the dataset's `rid`, `name`, and `parentFolderRid`. `Datasets.getSchema` returns its column schema:
+
+```ts title="src/describeDataset.ts"
+import type { Client } from "@osdk/client";
+import { Datasets } from "@osdk/foundry.datasets";
+
+export async function describeDataset(client: Client, datasetRid: string) {
+  const [dataset, { schema }] = await Promise.all([
+    Datasets.get(client, datasetRid),
+    Datasets.getSchema(client, datasetRid),
+  ]);
+  return {
+    name: dataset.name,
+    columns: schema.fieldSchemaList.map((field) => `${field.name}: ${field.type}`),
+  };
+}
+```
+
+`Datasets.getSchema` reads the latest committed version of the default branch. Pass `{ branchName }` or `{ endTransactionRid }` to read another.
+
+## Read a table
+
+`Datasets.readTable` exports a tabular dataset as CSV or Apache Arrow and resolves to a `Response`:
+
+```ts title="src/readCsv.ts"
+import type { Client } from "@osdk/client";
+import { Datasets } from "@osdk/foundry.datasets";
+
+export async function readCsv(client: Client, datasetRid: string): Promise<string> {
+  const response = await Datasets.readTable(client, datasetRid, {
+    format: "CSV",
+    columns: ["employeeId", "fullName", "department"],
+    rowLimit: 1000,
+  });
+  return response.text();
+}
+```
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `format` | `"CSV" \| "ARROW"` | Required. The export format. |
+| `columns` | `string[]` | Required. The columns to include. Pass `[]` for all columns. |
+| `rowLimit` | `number` | The maximum number of rows. Row order is not deterministic. |
+| `branchName` | `string` | The branch to read. Defaults to the dataset's default branch. |
+| `startTransactionRid`, `endTransactionRid` | `string` | Read the view at, or between, specific transactions. |
+
+For `"ARROW"`, read the body with `response.arrayBuffer()` and decode it with an Arrow library such as `apache-arrow`. `readTable` does not support views.
+
+## List and download files
+
+`Files.list` lists the files in the latest view of the default branch, one page at a time. `Files.content` downloads one file:
+
+```ts title="src/downloadFiles.ts"
+import type { Client } from "@osdk/client";
+import { Files } from "@osdk/foundry.datasets";
+
+export async function listCsvFiles(client: Client, datasetRid: string): Promise<string[]> {
+  const { data } = await Files.list(client, datasetRid, { pageSize: 100 });
+  return data.filter((file) => file.path.endsWith(".csv")).map((file) => file.path);
+}
+
+export async function downloadFile(
+  client: Client,
+  datasetRid: string,
+  filePath: string,
+): Promise<Blob> {
+  const response = await Files.content(client, datasetRid, filePath);
+  return response.blob();
+}
+```
+
+Each `File` has `path`, `transactionRid`, `sizeBytes` (a string, when known), and `updatedTime`. `Files.get` returns the same metadata for one path.
+
+`Files.list`, `Files.get`, and `Files.content` take the same view options:
+
+| Option | Reads |
+| --- | --- |
+| None | The latest view of the default branch. |
+| `branchName` | The latest view of that branch. |
+| `endTransactionRid` | The view as of that transaction. |
+| `startTransactionRid` and `endTransactionRid` | Files changed between the two transactions. Set both to the same RID to see only that transaction's files. |
+
+To read every page of `Files.list`, use the `paginate` helper from [Call platform APIs](./calling-apis.mdx#paginate).
+
+## Upload a single file
+
+`Files.upload` takes the dataset RID, the file path, and the content as a `Blob`. Without options, it uploads in a new transaction on the default branch and commits it:
+
+```ts title="src/uploadFile.ts"
+import type { Client } from "@osdk/client";
+import { Files } from "@osdk/foundry.datasets";
+
+export async function uploadCsv(client: Client, datasetRid: string, csv: string) {
+  return Files.upload(
+    client,
+    datasetRid,
+    "exports/employees.csv",
+    new Blob([csv], { type: "text/csv" }),
+  );
+}
+```
+
+It resolves to the new `File`. If a file already exists at that path, only the newest version is visible afterwards.
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `branchName` | `string` | Upload to this branch in a new transaction, which is committed. |
+| `transactionType` | `"APPEND" \| "UPDATE" \| "SNAPSHOT" \| "DELETE"` | With `branchName`, the type of the new transaction. Defaults to `"UPDATE"`. |
+| `transactionRid` | `string` | Upload into an open transaction that you commit yourself. |
+
+In a browser, a `File` from `<input type="file">` is a `Blob`, so you can pass it as the content.
+
+## Upload in a transaction
+
+To upload several files atomically, open a transaction, upload into it, then commit. If anything fails, abort it so no partial upload becomes visible:
+
+<Steps>
+<Step>
+
+Create a transaction with `Transactions.create`. Pass the branch as a query parameter, or omit it for the default branch.
+
+</Step>
+<Step>
+
+Upload each file with `Files.upload`, passing `transactionRid`.
+
+</Step>
+<Step>
+
+Call `Transactions.commit`, or `Transactions.abort` on failure.
+
+</Step>
+</Steps>
+
+```ts title="src/uploadBatch.ts"
+import type { Client } from "@osdk/client";
+import { Files, Transactions } from "@osdk/foundry.datasets";
+
+export async function replaceDatasetContents(
+  client: Client,
+  datasetRid: string,
+  files: Array<{ path: string; content: Blob }>,
+) {
+  const transaction = await Transactions.create(
+    client,
+    datasetRid,
+    { transactionType: "SNAPSHOT" },
+    { branchName: "master" },
+  );
+
+  try {
+    for (const file of files) {
+      await Files.upload(client, datasetRid, file.path, file.content, {
+        transactionRid: transaction.rid,
+      });
+    }
+    return await Transactions.commit(client, datasetRid, transaction.rid);
+  } catch (error) {
+    await Transactions.abort(client, datasetRid, transaction.rid);
+    throw error;
+  }
+}
+```
+
+The transaction type decides what the committed view contains:
+
+| Type | Effect on the view |
+| --- | --- |
+| `SNAPSHOT` | Replaces every file. The view contains only files from this transaction. |
+| `UPDATE` | Adds files and overwrites files at the same paths. |
+| `APPEND` | Adds new files. It cannot overwrite existing files. |
+| `DELETE` | Removes files. Use it with `Files.deleteFile` and `transactionRid`. |
+
+A `Transaction` has `rid`, `transactionType`, `status` (`"OPEN"`, `"COMMITTED"`, or `"ABORTED"`), `createdTime`, and `closedTime`. Check a transaction later with `Transactions.get`.
+
+## Delete a file
+
+`Files.deleteFile` removes a file in a new `DELETE` transaction on the default branch, which it commits. The file stays visible in historical views. Pass `branchName` for another branch, or `transactionRid` to delete several files in one open `DELETE` transaction:
+
+```ts title="src/deleteFile.ts"
+import type { Client } from "@osdk/client";
+import { Files } from "@osdk/foundry.datasets";
+
+export async function deleteExport(client: Client, datasetRid: string) {
+  await Files.deleteFile(client, datasetRid, "exports/employees.csv");
+}
+```
+
+## Work with branches
+
+`Branches` creates, reads, lists, and deletes dataset branches. A new branch can point at a committed transaction:
+
+```ts title="src/branches.ts"
+import type { Client } from "@osdk/client";
+import { Branches, Files } from "@osdk/foundry.datasets";
+
+export async function uploadToFeatureBranch(
+  client: Client,
+  datasetRid: string,
+  content: Blob,
+) {
+  const main = await Branches.get(client, datasetRid, "master");
+  await Branches.create(client, datasetRid, {
+    name: "feature-update",
+    transactionRid: main.transactionRid,
+  });
+  await Files.upload(client, datasetRid, "data/latest.csv", content, {
+    branchName: "feature-update",
+  });
+
+  const { data } = await Branches.list(client, datasetRid);
+  return data.map((branch) => branch.name);
+}
+```
+
+Each `Branch` has a `name` and the `transactionRid` it points to, if any. Delete one with `Branches.deleteBranch(client, datasetRid, branchName)`. The default branch is `master` on most stacks.
+
+## Create a dataset
+
+`Datasets.create` creates an empty dataset in a folder, with a default branch:
+
+```ts title="src/createDataset.ts"
+import type { Client } from "@osdk/client";
+import { Datasets } from "@osdk/foundry.datasets";
+
+export async function createDataset(client: Client, folderRid: string) {
+  const dataset = await Datasets.create(client, {
+    name: "employee-exports",
+    parentFolderRid: folderRid,
+  });
+  return dataset.rid;
+}
+```
+
+## Reference
+
+| Function | Endpoint | Scope | Returns |
+| --- | --- | --- | --- |
+| `Datasets.get(client, datasetRid)` | `GET /v2/datasets/{datasetRid}` | `api:datasets-read` | `Dataset` |
+| `Datasets.create(client, body)` | `POST /v2/datasets` | `api:datasets-write` | `Dataset` |
+| `Datasets.getSchema(client, datasetRid, query?)` | `GET /v2/datasets/{datasetRid}/getSchema` | `api:datasets-read` | `GetDatasetSchemaResponse` |
+| `Datasets.readTable(client, datasetRid, query)` | `GET /v2/datasets/{datasetRid}/readTable` | `api:datasets-read` | `Response` |
+| `Files.list(client, datasetRid, query?)` | `GET /v2/datasets/{datasetRid}/files` | `api:datasets-read` | `ListFilesResponse` |
+| `Files.get(client, datasetRid, filePath, query?)` | `GET /v2/datasets/{datasetRid}/files/{filePath}` | `api:datasets-read` | `File` |
+| `Files.content(client, datasetRid, filePath, query?)` | `GET /v2/datasets/{datasetRid}/files/{filePath}/content` | `api:datasets-read` | `Response` |
+| `Files.upload(client, datasetRid, filePath, blob, query?)` | `POST /v2/datasets/{datasetRid}/files/{filePath}/upload` | `api:datasets-write` | `File` |
+| `Files.deleteFile(client, datasetRid, filePath, query?)` | `DELETE /v2/datasets/{datasetRid}/files/{filePath}` | `api:datasets-write` | `void` |
+| `Transactions.create(client, datasetRid, body, query?)` | `POST /v2/datasets/{datasetRid}/transactions` | `api:datasets-write` | `Transaction` |
+| `Transactions.get(client, datasetRid, transactionRid)` | `GET /v2/datasets/{datasetRid}/transactions/{transactionRid}` | `api:datasets-read` | `Transaction` |
+| `Transactions.commit(client, datasetRid, transactionRid)` | `POST .../transactions/{transactionRid}/commit` | `api:datasets-write` | `Transaction` |
+| `Transactions.abort(client, datasetRid, transactionRid)` | `POST .../transactions/{transactionRid}/abort` | `api:datasets-write` | `Transaction` |
+| `Branches.list(client, datasetRid, query?)` | `GET /v2/datasets/{datasetRid}/branches` | `api:datasets-read` | `ListBranchesResponse` |
+| `Branches.get(client, datasetRid, branchName)` | `GET /v2/datasets/{datasetRid}/branches/{branchName}` | `api:datasets-read` | `Branch` |
+| `Branches.create(client, datasetRid, body)` | `POST /v2/datasets/{datasetRid}/branches` | `api:datasets-write` | `Branch` |
+| `Branches.deleteBranch(client, datasetRid, branchName)` | `DELETE /v2/datasets/{datasetRid}/branches/{branchName}` | `api:datasets-write` | `void` |
+
+All of these are stable. The package also covers views (`Views`) and a dataset's schedules (`Datasets.getSchedules`), and has preview endpoints for transaction history, jobs, and health checks that need `preview: true`, as described in [Call platform APIs](./calling-apis.mdx#preview-endpoints).

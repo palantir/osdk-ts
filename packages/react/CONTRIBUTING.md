@@ -268,7 +268,7 @@ For data-fetching hooks, errors are `PalantirApiError` instances with an `errorD
    - Support `where`, `orderBy`, and `pageSize` if the hook fetches collections.
 4. **Export the hook** from `src/public/experimental.ts`.
 5. **Write tests** in `src/new/__tests__/` or `test/`.
-6. **Add documentation** in `docs/react/` (see [Documentation](#documentation)).
+6. **Add documentation** in `docs/content/react/` (see [Documentation](#documentation)).
 
 ## Cache and Invalidation
 
@@ -340,21 +340,27 @@ pnpm --dir packages/react vitest
 
 ## Documentation
 
-User-facing documentation lives in `docs/react/` at the monorepo root:
+User-facing documentation lives in `docs/content/react/` at the monorepo root and is published to https://palantir.github.io/osdk-ts/. Follow [`docs/AGENTS.md`](../../docs/AGENTS.md) when writing it. The same files ship in this package's `docs/` folder.
 
-| File                  | Covers                                                                                  |
-| --------------------- | --------------------------------------------------------------------------------------- |
-| `getting-started.md`  | Installation, provider setup, basic usage                                               |
-| `querying-data.md`    | `useOsdkObjects`, `useOsdkObject`, filtering, sorting, pagination                       |
-| `advanced-queries.md` | `useObjectSet`, `useOsdkAggregation`, `useOsdkFunction`, derived properties, `useLinks` |
-| `actions.md`          | `useOsdkAction`, validation, optimistic updates, `useDebouncedCallback`                 |
-| `cache-management.md` | Cache model, automatic and manual invalidation                                          |
-| `platform-apis.md`    | `useCurrentFoundryUser`, `useFoundryUser`, `useFoundryUsersList`                        |
+| File                     | Covers                                                            |
+| ------------------------ | ----------------------------------------------------------------- |
+| `objects.mdx`            | `useOsdkObjects`, `useOsdkObject`, filtering, sorting, pagination |
+| `links.mdx`              | `useLinks`, `pivotTo`                                             |
+| `object-sets.mdx`        | `useObjectSet`, `useStableObjectSet`, derived properties          |
+| `aggregations.mdx`       | `useOsdkAggregation`                                              |
+| `functions.mdx`          | `useOsdkFunction`, `useOsdkFunctions`                             |
+| `actions.mdx`            | `useOsdkAction`, validation, `useDebouncedCallback`               |
+| `optimistic-updates.mdx` | Optimistic edits and `devMode`                                    |
+| `cache-invalidation.mdx` | Manual invalidation with `useObservableClient`                    |
+| `platform-apis.mdx`      | `@osdk/react/platform-apis` user and marking hooks                |
+| `testing.mdx`            | `@osdk/react/testing` and `@osdk/unit-testing`                    |
+
+Setup and concepts live one level up: `installation.mdx`, `client.mdx`, and `concepts/`.
 
 When adding or modifying a hook:
 
-- Update the relevant doc file with usage examples, options, and return values.
-- If adding a new category of hook, create a new doc file and link it from `getting-started.md`.
+- Update the relevant page with usage examples, options, and return values.
+- If adding a new category of hook, create a new page and add it to `docs/content/react/meta.json`.
 - Include both correct and incorrect usage patterns to guide consumers.
 
 ## Submitting a Pull Request

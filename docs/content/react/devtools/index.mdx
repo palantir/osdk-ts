@@ -1,0 +1,150 @@
+---
+title: OSDK Devtools
+description: Add an in-app panel that shows Ontology usage, hook owners, console output, and the observable cache of a running OSDK React app.
+---
+
+`@osdk/react-devtools` adds a panel to your `@osdk/react` app during development. Use it to see which components own OSDK hooks, how often reads hit the cache, and what your app logs to the console.
+
+<Callout type="warn">
+  `@osdk/react-devtools` is experimental. Its panels and metrics can change between minor versions.
+</Callout>
+
+## Set up the panel
+
+<Steps>
+<Step>
+
+### Install the package
+
+Add `@osdk/react-devtools` as a dev dependency:
+
+```npm
+npm install -D @osdk/react-devtools
+```
+
+The package has peer dependencies on `@osdk/api`, `@osdk/client`, `@osdk/react`, `react`, `react-dom`, `@types/react`, and `vite` 5, 6, or 7. An OSDK React app created with `@osdk/create-app` already has them.
+
+</Step>
+<Step>
+
+### Add the Vite plugin
+
+Import `osdkDevTools` from `@osdk/react-devtools/vite` and add it to `plugins`:
+
+```ts title="vite.config.ts"
+import { osdkDevTools } from "@osdk/react-devtools/vite";
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [react(), osdkDevTools()],
+});
+```
+
+`osdkDevTools` is also the default export of `@osdk/react-devtools/vite`.
+
+</Step>
+<Step>
+
+### Keep your existing provider
+
+You do not add any JSX. During `vite dev`, the plugin injects two scripts into `index.html`: one that installs a React Fiber hook, and one that imports the panel:
+
+```html
+<script type="module">import '@osdk/react-devtools';</script>
+```
+
+The import registers the devtools with `@osdk/react`. Your existing `OsdkProvider` then wraps its client with the monitor and renders the panel:
+
+```tsx title="src/main.tsx"
+import { OsdkProvider } from "@osdk/react";
+import ReactDOM from "react-dom/client";
+import App from "./App.js";
+import { client } from "./client.js";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider client={client}>
+    <App />
+  </OsdkProvider>,
+);
+```
+
+</Step>
+<Step>
+
+### Start the dev server
+
+Run your dev script, for example `npm run dev`. The panel opens in the top right corner of the page on the Overview tab.
+
+</Step>
+</Steps>
+
+## Plugin options
+
+All options are optional.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `enabled` | `boolean` | `true` unless `NODE_ENV` is `"production"` | Set to `false` to keep the plugin in your config without injecting the panel. |
+| `verbose` | `boolean` | `false` | Logs plugin diagnostics, including whether the scripts were injected into `index.html`. |
+
+```ts title="vite.config.ts"
+osdkDevTools({ enabled: true, verbose: true });
+```
+
+## Open and arrange the panel
+
+Select **Minimize** in the panel header to collapse it to a `</>` launcher in the bottom right corner. Select the launcher to reopen the panel.
+
+![Collapsed OSDK Devtools launcher](/img/react-devtools/launcher.png)
+
+The header controls apply to every tab:
+
+| Control | What it does |
+| --- | --- |
+| Theme | Cycles through dark (the default), light, and auto, which follows your system setting. |
+| Dock mode | Cycles through floating, docked to the bottom, and docked to the right. |
+| Reset metrics | Clears the metrics collected in this session. It does not change app data or the cache. |
+| Minimize | Collapses the panel to the `</>` launcher. |
+
+Drag the header to move a floating panel, and drag an edge or corner to resize it. The panel saves its position, size, theme, dock mode, and collapsed state in `localStorage`, so they survive reloads.
+
+## Tabs
+
+| Tab | Use it to |
+| --- | --- |
+| [Overview](./overview.mdx) | See Ontology usage, requests saved, cache hit rate, optimistic coverage, errors, overfetching, and recommendations. |
+| [Components](./components.mdx) | Find which React components call OSDK hooks and which object types, actions, and properties they use. |
+| [Console](./console.mdx) | Search and filter captured console output by level. |
+| [Cache](./cache.mdx) | Inspect cache entries, invalidate them, and review recent cache hits and misses. |
+
+## How collection works
+
+The panel observes the app you already run. It does not send its own requests.
+
+- **Requests and cache.** The devtools wrap the observable client that `OsdkProvider` creates and record the cache reads, network requests, and actions that pass through it. Data you load with raw `fetch`, `axios`, or another state library does not appear.
+- **Components.** The injected Fiber hook attributes each `@osdk/react` hook to the component that mounted it. The hook must install before React loads. If React loads first, the panel still works but shows a notice that component inspection is unavailable.
+- **Console.** The monitor captures `console` calls made while the page is open.
+
+Open the panel before you exercise the flow you want to inspect, and use **Reset metrics** to start from zero.
+
+## Production builds
+
+The plugin applies only to `vite dev` and `vite serve`. It does nothing during `vite build`, in `production` mode, or under Vitest, so the panel does not ship to users. To turn it off during development, do one of the following:
+
+- Pass `osdkDevTools({ enabled: false })`.
+- Remove `osdkDevTools()` from `plugins`.
+- Uninstall `@osdk/react-devtools`.
+
+## Compatibility
+
+Use compatible versions of `@osdk/react-devtools` and your other `@osdk/*` packages. Mismatched versions can behave unexpectedly. See [Installation](../../(docs)/installation.mdx) for how to keep OSDK packages in sync.
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| The panel does not appear. | Confirm `osdkDevTools()` is in `plugins`, `enabled` is not `false`, and you run `vite dev`. Set `verbose: true` and look for `Injected devtools into HTML` in the terminal. Your `index.html` needs a `</head>` or `</body>` tag. |
+| The panel appears but shows no data. | Confirm the app renders `OsdkProvider` and the screen reads data through `@osdk/react` hooks. |
+| Component inspection is unavailable. | Something loaded React before the injected script. Remove manual imports or scripts in `index.html` that load React ahead of it. |
+| The panel appears in a deployed build. | Look for code that imports `@osdk/react-devtools` directly, or a stale development bundle on the server. |

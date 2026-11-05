@@ -1,0 +1,71 @@
+---
+title: OsdkProvider
+description: React context provider that shares an OSDK client and its normalized cache with every hook below it.
+---
+
+```ts
+import { OsdkProvider } from "@osdk/react";
+
+function OsdkProvider(props: {
+  children: React.ReactNode;
+  client: Client;
+  enableDevTools?: boolean;
+  devMode?: ObservableClientOptions["devMode"];
+}): React.JSX.Element;
+```
+
+Wraps your app so `@osdk/react` hooks can reach the client. The provider builds an `ObservableClient` from `client`, which holds the shared cache, and rebuilds it whenever `client` changes.
+
+## Props
+
+The props type is not exported, so this table is written by hand.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `client` | `Client` | | The client from `createClient` in `@osdk/client`. Create it once at module scope; a new instance starts a new, empty cache. |
+| `children` | `React.ReactNode` | | The tree that uses OSDK hooks. |
+| `enableDevTools` | `boolean` | `true` when devtools are registered | Turns the devtools integration on or off. Ignored in production builds. |
+| `devMode` | `ObservableClientOptions["devMode"]` | | Development-only behavior of the observable client. Ignored in production builds. See the fields below. |
+
+### `devMode` fields
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `actionDelayMs` | `number` | Delay, in milliseconds, applied to the result of an action that has an optimistic update, so the optimistic state stays visible. Defaults to `1000`; pass `0` to disable it. |
+| `logLevel` | `"trace" \| "debug" \| "info" \| "warn" \| "error" \| "fatal"` | Log level of the observable client. Defaults to `"error"`; pass `"debug"` to see its tracing. |
+| `debug.refCounts` | `boolean` | Logs the reference-count lifecycle of cache entries and shortens their retention window. |
+| `debug.cacheKeys` | `boolean` | Logs cache-key lookups. |
+
+## Example
+
+```tsx title="src/Root.tsx"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+import { OsdkProvider } from "@osdk/react";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+const client = createClient(foundryUrl, $ontologyRid, auth);
+
+function App() {
+  return <main>My app</main>;
+}
+
+export function Root() {
+  return (
+    <OsdkProvider client={client}>
+      <App />
+    </OsdkProvider>
+  );
+}
+```
+
+## See also
+
+- [Create a client](/client)
+- [Devtools](/devtools)

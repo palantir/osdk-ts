@@ -1,0 +1,365 @@
+---
+title: Interfaces and shared properties
+description: Define shared property types and interfaces with @osdk/maker, implement them on object types, and add interface links, actions, and schema migrations.
+foundryDocs:
+  - title: Interfaces
+    path: interfaces/interface-overview
+---
+
+A shared property type is a property definition that several object types reuse. An interface is a contract of properties and links that object types implement, so code can work with any object that is a `Worker` without knowing its concrete type. Define both with `@osdk/maker` in your `.ontology/ontology.mts` file.
+
+## Shared property types
+
+```ts title=".ontology/ontology.mts"
+import { defineSharedPropertyType } from "@osdk/maker";
+
+export const name = defineSharedPropertyType({
+  apiName: "name",
+  type: "string",
+  displayName: "Name",
+  description: "A person's display name.",
+});
+
+export const skills = defineSharedPropertyType({
+  apiName: "skills",
+  type: "string",
+  array: true,
+  displayName: "Skills",
+});
+```
+
+`type`, `array`, `reducers`, `description`, `visibility`, `nullability`, `typeClasses`, and `baseFormatter` work as they do on [object type properties](./object-types.mdx#properties). The other options:
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiName` | `string` | | Required. The API name, without the namespace. |
+| `displayName` | `string` | `apiName` | The name shown in Foundry. |
+| `aliases` | `Array<string>` | | Other names to find the property by in search. |
+| `valueType` | `OntologyIrValueTypeReferenceWithMetadata` | | A reference to an installed value type. |
+| `gothamMapping` | `SharedPropertyTypeGothamMapping` | | A mapping to a Gotham property. |
+| `permission` | `"roles" \| "publicProject" \| { type: "ontologyPackage"; ontologyPackageRid: string }` | | The permission model. |
+
+To back an object type's property with a shared property type, set `sharedPropertyType` on the property and keep `type` and `array` the same as the shared property type's:
+
+```ts title=".ontology/ontology.mts"
+import { defineObject, defineSharedPropertyType } from "@osdk/maker";
+
+export const skills = defineSharedPropertyType({
+  apiName: "skills",
+  type: "string",
+  array: true,
+});
+
+export const contractor = defineObject({
+  apiName: "Contractor",
+  displayName: "Contractor",
+  pluralDisplayName: "Contractors",
+  primaryKeyPropertyApiName: "contractorId",
+  titlePropertyApiName: "contractorId",
+  properties: {
+    contractorId: { type: "string" },
+    skills: { type: "string", array: true, sharedPropertyType: skills },
+  },
+});
+```
+
+### Refer to a shared property type defined elsewhere
+
+`importSharedPropertyType` refers to a shared property type that another ontology defines. Maker records it as an imported type, and `typeHint` tells the SDK generator its type:
+
+```ts title=".ontology/ontology.mts"
+import { importSharedPropertyType } from "@osdk/maker";
+
+export const costCenter = importSharedPropertyType({
+  apiName: "costCenter",
+  packageName: "com.example.finance",
+  typeHint: "string",
+});
+```
+
+The full API name is `<packageName>.<apiName>`, here `com.example.finance.costCenter`. `packageName` must be lowercase and cannot end with `.`. To import many types from an existing ontology at once, use [`@osdk/maker-import`](./import.mdx).
+
+## Define an interface
+
+```ts title=".ontology/ontology.mts"
+import { defineInterface, defineSharedPropertyType } from "@osdk/maker";
+
+export const name = defineSharedPropertyType({ apiName: "name", type: "string" });
+export const email = defineSharedPropertyType({ apiName: "email", type: "string" });
+
+export const party = defineInterface({
+  apiName: "Party",
+  displayName: "Party",
+  properties: { name },
+});
+
+export const worker = defineInterface({
+  apiName: "Worker",
+  displayName: "Worker",
+  description: "Anyone who does work for the company.",
+  icon: { locator: "person", color: "#2D72D2" },
+  extends: [party],
+  properties: {
+    email: { sharedPropertyType: email, required: false },
+    jobTitle: { type: "string", displayName: "Job title" },
+    hourlyRate: { type: "double", required: false },
+  },
+});
+```
+
+`Worker` inherits `name` from `Party`, so an object type that implements `Worker` must provide `name` and `jobTitle`, and may provide `email` and `hourlyRate`.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiName` | `string` | | Required. The API name, without the namespace. |
+| `displayName` | `string` | `apiName` | The name shown in Foundry. |
+| `description` | `string` | `displayName` | A description shown in Foundry. |
+| `icon` | `{ locator: BlueprintIcon; color: string }` | | A Blueprint icon name and a hex color. |
+| `properties` | `Record<string, InterfaceProperty>` | | The properties, keyed by API name. See below. |
+| `extends` | `InterfaceType \| Array<InterfaceType>` | | Interfaces whose properties this interface inherits. Pass the values `defineInterface` returned. |
+| `status` | `{ type: "active" } \| { type: "experimental" } \| { type: "example" } \| { type: "deprecated"; message: string; deadline: string }` | `{ type: "active" }` | The interface's status. |
+| `searchable` | `boolean` | `true` | Whether the interface appears in search. |
+| `permission` | `"roles" \| "publicProject" \| { type: "ontologyPackage"; ontologyPackageRid: string }` | | The permission model. |
+| `schemaMigrations` | `{ transitions: Array<Transition> }` | | Opts into schema migrations. See [Schema migrations](#schema-migrations). |
+
+Each entry in `properties` takes one of three forms:
+
+| Form | Example | Required to implement |
+| --- | --- | --- |
+| A shared property type | `name` | Yes |
+| A shared property type with a flag | `{ sharedPropertyType: email, required: false }` | As set |
+| An interface-defined property | `{ type: "string", required?: boolean, displayName?, description?, array?, primaryKeyConstraint? }` | `required`, default `true` |
+
+When you use a shared property type, its key must be the shared property type's API name: `properties: { name }` works, and `properties: { fullName: name }` throws. `primaryKeyConstraint` is `"MUST_BE_PK"`, `"CANNOT_BE_PK"`, or `"NO_RESTRICTION"`.
+
+<Callout type="info">
+  Locally generated SDKs include only the shared-property-type properties of an interface. Interface-defined properties are in the IR but not in the SDK that `@osdk/vite-plugin-oac` generates. See [Local development](./local-development.mdx#limitations).
+</Callout>
+
+## Implement an interface
+
+List the interface in the object type's `implementsInterfaces`, and map each interface property to one of the object's properties:
+
+```ts title=".ontology/ontology.mts"
+import { defineInterface, defineObject, defineSharedPropertyType } from "@osdk/maker";
+
+export const name = defineSharedPropertyType({ apiName: "name", type: "string" });
+
+export const worker = defineInterface({
+  apiName: "Worker",
+  displayName: "Worker",
+  properties: {
+    name,
+    jobTitle: { type: "string" },
+  },
+});
+
+export const employee = defineObject({
+  apiName: "Employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  primaryKeyPropertyApiName: "employeeId",
+  titlePropertyApiName: "fullName",
+  properties: {
+    employeeId: { type: "integer" },
+    fullName: { type: "string" },
+    jobTitle: { type: "string" },
+  },
+  implementsInterfaces: [
+    {
+      implements: worker,
+      propertyMapping: [
+        { interfaceProperty: "name", mapsTo: "fullName" },
+        { interfaceProperty: "jobTitle", mapsTo: "jobTitle" },
+      ],
+    },
+  ],
+});
+```
+
+`defineObject` throws if a required interface property, including one inherited through `extends`, is not mapped, if a mapping names an interface property that does not exist, or if the object property's type differs from the interface property's type.
+
+## Interface links
+
+`defineInterfaceLinkConstraint` adds a link to an interface. Every object type that implements the interface must provide the link when `required` is `true`.
+
+```ts title=".ontology/ontology.mts"
+import { defineInterface, defineInterfaceLinkConstraint } from "@osdk/maker";
+
+export const worker = defineInterface({
+  apiName: "Worker",
+  displayName: "Worker",
+  properties: { jobTitle: { type: "string" } },
+});
+
+export const workerManager = defineInterfaceLinkConstraint({
+  apiName: "manager",
+  from: worker,
+  toOne: worker,
+  displayName: "Manager",
+  required: false,
+});
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `apiName` | `string` | | Required. The link's API name on the `from` interface. |
+| `from` | `InterfaceType` | | Required. The interface the link belongs to. It must be defined in this ontology, not imported. |
+| `toOne` or `toMany` | `InterfaceType \| string` | | Required, exactly one. The target interface, or its API name. |
+| `displayName` | `string` | `apiName` | The name shown in Foundry. |
+| `description` | `string` | `displayName` | A description shown in Foundry. |
+| `required` | `boolean` | `true` | Whether implementing object types must provide the link. |
+
+## Interface actions
+
+These helpers generate action types that work on any object that implements an interface. Their options match the [object action helpers](./links-and-actions.mdx#helper-options), with `interfaceType` in place of `objectType`.
+
+| Helper | Default API name | What it does |
+| --- | --- | --- |
+| `defineCreateInterfaceObjectAction` | `create-<interface>`, or `create-<interface>-<object>` with `objectType` | Creates an object that implements the interface. Without `objectType`, the user picks the object type in an `objectTypeParameter` parameter. |
+| `defineModifyInterfaceObjectAction` | `modify-<interface>`, or `modify-<interface>-<object>` with `objectType` | Modifies an object through the interface's properties. |
+| `defineDeleteInterfaceObjectAction` | `delete-interface-object-<interface>` | Deletes an object that implements the interface. |
+| `defineCreateInterfaceLinkAction` | Derived from the interface and link names | Adds an interface link between two objects. |
+| `defineDeleteInterfaceLinkAction` | Derived from the interface and link names | Removes an interface link. |
+
+```ts title=".ontology/ontology.mts"
+import {
+  defineCreateInterfaceLinkAction,
+  defineCreateInterfaceObjectAction,
+  defineDeleteInterfaceObjectAction,
+  defineInterface,
+  defineInterfaceLinkConstraint,
+  defineModifyInterfaceObjectAction,
+} from "@osdk/maker";
+
+export const worker = defineInterface({
+  apiName: "Worker",
+  displayName: "Worker",
+  properties: {
+    jobTitle: { type: "string" },
+    hourlyRate: { type: "double", required: false },
+  },
+});
+
+export const workerManager = defineInterfaceLinkConstraint({
+  apiName: "manager",
+  from: worker,
+  toOne: worker,
+});
+
+export const createWorker = defineCreateInterfaceObjectAction({ interfaceType: worker });
+
+export const modifyWorker = defineModifyInterfaceObjectAction({
+  interfaceType: worker,
+  excludedProperties: ["hourlyRate"],
+});
+
+export const deleteWorker = defineDeleteInterfaceObjectAction({ interfaceType: worker });
+
+export const setManager = defineCreateInterfaceLinkAction({ interfaceLink: workerManager });
+```
+
+The link actions take the value `defineInterfaceLinkConstraint` returned as `interfaceLink`, or the link's API name together with `from`. Use `sourceParameter` and `targetParameter` to rename their two parameters.
+
+### Action type constraints
+
+`defineInterfaceActionTypeConstraint` declares an action that implementing object types provide, with the parameters it must accept:
+
+```ts title=".ontology/ontology.mts"
+import { defineInterface, defineInterfaceActionTypeConstraint } from "@osdk/maker";
+
+export const worker = defineInterface({
+  apiName: "Worker",
+  displayName: "Worker",
+  properties: { jobTitle: { type: "string" } },
+});
+
+defineInterfaceActionTypeConstraint({
+  interfaceType: worker,
+  apiName: "reassign",
+  displayName: "Reassign",
+  description: "Moves a worker to a new team.",
+  requireImplementation: false,
+  parameters: [
+    {
+      apiName: "team",
+      displayName: "Team",
+      type: { type: "string", string: {} },
+      requireImplementation: true,
+    },
+  ],
+});
+```
+
+The interface must be defined in this ontology, and the constraint's API name must be unique on it.
+
+## Schema migrations
+
+<Callout type="warn">
+  Interface schema migrations are in beta in Foundry and may not be available on your enrollment.
+</Callout>
+
+Changing a published interface can break the object types that implement it. A schema migration announces a change and gives implementers a grace period before it is enforced. Adding `schemaMigrations` to an interface also turns on compatibility checks, so maker rejects breaking changes that are not staged as a migration.
+
+The only migration is `addRequiredProperty`, which makes an optional property required. While the migration is active, the property stays `required: false`:
+
+```ts title=".ontology/ontology.mts"
+import { defineInterface } from "@osdk/maker";
+
+export const order = defineInterface({
+  apiName: "Order",
+  displayName: "Order",
+  properties: {
+    orderId: { type: "string" },
+    shippedAt: { type: "timestamp", required: false },
+  },
+  schemaMigrations: {
+    transitions: [
+      {
+        id: "requireShippedAt",
+        title: "Require shipped at",
+        description: "Every order must record when it shipped.",
+        gracePeriod: { type: "afterInstall", days: 45 },
+        instructions: [{ type: "addRequiredProperty", property: "shippedAt" }],
+      },
+    ],
+  },
+});
+```
+
+A transition groups migrations that are finalized or deleted together:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | A stable ID, unique on the interface. 1 to 150 characters: a letter or digit, then letters, digits, `_`, or `-`. |
+| `title` | `string` | A summary of the change. |
+| `description` | `string` | Optional details. |
+| `gracePeriod` | `{ type: "afterInstall"; days: number } \| { type: "deadline"; deadline: string }` | How long implementers have to comply. `afterInstall` allows 7 to 180 days and suits Marketplace-distributed ontologies. `deadline` is an ISO 8601 UTC date-time, and installing after it fails. |
+| `instructions` | `Array<{ type: "addRequiredProperty"; property: string }>` | The migrations in the transition. |
+
+Use `schemaMigrations: { transitions: [] }` to turn on compatibility checks without a migration.
+
+### The lockfile
+
+Maker tracks opted-in interfaces in `ontology-schema-lock.json`, next to the ontology file. Commit it.
+
+<Steps>
+<Step>
+
+### Create the lockfile
+
+```sh
+npx maker -i .ontology/ontology.mts --write-locks
+```
+
+Without `--write-locks`, maker fails when an interface has opted in and no lockfile exists, or when the lockfile is out of date.
+
+</Step>
+<Step>
+
+### End a transition
+
+After the grace period, remove the transition and update the schema in the same change: set the property to `required: true` to **finalize**, or leave it optional to **delete** the transition. Then run `maker --write-locks` again. Maker compares the schema with the lockfile, asks you to confirm `FINALIZE` or `DELETE`, and rejects a schema that matches neither. Pass `--yes` to confirm without a prompt.
+
+</Step>
+</Steps>

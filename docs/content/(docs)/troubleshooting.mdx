@@ -1,0 +1,166 @@
+---
+title: Troubleshooting
+description: Fixes for common OSDK errors, including a missing OsdkProvider, mismatched package versions, CORS, auth failures, and Vite build issues.
+---
+
+Find the error message or symptom you see, then apply the fix. Each section names the cause first.
+
+## `No OsdkProvider found. Did you forget to wrap your component tree with <OsdkProvider>?`
+
+A component called an `@osdk/react` hook, or used the client from `useOsdkClient`, outside an `OsdkProvider`. Outside a provider, every hook gets a placeholder client that throws this error.
+
+Render `OsdkProvider` once at the root, above every component that uses OSDK hooks:
+
+```tsx title="src/main.tsx"
+import { OsdkProvider } from "@osdk/react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { client } from "./client";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider client={client}>
+    <App />
+  </OsdkProvider>,
+);
+```
+
+If only some components fail, they render outside the provider, for example in a header or a portal mounted next to `<App />`. Move `OsdkProvider` up so it wraps them.
+
+In tests, wrap the component under test in a provider. See [Testing](/react/testing).
+
+## `"<name>" is not exported by @osdk/client/…/observable.js`
+
+You might also see the same error for `unstable-do-not-use.js` or a path in `@osdk/api`. `@osdk/react` imports its runtime from `@osdk/client/observable`, and your installed `@osdk/client` or `@osdk/api` comes from a different release than your `@osdk/react`.
+
+`@osdk/api`, `@osdk/client`, and `@osdk/react` share one version number. Install the same version of all three, and keep prereleases together:
+
+```npm
+npm install @osdk/api@<version> @osdk/client@<version> @osdk/react@<version>
+```
+
+Check what is installed with `npm ls @osdk/api @osdk/client @osdk/react`. Do not delete the failing import or downgrade one package on its own. See [Version compatibility](./installation.mdx#version-compatibility).
+
+## Peer dependency warnings for `@osdk/client` or `@osdk/api`
+
+The peer ranges that `@osdk/react` declares, such as `^2.15.0`, are broader than what works. Pin `@osdk/api`, `@osdk/client`, and `@osdk/react` to the same version instead of ignoring the warning.
+
+If the warning comes from your generated SDK, the SDK was built against a newer `@osdk/client` than you have. Upgrade the three OSDK packages, or generate a new SDK version. If npm still cannot resolve peers, use `overrides` as shown in [Installation](./installation.mdx#version-compatibility).
+
+## `Rollup failed to resolve import "@osdk/foundry.admin"`
+
+The same error can name `@osdk/foundry.core`. You import from `@osdk/react/platform-apis`, which depends on two optional peer packages that are not installed.
+
+Install them:
+
+```npm
+npm install @osdk/foundry.admin @osdk/foundry.core
+```
+
+If you do not use the platform API hooks, remove the imports from `@osdk/react/platform-apis` instead. See [Platform APIs](/react/platform-apis).
+
+## `ReferenceError: process is not defined`
+
+OSDK packages read `process.env.NODE_ENV`, and Vite does not replace it by default. Add `"process.env.NODE_ENV": JSON.stringify(mode)` to `define` in your Vite config. See [Use OSDK with Vite](./guides/vite.mdx#define-processenvnode_env) for the full config.
+
+## CORS errors in local development
+
+The browser console shows an error like `Access to fetch at 'https://<your-stack>/api/...' from origin 'http://localhost:8080' has been blocked by CORS policy`. Your Foundry environment does not allow requests from your dev server's origin.
+
+Fix it in one of two ways:
+
+- **Allow the origin.** Ask your Foundry administrator to allow `http://localhost:8080` for CORS on your environment.
+- **Proxy through Vite.** Forward `/api` and `/multipass/api` to Foundry from the dev server, and set `VITE_FOUNDRY_API_URL=http://localhost:8080`. Requests then go to your own origin, so CORS does not apply. See [Proxy Foundry requests in development](./guides/vite.mdx#proxy-foundry-requests-in-development).
+
+Apps created with `@osdk/create-app` include the proxy when you answer yes to the CORS proxy prompt or pass `--corsProxy`. The proxy runs only under `vite dev`, so keep the real Foundry URL in `.env.production`.
+
+## `401 Unauthorized`
+
+The request had no valid token. Check, in order:
+
+1. **Client ID.** The client ID passed to `createPublicOauthClient` matches the one on your application's **OAuth & scopes** page in Developer Console.
+2. **Redirect URL.** The redirect URL matches one listed on the same page exactly, including protocol, port, and path, such as `http://localhost:8080/auth/callback`.
+3. **Callback route.** Your app renders a route at the redirect path, so the OAuth client can complete sign-in.
+4. **Token provider.** The client receives the OAuth client as its token provider: `createClient(foundryUrl, ontologyRid, auth)`.
+
+To detect an expired session in UI code, check `error.statusCode === 401` on a `PalantirApiError`. See [Loading and errors](./concepts/loading-and-errors.mdx#narrow-api-errors).
+
+## `403 Forbidden` or `PERMISSION_DENIED`
+
+The token is valid but cannot do what you asked. Common causes:
+
+- **Missing scopes.** The OAuth client requests `api:read-data`, `api:write-data`, `api:use-ontologies-read`, and `api:use-ontologies-write` by default. Other APIs need more. For example, the user and marking hooks in `@osdk/react/platform-apis` need `api:admin-read`. Add the scope to the application in Developer Console, then request it:
+
+  ```ts title="src/client.ts"
+  import { createPublicOauthClient } from "@osdk/oauth";
+
+  const clientId = import.meta.env.VITE_FOUNDRY_CLIENT_ID;
+  const foundryUrl = import.meta.env.VITE_FOUNDRY_API_URL;
+  const redirectUrl = import.meta.env.VITE_FOUNDRY_REDIRECT_URL;
+
+  export const auth = createPublicOauthClient(clientId, foundryUrl, redirectUrl, {
+    scopes: [
+      "api:use-ontologies-read",
+      "api:use-ontologies-write",
+      "api:read-data",
+      "api:write-data",
+      "api:admin-read",
+    ],
+  });
+  ```
+
+  Changing `scopes` signs users in again so the new token carries them. See [Scopes](./authentication.mdx#scopes).
+- **Resources outside the application's scope.** The object type, action, or function is not included in the application's Ontology SDK resources in Developer Console.
+- **User permissions.** The signed-in user cannot see the data or apply the action. Requests made with a public OAuth client act as the signed-in user and never exceed that user's access.
+
+A `NOT_FOUND` error, such as `ObjectNotFound`, can also mean the user lacks access to an object that exists.
+
+## `Invalid ontology RID`
+
+`createClient` throws this when its second argument does not start with `ri.`. The value is often empty, an API name, or a placeholder from an env file. Pass the full Ontology RID, such as `ri.ontology.main.ontology.<uuid>`. Find it on the **Ontology SDK** page of your application in Developer Console, or import `$ontologyRid` from your generated SDK.
+
+## `Meta tag osdk-clientId contains placeholder value`
+
+Apps created with `@osdk/create-app` read their configuration from `<meta>` tags that Vite fills in from `.env` files. This error means a variable, such as `VITE_FOUNDRY_CLIENT_ID`, is not set for the current mode. Add it to `.env.development` or `.env.production` and restart the dev server.
+
+## `Rendered more hooks than during the previous render`
+
+A component called an `@osdk/react` hook conditionally. Call every hook on every render, and use `enabled` to skip the request:
+
+```tsx
+const { data } = useOsdkObjects(Employee, { enabled: showEmployees });
+const { object } = useOsdkObject(Employee, employeeId, false);
+```
+
+## Actions take about a second in development
+
+In development, actions that have an `$optimisticUpdate` wait 1000 ms after the server responds so you can see the optimistic state. The console logs `[@osdk/client] Applied a 1000ms dev-mode delay…` the first time it happens. Production builds never delay. To turn it off in development:
+
+```tsx
+<OsdkProvider client={client} devMode={{ actionDelayMs: 0 }}>
+  <App />
+</OsdkProvider>
+```
+
+## Data does not update after a change made elsewhere
+
+The cache updates itself after actions you apply through `useOsdkAction`. It cannot see changes made by other systems, by `@osdk/client` calls outside the hooks, or by REST calls. Invalidate the affected data, or use `streamUpdates: true` on lists that must stay live. See [Caching and reactivity](./concepts/caching.mdx) and [Cache invalidation](/react/cache-invalidation).
+
+## Deprecation warnings for `@osdk/react/experimental`
+
+The hooks from `@osdk/react/experimental` are now exported from `@osdk/react`, and `OsdkProvider2` is now `OsdkProvider`. Change the imports:
+
+```tsx
+import { OsdkProvider, useOsdkObjects } from "@osdk/react";
+```
+
+The `experimental` entry point will be removed in a future major version.
+
+## The devtools panel does not appear
+
+| Symptom | Fix |
+| --- | --- |
+| No panel. | Confirm `osdkDevTools()` from `@osdk/react-devtools/vite` is in your Vite `plugins` and you run `vite dev`. Pass `osdkDevTools({ verbose: true })` and look for `Injected devtools into HTML` in the terminal. |
+| Panel shows no data. | The screen must read data through `@osdk/react` hooks under `OsdkProvider`. The panel does not see raw `fetch` calls. |
+| Component inspection is unavailable. | Something loaded React before the devtools script. Remove scripts in `index.html` that load React first. |
+
+See the [devtools troubleshooting table](/devtools#troubleshooting) for more.

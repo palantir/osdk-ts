@@ -1,0 +1,314 @@
+---
+title: Apply actions
+description: Apply and validate ontology actions from React with useOsdkAction, including error handling, debounced validation, and batch application.
+foundryDocs:
+  - title: Action types
+    path: action-types/overview
+---
+
+{/* cspell:ignore debounced refetches */}
+
+Use `useOsdkAction` to apply an action, validate its parameters before submitting, and track pending and error state. When an action succeeds, the cache refetches every object it edited, so components that show those objects update without extra code.
+
+## Apply an action
+
+Pass the action from your generated SDK, then call `applyAction` with its parameters:
+
+```tsx title="src/PromoteButton.tsx"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { useOsdkAction } from "@osdk/react";
+
+export function PromoteButton({
+  employee,
+  jobTitle,
+}: {
+  employee: Employee.OsdkInstance;
+  jobTitle: string;
+}) {
+  const { applyAction, isPending, error } = useOsdkAction(modifyEmployee);
+
+  async function handleClick() {
+    try {
+      await applyAction({ employee, jobTitle });
+    } catch (e) {
+      console.error("modifyEmployee failed", e);
+    }
+  }
+
+  return (
+    <div>
+      <button disabled={isPending} onClick={() => void handleClick()}>
+        {isPending ? "Saving…" : `Make ${jobTitle}`}
+      </button>
+      {error && <p role="alert">Could not update {employee.fullName}.</p>}
+    </div>
+  );
+}
+```
+
+<Callout type="warn">
+  `applyAction` rethrows every failure after it records it in `error`. Always `await` it inside `try`/`catch`, or attach `.catch`, or the failure becomes an unhandled promise rejection.
+</Callout>
+
+Parameters are typed from the action's definition. Object parameters accept an object instance or its primary key.
+
+### Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `applyAction` | `(args \| args[]) => Promise<ActionEditResponse \| undefined>` | Applies the action. Pass one parameter object, or an array to apply it in a batch. Each parameter object can include `$optimisticUpdate`. Rejects on failure. |
+| `isPending` | `boolean` | `true` while `applyAction` is running. |
+| `data` | `ActionEditResponse \| undefined` | The edits from the last successful application. |
+| `error` | `{ actionValidation?: ActionValidationError; unknown?: unknown } \| undefined` | The last failure from `applyAction` or `validateAction`. Cleared when either is called again. |
+| `validateAction` | `(args) => Promise<ActionValidationResponse \| undefined>` | Checks parameters on the server without applying the action. Rejects on request failure. |
+| `isValidating` | `boolean` | `true` while `validateAction` is running. |
+| `validationResult` | `ActionValidationResponse \| undefined` | The result of the last completed validation. |
+
+The hook takes no options. `$optimisticUpdate` is covered in [Optimistic updates](./optimistic-updates.mdx).
+
+## Read the result
+
+`data` is an `ActionEditResponse`: a summary of what the action changed, not a value returned by the action's logic.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"edits" \| "largeScaleEdits"` | `"largeScaleEdits"` when the action edited too many objects to list. Only `editedObjectTypes` is set in that case. |
+| `addedObjects` | `Array<{ objectType, primaryKey }>` | Objects the action created. |
+| `modifiedObjects` | `Array<{ objectType, primaryKey }>` | Objects the action changed. |
+| `deletedObjects` | `Array<{ objectType, primaryKey }>` | Objects the action deleted. |
+| `addedLinks` / `deletedLinks` | `Array<LinkReference>` | Links created or removed, with both sides and the link type API names. |
+| `deletedObjectsCount` / `deletedLinksCount` | `number` | Counts of deletions. |
+| `editedObjectTypes` | `Array<string>` | API names of every object type the action touched. |
+
+`applyAction` resolves to the same value, which is the simplest way to act on a new object's primary key:
+
+```ts
+const result = await applyAction({ employee, jobTitle: "Staff Engineer" });
+const created = result?.type === "edits" ? result.addedObjects : [];
+```
+
+## Handle errors
+
+`error` separates validation failures from everything else:
+
+- `error.actionValidation` is an `ActionValidationError`. The server rejected the parameters, for example because a submission criterion failed or a value is out of range.
+- `error.unknown` holds any other failure: network errors, permission errors, or a `PalantirApiError` from Foundry.
+
+Do not show `error.actionValidation.message` to users. It is `"Validation Error: "` followed by the raw validation response as JSON. Read the structured response from `error.actionValidation.validation` instead. This helper turns either a validation error or a `validationResult` into messages:
+
+```ts title="src/validationMessages.ts"
+interface ValidationLike {
+  result: "VALID" | "INVALID";
+  submissionCriteria: Array<{
+    result: "VALID" | "INVALID";
+    configuredFailureMessage?: string;
+  }>;
+  parameters: Record<string, { result: "VALID" | "INVALID" }>;
+}
+
+export function validationMessages(validation: ValidationLike | undefined): string[] {
+  if (validation == null || validation.result === "VALID") {
+    return [];
+  }
+  const messages = validation.submissionCriteria
+    .filter((criterion) => criterion.result === "INVALID")
+    .map(
+      (criterion) =>
+        criterion.configuredFailureMessage ?? "The action's conditions are not met.",
+    );
+  for (const [name, parameter] of Object.entries(validation.parameters)) {
+    if (parameter.result === "INVALID") {
+      messages.push(`${name} has an invalid value.`);
+    }
+  }
+  return messages;
+}
+```
+
+Use it with the hook's `error`:
+
+```tsx title="src/ActionError.tsx"
+import type { ActionValidationError } from "@osdk/client";
+import { validationMessages } from "./validationMessages";
+
+export function ActionError({
+  error,
+}: {
+  error: { actionValidation?: ActionValidationError; unknown?: unknown } | undefined;
+}) {
+  if (error?.actionValidation) {
+    return (
+      <ul role="alert">
+        {validationMessages(error.actionValidation.validation).map((message) => (
+          <li key={message}>{message}</li>
+        ))}
+      </ul>
+    );
+  }
+  if (error?.unknown != null) {
+    return <p role="alert">Something went wrong. Try again.</p>;
+  }
+  return null;
+}
+```
+
+`submissionCriteria[].configuredFailureMessage` is the message the action's author configured in Foundry, so prefer it when it is present.
+
+## Validate before submitting
+
+`validateAction` asks the server whether a set of parameters would pass, without applying the action. An `INVALID` result is not an error: it resolves normally and sets `validationResult`. `validateAction` rejects only when the request itself fails, so it needs a `catch` like `applyAction`.
+
+Validating on every keystroke sends a request per keystroke. Wrap the call in `useDebouncedCallback`, exported from `@osdk/react`, so it runs once the user pauses:
+
+```tsx title="src/JobTitleForm.tsx"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { useDebouncedCallback, useOsdkAction } from "@osdk/react";
+import { type FormEvent, useState } from "react";
+import { ActionError } from "./ActionError";
+import { validationMessages } from "./validationMessages";
+
+export function JobTitleForm({ employee }: { employee: Employee.OsdkInstance }) {
+  const [jobTitle, setJobTitle] = useState(employee.jobTitle ?? "");
+  const {
+    applyAction,
+    validateAction,
+    validationResult,
+    isValidating,
+    isPending,
+    error,
+  } = useOsdkAction(modifyEmployee);
+
+  const validate = useDebouncedCallback(async (value: string) => {
+    try {
+      await validateAction({ employee, jobTitle: value });
+    } catch (e) {
+      console.error("Validation request failed", e);
+    }
+  }, 400);
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    validate.cancel();
+    try {
+      await applyAction({ employee, jobTitle });
+    } catch (e) {
+      console.error("modifyEmployee failed", e);
+    }
+  }
+
+  const messages = validationMessages(validationResult);
+  const canSubmit =
+    jobTitle !== "" &&
+    validationResult?.result === "VALID" &&
+    !isValidating &&
+    !isPending;
+
+  return (
+    <form onSubmit={(event) => void handleSubmit(event)}>
+      <input
+        value={jobTitle}
+        placeholder="Job title"
+        onChange={(event) => {
+          setJobTitle(event.target.value);
+          validate(event.target.value);
+        }}
+      />
+      {isValidating && <span>Checking…</span>}
+      {messages.map((message) => (
+        <p key={message}>{message}</p>
+      ))}
+      <button type="submit" disabled={!canSubmit}>
+        Save
+      </button>
+      <ActionError error={error} />
+    </form>
+  );
+}
+```
+
+How validation and application interact:
+
+- A new `validateAction` call supersedes one still in flight. The earlier result is discarded and resolves to `undefined`.
+- `validateAction` does nothing and resolves to `undefined` while `applyAction` is running.
+- `applyAction` discards any validation in flight.
+- `validationResult` keeps the last completed result until the next validation finishes, so it can describe older input. Gate submission on `isValidating` as well, as the example does.
+
+The debounced function also has `cancel()`, which drops a pending call, and `flush()`, which runs it immediately. A pending call is dropped when the component unmounts.
+
+## Apply an action in a batch
+
+Pass an array to apply the same action to several parameter sets in one request:
+
+```tsx title="src/MoveTeam.tsx"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { useOsdkAction } from "@osdk/react";
+
+export function MoveTeam({
+  employees,
+  department,
+}: {
+  employees: Employee.OsdkInstance[];
+  department: string;
+}) {
+  const { applyAction, isPending } = useOsdkAction(modifyEmployee);
+
+  async function moveAll() {
+    try {
+      await applyAction(
+        employees.map((employee) => ({ employee, department })),
+      );
+    } catch (e) {
+      console.error("Batch modifyEmployee failed", e);
+    }
+  }
+
+  return (
+    <button disabled={isPending} onClick={() => void moveAll()}>
+      Move {employees.length} employees to {department}
+    </button>
+  );
+}
+```
+
+A batch is applied with the batch apply endpoint, so it differs from a single call:
+
+- A batch that the server rejects reports the failure in `error.unknown`. `error.actionValidation` is set only for single applications.
+- `validateAction` takes one parameter object, not an array.
+- Each item can carry its own `$optimisticUpdate`. They are combined into one optimistic layer.
+
+## Apply an action with the client
+
+You can also apply an action with the `Client` from `useOsdkClient`. This bypasses the cache: components do not update until you invalidate the affected data yourself (see [Invalidate the cache](./cache-invalidation.mdx)). Prefer `useOsdkAction` in components.
+
+```ts title="src/updateJobTitle.ts"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+
+export async function updateJobTitle(
+  client: Client,
+  employee: Employee.OsdkInstance,
+  jobTitle: string,
+) {
+  const validation = await client(modifyEmployee).applyAction(
+    { employee, jobTitle },
+    { $validateOnly: true },
+  );
+  if (validation.result === "INVALID") {
+    return undefined;
+  }
+
+  return client(modifyEmployee).applyAction(
+    { employee, jobTitle },
+    { $returnEdits: true },
+  );
+}
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `$returnEdits` | `boolean` | `false` | Resolve to an `ActionEditResponse`. Without it, `applyAction` resolves to `undefined`. |
+| `$validateOnly` | `boolean` | `false` | Validate without applying, and resolve to the `ActionValidationResponse`. Cannot be combined with `$returnEdits`. |
+
+A single `applyAction` call on the client throws an `ActionValidationError` when validation fails. For several parameter sets, call `client(modifyEmployee).batchApplyAction([...], { $returnEdits: true })`. It accepts `$returnEdits` but not `$validateOnly`.
+
+For a generated form with fields for every parameter, see the [ActionForm component](/components/action-form).

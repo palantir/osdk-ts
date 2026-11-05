@@ -1,0 +1,56 @@
+---
+title: useOsdkObjects
+description: Load a live, cached list of objects of one type or interface.
+---
+
+```ts
+import { useOsdkObjects } from "@osdk/react";
+
+function useOsdkObjects<T extends ObjectOrInterfaceDefinition>(
+  type: T,
+  options?: UseOsdkObjectsOptions<T>,
+): UseOsdkListResult<T>;
+```
+
+Subscribes the component to a list in the shared cache and re-renders when the list or any object in it changes. With `pivotTo`, the list holds the linked type instead of `T`; with `rids`, each object also carries `$rid`.
+
+## Options
+
+<auto-type-table path="../../../../packages/react/src/new/useOsdkObjects.ts" name="UseOsdkObjectsOptions" />
+
+## Returns
+
+<auto-type-table path="../../../../packages/react/src/new/useOsdkObjects.ts" name="UseOsdkListResult" />
+
+## Example
+
+```tsx title="src/EngineeringList.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObjects } from "@osdk/react";
+
+export function EngineeringList() {
+  const { data, isLoading, error, fetchMore } = useOsdkObjects(Employee, {
+    where: { department: "Engineering" },
+    orderBy: { fullName: "asc" },
+    pageSize: 50,
+  });
+
+  return (
+    <section>
+      {error && <p role="alert">{error.message}</p>}
+      <ul>
+        {data?.map((employee) => (
+          <li key={employee.$primaryKey}>{employee.fullName}</li>
+        ))}
+      </ul>
+      {isLoading && <p>Loading…</p>}
+      {fetchMore && <button onClick={() => void fetchMore()}>Load more</button>}
+    </section>
+  );
+}
+```
+
+## See also
+
+- [Load objects](/react/objects)
+- [Filtering](/sdk/filtering)

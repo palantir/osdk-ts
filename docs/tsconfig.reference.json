@@ -1,0 +1,68 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "lib": [
+      "ES2023",
+      "DOM"
+    ],
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "@osdk/api": [
+        "../packages/api/src/index.ts"
+      ],
+      "@osdk/api/unstable": [
+        "../packages/api/src/public/unstable.ts"
+      ],
+      "@osdk/api/shapes-internal": [
+        "../packages/api/src/public/shapes-internal.ts"
+      ],
+      "@osdk/client": [
+        "../packages/client/src/index.ts"
+      ],
+      "@osdk/client/observable": [
+        "../packages/client/src/public/observable.ts"
+      ],
+      "@osdk/client/unstable-do-not-use": [
+        "../packages/client/src/public/unstable-do-not-use.ts"
+      ],
+      "@osdk/client.unstable": [
+        "../packages/client.unstable/src/index.ts"
+      ],
+      "@osdk/shared.client.impl": [
+        "../packages/shared.client.impl/src/index.ts"
+      ],
+      "@osdk/shared.net.errors": [
+        "../packages/shared.net.errors/src/index.ts"
+      ],
+      "@osdk/shared.net.fetch": [
+        "../packages/shared.net.fetch/src/index.ts"
+      ],
+      "@osdk/generator-converters": [
+        "../packages/generator-converters/src/index.ts"
+      ],
+      "@osdk/react": [
+        "../packages/react/src/index.ts"
+      ],
+      "react": [
+        "../packages/react/node_modules/@types/react/index.d.ts"
+      ],
+      "react/jsx-runtime": [
+        "../packages/react/node_modules/@types/react/jsx-runtime.d.ts"
+      ],
+      "@osdk/react/platform-apis": [
+        "../packages/react/src/public/platform-apis.ts"
+      ],
+      "@osdk/react/testing": [
+        "../packages/react/src/public/testing.ts"
+      ]
+    }
+  },
+  "files": []
+}

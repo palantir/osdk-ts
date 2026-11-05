@@ -1,0 +1,229 @@
+---
+title: Invalidate the cache
+description: Refetch cached objects, lists, and function results with useObservableClient when data changes outside OSDK actions.
+---
+
+{/* cspell:ignore refetch refetches refetched refetching canonicalization */}
+
+Invalidating cached data makes every component that shows it refetch. Most apps rarely need it: the cache updates itself after actions. This page covers the cases it cannot see and the methods that handle them. For how the cache stores and shares data, see [Caching](../(docs)/concepts/caching.mdx).
+
+## When the cache updates itself
+
+You do not need to invalidate after:
+
+- **Actions applied with `useOsdkAction`.** The server reports which objects the action added, modified, and deleted. The cache refetches those objects, and every list, link, aggregation, and function that depends on their types re-evaluates.
+- **Optimistic updates.** They are removed when the action finishes. See [Optimistic updates](./optimistic-updates.mdx).
+- **Lists with `streamUpdates: true`.** The server pushes changes over a WebSocket.
+- **Functions with `dependsOn` or `dependsOnObjects`.** They rerun after actions edit what they declare. See [Call functions](./functions.mdx#refetch-when-objects-change).
+
+## When to invalidate
+
+The cache only learns about changes that pass through it. Invalidate when data changes some other way:
+
+- A pipeline, schedule, or external system writes to the ontology.
+- Your code applies an action with the `Client` directly, as in `client(modifyEmployee).applyAction(...)`, instead of through `useOsdkAction`.
+- Another service tells your app, for example over its own WebSocket, that records changed.
+- A function reads data the cache cannot track, and you did not declare `dependsOn`.
+
+## Get the observable client
+
+`useObservableClient` returns the `ObservableClient` that `OsdkProvider` created. Call it in a component or hook below the provider, and call the invalidation methods from an event handler or effect:
+
+```tsx title="src/RefreshEmployee.tsx"
+import { Employee } from "@my-app/sdk";
+import { useObservableClient } from "@osdk/react";
+import { useState } from "react";
+
+export function RefreshEmployee({ employee }: { employee: Employee.OsdkInstance }) {
+  const observableClient = useObservableClient();
+  const [isRefreshing, setRefreshing] = useState(false);
+
+  async function refresh() {
+    setRefreshing(true);
+    try {
+      await observableClient.invalidateObjects(employee);
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
+  return (
+    <button disabled={isRefreshing} onClick={() => void refresh()}>
+      {isRefreshing ? "Refreshing…" : "Refresh"}
+    </button>
+  );
+}
+```
+
+## Invalidation methods
+
+| Method | Refetches | Use it when |
+| --- | --- | --- |
+| `invalidateObjects(objects)` | The given object or array of objects, in every variant cached for them. Also reruns functions that list one of them in `dependsOnObjects`, and refreshes links from or to their type. An object that is not cached yet is fetched. | You know exactly which objects changed. |
+| `invalidateObjectType(type)` | Every cached query that reads the type: its objects, lists and object sets over it, aggregations over it, links from or to it, and functions that declare it in `dependsOn`. Takes the type from your SDK or its API name. | Many objects of one type changed, or you do not know which. |
+| `invalidateFunction(fn, params?)` | With `params`, the one cached call with exactly those parameters. Without, every cached call of that function. Takes the function from your SDK or its API name. | A function's inputs changed outside the cache. |
+| `invalidateFunctionsByObject(apiName, primaryKey)` | Functions that list that object in `dependsOnObjects`. | One object changed and you only want its functions to rerun. |
+| `invalidateAll()` | Everything in the cache. | Last resort, when you cannot tell what changed. |
+
+All methods return a promise that resolves when the refetches have settled. The promise does not reject: a failed refetch shows up as `error` on the hooks that read the data. While a refetch runs, those hooks keep their current data and report `isLoading: true`.
+
+## Examples
+
+### After an external write
+
+A component that starts a server-side job, then refreshes the type the job writes to once it finishes:
+
+```tsx title="src/ImportEmployeesButton.tsx"
+import { Employee } from "@my-app/sdk";
+import { useObservableClient } from "@osdk/react";
+import { useState } from "react";
+import { runEmployeeImport } from "./api";
+
+export function ImportEmployeesButton() {
+  const observableClient = useObservableClient();
+  const [status, setStatus] = useState<"idle" | "running" | "failed">("idle");
+
+  async function handleImport() {
+    setStatus("running");
+    try {
+      await runEmployeeImport();
+      await observableClient.invalidateObjectType(Employee);
+      setStatus("idle");
+    } catch (e) {
+      console.error("Import failed", e);
+      setStatus("failed");
+    }
+  }
+
+  return (
+    <div>
+      <button disabled={status === "running"} onClick={() => void handleImport()}>
+        Import employees
+      </button>
+      {status === "failed" && <p role="alert">The import failed.</p>}
+    </div>
+  );
+}
+```
+
+### After a direct client call
+
+When you apply an action with the `Client`, invalidate what it edited. Ask for the edits with `$returnEdits` and invalidate by type:
+
+```tsx title="src/useUpdateJobTitle.ts"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { useObservableClient, useOsdkClient } from "@osdk/react";
+import { useCallback } from "react";
+
+export function useUpdateJobTitle() {
+  const client = useOsdkClient();
+  const observableClient = useObservableClient();
+
+  return useCallback(
+    async (employee: Employee.OsdkInstance, jobTitle: string) => {
+      const edits = await client(modifyEmployee).applyAction(
+        { employee, jobTitle },
+        { $returnEdits: true },
+      );
+      await Promise.all(
+        edits.editedObjectTypes.map((type) =>
+          observableClient.invalidateObjectType(String(type)),
+        ),
+      );
+    },
+    [client, observableClient],
+  );
+}
+```
+
+`useOsdkAction` does this for you, and more precisely, so prefer it. See [Apply actions](./actions.mdx).
+
+### Refresh a function
+
+```tsx title="src/RefreshMetrics.tsx"
+import { getEmployeeMetrics } from "@my-app/sdk";
+import { useObservableClient } from "@osdk/react";
+
+export function RefreshMetrics({ department }: { department: string }) {
+  const observableClient = useObservableClient();
+
+  return (
+    <div>
+      <button
+        onClick={() =>
+          void observableClient.invalidateFunction(getEmployeeMetrics, { department })
+        }
+      >
+        Refresh this department
+      </button>
+      <button onClick={() => void observableClient.invalidateFunction(getEmployeeMetrics)}>
+        Refresh all departments
+      </button>
+    </div>
+  );
+}
+```
+
+For a single call site, `refetch` from `useOsdkFunction` does the same as `invalidateFunction` with that call's parameters.
+
+### Refresh when another service notifies you
+
+Subscribe in an effect and invalidate when a message arrives. `invalidateObjects` needs an object instance, so with only a primary key, invalidate the type, and rerun the functions bound to that one object with `invalidateFunctionsByObject`:
+
+```tsx title="src/useEmployeeChangeFeed.ts"
+import { Employee } from "@my-app/sdk";
+import { useObservableClient } from "@osdk/react";
+import { useEffect } from "react";
+
+export function useEmployeeChangeFeed(url: string) {
+  const observableClient = useObservableClient();
+
+  useEffect(() => {
+    const socket = new WebSocket(url);
+    socket.addEventListener("message", (event) => {
+      const { employeeId } = JSON.parse(String(event.data)) as { employeeId: number };
+      void observableClient.invalidateFunctionsByObject(Employee.apiName, employeeId);
+      void observableClient.invalidateObjectType(Employee);
+    });
+    return () => socket.close();
+  }, [observableClient, url]);
+}
+```
+
+## Best practices
+
+1. **Let actions drive updates.** If a change comes from `useOsdkAction`, do not invalidate afterward. It refetches data that is already fresh.
+2. **Invalidate the narrowest thing you can.** `invalidateObjects` is cheaper than `invalidateObjectType`, which is cheaper than `invalidateAll`.
+3. **Declare function dependencies.** `dependsOn` and `dependsOnObjects` let the cache rerun functions after actions, so you do not invalidate them by hand.
+4. **Do not invalidate on mount.** Calling `invalidateAll` or `invalidateObjectType` in a mount effect refetches on every navigation and defeats the cache.
+5. **Keep OSDK data in the cache.** Copying it into component state, Redux, or another query library creates a second copy that invalidation and optimistic updates do not reach.
+
+## Debug the cache
+
+The `devMode` prop on `OsdkProvider` turns on logging in development builds. It has no effect in production builds.
+
+```tsx title="src/main.tsx"
+import { OsdkProvider } from "@osdk/react";
+import { client } from "./client";
+import { App } from "./App";
+
+export function Root() {
+  return (
+    <OsdkProvider
+      client={client}
+      devMode={{ logLevel: "debug", debug: { refCounts: true, cacheKeys: true } }}
+    >
+      <App />
+    </OsdkProvider>
+  );
+}
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `logLevel` | `"trace" \| "debug" \| "info" \| "warn" \| "error" \| "fatal"` | `"error"` | Log level for the observable client. Set `"debug"` to see its tracing. |
+| `debug.refCounts` | `boolean` | `false` | Logs when cache entries are created, referenced, and cleaned up, and shortens how long unused entries are kept so cleanup happens sooner. |
+| `debug.cacheKeys` | `boolean` | `false` | Logs cache-key lookups and whether each key already existed. |
+| `actionDelayMs` | `number` | `1000` | Delay before optimistic updates are removed. See [Optimistic updates](./optimistic-updates.mdx#simulate-latency-in-development). |
+
+To browse cache entries in the running app instead, use [OSDK Devtools](/devtools).

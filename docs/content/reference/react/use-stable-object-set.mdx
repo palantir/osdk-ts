@@ -1,0 +1,51 @@
+---
+title: useStableObjectSet
+description: Return a referentially stable ObjectSet that changes only when its definition changes.
+---
+
+```ts
+import { useStableObjectSet } from "@osdk/react";
+
+function useStableObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+>(objectSet: ObjectSet<Q, RDPs> | undefined): ObjectSet<Q, RDPs> | undefined;
+```
+
+Returns the same `ObjectSet` instance across renders until the serialized definition, including `where`, `union`, `intersect`, `subtract`, and pivots, changes. Use it instead of `useMemo` when you build an object set inline and pass it to a hook, an effect, or a memoized child.
+
+## Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `objectSet` | `ObjectSet<Q, RDPs> \| undefined` | The object set to stabilize. `undefined` passes through. |
+
+## Returns
+
+`ObjectSet<Q, RDPs> | undefined`: the object set from the first render with the current definition.
+
+## Example
+
+```tsx title="src/TeamTable.tsx"
+import { Employee } from "@my-app/sdk";
+import { useObjectSet, useOsdkClient, useStableObjectSet } from "@osdk/react";
+
+export function TeamTable({ department }: { department: string }) {
+  const client = useOsdkClient();
+  const team = useStableObjectSet(client(Employee).where({ department }));
+  const { data } = useObjectSet(team);
+
+  return (
+    <ul>
+      {data?.map((employee) => (
+        <li key={employee.$primaryKey}>{employee.fullName}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## See also
+
+- [Object sets](/react/object-sets)
+- [useObjectSet](./use-object-set.mdx)

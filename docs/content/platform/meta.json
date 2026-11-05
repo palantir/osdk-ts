@@ -1,0 +1,16 @@
+{
+  "title": "Platform SDK",
+  "description": "Call Foundry platform APIs for users, datasets, media sets, and more with the @osdk/foundry packages.",
+  "icon": "Server",
+  "root": true,
+  "pages": [
+    "index",
+    "setup",
+    "calling-apis",
+    "---Recipes---",
+    "users-and-groups",
+    "datasets",
+    "media-sets",
+    "ontology-metadata"
+  ]
+}

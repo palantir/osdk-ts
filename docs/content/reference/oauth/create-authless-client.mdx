@@ -1,0 +1,34 @@
+---
+title: createAuthlessClient
+description: Create a token provider that always returns the public token, for Foundry resources that need no sign-in.
+---
+
+```ts
+import { createAuthlessClient } from "@osdk/oauth";
+
+function createAuthlessClient(): () => Promise<string>;
+```
+
+Returns a token provider that resolves to the string `"PUBLIC"` on every call. Pass it to `createClient` when your app reads resources that Foundry serves without authentication.
+
+## Returns
+
+`() => Promise<string>`: resolves to `"PUBLIC"`.
+
+## Example
+
+```ts title="src/client.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createAuthlessClient } from "@osdk/oauth";
+
+export const client = createClient(
+  "https://example.palantirfoundry.com",
+  $ontologyRid,
+  createAuthlessClient(),
+);
+```
+
+## See also
+
+- [Authentication](/authentication)

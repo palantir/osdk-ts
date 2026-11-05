@@ -1,0 +1,127 @@
+---
+title: Interfaces
+description: Query objects of every type that implements an interface, convert between interface and object views with $as, and narrow object sets with narrowToType.
+foundryDocs:
+  - title: Interfaces
+    path: interfaces/interface-overview
+---
+
+An interface describes properties that several object types share. Querying an interface returns objects of every type that implements it, viewed through the interface's properties. You can then convert each object to its concrete type.
+
+In the example SDK, the interface `Worker` has one property, `name`. `Employee` implements it, with `fullName` as `name`.
+
+## Query an interface
+
+`client(Worker)` is an object set over every object that implements `Worker`. Filter, sort, and select by the interface's property names:
+
+```ts title="src/workers.ts"
+import { Worker } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Worker)
+  .where({ name: { $startsWith: "ada" } })
+  .fetchPage({ $select: ["name"], $orderBy: { name: "asc" }, $pageSize: 50 });
+
+for (const worker of page.data) {
+  console.log(worker.$objectType, worker.$primaryKey, worker.name);
+}
+```
+
+On an interface object, `$apiName` is the interface (`"Worker"`) and `$objectType` is the object's concrete type (`"Employee"`). `$primaryKey` is the concrete object's primary key.
+
+## What an interface object set supports
+
+| Method | Supported | Notes |
+| --- | --- | --- |
+| `where` | Yes | On interface property names. |
+| `fetchPage`, `fetchPageWithErrors`, `asyncIter` | Yes | Accept `$includeAllBaseObjectProperties`. |
+| `aggregate` | Yes | On interface property names. |
+| `subscribe` | Yes | See [Subscriptions](./subscriptions.mdx). |
+| `narrowToType` | Yes | Converts to an object type set. See below. |
+| `pivotTo` | Yes | For links defined on the interface. |
+| `union`, `intersect`, `subtract` | With other sets of the same interface | Not with object type sets. Narrow first. |
+| `fetchOne`, `fetchOneWithErrors` | No | Typed `never`. A primary key is unique only within one object type, so load by key from the object type: `client(Employee).fetchOne(id)`. |
+
+## Convert one object with `$as`
+
+`$as(Employee)` returns the concrete view of an interface object, with the object type's property names. `$as(Worker)` goes the other way:
+
+```ts title="src/workerDetails.ts"
+import { Employee, Worker } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Worker).fetchPage({ $pageSize: 20 });
+
+for (const worker of page.data) {
+  if (worker.$objectType === "Employee") {
+    const employee = worker.$as(Employee);
+    console.log(employee.fullName);
+  }
+}
+
+const employee = await client(Employee).fetchOne(12345);
+const asWorker = employee.$as(Worker);
+console.log(asWorker.name);
+```
+
+`$as` makes no request. It only exposes the properties that were loaded:
+
+- From an interface fetch, the concrete view has only the properties that the interface maps to, such as `fullName`. Reading `salary` is a type error.
+- To get every property of the object type, pass `$includeAllBaseObjectProperties: true` to `fetchPage` or `asyncIter`. Then `$as(Employee)` has all `Employee` properties.
+
+```ts title="src/fullEmployees.ts"
+import { Employee, Worker } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Worker).fetchPage({ $includeAllBaseObjectProperties: true });
+
+for (const worker of page.data) {
+  if (worker.$objectType === "Employee") {
+    const employee = worker.$as(Employee);
+    console.log(employee.fullName, employee.salary, employee.department);
+  }
+}
+```
+
+`$includeAllBaseObjectProperties` cannot be combined with `$select`.
+
+`$as` throws when:
+
+- The target is an object type other than the object's own. Check `$objectType` first, as above.
+- The target interface is not implemented by the object type.
+- Converting an interface object to its object type, when one of the interface's properties is implemented by something other than a plain property of the object type. The message tells you to load the object type directly.
+
+## Convert an object set with `narrowToType`
+
+`narrowToType` converts a whole object set on the server, and keeps only objects of the given type:
+
+```ts title="src/narrow.ts"
+import { Employee, Worker } from "@my-app/sdk";
+import { client } from "./client";
+
+const engineers = await client(Worker)
+  .where({ name: { $startsWith: "a" } })
+  .narrowToType(Employee)
+  .where({ department: "Engineering" })
+  .fetchPage({ $select: ["fullName", "jobTitle"] });
+
+const workersInSales = client(Employee).where({ department: "Sales" }).narrowToType(Worker);
+```
+
+From an interface, pass a type that implements it. From an object type, pass an interface it implements. Other types do not typecheck.
+
+## Read interface metadata
+
+`client.fetchMetadata(Worker)` loads the interface definition from Foundry, including `implementedBy`, the API names of the object types that implement it:
+
+```ts title="src/workerMetadata.ts"
+import { Worker } from "@my-app/sdk";
+import { client } from "./client";
+
+const metadata = await client.fetchMetadata(Worker);
+console.log(metadata.displayName, metadata.implementedBy);
+```
+
+## Pass interface objects to actions
+
+An action parameter of an interface type takes a plain object with the concrete type and primary key, such as `{ $objectType: worker.$objectType, $primaryKey: worker.$primaryKey }`. Pass that object, not the loaded `worker` itself. See [Actions](./actions.mdx#parameter-values).
