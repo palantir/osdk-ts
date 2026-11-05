@@ -36,13 +36,9 @@ import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
-import {
-  getListMembershipChanges,
-  type ListObjectChanges,
-  reconcileListChanges,
-} from "../base-list/reconcileListChanges.js";
+import type { ListObjectChanges } from "../base-list/reconcileListChanges.js";
 import type { BatchContext } from "../BatchContext.js";
-import { type CacheKey } from "../CacheKey.js";
+import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
@@ -459,75 +455,12 @@ export abstract class ListQuery extends BaseListQuery<
     }
 
     try {
-      const relevantObjects = this.extractRelevantObjects(changes);
-      const { retVal: needsRevalidation } = this.store.batch(
-        { optimisticId, changes },
-        (batch) => {
-          const membership = getListMembershipChanges(
-            relevantObjects,
-            this.#whereClause,
-            batch.optimisticWrite,
-          );
-          const existingEntry = batch.read(this.cacheKey);
-          const existingList = new Set(existingEntry?.value?.data);
-
-          const toAdd = new Set(
-            // easy case. objects are new to the cache and they match this filter
-            membership.added,
-          );
-          // deal with the modified objects
-          for (const obj of membership.modified) {
-            toAdd.add(obj);
-          }
-          const { keys, hasMissingObjects } =
-            this.store.objects.getAvailableCacheKeys(
-              toAdd,
-              this.rdpConfig,
-              batch,
-            );
-
-          // anything thats been deleted can be removed, so start there
-          const keysToRemove = new Set<CacheKey>(changes.deleted);
-          for (const obj of membership.removed) {
-            keysToRemove.add(
-              this.store.objects.getCacheKey(obj, this.rdpConfig),
-            );
-          }
-          const newList = reconcileListChanges(existingList, {
-            keysToInsert: Array.from(keys).filter((key) => {
-              // object is new to the list
-              return !existingList.has(key);
-            }),
-            keysToRemove,
-          });
-          const requiresRefresh =
-            membership.needsRevalidation || hasMissingObjects;
-
-          // If we got purely strict matches we can just update the list and move
-          // on with our lives. But if we got sorta matches, then we need to revalidate
-          // the list so we preemptively set it to loading to avoid thrashing the store.
-          const status = this.getLocalUpdateStatus(
-            batch,
-            requiresRefresh || membership.hasUncertainMatches,
-          );
-
-          // while we only push updates for the strict matches, we still need to
-          // trigger the list updating if some of our objects changed
-          this._updateList(
-            newList,
-            status,
-            batch,
-            { type: "clientOrdered" },
-            existingEntry?.value?.totalCount,
-          );
-          return requiresRefresh;
-        },
+      return this.updateListFromChanges(
+        changes,
+        optimisticId,
+        this.extractRelevantObjects(changes),
+        this.#whereClause,
       );
-
-      if (needsRevalidation) {
-        return this.revalidateAfterUpdate(optimisticId);
-      }
-      return undefined;
     } finally {
       if (process.env.NODE_ENV !== "production") {
         this.logger

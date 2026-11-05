@@ -18,13 +18,13 @@ import { setImmediate } from "node:timers/promises";
 
 import type { DerivedProperty, ObjectSet } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
-import type { SetupServer } from "@osdk/shared.test";
 import {
   FauxFoundry,
   msw,
   ontologies,
   startNodeApiServer,
 } from "@osdk/shared.test";
+import type { SetupServer } from "@osdk/shared.test";
 import pDefer from "p-defer";
 import {
   afterEach,
@@ -38,24 +38,24 @@ import {
 
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { runOptimisticJob } from "../actions/OptimisticJob.js";
+import { createChangedObjects } from "../Changes.js";
 import { Store } from "../Store.js";
 import { updateObject } from "../testUtils.js";
 
-interface HeldRequest {
-  id: string;
-  body: { pageToken?: string };
-  response: ReturnType<typeof pDefer<Response>>;
-  received: ReturnType<typeof pDefer<void>>;
-}
-
 describe.each(["ListQuery", "ObjectSetQuery"])(
-  "%s shared requests",
+  "%s shared updates",
   (queryType) => {
     let client: Client;
     let apiServer: SetupServer;
     let store: Store;
-    let requests: HeldRequest[];
+    let requests: Array<{
+      id: string;
+      pageToken?: string;
+      response: ReturnType<typeof pDefer<Response>>;
+      received: ReturnType<typeof pDefer<void>>;
+    }>;
 
     beforeAll(() => {
       const setup = startNodeApiServer(
@@ -63,7 +63,13 @@ describe.each(["ListQuery", "ObjectSetQuery"])(
         createClient,
       );
       ({ client, apiServer } = setup);
-      ontologies.addEmployeeOntology(setup.fauxFoundry.getDefaultOntology());
+      const { fauxFoundry } = setup;
+      ontologies.addEmployeeOntology(fauxFoundry.getDefaultOntology());
+      fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 1,
+        fullName: "Alice",
+      });
       apiServer.events.on("response:mocked", ({ requestId }) => {
         requests
           .find((request) => request.id === requestId)
@@ -76,11 +82,39 @@ describe.each(["ListQuery", "ObjectSetQuery"])(
       store = new Store(client);
       requests = [];
       apiServer.resetHandlers();
+    });
+
+    afterEach(async () => {
+      for (const key of store.queries.keys())
+        store.queries.peek(key)?.dispose();
+      for (const request of requests)
+        request.response.resolve(msw.HttpResponse.json({ data: [] }));
+      await Promise.all(requests.map((request) => request.received.promise));
+      await setImmediate();
+    });
+
+    function getQuery(where = {}) {
+      const withProperties: DerivedProperty.Clause<typeof Employee> = {
+        derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+      };
+      const options = { pageSize: 1, where, withProperties };
+      return queryType === "ListQuery"
+        ? store.lists.getQuery({ type: Employee, ...options })
+        : store.objectSets.getQuery({
+            baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
+            ...options,
+          });
+    }
+
+    function holdRequests() {
       apiServer.use(
         msw.http.post("*/loadObjects", async ({ request, requestId }) => {
-          const held: HeldRequest = {
+          const { pageToken } = (await request.json()) as {
+            pageToken?: string;
+          };
+          const held = {
             id: requestId,
-            body: (await request.json()) as HeldRequest["body"],
+            pageToken,
             response: pDefer<Response>(),
             received: pDefer<void>(),
           };
@@ -88,34 +122,6 @@ describe.each(["ListQuery", "ObjectSetQuery"])(
           return held.response.promise;
         }),
       );
-    });
-
-    afterEach(async () => {
-      for (const key of store.queries.keys())
-        store.queries.peek(key)?.dispose();
-      for (const request of requests) {
-        request.response.resolve(msw.HttpResponse.json({ data: [] }));
-      }
-      await Promise.all(requests.map((request) => request.received.promise));
-      await setImmediate();
-    });
-
-    function getQuery(withRdp = false) {
-      const withProperties:
-        | DerivedProperty.Clause<typeof Employee>
-        | undefined = withRdp
-        ? {
-            derivedName: (base) =>
-              base.pivotTo("lead").selectProperty("fullName"),
-          }
-        : undefined;
-      const options = { pageSize: 1, withProperties };
-      return queryType === "ListQuery"
-        ? store.lists.getQuery({ type: Employee, ...options })
-        : store.objectSets.getQuery({
-            baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
-            ...options,
-          });
     }
 
     async function requestAt(index: number) {
@@ -135,7 +141,7 @@ describe.each(["ListQuery", "ObjectSetQuery"])(
             __apiName: "Employee",
             __primaryKey: id,
             employeeId: id,
-            fullName: id === 1 ? "Alice" : "Bob",
+            fullName: "Alice",
             derivedName: "Alice",
           })),
           nextPageToken,
@@ -145,154 +151,111 @@ describe.each(["ListQuery", "ObjectSetQuery"])(
       await setImmediate();
     }
 
-    function getIds(query: ReturnType<typeof getQuery>) {
-      return store
-        .getValue(query.cacheKey)
-        ?.value?.data.map((key) => store.getValue(key)?.value?.$primaryKey);
+    function expectList(
+      query: ReturnType<typeof getQuery>,
+      status: string,
+      ids: number[],
+    ) {
+      const entry = store.getValue(query.cacheKey);
+      expect(entry?.status).toBe(status);
+      expect(
+        entry?.value?.data.map(
+          (key) => store.getValue(key)?.value?.$primaryKey,
+        ),
+      ).toEqual(ids);
     }
 
-    it("serializes refreshes and pages while deduplicating concurrent requests", async () => {
+    it("serializes refreshes and pages, deduplicates requests, and keeps local updates loading", async () => {
+      const employee = await client(Employee).fetchOne(1);
+      holdRequests();
       const query = getQuery();
       const initial = query.revalidate();
-      await requestAt(0);
-      expect(query.pendingRequestKind).toBe("revalidation");
       const more = query.fetchMore();
       expect(query.fetchMore()).toBe(more);
+      updateObject(store, employee);
+      expectList(query, "loading", []);
       await respond(0, [1], "page-2");
       await initial;
-      const page = await requestAt(1);
-      expect(page.body.pageToken).toBe("page-2");
-      expect(query.pendingRequestKind).toBe("pagination");
+      expect((await requestAt(1)).pageToken).toBe("page-2");
       const samePage = query.fetchMore();
       const refresh = query.revalidate();
+      updateObject(store, employee);
+      expectList(query, "loading", [1]);
       expect(requests).toHaveLength(2);
-      await respond(1, [2], "page-3");
+      await respond(1, [2]);
       await Promise.all([more, samePage]);
-      expect((await requestAt(2)).body.pageToken).toBeUndefined();
-      expect(query.pendingRequestKind).toBe("revalidation");
+      expect((await requestAt(2)).pageToken).toBeUndefined();
       await respond(2, [1, 2]);
       await refresh;
+      updateObject(store, employee);
+      expectList(query, "loaded", [1, 2]);
       expect(requests).toHaveLength(3);
-      expect(getIds(query)).toEqual([1, 2]);
-      expect(store.getValue(query.cacheKey)?.status).toBe("loaded");
     });
 
-    it("restarts from the first page on a forced refresh and ignores a late page response", async () => {
+    it("replaces active requests, ignores late results, and cancels queued pages on disposal", async () => {
+      holdRequests();
       const query = getQuery();
       const initial = query.revalidate();
       await respond(0, [1], "old-page-2");
       await initial;
       const more = query.fetchMore();
       await requestAt(1);
-      const refresh = query.revalidate(true);
-      expect((await requestAt(2)).body.pageToken).toBeUndefined();
+      const oldRefresh = query.revalidate(true);
+      expect((await requestAt(2)).pageToken).toBeUndefined();
       await more;
       await respond(1, [2], "stale-page-3");
-      expect(query.pendingRequestKind).toBe("revalidation");
-      expect(store.getValue(query.cacheKey)?.status).toBe("loading");
-      expect(getIds(query)).toEqual([1]);
-      await respond(2, [3], "fresh-page-2");
-      await refresh;
-      const next = query.fetchMore();
-      expect((await requestAt(3)).body.pageToken).toBe("fresh-page-2");
-      await respond(3, [4]);
-      await next;
-      expect(getIds(query)).toEqual([3, 4]);
-      expect(query.pendingFetch).toBeUndefined();
-    });
-
-    it("replaces an active revalidation and ignores its late failure", async () => {
-      const query = getQuery();
-      const old = query.revalidate();
-      await requestAt(0);
+      expectList(query, "loading", [1]);
       const fresh = query.revalidate(true);
-      await requestAt(1);
-      await old;
-      const stale = await requestAt(0);
-      stale.response.resolve(msw.HttpResponse.json({}, { status: 500 }));
-      await stale.received.promise;
+      await requestAt(3);
+      await oldRefresh;
+      requests[2].response.resolve(msw.HttpResponse.json({}, { status: 500 }));
+      await requests[2].received.promise;
       await setImmediate();
-      expect(query.pendingRequestKind).toBe("revalidation");
-      expect(store.getValue(query.cacheKey)?.status).toBe("loading");
-      expect(getIds(query)).toBeUndefined();
-      await respond(1, [2]);
+      expectList(query, "loading", [1]);
+      await respond(3, [3], "fresh-page-2");
       await fresh;
-      expect(getIds(query)).toEqual([2]);
-      expect(store.getValue(query.cacheKey)?.status).toBe("loaded");
+      const next = query.fetchMore();
+      expect((await requestAt(4)).pageToken).toBe("fresh-page-2");
+      await respond(4, [4]);
+      await next;
+      expectList(query, "loaded", [3, 4]);
+      const final = query.revalidate(true);
+      await requestAt(5);
+      const queued = query.fetchMore();
+      query.dispose();
+      await Promise.all([final, queued]);
+      await respond(5, [5], "page-2");
+      expect(requests).toHaveLength(6);
+      expectList(query, "loading", [3, 4]);
     });
 
-    it.each(["revalidation", "pagination"])(
-      "keeps local cache updates loading during %s",
-      async (kind) => {
-        const query = getQuery(true);
-        const initial = query.revalidate();
-        await respond(0, [1], "page-2");
-        await initial;
-        const pending =
-          kind === "revalidation" ? query.revalidate(true) : query.fetchMore();
-        await requestAt(1);
-        const plain = client(Employee).fetchOne(1);
-        const plainRequest = await requestAt(2);
-        plainRequest.response.resolve(
-          msw.HttpResponse.json({
-            data: [
-              {
-                __apiName: "Employee",
-                __primaryKey: 1,
-                employeeId: 1,
-                fullName: "Updated",
-              },
-            ],
-          }),
-        );
-        const employee = await plain;
-        updateObject(store, employee);
-        expect(store.getValue(query.cacheKey)?.status).toBe("loading");
-        expect(requests).toHaveLength(3);
-        await respond(1, [1]);
-        await pending;
-        expect(store.getValue(query.cacheKey)?.status).toBe("loaded");
-        updateObject(store, employee);
-        expect(store.getValue(query.cacheKey)?.status).toBe("loaded");
-      },
-    );
-
-    it("does not fetch for optimistic missing RDP data and restores the completed response on rollback", async () => {
-      const query = getQuery(true);
-      const initial = query.revalidate();
-      await respond(0, [1]);
-      await initial;
+    it("revalidates uncertain additions and keeps optimistic changes loading until rollback", async () => {
+      const query = getQuery({ fullName: { $containsAllTerms: "Alice" } });
+      const employee = await client(Employee).fetchOne(1);
+      const objectQuery = store.objects.getQuery({ apiName: Employee, pk: 1 });
+      const changes = createChangedObjects();
+      changes.registerObject(
+        objectQuery.cacheKey,
+        employee as unknown as ObjectHolder,
+        true,
+      );
+      await query.maybeUpdateAndRevalidate(changes, undefined);
+      expectList(query, "loaded", [1]);
+      holdRequests();
       const rollback = runOptimisticJob(store, (builder) => {
         builder.createObject(Employee, 2, {
-          fullName: "Bob",
+          fullName: "Alice",
         } as Employee.Props);
       });
-      await vi.waitFor(() =>
-        expect(store.getValue(query.cacheKey)?.status).toBe("loading"),
-      );
-      expect(query.pendingFetch).toBeUndefined();
-      expect(requests).toHaveLength(1);
+      await vi.waitFor(() => expectList(query, "loading", [1]));
+      expect(requests).toHaveLength(0);
       const refresh = query.revalidate(true);
-      await respond(1, [1]);
+      await respond(0, [1]);
       await refresh;
       expect(store.layers.truth.get(query.cacheKey)?.status).toBe("loaded");
-      expect(store.getValue(query.cacheKey)?.status).toBe("loading");
+      expectList(query, "loading", [1]);
       await rollback();
-      expect(store.getValue(query.cacheKey)?.status).toBe("loaded");
-      expect(getIds(query)).toEqual([1]);
-    });
-
-    it("does not start queued pagination after disposal", async () => {
-      const query = getQuery();
-      const initial = query.revalidate();
-      await requestAt(0);
-      const more = query.fetchMore();
-      query.dispose();
-      await Promise.all([initial, more]);
-      await respond(0, [1], "page-2");
-      expect(requests).toHaveLength(1);
-      expect(query.pendingFetch).toBeUndefined();
-      expect(getIds(query)).toBeUndefined();
+      expectList(query, "loaded", [1]);
     });
   },
 );

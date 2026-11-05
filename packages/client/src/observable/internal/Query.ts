@@ -52,7 +52,7 @@ export abstract class Query<
   O extends CommonObserveOptions,
 > implements Subscribable<PAYLOAD> {
   lastFetchStarted?: number;
-  #pendingRequest?: PendingRequest;
+  protected pendingRequest?: PendingRequest;
   protected disposed = false;
 
   retainCount: number = 0;
@@ -97,18 +97,6 @@ export abstract class Query<
                   : "Query",
             },
           ));
-  }
-
-  get pendingFetch(): Promise<void> | undefined {
-    return this.#pendingRequest?.promise;
-  }
-
-  get pendingRequestKind(): RequestKind | undefined {
-    return this.#pendingRequest?.kind;
-  }
-
-  protected get isRequestPending(): boolean {
-    return this.#pendingRequest != null && !this.#pendingRequest.completed;
   }
 
   protected abstract _createConnectable(
@@ -189,13 +177,13 @@ export abstract class Query<
     // have a single page/object. It needs to be redone. FIXME
 
     // if we are pending the first page/object we can just ignore this
-    if (this.pendingFetch && !force) {
+    const pending = this.pendingRequest;
+    if (pending && !force) {
       if (process.env.NODE_ENV !== "production") {
         logger?.debug("Fetch is already pending, using it");
       }
-      const kind = this.pendingRequestKind;
-      await this.pendingFetch;
-      if (kind === "pagination") return this.revalidate();
+      await pending.promise;
+      if (pending.kind === "pagination") return this.revalidate();
       return;
     }
 
@@ -218,7 +206,7 @@ export abstract class Query<
       logger?.debug("Starting actual revalidate");
     }
 
-    this.#pendingRequest?.controller.abort();
+    this.pendingRequest?.controller.abort();
     this.lastFetchStarted = Date.now();
     await this.runRequest("revalidation", (signal) => {
       this._preFetch();
@@ -233,30 +221,26 @@ export abstract class Query<
     const controller = new AbortController();
     const { signal } = controller;
     let onAbort: () => void;
-    const aborted = new Promise<void>((resolve) => {
-      onAbort = resolve;
-      signal.addEventListener("abort", onAbort, { once: true });
-    });
-    const work = Promise.resolve().then(async () => {
-      if (signal.aborted) return;
-      try {
-        await fetch(signal);
-      } catch (error) {
-        if (!signal.aborted) throw error;
-      }
-    });
     const request: PendingRequest = {
       kind,
       controller,
       completed: false,
-      promise: Promise.race([work, aborted]).finally(() => {
+      promise: new Promise<void>((resolve, reject) => {
+        onAbort = resolve;
+        signal.addEventListener("abort", onAbort, { once: true });
+        Promise.resolve()
+          .then(() => {
+            if (!signal.aborted) return fetch(signal);
+          })
+          .then(resolve, reject);
+      }).finally(() => {
         signal.removeEventListener("abort", onAbort);
-        if (this.#pendingRequest === request) {
-          this.#pendingRequest = undefined;
+        if (this.pendingRequest === request) {
+          this.pendingRequest = undefined;
         }
       }),
     };
-    this.#pendingRequest = request;
+    this.pendingRequest = request;
     this.store.batch({}, (batch) => {
       // make sure the truth layer knows we are loading
 
@@ -268,18 +252,9 @@ export abstract class Query<
   }
 
   protected completeRequest(signal: AbortSignal): void {
-    if (this.#pendingRequest?.controller.signal === signal) {
-      this.#pendingRequest.completed = true;
+    if (this.pendingRequest?.controller.signal === signal) {
+      this.pendingRequest.completed = true;
     }
-  }
-
-  protected getLocalUpdateStatus(
-    batch: BatchContext,
-    requiresRefresh: boolean,
-  ): Status {
-    return batch.optimisticWrite || requiresRefresh || this.isRequestPending
-      ? "loading"
-      : "loaded";
   }
 
   protected revalidateAfterUpdate(
@@ -287,11 +262,11 @@ export abstract class Query<
   ): Promise<void> | undefined {
     if (optimisticId) return;
     if (
-      this.#pendingRequest &&
-      (this.#pendingRequest.kind === "revalidation" ||
-        this.#pendingRequest.completed)
+      this.pendingRequest &&
+      (this.pendingRequest.kind === "revalidation" ||
+        this.pendingRequest.completed)
     ) {
-      return this.#pendingRequest.promise;
+      return this.pendingRequest.promise;
     }
     return this.revalidate(true);
   }
@@ -333,7 +308,7 @@ export abstract class Query<
 
   dispose(): void {
     this.disposed = true;
-    this.#pendingRequest?.controller.abort();
+    this.pendingRequest?.controller.abort();
     this.#subscription?.unsubscribe();
     this._dispose();
   }

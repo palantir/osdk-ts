@@ -24,13 +24,8 @@ import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
-import {
-  getListMembershipChanges,
-  type ListObjectChanges,
-  reconcileListChanges,
-} from "../base-list/reconcileListChanges.js";
+import type { ListObjectChanges } from "../base-list/reconcileListChanges.js";
 import type { BatchContext } from "../BatchContext.js";
-import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
@@ -316,7 +311,17 @@ export class ObjectSetQuery extends BaseListQuery<
       if (this.#requiresServerEvaluation) {
         return this.#handleServerRevalidation(changes, optimisticId);
       }
-      return this.#handleLocalUpdate(changes, optimisticId);
+      const relevant = this.#getRelevantChanges(changes);
+      if (relevant) {
+        return this.updateListFromChanges(
+          changes,
+          optimisticId,
+          relevant,
+          (this.#operations.where as SimpleWhereClause | undefined) ?? {
+            $and: [],
+          },
+        );
+      }
     } finally {
       if (process.env.NODE_ENV !== "production") {
         this.logger
@@ -375,74 +380,6 @@ export class ObjectSetQuery extends BaseListQuery<
     }
 
     return { added: addedObjects, modified: modifiedObjects };
-  }
-
-  #handleLocalUpdate(
-    changes: Changes,
-    optimisticId: OptimisticId | undefined,
-  ): Promise<void> | undefined {
-    const whereClause = this.#operations.where as
-      | Canonical<SimpleWhereClause>
-      | undefined;
-    const effectiveWhere =
-      whereClause ?? this.store.whereCanonicalizer.canonicalize({ $and: [] });
-
-    const relevant = this.#getRelevantChanges(changes);
-    if (!relevant) {
-      return undefined;
-    }
-
-    const { retVal: needsRevalidation } = this.store.batch(
-      { optimisticId, changes },
-      (batch) => {
-        const membership = getListMembershipChanges(
-          relevant,
-          effectiveWhere,
-          batch.optimisticWrite,
-        );
-        const existingEntry = batch.read(this.cacheKey);
-        const existingKeys = new Set(existingEntry?.value?.data);
-        const { keys, hasMissingObjects } =
-          this.store.objects.getAvailableCacheKeys(
-            [...membership.added, ...membership.modified],
-            this.rdpConfig,
-            batch,
-          );
-        const keysToRemove = new Set<CacheKey>(changes.deleted);
-        for (const obj of membership.removed) {
-          keysToRemove.add(this.store.objects.getCacheKey(obj, this.rdpConfig));
-        }
-        const newList = reconcileListChanges(existingKeys, {
-          keysToInsert: Array.from(keys).filter(
-            (key) => !existingKeys.has(key),
-          ),
-          keysToRemove,
-        });
-        const requiresRefresh =
-          membership.needsRevalidation || hasMissingObjects;
-
-        const status = this.getLocalUpdateStatus(
-          batch,
-          requiresRefresh || membership.hasUncertainMatches,
-        );
-
-        const existingTotalCount = existingEntry?.value?.totalCount;
-        this._updateList(
-          newList,
-          status,
-          batch,
-          { type: "clientOrdered" },
-          existingTotalCount,
-        );
-
-        return requiresRefresh;
-      },
-    );
-
-    if (needsRevalidation) {
-      return this.revalidateAfterUpdate(optimisticId);
-    }
-    return undefined;
   }
 
   async #computeInvalidationTypes(

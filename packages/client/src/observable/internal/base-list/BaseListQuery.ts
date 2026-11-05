@@ -30,11 +30,14 @@ import type {
 import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
+import type { Changes } from "../Changes.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import type { OptimisticId } from "../OptimisticId.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
+import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { SortingStrategy } from "../sorting/SortingStrategy.js";
 import { NoOpSortingStrategy } from "../sorting/SortingStrategy.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
@@ -45,6 +48,11 @@ import type {
   CollectionStorageData,
 } from "./BaseCollectionQuery.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
+import {
+  getListMembershipChanges,
+  type ListObjectChanges,
+  reconcileListChanges,
+} from "./reconcileListChanges.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 
 export type ListUpdateMode =
@@ -187,6 +195,80 @@ export abstract class BaseListQuery<
       status,
       batch,
     );
+  }
+
+  protected updateListFromChanges(
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
+    relevantObjects: ListObjectChanges,
+    whereClause: SimpleWhereClause,
+  ): Promise<void> | undefined {
+    const { retVal: needsRevalidation } = this.store.batch(
+      { optimisticId, changes },
+      (batch) => {
+        const membership = getListMembershipChanges(
+          relevantObjects,
+          whereClause,
+          batch.optimisticWrite,
+        );
+        const existingEntry = batch.read(this.cacheKey);
+        const existingList = new Set(existingEntry?.value?.data);
+
+        const { keys, hasMissingObjects } =
+          this.store.objects.getAvailableCacheKeys(
+            [
+              // easy case. objects are new to the cache and they match this filter
+              ...membership.added,
+              // deal with the modified objects
+              ...membership.modified,
+            ],
+            this.rdpConfig,
+            batch,
+          );
+
+        // anything thats been deleted can be removed, so start there
+        const keysToRemove = new Set<CacheKey>(changes.deleted);
+        for (const obj of membership.removed) {
+          keysToRemove.add(this.store.objects.getCacheKey(obj, this.rdpConfig));
+        }
+        const newList = reconcileListChanges(existingList, {
+          keysToInsert: Array.from(keys).filter((key) => {
+            // object is new to the list
+            return !existingList.has(key);
+          }),
+          keysToRemove,
+        });
+        const requiresRefresh =
+          membership.needsRevalidation || hasMissingObjects;
+
+        // If we got purely strict matches we can just update the list and move
+        // on with our lives. But if we got sorta matches, then we need to revalidate
+        // the list so we preemptively set it to loading to avoid thrashing the store.
+        const status =
+          batch.optimisticWrite ||
+          requiresRefresh ||
+          membership.hasUncertainMatches ||
+          (this.pendingRequest && !this.pendingRequest.completed)
+            ? "loading"
+            : "loaded";
+
+        // while we only push updates for the strict matches, we still need to
+        // trigger the list updating if some of our objects changed
+        this._updateList(
+          newList,
+          status,
+          batch,
+          { type: "clientOrdered" },
+          existingEntry?.value?.totalCount,
+        );
+        return requiresRefresh;
+      },
+    );
+
+    if (needsRevalidation) {
+      return this.revalidateAfterUpdate(optimisticId);
+    }
+    return undefined;
   }
 
   /**
@@ -357,20 +439,16 @@ export abstract class BaseListQuery<
       return this.pendingPageFetch;
     }
 
-    if (this.pendingFetch) {
-      if (this.pendingRequestKind === "pagination" && this.isRequestPending) {
-        return this.pendingFetch;
+    const pending = this.pendingRequest;
+    if (pending) {
+      if (pending.kind === "pagination" && !pending.completed) {
+        return pending.promise;
       }
-      this.pendingPageFetch = this.pendingFetch.then(
-        () => {
+      this.pendingPageFetch = pending.promise
+        .finally(() => {
           this.pendingPageFetch = undefined;
-          return this.fetchMore();
-        },
-        (error: unknown) => {
-          this.pendingPageFetch = undefined;
-          throw error;
-        },
-      );
+        })
+        .then(() => this.fetchMore());
       return this.pendingPageFetch;
     }
 
@@ -611,76 +689,6 @@ export abstract class BaseListQuery<
     batch: BatchContext,
   ): ObjectCacheKey[] {
     return this.sortingStrategy.sortCacheKeys(objectCacheKeys, batch);
-  }
-
-  /**
-   * Unified method for updating collection data in the store
-   * Handles storing, sorting, deduplication, and reference counting
-   *
-   * @param items - Either object cache keys or object instances to update
-   * @param options - Configuration options for the update
-   * @param batch - The batch context to use
-   * @returns The updated entry
-   */
-  protected updateCollection<T extends ObjectCacheKey | Osdk.Instance<any>>(
-    items: T[],
-    options: {
-      append?: boolean;
-      status: Status;
-    },
-    batch: BatchContext,
-  ): Entry<KEY> {
-    if (process.env.NODE_ENV !== "production") {
-      const logger =
-        process.env.NODE_ENV !== "production"
-          ? this.logger?.child({ methodName: "updateCollection" })
-          : this.logger;
-
-      logger?.debug(
-        `{status: ${options.status}, append: ${options.append}}`,
-        JSON.stringify(items, null, 2),
-      );
-    }
-
-    // Step 1: Convert items to object cache keys if needed
-    let objectCacheKeys: ObjectCacheKey[];
-
-    if (items.length === 0) {
-      objectCacheKeys = [];
-    } else if (isObjectInstance(items[0])) {
-      // Items are object instances, need to store them first
-      objectCacheKeys = this.store.objects.storeOsdkInstances(
-        items as Array<Osdk.Instance<any>>,
-        batch,
-        this.rdpConfig,
-        this.selectFieldSet,
-        this.includeAllBaseObjectProperties,
-      );
-    } else {
-      // Items are already cache keys
-      objectCacheKeys = items as ObjectCacheKey[];
-    }
-
-    // Step 2: Handle retain/release/append logic
-    objectCacheKeys = this.#retainReleaseAppend(
-      batch,
-      options.append ?? false,
-      objectCacheKeys,
-    );
-
-    // Step 3: Sort using the configured sorting strategy
-    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
-
-    // Step 4: Remove duplicates
-    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
-
-    // Step 5: Write to store
-    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
-    return this.writeToStore(
-      { data: objectCacheKeys, totalCount: existingTotalCount },
-      options.status,
-      batch,
-    );
   }
 
   //
