@@ -95,8 +95,13 @@ export const objectArgumentsAgentVersion: AgentDefinitionVersion = {
   eventDefinitions: [
     { eventType: "SelectEmployees", payloadType: employeesField.dataType },
   ],
-  agentStateType: { type: "struct", fields: [] },
-  contextItemDefinitions: [],
+  agentStateType: { type: "struct", fields: [employeeField, employeesField] },
+  contextItemDefinitions: [
+    {
+      contextItemType: "selection",
+      dataType: { type: "struct", fields: [employeeField, employeesField] },
+    },
+  ],
 };
 
 export const optionalArgumentsAgentApiName = "optionalArgumentsAgent";

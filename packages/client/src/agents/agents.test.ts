@@ -526,6 +526,63 @@ describe("agents", () => {
       expect(state.agentState.data).toEqual({ temperature: 20 });
     });
 
+    it.each([
+      {
+        name: "arguments",
+        getData: (state: AgentSessionState) => state.arguments,
+      },
+      {
+        name: "state",
+        getData: (state: AgentSessionState) => state.agentState.data,
+      },
+      {
+        name: "context items",
+        getData: (state: AgentSessionState) =>
+          state.contextItems.selection.data,
+      },
+    ])("converts objects and sets in $name", async ({ getData }) => {
+      const objectSession = await client(
+        objectArgumentsAgent,
+      ).experimental_createSession({
+        employee: 50030,
+        employees: client(Employee).where({ employeeId: 50030 }),
+      });
+      const state = await objectSession.experimental_getState({
+        $timeoutMs: 0,
+      });
+      const converted = getData(state) as {
+        employee: unknown;
+        employees: ObjectSet<typeof Employee>;
+      };
+      expect(converted.employee).toMatchObject({
+        $apiName: "Employee",
+        $primaryKey: 50030,
+        $objectSpecifier: "Employee:50030",
+      });
+      const page = await converted.employees
+        .where({ employeeId: 50030 })
+        .fetchPage();
+      expect(page.data.map((employee) => employee.$primaryKey)).toEqual([
+        50030,
+      ]);
+    });
+
+    it("rejects conversion failures without advancing the consistency key", async () => {
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      const read = vi.spyOn(agentImpl, "getState").mockReturnValueOnce({
+        ...stubData.weatherAgentState,
+        agentState: { data: [] },
+      });
+      const result = session.experimental_getState();
+      await expect(result).rejects.toThrow(
+        'Invalid agent value "agentState.data": expected an object.',
+      );
+      await session.experimental_getState();
+      expect(read.mock.calls[1][0].consistencyKey).toBe("accepted-event");
+    });
+
     it("tracks accepted sends and successful reads", async () => {
       const read = vi.spyOn(agentImpl, "getState");
       await session.experimental_sendEvent({
