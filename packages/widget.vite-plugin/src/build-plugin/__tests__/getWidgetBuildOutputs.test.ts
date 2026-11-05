@@ -29,7 +29,7 @@ const MOCK_BUILD_DIR = "/build";
 const MOCK_INPUT = "index.html";
 const MOCK_WIDGET_ID = "widget-id";
 const MOCK_SERVER = {
-  config: { root: process.cwd(), base: "/" },
+  config: { root: process.cwd() },
 } as ViteDevServer;
 
 beforeEach(() => {
@@ -68,6 +68,7 @@ test("getWidgetBuildOutputs successfully matches widget build outputs", async ()
     { "chunk.js": entryChunk },
     MOCK_INPUT,
     MOCK_BUILD_DIR,
+    "/",
     MOCK_SERVER,
   );
   expect(result).toEqual({
@@ -100,6 +101,7 @@ test("getWidgetBuildOutputs throws error when entrypoint chunk not found", async
       { "chunk.js": nonEntryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
+      "/",
       MOCK_SERVER,
     ),
   ).rejects.toThrow("Entrypoint chunk not found for input file: index.html");
@@ -129,6 +131,7 @@ test("getWidgetBuildOutputs throws error when no config file found", async () =>
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
+      "/",
       MOCK_SERVER,
     ),
   ).rejects.toThrow(
@@ -160,6 +163,7 @@ test("getWidgetBuildOutputs throws error when multiple config files found", asyn
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
+      "/",
       MOCK_SERVER,
     ),
   ).rejects.toThrow(
@@ -196,6 +200,7 @@ test("getWidgetBuildOutputs throws error when extractWidgetConfig fails", async 
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
+      "/",
       MOCK_SERVER,
     ),
   ).rejects.toThrow("Config extraction failed");

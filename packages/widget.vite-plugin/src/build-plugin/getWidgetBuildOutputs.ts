@@ -32,6 +32,7 @@ export async function getWidgetBuildOutputs(
   bundle: Rollup.OutputBundle,
   input: string,
   buildDir: string,
+  base: string,
   server: ViteDevServer,
 ): Promise<WidgetBuildOutputs> {
   const inputHtmlFilePath = path.resolve(
@@ -44,14 +45,12 @@ export async function getWidgetBuildOutputs(
     .split(path.sep) // Normalize Windows paths that use `\` instead of `/`
     .join("/");
   const resolveAsset = (src: string): string => {
-    // Resolves src relative to htmlPath, e.g. if htmlPath = "app/index.html", then assets/index.js -> /app/assets/index.js
-    const url = new URL(src, `http://widget.invalid/${htmlPath}`);
-    const base = server.config.base;
-    // e.g. if base = "/widgets/", then /widgets/assets/index.js -> /assets/index.js
-    if (src.startsWith("/") && url.pathname.startsWith(base)) {
-      return `/${url.pathname.slice(base.length)}`;
+    if (src.startsWith("/")) {
+      // e.g. if base = "/widgets/", then /widgets/assets/index.js -> /assets/index.js
+      return src.startsWith(base) ? `/${src.slice(base.length)}` : src;
     }
-    return url.pathname;
+    // Resolves src relative to htmlPath, e.g. if htmlPath = "app/index.html", then assets/index.js -> /app/assets/index.js
+    return path.posix.join("/", path.posix.dirname(htmlPath), src);
   };
   const buildOutputs = {
     scripts: extracted.scripts.map((script) => ({

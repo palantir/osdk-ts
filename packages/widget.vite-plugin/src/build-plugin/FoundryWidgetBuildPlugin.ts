@@ -88,7 +88,7 @@ export function FoundryWidgetBuildPlugin(
         );
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
-            getWidgetBuildOutputs(bundle, input, outDir, server),
+            getWidgetBuildOutputs(bundle, input, outDir, config.base, server),
           ),
         );
         const widgetSetInputSpec = await getWidgetSetInputSpec(
