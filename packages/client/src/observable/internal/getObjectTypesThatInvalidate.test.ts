@@ -17,7 +17,12 @@
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
 import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
-import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
+import {
+  FauxFoundry,
+  ontologies,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -48,6 +53,28 @@ describe(getObjectTypesThatInvalidate, () => {
     ({ client, apiServer, fauxFoundry } = testSetup);
 
     setupOntology(fauxFoundry);
+    fauxFoundry.getDefaultOntology().registerInterfaceType({
+      ...stubData.FooInterface,
+      apiName: "Employee",
+      rid: "ri.interface.main.interface.collision",
+      implementedByObjectTypes: ["Employee"],
+    });
+    const offices = {
+      rid: "ri.interface.link.main.offices",
+      apiName: "offices",
+      linkedEntityApiName: { type: "objectTypeApiName", apiName: "Office" },
+      displayName: "Offices",
+      cardinality: "MANY",
+      required: true,
+    } as const;
+    fauxFoundry.getDefaultOntology().registerInterfaceType({
+      ...stubData.FooInterface,
+      apiName: "MixedInterface",
+      rid: "ri.interface.main.interface.mixed",
+      implementedByObjectTypes: ["Employee"],
+      links: { offices },
+      allLinks: { offices },
+    });
 
     return () => {
       testSetup.apiServer.close();
@@ -259,12 +286,43 @@ describe(getObjectTypesThatInvalidate, () => {
     );
   });
 
-  it.skip("supports interface link search around", async () => {
-    // FIXME, we don't have a good interface link example right now
-    // Assuming FooInterface has links - skip if not available
-    // const osdkObjectSet = client(FooInterface).pivotTo("someLink");
-    // const { resultType, invalidationSet } = await helper(osdkObjectSet);
-    // Verify it handles interface pivots correctly
+  it("keeps concrete dependencies when an interface has the same API name", async () => {
+    const result = await getObjectTypesThatInvalidate(
+      client[additionalContext],
+      {
+        type: "interfaceBase",
+        interfaceType: "Employee",
+      },
+    );
+    expect(result.invalidationSet).toEqual(new Set(["Employee"]));
+    expect(result.interfaceTypes).toEqual(new Set(["Employee"]));
+    await expect(
+      getObjectTypesThatInvalidate(client[additionalContext], {
+        type: "union",
+        objectSets: [
+          { type: "interfaceBase", interfaceType: "Employee" },
+          { type: "base", objectType: "Employee" },
+        ],
+      }),
+    ).rejects.toThrow("Incompatible context types");
+  });
+
+  it("resolves dependencies through mixed interface and object pivots", async () => {
+    const result = await getObjectTypesThatInvalidate(
+      client[additionalContext],
+      {
+        type: "interfaceLinkSearchAround",
+        interfaceLink: "occupants",
+        objectSet: {
+          type: "interfaceLinkSearchAround",
+          interfaceLink: "offices",
+          objectSet: { type: "interfaceBase", interfaceType: "MixedInterface" },
+        },
+      },
+    );
+    expect(result.resultType.apiName).toBe("Employee");
+    expect(result.invalidationSet).toEqual(new Set(["Employee", "Office"]));
+    expect(result.interfaceTypes).toEqual(new Set(["MixedInterface"]));
   });
 
   // Complex RDP Tests

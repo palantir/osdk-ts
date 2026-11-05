@@ -348,12 +348,15 @@ export function useObjectSet<
   }
 
   const typeApiName = baseObjectSet?.$objectSetInternals.def.apiName;
+  const typeKind = baseObjectSet?.$objectSetInternals.def.type;
 
   const refetch = React.useCallback(async () => {
-    if (typeApiName) {
-      await observableClient.invalidateObjectType(typeApiName);
-    }
-  }, [observableClient, typeApiName]);
+    if (!enabled || !typeApiName || !typeKind) return;
+    await observableClient.invalidateObjectOrInterfaceType({
+      type: typeKind,
+      apiName: typeApiName,
+    });
+  }, [observableClient, typeApiName, typeKind, enabled]);
 
   return React.useMemo(() => {
     const lastLoaded = isPayloadCompleted(payload)

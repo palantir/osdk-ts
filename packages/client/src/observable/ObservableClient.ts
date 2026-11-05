@@ -594,9 +594,19 @@ export interface ObservableClient extends ObserveLinks {
    *
    * @param type - Object type definition or API name string
    * @returns Promise that resolves when invalidation is complete
+   * @deprecated Use invalidateObjectOrInterfaceType with a type definition.
    */
   invalidateObjectType<T extends ObjectTypeDefinition>(
     type: T | T["apiName"],
+  ): Promise<void>;
+
+  /**
+   * Invalidates cached queries for an object type or interface and its implementing object types.
+   * Accepts a type definition to distinguish object and interface API names.
+   * Rejects if the interface's implementing types cannot be resolved.
+   */
+  invalidateObjectOrInterfaceType(
+    type: ObjectOrInterfaceDefinition,
   ): Promise<void>;
 
   /**

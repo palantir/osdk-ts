@@ -302,6 +302,12 @@ export class ObservableClientImpl implements ObservableClient {
     return this.__experimentalStore.invalidateObjectType(type, undefined);
   }
 
+  public invalidateObjectOrInterfaceType(
+    type: ObjectOrInterfaceDefinition,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateObjectOrInterfaceType(type);
+  }
+
   public invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
     params?: Record<string, unknown>,

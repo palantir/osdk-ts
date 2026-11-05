@@ -228,6 +228,17 @@ export class ObjectQuery extends Query<
     return batch.read(this.cacheKey);
   }
 
+  override invalidateInterfaceType(
+    interfaceType: string,
+    changes: Changes | undefined,
+  ): Promise<void> {
+    if (this.#defType === "interface" && this.#apiName === interfaceType) {
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+    return Promise.resolve();
+  }
+
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,

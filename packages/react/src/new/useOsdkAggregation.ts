@@ -257,8 +257,11 @@ export function useOsdkAggregation<
     if (!enabled) {
       return;
     }
-    await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName, enabled]);
+    await observableClient.invalidateObjectOrInterfaceType({
+      type: type.type,
+      apiName: type.apiName,
+    });
+  }, [observableClient, type.apiName, type.type, enabled]);
 
   return React.useMemo(
     () => ({

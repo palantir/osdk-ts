@@ -103,6 +103,7 @@ export class AggregationQuery extends Query<
   protected rdpConfig: Canonical<Rdp> | undefined;
   protected parsedWireObjectSet: WireObjectSet | undefined;
   #invalidationTypes: Set<string> | undefined;
+  #invalidationInterfaces = new Set<string>();
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
 
   constructor(
@@ -157,7 +158,8 @@ export class AggregationQuery extends Query<
       this.store.client[additionalContext],
       getWireObjectSet(this.createObjectSet()),
     )
-      .then(({ counts }) => {
+      .then(({ counts, interfaceTypes }) => {
+        this.#invalidationInterfaces = interfaceTypes;
         this.#invalidationTypes = new Set(Object.keys(counts));
         return this.#invalidationTypes;
       })
@@ -269,6 +271,20 @@ export class AggregationQuery extends Query<
     batch.write(this.cacheKey, data, status);
     batch.changes.modified.add(this.cacheKey);
     return batch.read(this.cacheKey)!;
+  }
+
+  override async invalidateInterfaceType(
+    interfaceType: string,
+    changes: Changes | undefined,
+  ): Promise<void> {
+    if (
+      (this.cacheKey.otherKeys[TYPE_IDX] === "interface" &&
+        this.apiName === interfaceType) ||
+      this.#invalidationInterfaces.has(interfaceType)
+    ) {
+      changes?.modified.add(this.cacheKey);
+      await this.revalidate(true);
+    }
   }
 
   invalidateObjectType = async (

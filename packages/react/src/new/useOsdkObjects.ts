@@ -388,8 +388,12 @@ export function useOsdkObjects<
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   const refetch = React.useCallback(async () => {
-    await observableClient.invalidateObjectType(type.apiName);
-  }, [observableClient, type.apiName]);
+    if (!enabled) return;
+    await observableClient.invalidateObjectOrInterfaceType({
+      type: type.type,
+      apiName: type.apiName,
+    });
+  }, [observableClient, type.apiName, type.type, enabled]);
 
   return React.useMemo<UseOsdkListResult<Q, RDPs>>(
     () => ({

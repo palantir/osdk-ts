@@ -58,6 +58,7 @@ export class ObjectSetQuery extends BaseListQuery<
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
+  #interfaceTypes = new Set<string>();
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
 
@@ -95,9 +96,11 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#composedObjectSet = this.#composeObjectSet(opts);
 
     const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
-    this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
+    this.#objectTypes = this.#extractObjectTypes(opts);
 
     this.#requiresServerEvaluation = !!(
+      baseWire.type === "interfaceBase" ||
+      opts.baseObjectSet.$objectSetInternals.def.type === "interface" ||
       operations.pivotTo ||
       (operations.union && operations.union.length > 0) ||
       (operations.intersect && operations.intersect.length > 0) ||
@@ -157,36 +160,22 @@ export class ObjectSetQuery extends BaseListQuery<
     return result;
   }
 
-  #extractObjectTypes(
-    baseWire: WireObjectSet,
-    opts: ObjectSetQueryOptions,
-  ): Set<string> {
+  #extractObjectTypes(opts: ObjectSetQueryOptions): Set<string> {
     const types = new Set<string>();
-    const baseTypeName = ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire);
-    if (baseTypeName) {
-      types.add(baseTypeName);
-    }
-    ObjectSetQuery.#addTypesFromObjectSets(opts.union, types);
-    ObjectSetQuery.#addTypesFromObjectSets(opts.intersect, types);
-    ObjectSetQuery.#addTypesFromObjectSets(opts.subtract, types);
-    return types;
-  }
-
-  static #addTypesFromObjectSets(
-    sets: ReadonlyArray<ObjectSet<any, any>> | undefined,
-    types: Set<string>,
-  ): void {
-    if (!sets) {
-      return;
-    }
-    for (const os of sets) {
-      const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
-        getWireObjectSet(os),
-      );
-      if (typeName) {
-        types.add(typeName);
+    for (const objectSet of [
+      opts.baseObjectSet,
+      ...(opts.union ?? []),
+      ...(opts.intersect ?? []),
+      ...(opts.subtract ?? []),
+    ]) {
+      const def = objectSet.$objectSetInternals.def;
+      if (def.type === "interface") {
+        this.#interfaceTypes.add(def.apiName);
+      } else {
+        types.add(def.apiName);
       }
     }
+    return types;
   }
 
   static #extractTypeFromWireObjectSet(
@@ -221,7 +210,7 @@ export class ObjectSetQuery extends BaseListQuery<
       !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType, invalidationSet } =
+      const { resultType, counts, interfaceTypes } =
         await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
           wireObjectSet,
@@ -234,13 +223,15 @@ export class ObjectSetQuery extends BaseListQuery<
           wireObjectSet,
         ),
       );
-      this.#rdpInvalidationSet = invalidationSet;
+      this.#rdpInvalidationSet = new Set(Object.keys(counts));
+      this.#interfaceTypes = interfaceTypes;
+      if (interfaceTypes.size > 0) {
+        this.#objectTypes = new Set(Object.keys(counts));
+        this.#requiresServerEvaluation = true;
+      }
     }
 
-    if (
-      this.#rdpInvalidationSet == null &&
-      this.#operations.withProperties != null
-    ) {
+    if (this.#rdpInvalidationSet == null) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
       this.#rdpInvalidationSet =
         await this.#computeInvalidationTypes(wireObjectSet);
@@ -482,19 +473,24 @@ export class ObjectSetQuery extends BaseListQuery<
 
   async #computeInvalidationTypes(
     wireObjectSet: WireObjectSet,
-  ): Promise<Set<string>> {
+  ): Promise<Set<string> | undefined> {
     try {
-      const { invalidationSet } = await getObjectTypesThatInvalidate(
+      const { counts, interfaceTypes } = await getObjectTypesThatInvalidate(
         this.store.client[additionalContext],
         wireObjectSet,
       );
-      return invalidationSet;
+      this.#interfaceTypes = interfaceTypes;
+      if (interfaceTypes.size > 0) {
+        this.#objectTypes = new Set(Object.keys(counts));
+        this.#requiresServerEvaluation = true;
+      }
+      return new Set(Object.keys(counts));
     } catch (error) {
       this.store.logger?.error(
         "Failed to compute invalidation types for object set query, falling back to empty set",
         error,
       );
-      return new Set();
+      return undefined;
     }
   }
 
@@ -521,6 +517,17 @@ export class ObjectSetQuery extends BaseListQuery<
       obj.$primaryKey,
       this.rdpConfig ?? undefined,
     );
+  }
+
+  override invalidateInterfaceType(
+    interfaceType: string,
+    changes: Changes | undefined,
+  ): Promise<void> {
+    if (this.#interfaceTypes.has(interfaceType)) {
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+    return Promise.resolve();
   }
 
   // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.

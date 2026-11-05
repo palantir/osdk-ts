@@ -24,6 +24,7 @@ import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
 
 const MockObjectType = {
   apiName: "MockObject",
+  type: "object",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
@@ -34,13 +35,15 @@ const MockInterface = {
 
 describe("useOsdkObjects enabled option", () => {
   const mockObserveList = vitest.fn();
-  const mockInvalidateObjectType = vitest.fn().mockResolvedValue(undefined);
+  const mockInvalidateObjectOrInterfaceType = vitest
+    .fn()
+    .mockResolvedValue(undefined);
 
   const createWrapper = () => {
     const observableClient = {
       observeList: mockObserveList,
       canonicalizeOptions: vitest.fn((opts) => opts),
-      invalidateObjectType: mockInvalidateObjectType,
+      invalidateObjectOrInterfaceType: mockInvalidateObjectOrInterfaceType,
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
@@ -53,6 +56,7 @@ describe("useOsdkObjects enabled option", () => {
   };
 
   beforeEach(() => {
+    mockInvalidateObjectOrInterfaceType.mockClear();
     mockObserveList.mockClear();
     mockObserveList.mockReturnValue({ unsubscribe: vitest.fn() });
   });
@@ -212,19 +216,30 @@ describe("useOsdkObjects enabled option", () => {
     expect(result.current.objectSet).toBe(mockObjectSet);
   });
 
-  it("should call invalidateObjectType when refetch is called", async () => {
-    const wrapper = createWrapper();
-
-    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
-      wrapper,
-    });
-
-    await act(async () => {
-      await result.current.refetch();
-    });
-
-    expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
-  });
+  it.each([MockObjectType, MockInterface])(
+    "refetch uses the typed scope for $apiName and respects enabled",
+    async (type) => {
+      const { result, rerender } = renderHook(
+        ({ enabled }) => useOsdkObjects(type, { enabled }),
+        { wrapper: createWrapper(), initialProps: { enabled: true } },
+      );
+      await act(async () => {
+        await result.current.refetch();
+      });
+      expect(
+        mockInvalidateObjectOrInterfaceType,
+      ).toHaveBeenCalledExactlyOnceWith({
+        type: type.type,
+        apiName: type.apiName,
+      });
+      mockInvalidateObjectOrInterfaceType.mockClear();
+      rerender({ enabled: false });
+      await act(async () => {
+        await result.current.refetch();
+      });
+      expect(mockInvalidateObjectOrInterfaceType).not.toHaveBeenCalled();
+    },
+  );
 
   it("should pass $includeAllBaseObjectProperties to observeList when true", () => {
     const wrapper = createWrapper();
@@ -255,7 +270,7 @@ describe("useOsdkObjects enabled option", () => {
         ...opts,
         withProperties: canonicalWithProperties,
       })),
-      invalidateObjectType: mockInvalidateObjectType,
+      invalidateObjectOrInterfaceType: mockInvalidateObjectOrInterfaceType,
     } as any;
 
     const wrapper = ({ children }: React.PropsWithChildren) => (

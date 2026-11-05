@@ -293,6 +293,13 @@ export abstract class Query<
     optimisticId: OptimisticId | undefined,
   ) => Promise<void> | undefined;
 
+  invalidateInterfaceType(
+    _interfaceType: string,
+    _changes: Changes | undefined,
+  ): Promise<void> {
+    return Promise.resolve();
+  }
+
   abstract invalidateObjectType(
     objectType: string,
     changes: Changes | undefined,

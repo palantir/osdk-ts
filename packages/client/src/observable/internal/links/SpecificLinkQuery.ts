@@ -343,6 +343,29 @@ export class SpecificLinkQuery extends BaseListQuery<
     return Promise.resolve();
   };
 
+  override async invalidateInterfaceType(
+    interfaceType: string,
+    changes: Changes | undefined,
+  ): Promise<void> {
+    if (this.#sourceTypeKind !== "interface") return;
+    if (this.#sourceApiName === interfaceType) {
+      changes?.modified.add(this.cacheKey);
+      await this.revalidate(true);
+      return;
+    }
+    const metadata = await this.store.client[
+      additionalContext
+    ].ontologyProvider.getInterfaceDefinition(this.#sourceApiName);
+    const target = metadata.links?.[this.#linkName];
+    if (
+      target?.targetType === "interface" &&
+      target.targetTypeApiName === interfaceType
+    ) {
+      changes?.modified.add(this.cacheKey);
+      await this.revalidate(true);
+    }
+  }
+
   invalidateObjectType = (
     objectType: string,
     changes: Changes | undefined,

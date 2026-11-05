@@ -628,6 +628,27 @@ export class Store {
     return false;
   }
 
+  public async invalidateObjectOrInterfaceType(
+    type: ObjectOrInterfaceDefinition,
+  ): Promise<void> {
+    if (type.type === "object") {
+      return this.invalidateObjectType(type, undefined);
+    }
+    const metadata = await this.client.fetchMetadata(type);
+    const changes = createChangedObjects();
+    await Promise.allSettled(
+      Array.from(this.layers.truth.keys(), async (cacheKey) => {
+        const query = this.queries.peek(cacheKey);
+        if (!query) return;
+        await query.invalidateInterfaceType(type.apiName, changes);
+        for (const objectType of metadata.implementedBy ?? []) {
+          if (changes.modified.has(cacheKey)) break;
+          await query.invalidateObjectType(objectType, changes);
+        }
+      }),
+    );
+  }
+
   /**
    * Invalidates all cache entries for a specific object type.
    * This will revalidate:

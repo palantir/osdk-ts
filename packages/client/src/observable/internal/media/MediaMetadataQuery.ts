@@ -245,7 +245,11 @@ export class MediaMetadataQuery extends Query<
     return undefined;
   };
 
-  invalidateObjectType = (): Promise<void> => {
+  invalidateObjectType = (
+    _objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void> => {
+    changes?.modified.add(this.cacheKey);
     return this.revalidate(true);
   };
 

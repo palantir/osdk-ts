@@ -26,6 +26,7 @@ import type {
   FetchedObjectTypeDefinition,
   OntologyProvider,
 } from "../../ontology/OntologyProvider.js";
+import { normalizeInterfaceLinkSearchArounds } from "../../util/normalizeInterfaceLinkSearchArounds.js";
 
 // Suppose we did an object set that is basically
 // A.where()
@@ -46,26 +47,31 @@ export async function getObjectTypesThatInvalidate(
 ): Promise<{
   resultType: FetchedObjectTypeDefinition | InterfaceMetadata;
   counts: Record<string, number>;
+  interfaceTypes: Set<string>;
   invalidationSet: Set<string>;
 }> {
   const counts: Record<string, number> = {};
 
-  const resultType = await calcObjectSet(objectSet, {
+  const interfaceTypes = new Set<string>();
+  const normalized = await normalizeInterfaceLinkSearchArounds(mc, objectSet);
+  const resultType = await calcObjectSet(normalized, {
     counts,
+    interfaceTypes,
     methodInput: undefined,
     ontologyProvider: mc.ontologyProvider,
     narrowTypeInterfaceOrObjectMapping: mc.narrowTypeInterfaceOrObjectMapping,
   });
 
   // we need to uncount the final result type
-  const tweaked = {
-    ...counts,
-    [resultType.apiName]: counts[resultType.apiName] - 1,
-  };
+  const tweaked = { ...counts };
+  if (resultType.type === "object") {
+    tweaked[resultType.apiName] -= 1;
+  }
 
   return {
     resultType,
     counts,
+    interfaceTypes,
     invalidationSet: new Set(
       Object.entries(tweaked)
         .filter(([, v]) => v > 0)
@@ -76,6 +82,7 @@ export async function getObjectTypesThatInvalidate(
 
 interface Ctx {
   counts: Record<string, number>;
+  interfaceTypes: Set<string>;
   methodInput: WireObjectSet | undefined;
   ontologyProvider: OntologyProvider;
   narrowTypeInterfaceOrObjectMapping: MinimalClient["narrowTypeInterfaceOrObjectMapping"];
@@ -96,6 +103,7 @@ async function calcObjectSet(
 
   async function bumpInterface(apiName: string) {
     const interfaceDef = await op.getInterfaceDefinition(apiName);
+    ctx.interfaceTypes.add(apiName);
     for (const s of interfaceDef.implementedBy ?? []) {
       ctx.counts[s] = (ctx.counts[s] ?? 0) + 1;
     }
@@ -205,7 +213,9 @@ async function calcObjectSet(
       }
 
       const allMatch = returnTypes.every(
-        ({ r }) => r.apiName === returnTypes[0].r.apiName,
+        ({ r }) =>
+          r.type === returnTypes[0].r.type &&
+          r.apiName === returnTypes[0].r.apiName,
       );
 
       if (!allMatch) {

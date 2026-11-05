@@ -35,20 +35,20 @@ const osdkClient = createClient(
 function createMockObservableClient(): {
   client: ObservableClient;
   observeAggregation: ReturnType<typeof vi.fn>;
-  invalidateObjectType: ReturnType<typeof vi.fn>;
+  invalidateObjectOrInterfaceType: ReturnType<typeof vi.fn>;
 } {
   const observeAggregation = vi.fn(
     (_args: unknown, _observer: Observer<unknown>) => ({
       unsubscribe: vi.fn(),
     }),
   );
-  const invalidateObjectType = vi.fn().mockResolvedValue(undefined);
+  const invalidateObjectOrInterfaceType = vi.fn().mockResolvedValue(undefined);
   const client = {
     observeAggregation,
     canonicalizeOptions: vi.fn((opts: unknown) => opts),
-    invalidateObjectType,
+    invalidateObjectOrInterfaceType,
   } as unknown as ObservableClient;
-  return { client, observeAggregation, invalidateObjectType };
+  return { client, observeAggregation, invalidateObjectOrInterfaceType };
 }
 
 function createWrapper(observableClient: ObservableClient) {
@@ -70,13 +70,13 @@ function createWrapper(observableClient: ObservableClient) {
 describe("useOsdkAggregation", () => {
   let observableClient: ObservableClient;
   let observeAggregation: ReturnType<typeof vi.fn>;
-  let invalidateObjectType: ReturnType<typeof vi.fn>;
+  let invalidateObjectOrInterfaceType: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     ({
       client: observableClient,
       observeAggregation,
-      invalidateObjectType,
+      invalidateObjectOrInterfaceType,
     } = createMockObservableClient());
   });
 
@@ -298,19 +298,24 @@ describe("useOsdkAggregation", () => {
   });
 
   describe("refetch", () => {
-    it("invalidates the object type when enabled is true", async () => {
-      const { result } = renderHook(
-        () =>
-          useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled: true }),
-        { wrapper: createWrapper(observableClient) },
-      );
+    it.each([Employee, FooInterface])(
+      "invalidates the typed scope for $apiName",
+      async (type) => {
+        const { result } = renderHook(
+          () =>
+            useOsdkAggregation(type, { aggregate: AGGREGATE, enabled: true }),
+          { wrapper: createWrapper(observableClient) },
+        );
 
-      await act(async () => {
-        await result.current.refetch();
-      });
+        await act(async () => {
+          await result.current.refetch();
+        });
 
-      expect(invalidateObjectType).toHaveBeenCalledTimes(1);
-    });
+        expect(invalidateObjectOrInterfaceType).toHaveBeenCalledExactlyOnceWith(
+          { type: type.type, apiName: type.apiName },
+        );
+      },
+    );
 
     it("does not invalidate the object type when enabled is false", async () => {
       const { result } = renderHook(
@@ -326,7 +331,7 @@ describe("useOsdkAggregation", () => {
         await result.current.refetch();
       });
 
-      expect(invalidateObjectType).not.toHaveBeenCalled();
+      expect(invalidateObjectOrInterfaceType).not.toHaveBeenCalled();
     });
   });
 });

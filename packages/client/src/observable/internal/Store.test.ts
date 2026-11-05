@@ -22,6 +22,7 @@ import {
   Employee,
   FooInterface,
   Office,
+  Person,
   Todo,
 } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
@@ -57,6 +58,7 @@ import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
   ObservableClient,
   ObserveListOptions,
+  ObserveObjectOptions,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
@@ -206,6 +208,237 @@ function setupSomeEmployees(fauxFoundry: FauxFoundry) {
 }
 
 describe(Store, () => {
+  describe("invalidateObjectOrInterfaceType", () => {
+    let client: Client;
+    let store: Store;
+    let fauxFoundry: FauxFoundry;
+    const sameNamedInterface = {
+      ...FooInterface,
+      apiName: "Employee",
+    } as const;
+
+    beforeAll(() => {
+      const setup = startNodeApiServer(
+        new FauxFoundry("https://stack.palantir.com/"),
+        createClient,
+      );
+      ({ client, fauxFoundry } = setup);
+      setupOntology(fauxFoundry);
+      const ontology = fauxFoundry.getDefaultOntology();
+      ontology.registerObjectType({
+        ...stubData.personWithLinkTypes,
+        implementsInterfaces: ["FooInterface"],
+        implementsInterfaces2: {
+          FooInterface: {
+            properties: { fooSpt: "name", fooIdp: "name" },
+            propertiesV2: {},
+            actionTypes: {},
+            links: {},
+          },
+        },
+      });
+      ontology.registerInterfaceType({
+        ...stubData.FooInterface,
+        apiName: "Employee",
+        rid: "ri.interface.main.interface.empty",
+        implementedByObjectTypes: [],
+      });
+      return () => setup.apiServer.close();
+    });
+
+    beforeEach(() => {
+      fauxFoundry.getDefaultDataStore().clear();
+      fauxFoundry
+        .getDefaultDataStore()
+        .registerObject(Employee, { employeeId: 1, fullName: "Alice" });
+      fauxFoundry
+        .getDefaultDataStore()
+        .registerObject(Person, { id: 1, name: "Bob" });
+      store = new Store(client);
+    });
+
+    it("refreshes implementing objects, lists, sets, and aggregates through the same interface scope", async () => {
+      const observable = new ObservableClientImpl(store);
+      const object = mockObserver();
+      const objects = mockObserver();
+      const interfaces = mockObserver();
+      const objectSet = mockObserver();
+      const interfaceSet = mockObserver();
+      const objectAggregate = mockObserver();
+      const interfaceAggregate = mockObserver();
+      const unrelated = mockObserver();
+      const subscriptions = [
+        observable.observeObject(Employee, 1, {}, object),
+        observable.observeList({ type: Employee }, objects),
+        observable.observeList({ type: FooInterface }, interfaces),
+        observable.observeObjectSet(client(Employee).where({}), {}, objectSet),
+        observable.observeObjectSet(
+          client(FooInterface).where({}),
+          {},
+          interfaceSet,
+        ),
+        observable.observeAggregation(
+          { type: Employee, aggregate: { $select: { $count: "unordered" } } },
+          objectAggregate,
+        ),
+        observable.observeAggregation(
+          {
+            type: FooInterface,
+            aggregate: { $select: { $count: "unordered" } },
+          },
+          interfaceAggregate,
+        ),
+        observable.observeAggregation(
+          { type: Office, aggregate: { $select: { $count: "unordered" } } },
+          unrelated,
+        ),
+      ];
+      try {
+        await vi.waitFor(() => {
+          for (const observer of [
+            object,
+            objects,
+            interfaces,
+            objectSet,
+            interfaceSet,
+            objectAggregate,
+            interfaceAggregate,
+            unrelated,
+          ]) {
+            expect(observer.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({ status: "loaded" }),
+            );
+          }
+        });
+        unrelated.next.mockClear();
+        const data = fauxFoundry.getDefaultDataStore();
+        data.replaceObjectOrThrow({
+          ...data.getObjectOrThrow(Employee.apiName, 1),
+          fullName: "Updated",
+        });
+        data.registerObject(Employee, { employeeId: 2, fullName: "Carol" });
+        data.registerObject(Person, { id: 2, name: "Dave" });
+        await observable.invalidateObjectOrInterfaceType(FooInterface);
+        await vi.waitFor(() => {
+          for (const observer of [
+            objects,
+            interfaces,
+            objectSet,
+            interfaceSet,
+          ]) {
+            expect(observer.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({ status: "loaded" }),
+            );
+          }
+        });
+        expect(object.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            object: expect.objectContaining({ fullName: "Updated" }),
+          }),
+        );
+        for (const observer of [objects, objectSet]) {
+          expect(observer.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              status: "loaded",
+              resolvedList: expect.any(Array),
+            }),
+          );
+          expect(observer.next.mock.lastCall?.[0]).toMatchObject({
+            resolvedList: [{ $primaryKey: 1 }, { $primaryKey: 2 }],
+          });
+        }
+        for (const observer of [interfaces, interfaceSet]) {
+          expect(observer.next.mock.lastCall?.[0]).toMatchObject({
+            status: "loaded",
+            resolvedList: expect.any(Array),
+          });
+          expect(
+            (observer.next.mock.lastCall?.[0] as { resolvedList: unknown[] })
+              .resolvedList,
+          ).toHaveLength(4);
+        }
+        expect(objectAggregate.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({ result: { $count: 2 } }),
+        );
+        expect(interfaceAggregate.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({ result: { $count: 4 } }),
+        );
+        expect(unrelated.next).not.toHaveBeenCalled();
+      } finally {
+        for (const subscription of subscriptions)
+          (await subscription).unsubscribe();
+      }
+    });
+
+    it("rejects unresolved interface metadata and permits a later retry", async () => {
+      const observable = new ObservableClientImpl(store);
+      const metadata = vi
+        .spyOn(
+          client[additionalContext].ontologyProvider,
+          "getInterfaceDefinition",
+        )
+        .mockRejectedValueOnce(new Error("Temporary metadata failure"));
+      try {
+        await expect(
+          observable.invalidateObjectOrInterfaceType(FooInterface),
+        ).rejects.toThrow("Temporary metadata failure");
+        await expect(
+          observable.invalidateObjectOrInterfaceType(FooInterface),
+        ).resolves.toBeUndefined();
+      } finally {
+        metadata.mockRestore();
+      }
+    });
+
+    it("distinguishes same-named types and refreshes an empty interface", async () => {
+      const observable = new ObservableClientImpl(store);
+      const objects = mockObserver();
+      const interfaces = mockObserver();
+      const aggregates = mockObserver();
+      const sets = mockObserver();
+      const subscriptions = [
+        observable.observeList({ type: Employee }, objects),
+        observable.observeList({ type: sameNamedInterface }, interfaces),
+        observable.observeAggregation(
+          {
+            type: sameNamedInterface,
+            aggregate: { $select: { $count: "unordered" } },
+          },
+          aggregates,
+        ),
+        observable.observeObjectSet(client(sameNamedInterface), {}, sets),
+      ];
+      try {
+        await vi.waitFor(() => {
+          for (const observer of [objects, interfaces, aggregates, sets]) {
+            expect(observer.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({ status: "loaded" }),
+            );
+          }
+        });
+        for (const observer of [objects, interfaces, aggregates, sets])
+          observer.next.mockClear();
+        await observable.invalidateObjectOrInterfaceType(sameNamedInterface);
+        expect(objects.next).not.toHaveBeenCalled();
+        for (const observer of [interfaces, aggregates, sets]) {
+          expect(observer.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({ status: "loaded" }),
+          );
+          observer.next.mockClear();
+        }
+        await observable.invalidateObjectOrInterfaceType(Employee);
+        expect(objects.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({ status: "loaded" }),
+        );
+        for (const observer of [interfaces, aggregates, sets])
+          expect(observer.next).not.toHaveBeenCalled();
+      } finally {
+        for (const subscription of subscriptions)
+          (await subscription).unsubscribe();
+      }
+    });
+  });
+
   describe("observeLinks", () => {
     let client: Client;
     let cache: Store;
@@ -791,44 +1024,47 @@ describe(Store, () => {
       testStage("Interface link query construction verified");
     });
 
-    it("invalidateObjectType correctly invalidates interface link queries when object implements source interface", async () => {
-      const { payload: emp1Payload } = await expectStandardObserveObject({
-        cache,
-        type: Employee,
-        primaryKey: 1,
-      });
-      const emp1 = emp1Payload?.object;
-      invariant(emp1);
+    it.each([Employee, FooInterface])(
+      "invalidates interface links through $apiName",
+      async (type) => {
+        const { payload: emp1Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        });
+        const emp1 = emp1Payload?.object;
+        invariant(emp1);
 
-      const fooInterfaceInstance = emp1.$as(FooInterface);
-      const linkSubFn = mockLinkSubCallback();
+        const fooInterfaceInstance = emp1.$as(FooInterface);
+        const linkSubFn = mockLinkSubCallback();
 
-      const subscription = cache.links.observe(
-        {
-          linkName: "toBar",
-          srcType: {
-            type: "interface",
-            apiName: fooInterfaceInstance.$apiName,
+        const subscription = cache.links.observe(
+          {
+            linkName: "toBar",
+            srcType: {
+              type: "interface",
+              apiName: fooInterfaceInstance.$apiName,
+            },
+            sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
+            pk: fooInterfaceInstance.$primaryKey,
           },
-          sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
-          pk: fooInterfaceInstance.$primaryKey,
-        },
-        linkSubFn,
-      );
+          linkSubFn,
+        );
 
-      await waitForCall(linkSubFn);
-      linkSubFn.next.mockClear();
+        await waitForCall(linkSubFn);
+        linkSubFn.next.mockClear();
 
-      await cache.invalidateObjectType(Employee, undefined);
+        await cache.invalidateObjectOrInterfaceType(type);
 
-      await waitForCall(linkSubFn);
-      expect(linkSubFn.next).toHaveBeenCalled();
+        await waitForCall(linkSubFn);
+        expect(linkSubFn.next).toHaveBeenCalled();
 
-      subscription.unsubscribe();
-      testStage(
-        "Interface link invalidation via implementing object type verified",
-      );
-    });
+        subscription.unsubscribe();
+        testStage(
+          "Interface link invalidation via implementing object type verified",
+        );
+      },
+    );
   });
 
   describe("with mock server", () => {
