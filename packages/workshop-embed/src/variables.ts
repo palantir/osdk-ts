@@ -93,7 +93,7 @@ export function isVariableRecord(
   value: unknown,
   isValue: (input: unknown) => boolean,
 ): value is Record<string, unknown> {
-  if (!isRecord(value)) return false;
+  if (!isPlainRecord(value)) return false;
 
   const seenExternalIds = new Set(RESERVED_EXTERNAL_IDS);
 
@@ -108,6 +108,16 @@ export function isVariableRecord(
 
     return isValue(input);
   });
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  if (!isRecord(value)) return false;
+
+  const prototype: unknown = Object.getPrototypeOf(value);
+  return (
+    prototype == null ||
+    (isRecord(prototype) && Object.getPrototypeOf(prototype) == null)
+  );
 }
 
 function isVariableValue(value: unknown): value is WorkshopVariableValue {
