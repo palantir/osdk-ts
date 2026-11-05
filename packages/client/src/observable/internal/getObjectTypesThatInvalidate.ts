@@ -229,7 +229,6 @@ async function calcObjectSet(
       // otherwise it will double count everything
       return await calcObjectSet(ctx.methodInput, { ...ctx, counts: {} });
 
-    // we don't currently support this anywhere.
     case "asBaseObjectTypes":
     // We don't currently support this because it could return multiple object types conceptually
     // internally, we actually use it this way but we shouldn't be finding that object sets.

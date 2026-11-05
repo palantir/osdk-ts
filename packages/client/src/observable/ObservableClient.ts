@@ -479,7 +479,6 @@ export interface ObservableClient extends ObserveLinks {
    *
    * This overload accepts an ObjectSet parameter, enabling aggregation on pivoted,
    * filtered, or composed ObjectSets. Returns a Promise resolving to the subscription.
-   * Dependency lookup failures are reported through the subscribed query's error state.
    *
    * @param options - Aggregation configuration including objectSet, where, aggregate spec
    * @param subFn - Observer that receives aggregation result updates
