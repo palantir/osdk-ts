@@ -36,11 +36,10 @@ import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type { AggregationCacheKey } from "./AggregationCacheKey.js";
-import type {
-  AggregationPayloadBase,
+import {
+  type AggregationPayloadBase,
   AggregationQuery,
 } from "./AggregationQuery.js";
-import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
 
 type AggregationOptions =
   | ObserveAggregationOptions<
@@ -153,12 +152,7 @@ export class AggregationsHelper extends AbstractHelper<
     );
 
     return this.store.queries.get(aggregationCacheKey, () => {
-      if (typeKind !== "object") {
-        throw new Error(
-          "Only ObjectTypeDefinition is currently supported for aggregations",
-        );
-      }
-      return new ObjectAggregationQuery(
+      return new AggregationQuery(
         this.store,
         this.store.subjects.get(aggregationCacheKey),
         aggregationCacheKey,
