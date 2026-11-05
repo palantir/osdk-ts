@@ -16,3 +16,5 @@
 
 export { createSharedClientContext } from "./createSharedClientContext.js";
 export { USER_AGENT_HEADER } from "./createSharedClientContext.js";
+export type { ObjectLoadSelectionOrigin } from "./OsdkRequestContext.js";
+export { createFetchWithOsdkRequestContext } from "./OsdkRequestContext.js";

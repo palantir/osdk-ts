@@ -18,6 +18,50 @@ export interface ClientMetrics {
   concurrency: number;
 }
 
+export type ObjectLoadSelectionOrigin = "OMITTED_BY_CALLER" | "EXPLICIT";
+
 export interface OsdkRequestContext {
   clientMetrics: ClientMetrics;
+  selectionOrigin?: ObjectLoadSelectionOrigin;
+}
+
+const osdkRequestContextKey: unique symbol = Symbol("osdkRequestContext");
+type OsdkRequestContextWithoutClientMetrics = Omit<
+  OsdkRequestContext,
+  "clientMetrics"
+>;
+
+type RequestInitWithOsdkRequestContext = RequestInit & {
+  [osdkRequestContextKey]?: OsdkRequestContextWithoutClientMetrics;
+};
+
+export function createFetchWithOsdkRequestContext(
+  fetchFn: typeof globalThis.fetch,
+  requestContext: OsdkRequestContextWithoutClientMetrics,
+): typeof globalThis.fetch {
+  return function fetchWithOsdkRequestContext(input, init) {
+    const initWithRequestContext: RequestInitWithOsdkRequestContext = {
+      ...init,
+      [osdkRequestContextKey]: requestContext,
+    };
+    return fetchFn(input, initWithRequestContext);
+  };
+}
+
+export function getOsdkRequestContext(
+  init: RequestInit | undefined,
+): OsdkRequestContextWithoutClientMetrics | undefined {
+  return (init as RequestInitWithOsdkRequestContext | undefined)?.[
+    osdkRequestContextKey
+  ];
+}
+
+export function removeOsdkRequestContext(
+  init: RequestInit | undefined,
+): RequestInit {
+  const {
+    [osdkRequestContextKey]: _requestContext,
+    ...initWithoutRequestContext
+  } = (init ?? {}) as RequestInitWithOsdkRequestContext;
+  return initWithoutRequestContext;
 }
