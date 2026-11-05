@@ -47,7 +47,8 @@ export interface ActionMetadata {
         	}>>;
     	// (undocumented)
     parameters: Record<any, ActionMetadata.Parameter<any>>;
-    	returnType?: QueryDataTypeDefinition;
+    	// (undocumented)
+    returnType?: QueryDataTypeDefinition;
     	// (undocumented)
     rid: string;
     	// Warning: (ae-forgotten-export) The symbol "ReleaseStatus" needs to be exported by the entry point index.d.ts
@@ -161,7 +162,7 @@ export namespace ActionParam {
             	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | null : never : never : never };
 }
 
-// @public
+// @public (undocumented)
 export type ActionReturnTypeForOptions<
 	Op extends ApplyActionOptions | ApplyBatchActionOptions,
 	TReturnValue = never

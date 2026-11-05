@@ -70,11 +70,6 @@ export function wireActionTypeV2ToSdkActionMetadata(
   };
 }
 
-/**
- * Returns undefined for return types the OSDK cannot represent (for example,
- * `unsupported` types reported by the server) so the action stays usable; the
- * server omits those return values from the apply response anyway.
- */
 function tryConvertActionReturnTypeToSdkReturnType(
   actionApiName: string,
   returnType: QueryDataType,
