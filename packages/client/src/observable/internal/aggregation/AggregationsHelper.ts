@@ -84,7 +84,7 @@ export class AggregationsHelper extends AbstractHelper<
     return super.observe(options, subFn);
   }
 
-  async observeAsync<
+  observeAsync<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
@@ -92,9 +92,10 @@ export class AggregationsHelper extends AbstractHelper<
     options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
     subFn: Observer<AggregationPayloadBase>,
   ): Promise<QuerySubscription<AggregationQuery>> {
-    const query = this.getQueryWithObjectSet(options);
-    await query.ensureInvalidationTypesReady();
-    return this._subscribe(query, options as AggregationOptions, subFn);
+    return Promise.resolve().then(() => {
+      const query = this.getQueryWithObjectSet(options);
+      return this._subscribe(query, options as AggregationOptions, subFn);
+    });
   }
 
   getQuery<

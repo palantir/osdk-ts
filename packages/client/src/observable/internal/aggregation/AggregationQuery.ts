@@ -103,6 +103,7 @@ export class AggregationQuery extends Query<
   protected rdpConfig: Canonical<Rdp> | undefined;
   protected parsedWireObjectSet: WireObjectSet | undefined;
   #invalidationTypes: Set<string> | undefined;
+  #invalidationTypesPromise: Promise<Set<string>> | undefined;
 
   constructor(
     store: Store,
@@ -143,6 +144,8 @@ export class AggregationQuery extends Query<
       !this.rdpConfig
     ) {
       this.#invalidationTypes = new Set([this.apiName]);
+    } else {
+      void this.ensureInvalidationTypesReady().catch(() => undefined);
     }
   }
 
@@ -150,12 +153,18 @@ export class AggregationQuery extends Query<
     if (this.#invalidationTypes) {
       return this.#invalidationTypes;
     }
-    const { counts } = await getObjectTypesThatInvalidate(
+    this.#invalidationTypesPromise ??= getObjectTypesThatInvalidate(
       this.store.client[additionalContext],
       getWireObjectSet(this.createObjectSet()),
-    );
-    this.#invalidationTypes = new Set(Object.keys(counts));
-    return this.#invalidationTypes;
+    )
+      .then(({ counts }) => {
+        this.#invalidationTypes = new Set(Object.keys(counts));
+        return this.#invalidationTypes;
+      })
+      .finally(() => {
+        this.#invalidationTypesPromise = undefined;
+      });
+    return await this.#invalidationTypesPromise;
   }
 
   protected _createConnectable(
