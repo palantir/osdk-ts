@@ -50,8 +50,15 @@ interface HookConfig {
     description: string;
     categoryType: "CONJUNCTIVE" | "DISJUNCTIVE";
     markingType: "MANDATORY" | "CBAC";
+    priority?: string;
   }>;
-  markings?: ReadonlyArray<{ id: string; categoryId: string; name: string }>;
+  markings?: ReadonlyArray<{
+    id: string;
+    categoryId: string;
+    name: string;
+    priority?: string;
+    prominence?: "COMMON" | "UNCOMMON";
+  }>;
   banner?: CbacBannerData;
   restrictions?: RestrictionsShape;
   loading?: Partial<Record<Slot, boolean>>;
@@ -106,16 +113,90 @@ describe("useCbacPickerState", () => {
     setHooks();
   });
 
-  it("forwards includeDeleted to the markings and categories hooks", () => {
-    renderHook(() => useCbacPickerState([]));
-    expect(useMarkingCategories).toHaveBeenLastCalledWith(undefined);
-    expect(useMarkings).toHaveBeenLastCalledWith(undefined);
+  describe("category ordering", () => {
+    it("sorts unsorted hook data by category priority and marking prominence and priority", () => {
+      setHooks({
+        categories: [
+          { ...CATEGORIES[0], id: "missing" },
+          { ...CATEGORIES[0], id: "low", priority: "2" },
+          { ...CATEGORIES[0], id: "high", priority: "10" },
+        ],
+        markings: [
+          { id: "missing", categoryId: "missing", name: "Missing" },
+          { id: "low", categoryId: "low", name: "Low" },
+          {
+            id: "unspecified",
+            categoryId: "high",
+            name: "Unspecified",
+            priority: "100",
+          },
+          {
+            id: "uncommon",
+            categoryId: "high",
+            name: "Uncommon",
+            priority: "50",
+            prominence: "UNCOMMON",
+          },
+          {
+            id: "common-low",
+            categoryId: "high",
+            name: "Common low",
+            priority: "2",
+            prominence: "COMMON",
+          },
+          {
+            id: "common-high",
+            categoryId: "high",
+            name: "Common high",
+            priority: "10",
+            prominence: "COMMON",
+          },
+        ],
+      });
 
-    renderHook(() => useCbacPickerState([], { includeDeleted: false }));
-    expect(useMarkingCategories).toHaveBeenLastCalledWith({
-      includeDeleted: false,
+      const { result } = renderHook(() => useCbacPickerState([]));
+
+      expect(
+        result.current.categoryGroups.map(({ category, markings }) => ({
+          categoryId: category.id,
+          markingIds: markings.map((marking) => marking.id),
+        })),
+      ).toEqual([
+        {
+          categoryId: "high",
+          markingIds: ["common-high", "common-low", "uncommon", "unspecified"],
+        },
+        { categoryId: "low", markingIds: ["low"] },
+        { categoryId: "missing", markingIds: ["missing"] },
+      ]);
     });
-    expect(useMarkings).toHaveBeenLastCalledWith({ includeDeleted: false });
+  });
+
+  describe("CBAC type filtering", () => {
+    it("requests only CBAC markings and categories without options", () => {
+      renderHook(() => useCbacPickerState([]));
+
+      expect(useMarkingCategories).toHaveBeenLastCalledWith({
+        markingType: "CBAC",
+      });
+      expect(useMarkings).toHaveBeenLastCalledWith({ markingType: "CBAC" });
+    });
+
+    it.each([undefined, false, true])(
+      "preserves includeDeleted=%s alongside the CBAC filter",
+      (includeDeleted) => {
+        renderHook(() => useCbacPickerState([], { includeDeleted }));
+
+        expect(useMarkingCategories).toHaveBeenLastCalledWith({
+          includeDeleted,
+          markingType: "CBAC",
+        });
+        expect(useMarkings).toHaveBeenLastCalledWith({
+          includeDeleted,
+          markingType: "CBAC",
+        });
+      },
+    );
   });
 
   it("uses permissive defaults when restrictions have not loaded", () => {
