@@ -44,6 +44,8 @@ export async function getWidgetBuildOutputs(
     .relative(buildDir, inputHtmlFilePath) // e.g. /project/dist/app/index.html -> app/index.html
     .split(path.sep) // Normalize Windows paths that use `\` instead of `/`
     .join("/");
+  // Vite stores base URL-encoded, e.g. "/my%20widgets/", but writes it decoded into the HTML
+  const decodedBase = decodeURI(base);
   const resolveAsset = (src: string): string => {
     // External URLs, e.g. https://cdn.example.com/lib.js, are left as is
     if (URL.canParse(src)) {
@@ -51,7 +53,9 @@ export async function getWidgetBuildOutputs(
     }
     if (src.startsWith("/")) {
       // e.g. if base = "/widgets/", then /widgets/assets/index.js -> /assets/index.js
-      return src.startsWith(base) ? `/${src.slice(base.length)}` : src;
+      return src.startsWith(decodedBase)
+        ? `/${src.slice(decodedBase.length)}`
+        : src;
     }
     // Resolves src relative to htmlPath, e.g. if htmlPath = "app/index.html", then assets/index.js -> /app/assets/index.js
     return path.posix.join("/", path.posix.dirname(htmlPath), src);
