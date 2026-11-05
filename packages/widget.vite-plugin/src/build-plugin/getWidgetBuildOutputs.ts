@@ -45,6 +45,10 @@ export async function getWidgetBuildOutputs(
     .split(path.sep) // Normalize Windows paths that use `\` instead of `/`
     .join("/");
   const resolveAsset = (src: string): string => {
+    // External URLs, e.g. https://cdn.example.com/lib.js, are left as is
+    if (URL.canParse(src)) {
+      return src;
+    }
     if (src.startsWith("/")) {
       // e.g. if base = "/widgets/", then /widgets/assets/index.js -> /assets/index.js
       return src.startsWith(base) ? `/${src.slice(base.length)}` : src;

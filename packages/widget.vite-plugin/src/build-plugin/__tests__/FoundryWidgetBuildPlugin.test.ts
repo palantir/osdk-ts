@@ -101,7 +101,7 @@ test.each(["/nested/widgets/", "./"])(
   },
 );
 
-test("uses the build's base and keeps non-ASCII asset names", async () => {
+test("uses the build's base and keeps non-ASCII and external asset paths", async () => {
   root = await realpath(await mkdtemp(path.join(tmpdir(), "widget-build-")));
   await mkdir(path.join(root, "src"));
   await writeFile(
@@ -121,7 +121,7 @@ test("uses the build's base and keeps non-ASCII asset names", async () => {
   );
   await writeFile(
     path.join(root, "café.html"),
-    `<script type="module" src="/src/widget.ts"></script>`,
+    `<script type="module" src="/src/widget.ts"></script><script src="https://cdn.example.com/lib.js"></script>`,
   );
   await writeFile(
     path.join(root, "src/widget.ts"),
@@ -144,7 +144,8 @@ test("uses the build's base and keeps non-ASCII asset names", async () => {
     await readFile(path.join(root, "dist", MANIFEST_FILE_LOCATION), "utf8"),
   ) as WidgetSetManifest;
   const html = await readFile(path.join(root, "dist/café.html"), "utf8");
-  const [script] = manifest.widgetSet.widgets.widget.entrypointJs;
+  const [script, external] = manifest.widgetSet.widgets.widget.entrypointJs;
   expect(script.path).toMatch(/^assets\/café-.*\.js$/u);
   expect(html).toContain(`src="/${script.path}"`);
+  expect(external.path).toBe("https://cdn.example.com/lib.js");
 });
