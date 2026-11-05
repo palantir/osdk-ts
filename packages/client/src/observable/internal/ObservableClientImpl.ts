@@ -93,8 +93,6 @@ export class ObservableClientImpl implements ObservableClient {
   constructor(store: Store) {
     this.__experimentalStore = store;
 
-    // The store returns the action's edits and any `returnValue` the action
-    // produced; the public overloads only add the precise return value type.
     this.applyAction = store.applyAction.bind(
       store,
     ) as ObservableClient["applyAction"];

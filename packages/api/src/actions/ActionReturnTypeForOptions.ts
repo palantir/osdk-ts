@@ -24,21 +24,15 @@ import type {
 
 // cannot specify both validateOnly and returnEdits as true
 
-/**
- * The value `applyAction` resolves to for the given options.
- *
- * `R` is the action's return value type. Actions without a return value leave it
- * as `never` and resolve to `undefined` (or the edits when `$returnEdits` is set).
- */
 export type ActionReturnTypeForOptions<
   Op extends ApplyActionOptions | ApplyBatchActionOptions,
-  R = never,
+  TReturnValue = never,
 > = Op extends { $validateOnly: true }
   ? ActionValidationResponse
   : Op extends { $returnEdits: true }
-    ? [R] extends [never]
+    ? [TReturnValue] extends [never]
       ? ActionEditResponse
-      : ActionEditResponse & ActionReturnValueResponse<R>
-    : [R] extends [never]
+      : ActionEditResponse & ActionReturnValueResponse<TReturnValue>
+    : [TReturnValue] extends [never]
       ? undefined
-      : ActionReturnValueResponse<R>;
+      : ActionReturnValueResponse<TReturnValue>;

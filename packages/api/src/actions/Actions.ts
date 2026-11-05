@@ -123,8 +123,8 @@ export type ActionEditResponse = ActionResults;
 /**
  * Carries the value returned by an action whose function declares a return type.
  */
-export interface ActionReturnValueResponse<R> {
+export interface ActionReturnValueResponse<TReturnValue> {
   /** The value returned by the function backing the action. */
-  returnValue: R;
+  returnValue: TReturnValue;
 }
 export type ActionValidationResponse = ValidateActionResponseV2;

@@ -86,9 +86,6 @@ export type ActionSignatureFromDef<T extends ActionDefinition<any>> = {
 };
 
 /**
- * The type of the value returned by applying the action, or `never` if the
- * action does not return a value.
- *
  * `ReturnType` cannot be used here: it does not resolve a generic signature
  * whose return type is conditional on its type parameter. Matching against a
  * generic signature lets TypeScript unify `OP` and infer `R` directly. The
@@ -252,11 +249,6 @@ export async function applyAction<
   }
 }
 
-/**
- * Resolves to undefined rather than throwing when the return value is missing
- * or cannot be converted, since the action has already been applied. The server
- * also omits return values it cannot convert.
- */
 async function remapActionReturnValue(
   client: MinimalClient,
   returnType: QueryDataTypeDefinition,

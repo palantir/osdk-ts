@@ -54,7 +54,6 @@ const MOCK_EDIT_RESPONSE: ActionEditResponse = {
   deletedLinksCount: 0,
 };
 
-// Mirrors the signatures the generator emits for an action returning a string.
 interface ReturnsNameSignatures {
   applyAction<OP extends ApplyActionOptions>(
     args: { name: string },
