@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">43/43 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">43/43 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">14/195 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">43/43 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">43/43 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">14/196 story errors</a></div>
   </div>
 </header>
 <main>
@@ -21610,7 +21610,7 @@ export const ActivePage: Story = {
       <div class="badges">
         <label for="c-40-components-actionform-features-err" class="badge err as-toggle">prop type error</label>
         <label for="c-40-components-actionform-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-40-components-actionform-features-stories" class="badge err as-toggle">10/12 story errors</label>
+        <label for="c-40-components-actionform-features-stories" class="badge err as-toggle">10/13 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx">components-actionform-features · ./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx</div>
@@ -21632,13 +21632,13 @@ export const ActivePage: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;UpdateEmployeeActionFormStory&quot; component.
-  328 | }
-  329 |
-&gt; 330 | const meta = {
+  337 | }
+  338 |
+&gt; 339 | const meta = {
       | ^
-  331 |   title: &quot;Components/ActionForm/Features&quot;,
-  332 |   component: UpdateEmployeeActionFormStory,
-  333 |   tags: [&quot;beta&quot;],
+  340 |   title: &quot;Components/ActionForm/Features&quot;,
+  341 |   component: UpdateEmployeeActionFormStory,
+  342 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx:
 /*
@@ -21659,6 +21659,7 @@ export const ActivePage: Story = {
 
 import type { ActionDefinition, ActionEditResponse } from &quot;@osdk/api&quot;;
 import type {
+  ActionFormContentItem,
   ActionFormProps,
   FormFieldDefinition,
   FormState,
@@ -21923,6 +21924,15 @@ function UpdateEmployeeActionFormStory({
       onSubmit,
     });
 
+  const commonProps = {
+    actionDefinition,
+    formTitle,
+    isSubmitDisabled,
+    onError: handleStoryError,
+    onSubmit: handleStorySubmit,
+    showFormTitle,
+  } as const;
+
   return (
     &lt;FormStoryLayout
       output={
@@ -21932,15 +21942,14 @@ function UpdateEmployeeActionFormStory({
         /&gt;
       }
     &gt;
-      &lt;ActionForm
-        actionDefinition={actionDefinition}
-        formFieldDefinitions={formFieldDefinitions}
-        formTitle={formTitle}
-        isSubmitDisabled={isSubmitDisabled}
-        onError={handleStoryError}
-        onSubmit={handleStorySubmit}
-        showFormTitle={showFormTitle}
-      /&gt;
+      {formFieldDefinitions != null ? (
+        &lt;ActionForm
+          {...commonProps}
+          formFieldDefinitions={formFieldDefinitions}
+        /&gt;
+      ) : (
+        &lt;ActionForm {...commonProps} /&gt;
+      )}
     &lt;/FormStoryLayout&gt;
   );
 }
@@ -22470,6 +22479,135 @@ export const ControlledFormState: Story = {
   },
 };
 
+export const WithSections: Story = {
+  render: () =&gt; &lt;SectionsActionFormStory /&gt;,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Groups related fields into collapsible sections using `formContentDefinitions`. Standalone fields and sections can be interleaved freely.&quot;,
+      },
+      source: {
+        code: `import type { ActionFormContentItem } from &quot;@osdk/react-components/action-form&quot;;
+
+const content: Array&lt;ActionFormContentItem&lt;typeof myAction&gt;&gt; = [
+  {
+    type: &quot;field&quot;,
+    definition: {
+      fieldKey: &quot;fullName&quot;,
+      label: &quot;Full name&quot;,
+      fieldComponent: &quot;TEXT_INPUT&quot;,
+      fieldComponentProps: {},
+    },
+  },
+  {
+    type: &quot;section&quot;,
+    key: &quot;employment&quot;,
+    definition: {
+      title: &quot;Employment details&quot;,
+      description: &quot;Information about the employee&#39;s role and schedule.&quot;,
+      fields: [
+        {
+          fieldKey: &quot;yearsExperience&quot;,
+          label: &quot;Years of experience&quot;,
+          fieldComponent: &quot;NUMBER_INPUT&quot;,
+          fieldComponentProps: { min: 0 },
+        },
+        {
+          fieldKey: &quot;isRemote&quot;,
+          label: &quot;Remote employee&quot;,
+          fieldComponent: &quot;SWITCH&quot;,
+          fieldComponentProps: {},
+        },
+      ],
+    },
+  },
+];
+
+&lt;ActionForm
+  actionDefinition={myAction}
+  formContentDefinitions={content}
+  showFormTitle={true}
+/&gt;`,
+      },
+    },
+  },
+};
+
+const sectionContentDefinitions: ReadonlyArray&lt;
+  ActionFormContentItem&lt;typeof actionDefinition&gt;
+&gt; = [
+  {
+    type: &quot;field&quot;,
+    definition: {
+      fieldKey: &quot;fullName&quot;,
+      label: &quot;Full name&quot;,
+      fieldComponent: &quot;TEXT_INPUT&quot;,
+      fieldComponentProps: {},
+    },
+  },
+  {
+    type: &quot;section&quot;,
+    key: &quot;employment&quot;,
+    definition: {
+      title: &quot;Employment details&quot;,
+      description: &quot;Information about the employee&#39;s role and schedule.&quot;,
+      fields: [
+        {
+          fieldKey: &quot;yearsExperience&quot;,
+          label: &quot;Years of experience&quot;,
+          fieldComponent: &quot;NUMBER_INPUT&quot;,
+          fieldComponentProps: { min: 0 },
+        },
+        {
+          fieldKey: &quot;isRemote&quot;,
+          label: &quot;Remote employee&quot;,
+          fieldComponent: &quot;SWITCH&quot;,
+          fieldComponentProps: {},
+        },
+        {
+          fieldKey: &quot;isFullTime&quot;,
+          label: &quot;Employment type&quot;,
+          fieldComponent: &quot;DROPDOWN&quot;,
+          fieldComponentProps: {
+            items: [true, false],
+            itemToStringLabel: (value: boolean) =&gt;
+              value === true ? &quot;Full-time&quot; : &quot;Contractor&quot;,
+            placeholder: &quot;Select employment type&quot;,
+          },
+        },
+      ],
+      columnCount: 1,
+    },
+  },
+];
+
+function SectionsActionFormStory(): React.ReactElement {
+  const { handleStoryError, handleStorySubmit, submission } =
+    useActionFormSubmission({
+      applyStoryAction: applyUpdateEmployeeStoryAction,
+    });
+
+  return (
+    &lt;FormStoryLayout
+      output={
+        &lt;SubmissionOutputPanel
+          idleMessage=&quot;Submit the form to see the action response.&quot;
+          snapshot={submission}
+        /&gt;
+      }
+    &gt;
+      &lt;ActionForm
+        actionDefinition={actionDefinition}
+        formContentDefinitions={sectionContentDefinitions}
+        onError={handleStoryError}
+        onSubmit={handleStorySubmit}
+        showFormTitle={true}
+      /&gt;
+    &lt;/FormStoryLayout&gt;
+  );
+}
+
 function ControlledActionFormStory(): React.ReactElement {
   const [formState, setFormState] = useState&lt;
     FormState&lt;typeof actionDefinition&gt;
@@ -22653,6 +22791,15 @@ function ControlledActionFormStory(): React.ReactElement {
               
               
               <pre><code>const ControlledFormState = () =&gt; &lt;ControlledActionFormStory /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sections</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSections = () =&gt; &lt;SectionsActionFormStory /&gt;;</code></pre>
             </div>
         </div>
   </div>
@@ -39388,7 +39535,7 @@ export const ActivePage: Story = {
       <div class="badges">
         <label for="c-error-31-components-actionform-features-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-31-components-actionform-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-31-components-actionform-features-stories" class="badge err as-toggle">10/12 story errors</label>
+        <label for="c-error-31-components-actionform-features-stories" class="badge err as-toggle">10/13 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx">components-actionform-features · ./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx</div>
@@ -39410,13 +39557,13 @@ export const ActivePage: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;UpdateEmployeeActionFormStory&quot; component.
-  328 | }
-  329 |
-&gt; 330 | const meta = {
+  337 | }
+  338 |
+&gt; 339 | const meta = {
       | ^
-  331 |   title: &quot;Components/ActionForm/Features&quot;,
-  332 |   component: UpdateEmployeeActionFormStory,
-  333 |   tags: [&quot;beta&quot;],
+  340 |   title: &quot;Components/ActionForm/Features&quot;,
+  341 |   component: UpdateEmployeeActionFormStory,
+  342 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx:
 /*
@@ -39437,6 +39584,7 @@ export const ActivePage: Story = {
 
 import type { ActionDefinition, ActionEditResponse } from &quot;@osdk/api&quot;;
 import type {
+  ActionFormContentItem,
   ActionFormProps,
   FormFieldDefinition,
   FormState,
@@ -39701,6 +39849,15 @@ function UpdateEmployeeActionFormStory({
       onSubmit,
     });
 
+  const commonProps = {
+    actionDefinition,
+    formTitle,
+    isSubmitDisabled,
+    onError: handleStoryError,
+    onSubmit: handleStorySubmit,
+    showFormTitle,
+  } as const;
+
   return (
     &lt;FormStoryLayout
       output={
@@ -39710,15 +39867,14 @@ function UpdateEmployeeActionFormStory({
         /&gt;
       }
     &gt;
-      &lt;ActionForm
-        actionDefinition={actionDefinition}
-        formFieldDefinitions={formFieldDefinitions}
-        formTitle={formTitle}
-        isSubmitDisabled={isSubmitDisabled}
-        onError={handleStoryError}
-        onSubmit={handleStorySubmit}
-        showFormTitle={showFormTitle}
-      /&gt;
+      {formFieldDefinitions != null ? (
+        &lt;ActionForm
+          {...commonProps}
+          formFieldDefinitions={formFieldDefinitions}
+        /&gt;
+      ) : (
+        &lt;ActionForm {...commonProps} /&gt;
+      )}
     &lt;/FormStoryLayout&gt;
   );
 }
@@ -40248,6 +40404,135 @@ export const ControlledFormState: Story = {
   },
 };
 
+export const WithSections: Story = {
+  render: () =&gt; &lt;SectionsActionFormStory /&gt;,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Groups related fields into collapsible sections using `formContentDefinitions`. Standalone fields and sections can be interleaved freely.&quot;,
+      },
+      source: {
+        code: `import type { ActionFormContentItem } from &quot;@osdk/react-components/action-form&quot;;
+
+const content: Array&lt;ActionFormContentItem&lt;typeof myAction&gt;&gt; = [
+  {
+    type: &quot;field&quot;,
+    definition: {
+      fieldKey: &quot;fullName&quot;,
+      label: &quot;Full name&quot;,
+      fieldComponent: &quot;TEXT_INPUT&quot;,
+      fieldComponentProps: {},
+    },
+  },
+  {
+    type: &quot;section&quot;,
+    key: &quot;employment&quot;,
+    definition: {
+      title: &quot;Employment details&quot;,
+      description: &quot;Information about the employee&#39;s role and schedule.&quot;,
+      fields: [
+        {
+          fieldKey: &quot;yearsExperience&quot;,
+          label: &quot;Years of experience&quot;,
+          fieldComponent: &quot;NUMBER_INPUT&quot;,
+          fieldComponentProps: { min: 0 },
+        },
+        {
+          fieldKey: &quot;isRemote&quot;,
+          label: &quot;Remote employee&quot;,
+          fieldComponent: &quot;SWITCH&quot;,
+          fieldComponentProps: {},
+        },
+      ],
+    },
+  },
+];
+
+&lt;ActionForm
+  actionDefinition={myAction}
+  formContentDefinitions={content}
+  showFormTitle={true}
+/&gt;`,
+      },
+    },
+  },
+};
+
+const sectionContentDefinitions: ReadonlyArray&lt;
+  ActionFormContentItem&lt;typeof actionDefinition&gt;
+&gt; = [
+  {
+    type: &quot;field&quot;,
+    definition: {
+      fieldKey: &quot;fullName&quot;,
+      label: &quot;Full name&quot;,
+      fieldComponent: &quot;TEXT_INPUT&quot;,
+      fieldComponentProps: {},
+    },
+  },
+  {
+    type: &quot;section&quot;,
+    key: &quot;employment&quot;,
+    definition: {
+      title: &quot;Employment details&quot;,
+      description: &quot;Information about the employee&#39;s role and schedule.&quot;,
+      fields: [
+        {
+          fieldKey: &quot;yearsExperience&quot;,
+          label: &quot;Years of experience&quot;,
+          fieldComponent: &quot;NUMBER_INPUT&quot;,
+          fieldComponentProps: { min: 0 },
+        },
+        {
+          fieldKey: &quot;isRemote&quot;,
+          label: &quot;Remote employee&quot;,
+          fieldComponent: &quot;SWITCH&quot;,
+          fieldComponentProps: {},
+        },
+        {
+          fieldKey: &quot;isFullTime&quot;,
+          label: &quot;Employment type&quot;,
+          fieldComponent: &quot;DROPDOWN&quot;,
+          fieldComponentProps: {
+            items: [true, false],
+            itemToStringLabel: (value: boolean) =&gt;
+              value === true ? &quot;Full-time&quot; : &quot;Contractor&quot;,
+            placeholder: &quot;Select employment type&quot;,
+          },
+        },
+      ],
+      columnCount: 1,
+    },
+  },
+];
+
+function SectionsActionFormStory(): React.ReactElement {
+  const { handleStoryError, handleStorySubmit, submission } =
+    useActionFormSubmission({
+      applyStoryAction: applyUpdateEmployeeStoryAction,
+    });
+
+  return (
+    &lt;FormStoryLayout
+      output={
+        &lt;SubmissionOutputPanel
+          idleMessage=&quot;Submit the form to see the action response.&quot;
+          snapshot={submission}
+        /&gt;
+      }
+    &gt;
+      &lt;ActionForm
+        actionDefinition={actionDefinition}
+        formContentDefinitions={sectionContentDefinitions}
+        onError={handleStoryError}
+        onSubmit={handleStorySubmit}
+        showFormTitle={true}
+      /&gt;
+    &lt;/FormStoryLayout&gt;
+  );
+}
+
 function ControlledActionFormStory(): React.ReactElement {
   const [formState, setFormState] = useState&lt;
     FormState&lt;typeof actionDefinition&gt;
@@ -40431,6 +40716,15 @@ function ControlledActionFormStory(): React.ReactElement {
               
               
               <pre><code>const ControlledFormState = () =&gt; &lt;ControlledActionFormStory /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sections</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSections = () =&gt; &lt;SectionsActionFormStory /&gt;;</code></pre>
             </div>
         </div>
   </div>
