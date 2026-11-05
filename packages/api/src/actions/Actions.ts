@@ -124,7 +124,10 @@ export type ActionEditResponse = ActionResults;
  * Carries the value returned by an action whose function declares a return type.
  */
 export interface ActionReturnValueResponse<TReturnValue> {
-  /** The value returned by the function backing the action. */
-  returnValue: TReturnValue;
+  /**
+   * The value returned by the function backing the action, or undefined if the
+   * OSDK could not convert it. The action has still been applied.
+   */
+  returnValue: TReturnValue | undefined;
 }
 export type ActionValidationResponse = ValidateActionResponseV2;
