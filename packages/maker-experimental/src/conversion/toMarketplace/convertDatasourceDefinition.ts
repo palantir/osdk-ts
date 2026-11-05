@@ -16,6 +16,7 @@
 
 import type {
   MarkingType,
+  ObjectTypeDatasource,
   ObjectTypeDatasourceDefinition,
   PropertySecurityGroup,
   PropertySecurityGroups,
@@ -205,6 +206,85 @@ export function convertDatasourceDefinition(
   }
 }
 
+/** Convert the primary datasource emitted by maker, preserving its cloud identity. */
+export function convertDatasourceForEdge(
+  source: ObjectTypeDatasource,
+  objectApiName: string,
+): ObjectTypeDatasource {
+  const definition = source.datasource;
+  let direct: {
+    directSourceRid: string;
+    propertyMapping: Record<string, PropertyTypeMappingInfo>;
+    propertySecurityGroups?: PropertySecurityGroups | null;
+  };
+  switch (definition.type) {
+    case "direct":
+    case "editsOnly":
+      return source;
+    case "datasetV2":
+    case "datasetV3": {
+      const dataset =
+        definition.type === "datasetV2"
+          ? definition.datasetV2
+          : definition.datasetV3;
+      direct = {
+        directSourceRid: dataset.datasetRid,
+        propertyMapping: dataset.propertyMapping,
+        propertySecurityGroups:
+          definition.type === "datasetV3"
+            ? definition.datasetV3.propertySecurityGroups
+            : undefined,
+      };
+      break;
+    }
+    case "streamV2":
+      direct = {
+        directSourceRid: definition.streamV2.streamLocator.streamLocatorRid,
+        propertyMapping: Object.fromEntries(
+          Object.entries(definition.streamV2.propertyMapping).map(
+            ([property, column]) => [property, { type: "column", column }],
+          ),
+        ),
+        propertySecurityGroups: definition.streamV2.propertySecurityGroups,
+      };
+      break;
+    default:
+      throw new Error(
+        `Cannot package object "${objectApiName}" datasource "${source.rid}" for edge: unsupported datasource type "${definition.type}" with PSG v2 packaging.`,
+      );
+  }
+  return {
+    ...source,
+    datasource: {
+      type: "direct",
+      direct: {
+        ...direct,
+        propertySecurityGroups: direct.propertySecurityGroups?.groups.length
+          ? direct.propertySecurityGroups
+          : {
+              groups: [
+                {
+                  // Match OMS's stable PSG identity for a remapped datasource.
+                  rid: source.rid.replace(
+                    ".datasource.",
+                    ".property-security-group.",
+                  ),
+                  properties: Object.keys(direct.propertyMapping),
+                  type: { type: "primaryKey", primaryKey: {} },
+                  security: {
+                    type: "mandatoryOnly",
+                    mandatoryOnly: {
+                      policy: { markings: [], assumedMarkings: [] },
+                    },
+                  },
+                },
+              ],
+            },
+      },
+    },
+  };
+}
+
 function convertPropertySecurityGroups(
   ds:
     | ObjectTypeDatasourceDefinition_dataset
@@ -260,43 +340,7 @@ function convertPropertySecurityGroups(
   const validPropertyNames = new Set(properties.map((prop) => prop.apiName));
   const usedPropertyApiNames = new Set<string>();
 
-  // Collect and register group IDs (matching Java's collectSecurityGroupIds)
-  const collectGroupIds = (granularPolicy?: SecurityConditionDefinition) => {
-    if (!granularPolicy) return;
-
-    const collectFromCondition = (condition: SecurityConditionDefinition) => {
-      switch (condition.type) {
-        case "group":
-          // Register group ID with the ridGenerator
-          const groupId = condition.name;
-          ridGenerator
-            .getGroupIds()
-            .put(ReadableIdGenerator.getForGroup(groupId), groupId);
-          break;
-        case "and":
-        case "or":
-          if ("conditions" in condition) {
-            condition.conditions.forEach(collectFromCondition);
-          }
-          break;
-      }
-    };
-
-    collectFromCondition(granularPolicy);
-  };
-
-  // Collect group IDs from object security policy
-  if (ds.objectSecurityPolicy?.granularPolicy) {
-    collectGroupIds(ds.objectSecurityPolicy.granularPolicy);
-  }
-
-  // Validate and collect property security groups
   ds.propertySecurityGroups?.forEach((psg) => {
-    // Collect group IDs from property security groups
-    if (psg.granularPolicy) {
-      collectGroupIds(psg.granularPolicy);
-    }
-
     psg.properties.forEach((propertyName) => {
       invariant(
         validPropertyNames.has(propertyName),
@@ -477,11 +521,13 @@ function convertSecurityCondition(
           ...condition.comparison,
           left: convertSecurityComparisonValue(
             condition.comparison.left,
+            condition.comparison.right,
             ridGenerator,
             objectTypeApiName,
           ),
           right: convertSecurityComparisonValue(
             condition.comparison.right,
+            condition.comparison.left,
             ridGenerator,
             objectTypeApiName,
           ),
@@ -521,26 +567,30 @@ function convertSecurityCondition(
         },
       };
     case "group":
-      return {
-        type: "comparison",
-        comparison: {
-          operator: "INTERSECTS",
-          left: {
-            type: "userProperty",
-            userProperty: {
-              type: "groupIds",
-              groupIds: {},
+      return convertSecurityCondition(
+        {
+          type: "comparison",
+          comparison: {
+            operator: "INTERSECTS",
+            left: {
+              type: "userProperty",
+              userProperty: {
+                type: "groupIds",
+                groupIds: {},
+              },
             },
-          },
-          right: {
-            type: "constant",
-            constant: {
-              type: "strings",
-              strings: [condition.name],
+            right: {
+              type: "constant",
+              constant: {
+                type: "strings",
+                strings: [condition.name],
+              },
             },
           },
         },
-      };
+        ridGenerator,
+        objectTypeApiName,
+      );
 
     default:
       return condition;
@@ -549,9 +599,29 @@ function convertSecurityCondition(
 
 function convertSecurityComparisonValue(
   value: SecurityGroupComparisonValue,
+  otherValue: SecurityGroupComparisonValue,
   ridGenerator?: OntologyRidGenerator,
   objectTypeApiName?: string,
 ): SecurityGroupComparisonValue {
+  if (
+    value.type === "constant" &&
+    otherValue.type === "userProperty" &&
+    otherValue.userProperty.type === "groupIds"
+  ) {
+    let groupIds: string[] = [];
+
+    if (value.constant.type === "string") {
+      groupIds = [value.constant.string];
+    } else if (value.constant.type === "strings") {
+      groupIds = value.constant.strings;
+    }
+
+    for (const groupId of groupIds) {
+      ridGenerator
+        ?.getGroupIds()
+        .put(ReadableIdGenerator.getForGroup(groupId), groupId);
+    }
+  }
   if (value.type !== "property") {
     return value;
   }

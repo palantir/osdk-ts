@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  TypeGroupGetOrganizationsRequest as _api_TypeGroupGetOrganizationsRequest,
-  TypeGroupGetOrganizationsResponse as _api_TypeGroupGetOrganizationsResponse,
-} from "../__components.js";
+import type { TypeGroupGetOrganizationsRequest as _api_TypeGroupGetOrganizationsRequest } from "../__components.js";
+import type { TypeGroupGetOrganizationsResponse as _api_TypeGroupGetOrganizationsResponse } from "../__components.js";
 
 /**
  * Endpoint to batch load organization rids per TypeGroup. The response will only contain entries for

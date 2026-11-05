@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetDeprecationUsageRequest as _api_usage_GetDeprecationUsageRequest,
-  GetDeprecationUsageResponse as _api_usage_GetDeprecationUsageResponse,
-} from "../__components.js";
+import type { GetDeprecationUsageRequest as _api_usage_GetDeprecationUsageRequest } from "../__components.js";
+import type { GetDeprecationUsageResponse as _api_usage_GetDeprecationUsageResponse } from "../__components.js";
 
 /**
  * Endpoint to get the daily deprecation usage of an ontology entity over the last 30 days.

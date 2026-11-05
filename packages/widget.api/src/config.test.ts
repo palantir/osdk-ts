@@ -148,7 +148,7 @@ describe("WidgetConfig", () => {
         test: boolean[];
         test2: string[];
         test3: number;
-        tileLayer: { styleJsonUrl: string };
+        tileLayer: { tileSourceId: string };
       }>();
     });
 

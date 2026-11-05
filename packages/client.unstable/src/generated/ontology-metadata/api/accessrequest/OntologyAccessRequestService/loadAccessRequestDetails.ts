@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadAccessRequestDetailsRequest as _api_accessrequest_LoadAccessRequestDetailsRequest,
-  LoadAccessRequestDetailsResponse as _api_accessrequest_LoadAccessRequestDetailsResponse,
-} from "../__components.js";
+import type { LoadAccessRequestDetailsRequest as _api_accessrequest_LoadAccessRequestDetailsRequest } from "../__components.js";
+import type { LoadAccessRequestDetailsResponse as _api_accessrequest_LoadAccessRequestDetailsResponse } from "../__components.js";
 
 /**
  * Returns the access requests of the requested ontology entities.

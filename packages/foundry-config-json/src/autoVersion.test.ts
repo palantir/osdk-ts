@@ -114,10 +114,8 @@ describe("autoVersion", () => {
     });
 
     await expect(
-      autoVersion({
-        type: "git-describe",
-      }),
-    ).rejects.toThrowError("the current directory is not a git repository");
+      autoVersion({ type: "git-describe" }, { cwd: "/path/to/project" }),
+    ).rejects.toThrowError("/path/to/project is not a git repository");
   });
 
   it("should throw an error if no git tags are found", async () => {
@@ -126,9 +124,7 @@ describe("autoVersion", () => {
     });
 
     await expect(
-      autoVersion({
-        type: "git-describe",
-      }),
-    ).rejects.toThrowError("no matching tags were found.");
+      autoVersion({ type: "git-describe" }, { cwd: "/path/to/project" }),
+    ).rejects.toThrowError("no matching tags were found in /path/to/project.");
   });
 });

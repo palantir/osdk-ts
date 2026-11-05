@@ -1,5 +1,15 @@
 # @osdk/language-models
 
+## 0.12.0
+
+### Minor Changes
+
+- a2730af: Require workspace-derived OSDK peer versions in @osdk/react-components, @osdk/react, @osdk/aip-core, and @osdk/language-models, preventing installs with older peers than the versions used to build and validate these packages.
+
+### Patch Changes
+
+- @osdk/client@2.78.0
+
 ## 0.11.0
 
 ### Minor Changes

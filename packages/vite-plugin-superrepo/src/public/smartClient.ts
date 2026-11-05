@@ -17,6 +17,13 @@
 /// <reference types="vite/client" />
 
 import type { Client } from "@osdk/client";
+import type {
+  BucketKey,
+  ExecuteFunctionResponse,
+  FailedResult,
+  SingleBucket,
+  Value,
+} from "@osdk/client.unstable/functionExecutor";
 
 // Vite serves under `import.meta.env.BASE_URL` (trailing slash); the direct
 // fetches below hit the same-origin proxies the plugin installs, so they must
@@ -179,39 +186,215 @@ function transformParametersToLocal(
   return transformed;
 }
 
-interface TypedValue {
-  type: string;
-  double?: number;
-  integer?: number;
-  string?: string;
-  boolean?: boolean;
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value != null && typeof value === "object" && !Array.isArray(value);
 }
 
-interface ExecutionResult {
-  executionResult?: {
-    type: string;
-    success?: { returnValue?: TypedValue };
-    failed?: { runtimeError?: { message?: string } };
-  };
+function decodeBucketKey(key: BucketKey): unknown {
+  return key.type === "range"
+    ? {
+        startValue:
+          key.range.min == null ? undefined : decodeRuntimeValue(key.range.min),
+        endValue:
+          key.range.max == null ? undefined : decodeRuntimeValue(key.range.max),
+      }
+    : decodeRuntimeValue(key);
 }
 
-function transformResponseFromLocal(response: unknown): unknown {
-  const resp = response as ExecutionResult;
+function decodeAggregationBuckets(buckets: SingleBucket[]): unknown[] {
+  return (buckets ?? []).map(({ key, value }) => ({
+    key: decodeBucketKey(key),
+    value: decodeRuntimeValue(value),
+  }));
+}
 
-  if (resp?.executionResult?.type === "success") {
-    const returnValue = resp.executionResult.success?.returnValue;
-    if (returnValue?.type != null && returnValue.type in returnValue) {
-      return returnValue[returnValue.type as keyof TypedValue];
+function decodeRuntimeValue(value: Value): unknown {
+  if (
+    !isRecord(value) ||
+    typeof value.type !== "string" ||
+    !Object.hasOwn(value, value.type)
+  ) {
+    throw new Error("Unexpected return value from local runtime");
+  }
+  switch (value.type) {
+    case "null":
+      return undefined;
+    case "boolean":
+      return value.boolean;
+    case "byte":
+      return value.byte;
+    case "short":
+      return value.short;
+    case "integer":
+      return value.integer;
+    case "long":
+      return value.long;
+    case "float":
+      return value.float;
+    case "double":
+      return value.double;
+    case "string":
+      return value.string;
+    case "date":
+      return value.date;
+    case "timestamp":
+      return value.timestamp;
+    case "decimal":
+      return value.decimal;
+    case "binary":
+      return value.binary;
+    case "user":
+      return value.user;
+    case "group":
+      return value.group;
+    case "geoShape":
+      return value.geoShape;
+    case "range":
+      return {
+        min:
+          value.range.min == null
+            ? undefined
+            : decodeRuntimeValue(value.range.min),
+        max:
+          value.range.max == null
+            ? undefined
+            : decodeRuntimeValue(value.range.max),
+      };
+    case "vector":
+      return (value.vector.values ?? []).map((element) => element.double);
+    case "twoDimensionalAggregation":
+      return decodeAggregationBuckets(value.twoDimensionalAggregation.buckets);
+    case "threeDimensionalAggregation":
+      return (value.threeDimensionalAggregation.buckets ?? []).map(
+        ({ key, buckets }) => ({
+          key: decodeBucketKey(key),
+          groups: decodeAggregationBuckets(buckets),
+        }),
+      );
+    case "customType":
+      return Object.fromEntries(
+        Object.entries(value.customType).map(([key, field]) => [
+          key,
+          decodeRuntimeValue(field),
+        ]),
+      );
+    case "list":
+      return (value.list.values ?? []).map(decodeRuntimeValue);
+    case "set":
+      return (value.set.values ?? []).map(decodeRuntimeValue);
+    case "map":
+      return Object.fromEntries(
+        (value.map.entries ?? []).map((entry) => {
+          const key = decodeRuntimeValue(entry.key);
+          if (typeof key !== "string" && typeof key !== "number") {
+            throw new Error(
+              "Unsupported map key from local runtime: expected a string or number",
+            );
+          }
+          return [key, decodeRuntimeValue(entry.value)];
+        }),
+      );
+    case "attachment":
+    case "mediaReference":
+    case "objectRid":
+    case "objectLocator":
+    case "objectLocatorWithData":
+    case "objectSetRid":
+    case "ontologyEdit":
+    case "ontologyEditV2":
+    case "action":
+    case "principal":
+    case "notification":
+    case "modelGraphRid":
+    case "timeSeriesRid":
+    case "marking":
+      throw new Error(
+        `Unsupported return value type from local runtime: ${value.type}. Return primitive values or collections of primitives instead.`,
+      );
+    default: {
+      value satisfies never;
+      throw new Error(
+        `Unsupported return value from local runtime: ${JSON.stringify(value)}`,
+      );
     }
-    return returnValue;
+  }
+}
+
+function formatRuntimeFailure(failure: FailedResult): string {
+  let details: unknown;
+  switch (failure.type) {
+    case "runtimeError":
+      if (failure.runtimeError?.message) return failure.runtimeError.message;
+      details = failure.runtimeError;
+      break;
+    case "userFacingError":
+      if (failure.userFacingError?.message)
+        return failure.userFacingError.message;
+      details = failure.userFacingError;
+      break;
+    case "functionNotSupportedWithTransaction":
+      if (failure.functionNotSupportedWithTransaction?.message) {
+        return failure.functionNotSupportedWithTransaction.message;
+      }
+      details = failure.functionNotSupportedWithTransaction;
+      break;
+    case "invalidInputs":
+      details = failure.invalidInputs;
+      break;
+    case "invalidOutput":
+      details = failure.invalidOutput;
+      break;
+    case "resourceLimitExceeded":
+      details = failure.resourceLimitExceeded;
+      break;
+    case "dataLoadingNotAllowed":
+      details = failure.dataLoadingNotAllowed;
+      break;
+    case "undeclaredObjectTypesEdited":
+      details = failure.undeclaredObjectTypesEdited;
+      break;
+    case "structuredError":
+      details = failure.structuredError;
+      break;
+    case "deploymentError":
+      details = failure.deploymentError;
+      break;
+    case "consistentSnapshotError":
+      details = failure.consistentSnapshotError;
+      break;
+    case "userCanceled":
+      details = failure.userCanceled;
+      break;
+    default: {
+      failure satisfies never;
+      return `Function execution failed: ${JSON.stringify(failure)}`;
+    }
+  }
+  return details == null
+    ? `Function execution failed with no error message (${failure.type})`
+    : `Function execution failed (${failure.type}): ${JSON.stringify(details)}`;
+}
+
+function transformResponseFromLocal(
+  response: ExecuteFunctionResponse,
+): unknown {
+  if (!isRecord(response) || !isRecord(response.executionResult)) {
+    throw new Error("Unexpected response format from local runtime");
+  }
+  const result = response.executionResult;
+
+  if (result.type === "success" && isRecord(result.success)) {
+    const { returnValue } = result.success;
+    if (returnValue == null) return returnValue;
+    return decodeRuntimeValue(returnValue);
   }
 
-  if (resp?.executionResult?.type === "failed") {
-    const msg = resp.executionResult.failed?.runtimeError?.message;
-    if (!msg) {
-      throw new Error("Function execution failed with no error message");
-    }
-    throw new Error(msg);
+  if (
+    result.type === "failed" &&
+    isRecord(result.failed) &&
+    typeof result.failed.type === "string"
+  ) {
+    throw new Error(formatRuntimeFailure(result.failed));
   }
 
   throw new Error("Unexpected response format from local runtime");
@@ -448,7 +631,9 @@ async function executeLocalFunction(
       info.runtime.executeEndpoint,
       requestBody,
     );
-    return transformResponseFromLocal(await response.json());
+    return transformResponseFromLocal(
+      (await response.json()) as ExecuteFunctionResponse,
+    );
   };
 
   return isPython ? enqueue(execute) : execute();

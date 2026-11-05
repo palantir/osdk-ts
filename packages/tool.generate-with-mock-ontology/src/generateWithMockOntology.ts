@@ -21,7 +21,11 @@ import * as path from "node:path";
 // @ts-check
 import { createClient } from "@osdk/client";
 import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import { $ } from "execa";
 
 import { safeStat } from "./safeStat.js";
@@ -75,6 +79,10 @@ export async function generateWithMockOntology(): Promise<void> {
           "returnsObject",
           "twoDimensionalAggregationFunction",
           "threeDimensionalAggregationFunction",
+        ],
+        agents: [
+          `${stubData.weatherAgentApiName}:${stubData.weatherAgentVersion.version}`,
+          `${stubData.noArgsAgentApiName}:${stubData.noArgsAgentVersion.version}`,
         ],
         interfaceTypes: ["FooInterface", "BarInterface"],
         linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],

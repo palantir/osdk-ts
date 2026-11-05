@@ -1,5 +1,11 @@
 # @osdk/react-sdk-docs
 
+## 0.21.0
+
+### Minor Changes
+
+- 86c708b: Recommend $select in object loading snippets and JSDoc, stop collecting asyncIter() into arrays in "load all objects" snippets, and document snapshot behavior of fetchPage vs asyncIter
+
 ## 0.20.0
 
 ### Minor Changes

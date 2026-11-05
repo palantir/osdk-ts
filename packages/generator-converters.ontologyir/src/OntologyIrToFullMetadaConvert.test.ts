@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+import type {
+  OntologyIrActionTypeBlockDataV2,
+  OntologyIrConditionalValidationBlock,
+  OntologyIrLinkTypeBlockDataV2,
+  OntologyIrParameter,
+  ParameterFreeText,
+  ParameterRequiredConfiguration,
+  VectorPropertyType,
+} from "@osdk/client.unstable";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -45,6 +54,122 @@ vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
 }));
 
 describe(OntologyIrToFullMetadataConverter, () => {
+  it.each(
+    [
+      {
+        vector: { dimension: 128, supportsSearchWith: [] },
+        expected: { type: "vector", dimension: 128, supportsSearchWith: [] },
+      },
+      {
+        vector: {
+          dimension: 1536,
+          supportsSearchWith: [
+            "COSINE_SIMILARITY",
+            "DOT_PRODUCT",
+            "EUCLIDEAN_DISTANCE",
+          ],
+        },
+        expected: {
+          type: "vector",
+          dimension: 1536,
+          supportsSearchWith: [
+            { value: "COSINE_SIMILARITY" },
+            { value: "DOT_PRODUCT" },
+            { value: "EUCLIDEAN_DISTANCE" },
+          ],
+        },
+      },
+    ] satisfies { vector: VectorPropertyType; expected: unknown }[],
+  )(
+    "preserves vector dimensions and search capabilities: $vector.dimension",
+    ({ vector, expected }) => {
+      expect(
+        OntologyIrToFullMetadataConverter.getOsdkPropertyType({
+          type: "vector",
+          vector,
+        }),
+      ).toEqual(expected);
+    },
+  );
+
+  it.each(
+    [
+      ["manyToMany", "Target"],
+      ["intermediary", "Target"],
+      ["intermediary", "Source"],
+    ] as const,
+  )("converts both directions of %s links to %s", (type, target) => {
+    const endpoints = {
+      objectTypeRidA: "Source",
+      objectTypeRidB: target,
+      objectTypeAToBLinkMetadata: {
+        apiName: "targets",
+        displayMetadata: {
+          displayName: "Targets",
+          pluralDisplayName: "Targets",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+      objectTypeBToALinkMetadata: {
+        apiName: "sources",
+        displayMetadata: {
+          displayName: "Sources",
+          pluralDisplayName: "Sources",
+          visibility: "NORMAL" as const,
+        },
+        typeClasses: [],
+      },
+    };
+    const link: OntologyIrLinkTypeBlockDataV2 = {
+      linkType: {
+        id: "source-to-target",
+        status: { type: "active", active: {} },
+        definition: type === "intermediary"
+          ? {
+            type,
+            intermediary: {
+              ...endpoints,
+              intermediaryObjectTypeRid: "Bridge",
+              aToIntermediaryLinkTypeRid: "source-to-bridge",
+              intermediaryToBLinkTypeRid: "target-to-bridge",
+            },
+          }
+          : {
+            type,
+            manyToMany: {
+              ...endpoints,
+              objectTypeAPrimaryKeyPropertyMapping: [],
+              objectTypeBPrimaryKeyPropertyMapping: [],
+            },
+          },
+      },
+      datasources: [],
+    };
+    const result = OntologyIrToFullMetadataConverter.getLinkMappings([link]);
+    const forward = {
+      apiName: "targets",
+      displayName: "Targets",
+      cardinality: "MANY",
+      objectTypeApiName: target,
+      linkTypeRid: `ri.Source.source-to-target.${target}`,
+      status: "ACTIVE",
+    };
+    const reverse = {
+      apiName: "sources",
+      displayName: "Sources",
+      cardinality: "MANY",
+      objectTypeApiName: "Source",
+      linkTypeRid: `ri.Source.source-to-target.${target}`,
+      status: "ACTIVE",
+    };
+    expect(result).toEqual(
+      target === "Source"
+        ? { Source: [forward, reverse] }
+        : { Source: [forward], Target: [reverse] },
+    );
+  });
+
   it("should convert ontology IR to full metadata", async () => {
     const result = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(
@@ -155,6 +280,23 @@ describe(OntologyIrToFullMetadataConverter, () => {
                       "type": "active",
                       "active": {},
                     },
+                  },
+                  "embedding": {
+                    "apiName": "embedding",
+                    "displayMetadata": {
+                      "displayName": "Embedding",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "type": {
+                      "type": "vector",
+                      "vector": {
+                        "dimension": 1536,
+                        "supportsSearchWith": ["COSINE_SIMILARITY"],
+                      },
+                    },
+                    "typeClasses": [],
+                    "status": { "type": "active", "active": {} },
                   },
                   "proposedLocation": {
                     "apiName": "proposedLocation",
@@ -3244,6 +3386,25 @@ describe(OntologyIrToFullMetadataConverter, () => {
               "pluralDisplayName": "",
               "primaryKey": "primaryKey_",
               "properties": {
+                "embedding": {
+                  "dataType": {
+                    "dimension": 1536,
+                    "supportsSearchWith": [
+                      {
+                        "value": "COSINE_SIMILARITY",
+                      },
+                    ],
+                    "type": "vector",
+                  },
+                  "description": undefined,
+                  "displayName": "Embedding",
+                  "rid": "ri.Dc3DistributionCenterProposal.embedding",
+                  "status": {
+                    "type": "active",
+                  },
+                  "typeClasses": [],
+                  "visibility": "NORMAL",
+                },
                 "footprint": {
                   "dataType": {
                     "structFieldTypes": [
@@ -3528,6 +3689,106 @@ describe(OntologyIrToFullMetadataConverter, () => {
         "valueTypes": {},
       }
     `);
+  });
+
+  it("converts action parameter text and list length validation", () => {
+    const parameter = (
+      id: string,
+      type: OntologyIrParameter["type"],
+    ): OntologyIrParameter => ({
+      id,
+      displayMetadata: { displayName: id, description: "", typeClasses: [] },
+      type,
+    });
+    const validation = (
+      required: ParameterRequiredConfiguration,
+      text: ParameterFreeText,
+    ): OntologyIrConditionalValidationBlock => ({
+      conditionalOverrides: [],
+      defaultValidation: {
+        display: {
+          renderHint: { type: "textInput", textInput: {} },
+          visibility: { type: "editable", editable: {} },
+        },
+        validation: {
+          required,
+          allowedValues: { type: "text", text: { type: "text", text } },
+        },
+      },
+    });
+    const action: OntologyIrActionTypeBlockDataV2 = {
+      actionType: {
+        metadata: {
+          apiName: "createItem",
+          displayMetadata: {
+            displayName: "Create item",
+            description: "",
+            applyingMessage: [],
+            successMessage: [],
+            typeClasses: [],
+          },
+          status: { type: "active", active: {} },
+          parameters: {
+            title: parameter("title", { type: "string", string: {} }),
+            tags: parameter("tags", { type: "stringList", stringList: {} }),
+          },
+          parameterOrdering: ["title", "tags"],
+          formContentOrdering: [],
+          sections: {},
+        },
+        actionTypeLogic: {
+          logic: { rules: [] },
+          validation: {
+            actionTypeLevelValidation: { rules: {} },
+            parameterValidations: {
+              title: validation({ type: "required", required: {} }, {
+                minLength: 3,
+                maxLength: 20,
+                regex: { regex: "^[A-Za-z].*", failureMessage: "Invalid" },
+              }),
+              tags: validation({
+                type: "listLengthValidation",
+                listLengthValidation: { minLength: 1, maxLength: 2 },
+              }, {}),
+            },
+            sectionValidations: {},
+          },
+        },
+      },
+    };
+
+    const result = OntologyIrToFullMetadataConverter.getOsdkActionParameters(
+      action,
+    );
+
+    expect(result).toEqual({
+      title: {
+        displayName: "title",
+        description: "",
+        required: true,
+        dataType: { type: "string" },
+        typeClasses: [],
+        validation: {
+          defaultValidation: {
+            allowedValues: {
+              type: "text",
+              gte: 3,
+              lte: 20,
+              regex: "^[A-Za-z].*",
+              configuredFailureMessage: "Invalid",
+            },
+          },
+        },
+      },
+      tags: {
+        displayName: "tags",
+        description: "",
+        required: true,
+        dataType: { type: "array", subType: { type: "string" } },
+        typeClasses: [],
+        validation: { defaultValidation: { arraySize: { gte: 1, lte: 2 } } },
+      },
+    });
   });
 
   describe(isInjectedRuntimeInput, () => {

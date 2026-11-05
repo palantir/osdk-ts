@@ -35,7 +35,7 @@ export namespace OsdkTestObject {
     /**
      *   display name: 'String Property'
      */
-    readonly stringProperty: 'brown' | 'found.com' | 'it\'s "cool"' | undefined;
+    readonly stringProperty: 'brown' | 'it\'s "cool"' | undefined;
     /**
      * @experimental
      *
@@ -78,6 +78,7 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
     props: OsdkTestObject.Props;
     linksType: OsdkTestObject.Links;
     strictProps: OsdkTestObject.StrictProps;
+    requiredProps: 'primaryKey_';
     apiName: 'OsdkTestObject';
     description: '';
     displayName: 'Osdk Test Object';

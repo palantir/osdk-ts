@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
-import type {
-  CheckExistingUniqueIdentifiersRequest as _api_modification_CheckExistingUniqueIdentifiersRequest,
-  CheckExistingUniqueIdentifiersResponse as _api_modification_CheckExistingUniqueIdentifiersResponse,
-} from "../../modification/__components.js";
+import type { CheckExistingUniqueIdentifiersRequest as _api_modification_CheckExistingUniqueIdentifiersRequest } from "../../modification/__components.js";
+import type { CheckExistingUniqueIdentifiersResponse as _api_modification_CheckExistingUniqueIdentifiersResponse } from "../../modification/__components.js";
 
 /**
  * Intended for use when making modifications to the Ontology. Allows checking ahead of time if identifiers that

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../../__components.js";
-import type {
-  GetModifiedEntitiesRequest as _api_modification_GetModifiedEntitiesRequest,
-  GetModifiedEntitiesResponse as _api_modification_GetModifiedEntitiesResponse,
-} from "../../modification/__components.js";
+import type { GetModifiedEntitiesRequest as _api_modification_GetModifiedEntitiesRequest } from "../../modification/__components.js";
+import type { GetModifiedEntitiesResponse as _api_modification_GetModifiedEntitiesResponse } from "../../modification/__components.js";
 
 /**
  * Returns all entities modified between two given OntologyVersions.

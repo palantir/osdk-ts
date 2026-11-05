@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  SharedPropertyTypeSearchRequest as _api_search_SharedPropertyTypeSearchRequest,
-  SharedPropertyTypeSearchResponse as _api_search_SharedPropertyTypeSearchResponse,
-} from "../search/__components.js";
+import type { SharedPropertyTypeSearchRequest as _api_search_SharedPropertyTypeSearchRequest } from "../search/__components.js";
+import type { SharedPropertyTypeSearchResponse as _api_search_SharedPropertyTypeSearchResponse } from "../search/__components.js";
 
 /**
  * Endpoint to search SharedPropertyTypes based on various filters. Endpoint allows to return results based on

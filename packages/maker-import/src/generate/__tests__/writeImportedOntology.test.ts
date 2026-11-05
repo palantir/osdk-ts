@@ -16,8 +16,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import type * as Ontologies from "@osdk/foundry.ontologies";
+import { defineOntology, getImportedTypes, type ObjectType } from "@osdk/maker";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { mapActionParameterType } from "../mapActionParameterType.js";
@@ -82,22 +84,109 @@ describe("mapPropertyType", () => {
     ).toEqual({ type: "string", array: true });
   });
 
-  it("returns undefined for unsupported types", () => {
-    expect(mapPropertyType({ type: "marking" })).toBeUndefined();
+  it.each(["CBAC", "MANDATORY"] as const)(
+    "maps %s marking types when the subtype is known",
+    (markingType) => {
+      expect(mapPropertyType({ type: "marking", markingType })).toEqual({
+        type: {
+          type: "marking",
+          markingType,
+          markingInputGroupName: "not-applicable",
+        },
+      });
+    },
+  );
+
+  it("throws for marking types with an unknown subtype", () => {
+    expect(() => mapPropertyType({ type: "marking" })).toThrowError(
+      'Cannot import marking property because markingType is missing. Expected "CBAC" or "MANDATORY" in the source ontology metadata.',
+    );
+  });
+
+  it("maps struct fields and main values", () => {
     expect(
-      mapPropertyType({ type: "struct", structFieldTypes: [] }),
-    ).toBeUndefined();
-    expect(
+      mapPropertyType({
+        type: "struct",
+        structFieldTypes: [
+          {
+            apiName: "name",
+            rid: "ri.ontology.main.struct-field.name",
+            dataType: { type: "string" },
+            typeClasses: [],
+          },
+          {
+            apiName: "score",
+            rid: "ri.ontology.main.struct-field.score",
+            dataType: { type: "double" },
+            typeClasses: [],
+          },
+        ],
+        mainValue: {
+          fields: ["name"],
+          mainValueType: { type: "string" },
+        },
+      }),
+    ).toEqual({
+      type: {
+        type: "struct",
+        structDefinition: {
+          name: {
+            fieldType: "string",
+            displayMetadata: {
+              displayName: "name",
+              description: undefined,
+            },
+            typeClasses: [],
+          },
+          score: {
+            fieldType: "double",
+            displayMetadata: {
+              displayName: "score",
+              description: undefined,
+            },
+            typeClasses: [],
+          },
+        },
+        mainValue: { fields: ["name"], type: "string" },
+      },
+    });
+  });
+
+  it("throws when a struct field is unsupported", () => {
+    expect(() =>
+      mapPropertyType({
+        type: "struct",
+        structFieldTypes: [
+          {
+            apiName: "history",
+            rid: "ri.ontology.main.struct-field.history",
+            dataType: { type: "timeseries", itemType: { type: "string" } },
+            typeClasses: [],
+          },
+        ],
+      }),
+    ).toThrowError('Unsupported property type "timeseries"');
+  });
+
+  it("throws for unsupported types", () => {
+    expect(() =>
       mapPropertyType({ type: "timeseries", itemType: { type: "string" } }),
-    ).toBeUndefined();
-    expect(
+    ).toThrowError('Unsupported property type "timeseries"');
+    expect(() => mapPropertyType({ type: "cipherText" })).toThrowError(
+      'Unsupported property type "cipherText"',
+    );
+  });
+
+  it("throws for vectors without a search configuration", () => {
+    expect(() =>
       mapPropertyType({
         type: "vector",
         dimension: 1,
         supportsSearchWith: [],
       }),
-    ).toBeUndefined();
-    expect(mapPropertyType({ type: "cipherText" })).toBeUndefined();
+    ).toThrowError(
+      'Can only map vectors with exactly one "supportsSearchWith", found 0',
+    );
   });
 });
 
@@ -206,14 +295,14 @@ describe("mapActionParameterType", () => {
     );
   });
 
-  it("returns undefined for unsupported types", () => {
-    expect(
+  it("throws for unsupported types", () => {
+    expect(() =>
       mapActionParameterType({
         type: "vector",
         dimension: 1,
         supportsSearchWith: [],
       }),
-    ).toBeUndefined();
+    ).toThrowError("Cannot map vector parameter type: no maker equivalent");
   });
 });
 
@@ -304,6 +393,61 @@ describe("writeImportedOntology", () => {
     queryTypes: {},
     valueTypes: {},
   };
+
+  it("imports canonical SPT dependencies through generated object proxies", async () => {
+    const sptApiName = "com.example.fullName";
+    writeImportedOntology(
+      {
+        ...sampleMetadata,
+        objectTypes: {
+          Employee: {
+            ...sampleMetadata.objectTypes.Employee,
+            sharedPropertyTypeMapping: { [sptApiName]: "fullName" },
+          },
+        },
+        sharedPropertyTypes: {
+          [sptApiName]: {
+            apiName: sptApiName,
+            rid: "ri.ontology.main.shared-property-type.full-name",
+            displayName: "Canonical Full Name",
+            description: "Canonical description",
+            dataType: {
+              type: "array",
+              subType: { type: "string" },
+              reducers: [],
+            },
+            typeClasses: [],
+          },
+        },
+      },
+      TEST_OUTPUT_DIR,
+    );
+
+    await defineOntology(
+      "com.local.",
+      async () => {
+        const { employee }: { employee: ObjectType } = await import(
+          pathToFileURL(
+            path.join(TEST_OUTPUT_DIR, "codegen/object-types/employee.ts"),
+          ).href
+        );
+        expect(employee.apiName).toBe("com.example.Employee");
+      },
+      undefined,
+    );
+
+    expect(getImportedTypes().SHARED_PROPERTY_TYPE).toEqual({
+      [sptApiName]: {
+        __type: "SHARED_PROPERTY_TYPE",
+        apiName: sptApiName,
+        nonNameSpacedApiName: "fullName",
+        displayName: "Canonical Full Name",
+        description: "Canonical description",
+        type: "string",
+        array: true,
+      },
+    });
+  });
 
   it("generates object type files", () => {
     writeImportedOntology(sampleMetadata, TEST_OUTPUT_DIR);

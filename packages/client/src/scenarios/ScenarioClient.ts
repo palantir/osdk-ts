@@ -25,8 +25,8 @@ import type {
 import { OntologyScenarios } from "@osdk/foundry.ontologies";
 
 import { additionalContext, type Client } from "../Client.js";
-import { createClientWithScenario } from "../createClient.js";
-import type { MinimalClient } from "../MinimalClientContext.js";
+import { createClientFromContext } from "../createClient.js";
+import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 
 /**
  * The set of many-to-many link types modified within a scenario for one source object type. Returned as part of
@@ -90,6 +90,11 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
    * The scenario RID this client is scoped to.
    */
   getScenarioReference(): string;
+
+  /**
+   * Rebase this scenario onto the latest data from its base
+   */
+  rebase(): Promise<void>;
 
   /**
    * List the object types and many-to-many link types that have been modified within this scenario. Useful as a
@@ -226,8 +231,8 @@ export function isScenarioClient(
 /**
  * Shared internal builder used by both {@link withScenario} and {@link createScenario}. Throws if the parent client
  * is already inside a scenario. If the parent client has an active transaction, the transaction is ignored (a warning
- * is logged) and the client is scoped to the scenario instead. Constructs a fresh {@link Client} via
- * `createClientWithScenario` and decorates it with {@link EXPERIMENTAL_ScenarioClient}-only methods.
+ * is logged) and the client is scoped to the scenario instead. Derives a {@link Client} from the parent's context via
+ * `createClientFromContext` and decorates it with {@link EXPERIMENTAL_ScenarioClient}-only methods.
  *
  * @internal
  */
@@ -249,22 +254,22 @@ export function buildScenarioClient(
     );
   }
 
-  const inner: Client = createClientWithScenario(
+  const inner: Client = createClientFromContext({
+    ...ctx,
+    transactionId: undefined,
+    flushEdits: undefined,
     scenarioRid,
-    ctx.baseUrl,
-    ctx.ontologyRid,
-    ctx.tokenProvider,
-    {
-      logger: ctx.logger,
-      // `?? null` so the scenario client inherits the parent's already-resolved
-      // branch rather than re-resolving from the environment. A parent that
-      // resolved to no branch must stay on the default branch here too.
-      UNSTABLE_DO_NOT_USE_BRANCH: ctx.branch ?? null,
-    },
-    ctx.fetch,
-  );
+    clientCacheKey: {} as ClientCacheKey,
+  });
 
   const innerCtx: MinimalClient = inner[additionalContext];
+
+  async function rebase(): Promise<void> {
+    const ontologyRid = await innerCtx.ontologyRid;
+    await OntologyScenarios.rebaseScenario(innerCtx, ontologyRid, scenarioRid, {
+      preview: true,
+    });
+  }
 
   async function getEditedEntityTypes(): Promise<ScenarioEditedEntityTypes> {
     const ontologyRid = await innerCtx.ontologyRid;
@@ -472,6 +477,9 @@ export function buildScenarioClient(
   return Object.defineProperties(inner, {
     getScenarioReference: {
       value: () => scenarioRid,
+    },
+    rebase: {
+      value: rebase,
     },
     getEditedEntityTypes: {
       value: getEditedEntityTypes,

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  OntologyModifyRequest as _api_OntologyModifyRequest,
-  OntologyModifyResponse as _api_OntologyModifyResponse,
-} from "../__components.js";
+import type { OntologyModifyRequest as _api_OntologyModifyRequest } from "../__components.js";
+import type { OntologyModifyResponse as _api_OntologyModifyResponse } from "../__components.js";
 
 /**
  * Endpoint to modify Ontology entities.

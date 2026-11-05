@@ -25,6 +25,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
 import { deepFreeze } from "../util/deepFreeze.js";
 import { loadActionMetadata } from "./loadActionMetadata.js";
+import { loadAgentMetadata } from "./loadAgentMetadata.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
 import { loadInterfaceMetadata } from "./loadInterfaceMetadata.js";
 import { loadQueryMetadata } from "./loadQueryMetadata.js";
@@ -99,22 +100,20 @@ export const createStandardOntologyProviderFactory: (
       };
     }
 
-    function makeQueryGetter(
+    function makeVersionedGetter<N extends {}>(
       client: MinimalClient,
       fn: (
         client: MinimalClient,
         key: string,
         skipCache?: boolean,
-      ) => Promise<QueryMetadata>,
+      ) => Promise<N>,
     ) {
-      const queryCache = createAsyncClientCache<string, QueryMetadata>(
-        (client, key) => {
-          return fn(client, key);
-        },
-      );
+      const cache = createAsyncClientCache<string, N>((client, key) => {
+        return fn(client, key);
+      });
       return async (apiName: string, version?: string) => {
         const key = version ? `${apiName}:${version}` : apiName;
-        return await queryCache.get(client, key);
+        return await cache.get(client, key);
       };
     }
 
@@ -122,7 +121,8 @@ export const createStandardOntologyProviderFactory: (
       getObjectDefinition: makeGetter(loadObject),
       getInterfaceDefinition: makeGetter(loadInterface),
       getActionDefinition: makeGetter(loadAction),
-      getQueryDefinition: makeQueryGetter(client, loadQuery),
+      getQueryDefinition: makeVersionedGetter(client, loadQuery),
+      getAgentDefinition: makeVersionedGetter(client, loadAgentMetadata),
     };
     return ret;
   };

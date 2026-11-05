@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyRid as _api_OntologyRid } from "../__components.js";
-import type {
-  LoadResourceAssociationsRequest as _api_association_metadata_LoadResourceAssociationsRequest,
-  LoadResourceAssociationsResponse as _api_association_metadata_LoadResourceAssociationsResponse,
-} from "../association/metadata/__components.js";
+import type { LoadResourceAssociationsRequest as _api_association_metadata_LoadResourceAssociationsRequest } from "../association/metadata/__components.js";
+import type { LoadResourceAssociationsResponse as _api_association_metadata_LoadResourceAssociationsResponse } from "../association/metadata/__components.js";
 
 /**
  * Endpoint to load the ontology associations linked to the requested resources

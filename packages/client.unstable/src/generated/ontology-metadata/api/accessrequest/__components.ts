@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import type {
-  AccessRequestRid as _api_AccessRequestRid,
-  AccessRequestVersion as _api_AccessRequestVersion,
-  AccessSubRequestRid as _api_AccessSubRequestRid,
-  AccessSubRequestVersion as _api_AccessSubRequestVersion,
-  ActionTypeRid as _api_ActionTypeRid,
-  GroupId as _api_GroupId,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  LinkTypeRid as _api_LinkTypeRid,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  PrincipalId as _api_PrincipalId,
-  RoleId as _api_RoleId,
-  SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
-  TypeGroupRid as _api_TypeGroupRid,
-} from "../__components.js";
+import type { AccessRequestRid as _api_AccessRequestRid } from "../__components.js";
+import type { AccessRequestVersion as _api_AccessRequestVersion } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { TypeGroupRid as _api_TypeGroupRid } from "../__components.js";
+import type { AccessSubRequestRid as _api_AccessSubRequestRid } from "../__components.js";
+import type { AccessSubRequestVersion as _api_AccessSubRequestVersion } from "../__components.js";
+import type { GroupId as _api_GroupId } from "../__components.js";
+import type { PrincipalId as _api_PrincipalId } from "../__components.js";
+import type { RoleId as _api_RoleId } from "../__components.js";
 
 /**
  * Metadata pertaining to a single access request.

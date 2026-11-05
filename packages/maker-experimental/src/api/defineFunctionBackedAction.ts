@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import type { ActionStatus, ActionType } from "@osdk/maker";
-import { defineAction, kebab } from "@osdk/maker";
+import type {
+  ActionStatus,
+  ActionType,
+  BlueprintIcon,
+  DefaultFormat,
+  EntityPermission,
+  SubmissionMetadata,
+} from "@osdk/maker";
+import { defineAction } from "@osdk/maker";
 
 export type FunctionBackedActionTypeUserDefinition = {
   functionApiName: string;
@@ -23,17 +30,21 @@ export type FunctionBackedActionTypeUserDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  defaultFormat?: DefaultFormat;
+  enableLayoutSwitch?: boolean;
+  submissionMetadata?: SubmissionMetadata;
+  permission?: EntityPermission;
+  icon?: { locator: BlueprintIcon; color: string };
 };
 
 export function defineFunctionBackedAction(
   def: FunctionBackedActionTypeUserDefinition,
 ): ActionType {
-  const actionApiName =
-    def.apiName ?? `function-action-${kebab(def.functionApiName)}`;
   return defineAction({
     apiName: def.apiName ?? `${def.functionApiName.toLowerCase()}-action`,
     displayName: def.displayName ?? `Function action ${def.functionApiName}`,
     description: def.description,
+    ...(def.permission !== undefined && { permission: def.permission }),
     rules: [
       {
         type: "functionRule",
@@ -60,5 +71,13 @@ export function defineFunctionBackedAction(
         },
       ],
     },
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch && {
+      enableLayoutSwitch: def.enableLayoutSwitch,
+    }),
+    ...(def.submissionMetadata && {
+      submissionMetadata: def.submissionMetadata,
+    }),
+    ...(def.icon && { icon: def.icon }),
   });
 }

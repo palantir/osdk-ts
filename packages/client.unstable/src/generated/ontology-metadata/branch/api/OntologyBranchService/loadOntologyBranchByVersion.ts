@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  LoadOntologyBranchByVersionRequest as _branch_api_LoadOntologyBranchByVersionRequest,
-  LoadOntologyBranchByVersionResponse as _branch_api_LoadOntologyBranchByVersionResponse,
-} from "../__components.js";
+import type { LoadOntologyBranchByVersionRequest as _branch_api_LoadOntologyBranchByVersionRequest } from "../__components.js";
+import type { LoadOntologyBranchByVersionResponse as _branch_api_LoadOntologyBranchByVersionResponse } from "../__components.js";
 
 /**
  * Load an existing branch with the provided OntologyVersion.

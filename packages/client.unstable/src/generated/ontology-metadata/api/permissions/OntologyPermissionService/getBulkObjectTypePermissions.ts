@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetBulkObjectTypePermissionsRequest as _api_permissions_GetBulkObjectTypePermissionsRequest,
-  GetBulkObjectTypePermissionsResponse as _api_permissions_GetBulkObjectTypePermissionsResponse,
-} from "../__components.js";
+import type { GetBulkObjectTypePermissionsRequest as _api_permissions_GetBulkObjectTypePermissionsRequest } from "../__components.js";
+import type { GetBulkObjectTypePermissionsResponse as _api_permissions_GetBulkObjectTypePermissionsResponse } from "../__components.js";
 
 /**
  * Returns which permissions the user has on the ObjectTypes provided. Limited to at most 500 entries per call.

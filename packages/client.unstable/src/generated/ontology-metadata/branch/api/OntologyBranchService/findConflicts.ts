@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
-import type {
-  FindConflictsRequest as _branch_api_FindConflictsRequest,
-  FindConflictsResponse as _branch_api_FindConflictsResponse,
-} from "../__components.js";
+import type { FindConflictsRequest as _branch_api_FindConflictsRequest } from "../__components.js";
+import type { FindConflictsResponse as _branch_api_FindConflictsResponse } from "../__components.js";
 
 /**
  * Endpoint to determine if there are conflicts for entities between the branch with the provided

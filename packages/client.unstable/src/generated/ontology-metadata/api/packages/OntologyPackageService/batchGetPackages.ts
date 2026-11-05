@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  BatchGetPackagesRequest as _api_packages_BatchGetPackagesRequest,
-  BatchGetPackagesResponse as _api_packages_BatchGetPackagesResponse,
-} from "../__components.js";
+import type { BatchGetPackagesRequest as _api_packages_BatchGetPackagesRequest } from "../__components.js";
+import type { BatchGetPackagesResponse as _api_packages_BatchGetPackagesResponse } from "../__components.js";
 
 /**
  * Gets packages by Rid. Resources which have no package associated will not have

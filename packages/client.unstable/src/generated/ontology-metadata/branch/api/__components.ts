@@ -14,60 +14,56 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeRid as _api_ActionTypeRid,
-  BasePropertyType as _api_BasePropertyType,
-  BranchId as _api_BranchId,
-  BuilderPipelineRid as _api_BuilderPipelineRid,
-  ColumnName as _api_ColumnName,
-  DataConstraints as _api_DataConstraints,
-  DatasourceRid as _api_DatasourceRid,
-  FoundryFieldType as _api_FoundryFieldType,
-  GenericOntologyMetadataError as _api_GenericOntologyMetadataError,
-  GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
-  GlobalBranchRid as _api_GlobalBranchRid,
-  InterfaceActionTypeConstraintRidOrIdInRequest as _api_InterfaceActionTypeConstraintRidOrIdInRequest,
-  InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
-  InterfaceParameterConstraintRidOrIdInRequest as _api_InterfaceParameterConstraintRidOrIdInRequest,
-  InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest,
-  InterfacePropertyTypeType as _api_InterfacePropertyTypeType,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
-  LinkedEntityTypeRidOrIdInRequest as _api_LinkedEntityTypeRidOrIdInRequest,
-  LinkTypeId as _api_LinkTypeId,
-  LinkTypeRid as _api_LinkTypeRid,
-  MarkingId as _api_MarkingId,
-  MarkingType as _api_MarkingType,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
-  ObjectTypeId as _api_ObjectTypeId,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyProposalRid as _api_OntologyProposalRid,
-  OntologyRid as _api_OntologyRid,
-  OntologyVersion as _api_OntologyVersion,
-  OrganizationRid as _api_OrganizationRid,
-  ParameterRid as _api_ParameterRid,
-  PropertyTypeId as _api_PropertyTypeId,
-  PropertyTypeRid as _api_PropertyTypeRid,
-  RestrictedViewRid as _api_RestrictedViewRid,
-  RetentionConfig as _api_RetentionConfig,
-  RuleSetRid as _api_RuleSetRid,
-  SchemaVersion as _api_SchemaVersion,
-  SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
-  SharedPropertyTypeRidOrIdInRequest as _api_SharedPropertyTypeRidOrIdInRequest,
-  StructFieldRid as _api_StructFieldRid,
-  TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
-  Type as _api_Type,
-  TypeClass as _api_TypeClass,
-  TypeGroupRid as _api_TypeGroupRid,
-  UserId as _api_UserId,
-  ValueTypeReference as _api_ValueTypeReference,
-} from "../../api/__components.js";
-import type {
-  ManyToManyLinkTypeBranchIndexingConfiguration as _api_modification_ManyToManyLinkTypeBranchIndexingConfiguration,
-  ModificationType as _api_modification_ModificationType,
-  ObjectTypeBranchIndexingConfiguration as _api_modification_ObjectTypeBranchIndexingConfiguration,
-} from "../../api/modification/__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../../api/__components.js";
+import type { PropertyTypeRid as _api_PropertyTypeRid } from "../../api/__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../api/__components.js";
+import type { BuilderPipelineRid as _api_BuilderPipelineRid } from "../../api/__components.js";
+import type { OntologyProposalRid as _api_OntologyProposalRid } from "../../api/__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../../api/__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../../api/__components.js";
+import type { ObjectTypeId as _api_ObjectTypeId } from "../../api/__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../../api/__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../../api/__components.js";
+import type { RuleSetRid as _api_RuleSetRid } from "../../api/__components.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../../api/__components.js";
+import type { TypeGroupRid as _api_TypeGroupRid } from "../../api/__components.js";
+import type { InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest } from "../../api/__components.js";
+import type { InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest } from "../../api/__components.js";
+import type { SharedPropertyTypeRidOrIdInRequest as _api_SharedPropertyTypeRidOrIdInRequest } from "../../api/__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../../api/__components.js";
+import type { BranchId as _api_BranchId } from "../../api/__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../../api/__components.js";
+import type { BasePropertyType as _api_BasePropertyType } from "../../api/__components.js";
+import type { LinkTypeId as _api_LinkTypeId } from "../../api/__components.js";
+import type { ValueTypeReference as _api_ValueTypeReference } from "../../api/__components.js";
+import type { InterfaceActionTypeConstraintRidOrIdInRequest as _api_InterfaceActionTypeConstraintRidOrIdInRequest } from "../../api/__components.js";
+import type { ParameterRid as _api_ParameterRid } from "../../api/__components.js";
+import type { ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName } from "../../api/__components.js";
+import type { GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid } from "../../api/__components.js";
+import type { RestrictedViewRid as _api_RestrictedViewRid } from "../../api/__components.js";
+import type { ColumnName as _api_ColumnName } from "../../api/__components.js";
+import type { InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest } from "../../api/__components.js";
+import type { InterfaceParameterConstraintRidOrIdInRequest as _api_InterfaceParameterConstraintRidOrIdInRequest } from "../../api/__components.js";
+import type { DataConstraints as _api_DataConstraints } from "../../api/__components.js";
+import type { StructFieldRid as _api_StructFieldRid } from "../../api/__components.js";
+import type { LinkedEntityTypeRidOrIdInRequest as _api_LinkedEntityTypeRidOrIdInRequest } from "../../api/__components.js";
+import type { InterfacePropertyTypeType as _api_InterfacePropertyTypeType } from "../../api/__components.js";
+import type { Type as _api_Type } from "../../api/__components.js";
+import type { TypeClass as _api_TypeClass } from "../../api/__components.js";
+import type { FoundryFieldType as _api_FoundryFieldType } from "../../api/__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../../api/__components.js";
+import type { MarkingId as _api_MarkingId } from "../../api/__components.js";
+import type { MarkingType as _api_MarkingType } from "../../api/__components.js";
+import type { GlobalBranchRid as _api_GlobalBranchRid } from "../../api/__components.js";
+import type { RetentionConfig as _api_RetentionConfig } from "../../api/__components.js";
+import type { UserId as _api_UserId } from "../../api/__components.js";
+import type { SchemaVersion as _api_SchemaVersion } from "../../api/__components.js";
+import type { OrganizationRid as _api_OrganizationRid } from "../../api/__components.js";
+import type { TimeSeriesSyncRid as _api_TimeSeriesSyncRid } from "../../api/__components.js";
+import type { GenericOntologyMetadataError as _api_GenericOntologyMetadataError } from "../../api/__components.js";
+import type { ManyToManyLinkTypeBranchIndexingConfiguration as _api_modification_ManyToManyLinkTypeBranchIndexingConfiguration } from "../../api/modification/__components.js";
+import type { ObjectTypeBranchIndexingConfiguration as _api_modification_ObjectTypeBranchIndexingConfiguration } from "../../api/modification/__components.js";
+import type { ModificationType as _api_modification_ModificationType } from "../../api/modification/__components.js";
 import type { LinkTypeSide as _api_types_LinkTypeSide } from "../../api/types/__components.js";
 import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../../api/validation/__components.js";
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../workflow/api/__components.js";
@@ -290,13 +286,6 @@ export interface CreateOntologyServiceBranchResponse {
   ontologyBranch: OntologyBranch;
   ontologyBranchRid: _api_OntologyBranchRid;
 }
-/**
- * A datasource specifies a property security group configuration with no property security groups.
- */
-export interface DatasourceHasEmptyPropertySecurityGroupsConstraintError {
-  datasourceRid: _api_DatasourceRid;
-  objectTypeRid: _api_ObjectTypeRid;
-}
 export interface DatasourceModificationConstraintError_objectTypeDatasourceWithoutPrimaryKeyColumn {
   type: "objectTypeDatasourceWithoutPrimaryKeyColumn";
   objectTypeDatasourceWithoutPrimaryKeyColumn: ObjectTypeDatasourceWithoutPrimaryKeyColumnError;
@@ -446,6 +435,11 @@ export interface DatasourceModificationConstraintError_deletedDerivedDatasourceN
   type: "deletedDerivedDatasourceNotAllowed";
   deletedDerivedDatasourceNotAllowed: DeletedDerivedDatasourceNotAllowedError;
 }
+
+export interface DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveDecimalProperties {
+  type: "objectTypeWithStreamDatasourceCannotHaveDecimalProperties";
+  objectTypeWithStreamDatasourceCannotHaveDecimalProperties: ObjectTypeWithStreamDatasourceCannotHaveDecimalPropertiesError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -479,7 +473,8 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations
   | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidTimeBasedRetention
   | DatasourceModificationConstraintError_objectTypeCannotBeMdoWithStreamingDatasource
-  | DatasourceModificationConstraintError_deletedDerivedDatasourceNotAllowed;
+  | DatasourceModificationConstraintError_deletedDerivedDatasourceNotAllowed
+  | DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveDecimalProperties;
 
 /**
  * Cannot change this datasource from a type that supports property security groups to one that does not,
@@ -519,9 +514,13 @@ export interface DerivedPropertyBaseTypeChangedWhenObjectTypeIsNotModifiedError 
  */
 export interface DerivedPropertyDefinitionDoesNotMatchSharedPropertyTypeError {
   derivedPropertyTypeBaseType: _api_BasePropertyType;
+  derivedPropertyTypeIsArray: boolean;
+  derivedPropertyTypeStructFieldTypes: Array<_api_BasePropertyType>;
   objectTypeRid: _api_ObjectTypeRid;
   propertyTypeRid: _api_PropertyTypeRid;
   sharedPropertyTypeBaseType: _api_BasePropertyType;
+  sharedPropertyTypeIsArray: boolean;
+  sharedPropertyTypeStructFieldTypes: Array<_api_BasePropertyType>;
 }
 /**
  * The type of the foreign property type that the derived property definition is deriving from is not
@@ -797,6 +796,16 @@ export interface FoundrySchemaConstraintError_schemaForLinkTypeDatasourceNotFoun
   type: "schemaForLinkTypeDatasourceNotFound";
   schemaForLinkTypeDatasourceNotFound: SchemaForLinkTypeDatasourceNotFoundError;
 }
+
+export interface FoundrySchemaConstraintError_unresolvedPropertyMappingForObjectType {
+  type: "unresolvedPropertyMappingForObjectType";
+  unresolvedPropertyMappingForObjectType: UnresolvedPropertyMappingForObjectTypeError;
+}
+
+export interface FoundrySchemaConstraintError_unresolvedPropertyMappingForLinkType {
+  type: "unresolvedPropertyMappingForLinkType";
+  unresolvedPropertyMappingForLinkType: UnresolvedPropertyMappingForLinkTypeError;
+}
 /**
  * A type representing the Validation Errors associated with Foundry Schema validation.
  */
@@ -810,7 +819,9 @@ export type FoundrySchemaConstraintError =
   | FoundrySchemaConstraintError_linkTypePropertyIncompatibleBackingColumnType
   | FoundrySchemaConstraintError_linkTypePropertiesReferenceSameColumn
   | FoundrySchemaConstraintError_schemaForObjectTypeDatasourceNotFound
-  | FoundrySchemaConstraintError_schemaForLinkTypeDatasourceNotFound;
+  | FoundrySchemaConstraintError_schemaForLinkTypeDatasourceNotFound
+  | FoundrySchemaConstraintError_unresolvedPropertyMappingForObjectType
+  | FoundrySchemaConstraintError_unresolvedPropertyMappingForLinkType;
 
 /**
  * An error representing when a geotime series datasource references properties that do not exist on the object type.
@@ -835,6 +846,11 @@ export interface GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeries
   geotimeSeriesReferencePropertyTypeHasNoDatasources: GeotimeSeriesReferencePropertyTypeHasNoDatasourcesError;
 }
 
+export interface GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeriesReferencePropertyTypeHasMultipleDatasources {
+  type: "geotimeSeriesReferencePropertyTypeHasMultipleDatasources";
+  geotimeSeriesReferencePropertyTypeHasMultipleDatasources: GeotimeSeriesReferencePropertyTypeHasMultipleDatasourcesError;
+}
+
 export interface GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeriesDatasourceDoesNotReferenceExistingProperties {
   type: "geotimeSeriesDatasourceDoesNotReferenceExistingProperties";
   geotimeSeriesDatasourceDoesNotReferenceExistingProperties: GeotimeSeriesDatasourceDoesNotReferenceExistingPropertiesError;
@@ -849,9 +865,19 @@ export interface GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeries
  */
 export type GeotimeSeriesReferencePropertyTypeConstraintError =
   | GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeriesReferencePropertyTypeHasNoDatasources
+  | GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeriesReferencePropertyTypeHasMultipleDatasources
   | GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeriesDatasourceDoesNotReferenceExistingProperties
   | GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeriesDatasourceDoesNotReferenceGeotimeSeriesReferenceProperties;
 
+/**
+ * A geotemporal series reference property type must have exactly one geotemporal series datasource.
+ */
+export interface GeotimeSeriesReferencePropertyTypeHasMultipleDatasourcesError {
+  datasourceRids: Array<_api_DatasourceRid>;
+  geotimeSeriesIntegrationRids: Array<_api_GeotimeSeriesIntegrationRid>;
+  geotimeSeriesReferencePropertyTypeRid: _api_PropertyTypeRid;
+  objectType: _api_ObjectTypeRid;
+}
 /**
  * An error representing when geotime series reference properties are not referenced by any datasources.
  */
@@ -1563,8 +1589,8 @@ export interface MarkingPropertiesMustBeBackedByDatasourceWithGranularPermission
   propertyTypeRid?: _api_PropertyTypeRid | null | undefined;
 }
 /**
- * A marking property must be referenced by a granular policy in a property security group, or must
- * map to a column that is referenced by an RV granular policy.
+ * A marking property must be referenced by a granular policy in an object or property security policy, or
+ * must map to a column that is referenced by an RV granular policy.
  */
 export interface MarkingPropertiesMustBeReferencedInGranularPolicyError {
   objectTypeId?: _api_ObjectTypeId | null | undefined;
@@ -1695,7 +1721,7 @@ export interface MissingDeletedPropertyTypeSchemaMigrationError {
   type: _api_Type;
 }
 /**
- * The object type implementing the interface has a property fulfilling the shared property that does not exist.
+ * The object type implementing the interface has a property fulfilling the interface property that does not exist.
  */
 export interface MissingImplementingPropertyError {
   interfacePropertyTypeRidOrIdInRequest: _api_InterfacePropertyTypeRidOrIdInRequest;
@@ -1825,9 +1851,9 @@ export type NumberOfDatasourcesConstraintError =
   | NumberOfDatasourcesConstraintError_linkTypesHaveMultipleDatasources;
 
 /**
- * An object type implements an interface by explicitly mapping properties. One of the SPTs on the interface has
- * the same API name as a local property on the object type without the two being explicitly mapped. This is
- * disallowed.
+ * An object type has a local property with the same API name as an interface property that is implemented by a
+ * different property. A local property may only share an interface property's API name when it is the property
+ * used to implement that interface property. This is disallowed.
  */
 export interface ObjectAndInterfacePropertyTypesConflictingApiNamesError {
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
@@ -1950,6 +1976,15 @@ export interface ObjectTypesHaveTooManyDatasourcesError {
   maxDatasources: number;
   numberOfDatasources: number;
   objectType: _api_ObjectTypeRid;
+}
+/**
+ * Stream backed ObjectTypes cannot have decimal properties.
+ */
+export interface ObjectTypeWithStreamDatasourceCannotHaveDecimalPropertiesError {
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
+  propertyTypeIds: Array<_api_PropertyTypeId>;
+  propertyTypeRids: Array<_api_PropertyTypeRid>;
 }
 /**
  * Object types with stream datasources cannot have materializations. If you are switching from a batch to stream datasource, please unlink your materializations first.
@@ -2132,7 +2167,7 @@ export interface PrimaryAndForeignKeyTypeMismatchError {
   primaryKeyPropertyType: _api_BasePropertyType;
 }
 /**
- * Indicates that there is a primary key change without a DropAllPatchesMigration.
+ * A primary key change requires either a dropAllPatches or a nonRevertible(permanentlyDeletePatches) schema migration.
  */
 export interface PrimaryKeyChangeMigrationError {
   existingPrimaryKeys: Array<_api_PropertyTypeRid>;
@@ -2194,11 +2229,6 @@ export interface PropertySecurityGroupsConstraintError_datasourceTypeDowngradeWi
   type: "datasourceTypeDowngradeWithPropertySecurityGroups";
   datasourceTypeDowngradeWithPropertySecurityGroups: DatasourceTypeDowngradeWithPropertySecurityGroupsConstraintError;
 }
-
-export interface PropertySecurityGroupsConstraintError_datasourceHasEmptyPropertySecurityGroups {
-  type: "datasourceHasEmptyPropertySecurityGroups";
-  datasourceHasEmptyPropertySecurityGroups: DatasourceHasEmptyPropertySecurityGroupsConstraintError;
-}
 /**
  * Errors related to validation of property security groups.
  */
@@ -2210,8 +2240,7 @@ export type PropertySecurityGroupsConstraintError =
   | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupNames
   | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupSecurityPolicies
   | PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError
-  | PropertySecurityGroupsConstraintError_datasourceTypeDowngradeWithPropertySecurityGroups
-  | PropertySecurityGroupsConstraintError_datasourceHasEmptyPropertySecurityGroups;
+  | PropertySecurityGroupsConstraintError_datasourceTypeDowngradeWithPropertySecurityGroups;
 
 /**
  * Validation error using a value type with a property type.
@@ -2507,6 +2536,24 @@ export interface UnmappedPropertiesInPropertySecurityGroupError {
   datasourceRid?: _api_DatasourceRid | null | undefined;
   objectTypeRid: _api_ObjectTypeRid;
   unmappedPropertyTypeIds: Array<_api_PropertyTypeId>;
+}
+/**
+ * An error representing when a many-to-many link type datasource column mapping references a property that cannot be resolved on the object type it is mapped from.
+ */
+export interface UnresolvedPropertyMappingForLinkTypeError {
+  linkType: _api_LinkTypeRid;
+  objectType: _api_ObjectTypeRid;
+  propertyType?: _api_PropertyTypeRid | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+}
+/**
+ * An error representing when an object type datasource column mapping references a property that does not exist on the object type (or whose type cannot be resolved).
+ */
+export interface UnresolvedPropertyMappingForObjectTypeError {
+  objectType: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyType?: _api_PropertyTypeRid | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
 }
 export interface ValidateOntologyBranchRequest {}
 export interface ValidateOntologyBranchResponse {

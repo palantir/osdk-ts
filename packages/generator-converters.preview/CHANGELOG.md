@@ -1,5 +1,126 @@
 # @osdk/generator-converters.preview
 
+## 0.60.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/foundry-sdk-generator@2.86.0
+  - @osdk/generator-converters.ontologyir@2.86.0
+
+## 0.59.0
+
+### Minor Changes
+
+- 34c76cd: Emit `createOrModifyObjectV2` logic rules with `objectToModify` and converted property arguments so the local preview can apply create-or-modify actions.
+
+### Patch Changes
+
+- Updated dependencies [94e35b4]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+  - @osdk/foundry-sdk-generator@2.85.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+
+## 0.58.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/foundry-sdk-generator@2.83.0
+  - @osdk/generator-converters.ontologyir@2.83.0
+
+## 0.57.0
+
+### Patch Changes
+
+- Updated dependencies [553461f]
+  - @osdk/foundry-sdk-generator@2.82.0
+  - @osdk/client.unstable@2.82.0
+  - @osdk/generator-converters.ontologyir@2.82.0
+
+## 0.56.0
+
+### Minor Changes
+
+- bc63bd9: Include imported action types in preview
+
+### Patch Changes
+
+- Updated dependencies [f28586c]
+- Updated dependencies [8bc6e4a]
+  - @osdk/generator-converters.ontologyir@2.81.0
+  - @osdk/foundry-sdk-generator@2.81.0
+  - @osdk/client.unstable@2.81.0
+
+## 0.55.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+  - @osdk/client.unstable@2.78.0
+  - @osdk/foundry-sdk-generator@2.78.0
+  - @osdk/generator-converters.ontologyir@2.78.0
+
+## 0.54.0
+
+### Minor Changes
+
+- 6f2b7e6: Remove package.json creation duplication from the OSDK generators
+
+### Patch Changes
+
+- Updated dependencies [6f2b7e6]
+  - @osdk/foundry-sdk-generator@2.77.0
+  - @osdk/client.unstable@2.77.0
+  - @osdk/generator-converters.ontologyir@2.77.0
+
+## 0.53.0
+
+### Minor Changes
+
+- a9fafd0: Fix link attachment for imported objects
+
+### Patch Changes
+
+- Updated dependencies [43dd010]
+- Updated dependencies [a9fafd0]
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/generator-converters.ontologyir@2.76.0
+  - @osdk/client.unstable@2.76.0
+  - @osdk/generator@2.76.0
+
+## 0.52.0
+
+### Minor Changes
+
+- aa9fe40: Support intermediary link types
+- e316cb7: Write the TypeScript functions runtime metadata with the plural ontologyRids key required by functions-typescript-runtime 0.311.0 and above
+
+### Patch Changes
+
+- Updated dependencies [aa9fe40]
+- Updated dependencies [f2e0591]
+  - @osdk/generator-converters.ontologyir@2.74.0
+  - @osdk/generator@2.74.0
+  - @osdk/client.unstable@2.74.0
+
+## 0.51.0
+
+### Minor Changes
+
+- 9fa9a26: Support interface types in functions preview
+
 ## 0.50.0
 
 ### Minor Changes

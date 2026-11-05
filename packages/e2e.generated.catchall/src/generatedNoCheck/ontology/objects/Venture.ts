@@ -63,6 +63,7 @@ export interface Venture extends $ObjectTypeDefinition {
     props: Venture.Props;
     linksType: Venture.Links;
     strictProps: Venture.StrictProps;
+    requiredProps: 'ventureId';
     apiName: 'Venture';
     description: 'A venture';
     displayName: 'Venture';

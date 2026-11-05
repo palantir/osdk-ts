@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
-import type {
-  SetOntologyBranchLockRequest as _branch_api_SetOntologyBranchLockRequest,
-  SetOntologyBranchLockResponse as _branch_api_SetOntologyBranchLockResponse,
-} from "../__components.js";
+import type { SetOntologyBranchLockRequest as _branch_api_SetOntologyBranchLockRequest } from "../__components.js";
+import type { SetOntologyBranchLockResponse as _branch_api_SetOntologyBranchLockResponse } from "../__components.js";
 
 /**
  * Endpoint for setting lock metadata for branches. Currently only functional for Builder branches.

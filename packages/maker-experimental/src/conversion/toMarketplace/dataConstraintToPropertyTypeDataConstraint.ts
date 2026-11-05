@@ -14,55 +14,50 @@
  * limitations under the License.
  */
 
-import type {
-  DataConstraint,
-  PropertyTypeDataConstraints,
-  PropertyTypeDataConstraints_array,
-  PropertyTypeDataConstraints_boolean,
-  PropertyTypeDataConstraints_date,
-  PropertyTypeDataConstraints_decimal,
-  PropertyTypeDataConstraints_double,
-  PropertyTypeDataConstraints_float,
-  PropertyTypeDataConstraints_integer,
-  PropertyTypeDataConstraints_long,
-  PropertyTypeDataConstraints_short,
-  PropertyTypeDataConstraints_string,
-  PropertyTypeDataConstraints_struct,
-  PropertyTypeDataConstraints_timestamp,
-} from "@osdk/client.unstable";
-
-import { convertDataConstraintToDataConstraints } from "./convertDataConstraintToDataConstraints.js";
+import type { PropertyTypeDataConstraints } from "@osdk/client.unstable";
+import type { AuthoringDataConstraint } from "@osdk/maker";
 
 export function dataConstraintToPropertyTypeDataConstraint(
-  dc: DataConstraint,
+  dc: AuthoringDataConstraint,
 ): PropertyTypeDataConstraints {
   switch (dc.type) {
     case "array":
-      return { ...dc } as PropertyTypeDataConstraints_array;
+      return {
+        type: "array",
+        array: {
+          ...dc.array,
+          elementsConstraint:
+            dc.array.elementsConstraint === undefined
+              ? undefined
+              : dataConstraintToPropertyTypeDataConstraint(
+                  dc.array.elementsConstraint,
+                ),
+        },
+      };
 
     case "boolean":
-      return { ...dc } as PropertyTypeDataConstraints_boolean;
+      return { ...dc };
 
     case "binary":
       throw new Error("Binary type constraints are not supported");
 
     case "date":
-      return { ...dc } as PropertyTypeDataConstraints_date;
+      return { ...dc };
 
     case "decimal":
-      return { ...dc } as PropertyTypeDataConstraints_decimal;
+      return { ...dc };
 
     case "double":
-      return { ...dc } as PropertyTypeDataConstraints_double;
+      return { ...dc };
 
     case "float":
-      return { ...dc } as PropertyTypeDataConstraints_float;
+      return { ...dc };
 
     case "integer":
-      return { ...dc } as PropertyTypeDataConstraints_integer;
+      return { ...dc };
 
     case "long":
-      return { ...dc } as PropertyTypeDataConstraints_long;
+      return { ...dc };
 
     case "map":
       throw new Error("Map type constraints are not supported");
@@ -71,10 +66,10 @@ export function dataConstraintToPropertyTypeDataConstraint(
       throw new Error("Nullable constraints are not supported");
 
     case "short":
-      return { ...dc } as PropertyTypeDataConstraints_short;
+      return { ...dc };
 
     case "string":
-      return { ...dc } as PropertyTypeDataConstraints_string;
+      return { ...dc };
 
     case "struct":
       return {
@@ -84,20 +79,52 @@ export function dataConstraintToPropertyTypeDataConstraint(
             Object.entries(dc.struct.elementConstraints).map(
               ([field, constraint]) => [
                 field,
-                convertDataConstraintToDataConstraints(constraint),
+                {
+                  propertyTypeConstraints: [
+                    {
+                      constraints:
+                        dataConstraintToPropertyTypeDataConstraint(constraint),
+                    },
+                  ],
+                },
               ],
             ),
           ),
         },
-      } as PropertyTypeDataConstraints_struct;
+      };
 
     case "structV2":
-      throw new Error("StructV2 constraints are not supported");
+      return {
+        type: "struct",
+        struct: {
+          elementConstraints: Object.fromEntries(
+            Object.entries(dc.structV2.elementConstraints).map(
+              ([field, valueType]) => [
+                field,
+                {
+                  propertyTypeConstraints: valueType.constraints.map(
+                    ({ constraint }) => ({
+                      constraints: dataConstraintToPropertyTypeDataConstraint(
+                        constraint.constraint,
+                      ),
+                      failureMessage: constraint.failureMessage,
+                    }),
+                  ),
+                },
+              ],
+            ),
+          ),
+        },
+      };
 
     case "timestamp":
-      return { ...dc } as PropertyTypeDataConstraints_timestamp;
+      return { ...dc };
 
-    default:
-      throw new Error(`Unknown DataConstraint type: ${(dc as any).type}`);
+    default: {
+      const exhaustiveCheck: never = dc;
+      throw new Error(
+        `Unknown DataConstraint: ${JSON.stringify(exhaustiveCheck)}`,
+      );
+    }
   }
 }

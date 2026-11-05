@@ -32,6 +32,7 @@ import { defineDeleteInterfaceObjectAction } from "../defineDeleteInterfaceObjec
 import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
+import { defineLink } from "../defineLink.js";
 import { defineModifyInterfaceObjectAction } from "../defineModifyInterfaceObjectAction.js";
 import { defineModifyObjectAction } from "../defineModifyObjectAction.js";
 import { defineObject } from "../defineObject.js";
@@ -4161,6 +4162,10 @@ describe("Action Types", () => {
               type: "group",
               name: "deleteValidationGroup",
             },
+            displayMetadata: {
+              failureMessage: "You must belong to the delete group.",
+              typeClasses: [],
+            },
           },
         ],
       });
@@ -4204,11 +4209,37 @@ describe("Action Types", () => {
                         "rules": {
                           "0": {
                             "condition": {
-                              "true": {},
-                              "type": "true",
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "deleteValidationGroup",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
                             },
                             "displayMetadata": {
-                              "failureMessage": "",
+                              "failureMessage": "You must belong to the delete group.",
                               "typeClasses": [],
                             },
                           },
@@ -4314,7 +4345,15 @@ describe("Action Types", () => {
               },
             },
             "blockPermissionInformation": {
-              "actionTypes": {},
+              "actionTypes": {
+                "com.palantir.delete-interface-object-example-interface": {
+                  "restrictionStatus": {
+                    "hasRolesApplied": true,
+                    "ontologyPackageRid": null,
+                    "publicProject": false,
+                  },
+                },
+              },
               "interfaceTypes": {},
               "linkTypes": {},
               "objectTypes": {},
@@ -4392,6 +4431,51 @@ describe("Action Types", () => {
           },
         }
       `);
+    });
+
+    it("Interface delete action validation can reference the target parameter", () => {
+      const exampleInterface = defineInterface({
+        apiName: "exampleInterface",
+        properties: {
+          property1: { type: "string" },
+        },
+      });
+      const matches = {
+        type: "staticValue",
+        staticValue: { type: "null", null: {} },
+      } as const;
+      const deleteAction = defineDeleteInterfaceObjectAction({
+        interfaceType: exampleInterface,
+        actionLevelValidation: [
+          {
+            condition: {
+              type: "parameter",
+              parameterId: DELETE_OBJECT_PARAMETER,
+              matches,
+            },
+          },
+        ],
+      });
+
+      expect(deleteAction.validation).toEqual([
+        {
+          condition: {
+            type: "comparison",
+            comparison: {
+              operator: "EQUALS",
+              left: {
+                type: "parameterId",
+                parameterId: DELETE_OBJECT_PARAMETER,
+              },
+              right: matches,
+            },
+          },
+          displayMetadata: {
+            failureMessage: "Did not satisfy validation",
+            typeClasses: [],
+          },
+        },
+      ]);
     });
 
     it("Interface actions with customizations are properly defined", () => {
@@ -6722,6 +6806,68 @@ describe("Action Types", () => {
         expect(paramIds).toContain("name");
         expect(paramIds).not.toContain("embedding");
       }
+    });
+
+    it("Derived properties are excluded from auto-generated action parameters", () => {
+      const personToParent = defineLink({
+        apiName: "person-to-parent",
+        manyForeignKeyProperty: "parentFk",
+        one: {
+          object: "com.palantir.person",
+          metadata: { apiName: "parent" },
+        },
+        toMany: {
+          object: "com.palantir.person",
+          metadata: { apiName: "child" },
+        },
+      });
+      const objectType = defineObject({
+        titlePropertyApiName: "pk",
+        displayName: "Person",
+        pluralDisplayName: "Persons",
+        apiName: "person",
+        primaryKeyPropertyApiName: "pk",
+        properties: {
+          pk: { type: "string" },
+          parentFk: { type: "string" },
+          siblingIds: { type: "string", array: true },
+        },
+        datasources: [
+          { type: "dataset" },
+          {
+            type: "derived",
+            linkDefinition: [
+              { linkType: personToParent, side: "TARGET" },
+              { linkType: personToParent, side: "SOURCE" },
+            ],
+            propertyMapping: {
+              siblingIds: { type: "collectList", property: "pk", limit: 100 },
+            },
+          },
+        ],
+      });
+
+      const create = defineCreateObjectAction({ objectType });
+      const modify = defineModifyObjectAction({ objectType });
+      const createOrModify = defineCreateOrModifyObjectAction({ objectType });
+
+      for (const action of [create, modify, createOrModify]) {
+        const paramIds = (action.parameters ?? []).map((p) => p.id);
+        expect(paramIds).toContain("parentFk");
+        expect(paramIds).not.toContain("siblingIds");
+      }
+      expect(modify.rules).toEqual([
+        {
+          type: "modifyObjectRule",
+          modifyObjectRule: {
+            objectToModify: MODIFY_OBJECT_PARAMETER,
+            propertyValues: {
+              parentFk: { type: "parameterId", parameterId: "parentFk" },
+            },
+            structFieldValues: {},
+          },
+        },
+      ]);
     });
 
     it("Vector properties cannot be forced into action parameters", () => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata } from "@osdk/api";
+import type { ActionMetadata, TimeSeriesReference } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as Attachments from "@osdk/foundry.ontologies/Attachment";
@@ -34,6 +34,7 @@ import { isScenarioClient } from "../scenarios/ScenarioClient.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
+import { normalizeInterfaceLinkSearchArounds } from "./normalizeInterfaceLinkSearchArounds.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -45,12 +46,16 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
-  actionMetadata: ActionMetadata,
+  parameterType: ActionMetadata.Parameter["type"],
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
     // Sending null over the wire clears the data, whereas undefined is dropped at request time.
     return value;
+  }
+
+  if (parameterType === "decimal" && typeof value === "number") {
+    return String(value);
   }
 
   // arrays and sets are both sent over the wire as arrays
@@ -64,14 +69,14 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValue(value, client, actionMetadata));
+        converted.push(await toDataValue(value, client, parameterType));
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValue(innerValue, client, actionMetadata),
+        await toDataValue(innerValue, client, parameterType),
     );
     return Promise.all(promiseArray);
   }
@@ -81,21 +86,21 @@ export async function toDataValue(
     const attachment = await Attachments.upload(client, value.data, {
       filename: value.name,
     });
-    return await toDataValue(attachment.rid, client, actionMetadata);
+    return await toDataValue(attachment.rid, client, parameterType);
   }
 
   if (isAttachmentFile(value)) {
     const attachment = await Attachments.upload(client, value, {
       filename: value.name as string,
     });
-    return await toDataValue(attachment.rid, client, actionMetadata);
+    return await toDataValue(attachment.rid, client, parameterType);
   }
 
   if (isMediaUpload(value)) {
     const mediaRef = await MediaSets.uploadMedia(client, value.data, {
       filename: value.fileName,
     });
-    return await toDataValue(mediaRef, client, actionMetadata);
+    return await toDataValue(mediaRef, client, parameterType);
   }
 
   if (isMedia(value)) {
@@ -108,19 +113,19 @@ export async function toDataValue(
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(value.__primaryKey, client, actionMetadata);
+    return await toDataValue(value.__primaryKey, client, parameterType);
   }
 
   if (isObjectSpecifiersObject(value)) {
-    return await toDataValue(value.$primaryKey, client, actionMetadata);
+    return await toDataValue(value.$primaryKey, client, parameterType);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
   if (isWireObjectSet(value)) {
-    return value;
+    return normalizeInterfaceLinkSearchArounds(client, value);
   }
   if (isObjectSet(value)) {
-    return getWireObjectSet(value);
+    return normalizeInterfaceLinkSearchArounds(client, getWireObjectSet(value));
   }
 
   if (isInterfaceActionParam(value)) {
@@ -134,16 +139,46 @@ export async function toDataValue(
     return value.getScenarioReference();
   }
 
+  if (isTimeSeriesReference(value)) {
+    if (value.$templateRid != null) {
+      // DerivedTimeSeriesProperty
+      return {
+        templateRid: value.$templateRid,
+        templateVersion: value.$templateVersion,
+      };
+    }
+    if (value.$syncRid != null) {
+      // QualifiedTimeseriesProperty
+      return { seriesId: value.$seriesId, syncRid: value.$syncRid };
+    }
+    // SeriesId (a bare string)
+    return value.$seriesId;
+  }
+
   // TODO (during queries implementation)
   // two dimensional aggregation
   // three dimensional aggregation
 
-  // struct
+  // structs and GeoJSON
   if (typeof value === "object") {
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
-        acc[key] = await toDataValue(structValue, client, actionMetadata);
+        let fieldType = parameterType;
+        if (
+          typeof parameterType === "object" &&
+          parameterType.type === "struct"
+        ) {
+          const fieldDefinition:
+            | ActionMetadata.Parameter["type"]
+            | ActionMetadata.DataType.StructFieldDefinition<ActionMetadata.DataType.BaseActionParameterTypes> =
+            parameterType.struct[key];
+          fieldType =
+            typeof fieldDefinition === "object" && "nullable" in fieldDefinition
+              ? fieldDefinition.type
+              : fieldDefinition;
+        }
+        acc[key] = await toDataValue(structValue, client, fieldType);
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),
@@ -152,4 +187,12 @@ export async function toDataValue(
 
   // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp, object type reference
   return value;
+}
+
+function isTimeSeriesReference(value: unknown): value is TimeSeriesReference {
+  return (
+    typeof value === "object" &&
+    value != null &&
+    ("$seriesId" in value || "$templateRid" in value)
+  );
 }

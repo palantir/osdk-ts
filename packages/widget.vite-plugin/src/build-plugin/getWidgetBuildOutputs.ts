@@ -40,13 +40,15 @@ export async function getWidgetBuildOutputs(
   );
   const extracted = extractBuildOutputs(inputHtmlFilePath);
   const htmlPath = path
-    .relative(buildDir, inputHtmlFilePath)
-    .split(path.sep)
+    .relative(buildDir, inputHtmlFilePath) // e.g. /project/dist/app/index.html -> app/index.html
+    .split(path.sep) // Normalize Windows paths that use `\` instead of `/`
     .join("/");
   const resolveAsset = (src: string): string => {
-    const url = new URL(src, `http://widget.local/${htmlPath}`);
+    // Resolves src relative to htmlPath, e.g. if htmlPath = "app/index.html", then assets/index.js -> /app/assets/index.js
+    const url = new URL(src, `http://widget.invalid/${htmlPath}`);
     const base = server.config.base;
-    if (src.startsWith("/") && base !== "./" && url.pathname.startsWith(base)) {
+    // e.g. if base = "/widgets/", then /widgets/assets/index.js -> /assets/index.js
+    if (src.startsWith("/") && url.pathname.startsWith(base)) {
       return `/${url.pathname.slice(base.length)}`;
     }
     return url.pathname;

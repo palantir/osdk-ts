@@ -1,5 +1,119 @@
 # @osdk/widget.client-react
 
+## 3.86.0
+
+### Patch Changes
+
+- Updated dependencies [af66ef0]
+- Updated dependencies [f7333d4]
+  - @osdk/client@2.86.0
+  - @osdk/widget.client@3.86.0
+
+## 3.85.0
+
+### Minor Changes
+
+- a3e7101: Forward hotkeys from custom widget to host
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [a3e7101]
+  - @osdk/client@2.85.0
+  - @osdk/widget.client@3.85.0
+
+## 3.84.0
+
+### Patch Changes
+
+- @osdk/client@2.84.0
+- @osdk/widget.client@3.84.0
+
+## 3.83.0
+
+### Patch Changes
+
+- @osdk/client@2.83.0
+- @osdk/widget.client@3.83.0
+
+## 3.82.0
+
+### Patch Changes
+
+- Updated dependencies [9f97981]
+  - @osdk/client@2.82.0
+  - @osdk/widget.client@3.82.0
+
+## 3.81.0
+
+### Patch Changes
+
+- Updated dependencies [3677309]
+  - @osdk/client@2.81.0
+  - @osdk/widget.client@3.81.0
+
+## 3.80.0
+
+### Patch Changes
+
+- @osdk/client@2.80.0
+- @osdk/widget.client@3.80.0
+
+## 3.79.0
+
+### Patch Changes
+
+- @osdk/client@2.79.0
+- @osdk/widget.client@3.79.0
+
+## 3.78.0
+
+### Patch Changes
+
+- @osdk/client@2.78.0
+- @osdk/widget.client@3.78.0
+
+## 3.77.0
+
+### Patch Changes
+
+- Updated dependencies [75a8f07]
+- Updated dependencies [bd50cd9]
+  - @osdk/client@2.77.0
+  - @osdk/widget.client@3.77.0
+
+## 3.76.0
+
+### Patch Changes
+
+- @osdk/widget.client@3.76.0
+
+## 3.75.0
+
+### Patch Changes
+
+- Updated dependencies [b1616e3]
+- Updated dependencies [b8f103c]
+  - @osdk/client@2.76.0
+  - @osdk/widget.client@3.75.0
+
+## 3.74.0
+
+### Patch Changes
+
+- Updated dependencies [a3dd285]
+  - @osdk/client@2.75.0
+  - @osdk/widget.client@3.74.0
+
+## 3.73.0
+
+### Patch Changes
+
+- Updated dependencies [6ca7442]
+  - @osdk/client@2.74.0
+  - @osdk/widget.client@3.73.0
+
 ## 3.72.0
 
 ### Patch Changes

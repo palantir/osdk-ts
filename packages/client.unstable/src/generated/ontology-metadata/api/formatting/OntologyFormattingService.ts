@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { loadAllRuleSets } from "./OntologyFormattingService/loadAllRuleSets.js";
 export { loadRuleSets } from "./OntologyFormattingService/loadRuleSets.js";
+export { loadRuleSetsV2 } from "./OntologyFormattingService/loadRuleSetsV2.js";
+export { loadAllRuleSets } from "./OntologyFormattingService/loadAllRuleSets.js";

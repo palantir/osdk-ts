@@ -20,6 +20,7 @@ import type {
   UserIsActive,
   UserNotFound,
 } from "@osdk/foundry.admin";
+import type { AgentDefinitionVersionNotFound } from "@osdk/foundry.agents";
 import type { InvalidPageToken } from "@osdk/foundry.core";
 import type { ObjectSetNotFound } from "@osdk/foundry.ontologies";
 import type {
@@ -117,6 +118,22 @@ export function ObjectSetNotFoundError(
     errorInstanceId,
     parameters: {
       objectSetRid,
+    },
+  };
+}
+
+export function AgentDefinitionVersionNotFoundError(
+  agentApiName: string,
+  version: string,
+): AgentDefinitionVersionNotFound {
+  return {
+    errorCode: "NOT_FOUND",
+    errorName: "AgentDefinitionVersionNotFound",
+    errorDescription: "The given AgentDefinitionVersion could not be found.",
+    errorInstanceId,
+    parameters: {
+      agentDefinitionApiName: agentApiName,
+      agentDefinitionVersionVersion: version,
     },
   };
 }

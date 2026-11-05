@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-import type {
-  DatasetRid as _api_DatasetRid,
-  DirectSourceRid as _api_DirectSourceRid,
-  MarkingType as _api_MarkingType,
-  ObjectRid as _api_ObjectRid,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
-  PropertySecurityGroupType as _api_PropertySecurityGroupType,
-  PropertyTypeId as _api_PropertyTypeId,
-  SecurityGroupComparisonConstant as _api_SecurityGroupComparisonConstant,
-  SecurityGroupSecurityDefinitionModification as _api_SecurityGroupSecurityDefinitionModification,
-  StreamLocatorRid as _api_StreamLocatorRid,
-  TableRid as _api_TableRid,
-  UserId as _api_UserId,
-} from "../__components.js";
+import type { DatasetRid as _api_DatasetRid } from "../__components.js";
+import type { StreamLocatorRid as _api_StreamLocatorRid } from "../__components.js";
+import type { DirectSourceRid as _api_DirectSourceRid } from "../__components.js";
+import type { TableRid as _api_TableRid } from "../__components.js";
+import type { PropertyTypeId as _api_PropertyTypeId } from "../__components.js";
+import type { MarkingType as _api_MarkingType } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../__components.js";
+import type { UserId as _api_UserId } from "../__components.js";
+import type { ObjectRid as _api_ObjectRid } from "../__components.js";
+import type { PropertySecurityGroupRid as _api_PropertySecurityGroupRid } from "../__components.js";
+import type { SecurityGroupSecurityDefinitionModification as _api_SecurityGroupSecurityDefinitionModification } from "../__components.js";
+import type { PropertySecurityGroupType as _api_PropertySecurityGroupType } from "../__components.js";
+import type { SecurityGroupComparisonConstant as _api_SecurityGroupComparisonConstant } from "../__components.js";
 export interface BackingResourceRid_datasetRid {
   type: "datasetRid";
   datasetRid: _api_DatasetRid;

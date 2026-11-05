@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-import type {
-  BuilderPipelineRid as _api_BuilderPipelineRid,
-  ObjectTypeApiName as _api_ObjectTypeApiName,
-  ObjectTypeRid as _api_ObjectTypeRid,
-} from "../../__components.js";
+import type { BuilderPipelineRid as _api_BuilderPipelineRid } from "../../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../../__components.js";
+import type { ObjectTypeApiName as _api_ObjectTypeApiName } from "../../__components.js";
+import type { WorkflowBuilderGraphRid as _api_WorkflowBuilderGraphRid } from "../../__components.js";
+export interface ActionTypeOwningResource_workflowBuilder {
+  type: "workflowBuilder";
+  workflowBuilder: WorkflowBuilderOwningResource;
+}
+/**
+ * The resource that owns and manages an action type.
+ */
+export type ActionTypeOwningResource = ActionTypeOwningResource_workflowBuilder;
 
 /**
  * Information describing the provenance of an action type.
@@ -144,3 +151,7 @@ export interface OwningDirectWriter_builder {
  * Information describing the owning direct writer for a direct datasource, modeled as an extensible union.
  */
 export type OwningDirectWriter = OwningDirectWriter_builder;
+
+export interface WorkflowBuilderOwningResource {
+  workflowRid: _api_WorkflowBuilderGraphRid;
+}

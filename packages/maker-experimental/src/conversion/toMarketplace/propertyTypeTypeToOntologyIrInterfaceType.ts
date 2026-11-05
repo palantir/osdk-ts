@@ -123,6 +123,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
             type.supportsEfficientLeadingWildcard ?? false,
           supportsExactMatching: type.supportsExactMatching ?? true,
           supportsFullTextRegex: type.supportsFullTextRegex,
+          supportsPhonetic: type.supportsPhonetic,
         },
       };
 

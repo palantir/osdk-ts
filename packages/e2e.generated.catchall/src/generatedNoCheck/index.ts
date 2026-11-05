@@ -1,4 +1,5 @@
 export {
+  actionTakesTimeSeriesReference,
   actionTakesAllParameterTypes,
   assignEmployee1,
   createFooInterface,
@@ -18,6 +19,8 @@ export {
   scenarioOsdkTestAction,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
+export { osdkTestFixture } from './ontology/agents.js';
+export * as $Agents from './ontology/agents.js';
 export {
   Athlete,
   bus_1,

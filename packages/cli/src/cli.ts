@@ -37,6 +37,7 @@ export async function cli(
     return await base
       .command(site)
       .command(widgetSet)
+      .command(branch)
       .command({
         command: "unstable",
         aliases: ["experimental"],

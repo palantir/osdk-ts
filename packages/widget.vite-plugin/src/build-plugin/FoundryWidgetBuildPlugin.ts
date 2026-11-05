@@ -17,6 +17,8 @@
 import fs from "fs";
 import path from "path";
 
+import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
+import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
@@ -27,10 +29,10 @@ import {
   MODULE_EVALUATION_MODE,
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
-import { getWidgetBuildContext } from "../common/getWidgetBuildContext.js";
 import type { FoundryWidgetPluginOptions } from "../index.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
+import { getWidgetSetInputSpec } from "./getWidgetSetInputSpec.js";
 
 export function FoundryWidgetBuildPlugin(
   options?: FoundryWidgetPluginOptions,
@@ -67,36 +69,42 @@ export function FoundryWidgetBuildPlugin(
      * Write the manifest to the expected location in the dist directory.
      */
     async writeBundle(_, bundle) {
-      const buildContext = await getWidgetBuildContext(config.root);
+      const foundryConfig = await loadFoundryConfig("widgetSet", {
+        cwd: config.root,
+      });
+      if (foundryConfig == null) {
+        throw new Error("foundry.config.json file not found.");
+      }
+      const outDir = path.resolve(config.root, config.build.outDir);
 
       // Create a Vite server to evaluate widget config modules
       const server = await createModuleEvaluationServer(config);
 
       try {
         // Build widget set manifest
+        const widgetSetVersion = await computeWidgetSetVersion(
+          foundryConfig,
+          config.root,
+        );
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
-            getWidgetBuildOutputs(
-              bundle,
-              input,
-              path.resolve(config.root, config.build.outDir),
-              server,
-            ),
+            getWidgetBuildOutputs(bundle, input, outDir, server),
           ),
         );
+        const widgetSetInputSpec = await getWidgetSetInputSpec(
+          path.resolve(config.root, "package.json"),
+          path.resolve(config.root, "resources.json"),
+        );
         const widgetSetManifest = buildWidgetSetManifest(
-          buildContext.widgetSetRid,
-          buildContext.version,
+          foundryConfig.foundryConfig.widgetSet.rid,
+          widgetSetVersion,
           widgetBuilds,
-          buildContext.inputSpec,
+          widgetSetInputSpec,
           options,
         );
 
         // Write the manifest to the dist directory
-        writeManifest(
-          widgetSetManifest,
-          path.resolve(config.root, config.build.outDir),
-        );
+        writeManifest(widgetSetManifest, outDir);
       } finally {
         await server.close();
       }
@@ -118,8 +126,21 @@ async function createModuleEvaluationServer(
     configFile: config.configFile,
     // Custom mode to prevent dev plugin execution
     mode: MODULE_EVALUATION_MODE,
-    server: { middlewareMode: true, hmr: false, watch: null },
   });
+}
+
+// TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
+// oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+async function computeWidgetSetVersion(
+  foundryConfig: LoadedFoundryConfig<"widgetSet">,
+  root: string,
+): Promise<string> {
+  return autoVersion(
+    foundryConfig.foundryConfig.widgetSet.autoVersion ?? {
+      type: "package-json",
+    },
+    { cwd: root },
+  );
 }
 
 function writeManifest(

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
-import type {
-  GetActionTypeUsageRequest as _api_usage_GetActionTypeUsageRequest,
-  GetActionTypeUsageResponse as _api_usage_GetActionTypeUsageResponse,
-} from "../__components.js";
+import type { GetActionTypeUsageRequest as _api_usage_GetActionTypeUsageRequest } from "../__components.js";
+import type { GetActionTypeUsageResponse as _api_usage_GetActionTypeUsageResponse } from "../__components.js";
 
 /**
  * Endpoint to load usage settings by day for an action type.

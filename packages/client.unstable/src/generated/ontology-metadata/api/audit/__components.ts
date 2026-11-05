@@ -14,216 +14,193 @@
  * limitations under the License.
  */
 
-import type {
-  CreateOntologyBranchRequest as _approvals_api_CreateOntologyBranchRequest,
-  LoadAllOntologyBranchesWithProposalPageRequest as _approvals_api_LoadAllOntologyBranchesWithProposalPageRequest,
-  LoadOntologyBranchWithProposalRequest as _approvals_api_LoadOntologyBranchWithProposalRequest,
-  ModifyOntologyBranchRequest as _approvals_api_ModifyOntologyBranchRequest,
-} from "../../approvals/api/__components.js";
-import type {
-  LoadAllWorkflowsPageRequest as _workflow_api_LoadAllWorkflowsPageRequest,
-  WorkflowDisplayName as _workflow_api_WorkflowDisplayName,
-  WorkflowRid as _workflow_api_WorkflowRid,
-} from "../../workflow/api/__components.js";
-import type {
-  ActionTypeLoadAllRequest as _api_ActionTypeLoadAllRequest,
-  ActionTypeLoadRequest as _api_ActionTypeLoadRequest,
-  ActionTypeLoadVersionedRequest as _api_ActionTypeLoadVersionedRequest,
-  ActionTypeModifyRequest as _api_ActionTypeModifyRequest,
-  ActionTypeRid as _api_ActionTypeRid,
-  ActionTypeVersion as _api_ActionTypeVersion,
-  DatasourceRid as _api_DatasourceRid,
-  GetActionTypesForInterfaceTypeRequest as _api_GetActionTypesForInterfaceTypeRequest,
-  GetActionTypesForInterfaceTypeResponse as _api_GetActionTypesForInterfaceTypeResponse,
-  GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest,
-  GetActionTypesForObjectTypeResponse as _api_GetActionTypesForObjectTypeResponse,
-  GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest,
-  GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse,
-  GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest,
-  GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse,
-  GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsResponse,
-  GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest,
-  GetObjectTypesForInterfaceTypesRequest as _api_GetObjectTypesForInterfaceTypesRequest,
-  GetObjectTypesForInterfaceTypesResponse as _api_GetObjectTypesForInterfaceTypesResponse,
-  GetObjectTypesForSharedPropertyTypesRequest as _api_GetObjectTypesForSharedPropertyTypesRequest,
-  GetObjectTypesForSharedPropertyTypesResponse as _api_GetObjectTypesForSharedPropertyTypesResponse,
-  GetObjectTypesForTypeGroupsRequest as _api_GetObjectTypesForTypeGroupsRequest,
-  GetObjectTypesForTypeGroupsResponse as _api_GetObjectTypesForTypeGroupsResponse,
-  GetOntologyEntitiesForTypeGroupsRequest as _api_GetOntologyEntitiesForTypeGroupsRequest,
-  GetOntologyEntitiesForTypeGroupsResponse as _api_GetOntologyEntitiesForTypeGroupsResponse,
-  GetOntologySummaryRequest as _api_GetOntologySummaryRequest,
-  GetOntologySummaryResponse as _api_GetOntologySummaryResponse,
-  GetRelationsForObjectTypesRequest as _api_GetRelationsForObjectTypesRequest,
-  InterfaceTypeRid as _api_InterfaceTypeRid,
-  LinkTypeId as _api_LinkTypeId,
-  LinkTypeRid as _api_LinkTypeRid,
-  LoadActionTypesFromOntologyRequest as _api_LoadActionTypesFromOntologyRequest,
-  LoadAllActionTypesFromOntologyRequest as _api_LoadAllActionTypesFromOntologyRequest,
-  LoadAllActionTypesPageRequest as _api_LoadAllActionTypesPageRequest,
-  LoadAllInterfaceTypesPageRequest as _api_LoadAllInterfaceTypesPageRequest,
-  LoadAllObjectTypesPageRequest as _api_LoadAllObjectTypesPageRequest,
-  LoadAllOntologiesRequest as _api_LoadAllOntologiesRequest,
-  LoadAllSharedPropertyTypesPageRequest as _api_LoadAllSharedPropertyTypesPageRequest,
-  LoadAllTypeGroupsPageRequest as _api_LoadAllTypeGroupsPageRequest,
-  LoadMergedRebaseStateRequest as _api_LoadMergedRebaseStateRequest,
-  ObjectTypeId as _api_ObjectTypeId,
-  ObjectTypeRid as _api_ObjectTypeRid,
-  OntologyBranchRid as _api_OntologyBranchRid,
-  OntologyBulkLoadEntitiesByDatasourcesRequest as _api_OntologyBulkLoadEntitiesByDatasourcesRequest,
-  OntologyBulkLoadEntitiesRequest as _api_OntologyBulkLoadEntitiesRequest,
-  OntologyLoadAllEntitiesRequest as _api_OntologyLoadAllEntitiesRequest,
-  OntologyLoadAllRequest as _api_OntologyLoadAllRequest,
-  OntologyLoadDatasourcesRequest as _api_OntologyLoadDatasourcesRequest,
-  OntologyLoadEntitiesRequest as _api_OntologyLoadEntitiesRequest,
-  OntologyLoadRequest as _api_OntologyLoadRequest,
-  OntologyModifyRequest as _api_OntologyModifyRequest,
-  OntologyModifyResponse as _api_OntologyModifyResponse,
-  OntologyRid as _api_OntologyRid,
-  OntologyRidsForEntitiesRequest as _api_OntologyRidsForEntitiesRequest,
-  OntologyRidsForEntitiesResponse as _api_OntologyRidsForEntitiesResponse,
-  OntologyVersion as _api_OntologyVersion,
-  OrganizationRid as _api_OrganizationRid,
-  OrganizationRidsForOntologyResponse as _api_OrganizationRidsForOntologyResponse,
-  RelationId as _api_RelationId,
-  RelationRid as _api_RelationRid,
-  RuleSetRid as _api_RuleSetRid,
-  SchemaMigrationRid as _api_SchemaMigrationRid,
-  SchemaVersion as _api_SchemaVersion,
-  SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
-  TypeGroupRid as _api_TypeGroupRid,
-} from "../__components.js";
-import type {
-  CreateAssociationRequest as _api_association_metadata_CreateAssociationRequest,
-  CreateAssociationResponse as _api_association_metadata_CreateAssociationResponse,
-  DeleteAssociationsRequest as _api_association_metadata_DeleteAssociationsRequest,
-  DeleteAssociationsResponse as _api_association_metadata_DeleteAssociationsResponse,
-  LoadOntologyEntityAssociationsRequest as _api_association_metadata_LoadOntologyEntityAssociationsRequest,
-  LoadOntologyEntityAssociationsResponse as _api_association_metadata_LoadOntologyEntityAssociationsResponse,
-  LoadResourceAssociationsRequest as _api_association_metadata_LoadResourceAssociationsRequest,
-  LoadResourceAssociationsResponse as _api_association_metadata_LoadResourceAssociationsResponse,
-  UpdateAssociationRequest as _api_association_metadata_UpdateAssociationRequest,
-  UpdateAssociationResponse as _api_association_metadata_UpdateAssociationResponse,
-} from "../association/metadata/__components.js";
-import type {
-  GetStreamingProfileConfigsResponse as _api_entitymetadata_GetStreamingProfileConfigsResponse,
-  LoadEntityMetadataRequest as _api_entitymetadata_LoadEntityMetadataRequest,
-  SystemEntityMetadataModificationRequest as _api_entitymetadata_SystemEntityMetadataModificationRequest,
-  SystemEntityMetadataModificationResponse as _api_entitymetadata_SystemEntityMetadataModificationResponse,
-} from "../entitymetadata/__components.js";
-import type {
-  LoadAllRuleSetsRequest as _api_formatting_LoadAllRuleSetsRequest,
-  LoadRuleSetsRequest as _api_formatting_LoadRuleSetsRequest,
-} from "../formatting/__components.js";
-import type {
-  CheckExistingUniqueIdentifiersRequest as _api_modification_CheckExistingUniqueIdentifiersRequest,
-  CheckExistingUniqueIdentifiersResponse as _api_modification_CheckExistingUniqueIdentifiersResponse,
-  GetEntityModificationHistoryRequest as _api_modification_GetEntityModificationHistoryRequest,
-  GetEntityModificationHistoryResponse as _api_modification_GetEntityModificationHistoryResponse,
-  GetModificationHistoryRequest as _api_modification_GetModificationHistoryRequest,
-  GetModificationHistoryResponse as _api_modification_GetModificationHistoryResponse,
-  GetModifiedEntitiesRequest as _api_modification_GetModifiedEntitiesRequest,
-  GetModifiedEntitiesResponse as _api_modification_GetModifiedEntitiesResponse,
-  ImportSharedPropertyTypesRequest as _api_modification_ImportSharedPropertyTypesRequest,
-  ImportSharedPropertyTypesResponse as _api_modification_ImportSharedPropertyTypesResponse,
-  LoadAllOntologiesInternalRequest as _api_modification_LoadAllOntologiesInternalRequest,
-  LoadAllOntologiesInternalResponse as _api_modification_LoadAllOntologiesInternalResponse,
-  OntologyCreateRequest as _api_modification_OntologyCreateRequest,
-  OntologyCreateResponse as _api_modification_OntologyCreateResponse,
-  OntologyDeleteRequest as _api_modification_OntologyDeleteRequest,
-  OntologyDeleteResponse as _api_modification_OntologyDeleteResponse,
-  OntologyModificationDryRunRequest as _api_modification_OntologyModificationDryRunRequest,
-  OntologyModificationDryRunResponse as _api_modification_OntologyModificationDryRunResponse,
-  OntologyModificationRequest as _api_modification_OntologyModificationRequest,
-  OntologyModificationResponse as _api_modification_OntologyModificationResponse,
-  OntologyUpdateRequest as _api_modification_OntologyUpdateRequest,
-  OntologyUpdateResponse as _api_modification_OntologyUpdateResponse,
-} from "../modification/__components.js";
-import type {
-  BulkUpdateEntityRolesRequest as _api_permissions_BulkUpdateEntityRolesRequest,
-  BulkUpdateEntityRolesResponse as _api_permissions_BulkUpdateEntityRolesResponse,
-  GetActionTypePermissionsResponse as _api_permissions_GetActionTypePermissionsResponse,
-  GetBulkActionTypePermissionsForUsersRequest as _api_permissions_GetBulkActionTypePermissionsForUsersRequest,
-  GetBulkActionTypePermissionsForUsersResponse as _api_permissions_GetBulkActionTypePermissionsForUsersResponse,
-  GetBulkActionTypePermissionsRequest as _api_permissions_GetBulkActionTypePermissionsRequest,
-  GetBulkActionTypePermissionsResponse as _api_permissions_GetBulkActionTypePermissionsResponse,
-  GetBulkInterfaceTypePermissionsRequest as _api_permissions_GetBulkInterfaceTypePermissionsRequest,
-  GetBulkInterfaceTypePermissionsResponse as _api_permissions_GetBulkInterfaceTypePermissionsResponse,
-  GetBulkLinkTypePermissionsForUsersRequest as _api_permissions_GetBulkLinkTypePermissionsForUsersRequest,
-  GetBulkLinkTypePermissionsForUsersResponse as _api_permissions_GetBulkLinkTypePermissionsForUsersResponse,
-  GetBulkLinkTypePermissionsRequest as _api_permissions_GetBulkLinkTypePermissionsRequest,
-  GetBulkLinkTypePermissionsResponse as _api_permissions_GetBulkLinkTypePermissionsResponse,
-  GetBulkObjectTypePermissionsForUsersRequest as _api_permissions_GetBulkObjectTypePermissionsForUsersRequest,
-  GetBulkObjectTypePermissionsForUsersResponse as _api_permissions_GetBulkObjectTypePermissionsForUsersResponse,
-  GetBulkObjectTypePermissionsRequest as _api_permissions_GetBulkObjectTypePermissionsRequest,
-  GetBulkObjectTypePermissionsResponse as _api_permissions_GetBulkObjectTypePermissionsResponse,
-  GetBulkOntologyPermissionsRequest as _api_permissions_GetBulkOntologyPermissionsRequest,
-  GetBulkOntologyPermissionsResponse as _api_permissions_GetBulkOntologyPermissionsResponse,
-  GetBulkSharedPropertyTypePermissionsRequest as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
-  GetBulkSharedPropertyTypePermissionsResponse as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse,
-  GetBulkTypeGroupPermissionsRequest as _api_permissions_GetBulkTypeGroupPermissionsRequest,
-  GetBulkTypeGroupPermissionsResponse as _api_permissions_GetBulkTypeGroupPermissionsResponse,
-  GetCreateOntologyPermissionsResponse as _api_permissions_GetCreateOntologyPermissionsResponse,
-  GetEditorsForObjectTypeRequest as _api_permissions_GetEditorsForObjectTypeRequest,
-  GetEditorsForObjectTypeResponse as _api_permissions_GetEditorsForObjectTypeResponse,
-  GetInterfaceTypePermissionsResponse as _api_permissions_GetInterfaceTypePermissionsResponse,
-  GetLinkTypePermissionsResponse as _api_permissions_GetLinkTypePermissionsResponse,
-  GetObjectTypePermissionsResponse as _api_permissions_GetObjectTypePermissionsResponse,
-  GetOntologyPermissionsResponse as _api_permissions_GetOntologyPermissionsResponse,
-  GetRuleSetPermissionsResponse as _api_permissions_GetRuleSetPermissionsResponse,
-  GetSharedPropertyTypePermissionsResponse as _api_permissions_GetSharedPropertyTypePermissionsResponse,
-  GetSuggestedRolesDatasourceResponse as _api_permissions_GetSuggestedRolesDatasourceResponse,
-  GetSuggestedRolesResponse as _api_permissions_GetSuggestedRolesResponse,
-  GetWorkflowPermissionsResponse as _api_permissions_GetWorkflowPermissionsResponse,
-  UpdateEntityRolesRequest as _api_permissions_UpdateEntityRolesRequest,
-  UpdateEntityRolesResponse as _api_permissions_UpdateEntityRolesResponse,
-} from "../permissions/__components.js";
-import type {
-  BatchGetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest,
-  BatchGetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse,
-  GetDependenciesForTaggedDependentRequest as _api_provenance_GetDependenciesForTaggedDependentRequest,
-  GetDependenciesForTaggedDependentRequestV2 as _api_provenance_GetDependenciesForTaggedDependentRequestV2,
-  GetDependenciesForTaggedDependentResponse as _api_provenance_GetDependenciesForTaggedDependentResponse,
-  GetDependenciesForTaggedDependentResponseV2 as _api_provenance_GetDependenciesForTaggedDependentResponseV2,
-  GetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest,
-  GetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse,
-  GetTaggedDependentsForOntologyEntityRequest as _api_provenance_GetTaggedDependentsForOntologyEntityRequest,
-  GetTaggedDependentsForOntologyEntityResponse as _api_provenance_GetTaggedDependentsForOntologyEntityResponse,
-  RegisterDependencyRequest as _api_provenance_RegisterDependencyRequest,
-  RegisterDependencyResponse as _api_provenance_RegisterDependencyResponse,
-  TagDependentRequest as _api_provenance_TagDependentRequest,
-  TagDependentResponse as _api_provenance_TagDependentResponse,
-} from "../provenance/__components.js";
+import type { CreateOntologyBranchRequest as _approvals_api_CreateOntologyBranchRequest } from "../../approvals/api/__components.js";
+import type { LoadAllOntologyBranchesWithProposalPageRequest as _approvals_api_LoadAllOntologyBranchesWithProposalPageRequest } from "../../approvals/api/__components.js";
+import type { LoadOntologyBranchWithProposalRequest as _approvals_api_LoadOntologyBranchWithProposalRequest } from "../../approvals/api/__components.js";
+import type { ModifyOntologyBranchRequest as _approvals_api_ModifyOntologyBranchRequest } from "../../approvals/api/__components.js";
+import type { WorkflowDisplayName as _workflow_api_WorkflowDisplayName } from "../../workflow/api/__components.js";
+import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../workflow/api/__components.js";
+import type { LoadAllWorkflowsPageRequest as _workflow_api_LoadAllWorkflowsPageRequest } from "../../workflow/api/__components.js";
+import type { ActionTypeRid as _api_ActionTypeRid } from "../__components.js";
+import type { OrganizationRid as _api_OrganizationRid } from "../__components.js";
+import type { OntologyRid as _api_OntologyRid } from "../__components.js";
+import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
+import type { LoadActionTypesFromOntologyRequest as _api_LoadActionTypesFromOntologyRequest } from "../__components.js";
+import type { ActionTypeLoadRequest as _api_ActionTypeLoadRequest } from "../__components.js";
+import type { ActionTypeLoadVersionedRequest as _api_ActionTypeLoadVersionedRequest } from "../__components.js";
+import type { LoadAllActionTypesFromOntologyRequest as _api_LoadAllActionTypesFromOntologyRequest } from "../__components.js";
+import type { ActionTypeLoadAllRequest as _api_ActionTypeLoadAllRequest } from "../__components.js";
+import type { ActionTypeModifyRequest as _api_ActionTypeModifyRequest } from "../__components.js";
+import type { LoadAllActionTypesPageRequest as _api_LoadAllActionTypesPageRequest } from "../__components.js";
+import type { ActionTypeVersion as _api_ActionTypeVersion } from "../__components.js";
+import type { OntologyBranchRid as _api_OntologyBranchRid } from "../__components.js";
+import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
+import type { LinkTypeId as _api_LinkTypeId } from "../__components.js";
+import type { LinkTypeRid as _api_LinkTypeRid } from "../__components.js";
+import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
+import type { SharedPropertyTypeRid as _api_SharedPropertyTypeRid } from "../__components.js";
+import type { TypeGroupRid as _api_TypeGroupRid } from "../__components.js";
+import type { SchemaVersion as _api_SchemaVersion } from "../__components.js";
+import type { RuleSetRid as _api_RuleSetRid } from "../__components.js";
+import type { SchemaMigrationRid as _api_SchemaMigrationRid } from "../__components.js";
+import type { ObjectTypeId as _api_ObjectTypeId } from "../__components.js";
+import type { OntologyBulkLoadEntitiesByDatasourcesRequest as _api_OntologyBulkLoadEntitiesByDatasourcesRequest } from "../__components.js";
+import type { OntologyBulkLoadEntitiesRequest as _api_OntologyBulkLoadEntitiesRequest } from "../__components.js";
+import type { GetActionTypesForInterfaceTypeRequest as _api_GetActionTypesForInterfaceTypeRequest } from "../__components.js";
+import type { GetActionTypesForInterfaceTypeResponse as _api_GetActionTypesForInterfaceTypeResponse } from "../__components.js";
+import type { GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest } from "../__components.js";
+import type { GetActionTypesForObjectTypeResponse as _api_GetActionTypesForObjectTypeResponse } from "../__components.js";
+import type { GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest } from "../__components.js";
+import type { GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse } from "../__components.js";
+import type { GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest } from "../__components.js";
+import type { GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse } from "../__components.js";
+import type { GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsResponse } from "../__components.js";
+import type { GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest } from "../__components.js";
+import type { GetObjectTypesForInterfaceTypesRequest as _api_GetObjectTypesForInterfaceTypesRequest } from "../__components.js";
+import type { GetObjectTypesForInterfaceTypesResponse as _api_GetObjectTypesForInterfaceTypesResponse } from "../__components.js";
+import type { GetObjectTypesForSharedPropertyTypesRequest as _api_GetObjectTypesForSharedPropertyTypesRequest } from "../__components.js";
+import type { GetObjectTypesForSharedPropertyTypesResponse as _api_GetObjectTypesForSharedPropertyTypesResponse } from "../__components.js";
+import type { GetObjectTypesForTypeGroupsRequest as _api_GetObjectTypesForTypeGroupsRequest } from "../__components.js";
+import type { GetObjectTypesForTypeGroupsResponse as _api_GetObjectTypesForTypeGroupsResponse } from "../__components.js";
+import type { GetOntologyEntitiesForTypeGroupsRequest as _api_GetOntologyEntitiesForTypeGroupsRequest } from "../__components.js";
+import type { GetOntologyEntitiesForTypeGroupsResponse as _api_GetOntologyEntitiesForTypeGroupsResponse } from "../__components.js";
+import type { OntologyRidsForEntitiesRequest as _api_OntologyRidsForEntitiesRequest } from "../__components.js";
+import type { OntologyRidsForEntitiesResponse as _api_OntologyRidsForEntitiesResponse } from "../__components.js";
+import type { GetOntologySummaryRequest as _api_GetOntologySummaryRequest } from "../__components.js";
+import type { GetOntologySummaryResponse as _api_GetOntologySummaryResponse } from "../__components.js";
+import type { OrganizationRidsForOntologyResponse as _api_OrganizationRidsForOntologyResponse } from "../__components.js";
+import type { GetRelationsForObjectTypesRequest as _api_GetRelationsForObjectTypesRequest } from "../__components.js";
+import type { LoadAllInterfaceTypesPageRequest as _api_LoadAllInterfaceTypesPageRequest } from "../__components.js";
+import type { LoadAllObjectTypesPageRequest as _api_LoadAllObjectTypesPageRequest } from "../__components.js";
+import type { LoadAllOntologiesRequest as _api_LoadAllOntologiesRequest } from "../__components.js";
+import type { OntologyLoadAllEntitiesRequest as _api_OntologyLoadAllEntitiesRequest } from "../__components.js";
+import type { OntologyLoadAllRequest as _api_OntologyLoadAllRequest } from "../__components.js";
+import type { LoadAllSharedPropertyTypesPageRequest as _api_LoadAllSharedPropertyTypesPageRequest } from "../__components.js";
+import type { LoadAllTypeGroupsPageRequest as _api_LoadAllTypeGroupsPageRequest } from "../__components.js";
+import type { LoadMergedRebaseStateRequest as _api_LoadMergedRebaseStateRequest } from "../__components.js";
+import type { OntologyLoadDatasourcesRequest as _api_OntologyLoadDatasourcesRequest } from "../__components.js";
+import type { OntologyLoadEntitiesRequest as _api_OntologyLoadEntitiesRequest } from "../__components.js";
+import type { OntologyLoadRequest as _api_OntologyLoadRequest } from "../__components.js";
+import type { OntologyModifyRequest as _api_OntologyModifyRequest } from "../__components.js";
+import type { OntologyModifyResponse as _api_OntologyModifyResponse } from "../__components.js";
+import type { RelationId as _api_RelationId } from "../__components.js";
+import type { RelationRid as _api_RelationRid } from "../__components.js";
+import type { CreateAssociationRequest as _api_association_metadata_CreateAssociationRequest } from "../association/metadata/__components.js";
+import type { CreateAssociationResponse as _api_association_metadata_CreateAssociationResponse } from "../association/metadata/__components.js";
+import type { DeleteAssociationsRequest as _api_association_metadata_DeleteAssociationsRequest } from "../association/metadata/__components.js";
+import type { DeleteAssociationsResponse as _api_association_metadata_DeleteAssociationsResponse } from "../association/metadata/__components.js";
+import type { LoadOntologyEntityAssociationsRequest as _api_association_metadata_LoadOntologyEntityAssociationsRequest } from "../association/metadata/__components.js";
+import type { LoadOntologyEntityAssociationsResponse as _api_association_metadata_LoadOntologyEntityAssociationsResponse } from "../association/metadata/__components.js";
+import type { LoadResourceAssociationsRequest as _api_association_metadata_LoadResourceAssociationsRequest } from "../association/metadata/__components.js";
+import type { LoadResourceAssociationsResponse as _api_association_metadata_LoadResourceAssociationsResponse } from "../association/metadata/__components.js";
+import type { UpdateAssociationRequest as _api_association_metadata_UpdateAssociationRequest } from "../association/metadata/__components.js";
+import type { UpdateAssociationResponse as _api_association_metadata_UpdateAssociationResponse } from "../association/metadata/__components.js";
+import type { GetStreamingProfileConfigsResponse as _api_entitymetadata_GetStreamingProfileConfigsResponse } from "../entitymetadata/__components.js";
+import type { LoadEntityMetadataRequest as _api_entitymetadata_LoadEntityMetadataRequest } from "../entitymetadata/__components.js";
+import type { SystemEntityMetadataModificationRequest as _api_entitymetadata_SystemEntityMetadataModificationRequest } from "../entitymetadata/__components.js";
+import type { SystemEntityMetadataModificationResponse as _api_entitymetadata_SystemEntityMetadataModificationResponse } from "../entitymetadata/__components.js";
+import type { LoadAllRuleSetsRequest as _api_formatting_LoadAllRuleSetsRequest } from "../formatting/__components.js";
+import type { LoadRuleSetsRequest as _api_formatting_LoadRuleSetsRequest } from "../formatting/__components.js";
+import type { LoadRuleSetsRequestV2 as _api_formatting_LoadRuleSetsRequestV2 } from "../formatting/__components.js";
+import type { OntologyCreateRequest as _api_modification_OntologyCreateRequest } from "../modification/__components.js";
+import type { OntologyCreateResponse as _api_modification_OntologyCreateResponse } from "../modification/__components.js";
+import type { OntologyModificationDryRunRequest as _api_modification_OntologyModificationDryRunRequest } from "../modification/__components.js";
+import type { OntologyModificationDryRunResponse as _api_modification_OntologyModificationDryRunResponse } from "../modification/__components.js";
+import type { GetEntityModificationHistoryRequest as _api_modification_GetEntityModificationHistoryRequest } from "../modification/__components.js";
+import type { GetEntityModificationHistoryResponse as _api_modification_GetEntityModificationHistoryResponse } from "../modification/__components.js";
+import type { GetModificationHistoryRequest as _api_modification_GetModificationHistoryRequest } from "../modification/__components.js";
+import type { GetModificationHistoryResponse as _api_modification_GetModificationHistoryResponse } from "../modification/__components.js";
+import type { GetModifiedEntitiesRequest as _api_modification_GetModifiedEntitiesRequest } from "../modification/__components.js";
+import type { GetModifiedEntitiesResponse as _api_modification_GetModifiedEntitiesResponse } from "../modification/__components.js";
+import type { LoadAllOntologiesInternalRequest as _api_modification_LoadAllOntologiesInternalRequest } from "../modification/__components.js";
+import type { LoadAllOntologiesInternalResponse as _api_modification_LoadAllOntologiesInternalResponse } from "../modification/__components.js";
+import type { CheckExistingUniqueIdentifiersRequest as _api_modification_CheckExistingUniqueIdentifiersRequest } from "../modification/__components.js";
+import type { CheckExistingUniqueIdentifiersResponse as _api_modification_CheckExistingUniqueIdentifiersResponse } from "../modification/__components.js";
+import type { OntologyModificationRequest as _api_modification_OntologyModificationRequest } from "../modification/__components.js";
+import type { OntologyModificationResponse as _api_modification_OntologyModificationResponse } from "../modification/__components.js";
+import type { OntologyDeleteRequest as _api_modification_OntologyDeleteRequest } from "../modification/__components.js";
+import type { OntologyDeleteResponse as _api_modification_OntologyDeleteResponse } from "../modification/__components.js";
+import type { OntologyUpdateRequest as _api_modification_OntologyUpdateRequest } from "../modification/__components.js";
+import type { OntologyUpdateResponse as _api_modification_OntologyUpdateResponse } from "../modification/__components.js";
+import type { BulkUpdateEntityRolesRequest as _api_permissions_BulkUpdateEntityRolesRequest } from "../permissions/__components.js";
+import type { BulkUpdateEntityRolesResponse as _api_permissions_BulkUpdateEntityRolesResponse } from "../permissions/__components.js";
+import type { GetActionTypePermissionsResponse as _api_permissions_GetActionTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetBulkActionTypePermissionsForUsersRequest as _api_permissions_GetBulkActionTypePermissionsForUsersRequest } from "../permissions/__components.js";
+import type { GetBulkActionTypePermissionsForUsersResponse as _api_permissions_GetBulkActionTypePermissionsForUsersResponse } from "../permissions/__components.js";
+import type { GetBulkActionTypePermissionsRequest as _api_permissions_GetBulkActionTypePermissionsRequest } from "../permissions/__components.js";
+import type { GetBulkActionTypePermissionsResponse as _api_permissions_GetBulkActionTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetBulkInterfaceTypePermissionsRequest as _api_permissions_GetBulkInterfaceTypePermissionsRequest } from "../permissions/__components.js";
+import type { GetBulkInterfaceTypePermissionsResponse as _api_permissions_GetBulkInterfaceTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetBulkLinkTypePermissionsForUsersRequest as _api_permissions_GetBulkLinkTypePermissionsForUsersRequest } from "../permissions/__components.js";
+import type { GetBulkLinkTypePermissionsForUsersResponse as _api_permissions_GetBulkLinkTypePermissionsForUsersResponse } from "../permissions/__components.js";
+import type { GetBulkLinkTypePermissionsRequest as _api_permissions_GetBulkLinkTypePermissionsRequest } from "../permissions/__components.js";
+import type { GetBulkLinkTypePermissionsResponse as _api_permissions_GetBulkLinkTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetBulkObjectTypePermissionsForUsersRequest as _api_permissions_GetBulkObjectTypePermissionsForUsersRequest } from "../permissions/__components.js";
+import type { GetBulkObjectTypePermissionsForUsersResponse as _api_permissions_GetBulkObjectTypePermissionsForUsersResponse } from "../permissions/__components.js";
+import type { GetBulkObjectTypePermissionsRequest as _api_permissions_GetBulkObjectTypePermissionsRequest } from "../permissions/__components.js";
+import type { GetBulkObjectTypePermissionsResponse as _api_permissions_GetBulkObjectTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetBulkOntologyPermissionsRequest as _api_permissions_GetBulkOntologyPermissionsRequest } from "../permissions/__components.js";
+import type { GetBulkOntologyPermissionsResponse as _api_permissions_GetBulkOntologyPermissionsResponse } from "../permissions/__components.js";
+import type { GetBulkSharedPropertyTypePermissionsRequest as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest } from "../permissions/__components.js";
+import type { GetBulkSharedPropertyTypePermissionsResponse as _api_permissions_GetBulkSharedPropertyTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetBulkTypeGroupPermissionsRequest as _api_permissions_GetBulkTypeGroupPermissionsRequest } from "../permissions/__components.js";
+import type { GetBulkTypeGroupPermissionsResponse as _api_permissions_GetBulkTypeGroupPermissionsResponse } from "../permissions/__components.js";
+import type { GetCreateOntologyPermissionsResponse as _api_permissions_GetCreateOntologyPermissionsResponse } from "../permissions/__components.js";
+import type { GetEditorsForObjectTypeRequest as _api_permissions_GetEditorsForObjectTypeRequest } from "../permissions/__components.js";
+import type { GetEditorsForObjectTypeResponse as _api_permissions_GetEditorsForObjectTypeResponse } from "../permissions/__components.js";
+import type { GetInterfaceTypePermissionsResponse as _api_permissions_GetInterfaceTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetLinkTypePermissionsResponse as _api_permissions_GetLinkTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetObjectTypePermissionsResponse as _api_permissions_GetObjectTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetOntologyPermissionsResponse as _api_permissions_GetOntologyPermissionsResponse } from "../permissions/__components.js";
+import type { GetRuleSetPermissionsResponse as _api_permissions_GetRuleSetPermissionsResponse } from "../permissions/__components.js";
+import type { GetSharedPropertyTypePermissionsResponse as _api_permissions_GetSharedPropertyTypePermissionsResponse } from "../permissions/__components.js";
+import type { GetSuggestedRolesResponse as _api_permissions_GetSuggestedRolesResponse } from "../permissions/__components.js";
+import type { GetSuggestedRolesDatasourceResponse as _api_permissions_GetSuggestedRolesDatasourceResponse } from "../permissions/__components.js";
+import type { GetWorkflowPermissionsResponse as _api_permissions_GetWorkflowPermissionsResponse } from "../permissions/__components.js";
+import type { UpdateEntityRolesRequest as _api_permissions_UpdateEntityRolesRequest } from "../permissions/__components.js";
+import type { UpdateEntityRolesResponse as _api_permissions_UpdateEntityRolesResponse } from "../permissions/__components.js";
+import type { BatchGetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierRequest } from "../provenance/__components.js";
+import type { BatchGetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_BatchGetTaggedDependentsForOntologyEntityIdentifierResponse } from "../provenance/__components.js";
+import type { GetDependenciesForTaggedDependentRequest as _api_provenance_GetDependenciesForTaggedDependentRequest } from "../provenance/__components.js";
+import type { GetDependenciesForTaggedDependentResponse as _api_provenance_GetDependenciesForTaggedDependentResponse } from "../provenance/__components.js";
+import type { GetDependenciesForTaggedDependentRequestV2 as _api_provenance_GetDependenciesForTaggedDependentRequestV2 } from "../provenance/__components.js";
+import type { GetDependenciesForTaggedDependentResponseV2 as _api_provenance_GetDependenciesForTaggedDependentResponseV2 } from "../provenance/__components.js";
+import type { GetTaggedDependentsForOntologyEntityIdentifierRequest as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierRequest } from "../provenance/__components.js";
+import type { GetTaggedDependentsForOntologyEntityIdentifierResponse as _api_provenance_GetTaggedDependentsForOntologyEntityIdentifierResponse } from "../provenance/__components.js";
+import type { GetTaggedDependentsForOntologyEntityRequest as _api_provenance_GetTaggedDependentsForOntologyEntityRequest } from "../provenance/__components.js";
+import type { GetTaggedDependentsForOntologyEntityResponse as _api_provenance_GetTaggedDependentsForOntologyEntityResponse } from "../provenance/__components.js";
+import type { RegisterDependencyRequest as _api_provenance_RegisterDependencyRequest } from "../provenance/__components.js";
+import type { RegisterDependencyResponse as _api_provenance_RegisterDependencyResponse } from "../provenance/__components.js";
+import type { TagDependentRequest as _api_provenance_TagDependentRequest } from "../provenance/__components.js";
+import type { TagDependentResponse as _api_provenance_TagDependentResponse } from "../provenance/__components.js";
 import type { LoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest } from "../schemamigrations/__components.js";
-import type {
-  ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest,
-  CombinedEntityTypeRid as _api_search_CombinedEntityTypeRid,
-  GetObjectTypeSemanticSearchStatusResponse as _api_search_GetObjectTypeSemanticSearchStatusResponse,
-  InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
-  LinkTypeSearchRequest as _api_search_LinkTypeSearchRequest,
-  ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest,
-  ObjectTypeSearchRequestV2 as _api_search_ObjectTypeSearchRequestV2,
-  SearchTitleInCombinedEntityTypeRequest as _api_search_SearchTitleInCombinedEntityTypeRequest,
-  SharedPropertyTypeSearchRequest as _api_search_SharedPropertyTypeSearchRequest,
-  TypeGroupSearchRequest as _api_search_TypeGroupSearchRequest,
-} from "../search/__components.js";
-import type {
-  GetActionTypeUsageRequest as _api_usage_GetActionTypeUsageRequest,
-  GetActionTypeUsageResponse as _api_usage_GetActionTypeUsageResponse,
-  GetDeprecationUsageRequest as _api_usage_GetDeprecationUsageRequest,
-  GetDeprecationUsageResponse as _api_usage_GetDeprecationUsageResponse,
-  GetUsageRequest as _api_usage_GetUsageRequest,
-  GetUsageRequestV2 as _api_usage_GetUsageRequestV2,
-  GetUsageResponse as _api_usage_GetUsageResponse,
-  GetUsageResponseV2 as _api_usage_GetUsageResponseV2,
-  GetUsageSettingsByOrganizationRequest as _api_usage_GetUsageSettingsByOrganizationRequest,
-  GetUsageSettingsByOrganizationResponse as _api_usage_GetUsageSettingsByOrganizationResponse,
-  GetUsageSettingsByUserRequest as _api_usage_GetUsageSettingsByUserRequest,
-  GetUsageSettingsByUserResponse as _api_usage_GetUsageSettingsByUserResponse,
-  ReportUsageMetadataRequest as _api_usage_ReportUsageMetadataRequest,
-  ReportUsageMetadataResponse as _api_usage_ReportUsageMetadataResponse,
-  SetUsageSettingsByOrganizationRequest as _api_usage_SetUsageSettingsByOrganizationRequest,
-  SetUsageSettingsByOrganizationResponse as _api_usage_SetUsageSettingsByOrganizationResponse,
-} from "../usage/__components.js";
+import type { CombinedEntityTypeRid as _api_search_CombinedEntityTypeRid } from "../search/__components.js";
+import type { ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest } from "../search/__components.js";
+import type { ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest } from "../search/__components.js";
+import type { InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest } from "../search/__components.js";
+import type { LinkTypeSearchRequest as _api_search_LinkTypeSearchRequest } from "../search/__components.js";
+import type { ObjectTypeSearchRequestV2 as _api_search_ObjectTypeSearchRequestV2 } from "../search/__components.js";
+import type { SharedPropertyTypeSearchRequest as _api_search_SharedPropertyTypeSearchRequest } from "../search/__components.js";
+import type { SearchTitleInCombinedEntityTypeRequest as _api_search_SearchTitleInCombinedEntityTypeRequest } from "../search/__components.js";
+import type { TypeGroupSearchRequest as _api_search_TypeGroupSearchRequest } from "../search/__components.js";
+import type { GetObjectTypeSemanticSearchStatusResponse as _api_search_GetObjectTypeSemanticSearchStatusResponse } from "../search/__components.js";
+import type { GetActionTypeUsageRequest as _api_usage_GetActionTypeUsageRequest } from "../usage/__components.js";
+import type { GetActionTypeUsageResponse as _api_usage_GetActionTypeUsageResponse } from "../usage/__components.js";
+import type { GetDeprecationUsageRequest as _api_usage_GetDeprecationUsageRequest } from "../usage/__components.js";
+import type { GetDeprecationUsageResponse as _api_usage_GetDeprecationUsageResponse } from "../usage/__components.js";
+import type { GetUsageRequest as _api_usage_GetUsageRequest } from "../usage/__components.js";
+import type { GetUsageResponse as _api_usage_GetUsageResponse } from "../usage/__components.js";
+import type { GetUsageSettingsByOrganizationRequest as _api_usage_GetUsageSettingsByOrganizationRequest } from "../usage/__components.js";
+import type { GetUsageSettingsByOrganizationResponse as _api_usage_GetUsageSettingsByOrganizationResponse } from "../usage/__components.js";
+import type { GetUsageSettingsByUserRequest as _api_usage_GetUsageSettingsByUserRequest } from "../usage/__components.js";
+import type { GetUsageSettingsByUserResponse as _api_usage_GetUsageSettingsByUserResponse } from "../usage/__components.js";
+import type { GetUsageRequestV2 as _api_usage_GetUsageRequestV2 } from "../usage/__components.js";
+import type { GetUsageResponseV2 as _api_usage_GetUsageResponseV2 } from "../usage/__components.js";
+import type { ReportUsageMetadataRequest as _api_usage_ReportUsageMetadataRequest } from "../usage/__components.js";
+import type { ReportUsageMetadataResponse as _api_usage_ReportUsageMetadataResponse } from "../usage/__components.js";
+import type { SetUsageSettingsByOrganizationRequest as _api_usage_SetUsageSettingsByOrganizationRequest } from "../usage/__components.js";
+import type { SetUsageSettingsByOrganizationResponse as _api_usage_SetUsageSettingsByOrganizationResponse } from "../usage/__components.js";
 export interface ActionTypeGetOrganizationsRequestParams {
   actionTypeRids: Array<_api_ActionTypeRid>;
 }
@@ -600,7 +577,6 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_MODIFICATION"
   | "ONTOLOGT_METADATA_SERVICE_SYSTEM_ENTITY_METADATA_MODIFICATION"
   | "ONTOLOGY_METADATA_SERVICE_MODIFICATION_CHECK_UNIQUE_IDENTIFIERS"
-  | "ONTOLOGY_METADATA_SERVICE_MODIFICATION_IMPORT_SHARED_PROPERTY_TYPE"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_RULE_SETS"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_RULE_SETS"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_WORKFLOWS_FROM_ONTOLOGY"
@@ -654,6 +630,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_PERMISSION_SERVICE_GET_SUGGESTED_ROLES_FOR_ACTION_TYPE"
   | "ONTOLOGY_PERMISSION_SERVICE_MIGRATE_ENTITIES_TO_PROJECT"
   | "ONTOLOGY_PERMISSION_SERVICE_REVERT_PUBLIC_PROJECT_ENTITY"
+  | "ONTOLOGY_PERMISSION_SERVICE_BULK_REVERT_PUBLIC_PROJECT_ENTITIES"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_ENTITY_MIGRATION_STATUS"
   | "ONTOLOGY_PROVENANCE_SERVICE_REGISTER_DEPENDENCY"
   | "ONTOLOGY_PROVENANCE_SERVICE_TAG_DEPENDENT"
@@ -984,6 +961,9 @@ export interface OntologyMetadataServiceLoadRuleSetsRequestParams {
 export interface OntologyMetadataServiceLoadRuleSetsResultParams {
   record: LoadRuleSetsAuditRecord;
 }
+export interface OntologyMetadataServiceLoadRuleSetsV2RequestParams {
+  request: _api_formatting_LoadRuleSetsRequestV2;
+}
 export interface OntologyMetadataServiceLoadWorkflowsPageResultParams {
   record: LoadWorkflowsAuditRecord;
 }
@@ -993,13 +973,6 @@ export interface OntologyMetadataServiceModificationCheckExistingUniqueIdentifie
 }
 export interface OntologyMetadataServiceModificationcheckExistingUniqueIdentifiersResultParams {
   response: _api_modification_CheckExistingUniqueIdentifiersResponse;
-}
-export interface OntologyMetadataServiceModificationImportSharedPropertyTypesRequestParams {
-  ontologyRid: _api_OntologyRid;
-  request: _api_modification_ImportSharedPropertyTypesRequest;
-}
-export interface OntologyMetadataServiceModificationImportSharedPropertyTypesResultParams {
-  response: _api_modification_ImportSharedPropertyTypesResponse;
 }
 export interface OntologyMetadataServiceModificationRequestParams {
   ontologyRid: _api_OntologyRid;

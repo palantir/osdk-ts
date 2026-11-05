@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { GeneratorError } from "@osdk/generator-converters";
 import {
   authHandlerMiddleware,
   LegacyFauxFoundry,
@@ -22,7 +23,7 @@ import {
 } from "@osdk/shared.test";
 import { http, HttpResponse } from "msw";
 import type { SetupServerApi } from "msw/node";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
 describe("Load Ontologies Metadata", () => {
@@ -41,6 +42,64 @@ describe("Load Ontologies Metadata", () => {
     return () => {
       testSetup.apiServer.close();
     };
+  });
+
+  describe("request trace propagation", () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it.each(["0123456789abcdef", "", undefined])(
+      "uses the configured trace ID on ontology and metadata requests: %s",
+      async (traceId) => {
+        vi.stubEnv("TRACE_ID", traceId);
+        const requests: Request[] = [];
+        const onRequest = ({ request }: { request: Request }) => {
+          requests.push(request.clone());
+        };
+        apiServer.events.on("request:start", onRequest);
+        try {
+          const result = await ontologyMetadataResolver
+            .getWireOntologyDefinition(
+              "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+              { objectTypesApiNamesToLoad: ["Employee"] },
+            );
+          expect(result.isOk()).toBe(true);
+          expect(requests.map(request => request.method)).toEqual([
+            "GET",
+            "POST",
+          ]);
+          expect(new URL(requests[1].url).pathname).toMatch(/\/metadata$/);
+          const spanIds = requests.map(request =>
+            request.headers.get("X-B3-SpanId")
+          );
+          for (const request of requests) {
+            expect(request.headers.get("X-B3-TraceId")).toBe(traceId || null);
+            const spanId = request.headers.get("X-B3-SpanId");
+            if (traceId) {
+              expect(spanId).toMatch(/^[0-9a-f]{16}$/);
+            } else {
+              expect(spanId).toBeNull();
+            }
+            expect(request.headers.get("Authorization")).toBe(
+              "Bearer myAccessToken",
+            );
+            expect(request.headers.get("Fetch-User-Agent")).toContain(
+              "foundry-typescript-osdk-generator/",
+            );
+            expect(request.headers.has("X-B3-Sampled")).toBe(false);
+          }
+          if (traceId) {
+            expect(new Set(spanIds).size).toBe(requests.length);
+          }
+          expect(await requests[1].clone().json()).toMatchObject({
+            objectTypes: ["Employee"],
+          });
+        } finally {
+          apiServer.events.removeListener("request:start", onRequest);
+        }
+      },
+    );
   });
 
   it("Loads no object types and action types", async () => {
@@ -64,12 +123,14 @@ describe("Load Ontologies Metadata", () => {
 
     expect(ontologyDefinitions.value).toMatchInlineSnapshot(`
       {
+        "agentVersionReferences": Map {},
         "externalInterfaces": Map {},
         "externalObjects": Map {},
         "queryVersionReferences": Map {},
         "requestedMetadata": {
           "actionTypes": {},
           "actionTypesFullMetadata": {},
+          "agents": {},
           "interfaceTypes": {},
           "objectTypes": {},
           "ontology": {
@@ -106,14 +167,32 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-      [
-        "Unable to find the following Object Types: objectDoesNotExist",
-        "Link types were specified for Object Type employee (doesNotExist), but it was not included in --objectTypes. Please add --objectTypes employee",
-        "Unable to find the following Query Types: queryDoesNotExist",
-        "Unable to find the following Action Types: action-does-not-exit",
-      ]
-    `);
+    expect(errorDetails(ontologyDefinitions.error)).toEqual([
+      {
+        message: "Unable to find the following object types",
+        params: undefined,
+        unsafeParams: { objectTypeApiNames: ["objectDoesNotExist"] },
+      },
+      {
+        message:
+          "Link types were specified for object type, but it was not included in --objectTypes. Please add --objectTypes <objectTypeApiName>",
+        params: undefined,
+        unsafeParams: {
+          linkTypeApiNames: ["doesNotExist"],
+          objectTypeApiName: "employee",
+        },
+      },
+      {
+        message: "Unable to find requested query types",
+        params: undefined,
+        unsafeParams: { queryTypeApiNames: ["queryDoesNotExist"] },
+      },
+      {
+        message: "Unable to find the following action types",
+        params: undefined,
+        unsafeParams: { actionTypeApiNames: ["action-does-not-exit"] },
+      },
+    ]);
   });
 
   it("Fails when link types reference object types not in --objectTypes", async () => {
@@ -138,11 +217,17 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-      [
-        "Link types were specified for Object Type invalid (invalid), but it was not included in --objectTypes. Please add --objectTypes invalid",
-      ]
-    `);
+    expect(errorDetails(ontologyDefinitions.error)).toEqual([
+      {
+        message:
+          "Link types were specified for object type, but it was not included in --objectTypes. Please add --objectTypes <objectTypeApiName>",
+        params: undefined,
+        unsafeParams: {
+          linkTypeApiNames: ["invalid"],
+          objectTypeApiName: "invalid",
+        },
+      },
+    ]);
   });
 
   it("Captures errors while loading wire ontology definition", async () => {
@@ -194,13 +279,36 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-      [
-        "Unable to load query returnsObject because it takes an unloaded object type as a parameter: Employee in parameter output. Make sure to specify it as an argument with --ontologyObjects Employee.}",
-        "Unable to load action unsupportedAction because it takes an unsupported parameter: {"type":"unsupportedType"} specify only the actions you want to load with the --actions argument.",
-        "Unable to load action unsupportedAction because it takes an unloaded object type as a parameter: unsupported make sure to specify it as an argument with --ontologyObjects unsupported)",
-      ]
-    `);
+    expect(errorDetails(ontologyDefinitions.error)).toEqual([
+      {
+        message:
+          "Unable to load query because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
+        params: undefined,
+        unsafeParams: {
+          objectTypeApiName: "Employee",
+          propertyName: "output",
+          queryApiName: "returnsObject",
+        },
+      },
+      {
+        message:
+          "Unable to load action because it takes an unsupported parameter. Specify only the actions you want to load with the --actionTypes argument.",
+        params: undefined,
+        unsafeParams: {
+          actionApiName: "unsupportedAction",
+          actionParameterType: "{\"type\":\"unsupportedType\"}",
+        },
+      },
+      {
+        message:
+          "Unable to load action because it takes an unloaded object type as a parameter. Make sure to specify it as an argument with --objectTypes <objectTypeApiName>.",
+        params: undefined,
+        unsafeParams: {
+          actionApiName: "unsupportedAction",
+          objectTypeApiName: "unsupported",
+        },
+      },
+    ]);
   });
 
   it("Does not load any entity type using generatePackageV2", async () => {
@@ -365,11 +473,217 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-      [
-        "Unable to load action deleteFooInterface because it takes an unloaded interface type as a parameter: FooInterface make sure to specify it as an argument with --interfaceTypes FooInterface",
-      ]
-    `);
+    expect(errorDetails(ontologyDefinitions.error)).toEqual([
+      {
+        message:
+          "Unable to load action because it takes an unloaded interface type as a parameter. Make sure to specify it as an argument with --interfaceTypes <interfaceTypeApiName>.",
+        params: undefined,
+        unsafeParams: {
+          actionApiName: "deleteFooInterface",
+          interfaceTypeApiName: "FooInterface",
+        },
+      },
+    ]);
+  });
+
+  describe("Load ontology metadata with agents", () => {
+    const {
+      weatherAgentApiName,
+      weatherAgentVersion,
+      weatherAgentOtherVersion,
+      noArgsAgentApiName,
+      noArgsAgentVersion,
+    } = stubData;
+    const ontologyRid =
+      "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361";
+
+    it("loads the selected agent versions and preserves their metadata", async () => {
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        {
+          agentApiNamesToLoad: [
+            `${weatherAgentApiName}:${weatherAgentOtherVersion.version}`,
+            `${noArgsAgentApiName}:${noArgsAgentVersion.version}`,
+          ],
+        },
+      );
+      if (result.isErr()) {
+        throw new Error(result.error.join("\n"));
+      }
+      expect(result.value.requestedMetadata.agents).toMatchInlineSnapshot(`
+        {
+          "noArgsAgent": {
+            "agentStateType": {
+              "fields": [
+                {
+                  "dataType": {
+                    "type": "integer",
+                  },
+                  "name": "temperature",
+                },
+              ],
+              "type": "struct",
+            },
+            "apiName": "noArgsAgent",
+            "argumentDefinitions": [],
+            "contextItemDefinitions": [
+              {
+                "contextItemType": "weather-result",
+                "dataType": {
+                  "type": "string",
+                },
+              },
+            ],
+            "createdBy": "user",
+            "createdTime": "2026-01-01T00:00:00Z",
+            "eventDefinitions": [
+              {
+                "eventType": "LookupWeather",
+                "payloadType": {
+                  "fields": [
+                    {
+                      "dataType": {
+                        "type": "string",
+                      },
+                      "name": "city",
+                    },
+                  ],
+                  "type": "struct",
+                },
+              },
+            ],
+            "version": "1.2.3",
+          },
+          "weatherAgent": {
+            "agentStateType": {
+              "fields": [
+                {
+                  "dataType": {
+                    "type": "integer",
+                  },
+                  "name": "temperature",
+                },
+              ],
+              "type": "struct",
+            },
+            "apiName": "weatherAgent",
+            "argumentDefinitions": [
+              {
+                "dataType": {
+                  "type": "string",
+                },
+                "name": "city",
+              },
+            ],
+            "contextItemDefinitions": [
+              {
+                "contextItemType": "weather-result",
+                "dataType": {
+                  "type": "string",
+                },
+              },
+            ],
+            "createdBy": "user",
+            "createdTime": "2026-01-01T00:00:00Z",
+            "eventDefinitions": [
+              {
+                "eventType": "LookupWeather",
+                "payloadType": {
+                  "fields": [
+                    {
+                      "dataType": {
+                        "type": "string",
+                      },
+                      "name": "city",
+                    },
+                  ],
+                  "type": "struct",
+                },
+              },
+            ],
+            "version": "2.0.0",
+          },
+        }
+      `);
+      expect(result.value.agentVersionReferences).toEqual(
+        new Map([
+          [weatherAgentApiName, weatherAgentOtherVersion.version],
+          [noArgsAgentApiName, noArgsAgentVersion.version],
+        ]),
+      );
+      expect(result.value.requestedMetadata.objectTypes).toEqual({});
+    });
+
+    it.each([
+      weatherAgentApiName,
+      `${weatherAgentApiName}:`,
+      `:${weatherAgentVersion.version}`,
+    ])(
+      "rejects an incomplete selection: %s",
+      async selection => {
+        const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+          ontologyRid,
+          {
+            agentApiNamesToLoad: [selection],
+          },
+        );
+        if (result.isOk()) {
+          throw new Error("Expected an invalid selection error");
+        }
+        expect(errorDetails(result.error)).toEqual([
+          {
+            message:
+              "Agents require an API name and version in apiName:version format",
+            params: undefined,
+            unsafeParams: { agent: selection },
+          },
+        ]);
+      },
+    );
+
+    it("rejects multiple versions of the same agent", async () => {
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        {
+          agentApiNamesToLoad: [
+            `${weatherAgentApiName}:${weatherAgentVersion.version}`,
+            `${weatherAgentApiName}:${weatherAgentOtherVersion.version}`,
+          ],
+        },
+      );
+      if (result.isOk()) {
+        throw new Error("Expected a duplicate agent error");
+      }
+      expect(errorDetails(result.error)).toEqual([
+        {
+          message: "Agent was specified multiple times",
+          params: undefined,
+          unsafeParams: { agentApiName: weatherAgentApiName },
+        },
+      ]);
+    });
+
+    it("reports metadata loading failures", async () => {
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        {
+          agentApiNamesToLoad: [`${weatherAgentApiName}:99.0.0`],
+        },
+      );
+      if (result.isOk()) {
+        throw new Error("Expected a metadata loading error");
+      }
+      expect(errorDetails(result.error)).toMatchObject([
+        {
+          message: "Unable to load agent metadata",
+          params: undefined,
+          unsafeParams: {
+            apiName: weatherAgentApiName,
+            version: "99.0.0",
+          },
+        },
+      ]);
+    });
   });
 
   describe("Load ontology metadata with query types with versions", () => {
@@ -475,9 +789,21 @@ describe("Load Ontologies Metadata", () => {
       if (ontologyDefinitions.isOk()) {
         throw new Error("Expected duplicate query references to be rejected");
       }
-      expect(ontologyDefinitions.error).toEqual([
-        "Query type addOne was specified multiple times.",
+      expect(errorDetails(ontologyDefinitions.error)).toEqual([
+        {
+          message: "Query type was specified multiple times",
+          params: undefined,
+          unsafeParams: { queryTypeApiName: "addOne" },
+        },
       ]);
     });
   });
 });
+
+function errorDetails(errors: GeneratorError[]) {
+  return errors.map(({ message, params, unsafeParams }) => ({
+    message,
+    params,
+    unsafeParams,
+  }));
+}

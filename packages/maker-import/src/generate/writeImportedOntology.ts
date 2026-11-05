@@ -61,10 +61,8 @@ export function convertOntologyFullMetadata(
 
   for (const spt of Object.values(metadata.sharedPropertyTypes)) {
     const converted = convertSharedPropertyType(spt);
-    if (converted) {
-      result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][converted.apiName] =
-        converted;
-    }
+    result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][converted.apiName] =
+      converted;
   }
   for (const iface of Object.values(metadata.interfaceTypes)) {
     const converted = convertInterfaceType(iface, metadata.interfaceTypes);
@@ -72,7 +70,10 @@ export function convertOntologyFullMetadata(
       converted;
   }
   for (const objectType of Object.values(metadata.objectTypes)) {
-    const converted = convertObjectType(objectType);
+    const converted = convertObjectType(
+      objectType,
+      result[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+    );
     result[OntologyEntityTypeEnum.OBJECT_TYPE][converted.apiName] = converted;
   }
   for (const action of Object.values(metadata.actionTypes)) {

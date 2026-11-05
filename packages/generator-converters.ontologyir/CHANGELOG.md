@@ -1,5 +1,112 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.86.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+  - @osdk/client.unstable@2.86.0
+
+## 2.85.0
+
+### Minor Changes
+
+- 8f34b57: Extract action parameter validation logic and ensure it matches Foundry backend logic
+
+### Patch Changes
+
+- Updated dependencies [646d01d]
+  - @osdk/client.unstable@2.85.0
+
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+
+## 2.82.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.82.0
+
+## 2.81.0
+
+### Minor Changes
+
+- f28586c: Remove getOsdkPropertyType duplication
+- 8bc6e4a: Preserve vector properties, their dimensions and supported similarity functions when converting ontology metadata for SDK generation.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.81.0
+
+## 2.80.0
+
+### Patch Changes
+
+- Updated dependencies [e9bf2de]
+  - @osdk/client.unstable@2.80.0
+
+## 2.79.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.79.0
+
+## 2.78.0
+
+### Patch Changes
+
+- Updated dependencies [533f264]
+  - @osdk/client.unstable@2.78.0
+
+## 2.77.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.77.0
+
+## 2.76.0
+
+### Minor Changes
+
+- 43dd010: Skip and warn functions are not osdk compatible
+- a9fafd0: Fix link attachment for imported objects
+
+### Patch Changes
+
+- Updated dependencies [21a0d8c]
+- Updated dependencies [a38af5a]
+  - @osdk/client.unstable@2.76.0
+
+## 2.75.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.75.0
+
+## 2.74.0
+
+### Minor Changes
+
+- aa9fe40: Support intermediary link types
+
+### Patch Changes
+
+- @osdk/client.unstable@2.74.0
+
 ## 2.73.0
 
 ### Patch Changes

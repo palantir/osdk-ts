@@ -31,6 +31,7 @@ export interface generatePackageCommandArgs {
   objectTypes?: string[];
   actionTypes?: string[];
   queryTypes?: string[];
+  agents?: string[];
   linkTypes?: string[];
   interfaceTypes?: string[];
   experimentalFeatures?: string[];
@@ -119,6 +120,16 @@ export class GeneratePackageCommand implements
         defaultDescription:
           `By default, no arguments will not load any link type.`,
       })
+      .options("agents", {
+        array: true,
+        string: true,
+        demandOption: false,
+        description:
+          "The API names and versions of the agents to generate. Example Usage: --agents weatherAgent:1.2.3",
+        default: undefined,
+        defaultDescription:
+          `By default, no arguments will not load any agents.`,
+      })
       .options("queryTypes", {
         array: true,
         string: true,
@@ -201,8 +212,8 @@ export class GeneratePackageCommand implements
     const logger = new SlsLogger();
 
     const ontologyRid = args.ontology as string;
-    const baseSafeParams = { ontologyRid, packageVersion: args.packageVersion };
-    const baseUnsafeParams = { packageName: args.packageName };
+    const baseSafeParams = { packageVersion: args.packageVersion };
+    const baseUnsafeParams = { ontologyRid, packageName: args.packageName };
 
     if (!isValidSemver(args.packageVersion as string)) {
       logger.error(
@@ -241,6 +252,7 @@ export class GeneratePackageCommand implements
                 objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
                 actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
                 queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+                agentApiNamesToLoad: transformArrayArg(args.agents),
                 interfaceTypesApiNamesToLoad: transformArrayArg(
                   args.interfaceTypes,
                 ),
@@ -251,13 +263,23 @@ export class GeneratePackageCommand implements
               packageInfo,
               args.branch,
             ),
-          { params: { ontologyRid } },
+          { unsafeParams: { ontologyRid } },
         );
 
         if (wireOntologyDefinition.isErr()) {
-          logger.error("Failed loading ontology metadata", {
-            unsafeParams: { errors: wireOntologyDefinition.error },
-          });
+          logger.error(
+            `Encountered ${wireOntologyDefinition.error.length} errors loading or validating ontology metadata`,
+          );
+          for (const error of wireOntologyDefinition.error) {
+            logger.error(
+              error.message,
+              {
+                params: error.params,
+                unsafeParams: error.unsafeParams,
+              },
+              error,
+            );
+          }
           exit(1);
         }
 

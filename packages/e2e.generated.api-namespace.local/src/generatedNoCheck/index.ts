@@ -1,5 +1,7 @@
 export { setTaskBody } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
+export {} from './ontology/agents.js';
+export * as $Agents from './ontology/agents.js';
 export { SomeInterface } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export { Thing, UsesForeignSpt } from './ontology/objects.js';

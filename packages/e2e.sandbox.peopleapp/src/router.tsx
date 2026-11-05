@@ -8,6 +8,7 @@ import { EmployeesFilterListPage } from "./app/employees/filterListPage.js";
 import { EmployeesPage } from "./app/employees/page.js";
 import { FormPage } from "./app/form/page.js";
 import { OfficesPage } from "./app/offices/page.js";
+import { WorkshopModulePage } from "./app/workshop-module/page.js";
 
 const router = createBrowserRouter([
   // Auth callback route - outside of the main app layout
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "/aip-agent-chat",
         element: <AipAgentChatPage />,
+      },
+      {
+        path: "/workshop-module",
+        element: <WorkshopModulePage />,
       },
     ],
   },

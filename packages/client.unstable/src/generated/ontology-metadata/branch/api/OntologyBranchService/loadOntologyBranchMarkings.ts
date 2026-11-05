@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
+import { conjureFetch, type ConjureContext } from "conjure-lite";
 
 import type { OntologyBranchRid as _api_OntologyBranchRid } from "../../../api/__components.js";
-import type {
-  LoadOntologyBranchMarkingsRequest as _branch_api_LoadOntologyBranchMarkingsRequest,
-  LoadOntologyBranchMarkingsResponse as _branch_api_LoadOntologyBranchMarkingsResponse,
-} from "../__components.js";
+import type { LoadOntologyBranchMarkingsRequest as _branch_api_LoadOntologyBranchMarkingsRequest } from "../__components.js";
+import type { LoadOntologyBranchMarkingsResponse as _branch_api_LoadOntologyBranchMarkingsResponse } from "../__components.js";
 
 /**
  * Load the markings for an ontology branch. Markings for orgs the user does not belong to will be

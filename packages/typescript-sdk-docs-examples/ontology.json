@@ -564,7 +564,12 @@
               "type": "array",
               "subType": {
                 "type": "string"
-              }
+              },
+              "reducers": [
+                {
+                  "direction": "DESCENDING_NULLS_LAST"
+                }
+              ]
             },
             "description": "List of professional certifications"
           },
