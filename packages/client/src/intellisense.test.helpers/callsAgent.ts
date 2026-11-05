@@ -21,3 +21,4 @@ import type { Client } from "../Client.js";
 declare const client: Client;
 const agent = client(weatherAgent);
 void agent.experimental_createSession({ city: "London" });
+void agent.experimental_getSession("session-id");

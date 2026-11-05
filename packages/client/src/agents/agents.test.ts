@@ -346,6 +346,242 @@ describe("agents", () => {
     expect($Agents.weatherAgent).toBe(weatherAgent);
   });
 
+  describe("session lookup", () => {
+    it("rejects scenario clients before making requests", async () => {
+      const fetchFunction = vi.fn<typeof globalThis.fetch>();
+      const scenario = withScenario(
+        createClient(
+          baseUrl,
+          fauxFoundry.defaultOntologyRid,
+          auth,
+          {},
+          fetchFunction,
+        ),
+        "ri.actions..scenario.test",
+      );
+      const result =
+        scenario(weatherAgent).experimental_getSession("session-id");
+      await expect(result).rejects.toThrow(
+        "Agent sessions are not supported in scenarios",
+      );
+      expect(fetchFunction).not.toHaveBeenCalled();
+    });
+
+    it("rejects transaction clients before flushing edits or making requests", async () => {
+      const fetchFunction = vi.fn<typeof globalThis.fetch>();
+      const flushEdits = vi.fn<() => Promise<void>>();
+      const transaction = createClientWithTransaction(
+        "ri.transactions..transaction.test",
+        flushEdits,
+        baseUrl,
+        fauxFoundry.defaultOntologyRid,
+        auth,
+        {},
+        fetchFunction,
+      );
+      const result =
+        transaction(weatherAgent).experimental_getSession("session-id");
+      await expect(result).rejects.toThrow(
+        "Agent sessions are not supported in transactions",
+      );
+      expect(flushEdits).not.toHaveBeenCalled();
+      expect(fetchFunction).not.toHaveBeenCalled();
+    });
+
+    it.each(["ri.foundry.main.branch.test", "feature/test branch"])(
+      "rejects branch %s before making requests",
+      async (branch) => {
+        const fetchFunction = vi.fn<typeof globalThis.fetch>();
+        const branchClient = createClient(
+          baseUrl,
+          fauxFoundry.defaultOntologyRid,
+          auth,
+          { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+          fetchFunction,
+        );
+        const result =
+          branchClient(weatherAgent).experimental_getSession("session-id");
+        await expect(result).rejects.toThrow(
+          "Agent sessions are not supported on branches",
+        );
+        expect(fetchFunction).not.toHaveBeenCalled();
+      },
+    );
+
+    it("retrieves a session", async () => {
+      const created = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+
+      const experimental_getSession =
+        client(weatherAgent).experimental_getSession;
+      type InferredParamType = Parameters<typeof experimental_getSession>[0];
+      expectTypeOf<InferredParamType>().toEqualTypeOf<string>();
+
+      const session = await client(weatherAgent).experimental_getSession(
+        created.id,
+      );
+
+      expectTypeOf<typeof session>().toEqualTypeOf<AgentSession>();
+      expect(session).toMatchObject({ id: created.id });
+    });
+
+    it("supports a detached experimental_getSession method", async () => {
+      const created = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+
+      const { experimental_getSession } = client(weatherAgent);
+      const session = await experimental_getSession(created.id);
+      expect(session).toMatchObject({ id: created.id });
+    });
+
+    it("works for generic agents", async () => {
+      const generic: AgentDefinition = {
+        type: "agent",
+        apiName: weatherAgent.apiName,
+        version: weatherAgent.version,
+      };
+      const created = await client(generic).experimental_createSession({
+        city: "London",
+      });
+      const session = await client(generic).experimental_getSession(created.id);
+      expectTypeOf<typeof session>().toEqualTypeOf<AgentSession>();
+      expect(session).toMatchObject({ id: created.id });
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+    });
+
+    it("returns a fresh handle for each lookup", async () => {
+      const created = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+      const first = await client(weatherAgent).experimental_getSession(
+        created.id,
+      );
+      const second = await client(weatherAgent).experimental_getSession(
+        created.id,
+      );
+      expect(first).toMatchObject({ id: created.id });
+      expect(second).toMatchObject({ id: created.id });
+      expect(first).not.toBe(created);
+      expect(second).not.toBe(first);
+    });
+
+    it("retrieves sessions created with an older version", async () => {
+      const employee = await client(Employee).fetchOne(50030);
+      const employees = client(Employee).where({ employeeId: 50030 });
+
+      const created = await client(
+        objectArgumentsAgent,
+      ).experimental_createSession({
+        employee,
+        employees,
+      });
+
+      const session = await client({
+        ...objectArgumentsAgent,
+        version: "2.0.0",
+      }).experimental_getSession(created.id);
+      expect(session).toMatchObject({
+        id: created.id,
+      });
+
+      await session.experimental_sendEvent({ SelectEmployees: employees });
+    });
+
+    it("retrieves sessions created with a newer version", async () => {
+      const employee = await client(Employee).fetchOne(50030);
+
+      const created = await client({
+        type: "agent",
+        apiName: objectArgumentsAgent.apiName,
+        version: "2.0.0",
+      }).experimental_createSession();
+
+      const session = await client(
+        objectArgumentsAgent,
+      ).experimental_getSession(created.id);
+      expect(session).toMatchObject({
+        id: created.id,
+      });
+
+      await session.experimental_sendEvent({ SelectEmployees: employee });
+    });
+
+    it("rejects sessions belonging to another agent", async () => {
+      const created = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+      const result = client(noArgumentsAgent).experimental_getSession(
+        created.id,
+      );
+      await expect(result).rejects.toThrow(
+        "Agent session does not belong to the specified agent and ontology",
+      );
+    });
+
+    it("rejects sessions belonging to another ontology", async () => {
+      const impl = fauxFoundry
+        .getOntology(fauxFoundry.defaultOntologyRid)
+        .getAgentImpl(weatherAgent.apiName, weatherAgent.version);
+      vi.spyOn(impl, "createSession").mockReturnValueOnce({
+        ...stubData.weatherAgentResponse,
+        agentApiNameIdentifier: {
+          ontology: "ri.ontology.main.ontology.other",
+          agentApiName: weatherAgent.apiName,
+        },
+      });
+      const created = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+      const result = client(weatherAgent).experimental_getSession(created.id);
+      await expect(result).rejects.toThrow(
+        "Agent session does not belong to the specified agent and ontology",
+      );
+    });
+
+    it("rejects sessions without api names", async () => {
+      const impl = fauxFoundry
+        .getOntology(fauxFoundry.defaultOntologyRid)
+        .getAgentImpl(weatherAgent.apiName, weatherAgent.version);
+      vi.spyOn(impl, "createSession").mockReturnValueOnce({
+        ...stubData.weatherAgentResponse,
+        agentApiNameIdentifier: undefined,
+      });
+      const created = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+      const result = client(weatherAgent).experimental_getSession(created.id);
+      await expect(result).rejects.toThrow("Cannot validate agent identity");
+    });
+
+    it("propagates errors for missing sessions", async () => {
+      const result =
+        client(weatherAgent).experimental_getSession("missing-session");
+      await expect(result).rejects.toMatchObject({
+        errorName: "Invalid Agent Session",
+      });
+    });
+
+    it("rejects lookup when the session version schema cannot be loaded", async () => {
+      const impl = fauxFoundry
+        .getOntology(fauxFoundry.defaultOntologyRid)
+        .getAgentImpl(weatherAgent.apiName, weatherAgent.version);
+      const metadata = { ...stubData.weatherAgentResponse };
+      vi.spyOn(impl, "createSession").mockReturnValueOnce(metadata);
+      const created = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+      metadata.agentVersion = "9.9.9";
+      const result = client(weatherAgent).experimental_getSession(created.id);
+      await expect(result).rejects.toMatchObject({
+        errorName: "AgentDefinitionVersionNotFound",
+      });
+    });
+  });
+
   describe("event sending", () => {
     let session: AgentSession;
     let agentImpl: FauxAgentImpl;
@@ -567,6 +803,67 @@ describe("agents", () => {
       ]);
     });
 
+    it("converts context items using the older session schema", async () => {
+      const created = await client(
+        objectArgumentsAgent,
+      ).experimental_createSession({
+        employee: 50030,
+        employees: client(Employee).where({ employeeId: 50030 }),
+      });
+      const objectSession = await client({
+        ...objectArgumentsAgent,
+        version: "2.0.0",
+      }).experimental_getSession(created.id);
+      const state = await objectSession.experimental_getState();
+      expect(state.contextItems.selection).toMatchObject({
+        type: "selection",
+      });
+      const converted = state.contextItems.selection.data as {
+        employee: unknown;
+        employees: ObjectSet<typeof Employee>;
+      };
+      expect(converted.employee).toMatchObject({
+        $apiName: "Employee",
+        $primaryKey: 50030,
+        $objectSpecifier: "Employee:50030",
+      });
+      const page = await converted.employees
+        .where({ employeeId: 50030 })
+        .fetchPage();
+      expect(page.data.map((employee) => employee.$primaryKey)).toEqual([
+        50030,
+      ]);
+    });
+
+    it("converts newer session state and preserves context types absent from the session schema", async () => {
+      const created = await client({
+        type: "agent",
+        apiName: objectArgumentsAgent.apiName,
+        version: "2.0.0",
+      }).experimental_createSession();
+      const objectSession = await client(
+        objectArgumentsAgent,
+      ).experimental_getSession(created.id);
+      const state = await objectSession.experimental_getState();
+      expect(state.agentState.data).toMatchObject({
+        $apiName: "Employee",
+        $primaryKey: 50030,
+        $objectSpecifier: "Employee:50030",
+      });
+      expect(state.contextItems.selection).toEqual({
+        type: "selection",
+        data: { retained: true },
+      });
+      expect(state.contextItems.newer).toMatchObject({
+        type: "new-selection",
+        data: {
+          $apiName: "Employee",
+          $primaryKey: 50030,
+          $objectSpecifier: "Employee:50030",
+        },
+      });
+    });
+
     it("rejects conversion failures without advancing the consistency key", async () => {
       await session.experimental_sendEvent({
         LookupWeather: { city: "Paris" },
@@ -609,6 +906,23 @@ describe("agents", () => {
       const read = vi.spyOn(agentImpl, "getState");
       await otherSession.experimental_getState();
       expect(read.mock.calls[0][0].consistencyKey).toBeUndefined();
+    });
+
+    it("does not share consistency keys between looked-up handles", async () => {
+      const first = await client(weatherAgent).experimental_getSession(
+        session.id,
+      );
+      const second = await client(weatherAgent).experimental_getSession(
+        session.id,
+      );
+      await first.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      const read = vi.spyOn(agentImpl, "getState");
+      await second.experimental_getState();
+      expect(read.mock.calls[0][0].consistencyKey).toBeUndefined();
+      await first.experimental_getState();
+      expect(read.mock.calls[1][0].consistencyKey).toBe("accepted-event");
     });
 
     it("keeps a read's captured key while another send completes", async () => {
