@@ -17,7 +17,10 @@
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import { createClient } from "@osdk/client";
 import { Employee } from "@osdk/client.test.ontology";
-import { createObservableClient } from "@osdk/client/observable";
+import {
+  createObservableClient,
+  type ObservableClient,
+} from "@osdk/client/observable";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import * as React from "react";
@@ -231,11 +234,13 @@ describe("useLinks enabled option", () => {
 });
 
 describe("useLinks pagination", () => {
+  let fauxFoundry: FauxFoundry;
+  let observableClient: ObservableClient;
   let sources: Osdk.Instance<Employee>[];
   let wrapper: React.FC<React.PropsWithChildren>;
 
   beforeEach(async () => {
-    const fauxFoundry = new FauxFoundry("https://stack.palantir.com/");
+    fauxFoundry = new FauxFoundry("https://stack.palantir.com/");
     ontologies.addEmployeeOntology(fauxFoundry.getDefaultOntology());
     const dataStore = fauxFoundry.getDefaultDataStore();
     for (const [sourceId, targetIds] of [
@@ -255,7 +260,7 @@ describe("useLinks pagination", () => {
       }
     }
     const { client, apiServer } = startNodeApiServer(fauxFoundry, createClient);
-    const observableClient = createObservableClient(client);
+    observableClient = createObservableClient(client);
     sources = await Promise.all([
       client(Employee).fetchOne(1),
       client(Employee).fetchOne(10),
@@ -271,108 +276,90 @@ describe("useLinks pagination", () => {
 
   afterEach(cleanup);
 
-  it.each([
-    { autoFetchMore: undefined, expected: [2], hasMore: true },
-    { autoFetchMore: false, expected: [2], hasMore: true },
-    { autoFetchMore: true, expected: [2, 4, 5], hasMore: false },
-    { autoFetchMore: 2, expected: [2, 4], hasMore: true },
-    { autoFetchMore: 10, expected: [2, 4, 5], hasMore: false },
-  ])(
-    "loads the expected filtered pages with autoFetchMore=$autoFetchMore",
-    async ({ autoFetchMore, expected, hasMore }) => {
-      const { result } = renderHook(
-        () =>
-          useLinks(sources[0], "peeps", {
-            where: { fullName: "Match" },
-            orderBy: { employeeId: "asc" },
-            pageSize: 1,
-            autoFetchMore,
-          }),
-        { wrapper },
-      );
-
-      await waitFor(() => expect(result.current.isLoading).toBe(false));
-      expect(result.current.error).toBeUndefined();
-      expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual(
-        expected,
-      );
-      expect(result.current.hasMore).toBe(hasMore);
-      expect(result.current.linkedObjectsBySourcePrimaryKey.get(1)).toEqual(
-        result.current.links,
-      );
-    },
-  );
-
-  it("keeps manual pagination when autoFetchMore is omitted", async () => {
+  it("keeps links filtered through manual pagination and refresh", async () => {
     const { result } = renderHook(
       () =>
         useLinks(sources[0], "peeps", {
-          pageSize: 1,
+          where: { fullName: "Match" },
+          pageSize: 2,
           orderBy: { employeeId: "asc" },
         }),
       { wrapper },
     );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual([2]);
+    expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual([2, 4]);
     expect(result.current.hasMore).toBe(true);
     await act(async () => {
       await result.current.fetchMore?.();
     });
     await waitFor(() =>
       expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual([
-        2, 3,
+        2, 4, 5,
       ]),
+    );
+    expect(result.current.hasMore).toBe(false);
+
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    const source = dataStore.getObjectOrThrow(Employee.apiName, 1);
+    dataStore.unregisterLink(
+      source,
+      "peeps",
+      dataStore.getObjectOrThrow(Employee.apiName, 2),
+      "lead",
+    );
+    const added = dataStore.registerObject(Employee, {
+      employeeId: 9,
+      fullName: "Match",
+    });
+    dataStore.registerLink(source, "peeps", added, "lead");
+    await act(() => observableClient.invalidateObjectType(Employee));
+
+    await waitFor(() =>
+      expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual([
+        4, 5, 9,
+      ]),
+    );
+    expect(result.current.hasMore).toBe(false);
+    expect(result.current.linkedObjectsBySourcePrimaryKey.get(1)).toEqual(
+      result.current.links,
     );
   });
 
-  it("starts automatic pagination when autoFetchMore changes", async () => {
+  it("loads the requested pages for each source when autoFetchMore changes", async () => {
     const { result, rerender } = renderHook(
       ({ autoFetchMore }) =>
-        useLinks(sources[0], "peeps", {
+        useLinks(sources, "peeps", {
+          where: { fullName: "Match" },
           pageSize: 1,
           autoFetchMore,
           orderBy: { employeeId: "asc" },
         }),
-      { wrapper, initialProps: { autoFetchMore: false } },
+      { wrapper, initialProps: { autoFetchMore: false as boolean | number } },
     );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual([2]);
-    rerender({ autoFetchMore: true });
-    await waitFor(() => expect(result.current.hasMore).toBe(false));
-    expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual([
-      2, 3, 4, 5,
-    ]);
-  });
+    expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual([2, 6]);
+    expect(result.current.hasMore).toBe(true);
 
-  it("automatically loads filtered links for every source", async () => {
-    const { result } = renderHook(
-      () =>
-        useLinks(sources, "peeps", {
-          where: { fullName: "Match" },
-          pageSize: 1,
-          autoFetchMore: true,
-          orderBy: { employeeId: "asc" },
-        }),
-      { wrapper },
-    );
-
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.error).toBeUndefined();
-    expect(
-      result.current.links?.map((obj) => obj.$primaryKey).sort((a, b) => a - b),
-    ).toEqual([2, 4, 5, 6, 8]);
-    expect(result.current.hasMore).toBe(false);
+    rerender({ autoFetchMore: 2 });
+    await waitFor(() => expect(result.current.links).toHaveLength(4));
+    expect(result.current.hasMore).toBe(true);
     expect(
       result.current.linkedObjectsBySourcePrimaryKey
         .get(1)
         ?.map((obj) => obj.$primaryKey),
-    ).toEqual([2, 4, 5]);
+    ).toEqual([2, 4]);
     expect(
       result.current.linkedObjectsBySourcePrimaryKey
         .get(10)
         ?.map((obj) => obj.$primaryKey),
     ).toEqual([6, 8]);
+
+    rerender({ autoFetchMore: true });
+    await waitFor(() => expect(result.current.hasMore).toBe(false));
+    expect(result.current.links?.map((obj) => obj.$primaryKey)).toEqual([
+      2, 4, 5, 6, 8,
+    ]);
   });
 });
