@@ -164,16 +164,16 @@ export namespace ActionParam {
 // @public
 export type ActionReturnTypeForOptions<
 	Op extends ApplyActionOptions | ApplyBatchActionOptions,
-	R = never
+	TReturnValue = never
 > = Op extends {
     	$validateOnly: true
 } ? ActionValidationResponse : Op extends {
     	$returnEdits: true
-} ? [R] extends [never] ? ActionEditResponse : ActionEditResponse & ActionReturnValueResponse<R> : [R] extends [never] ? undefined : ActionReturnValueResponse<R>;
+} ? [TReturnValue] extends [never] ? ActionEditResponse : ActionEditResponse & ActionReturnValueResponse<TReturnValue> : [TReturnValue] extends [never] ? undefined : ActionReturnValueResponse<TReturnValue>;
 
 // @public
-export interface ActionReturnValueResponse<R> {
-    	returnValue: R;
+export interface ActionReturnValueResponse<TReturnValue> {
+    	returnValue: TReturnValue;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ValidateActionResponseV2" needs to be exported by the entry point index.d.ts
