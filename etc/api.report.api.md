@@ -174,7 +174,7 @@ export type ActionReturnTypeForOptions<
 
 // @public
 export interface ActionReturnValueResponse<TReturnValue> {
-    	returnValue: TReturnValue;
+    	returnValue: TReturnValue | undefined;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ValidateActionResponseV2" needs to be exported by the entry point index.d.ts
