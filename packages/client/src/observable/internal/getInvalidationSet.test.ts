@@ -26,14 +26,14 @@ import { additionalContext } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import { objectSetDefinitions } from "../../objectSet/createObjectSet.js";
-import { getObjectTypesThatInvalidate } from "./getObjectTypesThatInvalidate.js";
+import { getInvalidationSet } from "./getInvalidationSet.js";
 
 function setupOntology(fauxFoundry: FauxFoundry) {
   const fauxOntology = fauxFoundry.getDefaultOntology();
   ontologies.addEmployeeOntology(fauxOntology);
 }
 
-describe(getObjectTypesThatInvalidate, () => {
+describe(getInvalidationSet, () => {
   let client: Client;
   let apiServer: SetupServer;
   let fauxFoundry: FauxFoundry;
@@ -60,7 +60,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const wireObjectSet = objectSetDefinitions.get(osdkObjectSet);
     invariant(wireObjectSet);
 
-    const { resultType, ...dependencies } = await getObjectTypesThatInvalidate(
+    const { resultType, ...dependencies } = await getInvalidationSet(
       client[additionalContext],
       wireObjectSet,
     );
@@ -205,11 +205,10 @@ describe(getObjectTypesThatInvalidate, () => {
       ],
     };
 
-    const { resultType, objectInvalidationSet } =
-      await getObjectTypesThatInvalidate(
-        client[additionalContext],
-        wireObjectSet as any,
-      );
+    const { resultType, objectInvalidationSet } = await getInvalidationSet(
+      client[additionalContext],
+      wireObjectSet as any,
+    );
     expect(resultType.apiName).toEqual("Employee");
     expect(objectInvalidationSet).toEqual(new Set(["Employee"]));
   });
@@ -340,10 +339,7 @@ describe(getObjectTypesThatInvalidate, () => {
     // Test each type throws an appropriate error
     for (const wireObjectSet of unsupportedTypes) {
       await expect(
-        getObjectTypesThatInvalidate(
-          client[additionalContext],
-          wireObjectSet as any,
-        ),
+        getInvalidationSet(client[additionalContext], wireObjectSet as any),
       ).rejects.toThrow(/Unsupported|Unhandled ObjectSet type/u);
     }
   });

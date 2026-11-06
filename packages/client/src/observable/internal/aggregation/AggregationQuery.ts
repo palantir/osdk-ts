@@ -39,7 +39,7 @@ import type {
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
-import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
+import { getInvalidationSet } from "../getInvalidationSet.js";
 import type { Entry } from "../Layer.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -153,7 +153,7 @@ export class AggregationQuery extends Query<
     if (this.#invalidationTypes) {
       return this.#invalidationTypes;
     }
-    this.#invalidationTypesPromise ??= getObjectTypesThatInvalidate(
+    this.#invalidationTypesPromise ??= getInvalidationSet(
       this.store.client[additionalContext],
       getWireObjectSet(this.createObjectSet()),
     )

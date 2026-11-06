@@ -41,7 +41,7 @@ import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
-import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
+import { getInvalidationSet } from "../getInvalidationSet.js";
 import type { Entry } from "../Layer.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
@@ -111,7 +111,7 @@ export abstract class ListQuery extends BaseListQuery<
   #pivotIntersectApplied = false;
 
   // The actual type of objects this query returns, resolved on first fetch
-  // via getObjectTypesThatInvalidate. For simple queries this equals apiName.
+  // via getInvalidationSet. For simple queries this equals apiName.
   // For transformed queries (e.g. link traversal) it may differ -- e.g.
   // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
   #fetchedObjectType: string | undefined;
@@ -245,11 +245,10 @@ export abstract class ListQuery extends BaseListQuery<
 
     if (needsResultType) {
       const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType, objectInvalidationSet } =
-        await getObjectTypesThatInvalidate(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        );
+      const { resultType, objectInvalidationSet } = await getInvalidationSet(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
 
       this.#updateFetchedObjectType(resultType.apiName);
       this.#rdpInvalidationSet = objectInvalidationSet;
@@ -315,11 +314,10 @@ export abstract class ListQuery extends BaseListQuery<
     if (this.#fetchedObjectType == null) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
-        const { resultType, objectInvalidationSet } =
-          await getObjectTypesThatInvalidate(
-            this.store.client[additionalContext],
-            wireObjectSet,
-          );
+        const { resultType, objectInvalidationSet } = await getInvalidationSet(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
         this.#updateFetchedObjectType(resultType.apiName);
         this.#rdpInvalidationSet = objectInvalidationSet;
       } catch {

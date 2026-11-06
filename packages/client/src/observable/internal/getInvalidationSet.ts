@@ -40,7 +40,7 @@ import type {
 // For now we are keeping things conservative and just invalidating A either way,
 // but we can make this better.
 
-export async function getObjectTypesThatInvalidate(
+export async function getInvalidationSet(
   mc: MinimalClient,
   objectSet: WireObjectSet,
 ): Promise<{

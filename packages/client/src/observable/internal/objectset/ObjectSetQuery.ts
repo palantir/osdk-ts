@@ -30,7 +30,7 @@ import type { BatchContext } from "../BatchContext.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
-import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
+import { getInvalidationSet } from "../getInvalidationSet.js";
 import type { Entry } from "../Layer.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
@@ -221,11 +221,10 @@ export class ObjectSetQuery extends BaseListQuery<
       !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType, objectInvalidationSet } =
-        await getObjectTypesThatInvalidate(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        );
+      const { resultType, objectInvalidationSet } = await getInvalidationSet(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
       this.sortingStrategy = new OrderBySortingStrategy(
         resultType.apiName,
         this.#operations.orderBy,
@@ -484,7 +483,7 @@ export class ObjectSetQuery extends BaseListQuery<
     wireObjectSet: WireObjectSet,
   ): Promise<Set<string>> {
     try {
-      const { objectInvalidationSet } = await getObjectTypesThatInvalidate(
+      const { objectInvalidationSet } = await getInvalidationSet(
         this.store.client[additionalContext],
         wireObjectSet,
       );
