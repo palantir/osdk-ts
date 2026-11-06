@@ -23,7 +23,11 @@ import type {
   ParameterRequiredConfiguration,
   VectorPropertyType,
 } from "@osdk/client.unstable";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+import * as ts from "typescript";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
 import {
@@ -31,19 +35,22 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
 
-const { discoveredFunctions, entityMetadataMappings } = vi.hoisted(() => ({
-  discoveredFunctions: [] as IDiscoveredFunction[],
-  entityMetadataMappings: [] as unknown[],
-}));
+const { discoveredFunctions, discoveryPrograms, entityMetadataMappings } = vi
+  .hoisted(() => ({
+    discoveredFunctions: [] as IDiscoveredFunction[],
+    discoveryPrograms: [] as ts.Program[],
+    entityMetadataMappings: [] as unknown[],
+  }));
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
   FunctionDiscoverer: class {
     constructor(
-      _program: unknown,
+      program: ts.Program,
       _entryPointPath: string,
       _fullFilePath: string,
       entityMetadataMapping?: unknown,
     ) {
+      discoveryPrograms.push(program);
       entityMetadataMappings.push(entityMetadataMapping);
     }
 
@@ -3968,4 +3975,259 @@ describe(OntologyIrToFullMetadataConverter, () => {
       createProgramSpy.mockRestore();
     }
   });
+
+  it.each(
+    [false, true].flatMap(hasMetadata =>
+      [false, true].flatMap(allowJs =>
+        [false, true].map(excludeImports => ({
+          hasMetadata,
+          allowJs,
+          excludeImports,
+        }))
+      )
+    ),
+  )(
+    "discovers imported JavaScript using its declarations without generating TypeScript (metadata: $hasMetadata, allowJs: $allowJs, excludeImports: $excludeImports)",
+    async ({ hasMetadata, allowJs, excludeImports }) => {
+      const componentDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "function-imports-"),
+      );
+      const projectDir = path.join(componentDir, "src");
+      const functionsDir = path.join(projectDir, "functions");
+      const importsDir = path.join(functionsDir, "external-imports");
+      const runtimeImportsDir = path.join(
+        componentDir,
+        ".dev-server/var/data/typescript-functions/dist/functions/external-imports",
+      );
+      const importedFunctionPath = path.join(
+        importsDir,
+        "container",
+        "dist",
+        "importedFunction.js",
+      );
+      const metadata = {
+        functionRid: "ri.function-registry.main.function.imported",
+        functionVersion: "1.2.3",
+      };
+      const writeFile = (fileName: string, contents: string) => {
+        const fullPath = path.join(projectDir, fileName);
+        fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+        fs.writeFileSync(fullPath, contents);
+      };
+      writeFile(
+        "tsconfig.json",
+        JSON.stringify({
+          compilerOptions: { allowJs, noLib: true, types: [] },
+          include: ["**/*.ts", "**/*.js"],
+          exclude: excludeImports ? ["functions/external-imports"] : [],
+        }),
+      );
+      writeFile(
+        "functions/localFunction.ts",
+        `import importedFunction from "./external-imports/container/dist/importedFunction.js";
+export default function localFunction(): string { return importedFunction("local"); }`,
+      );
+      writeFile(
+        "functions/unlisted.js",
+        "export default function unlisted() { return \"unlisted\"; }",
+      );
+      writeFile(
+        "outsideFunctions.ts",
+        "export default function outsideFunctions(): string { return \"outside\"; }",
+      );
+      writeFile("globals.d.ts", "type ImportedResult = string;");
+      writeFile(
+        "functions/declarationOnly.d.ts",
+        "export default function declarationOnly(): string;",
+      );
+      writeFile(
+        "functions/external-imports/container/dist/importedFunction.js",
+        "export default function importedFunction(value) { return value; }",
+      );
+      writeFile(
+        "functions/external-imports/container/dist/importedFunction.d.ts",
+        `import type { ImportedValue } from "./types.js";
+export default function importedFunction(value: ImportedValue): ImportedResult;`,
+      );
+      writeFile(
+        "functions/external-imports/container/dist/types.d.ts",
+        "export type ImportedValue = string;",
+      );
+      writeFile(
+        "functions/external-imports/container/dist/unlisted.js",
+        "export default function unlisted() { return \"unlisted\"; }",
+      );
+      writeFile(
+        "functions/external-imports/container/node_modules/dependency/importedFunction.js",
+        "export default function importedFunction() {}",
+      );
+      writeFile(
+        "functions/external-imports/container/node_modules/dependency/importedFunction.d.ts",
+        "export default function importedFunction(): void;",
+      );
+      writeFile(
+        "functions/external-imports/container/dist/existing.js",
+        "export default function existing() {}",
+      );
+      writeFile(
+        "functions/external-imports/container/dist/existing.d.ts",
+        "export default function existing(): void;",
+      );
+      const existingSource = "export default function existing() {}\n";
+      writeFile(
+        "functions/external-imports/container/dist/existing.ts",
+        existingSource,
+      );
+      fs.mkdirSync(path.join(runtimeImportsDir, "container/dist"), {
+        recursive: true,
+      });
+      fs.writeFileSync(
+        path.join(runtimeImportsDir, "container/dist/importedFunction.js"),
+        "stale compiled output",
+      );
+      if (hasMetadata) {
+        writeFile(
+          "functions/external-imports/functions-metadata.json",
+          JSON.stringify({
+            functions: { importedFunction: metadata },
+          }),
+        );
+      }
+      discoveredFunctions.splice(0, discoveredFunctions.length, {
+        locator: {
+          type: "typescript",
+          typescript: { functionName: "localFunction" },
+        },
+        inputs: [],
+        output: { single: { dataType: { type: "string" } } },
+        customTypes: {},
+      });
+      if (hasMetadata) {
+        discoveredFunctions.push({
+          locator: {
+            type: "typescript",
+            typescript: { functionName: "importedFunction" },
+          },
+          inputs: [{ name: "value", dataType: { type: "string" } }],
+          output: { single: { dataType: { type: "string" } } },
+          customTypes: {},
+        });
+      }
+      discoveryPrograms.splice(0);
+
+      try {
+        const irOutputFile = path.join(
+          projectDir,
+          "build",
+          "functions-ir.json",
+        );
+        const queries = await OntologyIrToFullMetadataConverter
+          .discoverTypeScriptFunctions(
+            functionsDir,
+            undefined,
+            irOutputFile,
+          );
+        const program = discoveryPrograms[0];
+        expect(
+          fs.existsSync(importedFunctionPath.replace(/\.js$/, ".ts")),
+        ).toBe(false);
+        for (
+          const fileName of [
+            "importedFunction.js",
+            "unlisted.js",
+            "existing.js",
+          ]
+        ) {
+          expect(
+            fs.readFileSync(
+              path.join(runtimeImportsDir, "container/dist", fileName),
+              "utf8",
+            ),
+          ).toBe(
+            fs.readFileSync(
+              path.join(importsDir, "container/dist", fileName),
+              "utf8",
+            ),
+          );
+        }
+        expect(
+          fs.readFileSync(
+            path.join(importsDir, "container/dist/existing.ts"),
+            "utf8",
+          ),
+        ).toBe(existingSource);
+        expect(
+          fs.existsSync(path.join(importsDir, "container/dist/unlisted.ts")),
+        )
+          .toBe(false);
+        expect(
+          fs.existsSync(
+            path.join(
+              runtimeImportsDir,
+              "container/node_modules",
+            ),
+          ),
+        ).toBe(false);
+        expect(
+          fs.existsSync(
+            path.join(
+              runtimeImportsDir,
+              "container/dist/importedFunction.d.ts",
+            ),
+          ),
+        ).toBe(false);
+        expect(program.getRootFileNames()).toEqual([
+          path.join(functionsDir, "localFunction.ts"),
+          ...(hasMetadata ? [importedFunctionPath] : []),
+        ]);
+        // Ambient project declarations and imported types must remain available
+        // to the type checker even though they are not discovery entry points.
+        expect(program.getSourceFile(path.join(projectDir, "globals.d.ts")))
+          .toBeDefined();
+        expect(queries[0]).toMatchObject({
+          apiName: "localFunction",
+          version: "0.0.0",
+        });
+        if (hasMetadata) {
+          const importedSource = program.getSourceFile(importedFunctionPath)!;
+          const checker = program.getTypeChecker();
+          const defaultExport = checker.getExportsOfModule(
+            checker.getSymbolAtLocation(importedSource)!,
+          ).find(symbol => symbol.name === "default")!;
+          const [signature] = checker.getSignaturesOfType(
+            checker.getTypeOfSymbolAtLocation(defaultExport, importedSource),
+            ts.SignatureKind.Call,
+          );
+          expect(importedSource.fileName).toBe(importedFunctionPath);
+          expect(checker.typeToString(
+            checker.getTypeOfSymbolAtLocation(
+              signature.parameters[0],
+              importedSource,
+            ),
+          )).toBe("string");
+          expect(checker.typeToString(signature.getReturnType())).toBe(
+            "string",
+          );
+          expect(program.getSemanticDiagnostics(importedSource)).toEqual([]);
+          expect(queries[1]).toMatchObject({
+            apiName: "importedFunction",
+            rid: metadata.functionRid,
+            version: metadata.functionVersion,
+            parameters: {
+              value: { dataType: { type: "string" }, required: true },
+            },
+          });
+          expect(
+            JSON.parse(fs.readFileSync(irOutputFile, "utf-8"))
+              .discoveredFunctions[1].externalMetadata,
+          )
+            .toEqual(metadata);
+        }
+      } finally {
+        fs.rmSync(componentDir, { recursive: true, force: true });
+        discoveredFunctions.splice(0);
+        discoveryPrograms.splice(0);
+      }
+    },
+  );
 });

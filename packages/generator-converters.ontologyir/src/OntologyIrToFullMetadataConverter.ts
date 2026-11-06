@@ -375,10 +375,26 @@ export class OntologyIrToFullMetadataConverter {
       functionsDir,
     );
 
+    const importedFunctionsDir = path.join(
+      projectDir,
+      "functions",
+      "external-imports",
+    );
+    const importedFunctionsMetadataPath = path.join(
+      importedFunctionsDir,
+      "functions-metadata.json",
+    );
+    const importedFunctionsMetadata: IFunctionMetadata = fs.existsSync(
+        importedFunctionsMetadataPath,
+      )
+      ? JSON.parse(fs.readFileSync(importedFunctionsMetadataPath, "utf-8"))
+      : { functions: {} };
+
     const program = this.createProgram(
       tsConfigPath,
       projectDir,
       discoveryTs,
+      importedFunctionsMetadata,
     );
 
     // Construct entity metadata mapping from preview metadata so FunctionDiscoverer
@@ -441,12 +457,31 @@ export class OntologyIrToFullMetadataConverter {
       };
     }
 
-    // Normalize to forward slashes to match TypeScript's internal path format
-    const normalizedFunctionsDir = functionsDir.replace(/\\/g, "/");
+    // Keep all project files available to the type checker, but only discover
+    // local functions and the imported JavaScript roots added to the program.
+    const normalizedFunctionsDir = functionsDir.replace(/\\/g, "/")
+      .replace(/\/$/, "");
+    const normalizedImportsDir = importedFunctionsDir.replace(/\\/g, "/");
     const fd = new FunctionDiscoverer(
-      program,
+      {
+        ...program,
+        getRootFileNames: () =>
+          program.getRootFileNames().filter(fileName => {
+            if (fileName.startsWith(`${normalizedImportsDir}/`)) {
+              return fileName.endsWith(".js")
+                && !fileName.includes("/node_modules/")
+                && Object.hasOwn(
+                  importedFunctionsMetadata.functions,
+                  path.basename(fileName, ".js"),
+                );
+            }
+            return fileName.startsWith(`${normalizedFunctionsDir}/`)
+              && fileName.endsWith(".ts")
+              && !fileName.endsWith(".d.ts");
+          }),
+      },
       projectDir,
-      normalizedFunctionsDir,
+      projectDir.replace(/\\/g, "/"),
       entityMetadataMapping,
     );
     const functions = fd.discover();
@@ -478,21 +513,10 @@ export class OntologyIrToFullMetadataConverter {
       );
     }
 
-    const importedFunctionsMetadataPath = path.join(
-      projectDir,
-      "functions",
-      "external-imports",
-      "functions-metadata.json",
-    );
-    if (fs.existsSync(importedFunctionsMetadataPath)) {
-      const importedFunctionsMetadata = JSON.parse(
-        fs.readFileSync(importedFunctionsMetadataPath, "utf-8"),
-      ) as IFunctionMetadata;
-      for (const func of tsFunctions) {
-        func.externalMetadata = importedFunctionsMetadata.functions[
-          func.locator.typescript!.functionName
-        ];
-      }
+    for (const func of tsFunctions) {
+      func.externalMetadata = importedFunctionsMetadata.functions[
+        func.locator.typescript!.functionName
+      ];
     }
 
     if (irOutputFile) {
@@ -699,6 +723,7 @@ export class OntologyIrToFullMetadataConverter {
     tsConfigFilePath: string,
     projectDir: string,
     typescript: typeof ts = ts,
+    importedFunctionsMetadata?: IFunctionMetadata,
   ): ts.Program {
     const configFile = typescript.readConfigFile(
       tsConfigFilePath,
@@ -728,15 +753,96 @@ export class OntologyIrToFullMetadataConverter {
         .join("\n");
       consola.warn(`tsconfig diagnostics in ${projectDir}:\n${messages}`);
     }
-    if (fileNames.length === 0) {
+    const importedJavaScriptFiles = new Set<string>();
+    if (importedFunctionsMetadata) {
+      const importedFunctionsDir = path.join(
+        projectDir,
+        "functions",
+        "external-imports",
+      )
+        .replace(/\\/g, "/");
+      const isImportedFunction = (fileName: string) =>
+        Object.hasOwn(
+          importedFunctionsMetadata.functions,
+          path.basename(fileName, ".js"),
+        );
+      const runtimeFunctionsDir = path.resolve(
+        projectDir,
+        "..",
+        ".dev-server",
+        "var",
+        "data",
+        "typescript-functions",
+        "dist",
+        "functions",
+      );
+
+      // Preserve the imported container layout for runtime locators and relative imports.
+      for (
+        const fileName of typescript.sys.readDirectory(
+          importedFunctionsDir,
+          [".js"],
+          ["**/node_modules/**"],
+          ["**/*"],
+        )
+      ) {
+        const destinationPath = path.join(
+          runtimeFunctionsDir,
+          path.relative(path.join(projectDir, "functions"), fileName),
+        );
+        fs.mkdirSync(path.dirname(destinationPath), { recursive: true });
+        fs.copyFileSync(fileName, destinationPath);
+        if (isImportedFunction(fileName)) {
+          importedJavaScriptFiles.add(fileName);
+        }
+      }
+    }
+    const rootNames = [...new Set([...fileNames, ...importedJavaScriptFiles])];
+    if (rootNames.length === 0) {
       consola.warn(
         `tsconfig at ${tsConfigFilePath} resolved 0 files `
           + `(projectDir: ${projectDir}). TypeScript function discovery will find nothing.`,
       );
     }
+    if (importedJavaScriptFiles.size > 0) {
+      options.allowJs = true;
+    }
+    const host = typescript.createCompilerHost(options);
+    const getSourceFile = host.getSourceFile.bind(host);
+    host.getSourceFile = (
+      fileName,
+      languageVersion,
+      onError,
+      shouldCreateNewSourceFile,
+    ) => {
+      if (importedJavaScriptFiles.has(fileName)) {
+        // Compiled JavaScript has no type annotations. Discover its declaration
+        // signature under the runtime path so the emitted locator still uses .js.
+        const declarationPath = fileName.replace(/\.js$/, ".d.ts");
+        const declaration = typescript.sys.readFile(declarationPath);
+        if (declaration !== undefined) {
+          const sourceFile = typescript.createSourceFile(
+            declarationPath,
+            declaration,
+            languageVersion,
+            true,
+            typescript.ScriptKind.TS,
+          );
+          sourceFile.fileName = fileName;
+          return sourceFile;
+        }
+      }
+      return getSourceFile(
+        fileName,
+        languageVersion,
+        onError,
+        shouldCreateNewSourceFile,
+      );
+    };
     return typescript.createProgram({
       options,
-      rootNames: fileNames,
+      rootNames,
+      host,
       configFileParsingDiagnostics: errors,
     });
   }
