@@ -245,19 +245,12 @@ export class SpecificLinkQuery extends BaseListQuery<
       throw new Error("Aborted");
     }
 
-    const queryParams: {
-      $pageSize: number;
-      $nextPageToken: string | undefined;
-      $includeRid: true;
-      $orderBy?: Record<string, "asc" | "desc" | undefined>;
-      $where?: Record<string, unknown>;
-      $select?: readonly string[];
-      $includeAllBaseObjectProperties?: true;
-    } = {
-      $pageSize: this.getEffectiveFetchPageSize(),
-      $nextPageToken: this.nextPageToken,
-      $includeRid: true,
-    };
+    const queryParams: NonNullable<Parameters<typeof linkQuery.fetchPage>[0]> =
+      {
+        $pageSize: this.getEffectiveFetchPageSize(),
+        $nextPageToken: this.nextPageToken,
+        $includeRid: true,
+      };
 
     if (this.#select && this.#select.length > 0) {
       queryParams.$select = this.#select;
@@ -267,8 +260,8 @@ export class SpecificLinkQuery extends BaseListQuery<
       queryParams.$orderBy = this.#orderBy;
     }
 
-    if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
-      queryParams.$where = this.#whereClause;
+    if (Object.keys(this.#whereClause).length > 0) {
+      linkQuery = linkQuery.where(this.#whereClause);
     }
 
     // Only forward $includeAllBaseObjectProperties when the link target is an
