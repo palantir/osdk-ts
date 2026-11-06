@@ -20,6 +20,7 @@ import React from "react";
 
 import { getWorkshopModuleUrl } from "./getWorkshopModuleUrl.js";
 import { useInitialTheme } from "./hooks/useInitialTheme.js";
+import { useWorkshopModuleMessaging } from "./hooks/useWorkshopModuleMessaging.js";
 import type { BaseWorkshopModuleProps } from "./WorkshopModuleApi.js";
 
 import styles from "./BaseWorkshopModule.module.css";
@@ -35,10 +36,13 @@ export function BaseWorkshopModule<
 }: BaseWorkshopModuleProps<TVariables>): React.ReactElement {
   const { theme, isLoading } = useInitialTheme(defaultTheme);
   const src = getWorkshopModuleUrl({ ...props, theme });
+  const iframeSrc = isLoading ? undefined : src;
+  const onLoad = useWorkshopModuleMessaging<TVariables>(iframeSrc, props);
 
   return (
     <iframe
-      src={isLoading ? undefined : src}
+      src={iframeSrc}
+      onLoad={onLoad}
       hidden={isLoading}
       title={title}
       className={classnames(styles.iframe, className)}

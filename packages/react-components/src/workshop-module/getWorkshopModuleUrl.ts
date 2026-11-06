@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  WORKSHOP_EMBED_QUERY_PARAM,
+  WORKSHOP_EMBED_QUERY_VALUE,
+} from "@osdk/workshop-embed";
 import invariant from "tiny-invariant";
 
 import type { ResolvedOsdkTheme } from "../theme/types.js";
@@ -40,6 +44,7 @@ export function getWorkshopModuleUrl({
     "Foundry URL must use http or https.",
   );
   url.searchParams.set("embedded", "true");
+  url.searchParams.set(WORKSHOP_EMBED_QUERY_PARAM, WORKSHOP_EMBED_QUERY_VALUE);
   // An empty value clears Workshop's persisted branch; omitting it restores that branch.
   url.searchParams.set("foundry-branch-rid", branchRid ?? "");
   if (theme != null) {
