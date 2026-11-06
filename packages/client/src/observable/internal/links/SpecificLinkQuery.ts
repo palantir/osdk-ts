@@ -266,10 +266,7 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     // Only forward $includeAllBaseObjectProperties when the link target is an
     // interface — for object targets the flag is a no-op on the server.
-    if (
-      target?.kind === "interface" &&
-      (this.includeAllBaseObjectProperties || this.#resolveToObjectType)
-    ) {
+    if (target?.kind === "interface") {
       queryParams.$includeAllBaseObjectProperties = true;
     }
 

@@ -6,5 +6,3 @@
 Apply linked-object filters and expose automatic pagination through useLinks.
 
 Preserve filters on nested operands in shape link set operations.
-
-Do not load all base-object properties solely because interface links are sorted.
