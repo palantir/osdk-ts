@@ -124,6 +124,23 @@ export function defineObject(
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
+  const hasMarkingProperty = (markingType: "CBAC" | "MANDATORY") =>
+    Object.values(objectDef.properties ?? {}).some(
+      (property) =>
+        typeof property.type === "object" &&
+        property.type.type === "marking" &&
+        property.type.markingType === markingType,
+    );
+  invariant(
+    objectDef.dataSecurity?.mandatory === undefined ||
+      hasMarkingProperty("MANDATORY"),
+    `Object "${objectDef.apiName}" sets dataSecurity.mandatory but has no MANDATORY marking property, so no mandatory marking constraint is emitted. Add a MANDATORY marking property or remove dataSecurity.mandatory.`,
+  );
+  invariant(
+    objectDef.dataSecurity?.cbac === undefined || hasMarkingProperty("CBAC"),
+    `Object "${objectDef.apiName}" sets dataSecurity.cbac but has no CBAC marking property, so no classification constraint is emitted. Add a CBAC marking property or remove dataSecurity.cbac.`,
+  );
+
   if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
     const nonDatasetDatasources = objectDef.datasources.filter(
       (ds) => ds.type !== "dataset" && ds.type !== "derived",
