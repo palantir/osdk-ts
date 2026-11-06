@@ -183,6 +183,12 @@ describe("agents", () => {
 
       for (const args of [undefined, {}]) {
         const session = await clientBoundCreateSession(args);
+        expectTypeOf<
+          typeof session
+        >().toEqualTypeOf<noArgumentsAgent.Session>();
+        expectTypeOf<
+          Parameters<typeof session.experimental_sendEvent>[0]
+        >().toBeNever();
         expect(session).toMatchObject({
           id: stubData.noArgumentsAgentResponse.id,
         });
@@ -422,7 +428,7 @@ describe("agents", () => {
         created.id,
       );
 
-      expectTypeOf<typeof session>().toEqualTypeOf<AgentSession>();
+      expectTypeOf<typeof session>().toEqualTypeOf<weatherAgent.Session>();
       expect(session).toMatchObject({ id: created.id });
     });
 
@@ -451,6 +457,19 @@ describe("agents", () => {
       await session.experimental_sendEvent({
         LookupWeather: { city: "Paris" },
       });
+    });
+
+    it("retrieves a session with no declared events", async () => {
+      const created =
+        await client(noArgumentsAgent).experimental_createSession();
+      const session = await client(noArgumentsAgent).experimental_getSession(
+        created.id,
+      );
+      expectTypeOf<typeof session>().toEqualTypeOf<noArgumentsAgent.Session>();
+      expectTypeOf<
+        Parameters<typeof session.experimental_sendEvent>[0]
+      >().toBeNever();
+      expect(session.id).toBe(created.id);
     });
 
     it("returns a fresh handle for each lookup", async () => {
@@ -507,7 +526,16 @@ describe("agents", () => {
         id: created.id,
       });
 
-      await session.experimental_sendEvent({ SelectEmployees: employee });
+      expectTypeOf<
+        typeof session
+      >().toEqualTypeOf<objectArgumentsAgent.Session>();
+      expectTypeOf<{ SelectEmployees: typeof employee }>().not.toMatchTypeOf<
+        Parameters<typeof session.experimental_sendEvent>[0]
+      >();
+      const genericSession: AgentSession = session;
+      await genericSession.experimental_sendEvent({
+        SelectEmployees: employee,
+      });
     });
 
     it("rejects sessions belonging to another agent", async () => {
@@ -583,7 +611,7 @@ describe("agents", () => {
   });
 
   describe("event sending", () => {
-    let session: AgentSession;
+    let session: weatherAgent.Session;
     let agentImpl: FauxAgentImpl;
     const notReady: SendEventResponse = { result: { type: "sessionNotReady" } };
 
@@ -597,9 +625,35 @@ describe("agents", () => {
     });
 
     it("sends an event and resolves on acceptance", async () => {
-      await session.experimental_sendEvent({
-        LookupWeather: { city: "Paris" },
-      });
+      const event: weatherAgent.Events["LookupWeather"] = { city: "Paris" };
+      await session.experimental_sendEvent({ LookupWeather: event });
+    });
+
+    it("checks event names and payloads", () => {
+      type Event = Parameters<typeof session.experimental_sendEvent>[0];
+      expectTypeOf<Event>().toEqualTypeOf<weatherAgent.SendEventArguments>();
+      expectTypeOf<{
+        LookupWeather: { readonly city: string };
+      }>().toMatchTypeOf<Event>();
+      expectTypeOf<{
+        LookupWeather: { city: number };
+      }>().not.toMatchTypeOf<Event>();
+      expectTypeOf<{ LookupWeather: {} }>().not.toMatchTypeOf<Event>();
+      expectTypeOf<{ LookupWeather: null }>().not.toMatchTypeOf<Event>();
+      expectTypeOf<{ unknownEvent: string }>().not.toMatchTypeOf<Event>();
+      expectTypeOf<{}>().not.toMatchTypeOf<Event>();
+      const events = { LookupWeather: { city: "Paris" }, SetTemperature: 20 };
+      expectTypeOf<typeof events>().not.toMatchTypeOf<Event>();
+    });
+
+    it("supports nullable payloads without making the event optional", async () => {
+      expectTypeOf<weatherAgent.Events["SetTemperature"]>().toEqualTypeOf<
+        number | null
+      >();
+      expectTypeOf<{ SetTemperature?: number | null }>().not.toMatchTypeOf<
+        Parameters<typeof session.experimental_sendEvent>[0]
+      >();
+      await session.experimental_sendEvent({ SetTemperature: null });
     });
 
     it("supports a detached experimental_sendEvent method", async () => {
@@ -609,8 +663,19 @@ describe("agents", () => {
       });
     });
 
-    it("forwards unknown event payloads", async () => {
-      await session.experimental_sendEvent({
+    it("forwards unknown event payloads for generic agents", async () => {
+      const generic: AgentDefinition = {
+        type: "agent",
+        apiName: weatherAgent.apiName,
+        version: weatherAgent.version,
+      };
+      const genericSession = await client(generic).experimental_getSession(
+        session.id,
+      );
+      expectTypeOf<
+        Parameters<typeof genericSession.experimental_sendEvent>[0]
+      >().toEqualTypeOf<Record<string, unknown>>();
+      await genericSession.experimental_sendEvent({
         unknownEvent: { raw: [1, null, "value"] },
       });
     });
@@ -623,6 +688,15 @@ describe("agents", () => {
         employee: 50030,
         employees,
       });
+      expectTypeOf<
+        typeof objectSession
+      >().toEqualTypeOf<objectArgumentsAgent.Session>();
+      expectTypeOf<
+        objectArgumentsAgent.Events["SelectEmployees"]
+      >().toEqualTypeOf<AgentParam.ObjectSetType<Employee>>();
+      expectTypeOf<{ SelectEmployees: string }>().not.toMatchTypeOf<
+        Parameters<typeof objectSession.experimental_sendEvent>[0]
+      >();
       await objectSession.experimental_sendEvent({
         SelectEmployees: employees,
       });
@@ -631,13 +705,16 @@ describe("agents", () => {
     it.each([{}, { first: {}, second: {} }])(
       "requires exactly one event: %j",
       async (event) => {
-        const result = session.experimental_sendEvent(event);
+        const genericSession: AgentSession = session;
+        const result = genericSession.experimental_sendEvent(event);
         await expect(result).rejects.toThrow("requires exactly one event");
       },
     );
 
     it("propagates API errors", async () => {
-      const result = session.experimental_sendEvent({ invalid: {} });
+      const result = session.experimental_sendEvent({
+        LookupWeather: { city: "invalid" },
+      });
       await expect(result).rejects.toMatchObject({
         errorName: "Invalid Agent Event",
       });
