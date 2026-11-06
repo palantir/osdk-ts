@@ -77,6 +77,7 @@ interface ClientArgs extends BaseClientArgs {
   scopes?: string[];
   ctxPath?: string;
   refreshTokenMarker?: string;
+  realmId?: string;
 }
 
 describe(createPublicOauthClient, () => {
@@ -149,7 +150,7 @@ describe(createPublicOauthClient, () => {
   let clientArgs: ClientArgs;
   function setupClient(clientArgs_: ClientArgs) {
     clientArgs = clientArgs_;
-    if (clientArgs.refreshTokenMarker) {
+    if (clientArgs.refreshTokenMarker || clientArgs.realmId) {
       client = createPublicOauthClient(
         clientArgs.clientId,
         clientArgs.foundryUrl,
@@ -210,6 +211,38 @@ describe(createPublicOauthClient, () => {
       }),
     );
   }
+
+  it("includes the realm id in the authorization request", async () => {
+    setupLocalState({});
+    vi.mocked(commonJs.readSession).mockImplementation(() => ({}));
+    setupClient({
+      ...BASE_CLIENT_ARGS,
+      realmId: "example realm",
+    });
+
+    await expectRedirectToMultipass(client());
+
+    const url = new URL(mockWindow.location.assign.mock.calls[0][0]);
+    expect(url.searchParams.get("_realm")).toBe("example realm");
+  });
+
+  it.each([undefined, ""])(
+    "does not include a realm id when it is %j",
+    async (realmId) => {
+      setupLocalState({});
+      vi.mocked(commonJs.readSession).mockImplementation(() => ({}));
+      setupClient({
+        ...BASE_CLIENT_ARGS,
+        refreshTokenMarker: "marker",
+        realmId,
+      });
+
+      await expectRedirectToMultipass(client());
+
+      const url = new URL(mockWindow.location.assign.mock.calls[0][0]);
+      expect(url.searchParams.has("_realm")).toBe(false);
+    },
+  );
 
   describe("refresh token marker and scopes", () => {
     beforeEach(() => {
