@@ -21,7 +21,8 @@ import {
   DEFAULT_RESOURCES_PATH,
   initAliases,
   resetAliasesCache,
-} from "./customForBrowser.js";
+  workshopForBrowser as workshop,
+} from "./aliasesForBrowser.js";
 
 interface FakeResponseInit {
   ok?: boolean;
@@ -59,6 +60,9 @@ const RESOURCES_JSON = {
       },
       featureXEnabled: { value: "false" },
     },
+    workshops: [
+      { alias: "orderDetails", rid: "ri.workshop.main.module.example" },
+    ],
   },
 };
 
@@ -115,6 +119,72 @@ describe("browser aliases", () => {
       });
 
       await expect(custom(name)).resolves.toBe("real-value");
+    });
+  });
+
+  describe("workshop", () => {
+    it("returns the RID served in resources.json", async () => {
+      vi.stubGlobal("fetch", mockFetch({ body: RESOURCES_JSON }));
+
+      await expect(workshop("orderDetails")).resolves.toEqual({
+        rid: "ri.workshop.main.module.example",
+      });
+    });
+
+    it.each([undefined, []])(
+      "handles missing or empty declarations: %j",
+      async (workshops) => {
+        vi.stubGlobal("fetch", mockFetch({ body: { aliases: { workshops } } }));
+
+        await expect(workshop("orderDetails")).rejects.toThrow(
+          "Workshop alias 'orderDetails' not found. Available aliases: []",
+        );
+      },
+    );
+
+    it("lists only Workshop aliases when a name is unknown", async () => {
+      vi.stubGlobal("fetch", mockFetch({ body: RESOURCES_JSON }));
+
+      await expect(workshop("toString")).rejects.toThrow(
+        "Workshop alias 'toString' not found. Available aliases: [orderDetails]",
+      );
+    });
+
+    it.each([
+      null,
+      {},
+      [null],
+      [{ alias: "orderDetails" }],
+      [{ alias: 123, rid: "ri.workshop.main.module.example" }],
+      [{ alias: "orderDetails", rid: 123 }],
+      [{ alias: "", rid: "ri.workshop.main.module.example" }],
+      [{ alias: "orderDetails", rid: "" }],
+    ])("rejects malformed declarations: %j", async (workshops) => {
+      vi.stubGlobal("fetch", mockFetch({ body: { aliases: { workshops } } }));
+
+      await expect(workshop("orderDetails")).rejects.toThrow(
+        "aliases.workshops",
+      );
+    });
+
+    it("rejects duplicate aliases", async () => {
+      vi.stubGlobal(
+        "fetch",
+        mockFetch({
+          body: {
+            aliases: {
+              workshops: [
+                ...RESOURCES_JSON.aliases.workshops,
+                { alias: "orderDetails", rid: "ri.workshop.main.module.other" },
+              ],
+            },
+          },
+        }),
+      );
+
+      await expect(workshop("orderDetails")).rejects.toThrow(
+        "Duplicate Workshop alias 'orderDetails'",
+      );
     });
   });
 
@@ -402,9 +472,7 @@ describe("browser aliases", () => {
     it("rejects a non-object aliases block", async () => {
       await expect(
         initAliases({ fetch: mockFetch({ body: { aliases: [] } }) }),
-      ).rejects.toThrow(
-        `'aliases' to look like { "custom": { "myAlias": { "value": "..." } } }`,
-      );
+      ).rejects.toThrow("expected 'aliases' to be a JSON object");
     });
 
     it("rejects a non-object custom block", async () => {
