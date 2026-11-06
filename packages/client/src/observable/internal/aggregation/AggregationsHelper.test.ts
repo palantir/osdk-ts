@@ -145,7 +145,7 @@ describe("aggregation ObjectSet support", () => {
   it("includes wireObjectSet in cache key when provided", () => {
     const pivotedSet = client(Employee).pivotTo("officeLink");
 
-    const query = store.aggregations.getQueryWithObjectSet({
+    const query = store.aggregations.getQuery({
       type: Office,
       objectSet: pivotedSet,
       where: {},
@@ -160,7 +160,7 @@ describe("aggregation ObjectSet support", () => {
   it("invalidates pivoted aggregations on source type invalidation", async () => {
     const pivotedSet = client(Employee).pivotTo("officeLink");
 
-    const query = store.aggregations.getQueryWithObjectSet({
+    const query = store.aggregations.getQuery({
       type: Office,
       objectSet: pivotedSet,
       where: {},
@@ -198,7 +198,7 @@ describe("aggregation ObjectSet support", () => {
       .mockRejectedValue(new Error("Temporary metadata failure"));
     const observableClient = new ObservableClientImpl(store);
     let payload: AggregationState | undefined;
-    const subscription = await observableClient.observeAggregation(
+    const subscriptionPromise = observableClient.observeAggregation(
       {
         type: Employee,
         objectSet: client(Employee).where({ fullName: "Alice" }),
@@ -215,7 +215,11 @@ describe("aggregation ObjectSet support", () => {
       },
     );
 
+    const initialPayload = payload;
+    const subscription = await subscriptionPromise;
     try {
+      expect(subscriptionPromise).toBeInstanceOf(Promise);
+      expect(initialPayload).toMatchObject({ status: "loading" });
       await vi.waitFor(() => expect(payload?.status).toBe("error"));
       expect(payload?.result).toBeUndefined();
 

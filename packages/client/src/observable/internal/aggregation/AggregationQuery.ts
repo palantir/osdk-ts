@@ -275,7 +275,17 @@ export class AggregationQuery extends Query<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    const invalidationTypes = await this.ensureInvalidationTypesReady();
+    let invalidationTypes: Set<string>;
+    try {
+      invalidationTypes = await this.ensureInvalidationTypesReady();
+    } catch {
+      changes?.modified.add(this.cacheKey);
+      this.store.batch({}, (batch) => {
+        this.writeToStore(undefined, "error", batch);
+      });
+      return;
+    }
+
     if (invalidationTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
