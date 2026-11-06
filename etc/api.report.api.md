@@ -299,7 +299,7 @@ export interface AsyncIterArgs<
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q> | RDP_KEYS> = ObjectSetArgs.OrderByOptions<PropertyKeys<Q> | RDP_KEYS>,
 	PROPERTY_SECURITIES extends boolean = false,
 	MODIFIERS extends ApplyModifiersArg<Q> = {}
 > extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
@@ -317,7 +317,7 @@ export interface Attachment {
 
 // @public (undocumented)
 export interface AttachmentMetadata {
-	// (undocumented)
+    	// (undocumented)
     filename: string;
     	// (undocumented)
     mediaType: string;
@@ -868,7 +868,7 @@ export interface FetchPageArgs<
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q> | RDP_KEYS> = ObjectSetArgs.OrderByOptions<PropertyKeys<Q> | RDP_KEYS>,
 	PROPERTY_SECURITIES extends boolean = false,
 	MODIFIERS extends ApplyModifiersArg<Q> = {},
 	DEFAULT_LOAD_LEVEL extends PropertyModifierValue | undefined = PropertyModifierValue
@@ -1244,13 +1244,14 @@ export interface MailboxWrapper {
     mailbox: Mailbox;
 }
 
-// @public (undocumented)
+// @public
 export type MaybeScore<
 	T extends Osdk.Instance<any>,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>
-> = ORDER_BY_OPTIONS extends "relevance" ? T & {
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>,
+	_ALL_ORDER_BY_OPTIONS = ORDER_BY_OPTIONS
+> = ORDER_BY_OPTIONS extends "relevance" ? [_ALL_ORDER_BY_OPTIONS] extends ["relevance"] ? T & {
     	$score: number
-} : T;
+} : T : T;
 
 // @public (undocumented)
 export interface Media {
@@ -1660,7 +1661,7 @@ export namespace ObjectSetArgs {
     		K extends PropertyKeys<Q> = never,
     		T extends boolean = false,
     		RDP_KEYS extends string = never,
-    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
+    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = ObjectSetArgs.OrderByOptions<K>
     	> extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
         		// (undocumented)
         $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
@@ -1671,7 +1672,7 @@ export namespace ObjectSetArgs {
     		K extends PropertyKeys<Q> = never,
     		T extends boolean = false,
     		RDP_KEYS extends string = never,
-    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
+    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = ObjectSetArgs.OrderByOptions<K>
     	> extends AsyncIter<Q, K, T, RDP_KEYS, ORDER_BY_OPTIONS> {
         		// (undocumented)
         $nextPageToken?: string;
@@ -2540,8 +2541,8 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:312:35 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
-// src/OsdkObjectFrom.ts:357:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:323:35 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:368:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts

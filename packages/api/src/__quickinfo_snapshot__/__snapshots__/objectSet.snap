@@ -23,79 +23,7 @@ type objectSet_aggregate_req_param = AggregateOpts<EmployeeApiTest> & {
 
 /** The result of objectSet.asyncIter(). */
 type objectSet_asyncIter_result = AsyncIterableIterator<
-  | Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
-  | (
-    & ObjectIdentifiers<EmployeeApiTest>
-    & {
-      readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
-      readonly $objectType: string;
-      readonly $title: string | undefined;
-    }
-    & Pick<
-      EmployeeApiTest.Props,
-      | "employeeId"
-      | "fullName"
-      | "addressStruct"
-      | "salaryHistory"
-      | "bonusHistory"
-      | "class"
-      | "mediaReference"
-      | "attachment"
-      | "geopoint"
-      | "geotimeSeriesReference"
-      | "timeseries"
-      | "isActive"
-      | "yearsOfExperience"
-      | "rank"
-      | "performanceScore"
-      | "hourlyRate"
-      | "dateOfJoining"
-      | "lastUpdated"
-      | "skillSet"
-      | "skillSetEmbedding"
-    >
-    & {}
-    & {
-      readonly $link: {
-        readonly lead: SingleLinkAccessor<EmployeeApiTest>;
-        readonly peeps: ObjectSet<EmployeeApiTest, never>;
-      };
-      readonly $as: <NEW_Q extends InterfaceDefinition>(
-        type: string | NEW_Q,
-      ) => Osdk.Instance<
-        NEW_Q,
-        never,
-        ConvertProps<
-          EmployeeApiTest,
-          NEW_Q,
-          PropertyKeys<EmployeeApiTest>,
-          never
-        >,
-        {}
-      >;
-      readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
-        updatedObject?:
-          | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
-          | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
-          | undefined,
-      ) => Osdk.Instance<
-        EmployeeApiTest,
-        never,
-        PropertyKeys<EmployeeApiTest> | NEW_PROPS,
-        {}
-      >;
-      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
-        ObjectMetadata: ObjectMetadata;
-      };
-      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
-        PropertyApiName extends PropertyKeys<EmployeeApiTest>,
-      >(
-        propertyApiName: PropertyApiName,
-        options?: { locale?: string; timezoneId?: string },
-      ) => string | undefined;
-    }
-    & { $score: number }
-  )
+  Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>
 >;
 
 /** The awaited result of objectSet.fetchPageWithErrors() — Result-wrapped envelope around the fetchPage shape. */
@@ -103,7 +31,7 @@ type objectSet_fetchPageWithErrors_result =
   | ErrorResult
   | OkResult<
     PageResult<
-      | Osdk.Instance<
+      Osdk.Instance<
         EmployeeApiTest,
         never,
         | "employeeId"
@@ -126,97 +54,12 @@ type objectSet_fetchPageWithErrors_result =
         | undefined,
         {}
       >
-      | (
-        & ObjectIdentifiers<EmployeeApiTest>
-        & {
-          readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
-          readonly $objectType: string;
-          readonly $title: string | undefined;
-        }
-        & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
-        & {}
-        & {
-          readonly $link: {
-            readonly lead: SingleLinkAccessor<EmployeeApiTest>;
-            readonly peeps: ObjectSet<EmployeeApiTest, never>;
-          };
-          readonly $as: <NEW_Q extends InterfaceDefinition>(
-            type: string | NEW_Q,
-          ) => Osdk.Instance<
-            NEW_Q,
-            never,
-            ConvertProps<
-              EmployeeApiTest,
-              NEW_Q,
-              | "employeeId"
-              | "fullName"
-              | "class"
-              | "mediaReference"
-              | "attachment"
-              | "geopoint"
-              | "geotimeSeriesReference"
-              | "timeseries"
-              | "isActive"
-              | "yearsOfExperience"
-              | "rank"
-              | "performanceScore"
-              | "hourlyRate"
-              | "dateOfJoining"
-              | "lastUpdated"
-              | "skillSet"
-              | "skillSetEmbedding"
-              | undefined,
-              never
-            >,
-            {}
-          >;
-          readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
-            updatedObject?:
-              | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
-              | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
-              | undefined,
-          ) => Osdk.Instance<
-            EmployeeApiTest,
-            never,
-            | "employeeId"
-            | "fullName"
-            | "class"
-            | "mediaReference"
-            | "attachment"
-            | "geopoint"
-            | "geotimeSeriesReference"
-            | "timeseries"
-            | "isActive"
-            | "yearsOfExperience"
-            | "rank"
-            | "performanceScore"
-            | "hourlyRate"
-            | "dateOfJoining"
-            | "lastUpdated"
-            | "skillSet"
-            | "skillSetEmbedding"
-            | NEW_PROPS
-            | undefined,
-            {}
-          >;
-          readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
-            ObjectMetadata: ObjectMetadata;
-          };
-          readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
-            PropertyApiName extends PropertyKeys<EmployeeApiTest>,
-          >(
-            propertyApiName: PropertyApiName,
-            options?: { locale?: string; timezoneId?: string },
-          ) => string | undefined;
-        }
-        & { $score: number }
-      )
     >
   >;
 
 /** The awaited result of objectSet.fetchPage(). */
 type objectSet_fetchPage_result = PageResult<
-  | Osdk.Instance<
+  Osdk.Instance<
     EmployeeApiTest,
     never,
     | "employeeId"
@@ -239,91 +82,6 @@ type objectSet_fetchPage_result = PageResult<
     | undefined,
     {}
   >
-  | (
-    & ObjectIdentifiers<EmployeeApiTest>
-    & {
-      readonly $objectSpecifier: ObjectSpecifier<EmployeeApiTest>;
-      readonly $objectType: string;
-      readonly $title: string | undefined;
-    }
-    & Pick<EmployeeApiTest.Props, PropertyKeys<EmployeeApiTest>>
-    & {}
-    & {
-      readonly $link: {
-        readonly lead: SingleLinkAccessor<EmployeeApiTest>;
-        readonly peeps: ObjectSet<EmployeeApiTest, never>;
-      };
-      readonly $as: <NEW_Q extends InterfaceDefinition>(
-        type: string | NEW_Q,
-      ) => Osdk.Instance<
-        NEW_Q,
-        never,
-        ConvertProps<
-          EmployeeApiTest,
-          NEW_Q,
-          | "employeeId"
-          | "fullName"
-          | "class"
-          | "mediaReference"
-          | "attachment"
-          | "geopoint"
-          | "geotimeSeriesReference"
-          | "timeseries"
-          | "isActive"
-          | "yearsOfExperience"
-          | "rank"
-          | "performanceScore"
-          | "hourlyRate"
-          | "dateOfJoining"
-          | "lastUpdated"
-          | "skillSet"
-          | "skillSetEmbedding"
-          | undefined,
-          never
-        >,
-        {}
-      >;
-      readonly $clone: <NEW_PROPS extends PropertyKeys<EmployeeApiTest>>(
-        updatedObject?:
-          | Osdk.Instance<EmployeeApiTest, any, NEW_PROPS, {}>
-          | { [K in NEW_PROPS]?: EmployeeApiTest.Props[K] | undefined }
-          | undefined,
-      ) => Osdk.Instance<
-        EmployeeApiTest,
-        never,
-        | "employeeId"
-        | "fullName"
-        | "class"
-        | "mediaReference"
-        | "attachment"
-        | "geopoint"
-        | "geotimeSeriesReference"
-        | "timeseries"
-        | "isActive"
-        | "yearsOfExperience"
-        | "rank"
-        | "performanceScore"
-        | "hourlyRate"
-        | "dateOfJoining"
-        | "lastUpdated"
-        | "skillSet"
-        | "skillSetEmbedding"
-        | NEW_PROPS
-        | undefined,
-        {}
-      >;
-      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
-        ObjectMetadata: ObjectMetadata;
-      };
-      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
-        PropertyApiName extends PropertyKeys<EmployeeApiTest>,
-      >(
-        propertyApiName: PropertyApiName,
-        options?: { locale?: string; timezoneId?: string },
-      ) => string | undefined;
-    }
-    & { $score: number }
-  )
 >;
 
 /** The listener argument of objectSet.subscribe(...). */

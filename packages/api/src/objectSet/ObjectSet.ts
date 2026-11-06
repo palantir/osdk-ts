@@ -181,8 +181,15 @@ type ValidAsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
 > =
-  | ObjectSetArgs.AsyncIter<Q, PropertyKeys<Q>, false, string & keyof RDPs>
-  | AsyncIterArgs<Q, never, any, any, any, true, string & keyof RDPs>;
+  | ObjectSetArgs.AsyncIter<
+      Q,
+      PropertyKeys<Q>,
+      false,
+      string & keyof RDPs,
+      // ordering is handled by the overload that tracks ORDER_BY_OPTIONS
+      never
+    >
+  | AsyncIterArgs<Q, never, any, any, any, true, string & keyof RDPs, never>;
 
 interface FetchPageSignature<
   Q extends ObjectOrInterfaceDefinition,
@@ -215,7 +222,9 @@ interface FetchPageSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+    // Defaulting to the constraint (not `{}`) keeps $orderBy completions working
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> =
+      ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
     PROPERTY_SECURITIES extends boolean = false,
     MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
@@ -310,7 +319,9 @@ interface FetchPageWithErrorsSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+    // Defaulting to the constraint (not `{}`) keeps $orderBy completions working
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> =
+      ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
     const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     args?: FetchPageArgs<
@@ -437,7 +448,9 @@ interface AsyncIterSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+    // Defaulting to the constraint (not `{}`) keeps $orderBy completions working
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> =
+      ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
     const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     args?: AsyncIterArgs<

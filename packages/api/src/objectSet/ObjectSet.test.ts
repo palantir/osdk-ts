@@ -17,11 +17,14 @@
 import { describe, expectTypeOf, it, test, vi } from "vitest";
 
 import type {
+  AsyncIterArgs,
   DerivedProperty,
+  FetchPageArgs,
   NullabilityAdherence,
   ObjectIdentifiers,
   ObjectOrInterfaceDefinition,
   ObjectSet as $ObjectSet,
+  ObjectSetArgs,
   Osdk,
   PageResult,
   PropertyKeys,
@@ -117,6 +120,33 @@ describe("ObjectSet", () => {
       const result = await fauxObjectSet.fetchPage({ $select: ["fullName"] });
       expectTypeOf<(typeof result.data)[0]>().toEqualTypeOf<
         Osdk.Instance<EmployeeApiTest, never, "fullName">
+      >();
+    });
+
+    test("order by an unselected property", async () => {
+      const result = await fauxObjectSet.fetchPage({
+        $select: ["fullName"],
+        $orderBy: { employeeId: "asc" },
+      });
+      expectTypeOf<(typeof result.data)[0]>().toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, never, "fullName">
+      >();
+
+      const resultWithErrors = await fauxObjectSet.fetchPageWithErrors({
+        $select: ["fullName"],
+        $orderBy: { employeeId: "asc" },
+      });
+      expectTypeOf(resultWithErrors.value!.data[0]).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, never, "fullName">
+      >();
+    });
+
+    test("args types accept $orderBy by default", () => {
+      expectTypeOf<FetchPageArgs<EmployeeApiTest>["$orderBy"]>().toEqualTypeOf<
+        ObjectSetArgs.OrderByOptions<PropertyKeys<EmployeeApiTest>> | undefined
+      >();
+      expectTypeOf<AsyncIterArgs<EmployeeApiTest>["$orderBy"]>().toEqualTypeOf<
+        ObjectSetArgs.OrderByOptions<PropertyKeys<EmployeeApiTest>> | undefined
       >();
     });
   });
@@ -1379,6 +1409,28 @@ describe("ObjectSet", () => {
         > & { $score: number }
       >;
       expectTypeOf(asyncIter).toEqualTypeOf<expectedType>();
+    });
+
+    it("accepts relevance or property ordering in $orderBy", () => {
+      const knn = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      );
+
+      type ExpectedOrderBy =
+        | ObjectSetArgs.OrderByOptions<PropertyKeys<EmployeeApiTest>>
+        | undefined;
+
+      expectTypeOf<
+        NonNullable<Parameters<typeof knn.fetchPage>[0]>["$orderBy"]
+      >().toEqualTypeOf<ExpectedOrderBy>();
+      expectTypeOf<
+        NonNullable<Parameters<typeof knn.fetchPageWithErrors>[0]>["$orderBy"]
+      >().toEqualTypeOf<ExpectedOrderBy>();
+      expectTypeOf<
+        NonNullable<Parameters<typeof knn.asyncIter>[0]>["$orderBy"]
+      >().toEqualTypeOf<ExpectedOrderBy>();
     });
 
     it("no arbitrary order bys", () => {
