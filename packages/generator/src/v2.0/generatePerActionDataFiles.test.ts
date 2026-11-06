@@ -203,6 +203,30 @@ describe(generatePerActionDataFiles, () => {
       );
     });
 
+    it("allows undefined items in list and set return types", async () => {
+      const nullableInteger: QueryDataType = {
+        type: "union",
+        unionTypes: [{ type: "integer" }, { type: "null" }],
+      };
+      const files = await generateActions({
+        returnsList: actionReturning("returnsList", {
+          type: "array",
+          subType: nullableInteger,
+        }),
+        returnsSet: actionReturning("returnsSet", {
+          type: "set",
+          subType: nullableInteger,
+        }),
+      });
+
+      expect(files["/foo/ontology/actions/returnsList.ts"]).toMatch(
+        /export type ReturnType = Array<\s*QueryResult.PrimitiveType<'integer'> \| undefined\s*> \| undefined;/,
+      );
+      expect(files["/foo/ontology/actions/returnsSet.ts"]).toMatch(
+        /export type ReturnType = Array<\s*QueryResult.PrimitiveType<'integer'> \| undefined\s*>;/,
+      );
+    });
+
     it("leaves actions without a return type unchanged", async () => {
       const files = await generateActions(TodoWireOntology.actionTypes);
       const generated = files["/foo/ontology/actions/markTodoCompleted.ts"];
