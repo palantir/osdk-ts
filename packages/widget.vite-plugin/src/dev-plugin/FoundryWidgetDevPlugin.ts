@@ -134,7 +134,19 @@ export function FoundryWidgetDevPlugin(
         res.setHeader("Content-Type", "application/json");
         res.end(
           JSON.stringify(
-            htmlEntrypoints.map((entrypoint) => serverPath(server, entrypoint)),
+            htmlEntrypoints.map((entrypoint) =>
+              serverPath(
+                server,
+                // Absolute inputs are file paths, so serve them relative to the Vite root
+                path
+                  .relative(
+                    server.config.root,
+                    path.resolve(server.config.root, entrypoint),
+                  )
+                  .split(path.sep)
+                  .join("/"),
+              ),
+            ),
           ),
         );
       });
