@@ -317,7 +317,7 @@ export interface Attachment {
 
 // @public (undocumented)
 export interface AttachmentMetadata {
-	// (undocumented)
+    	// (undocumented)
     filename: string;
     	// (undocumented)
     mediaType: string;
@@ -2541,8 +2541,8 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:321:35 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
-// src/OsdkObjectFrom.ts:366:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:323:35 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:368:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
