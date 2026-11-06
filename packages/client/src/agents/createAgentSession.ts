@@ -39,14 +39,13 @@ export async function createAgentSession<D extends AgentDefinition<unknown>>(
   }
   const clientWithHeaders = addUserAgentHeader(client, agent);
   const ontologyRid = await client.ontologyRid;
-  const clientAgentDefinition =
-    await client.ontologyProvider.getAgentDefinition(
-      agent.apiName,
-      agent.version,
-    );
+  const agentDefinition = await client.ontologyProvider.getAgentDefinition(
+    agent.apiName,
+    agent.version,
+  );
   const convertedArguments = await toDataValueAgents(args ?? {}, client, {
     type: "struct",
-    fields: clientAgentDefinition.argumentDefinitions,
+    fields: agentDefinition.argumentDefinitions,
   });
   const response = await Sessions.create(
     clientWithHeaders,
@@ -61,16 +60,9 @@ export async function createAgentSession<D extends AgentDefinition<unknown>>(
     },
     { preview: true },
   );
-  const sessionAgentDefinition =
-    response.agentVersion === clientAgentDefinition.version
-      ? clientAgentDefinition
-      : await client.ontologyProvider.getAgentDefinition(
-          agent.apiName,
-          response.agentVersion,
-        );
   return createAgentSessionHandle(
     clientWithHeaders,
     response.id,
-    sessionAgentDefinition,
+    agentDefinition,
   );
 }
