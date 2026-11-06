@@ -69,25 +69,32 @@ export function FoundryWidgetBuildPlugin(
      * Write the manifest to the expected location in the dist directory.
      */
     async writeBundle(_, bundle) {
-      const foundryConfig = await loadFoundryConfig("widgetSet");
+      const foundryConfig = await loadFoundryConfig("widgetSet", {
+        cwd: config.root,
+      });
       if (foundryConfig == null) {
         throw new Error("foundry.config.json file not found.");
       }
+      const projectDir = path.dirname(foundryConfig.configFilePath);
+      const outDir = path.resolve(config.root, config.build.outDir);
 
       // Create a Vite server to evaluate widget config modules
       const server = await createModuleEvaluationServer(config);
 
       try {
         // Build widget set manifest
-        const widgetSetVersion = await computeWidgetSetVersion(foundryConfig);
+        const widgetSetVersion = await computeWidgetSetVersion(
+          foundryConfig,
+          projectDir,
+        );
         const widgetBuilds = await Promise.all(
           htmlEntrypoints.map((input) =>
-            getWidgetBuildOutputs(bundle, input, config.build.outDir, server),
+            getWidgetBuildOutputs(bundle, input, config.root, outDir, server),
           ),
         );
         const widgetSetInputSpec = await getWidgetSetInputSpec(
-          path.resolve(process.cwd(), "package.json"),
-          path.resolve(process.cwd(), "resources.json"),
+          path.join(projectDir, "package.json"),
+          path.join(projectDir, "resources.json"),
         );
         const widgetSetManifest = buildWidgetSetManifest(
           foundryConfig.foundryConfig.widgetSet.rid,
@@ -98,7 +105,7 @@ export function FoundryWidgetBuildPlugin(
         );
 
         // Write the manifest to the dist directory
-        writeManifest(widgetSetManifest, config.build.outDir);
+        writeManifest(widgetSetManifest, outDir);
       } finally {
         await server.close();
       }
@@ -125,11 +132,13 @@ async function createModuleEvaluationServer(
 // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
 async function computeWidgetSetVersion(
   foundryConfig: LoadedFoundryConfig<"widgetSet">,
+  projectDir: string,
 ): Promise<string> {
   return autoVersion(
     foundryConfig.foundryConfig.widgetSet.autoVersion ?? {
       type: "package-json",
     },
+    { cwd: projectDir },
   );
 }
 

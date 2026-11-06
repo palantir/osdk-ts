@@ -29,6 +29,12 @@ vi.mock("../../build-plugin/getWidgetSetInputSpec.js", () => ({
   getWidgetSetInputSpec: vi.fn(),
 }));
 
+vi.mock("@osdk/foundry-config-json", () => ({
+  loadFoundryConfig: vi.fn(() =>
+    Promise.resolve({ configFilePath: "/project/foundry.config.json" }),
+  ),
+}));
+
 import { getWidgetSetInputSpec } from "../../build-plugin/getWidgetSetInputSpec.js";
 import { extractWidgetConfig } from "../../common/extractWidgetConfig.js";
 
