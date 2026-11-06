@@ -370,6 +370,156 @@ describe("Experimental Test Suite", () => {
         ).toEqual([[combinedMarkingId]]);
       },
     );
+
+    describe("dataSecurity allowEmptyMarkings", () => {
+      function defineDocument(
+        dataSecurity: Parameters<typeof defineObject>[0]["dataSecurity"],
+        markingTypes: Array<"CBAC" | "MANDATORY"> = ["CBAC", "MANDATORY"],
+      ) {
+        return defineObject({
+          apiName: "document",
+          displayName: "Document",
+          pluralDisplayName: "Documents",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            ...(markingTypes.includes("CBAC") && {
+              classification: {
+                type: {
+                  type: "marking",
+                  markingType: "CBAC",
+                  markingInputGroupName: "classificationGroup",
+                },
+              },
+            }),
+            ...(markingTypes.includes("MANDATORY") && {
+              mandatory: {
+                type: {
+                  type: "marking",
+                  markingType: "MANDATORY",
+                  markingInputGroupName: "mandatoryGroup",
+                },
+              },
+            }),
+          },
+          dataSecurity,
+        });
+      }
+
+      async function getDataSecurity(
+        dataSecurity: Parameters<typeof defineObject>[0]["dataSecurity"],
+      ) {
+        const result = await defineOntologyV2("com.palantir.", () => {
+          defineDocument(dataSecurity);
+        });
+        const document = Object.values(
+          result.ontologyIr.ontology.objectTypes,
+        )[0];
+        const datasources = document.datasources;
+        expect(datasources).toHaveLength(1);
+        return datasources[0].dataSecurity;
+      }
+
+      it("emits allowEmptyMarkings on the mandatory constraint", async () => {
+        expect(
+          await getDataSecurity({ mandatory: { allowEmptyMarkings: true } }),
+        ).toEqual({
+          classificationConstraint: { markings: ["classificationGroup"] },
+          markingConstraint: {
+            markingIds: ["mandatoryGroup"],
+            allowEmptyMarkings: true,
+          },
+        });
+      });
+
+      it("emits allowEmptyMarkings on the classification constraint", async () => {
+        expect(
+          await getDataSecurity({ cbac: { allowEmptyMarkings: true } }),
+        ).toEqual({
+          classificationConstraint: {
+            markings: ["classificationGroup"],
+            allowEmptyMarkings: true,
+          },
+          markingConstraint: { markingIds: ["mandatoryGroup"] },
+        });
+      });
+
+      it("emits allowEmptyMarkings on both constraints independently", async () => {
+        expect(
+          await getDataSecurity({
+            mandatory: { allowEmptyMarkings: true },
+            cbac: { allowEmptyMarkings: false },
+          }),
+        ).toEqual({
+          classificationConstraint: {
+            markings: ["classificationGroup"],
+            allowEmptyMarkings: false,
+          },
+          markingConstraint: {
+            markingIds: ["mandatoryGroup"],
+            allowEmptyMarkings: true,
+          },
+        });
+      });
+
+      it("emits an explicit false", async () => {
+        const dataSecurity = await getDataSecurity({
+          mandatory: { allowEmptyMarkings: false },
+          cbac: { allowEmptyMarkings: false },
+        });
+        expect(dataSecurity?.markingConstraint).toHaveProperty(
+          "allowEmptyMarkings",
+          false,
+        );
+        expect(dataSecurity?.classificationConstraint).toHaveProperty(
+          "allowEmptyMarkings",
+          false,
+        );
+      });
+
+      it.each([
+        ["no dataSecurity", undefined],
+        ["empty dataSecurity", {}],
+        ["empty constraint settings", { mandatory: {}, cbac: {} }],
+      ])("omits allowEmptyMarkings with %s", async (_, input) => {
+        const dataSecurity = await getDataSecurity(input);
+        expect(dataSecurity).toEqual({
+          classificationConstraint: { markings: ["classificationGroup"] },
+          markingConstraint: { markingIds: ["mandatoryGroup"] },
+        });
+        expect(dataSecurity?.markingConstraint).not.toHaveProperty(
+          "allowEmptyMarkings",
+        );
+        expect(dataSecurity?.classificationConstraint).not.toHaveProperty(
+          "allowEmptyMarkings",
+        );
+      });
+
+      it("throws when dataSecurity.mandatory is set without a MANDATORY marking property", async () => {
+        await defineOntologyV2("com.palantir.", () => {
+          expect(() =>
+            defineDocument({ mandatory: { allowEmptyMarkings: true } }, [
+              "CBAC",
+            ]),
+          ).toThrowErrorMatchingInlineSnapshot(
+            `[Error: Invariant failed: Object "document" sets dataSecurity.mandatory but has no MANDATORY marking property, so no mandatory marking constraint is emitted. Add a MANDATORY marking property or remove dataSecurity.mandatory.]`,
+          );
+        });
+      });
+
+      it("throws when dataSecurity.cbac is set without a CBAC marking property", async () => {
+        await defineOntologyV2("com.palantir.", () => {
+          expect(() =>
+            defineDocument({ cbac: { allowEmptyMarkings: true } }, [
+              "MANDATORY",
+            ]),
+          ).toThrowErrorMatchingInlineSnapshot(
+            `[Error: Invariant failed: Object "document" sets dataSecurity.cbac but has no CBAC marking property, so no classification constraint is emitted. Add a CBAC marking property or remove dataSecurity.cbac.]`,
+          );
+        });
+      });
+    });
   });
 
   describe("Security group dependencies", () => {

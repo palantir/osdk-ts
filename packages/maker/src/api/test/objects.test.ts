@@ -469,6 +469,56 @@ describe("Object Types", () => {
     expect(dumpOntologyFullMetadata()).toMatchSnapshot();
   });
 
+  it("Fails if dataSecurity.mandatory is set without a MANDATORY marking property", () => {
+    expect(() => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          classification: {
+            type: {
+              type: "marking",
+              markingType: "CBAC",
+              markingInputGroupName: "classificationGroup",
+            },
+          },
+        },
+        dataSecurity: { mandatory: { allowEmptyMarkings: true } },
+      });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Object "foo" sets dataSecurity.mandatory but has no MANDATORY marking property, so no mandatory marking constraint is emitted. Add a MANDATORY marking property or remove dataSecurity.mandatory.]`,
+    );
+  });
+
+  it("Fails if dataSecurity.cbac is set without a CBAC marking property", () => {
+    expect(() => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          mandatory: {
+            type: {
+              type: "marking",
+              markingType: "MANDATORY",
+              markingInputGroupName: "mandatoryGroup",
+            },
+          },
+        },
+        dataSecurity: { cbac: { allowEmptyMarkings: true } },
+      });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Object "foo" sets dataSecurity.cbac but has no CBAC marking property, so no classification constraint is emitted. Add a CBAC marking property or remove dataSecurity.cbac.]`,
+    );
+  });
+
   it("Fails if edit only property is primary key", () => {
     expect(() => {
       defineObject({

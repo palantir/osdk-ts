@@ -133,6 +133,10 @@ export type {
   ObjectTypeDatasourceDefinition_derived,
   ObjectTypeDatasourceDefinition_direct,
 } from "./api/object/ObjectTypeDatasourceDefinition.js";
+export type {
+  ObjectTypeDataSecurity,
+  ObjectTypeMarkingConstraintSettings,
+} from "./api/object/ObjectTypeDataSecurity.js";
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
 export { resolveDerivedPropertyLinks } from "./api/object/resolveDerivedPropertyLinks.js";
 export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";

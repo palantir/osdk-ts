@@ -47,6 +47,7 @@ import type {
   ActionParameterValidation,
   ActionType,
   InterfaceType,
+  ObjectTypeDataSecurity,
 } from "@osdk/maker";
 import {
   extractAllowedValuesFromActionParameterType,
@@ -75,6 +76,7 @@ export function buildDatasource(
   ridGenerator: OntologyRidGenerator,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
+  dataSecurity?: ObjectTypeDataSecurity,
 ): ObjectTypeDatasource {
   const needsSecurity =
     classificationMarkingGroupName !== undefined ||
@@ -85,11 +87,17 @@ export function buildDatasource(
         classificationConstraint: classificationMarkingGroupName
           ? {
               markings: [classificationMarkingGroupName],
+              ...(dataSecurity?.cbac?.allowEmptyMarkings !== undefined && {
+                allowEmptyMarkings: dataSecurity.cbac.allowEmptyMarkings,
+              }),
             }
           : undefined,
         markingConstraint: mandatoryMarkingGroupName
           ? {
               markingIds: [mandatoryMarkingGroupName],
+              ...(dataSecurity?.mandatory?.allowEmptyMarkings !== undefined && {
+                allowEmptyMarkings: dataSecurity.mandatory.allowEmptyMarkings,
+              }),
             }
           : undefined,
       }

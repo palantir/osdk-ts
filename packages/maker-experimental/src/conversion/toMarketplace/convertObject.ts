@@ -158,6 +158,7 @@ export function convertObject(
     ridGenerator,
     classificationInputGroup,
     mandatoryInputGroup,
+    objectType.dataSecurity,
   );
 
   const implementations = objectType.implementsInterfaces ?? [];
