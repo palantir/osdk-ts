@@ -62,6 +62,23 @@ const auth = createPublicOauthClient(
 
 For more details, refer to the documentation provided in your Developer Console application.
 
+#### Selecting an authentication provider
+
+If your Foundry enrollment has more than one authentication provider, pass `realmId` so users skip the provider picker and go straight to the provider for that realm. Use the realm identifier of the provider, not its display name.
+
+```typescript
+const auth = createPublicOauthClient(
+  "<YOUR CLIENT ID>",
+  "<YOUR FOUNDRY URL>",
+  "http://redirect-url",
+  { realmId: "<YOUR REALM ID>" },
+);
+```
+
+- `realmId` only applies when the user has to log in. A user who already has a Foundry session keeps that session's identity.
+- To ignore stored refresh tokens when `realmId` changes, also pass it as `refreshTokenMarker` (for example `{ realmId, refreshTokenMarker: realmId }`). This does not end an existing Foundry session.
+- `realmId` takes precedence over a domain's default authentication provider configured in Control Panel. If `realmId` does not match an enabled provider, Foundry shows the provider picker rather than falling back to the domain's default.
+
 ### Confidential Client
 
 To create a confidential client, follow the steps to create a service user in the Developer Console. You will need the client ID, client secret, and the base URL of your Foundry stack.
