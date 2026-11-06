@@ -632,8 +632,6 @@ function OptionalReportsList(
 }
 ```
 
-### Automatic Pagination
-
 Set `autoFetchMore: true` to load all pages of linked objects, or set a number to load at least that many linked objects per source. When omitted or `false`, use `fetchMore()` to load additional pages.
 
 ```ts
