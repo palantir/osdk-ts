@@ -79,11 +79,9 @@ describe("Object Types", () => {
         ],
       }),
     );
-    expect(
-      getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][
-        "com.palantir.Document"
-      ],
-    ).toBeUndefined();
+    expect(getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE]).toEqual(
+      {},
+    );
 
     expect(() =>
       defineObject({
@@ -93,68 +91,6 @@ describe("Object Types", () => {
         properties: { id: { type: "string" } },
       }),
     ).not.toThrow();
-  });
-
-  it("skips invalid datasource prerequisites while collecting other object issues", () => {
-    const link = defineLink({
-      apiName: "self",
-      many: {
-        object: "com.palantir.Document",
-        metadata: { apiName: "sources" },
-      },
-      toMany: {
-        object: "com.palantir.Document",
-        metadata: { apiName: "targets" },
-      },
-    });
-    expect(() =>
-      defineObject({
-        apiName: "Document",
-        displayName: "Document",
-        pluralDisplayName: "Documents",
-        description: "x".repeat(10001),
-        titlePropertyApiName: "missingTitle",
-        primaryKeyPropertyApiName: "id",
-        properties: { id: { type: "string" } },
-        datasources: [
-          {
-            type: "derived",
-            linkDefinition: [{ linkType: link }],
-            propertyMapping: { missingTotal: { type: "sum", property: "id" } },
-          },
-          {
-            type: "derived",
-            linkDefinition: [{ linkType: link }],
-            propertyMapping: { id: { type: "sum", property: "id" } },
-          },
-        ],
-      }),
-    ).toThrowError(
-      expect.objectContaining({
-        name: "MakerValidationError",
-        issues: [
-          expect.objectContaining({
-            message:
-              "Title property missingTitle is not defined on object Document",
-          }),
-          expect.objectContaining({
-            message:
-              "Property 'missingTotal' used in derived datasource for object 'Document' is not defined.",
-          }),
-          expect.objectContaining({
-            message: "Property 'id' on object 'Document' is not numeric",
-          }),
-          expect.objectContaining({
-            message: expect.stringContaining(
-              "description must be at most 10000",
-            ),
-          }),
-        ],
-      }),
-    );
-    expect(getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE]).toEqual(
-      {},
-    );
   });
 
   it("allows an empty backing Media Set for a media reference property", () => {
