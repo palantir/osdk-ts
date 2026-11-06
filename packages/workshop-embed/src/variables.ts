@@ -23,10 +23,18 @@ import type { WorkshopEmbedMessage } from "./protocol.js";
 
 const RESERVED_EXTERNAL_IDS = ["_open_rebase_dialog", "_kiosk_mode_session_id"];
 
-/** A scalar variable value. Numbers must be finite; null represents a cleared value. @public */
-export type WorkshopVariableValue = string | number | boolean | null;
+/** A single variable value. Numbers must be finite. @public */
+export type WorkshopSingleVariableValue = string | number | boolean;
 
-/** A map from external IDs to supported scalar values. @public */
+/** A single value or array. Arrays must be homogeneous; null clears the whole variable. @public */
+export type WorkshopVariableValue =
+  | WorkshopSingleVariableValue
+  | readonly string[]
+  | readonly number[]
+  | readonly boolean[]
+  | null;
+
+/** A map from external IDs to supported variable values. @public */
 export type WorkshopVariableMap = {
   [externalId: string]: WorkshopVariableValue;
 };
@@ -49,7 +57,7 @@ export function createSetVariablesMessage(
 ): SetVariablesMessage {
   if (!isVariableValues(values)) {
     throw new TypeError(
-      "Variable values must map non-empty, non-reserved external IDs that are unique ignoring case to strings, finite numbers, booleans, or null.",
+      "Variable values must map non-empty, non-reserved external IDs that are unique ignoring case to strings, finite numbers, booleans, homogeneous arrays of those values, or null.",
     );
   }
   return {
@@ -78,14 +86,7 @@ export function isSetVariablesMessage(
 export function isVariableValues(
   value: unknown,
 ): value is Readonly<WorkshopVariableMap> {
-  return isVariableRecord(value, (input) => {
-    if (input == null) return input !== undefined;
-    return (
-      typeof input === "string" ||
-      typeof input === "boolean" ||
-      (typeof input === "number" && Number.isFinite(input))
-    );
-  });
+  return isVariableRecord(value, isVariableValue);
 }
 
 export function isVariableRecord(
@@ -116,5 +117,25 @@ function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return (
     prototype == null ||
     (isRecord(prototype) && Object.getPrototypeOf(prototype) == null)
+  );
+}
+
+function isVariableValue(value: unknown): value is WorkshopVariableValue {
+  if (value == null) return value !== undefined;
+  if (!Array.isArray(value)) return isScalarValue(value);
+
+  const elementType = typeof value[0];
+  // Iteration also checks sparse entries, which Array.prototype.every skips.
+  for (const element of value) {
+    if (typeof element !== elementType || !isScalarValue(element)) return false;
+  }
+  return true;
+}
+
+function isScalarValue(value: unknown): value is WorkshopSingleVariableValue {
+  return (
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    (typeof value === "number" && Number.isFinite(value))
   );
 }
