@@ -39,6 +39,9 @@ import type {
 //
 // For now we are keeping things conservative and just invalidating A either way,
 // but we can make this better.
+//
+// Each interface dependency adds its API name to interfaceInvalidationSet and
+// all implementing object type API names to objectInvalidationSet.
 
 export async function getInvalidationSet(
   mc: MinimalClient,
