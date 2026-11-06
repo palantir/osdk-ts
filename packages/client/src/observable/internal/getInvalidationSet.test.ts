@@ -15,9 +15,18 @@
  */
 
 import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
-import { Employee, FooInterface } from "@osdk/client.test.ontology";
+import {
+  BarInterface,
+  Employee,
+  FooInterface,
+} from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
-import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
+import {
+  FauxFoundry,
+  ontologies,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -31,6 +40,7 @@ import { getInvalidationSet } from "./getInvalidationSet.js";
 function setupOntology(fauxFoundry: FauxFoundry) {
   const fauxOntology = fauxFoundry.getDefaultOntology();
   ontologies.addEmployeeOntology(fauxOntology);
+  fauxOntology.registerInterfaceType(stubData.BarInterface);
 }
 
 describe(getInvalidationSet, () => {
@@ -253,12 +263,16 @@ describe(getInvalidationSet, () => {
     );
   });
 
-  it.skip("supports interface link search around", async () => {
-    // FIXME, we don't have a good interface link example right now
-    // Assuming FooInterface has links - skip if not available
-    // const osdkObjectSet = client(FooInterface).pivotTo("someLink");
-    // const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
-    // Verify it handles interface pivots correctly
+  it("supports interface link search around", async () => {
+    const osdkObjectSet = client(BarInterface).pivotTo("toFoo");
+
+    const { resultType, objectInvalidationSet, interfaceInvalidationSet } =
+      await helper(osdkObjectSet);
+    expect(resultType).toEqual("FooInterface");
+    expect(objectInvalidationSet).toEqual(new Set(["Employee", "Person"]));
+    expect(interfaceInvalidationSet).toEqual(
+      new Set(["BarInterface", "FooInterface"]),
+    );
   });
 
   // Complex RDP Tests
