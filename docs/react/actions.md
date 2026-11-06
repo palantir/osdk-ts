@@ -56,12 +56,67 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
 ### Return Values
 
 - `applyAction` - Function to execute the action (accepts single args object or array for batch)
-- `data` - Return value from the last successful action execution
+- `data` - Result of the last successful action execution: the edits, plus `returnValue` if the action returns a value (see [Action Return Values](#action-return-values))
 - `error` - Error object (see error handling below)
 - `isPending` - True while action is executing
 - `isValidating` - True while validation is in progress
 - `validateAction` - Function to validate without executing
 - `validationResult` - Result of last validation
+
+---
+
+## Action Return Values
+
+When the function backing an action returns a value, `applyAction` resolves with it as `returnValue`, alongside the edits. You don't need an option to opt in. Actions that don't return a value behave as before.
+
+```tsx
+import { createTicket } from "@my/osdk";
+import { useOsdkAction } from "@osdk/react";
+import { useCallback } from "react";
+
+function CreateTicketButton() {
+  const { applyAction, data, isPending } = useOsdkAction(createTicket);
+
+  const onClick = useCallback(async () => {
+    const result = await applyAction({ title: "Printer is jammed" });
+    // `returnValue` is typed from the function's return type, e.g. `string`
+    console.log("Created ticket", result?.returnValue);
+  }, [applyAction]);
+
+  return (
+    <div>
+      <button onClick={onClick} disabled={isPending}>
+        Create Ticket
+      </button>
+      {data?.returnValue && <div>Created ticket {data.returnValue}</div>}
+    </div>
+  );
+}
+```
+
+The same applies when you use the client directly:
+
+```ts
+const { returnValue } = await client(createTicket).applyAction({
+  title: "Printer is jammed",
+});
+
+// With $returnEdits, the edits and the return value come back together
+const result = await client(createTicket).applyAction(
+  { title: "Printer is jammed" },
+  { $returnEdits: true },
+);
+result.returnValue;
+result.editedObjectTypes;
+```
+
+Return values use the same TypeScript types as [function](./advanced-queries.md#useosdkfunction) results. Some things to know:
+
+- **Batches don't return values.** When you pass an array to `applyAction`, the result only contains the edits.
+- **Validation doesn't return a value.** With `$validateOnly: true`, the action doesn't run, so there's nothing to return.
+- **Some types aren't returned.** Return types such as objects, object sets and attachments aren't supported yet. Actions that return them behave as if they don't return a value.
+- **An optional return value can be `undefined`.** This happens when the function returns nothing for an optional return type. The value is also `undefined` if the OSDK can't convert it, and a warning goes to the client's `logger` if you set one. The action has still been applied.
+- **Mismatches are reported as errors.** If the function was republished with a different return type (`ReturnValueTypeMismatch`), or didn't return a required value (`ActionDidNotReturnValue`), the action fails and no edits are applied.
 
 ---
 
