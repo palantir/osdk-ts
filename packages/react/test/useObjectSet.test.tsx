@@ -63,13 +63,15 @@ describe(useObjectSet, () => {
     error: (err: any) => void;
   } | null = null;
   const mockObserveObjectSet = vitest.fn();
-  const mockInvalidateObjectType = vitest.fn().mockResolvedValue(undefined);
+  const mockInvalidateObjectOrInterfaceType = vitest
+    .fn()
+    .mockResolvedValue(undefined);
 
   const createWrapper = () => {
     const observableClient = {
       observeObjectSet: mockObserveObjectSet,
       canonicalizeOptions: vitest.fn((opts) => opts),
-      invalidateObjectType: mockInvalidateObjectType,
+      invalidateObjectOrInterfaceType: mockInvalidateObjectOrInterfaceType,
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
@@ -390,7 +392,7 @@ describe(useObjectSet, () => {
   });
 
   describe("refetch", () => {
-    it("should call invalidateObjectType when refetch is called", async () => {
+    it("should call invalidateObjectOrInterfaceType when refetch is called", async () => {
       const wrapper = createWrapper();
 
       const { result } = renderHook(() => useObjectSet(mockObjectSet), {
@@ -401,7 +403,9 @@ describe(useObjectSet, () => {
         await result.current.refetch();
       });
 
-      expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
+      expect(mockInvalidateObjectOrInterfaceType).toHaveBeenCalledWith(
+        "MockObject",
+      );
     });
   });
 
@@ -414,7 +418,7 @@ describe(useObjectSet, () => {
           ..._opts,
           orderBy: canonicalizedOrderBy,
         })),
-        invalidateObjectType: mockInvalidateObjectType,
+        invalidateObjectOrInterfaceType: mockInvalidateObjectOrInterfaceType,
       } as any;
 
       const wrapper = ({ children }: React.PropsWithChildren) => (

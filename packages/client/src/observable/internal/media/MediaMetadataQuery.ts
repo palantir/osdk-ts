@@ -245,7 +245,7 @@ export class MediaMetadataQuery extends Query<
     return undefined;
   };
 
-  invalidateObjectType = (): Promise<void> => {
+  invalidateObjectOrInterfaceType = (): Promise<void> => {
     return this.revalidate(true);
   };
 
