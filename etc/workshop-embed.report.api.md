@@ -5,7 +5,7 @@
 ```ts
 
 // @public
-export function connectToWorkshopModule({ targetWindow, targetOrigin, signal, timeoutMs, hostWindow }: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection>;
+export function connectToWorkshopModule<TVariables extends WorkshopVariableMap = WorkshopVariableMap>({ targetWindow, targetOrigin, signal, timeoutMs, hostWindow }: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection<TVariables>>;
 
 // @public
 export interface ConnectToWorkshopModuleOptions {
@@ -17,12 +17,12 @@ export interface ConnectToWorkshopModuleOptions {
 }
 
 // @public
-export function listenForWorkshopModuleEmbedMessages({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions): () => void;
+export function listenForWorkshopModuleEmbedMessages<TVariables extends WorkshopVariableMap = WorkshopVariableMap>({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions<TVariables>): () => void;
 
 // @public
-export interface ListenForWorkshopModuleEmbedMessagesOptions {
+export interface ListenForWorkshopModuleEmbedMessagesOptions<TVariables extends WorkshopVariableMap = WorkshopVariableMap> {
     	hostWindow?: Window;
-    	onConnect?: WorkshopModuleConnectHandler;
+    	onConnect?: WorkshopModuleConnectHandler<TVariables>;
 }
 
 // @public
@@ -32,14 +32,27 @@ export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 export const WORKSHOP_EMBED_QUERY_VALUE = "1";
 
 // @public
-export type WorkshopModuleConnectHandler = (connection: WorkshopModuleConnection) => void | (() => void);
+export type WorkshopModuleConnectHandler<TVariables extends WorkshopVariableMap = WorkshopVariableMap> = (connection: WorkshopModuleConnection<TVariables>) => void | (() => void);
 
 // @public
-export interface WorkshopModuleConnection {
+export interface WorkshopModuleConnection<TVariables extends WorkshopVariableMap = WorkshopVariableMap> {
     	disconnect: () => void;
+    	onVariablesSet: (listener: (values: WorkshopVariableValues<TVariables>) => void) => () => void;
     	readonly port: MessagePort;
     	readonly sessionId: string;
+    	setVariables: (values: WorkshopVariableValues<TVariables>) => void;
 }
+
+// @public
+export type WorkshopVariableMap = {
+    	[externalId: string]: WorkshopVariableValue
+};
+
+// @public
+export type WorkshopVariableValue = string | number | boolean | null;
+
+// @public
+export type WorkshopVariableValues<TVariables extends WorkshopVariableMap = WorkshopVariableMap> = { readonly [Name in keyof TVariables]? : TVariables[Name] | null };
 
 // (No @packageDocumentation comment for this package)
 
