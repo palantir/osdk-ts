@@ -404,7 +404,7 @@ export abstract class ListQuery extends BaseListQuery<
     data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]>;
 
-  invalidateObjectType = async (
+  invalidateObjectOrInterfaceType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {

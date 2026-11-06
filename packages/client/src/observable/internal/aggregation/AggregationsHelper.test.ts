@@ -173,7 +173,7 @@ describe("aggregation ObjectSet support", () => {
       .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
-    await query.invalidateObjectType("Employee", undefined);
+    await query.invalidateObjectOrInterfaceType("Employee", undefined);
     expect(revalidateSpy).toHaveBeenCalledWith(true);
   });
 
@@ -188,7 +188,7 @@ describe("aggregation ObjectSet support", () => {
       .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
-    await query.invalidateObjectType("Employee", undefined);
+    await query.invalidateObjectOrInterfaceType("Employee", undefined);
     expect(revalidateSpy).not.toHaveBeenCalled();
   });
 

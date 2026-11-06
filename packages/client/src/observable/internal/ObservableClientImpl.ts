@@ -309,7 +309,7 @@ export class ObservableClientImpl implements ObservableClient {
   public invalidateObjectOrInterfaceType(
     type: ObjectOrInterfaceDefinition | string,
   ): Promise<void> {
-    return this.__experimentalStore.invalidateObjectType(
+    return this.__experimentalStore.invalidateObjectOrInterfaceType(
       typeof type === "string" ? type : type.apiName,
       undefined,
     );

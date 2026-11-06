@@ -282,7 +282,7 @@ describe(Store, () => {
       testStage("Observing Employee 1's peeps");
 
       // Invalidate the employee cache
-      const invalidateEmployeePromise = cache.invalidateObjectType(
+      const invalidateEmployeePromise = cache.invalidateObjectOrInterfaceType(
         targetType,
         undefined,
       );
@@ -369,7 +369,7 @@ describe(Store, () => {
       //  - any object list query for Employee to be invalidated
       //  - any link queries where the source is an Employee to be invalidated
       //  - any link queries where the target is an Employee to be invalidated
-      const invalidateEmployeePromise = cache.invalidateObjectType(
+      const invalidateEmployeePromise = cache.invalidateObjectOrInterfaceType(
         Employee,
         undefined,
       );
@@ -493,7 +493,7 @@ describe(Store, () => {
         status: "loaded",
       });
 
-      const invalidatePromise = cache.invalidateObjectType(
+      const invalidatePromise = cache.invalidateObjectOrInterfaceType(
         "Employee",
         undefined,
       );
@@ -791,7 +791,7 @@ describe(Store, () => {
       testStage("Interface link query construction verified");
     });
 
-    it("invalidateObjectType correctly invalidates interface link queries when object implements source interface", async () => {
+    it("invalidateObjectOrInterfaceType correctly invalidates interface link queries when object implements source interface", async () => {
       const { payload: emp1Payload } = await expectStandardObserveObject({
         cache,
         type: Employee,
@@ -819,7 +819,7 @@ describe(Store, () => {
       await waitForCall(linkSubFn);
       linkSubFn.next.mockClear();
 
-      await cache.invalidateObjectType(Employee, undefined);
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
 
       await waitForCall(linkSubFn);
       expect(linkSubFn.next).toHaveBeenCalled();
@@ -1358,7 +1358,7 @@ describe(Store, () => {
       });
     });
 
-    describe(".invalidateObjectType", () => {
+    describe(".invalidateObjectOrInterfaceType", () => {
       beforeEach(() => {
         vi.useFakeTimers({});
       });
@@ -1406,7 +1406,7 @@ describe(Store, () => {
 
         testStage("invalidate");
 
-        const pInvalidateComplete = cache.invalidateObjectType(
+        const pInvalidateComplete = cache.invalidateObjectOrInterfaceType(
           Employee,
           undefined,
         );
@@ -2792,7 +2792,7 @@ describe(Store, () => {
 
         sub.next.mockClear();
 
-        await store.invalidateObjectType(Employee, undefined);
+        await store.invalidateObjectOrInterfaceType(Employee, undefined);
 
         await vi.waitFor(
           () => {
@@ -2893,7 +2893,7 @@ describe(Store, () => {
 
         const callCountBefore = sub.next.mock.calls.length;
 
-        await store.invalidateObjectType(Office, undefined);
+        await store.invalidateObjectOrInterfaceType(Office, undefined);
 
         expect(sub.next.mock.calls.length).toBe(callCountBefore);
       });
@@ -2957,7 +2957,7 @@ describe(Store, () => {
 
         sub.next.mockClear();
 
-        await store.invalidateObjectType(Employee, undefined);
+        await store.invalidateObjectOrInterfaceType(Employee, undefined);
 
         await vi.waitFor(
           () => {
@@ -3026,7 +3026,7 @@ describe(Store, () => {
 
         sub.next.mockClear();
 
-        await store.invalidateObjectType(Employee, undefined);
+        await store.invalidateObjectOrInterfaceType(Employee, undefined);
 
         await vi.waitFor(
           () => {

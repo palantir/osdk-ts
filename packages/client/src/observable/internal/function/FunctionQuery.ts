@@ -195,7 +195,7 @@ export class FunctionQuery extends Query<
     return batch.read(this.cacheKey)!;
   }
 
-  invalidateObjectType = (
+  invalidateObjectOrInterfaceType = (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {

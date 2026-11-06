@@ -175,7 +175,7 @@ describe("FunctionQuery", () => {
     subFn.next.mockClear();
 
     // Invalidate Employee object type - should trigger function refetch
-    await store.invalidateObjectType(Employee, undefined);
+    await store.invalidateObjectOrInterfaceType(Employee, undefined);
 
     // Should refetch
     await waitForCall(subFn, 2);
@@ -394,7 +394,7 @@ describe("FunctionQuery", () => {
       subscription.unsubscribe();
     });
 
-    it("invalidateObjectType fires functions with dependsOn on that type", async () => {
+    it("invalidateObjectOrInterfaceType fires functions with dependsOn on that type", async () => {
       const subFn = mockFunctionSubCallback();
 
       const subscription = store.functions.observe(
@@ -414,7 +414,7 @@ describe("FunctionQuery", () => {
 
       subFn.next.mockClear();
 
-      await store.invalidateObjectType(Todo, undefined);
+      await store.invalidateObjectOrInterfaceType(Todo, undefined);
 
       await vi.waitFor(() => {
         expect(subFn.next).toHaveBeenCalled();

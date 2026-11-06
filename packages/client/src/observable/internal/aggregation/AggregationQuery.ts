@@ -274,8 +274,8 @@ export class AggregationQuery extends Query<
     return batch.read(this.cacheKey)!;
   }
 
-  invalidateObjectType = async (
-    objectType: string,
+  invalidateObjectOrInterfaceType = async (
+    apiName: string,
     changes: Changes | undefined,
   ): Promise<void> => {
     let invalidationTypes: Set<string>;
@@ -289,7 +289,7 @@ export class AggregationQuery extends Query<
       return;
     }
 
-    if (invalidationTypes.has(objectType)) {
+    if (invalidationTypes.has(apiName)) {
       changes?.modified.add(this.cacheKey);
       if (this.pendingFetch) {
         await this.pendingFetch;

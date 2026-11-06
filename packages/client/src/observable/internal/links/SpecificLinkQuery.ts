@@ -343,7 +343,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     return Promise.resolve();
   };
 
-  invalidateObjectType = (
+  invalidateObjectOrInterfaceType = (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
