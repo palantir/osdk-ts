@@ -87,8 +87,15 @@ describe("experimental Node entry point", () => {
     await expect(Aliases.custom("previewAlias")).resolves.toBe("preview-value");
   });
 
-  it("exposes custom only through the Aliases namespace", () => {
+  it("rejects Workshop alias reads outside browser builds", async () => {
+    await expect(Aliases.workshop("orderDetails")).rejects.toThrow(
+      "Workshop aliases are only supported in browser builds.",
+    );
+    expect(fs.readFileSync).not.toHaveBeenCalled();
+  });
+
+  it("exposes aliases only through the Aliases namespace", () => {
     expect(Object.keys(experimental)).toEqual(["Aliases"]);
-    expect(Object.keys(Aliases)).toEqual(["custom"]);
+    expect(Object.keys(Aliases)).toEqual(["custom", "workshop"]);
   });
 });

@@ -38,6 +38,10 @@ export interface Stream {
   rid: string;
 }
 
+export interface Workshop {
+  rid: string;
+}
+
 export interface ResolvedAliases {
   custom: Record<string, string>;
   models: Record<string, Model>;
