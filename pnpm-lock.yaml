@@ -4639,9 +4639,6 @@ importers:
 
   packages/integration-testing:
     dependencies:
-      '@osdk/foundry.ontologies':
-        specifier: catalog:foundry-platform-typescript
-        version: 2.87.0
       '@osdk/generator-converters.preview':
         specifier: workspace:~
         version: link:../generator-converters.preview
@@ -4679,6 +4676,9 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
+      '@osdk/foundry.ontologies':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.87.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor

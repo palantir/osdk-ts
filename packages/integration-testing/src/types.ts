@@ -16,7 +16,6 @@
 
 import type { LinkTypeApiNamesFor, PrimaryKeyType } from "@osdk/api";
 import type { Client, ObjectTypeDefinition } from "@osdk/client";
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type {
   LinkTargets,
   SeedFunction,
@@ -34,13 +33,13 @@ export type IntegrationClient = Client & {
 
 export interface IntegrationClientConfig {
   baseUrl: string;
-  metadata: OntologyFullMetadata;
+  metadata: unknown;
   caCertPath?: string;
 }
 
 export interface IntegrationServerConfig {
   /** Path to a prebuilt ontology metadata JSON. */
-  metadata: OntologyFullMetadata;
+  metadata: unknown;
   /** Path to the `foundry` binary. Defaults to `foundry` on `PATH`. */
   foundryCliPath?: string;
   /**
