@@ -16,6 +16,12 @@
 
 import { createMessage, isWorkshopEmbedMessage } from "./protocol.js";
 import {
+  createModuleSchemaMessage,
+  isModuleSchemaMessage,
+  validateVariableValues,
+} from "./schema.js";
+import type { WorkshopModuleSchema } from "./schema.js";
+import {
   createSetVariablesMessage,
   isSetVariablesMessage,
 } from "./variables.js";
@@ -24,7 +30,7 @@ import type {
   WorkshopVariableValues,
 } from "./variables.js";
 
-/** An established transport connection; this does not imply module readiness. @public */
+/** A dedicated connection to an embedded Workshop module. @public */
 export interface WorkshopModuleConnection<
   TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 > {
@@ -32,9 +38,9 @@ export interface WorkshopModuleConnection<
   readonly sessionId: string;
   /** Dedicated transport. Add listeners with addEventListener; use disconnect to close it. */
   readonly port: MessagePort;
-  /** Sends scalar variable updates to the peer. Throws for invalid updates or a closed connection. Does not acknowledge application. */
+  /** Validates updates against the module schema and sends them to the peer. Throws for invalid updates, a missing schema, or a closed connection. Does not acknowledge application. */
   setVariables: (values: WorkshopVariableValues<TVariables>) => void;
-  /** Receives scalar variable updates from the peer for this session. Returns an unsubscribe function; disconnect removes all listeners. Throws if closed. */
+  /** Receives updates validated against the module schema for this session. Invalid updates are ignored. Returns an unsubscribe function; disconnect removes all listeners. Throws if closed. */
   onVariablesSet: (
     listener: (values: WorkshopVariableValues<TVariables>) => void,
   ) => () => void;
@@ -42,13 +48,24 @@ export interface WorkshopModuleConnection<
   disconnect: () => void;
 }
 
-/** Callback invoked when a connection is established. Its returned cleanup runs on disposal. @public */
+/** Workshop's side of an embedded module connection. @public */
+export interface WorkshopModuleHostConnection<
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
+> extends WorkshopModuleConnection<TVariables> {
+  /** Publishes the module's supported interface after it loads and updates local validation. Throws for invalid schemas or a closed connection. */
+  setModuleSchema: (schema: WorkshopModuleSchema) => void;
+}
+
+/** Callback invoked when Workshop accepts a connection. Its returned cleanup runs on disposal. @public */
 export type WorkshopModuleConnectHandler<
   TVariables extends WorkshopVariableMap = WorkshopVariableMap,
-> = (connection: WorkshopModuleConnection<TVariables>) => void | (() => void);
+> = (
+  connection: WorkshopModuleHostConnection<TVariables>,
+) => void | (() => void);
 
 interface ManagedConnection<TVariables extends WorkshopVariableMap> {
   connection: WorkshopModuleConnection<TVariables>;
+  hasModuleSchema: () => boolean;
   dispose: (notifyPeer: boolean) => void;
   activate: (
     handler: WorkshopModuleConnectHandler<TVariables> | undefined,
@@ -61,12 +78,14 @@ export function createConnection<
   port: MessagePort,
   sessionId: string,
   onDispose: () => void,
+  role: "parent" | "workshop" = "parent",
 ): ManagedConnection<TVariables> {
   let disposed = false;
   let cleanup: void | (() => void);
   const variableListeners = new Set<
     (values: WorkshopVariableValues<TVariables>) => void
   >();
+  let moduleSchema: WorkshopModuleSchema | undefined;
 
   function dispose(notifyPeer: boolean) {
     if (disposed) return;
@@ -75,6 +94,7 @@ export function createConnection<
     port.removeEventListener("message", handleMessage);
     port.removeEventListener("messageerror", disconnect);
     variableListeners.clear();
+    moduleSchema = undefined;
     port.close();
     try {
       cleanup?.();
@@ -95,10 +115,22 @@ export function createConnection<
     ) {
       dispose(false);
     } else if (
+      role === "parent" &&
+      isModuleSchemaMessage(event.data) &&
+      event.data.sessionId === sessionId
+    ) {
+      moduleSchema = event.data.variables;
+    } else if (
       isSetVariablesMessage(event.data) &&
       event.data.sessionId === sessionId
     ) {
-      // The caller declares the variable types; runtime validation checks IDs and supported scalar values.
+      if (moduleSchema == null) return;
+      try {
+        validateVariableValues(moduleSchema, event.data.values);
+      } catch {
+        return;
+      }
+      // Runtime validation uses Workshop's schema; the caller's generic is erased.
       const values = event.data.values as WorkshopVariableValues<TVariables>;
       // Defer listeners added by a callback until the next message.
       const listeners = [...variableListeners];
@@ -118,6 +150,10 @@ export function createConnection<
     disconnect,
     setVariables(values) {
       assertOpen();
+      if (moduleSchema == null) {
+        throw new Error("Workshop module schema is not ready.");
+      }
+      validateVariableValues(moduleSchema, values);
       port.postMessage(createSetVariablesMessage(sessionId, values));
     },
     onVariablesSet(listener) {
@@ -134,11 +170,21 @@ export function createConnection<
 
   return {
     connection,
+    hasModuleSchema: () => moduleSchema != null,
     dispose,
     activate(handler) {
       if (disposed) return;
       port.postMessage(createMessage("connected", sessionId));
-      const result = handler?.(connection);
+      const result = handler?.({
+        ...connection,
+        setModuleSchema(schema) {
+          assertOpen();
+          const message = createModuleSchemaMessage(sessionId, schema);
+          const snapshot = structuredClone(schema);
+          port.postMessage(message);
+          moduleSchema = snapshot;
+        },
+      });
       if (disposed) result?.();
       else cleanup = result;
     },

@@ -75,9 +75,23 @@ export function isSetVariablesMessage(
   );
 }
 
-function isVariableValues(
+export function isVariableValues(
   value: unknown,
 ): value is Readonly<WorkshopVariableMap> {
+  return isVariableRecord(value, (input) => {
+    if (input == null) return input !== undefined;
+    return (
+      typeof input === "string" ||
+      typeof input === "boolean" ||
+      (typeof input === "number" && Number.isFinite(input))
+    );
+  });
+}
+
+export function isVariableRecord(
+  value: unknown,
+  isValue: (input: unknown) => boolean,
+): value is Record<string, unknown> {
   if (!isPlainRecord(value)) return false;
 
   const seenExternalIds = new Set(RESERVED_EXTERNAL_IDS);
@@ -85,25 +99,13 @@ function isVariableValues(
   return Object.entries(value).every(([externalId, input]) => {
     const normalizedId = externalId.toLowerCase();
 
-    if (
-      normalizedId.length === 0 ||
-      seenExternalIds.has(normalizedId) ||
-      input === undefined
-    ) {
+    if (normalizedId.length === 0 || seenExternalIds.has(normalizedId)) {
       return false;
     }
 
     seenExternalIds.add(normalizedId);
 
-    if (
-      input != null &&
-      typeof input !== "string" &&
-      typeof input !== "number" &&
-      typeof input !== "boolean"
-    ) {
-      return false;
-    }
-    return typeof input !== "number" || Number.isFinite(input);
+    return isValue(input);
   });
 }
 
