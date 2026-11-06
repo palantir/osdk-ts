@@ -155,13 +155,17 @@ export class ObservableClientImpl implements ObservableClient {
     subFn: Observer<ObserveAggregationArgs<T, A>>,
   ): Unsubscribable | Promise<Unsubscribable> {
     if (options.objectSet) {
-      return this.__experimentalStore.aggregations.observeAsync(
-        options as ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
-        subFn as Observer<AggregationPayloadBase>,
+      return new Promise<Unsubscribable>((resolve) =>
+        resolve(
+          this.__experimentalStore.aggregations.observe(
+            options,
+            subFn as Observer<AggregationPayloadBase>,
+          ),
+        ),
       );
     }
     return this.__experimentalStore.aggregations.observe(
-      options as ObserveAggregationOptions<T, A, RDPs>,
+      options,
       subFn as Observer<AggregationPayloadBase>,
     );
   }
