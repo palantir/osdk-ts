@@ -122,6 +122,18 @@ export abstract class BaseListQuery<
    */
   protected pendingPageFetch?: Promise<void>;
 
+  #fetchedObjects = new WeakSet<ObjectCacheKey>();
+
+  get fetchedObjects(): WeakSet<ObjectCacheKey> {
+    return this.#fetchedObjects;
+  }
+
+  async waitForPendingPages(): Promise<void> {
+    while (this.pendingFetch || this.pendingPageFetch) {
+      await Promise.allSettled([this.pendingFetch, this.pendingPageFetch]);
+    }
+  }
+
   protected currentTotalCount?: string;
 
   #subscriberPageSizes: Map<string, number> = new Map();
@@ -292,6 +304,7 @@ export abstract class BaseListQuery<
   }
 
   _dispose(): void {
+    this.#fetchedObjects = new WeakSet();
     this.store.batch({}, (batch) => {
       const entry = batch.read(this.cacheKey);
       if (entry) {
@@ -343,6 +356,7 @@ export abstract class BaseListQuery<
    * @override Reset pagination state before a fetch
    */
   protected _preFetch(): void {
+    this.#fetchedObjects = new WeakSet();
     this.nextPageToken = undefined;
     super._preFetch();
   }
@@ -534,13 +548,17 @@ export abstract class BaseListQuery<
           this.includeAllBaseObjectProperties,
         );
 
-        return this._updateList(
+        const updatedList = this._updateList(
           objectKeys,
           finalStatus,
           batch,
           { type: "serverOrdered", append },
           this.currentTotalCount,
         );
+        for (const key of objectKeys) {
+          this.#fetchedObjects.add(key);
+        }
+        return updatedList;
       });
 
       return retVal;
