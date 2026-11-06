@@ -434,6 +434,7 @@ jobs:
           name: Run interaction tests
           command: |
             pnpm --filter @osdk/react-components-storybook run test-storybook \
+              --maxWorkers=4 \
               --reporter=default \
               --reporter=junit \
               --outputFile.junit=reports/junit.xml
