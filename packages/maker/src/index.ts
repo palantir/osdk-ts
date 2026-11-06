@@ -167,13 +167,8 @@ export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
 export {
-  createValidationIssueCollector,
-  formatValidationPath,
   MakerValidationError,
   type MakerValidationIssue,
-  type MakerValidationIssueCollector,
-  parseModel,
-  throwIfAnyValidationIssues,
 } from "./validation.js";
 export { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "./lockfile/OntologySchemaLockfile.js";
 export {
