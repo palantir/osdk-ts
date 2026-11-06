@@ -54,6 +54,13 @@ declare const process: {
 
 export interface PublicOauthClientOptions {
   /**
+   * Realm of the authentication provider to use when the user needs to log in, sent as
+   * the `_realm` authorize parameter. Users who already have a Foundry session keep that
+   * session's identity.
+   */
+  realmId?: string;
+
+  /**
    * If true, uses `history.replaceState()`, otherwise uses `window.location.assign()` (defaults to true)
    */
   useHistory?: boolean;
@@ -167,6 +174,7 @@ export function createPublicOauthClient(
   let joinedScopes: string;
   let tokenStorage: TokenStorageType;
   let logger: OauthLogger | undefined;
+  let realmId: string | undefined;
   ({
     useHistory,
     loginPage,
@@ -177,6 +185,7 @@ export function createPublicOauthClient(
     refreshTokenMarker,
     tokenStorage,
     logger,
+    realmId,
   } = processOptionsAndAssignDefaults(
     url,
     redirect_uri,
@@ -355,16 +364,21 @@ export function createPublicOauthClient(
     const scopeString =
       tokenStorage === "none" ? joinedScopes : `offline_access ${joinedScopes}`;
 
+    const authorizationParameters = new URLSearchParams({
+      client_id,
+      response_type: "code",
+      state,
+      redirect_uri,
+      code_challenge: await calculatePKCECodeChallenge(codeVerifier),
+      code_challenge_method: "S256",
+      scope: scopeString,
+    });
+    if (realmId) {
+      authorizationParameters.set("_realm", realmId);
+    }
+
     window.location.assign(
-      `${authServer.authorization_endpoint!}?${new URLSearchParams({
-        client_id,
-        response_type: "code",
-        state,
-        redirect_uri,
-        code_challenge: await calculatePKCECodeChallenge(codeVerifier),
-        code_challenge_method: "S256",
-        scope: scopeString,
-      })}`,
+      `${authServer.authorization_endpoint!}?${authorizationParameters}`,
     );
 
     // Give time for redirect to happen
