@@ -74,6 +74,10 @@ describe(generatePerAgentDataFiles, () => {
   it.each(
     [
       [
+        stubData.weatherAgentApiName,
+        stubData.weatherAgentVersion,
+      ],
+      [
         stubData.optionalArgumentsAgentApiName,
         stubData.optionalArgumentsAgentVersion,
       ],
@@ -105,10 +109,42 @@ describe(generatePerAgentDataFiles, () => {
     expect(helper.getFiles()).toMatchSnapshot();
   });
 
+  it("generates payload types and imports objects used only by events", async () => {
+    const definition: WireAgentDefinitionVersion = {
+      ...agent,
+      eventDefinitions: stubData.structuredArgumentsAgentVersion
+        .argumentDefinitions.map(
+          field => ({
+            eventType: String(field.name),
+            payloadType: field.dataType,
+          }),
+        ),
+    };
+    const helper = createMockMinimalFiles();
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology: enhanceOntology({
+        sanitized: {
+          ...ontologyMetadata,
+          agents: { [definition.apiName]: definition },
+        },
+        importExt: ".js",
+      }),
+      importExt: ".js",
+      agentVersionReferences: new Map(),
+    });
+    expect(helper.getFiles()).toMatchSnapshot();
+  });
+
   it("escapes field names and discriminator strings", async () => {
     const escapingAgent: WireAgentDefinitionVersion = {
       ...stubData.noArgumentsAgentVersion,
       apiName: "escapingAgent",
+      eventDefinitions: [{
+        eventType: "escaped\"event",
+        payloadType: { type: "string" },
+      }],
       argumentDefinitions: [{
         name: "escaped\"argument",
         dataType: {

@@ -108,16 +108,59 @@ describe("intellisense", () => {
       offset: 12,
     });
     expect(resp.body?.displayString).toMatchInlineSnapshot(
-      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_createSession: (args: weatherAgent.CreateSessionArguments) => Promise<AgentSession>"`,
+      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_createSession: (args: weatherAgent.CreateSessionArguments) => Promise<weatherAgent.Session>"`,
     );
+
     const { resp: lookup } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
       line: 24,
       offset: 12,
     });
     expect(lookup.body?.displayString).toMatchInlineSnapshot(
-      `"(method) AgentSignatureFromDef<weatherAgent>.experimental_getSession(sessionId: string): Promise<AgentSession>"`,
+      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_getSession: (sessionId: string) => Promise<weatherAgent.Session>"`,
     );
+
+    const createdEventNames = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 27,
+      offset: 40,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(createdEventNames.resp.body?.entries.map((e) => e.name)).toEqual([
+      "LookupWeather",
+      "SetTemperature",
+    ]);
+
+    const createdPayload = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 27,
+      offset: 57,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(createdPayload.resp.body?.entries.map((e) => e.name)).toEqual([
+      "city",
+    ]);
+
+    const retrievedEventNames = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 28,
+      offset: 42,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(retrievedEventNames.resp.body?.entries.map((e) => e.name)).toEqual([
+      "LookupWeather",
+      "SetTemperature",
+    ]);
+
+    const retrievedPayload = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 28,
+      offset: 59,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(retrievedPayload.resp.body?.entries.map((e) => e.name)).toEqual([
+      "city",
+    ]);
   });
 
   it("callsQueryAcceptsObject", { timeout: 40_000 }, async () => {
