@@ -571,6 +571,15 @@ describe("Load Ontologies Metadata", () => {
                   "type": "struct",
                 },
               },
+              {
+                "eventType": "SetTemperature",
+                "payloadType": {
+                  "type": "nullable",
+                  "wrappedType": {
+                    "type": "double",
+                  },
+                },
+              },
             ],
             "version": "2.0.0",
           },
