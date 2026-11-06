@@ -24,6 +24,7 @@ import {
 import type {
   BaseWorkshopModuleProps,
   WorkshopModuleProps,
+  WorkshopObjectSetValue,
   WorkshopVariableValues,
 } from "../../public/experimental/workshop-module.js";
 
@@ -32,12 +33,18 @@ type ModuleVariables = {
   searchText: string;
   includeArchived: boolean;
   names: readonly string[];
+  employees: WorkshopObjectSetValue;
 };
 
 const moduleRid = "ri.workshop.main.module.example";
 const props: WorkshopModuleProps<ModuleVariables> = {
   moduleRid,
-  variables: { count: 25, searchText: null, names: ["Ada"] as const },
+  variables: {
+    count: 25,
+    searchText: null,
+    names: ["Ada"] as const,
+    employees: { objectSetRid: "ri.object-set.main.object-set.example" },
+  },
   onVariablesChanged: (changes) => {
     expectTypeOf(changes.count).toEqualTypeOf<number | null | undefined>();
     expectTypeOf(changes.searchText).toEqualTypeOf<string | null | undefined>();
@@ -46,6 +53,9 @@ const props: WorkshopModuleProps<ModuleVariables> = {
     >();
     expectTypeOf(changes.names).toEqualTypeOf<
       readonly string[] | null | undefined
+    >();
+    expectTypeOf(changes.employees).toEqualTypeOf<
+      WorkshopObjectSetValue | null | undefined
     >();
     // @ts-expect-error callbacks only expose declared external IDs
     void changes.unknownVariable;
@@ -90,6 +100,10 @@ void (
 );
 // @ts-expect-error nested arrays are not supported variable types
 void ({} satisfies WorkshopModuleProps<{ names: string[][] }>);
+// @ts-expect-error object-set arrays are not supported variable types
+void ({} satisfies WorkshopModuleProps<{
+  employees: WorkshopObjectSetValue[];
+}>);
 
 // Existing callers can omit the contract and all variable props.
 void (<WorkshopModule moduleRid={moduleRid} />);

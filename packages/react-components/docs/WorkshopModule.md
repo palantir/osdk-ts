@@ -61,7 +61,7 @@ function Dashboard() {
 }
 ```
 
-TypeScript checks variable names and values against the declared contract, including the callback's partial updates. For example, `{ count: "25" }` and `{ unknownVariable: true }` are rejected. Omitted fields are unchanged, and `null` represents clearing a value. Supported types are `string`, `number`, `boolean`, and homogeneous arrays of those types, including readonly arrays. Object sets are not supported.
+TypeScript checks variable names and values against the declared contract, including the callback's partial updates. For example, `{ count: "25" }` and `{ unknownVariable: true }` are rejected. Omitted fields are unchanged, and `null` represents clearing a value. Supported types are `string`, `number`, `boolean`, homogeneous arrays of those primitives (including readonly arrays), and `WorkshopObjectSetValue` references.
 
 The connection waits for Workshop to publish its module schema, then validates inputs and outputs against the declared variable types. Integrations that do not publish a schema time out. The current `variables` object is sent when the connection is established and whenever that prop changes. Merge the partial updates from `onVariablesChanged` back into your state, as above, to retain Workshop edits when sending later inputs. A new connection sends the latest values again after iframe navigation or reload. These messages do not acknowledge that Workshop applied an update.
 
@@ -77,6 +77,27 @@ Declare list variables as `string[]`, `number[]`, or `boolean[]` (or their reado
 ```
 
 Array inputs and outputs require a Foundry deployment with list-variable support in the Workshop embed integration. Scalar-only deployments reject messages containing arrays.
+
+## Object-set variables
+
+Declare object-set variables as `WorkshopObjectSetValue` and pass a reference to a set that Workshop's signed-in user can access:
+
+```tsx
+import type { WorkshopObjectSetValue } from "@osdk/react-components/experimental/workshop-module";
+
+<WorkshopModule<{ employees: WorkshopObjectSetValue }>
+  moduleRid="ri.workshop.main.module.example"
+  variables={{
+    employees: {
+      objectSetRid: "ri.object-set.main.temporary-object-set.example",
+    },
+  }}
+/>;
+```
+
+`onVariablesChanged` receives the same reference shape. Merge changes into your controlled state as above. Use `null` to clear the variable. Pass a serialized RID reference, not an OSDK `ObjectSet` instance; the component does not create temporary object sets or hydrate received references. Object-set arrays are not supported.
+
+This requires a Foundry deployment with object-set support in the Workshop embed integration. Older deployments reject messages containing object-set references.
 
 ## Branch
 
@@ -124,15 +145,15 @@ import { BaseWorkshopModule } from "@osdk/react-components/experimental/workshop
 
 Type parameters: `TVariables extends WorkshopVariableMap = WorkshopVariableMap`
 
-| Name                 | Type                                                    | Description                                                                                                                                                                                                                |
-| -------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `moduleRid`          | `string`                                                | **Required.** RID of the Workshop module to render.                                                                                                                                                                        |
-| `moduleVersion`      | `"latest" \| "published"`                               | Module version: `latest` for the latest saved version, or `published` for the published version (falling back to the latest saved version if none is published). Defaults to `"published"`.                                |
-| `variables`          | `WorkshopVariableValues<TVariables>`                    | Controlled scalar or array values keyed by module-interface external ID. Pair with onVariablesChanged to retain Workshop edits. Omitted variables are unchanged; null represents a cleared value. Defaults to `undefined`. |
-| `onVariablesChanged` | `(changes: WorkshopVariableValues<TVariables>) => void` | Callback for partial updates to the controlled variables. Merge the changes into variables to retain Workshop edits. Defaults to `undefined`.                                                                              |
-| `title`              | `string`                                                | Accessible title for the iframe. Defaults to `"Workshop module"`.                                                                                                                                                          |
-| `className`          | `string`                                                | Additional CSS class name for the iframe. Defaults to `undefined`.                                                                                                                                                         |
-| `style`              | `CSSProperties`                                         | Inline styles for the iframe. By default, it fills its container. Defaults to `undefined`.                                                                                                                                 |
+| Name                 | Type                                                    | Description                                                                                                                                                                                                         |
+| -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `moduleRid`          | `string`                                                | **Required.** RID of the Workshop module to render.                                                                                                                                                                 |
+| `moduleVersion`      | `"latest" \| "published"`                               | Module version: `latest` for the latest saved version, or `published` for the published version (falling back to the latest saved version if none is published). Defaults to `"published"`.                         |
+| `variables`          | `WorkshopVariableValues<TVariables>`                    | Controlled variable values keyed by module-interface external ID. Pair with onVariablesChanged to retain Workshop edits. Omitted variables are unchanged; null represents a cleared value. Defaults to `undefined`. |
+| `onVariablesChanged` | `(changes: WorkshopVariableValues<TVariables>) => void` | Callback for partial updates to the controlled variables. Merge the changes into variables to retain Workshop edits. Defaults to `undefined`.                                                                       |
+| `title`              | `string`                                                | Accessible title for the iframe. Defaults to `"Workshop module"`.                                                                                                                                                   |
+| `className`          | `string`                                                | Additional CSS class name for the iframe. Defaults to `undefined`.                                                                                                                                                  |
+| `style`              | `CSSProperties`                                         | Inline styles for the iframe. By default, it fills its container. Defaults to `undefined`.                                                                                                                          |
 
 <!-- AUTOGEN:props END -->
 
@@ -142,17 +163,17 @@ Type parameters: `TVariables extends WorkshopVariableMap = WorkshopVariableMap`
 
 Type parameters: `TVariables extends WorkshopVariableMap = WorkshopVariableMap`
 
-| Name                 | Type                                                    | Description                                                                                                                                                                                                                |
-| -------------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `moduleRid`          | `string`                                                | **Required.** RID of the Workshop module to render.                                                                                                                                                                        |
-| `moduleVersion`      | `"latest" \| "published"`                               | Module version: `latest` for the latest saved version, or `published` for the published version (falling back to the latest saved version if none is published). Defaults to `"published"`.                                |
-| `variables`          | `WorkshopVariableValues<TVariables>`                    | Controlled scalar or array values keyed by module-interface external ID. Pair with onVariablesChanged to retain Workshop edits. Omitted variables are unchanged; null represents a cleared value. Defaults to `undefined`. |
-| `onVariablesChanged` | `(changes: WorkshopVariableValues<TVariables>) => void` | Callback for partial updates to the controlled variables. Merge the changes into variables to retain Workshop edits. Defaults to `undefined`.                                                                              |
-| `title`              | `string`                                                | Accessible title for the iframe. Defaults to `"Workshop module"`.                                                                                                                                                          |
-| `className`          | `string`                                                | Additional CSS class name for the iframe. Defaults to `undefined`.                                                                                                                                                         |
-| `style`              | `CSSProperties`                                         | Inline styles for the iframe. By default, it fills its container. Defaults to `undefined`.                                                                                                                                 |
-| `foundryUrl`         | `string`                                                | **Required.** HTTP or HTTPS Foundry base URL, for example `https://example.palantirfoundry.com`.                                                                                                                           |
-| `branchRid`          | `string`                                                | Global branch RID. Changing the branch reloads the module. Defaults to `undefined (main branch)`.                                                                                                                          |
-| `defaultTheme`       | `"light" \| "dark" \| "system"`                         | Sets the initial theme. `system` reads the browser's preference once before the module loads.<br /><br />Changes after mount are ignored. Remount to change the theme. Defaults to `undefined (uses the module's theme)`.  |
+| Name                 | Type                                                    | Description                                                                                                                                                                                                               |
+| -------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `moduleRid`          | `string`                                                | **Required.** RID of the Workshop module to render.                                                                                                                                                                       |
+| `moduleVersion`      | `"latest" \| "published"`                               | Module version: `latest` for the latest saved version, or `published` for the published version (falling back to the latest saved version if none is published). Defaults to `"published"`.                               |
+| `variables`          | `WorkshopVariableValues<TVariables>`                    | Controlled variable values keyed by module-interface external ID. Pair with onVariablesChanged to retain Workshop edits. Omitted variables are unchanged; null represents a cleared value. Defaults to `undefined`.       |
+| `onVariablesChanged` | `(changes: WorkshopVariableValues<TVariables>) => void` | Callback for partial updates to the controlled variables. Merge the changes into variables to retain Workshop edits. Defaults to `undefined`.                                                                             |
+| `title`              | `string`                                                | Accessible title for the iframe. Defaults to `"Workshop module"`.                                                                                                                                                         |
+| `className`          | `string`                                                | Additional CSS class name for the iframe. Defaults to `undefined`.                                                                                                                                                        |
+| `style`              | `CSSProperties`                                         | Inline styles for the iframe. By default, it fills its container. Defaults to `undefined`.                                                                                                                                |
+| `foundryUrl`         | `string`                                                | **Required.** HTTP or HTTPS Foundry base URL, for example `https://example.palantirfoundry.com`.                                                                                                                          |
+| `branchRid`          | `string`                                                | Global branch RID. Changing the branch reloads the module. Defaults to `undefined (main branch)`.                                                                                                                         |
+| `defaultTheme`       | `"light" \| "dark" \| "system"`                         | Sets the initial theme. `system` reads the browser's preference once before the module loads.<br /><br />Changes after mount are ignored. Remount to change the theme. Defaults to `undefined (uses the module's theme)`. |
 
 <!-- AUTOGEN:props END -->
