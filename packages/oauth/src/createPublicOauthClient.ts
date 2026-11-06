@@ -57,6 +57,9 @@ export interface PublicOauthClientOptions {
    * Realm of the authentication provider to use when the user needs to log in, sent as
    * the `_realm` authorize parameter. Users who already have a Foundry session keep that
    * session's identity.
+   *
+   * To ignore stored refresh tokens when `realmId` changes, also pass it as
+   * `refreshTokenMarker`.
    */
   realmId?: string;
 
@@ -91,7 +94,9 @@ export interface PublicOauthClientOptions {
   ctxPath?: string;
 
   /**
-   * Allows for an additional value to be appended to the local storage key for the refresh token.
+   * Value stored with the refresh token. A stored refresh token is only reused when its marker
+   * matches this value, so changing it (for example when the SDK version or `realmId` changes)
+   * forces a new authorization.
    */
   refreshTokenMarker?: string;
 
