@@ -23,6 +23,7 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import * as ObjectSets from "../objectSet/createTemporaryObjectSet.js";
 import { deepFreeze } from "./deepFreeze.js";
 import { toDataValueAgents } from "./toDataValueAgents.js";
 
@@ -422,7 +423,7 @@ describe(toDataValueAgents, () => {
     {
       name: "object",
       dataType: employeeType,
-      value: () => 50030,
+      value: (): number => 50030,
     },
     {
       name: "OSDK object set",
@@ -452,10 +453,60 @@ describe(toDataValueAgents, () => {
             },
           ],
         }),
-      ).rejects.toThrow(
-        'Agent argument "input" references ontology "another-ontology", but the client uses ontology "default-ontology".',
-      );
+      ).rejects.toMatchObject({
+        message: expect.stringContaining(
+          'Failed to convert agent argument "input"',
+        ),
+        cause: expect.objectContaining({
+          message:
+            'Agent argument "input" references ontology "another-ontology", but the client uses ontology "default-ontology".',
+        }),
+      });
       expect(getObject).not.toHaveBeenCalled();
     },
   );
+
+  it("reports metadata lookup failures with the argument path and cause", async () => {
+    const cause = new Error("Metadata unavailable");
+    vi.spyOn(
+      clientCtx.ontologyProvider,
+      "getObjectDefinition",
+    ).mockRejectedValue(cause);
+
+    const result = toDataValueAgents({ employees: [50030] }, clientCtx, {
+      type: "struct",
+      fields: [
+        {
+          name: "employees",
+          dataType: { type: "list", elementType: employeeType },
+        },
+      ],
+    });
+
+    await expect(result).rejects.toMatchObject({
+      message:
+        'Failed to convert agent argument "employees[0]" to an object reference',
+      cause,
+    });
+  });
+
+  it("reports temporary object set failures with the argument path and cause", async () => {
+    const cause = new Error("Temporary object set creation failed");
+    vi.spyOn(ObjectSets, "createTemporaryObjectSet").mockRejectedValue(cause);
+
+    const result = toDataValueAgents(
+      { employees: client(Employee) },
+      clientCtx,
+      {
+        type: "struct",
+        fields: [{ name: "employees", dataType: employeeSetType }],
+      },
+    );
+
+    await expect(result).rejects.toMatchObject({
+      message:
+        'Failed to convert agent argument "employees" to an object set RID',
+      cause,
+    });
+  });
 });

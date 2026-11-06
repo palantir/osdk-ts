@@ -330,7 +330,20 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         }
         return acceptedAgentEvent;
       },
-      {},
+      (_request, dataStore) => {
+        const objectSetRid = "ri.object-set.main.object-set.agent-state";
+        dataStore.registerObjectSet(objectSetRid, employeeObjectSet);
+        const data = objectArgumentsAgentRequest(objectSetRid).arguments;
+        return {
+          ...weatherAgentState,
+          arguments: data,
+          agentState: { data },
+          contextItems: {
+            selection: { contextItemType: "selection", data },
+          },
+          contextItemOrder: ["selection"],
+        };
+      },
     ),
   );
 }
