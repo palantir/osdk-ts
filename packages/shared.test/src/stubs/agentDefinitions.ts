@@ -182,3 +182,23 @@ export const structuredArgumentsAgentVersion: AgentDefinitionVersion = {
     { name: "future", dataType: { type: "futureType" } as unknown as DataType },
   ],
 };
+
+export const objectArgumentsAgentOtherVersion: AgentDefinitionVersion = {
+  ...objectArgumentsAgentVersion,
+  version: "2.0.0",
+  argumentDefinitions: [],
+  agentStateType: employeeField.dataType,
+  contextItemDefinitions: [
+    { contextItemType: "new-selection", dataType: employeeField.dataType },
+  ],
+  eventDefinitions: [
+    {
+      eventType: "SelectEmployees",
+      payloadType: {
+        type: "object",
+        ontologyApiName: defaultOntologyMetadata.apiName,
+        objectTypeApiName: "Employee",
+      },
+    },
+  ],
+};
