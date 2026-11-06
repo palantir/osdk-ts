@@ -48,6 +48,10 @@ export const weatherAgentVersion: AgentDefinitionVersion = {
   },
   contextItemDefinitions: [
     { contextItemType: "weather-result", dataType: { type: "string" } },
+    {
+      contextItemType: "temperature",
+      dataType: { type: "nullable", wrappedType: { type: "integer" } },
+    },
   ],
 };
 
