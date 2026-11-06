@@ -245,14 +245,14 @@ export abstract class ListQuery extends BaseListQuery<
 
     if (needsResultType) {
       const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType, objectInvalidationSet } =
+      const { resultType, additionalObjectInvalidationSet } =
         await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
           wireObjectSet,
         );
 
       this.#updateFetchedObjectType(resultType.apiName);
-      this.#rdpInvalidationSet = objectInvalidationSet;
+      this.#rdpInvalidationSet = additionalObjectInvalidationSet;
 
       if (
         Object.keys(this.#orderBy).length > 0 &&
@@ -315,13 +315,13 @@ export abstract class ListQuery extends BaseListQuery<
     if (this.#fetchedObjectType == null) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
-        const { resultType, objectInvalidationSet } =
+        const { resultType, additionalObjectInvalidationSet } =
           await getObjectTypesThatInvalidate(
             this.store.client[additionalContext],
             wireObjectSet,
           );
         this.#updateFetchedObjectType(resultType.apiName);
-        this.#rdpInvalidationSet = objectInvalidationSet;
+        this.#rdpInvalidationSet = additionalObjectInvalidationSet;
       } catch {
         this.#updateFetchedObjectType(this.apiName);
       }

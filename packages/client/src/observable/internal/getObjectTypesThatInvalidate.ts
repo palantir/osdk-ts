@@ -45,9 +45,9 @@ export async function getObjectTypesThatInvalidate(
   objectSet: WireObjectSet,
 ): Promise<{
   resultType: FetchedObjectTypeDefinition | InterfaceMetadata;
-  counts: Record<string, number>;
-  interfaceInvalidationSet: Set<string>;
   objectInvalidationSet: Set<string>;
+  interfaceInvalidationSet: Set<string>;
+  additionalObjectInvalidationSet: Set<string>;
 }> {
   const counts: Record<string, number> = {};
   const interfaceInvalidationSet = new Set<string>();
@@ -68,9 +68,9 @@ export async function getObjectTypesThatInvalidate(
 
   return {
     resultType,
-    counts,
+    objectInvalidationSet: new Set(Object.keys(counts)),
     interfaceInvalidationSet,
-    objectInvalidationSet: new Set(
+    additionalObjectInvalidationSet: new Set(
       Object.entries(tweaked)
         .filter(([, v]) => v > 0)
         .map(([k]) => k),

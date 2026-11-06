@@ -157,9 +157,9 @@ export class AggregationQuery extends Query<
       this.store.client[additionalContext],
       getWireObjectSet(this.createObjectSet()),
     )
-      .then(({ counts, interfaceInvalidationSet }) => {
+      .then(({ objectInvalidationSet, interfaceInvalidationSet }) => {
         this.#invalidationTypes = new Set([
-          ...Object.keys(counts),
+          ...objectInvalidationSet,
           ...interfaceInvalidationSet,
         ]);
         return this.#invalidationTypes;
