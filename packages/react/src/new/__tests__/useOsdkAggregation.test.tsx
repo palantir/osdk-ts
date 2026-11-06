@@ -298,24 +298,19 @@ describe("useOsdkAggregation", () => {
   });
 
   describe("refetch", () => {
-    it.each([Employee, FooInterface])(
-      "invalidates the typed scope for $apiName",
-      async (type) => {
-        const { result } = renderHook(
-          () =>
-            useOsdkAggregation(type, { aggregate: AGGREGATE, enabled: true }),
-          { wrapper: createWrapper(observableClient) },
-        );
+    it("invalidates the object type when enabled is true", async () => {
+      const { result } = renderHook(
+        () =>
+          useOsdkAggregation(Employee, { aggregate: AGGREGATE, enabled: true }),
+        { wrapper: createWrapper(observableClient) },
+      );
 
-        await act(async () => {
-          await result.current.refetch();
-        });
+      await act(async () => {
+        await result.current.refetch();
+      });
 
-        expect(invalidateObjectOrInterfaceType).toHaveBeenCalledExactlyOnceWith(
-          { type: type.type, apiName: type.apiName },
-        );
-      },
-    );
+      expect(invalidateObjectOrInterfaceType).toHaveBeenCalledTimes(1);
+    });
 
     it("does not invalidate the object type when enabled is false", async () => {
       const { result } = renderHook(

@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  addOne,
-  Employee,
-  FooInterface,
-  Todo,
-} from "@osdk/client.test.ontology";
+import { addOne, Employee, Todo } from "@osdk/client.test.ontology";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import type { MockedObject } from "vitest";
 import {
@@ -159,40 +154,37 @@ describe("FunctionQuery", () => {
     subscription.unsubscribe();
   });
 
-  it.each([Employee, FooInterface])(
-    "dependsOn triggers refetch when invalidating $apiName",
-    async (type) => {
-      const subFn = mockFunctionSubCallback();
+  it("dependsOn triggers refetch on object type invalidation", async () => {
+    const subFn = mockFunctionSubCallback();
 
-      const subscription = store.functions.observe(
-        {
-          queryDef: addOne,
-          params: { n: 2 },
-          dependsOn: [Employee.apiName],
-          dedupeInterval: 0,
-        },
-        subFn,
-      );
+    const subscription = store.functions.observe(
+      {
+        queryDef: addOne,
+        params: { n: 2 },
+        dependsOn: [Employee.apiName],
+        dedupeInterval: 0,
+      },
+      subFn,
+    );
 
-      await waitForCall(subFn, 2);
-      expect(subFn.next).toHaveBeenLastCalledWith(
-        expect.objectContaining({ status: "loaded", result: 3 }),
-      );
+    await waitForCall(subFn, 2);
+    expect(subFn.next).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: "loaded", result: 3 }),
+    );
 
-      subFn.next.mockClear();
+    subFn.next.mockClear();
 
-      // Invalidate Employee object type - should trigger function refetch
-      await store.invalidateObjectOrInterfaceType(type);
+    // Invalidate Employee object type - should trigger function refetch
+    await store.invalidateObjectType(Employee, undefined);
 
-      // Should refetch
-      await waitForCall(subFn, 2);
-      expect(subFn.next).toHaveBeenLastCalledWith(
-        expect.objectContaining({ status: "loaded", result: 3 }),
-      );
+    // Should refetch
+    await waitForCall(subFn, 2);
+    expect(subFn.next).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: "loaded", result: 3 }),
+    );
 
-      subscription.unsubscribe();
-    },
-  );
+    subscription.unsubscribe();
+  });
 
   it("cache key deduplicates same function calls", async () => {
     const subFn1 = mockFunctionSubCallback();

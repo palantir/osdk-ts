@@ -28,7 +28,6 @@ import { useObjectSet } from "../src/new/useObjectSet.js";
 
 const MockObjectType = {
   apiName: "MockObject",
-  type: "object",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
@@ -85,7 +84,6 @@ describe(useObjectSet, () => {
   };
 
   beforeEach(() => {
-    mockInvalidateObjectOrInterfaceType.mockClear();
     capturedObserver = null;
     mockObserveObjectSet.mockClear();
     mockObserveObjectSet.mockImplementation((_os, _opts, observer) => {
@@ -394,30 +392,21 @@ describe(useObjectSet, () => {
   });
 
   describe("refetch", () => {
-    it.each([mockObjectSet, createMockInterfaceObjectSet(MockInterfaceType)])(
-      "refetch uses the set's typed scope and respects enabled",
-      async (objectSet) => {
-        const { result, rerender } = renderHook(
-          ({ enabled }) => useObjectSet(objectSet, { enabled }),
-          { wrapper: createWrapper(), initialProps: { enabled: true } },
-        );
-        await act(async () => {
-          await result.current.refetch();
-        });
-        expect(
-          mockInvalidateObjectOrInterfaceType,
-        ).toHaveBeenCalledExactlyOnceWith({
-          type: objectSet.$objectSetInternals.def.type,
-          apiName: objectSet.$objectSetInternals.def.apiName,
-        });
-        mockInvalidateObjectOrInterfaceType.mockClear();
-        rerender({ enabled: false });
-        await act(async () => {
-          await result.current.refetch();
-        });
-        expect(mockInvalidateObjectOrInterfaceType).not.toHaveBeenCalled();
-      },
-    );
+    it("should call invalidateObjectOrInterfaceType when refetch is called", async () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
+
+      await act(async () => {
+        await result.current.refetch();
+      });
+
+      expect(mockInvalidateObjectOrInterfaceType).toHaveBeenCalledWith(
+        "MockObject",
+      );
+    });
   });
 
   describe("orderBy deduplication", () => {

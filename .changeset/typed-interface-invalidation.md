@@ -3,4 +3,4 @@
 "@osdk/react": patch
 ---
 
-Add `invalidateObjectOrInterfaceType`, which accepts an object or interface definition and refreshes affected queries. Deprecate `invalidateObjectType` while retaining its object-only behavior. React list, object-set, and aggregation refetch callbacks use the typed API and do nothing while disabled. Preserve object/interface identity in dependency matching and normalize mixed interface/object pivots before dependency discovery.
+Add `invalidateObjectOrInterfaceType`, accepting an API name string or object/interface definition through the existing invalidation path. Deprecate `invalidateObjectType` as an alias. React refetch callbacks use the new API, and aggregations now refresh for interface dependencies, including when a fetch is already running.

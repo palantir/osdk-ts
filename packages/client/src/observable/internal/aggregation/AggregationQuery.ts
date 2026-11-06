@@ -103,7 +103,6 @@ export class AggregationQuery extends Query<
   protected rdpConfig: Canonical<Rdp> | undefined;
   protected parsedWireObjectSet: WireObjectSet | undefined;
   #invalidationTypes: Set<string> | undefined;
-  #invalidationInterfaces = new Set<string>();
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
 
   constructor(
@@ -159,8 +158,10 @@ export class AggregationQuery extends Query<
       getWireObjectSet(this.createObjectSet()),
     )
       .then(({ counts, interfaceTypes }) => {
-        this.#invalidationInterfaces = interfaceTypes;
-        this.#invalidationTypes = new Set(Object.keys(counts));
+        this.#invalidationTypes = new Set([
+          ...Object.keys(counts),
+          ...interfaceTypes,
+        ]);
         return this.#invalidationTypes;
       })
       .finally(() => {
@@ -273,27 +274,26 @@ export class AggregationQuery extends Query<
     return batch.read(this.cacheKey)!;
   }
 
-  override async invalidateInterfaceType(
-    interfaceType: string,
-    changes: Changes | undefined,
-  ): Promise<void> {
-    if (
-      (this.cacheKey.otherKeys[TYPE_IDX] === "interface" &&
-        this.apiName === interfaceType) ||
-      this.#invalidationInterfaces.has(interfaceType)
-    ) {
-      changes?.modified.add(this.cacheKey);
-      await this.revalidate(true);
-    }
-  }
-
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    const invalidationTypes = await this.ensureInvalidationTypesReady();
+    let invalidationTypes: Set<string>;
+    try {
+      invalidationTypes = await this.ensureInvalidationTypesReady();
+    } catch {
+      changes?.modified.add(this.cacheKey);
+      this.store.batch({}, (batch) => {
+        this.writeToStore(undefined, "error", batch);
+      });
+      return;
+    }
+
     if (invalidationTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);
+      if (this.pendingFetch) {
+        await this.pendingFetch;
+      }
       return this.revalidate(true);
     }
   };

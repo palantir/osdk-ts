@@ -26,7 +26,6 @@ import type {
   FetchedObjectTypeDefinition,
   OntologyProvider,
 } from "../../ontology/OntologyProvider.js";
-import { normalizeInterfaceLinkSearchArounds } from "../../util/normalizeInterfaceLinkSearchArounds.js";
 
 // Suppose we did an object set that is basically
 // A.where()
@@ -51,10 +50,9 @@ export async function getObjectTypesThatInvalidate(
   invalidationSet: Set<string>;
 }> {
   const counts: Record<string, number> = {};
-
   const interfaceTypes = new Set<string>();
-  const normalized = await normalizeInterfaceLinkSearchArounds(mc, objectSet);
-  const resultType = await calcObjectSet(normalized, {
+
+  const resultType = await calcObjectSet(objectSet, {
     counts,
     interfaceTypes,
     methodInput: undefined,
@@ -63,10 +61,10 @@ export async function getObjectTypesThatInvalidate(
   });
 
   // we need to uncount the final result type
-  const tweaked = { ...counts };
-  if (resultType.type === "object") {
-    tweaked[resultType.apiName] -= 1;
-  }
+  const tweaked = {
+    ...counts,
+    [resultType.apiName]: counts[resultType.apiName] - 1,
+  };
 
   return {
     resultType,
@@ -213,9 +211,7 @@ async function calcObjectSet(
       }
 
       const allMatch = returnTypes.every(
-        ({ r }) =>
-          r.type === returnTypes[0].r.type &&
-          r.apiName === returnTypes[0].r.apiName,
+        ({ r }) => r.apiName === returnTypes[0].r.apiName,
       );
 
       if (!allMatch) {
@@ -239,7 +235,6 @@ async function calcObjectSet(
       // otherwise it will double count everything
       return await calcObjectSet(ctx.methodInput, { ...ctx, counts: {} });
 
-    // we don't currently support this anywhere.
     case "asBaseObjectTypes":
     // We don't currently support this because it could return multiple object types conceptually
     // internally, we actually use it this way but we shouldn't be finding that object sets.

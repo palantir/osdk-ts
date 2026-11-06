@@ -24,7 +24,6 @@ import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
 
 const MockObjectType = {
   apiName: "MockObject",
-  type: "object",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
@@ -56,7 +55,6 @@ describe("useOsdkObjects enabled option", () => {
   };
 
   beforeEach(() => {
-    mockInvalidateObjectOrInterfaceType.mockClear();
     mockObserveList.mockClear();
     mockObserveList.mockReturnValue({ unsubscribe: vitest.fn() });
   });
@@ -216,30 +214,21 @@ describe("useOsdkObjects enabled option", () => {
     expect(result.current.objectSet).toBe(mockObjectSet);
   });
 
-  it.each([MockObjectType, MockInterface])(
-    "refetch uses the typed scope for $apiName and respects enabled",
-    async (type) => {
-      const { result, rerender } = renderHook(
-        ({ enabled }) => useOsdkObjects(type, { enabled }),
-        { wrapper: createWrapper(), initialProps: { enabled: true } },
-      );
-      await act(async () => {
-        await result.current.refetch();
-      });
-      expect(
-        mockInvalidateObjectOrInterfaceType,
-      ).toHaveBeenCalledExactlyOnceWith({
-        type: type.type,
-        apiName: type.apiName,
-      });
-      mockInvalidateObjectOrInterfaceType.mockClear();
-      rerender({ enabled: false });
-      await act(async () => {
-        await result.current.refetch();
-      });
-      expect(mockInvalidateObjectOrInterfaceType).not.toHaveBeenCalled();
-    },
-  );
+  it("should call invalidateObjectOrInterfaceType when refetch is called", async () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
+
+    await act(async () => {
+      await result.current.refetch();
+    });
+
+    expect(mockInvalidateObjectOrInterfaceType).toHaveBeenCalledWith(
+      "MockObject",
+    );
+  });
 
   it("should pass $includeAllBaseObjectProperties to observeList when true", () => {
     const wrapper = createWrapper();

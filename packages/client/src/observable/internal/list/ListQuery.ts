@@ -64,7 +64,6 @@ import {
   PIVOT_IDX,
   RDP_IDX,
   SELECT_IDX,
-  TYPE_IDX,
   WHERE_IDX,
 } from "./ListCacheKey.js";
 export {
@@ -117,8 +116,6 @@ export abstract class ListQuery extends BaseListQuery<
   // Employee.pivotTo(Office) has apiName "Employee" but fetches Office objects.
   #fetchedObjectType: string | undefined;
   #objectTypesCache: ReadonlySet<string> | undefined;
-  #fetchedTypeKind: "object" | "interface" | undefined;
-  #invalidationInterfaces = new Set<string>();
 
   // Object types this query's RDPs traverse; an edit to any of these triggers
   // revalidation. Undefined for ObjectSets the walker doesn't support.
@@ -212,11 +209,7 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#objectTypesCache ?? new Set([this.apiName]);
   }
 
-  #updateFetchedObjectType(
-    fetchedApiName: string,
-    type: "object" | "interface",
-  ): void {
-    this.#fetchedTypeKind = type;
+  #updateFetchedObjectType(fetchedApiName: string): void {
     this.#fetchedObjectType = fetchedApiName;
     this.#objectTypesCache =
       fetchedApiName !== this.apiName
@@ -252,15 +245,14 @@ export abstract class ListQuery extends BaseListQuery<
 
     if (needsResultType) {
       const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType, counts, interfaceTypes } =
+      const { resultType, invalidationSet } =
         await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
           wireObjectSet,
         );
 
-      this.#updateFetchedObjectType(resultType.apiName, resultType.type);
-      this.#rdpInvalidationSet = new Set(Object.keys(counts));
-      this.#invalidationInterfaces = interfaceTypes;
+      this.#updateFetchedObjectType(resultType.apiName);
+      this.#rdpInvalidationSet = invalidationSet;
 
       if (
         Object.keys(this.#orderBy).length > 0 &&
@@ -323,19 +315,15 @@ export abstract class ListQuery extends BaseListQuery<
     if (this.#fetchedObjectType == null) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
-        const { resultType, counts, interfaceTypes } =
+        const { resultType, invalidationSet } =
           await getObjectTypesThatInvalidate(
             this.store.client[additionalContext],
             wireObjectSet,
           );
-        this.#updateFetchedObjectType(resultType.apiName, resultType.type);
-        this.#rdpInvalidationSet = new Set(Object.keys(counts));
-        this.#invalidationInterfaces = interfaceTypes;
+        this.#updateFetchedObjectType(resultType.apiName);
+        this.#rdpInvalidationSet = invalidationSet;
       } catch {
-        this.#updateFetchedObjectType(
-          this.apiName,
-          this.cacheKey.otherKeys[TYPE_IDX],
-        );
+        this.#updateFetchedObjectType(this.apiName);
       }
     }
 
@@ -404,10 +392,8 @@ export abstract class ListQuery extends BaseListQuery<
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async revalidateObjectType(objectType: string): Promise<boolean> {
     return (
-      (this.cacheKey.otherKeys[TYPE_IDX] === "object" &&
-        this.apiName === objectType) ||
-      (this.#fetchedTypeKind === "object" &&
-        this.#fetchedObjectType != null &&
+      this.apiName === objectType ||
+      (this.#fetchedObjectType != null &&
         this.#fetchedObjectType === objectType) ||
       (this.#rdpInvalidationSet?.has(objectType) ?? false)
     );
@@ -419,23 +405,6 @@ export abstract class ListQuery extends BaseListQuery<
   protected abstract postProcessFetchedData(
     data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]>;
-
-  override invalidateInterfaceType(
-    interfaceType: string,
-    changes: Changes | undefined,
-  ): Promise<void> {
-    if (
-      (this.cacheKey.otherKeys[TYPE_IDX] === "interface" &&
-        this.apiName === interfaceType) ||
-      (this.#fetchedTypeKind === "interface" &&
-        this.#fetchedObjectType === interfaceType) ||
-      this.#invalidationInterfaces.has(interfaceType)
-    ) {
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
-    }
-    return Promise.resolve();
-  }
 
   invalidateObjectType = async (
     objectType: string,

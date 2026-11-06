@@ -78,44 +78,26 @@ export class AggregationsHelper extends AbstractHelper<
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options:
+      | ObserveAggregationOptions<T, A, RDPs>
+      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
     subFn: Observer<AggregationPayloadBase>,
   ): QuerySubscription<AggregationQuery> {
-    return super.observe(options, subFn);
-  }
-
-  observeAsync<
-    T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
-    RDPs extends Record<string, SimplePropertyDef> = {},
-  >(
-    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
-    subFn: Observer<AggregationPayloadBase>,
-  ): Promise<QuerySubscription<AggregationQuery>> {
-    return Promise.resolve().then(() => {
-      const query = this.getQueryWithObjectSet(options);
-      return this._subscribe(query, options as AggregationOptions, subFn);
-    });
+    return super.observe(options as AggregationOptions, subFn);
   }
 
   getQuery<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
-  >(options: ObserveAggregationOptions<T, A, RDPs>): AggregationQuery {
-    return this.getOrCreateQuery(options as AggregationOptions, undefined);
-  }
-
-  getQueryWithObjectSet<
-    T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
-    RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    options:
+      | ObserveAggregationOptions<T, A, RDPs>
+      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
   ): AggregationQuery {
-    const serializedObjectSet = JSON.stringify(
-      getWireObjectSet(options.objectSet),
-    );
+    const serializedObjectSet = options.objectSet
+      ? JSON.stringify(getWireObjectSet(options.objectSet))
+      : undefined;
     return this.getOrCreateQuery(
       options as AggregationOptions,
       serializedObjectSet,

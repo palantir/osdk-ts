@@ -479,7 +479,6 @@ export interface ObservableClient extends ObserveLinks {
    *
    * This overload accepts an ObjectSet parameter, enabling aggregation on pivoted,
    * filtered, or composed ObjectSets. Returns a Promise resolving to the subscription.
-   * Dependency lookup failures are reported through the subscribed query's error state.
    *
    * @param options - Aggregation configuration including objectSet, where, aggregate spec
    * @param subFn - Observer that receives aggregation result updates
@@ -594,19 +593,18 @@ export interface ObservableClient extends ObserveLinks {
    *
    * @param type - Object type definition or API name string
    * @returns Promise that resolves when invalidation is complete
-   * @deprecated Use invalidateObjectOrInterfaceType with a type definition.
+   * @deprecated Use invalidateObjectOrInterfaceType instead.
    */
   invalidateObjectType<T extends ObjectTypeDefinition>(
     type: T | T["apiName"],
   ): Promise<void>;
 
   /**
-   * Invalidates cached queries for an object type or interface and its implementing object types.
-   * Accepts a type definition to distinguish object and interface API names.
-   * Rejects if the interface's implementing types cannot be resolved.
+   * Invalidates cached queries that depend on an object or interface type.
+   * Accepts an API name string or a type definition.
    */
   invalidateObjectOrInterfaceType(
-    type: ObjectOrInterfaceDefinition,
+    type: ObjectOrInterfaceDefinition | string,
   ): Promise<void>;
 
   /**
