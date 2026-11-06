@@ -43,15 +43,38 @@ export namespace ObserveLinks {
     sourceUnderlyingObjectType: string;
     pk: PrimaryKeyType<Q>;
     linkName: L;
+
+    /**
+     * Standard OSDK Where clause for filtering linked objects
+     */
     where?: WhereClause<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
+
+    /**
+     * Restrict which properties are returned for each linked object.
+     * When provided, only the specified properties will be fetched,
+     * reducing payload sizes for list views.
+     */
     select?: readonly string[];
+
+    /**
+     * The preferred page size for the links list.
+     */
     pageSize?: number;
+
     /**
      * Fetch all pages when true, or at least this many linked objects per source
      * when a number is provided. Defaults to manual pagination.
      */
     autoFetchMore?: boolean | number;
+
+    /** Sorting options for the linked objects */
     orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
+
+    /**
+     * Defines how data should be handled during invalidation.
+     *
+     * @see InvalidationMode
+     */
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
 
