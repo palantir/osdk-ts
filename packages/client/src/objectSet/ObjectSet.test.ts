@@ -492,10 +492,23 @@ describe("ObjectSet", () => {
     client(BarInterface).where({ $title: { $eq: "abc" } });
   });
 
-  it("type checking containsallterm and containsanyterm", () => {
-    const ids: ReadonlyArray<number> = [50030, 50031];
+  it("type checks text search options", () => {
     client(Employee).where({
       $or: [
+        { fullName: { $startsWith: "John" } },
+        {
+          fullName: {
+            $startsWith: { term: "Jon", phoneticSearch: true },
+          },
+        },
+        {
+          fullName: {
+            $containsAllTermsInOrder: {
+              term: "Jon Smith",
+              phoneticSearch: true,
+            },
+          },
+        },
         { fullName: { $containsAllTerms: "John Smith" } },
         {
           office: { $containsAllTerms: { term: "NYC DC" } },
@@ -503,6 +516,24 @@ describe("ObjectSet", () => {
         {
           fullName: {
             $containsAllTerms: { term: "John Smith", fuzzySearch: false },
+          },
+        },
+        {
+          fullName: {
+            $containsAllTerms: {
+              term: "Jon Smith",
+              fuzzySearch: false,
+              phoneticSearch: true,
+            },
+          },
+        },
+        {
+          fullName: {
+            $containsAllTerms: {
+              term: "John Smith",
+              fuzzySearch: true,
+              phoneticSearch: false,
+            },
           },
         },
         {
@@ -524,11 +555,43 @@ describe("ObjectSet", () => {
           },
         },
         {
+          fullName: {
+            $containsAnyTerm: {
+              term: "Jon",
+              phoneticSearch: true,
+            },
+          },
+        },
+        {
           // @ts-expect-error
           fullName: { $containsAnyTerm: { fuzzySearch: false } },
         },
       ],
     });
+
+    const typeCheckInvalidOptions = () => {
+      client(Employee).where({
+        fullName: {
+          // @ts-expect-error fuzzy and phonetic search cannot both be enabled
+          $containsAllTerms: {
+            term: "Jon Smith",
+            fuzzySearch: true,
+            phoneticSearch: true,
+          },
+        },
+      });
+      client(Employee).where({
+        fullName: {
+          // @ts-expect-error fuzzy and phonetic search cannot both be enabled
+          $containsAnyTerm: {
+            term: "Jon",
+            fuzzySearch: true,
+            phoneticSearch: true,
+          },
+        },
+      });
+    };
+    expectTypeOf(typeCheckInvalidOptions).toBeFunction();
 
     client(BarInterface).where({
       // @ts-expect-error

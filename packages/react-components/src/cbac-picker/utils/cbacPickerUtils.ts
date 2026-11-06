@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import { sortBy } from "lodash-es";
+
 import type {
   CategoryMarkingGroup,
   CbacBannerData,
   RequiredMarkingGroup,
 } from "../types.js";
+import {
+  sortCategoriesByPriority,
+  sortMarkingsByProminenceAndPriority,
+} from "./selectionLogic.js";
 const UNMARKED_BACKGROUND_COLORS: string[] = ["#8F99A8"];
 const UNMARKED_TEXT_COLOR = "#FFFFFF";
 const UNMARKED_CLASSIFICATION_STRING = "UNMARKED";
@@ -55,9 +61,17 @@ export interface AppliedMarkingGroup {
 
 export function groupMarkingsByCategory(
   markingIds: string[],
-  categories: ReadonlyArray<{ id: string; name: string }> | undefined,
+  categories:
+    | ReadonlyArray<{ id: string; name: string; priority?: string }>
+    | undefined,
   markings:
-    | ReadonlyArray<{ id: string; name: string; categoryId: string }>
+    | ReadonlyArray<{
+        id: string;
+        name: string;
+        categoryId: string;
+        priority?: string;
+        prominence?: "COMMON" | "UNCOMMON";
+      }>
     | undefined,
 ): AppliedMarkingGroup[] {
   if (
@@ -70,9 +84,18 @@ export function groupMarkingsByCategory(
 
   const selected = new Set(markingIds);
   const categoryNames = new Map(categories.map((c) => [c.id, c.name]));
+  const categoryOrder = new Map<string, number>();
+  const sortedCategories = sortCategoriesByPriority(categories);
+  for (const [index, category] of sortedCategories.entries()) {
+    // Store the category index for sorting
+    if (!categoryOrder.has(category.name)) {
+      categoryOrder.set(category.name, index);
+    }
+  }
   const grouped = new Map<string, string[]>();
 
-  for (const marking of markings) {
+  const sortedMarkings = sortMarkingsByProminenceAndPriority(markings);
+  for (const marking of sortedMarkings) {
     if (selected.has(marking.id)) {
       const name = categoryNames.get(marking.categoryId) ?? marking.categoryId;
       const list = grouped.get(name);
@@ -84,10 +107,13 @@ export function groupMarkingsByCategory(
     }
   }
 
-  return Array.from(grouped, ([categoryName, markingNames]) => ({
-    categoryName,
-    markingNames,
-  }));
+  return sortBy(
+    Array.from(grouped, ([categoryName, markingNames]) => ({
+      categoryName,
+      markingNames,
+    })),
+    (group) => categoryOrder.get(group.categoryName),
+  );
 }
 
 export function resolveRequiredGroups(

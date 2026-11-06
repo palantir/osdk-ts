@@ -26,6 +26,7 @@ import invariant from "tiny-invariant";
 import type { Client } from "./Client.js";
 import { additionalContext } from "./Client.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import { getMediaSizeBytes } from "./object/getMediaSizeBytes.js";
 import { validateMediaItemMetadata } from "./object/validateMediaItemMetadata.js";
 
 export function createMediaFromReference(
@@ -65,12 +66,12 @@ export function createMediaFromReferenceInternal(
         token ? { ReadToken: token } : undefined,
       );
 
-      invariant(info.sizeBytes != null, "Expected sizeBytes in media info");
+      const sizeBytes = getMediaSizeBytes(info);
       invariant(info.mimeType != null, "Expected mimeType in media info");
 
       return {
         path: info.path,
-        sizeBytes: info.sizeBytes,
+        sizeBytes,
         mediaType: info.mimeType,
       };
     },

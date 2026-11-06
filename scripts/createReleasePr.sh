@@ -15,5 +15,5 @@ fi
 
 # generator needed by turbo codegen in postVersionCmd
 pnpm exec turbo transpileEsm --filter "./packages/tool.release" --filter "@osdk/cli.cmd.typescript..."
-node ./packages/tool.release/build/esm/index.js --repo palantir/osdk-ts
+node ./packages/tool.release/build/esm/index.js --repo palantir/osdk-ts "$@"
 echo "WARNING: You are probably on the pr branch"

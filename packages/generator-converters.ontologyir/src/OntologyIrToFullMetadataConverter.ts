@@ -41,6 +41,10 @@ import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
+import {
+  convertActionParameterValidation,
+  isActionParameterRequired,
+} from "./convertActionParameterValidation.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
@@ -1288,12 +1292,16 @@ export class OntologyIrToFullMetadataConverter {
           throw new Error("Unknown parameter type");
       }
 
+      const { validation } = action.actionType.actionTypeLogic.validation
+        .parameterValidations[paramKey].defaultValidation;
+      const convertedValidation = convertActionParameterValidation(validation);
       result[paramKey] = {
         displayName: irParameter.displayMetadata.displayName,
         description: irParameter.displayMetadata.description,
-        required: isParameterRequired(action, paramKey),
+        required: isActionParameterRequired(validation.required),
         dataType,
         typeClasses: [],
+        ...(convertedValidation && { validation: convertedValidation }),
       };
     }
 
@@ -1612,13 +1620,4 @@ function discoverComponentRoot(
     tsConfigPath: tsConfigPath.replace(/\\/g, "/"),
     projectDir: projectDir.replace(/\\/g, "/"),
   };
-}
-
-function isParameterRequired(
-  action: OntologyIrActionTypeBlockDataV2,
-  paramKey: string,
-): boolean {
-  return action.actionType.actionTypeLogic.validation
-    .parameterValidations[paramKey].defaultValidation.validation.required.type
-    === "required";
 }

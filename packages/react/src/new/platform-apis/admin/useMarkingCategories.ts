@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MarkingCategory } from "@osdk/foundry.admin";
+import type { MarkingCategory, MarkingType } from "@osdk/foundry.admin";
 import { MarkingCategories } from "@osdk/foundry.admin";
 import React from "react";
 
@@ -42,6 +42,13 @@ export interface UseMarkingCategoriesOptions {
    * @default true
    */
   includeDeleted?: boolean;
+
+  /**
+   * Filter marking categories by type. When omitted, returns all marking types.
+   *
+   * @default undefined
+   */
+  markingType?: MarkingType;
 }
 
 export interface UseMarkingCategoriesResult {
@@ -60,12 +67,13 @@ export interface UseMarkingCategoriesResult {
 export function useMarkingCategories({
   enabled = true,
   includeDeleted = true,
+  markingType,
 }: UseMarkingCategoriesOptions = {}): UseMarkingCategoriesResult {
   const { client } = React.useContext(OsdkContext);
 
   const handleQuery = React.useCallback(() => {
-    return MarkingCategories.list(client, { includeDeleted });
-  }, [client, includeDeleted]);
+    return MarkingCategories.list(client, { includeDeleted, markingType });
+  }, [client, includeDeleted, markingType]);
 
   const query = usePlatformQuery({
     query: handleQuery,

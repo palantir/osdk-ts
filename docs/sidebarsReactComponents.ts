@@ -35,6 +35,7 @@ const sidebars: SidebarsConfig = {
         "VideoViewer",
         "XmlViewer",
         "CbacPicker",
+        "WorkshopModule",
       ],
     },
   ],

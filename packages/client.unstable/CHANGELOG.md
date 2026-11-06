@@ -1,5 +1,27 @@
 # @osdk/client.unstable
 
+## 2.87.0
+
+## 2.86.0
+
+### Minor Changes
+
+- 6b9b2c0: Preserve `isRequiredParameterOnConcreteAction` in Maker and Marketplace shapes. When the flag is true, check that mapped Action parameters are required.
+
+## 2.85.0
+
+### Minor Changes
+
+- 646d01d: Expose implementing-object reference and reference-list parameter constraints for interface action types in the generated Marketplace API.
+
+## 2.84.0
+
+## 2.83.0
+
+### Minor Changes
+
+- 4c59807: Support authored value type references in struct constraints, including inline constraints on struct and array-of-struct object properties, and package their Marketplace dependencies with consistent value type input titles and descriptions across blocks. Move `OntologyIrV2` from `@osdk/client.unstable` to `@osdk/maker-experimental` and include value type dependencies in its `valueTypes` entries.
+
 ## 2.82.0
 
 ## 2.81.0

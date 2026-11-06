@@ -1,5 +1,48 @@
 # @osdk/shared.test
 
+## 0.64.0
+
+### Minor Changes
+
+- 093d27c: Add experimental support for sending events to agent sessions.
+- a0703ee: Add markingType filtering to marking hooks and request only CBAC markings and categories in CbacPicker and CbacPickerDialog, ordering categories by descending priority and markings by common, uncommon, then unspecified prominence with descending priority within each group. Apply the same ordering to CbacBannerPopover. Honor markingType filters in FauxFoundry's marking and category handlers.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/generator-converters@2.87.0
+
+## 0.63.0
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+
+## 0.62.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+- d0f3019: Upgrade the admin Platform SDK to 2.86.0 and remove the obsolete CBAC banner preview parameter.
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+
+## 0.61.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+- @osdk/generator-converters@2.83.0
+
 ## 0.60.0
 
 ### Minor Changes

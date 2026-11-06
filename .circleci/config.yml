@@ -293,10 +293,10 @@ jobs:
           command: |
             case "$CIRCLE_NODE_INDEX" in
               0)
-                pnpm exec turbo run test --filter='!@osdk/react-components' $TURBO_FILTERS
+                pnpm exec turbo run test --concurrency=4 --filter='!@osdk/react-components' $TURBO_FILTERS
                 ;;
               1)
-                pnpm exec turbo run test --filter=@osdk/react-components
+                pnpm exec turbo run test --concurrency=4 --filter=@osdk/react-components
                 ;;
               *)
                 echo "No tests assigned to container $CIRCLE_NODE_INDEX." >&2
@@ -370,7 +370,7 @@ jobs:
   build-storybook:
     executor:
       name: node
-      resource-class: large
+      resource-class: xlarge
     environment:
       # Relative, because CircleCI serves artifacts under a path prefix
       STORYBOOK_BASE_PATH: ./
@@ -434,6 +434,7 @@ jobs:
           name: Run interaction tests
           command: |
             pnpm --filter @osdk/react-components-storybook run test-storybook \
+              --maxWorkers=2 \
               --reporter=default \
               --reporter=junit \
               --outputFile.junit=reports/junit.xml

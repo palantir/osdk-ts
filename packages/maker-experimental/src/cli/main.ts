@@ -49,6 +49,7 @@ import type {
   ExternalImportedOntologyMetadata,
   LinkTypeIdsByApiName,
 } from "../conversion/toMarketplace/shapeExtractors/ImportedShapeExtractor.js";
+import { generateFolderBlockResults } from "../util/foldersUtil.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
@@ -324,6 +325,7 @@ export default async function main(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    folders,
   } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
@@ -380,6 +382,17 @@ export default async function main(
     ),
   );
   consola.info(`Wrote oac-imported-metadata.json to ${importedMetadataPath}`);
+
+  const folderResults = await generateFolderBlockResults(
+    folders,
+    commandLineOpts.buildDir,
+    commandLineOpts.randomnessKey,
+  );
+  const outputFolders = new Map(
+    folders.flatMap((folder) =>
+      folder.outputIds.map((outputId) => [outputId, folder] as const),
+    ),
+  );
 
   let valueTypeResults: BlockGeneratorResult[] = [];
   if (ontologyIr.valueTypes.length > 0) {
@@ -530,6 +543,7 @@ export default async function main(
           objectTypeBlockData!,
           commandLineOpts.buildDir,
           commandLineOpts.randomnessKey,
+          outputFolders.get(ReadableIdGenerator.getForObjectType(apiName)),
         );
       }),
   );
@@ -552,6 +566,11 @@ export default async function main(
           ontologyIr.ontology.objectTypes,
           commandLineOpts.buildDir,
           commandLineOpts.randomnessKey,
+          outputFolders.get(
+            ReadableIdGenerator.getForLinkType(
+              cleanAndValidateLinkTypeId(linkApiName),
+            ),
+          ),
         );
       })
       .filter((p): p is Promise<BlockGeneratorResult> => p !== undefined),
@@ -595,6 +614,7 @@ export default async function main(
   const blockGeneratorResultJson = JSON.stringify(
     [
       blockGeneratorResult,
+      ...folderResults,
       ...directDatasourceGeneratorResults,
       ...backingDsGeneratorResults,
       ...backingDsLinkGeneratorResults,

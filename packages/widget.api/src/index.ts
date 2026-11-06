@@ -36,6 +36,8 @@ export type {
 export { MANIFEST_FILE_LOCATION } from "./manifest.js";
 export {
   HostMessage,
+  isHostSetHotkeysMessage,
+  isHostSetThemeMessage,
   isHostParametersUpdatedMessage,
   visitHostMessage,
 } from "./messages/hostMessages.js";
@@ -44,6 +46,7 @@ export {
   isWidgetReadyMessage,
   isWidgetReloadMessage,
   isWidgetResizeMessage,
+  isWidgetHotkeyMessage,
   visitWidgetMessage,
 } from "./messages/widgetMessages.js";
 export type { WidgetMessage } from "./messages/widgetMessages.js";

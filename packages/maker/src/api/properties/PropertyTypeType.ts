@@ -85,9 +85,16 @@ type PropertyTypeTypeString = {
   analyzerOverride?: Analyzer;
 };
 
+/** Precision applied to decimal properties that don't specify one. */
+export const DEFAULT_DECIMAL_PRECISION = 5;
+/** Scale applied to decimal properties that don't specify one. */
+export const DEFAULT_DECIMAL_SCALE = 2;
+
 type PropertyTypeTypeDecimal = {
   type: "decimal";
+  /** Defaults to 5. */
   precision?: number;
+  /** Defaults to 2. */
   scale?: number;
 };
 

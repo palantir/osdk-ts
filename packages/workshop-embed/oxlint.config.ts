@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-export type {
-  AggregateStubBuilder,
-  FetchOneStubBuilder,
-  FetchPageStubBuilder,
-  MockClient,
-  MockOsdkObjectOptions,
-  MockWriteableClient,
-  QueryStubBuilder,
-  StubBuilderFor,
-  StubClient,
-} from "../api/index.js";
-export { createMockAttachment } from "../mock/createMockAttachment.js";
-export { createMockClient } from "../mock/createMockClient.js";
-export { createMockObjectSet } from "../mock/createMockObjectSet.js";
-export { createMockOsdkObject } from "../mock/createMockOsdkObject.js";
-export { createMockWriteableClient } from "../mock/createMockWriteableClient.js";
+import { defineConfig } from "oxlint";
+
+import root from "../../oxlint.config.ts";
+
+export default defineConfig({
+  extends: [root],
+  ignorePatterns: root.ignorePatterns,
+});

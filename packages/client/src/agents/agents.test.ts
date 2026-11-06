@@ -14,24 +14,36 @@
  * limitations under the License.
  */
 
-import type { AgentSession } from "@osdk/api/unstable";
+import type { ObjectSet, Osdk } from "@osdk/api";
+import type {
+  AgentDefinition,
+  AgentParam,
+  AgentSession,
+  AgentSessionState,
+} from "@osdk/api/unstable";
 import {
   $Agents,
   Employee,
-  noArgsAgent,
+  noArgumentsAgent,
   objectArgumentsAgent,
+  type Office,
+  optionalArgumentsAgent,
+  structuredArgumentsAgent,
   weatherAgent,
 } from "@osdk/client.test.ontology";
+import type { GetStateResponse, SendEventResponse } from "@osdk/foundry.agents";
 import {
+  type FauxAgentImpl,
   LegacyFauxFoundry,
   type SetupServer,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
+import pDefer from "p-defer";
 import {
   afterEach,
-  assert,
   beforeAll,
+  beforeEach,
   describe,
   expect,
   expectTypeOf,
@@ -41,6 +53,10 @@ import {
 
 import type { Client } from "../Client.js";
 import { createClient, createClientWithTransaction } from "../createClient.js";
+import {
+  AgentGetStateTimeoutError,
+  AgentSendEventTimeoutError,
+} from "../public/experimental.js";
 import { withScenario } from "../scenarios/withScenario.js";
 
 describe("agents", () => {
@@ -62,122 +78,581 @@ describe("agents", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
   });
 
-  it("rejects scenario clients before making requests", async () => {
-    const fetchFunction = vi.fn<typeof globalThis.fetch>();
-    const scenario = withScenario(
-      createClient(
+  describe("createSession", () => {
+    it("rejects scenario clients before making requests", async () => {
+      const fetchFunction = vi.fn<typeof globalThis.fetch>();
+      const scenario = withScenario(
+        createClient(
+          baseUrl,
+          fauxFoundry.defaultOntologyRid,
+          auth,
+          {},
+          fetchFunction,
+        ),
+        "ri.actions..scenario.test",
+      );
+      const result = scenario(noArgumentsAgent).experimental_createSession();
+      await expect(result).rejects.toThrow(
+        "Agent sessions are not supported in scenarios",
+      );
+      expect(fetchFunction).not.toHaveBeenCalled();
+    });
+
+    it("rejects transaction clients before flushing edits or making requests", async () => {
+      const fetchFunction = vi.fn<typeof globalThis.fetch>();
+      const flushEdits = vi.fn<() => Promise<void>>();
+      const transaction = createClientWithTransaction(
+        "ri.transactions..transaction.test",
+        flushEdits,
         baseUrl,
         fauxFoundry.defaultOntologyRid,
         auth,
         {},
         fetchFunction,
-      ),
-      "ri.actions..scenario.test",
-    );
-    await expect(
-      scenario(weatherAgent).experimental_createSession({ city: "London" }),
-    ).rejects.toThrow("Agent sessions are not supported in scenarios");
-    expect(fetchFunction).not.toHaveBeenCalled();
-  });
-
-  it("rejects transaction clients before flushing edits or making requests", async () => {
-    const fetchFunction = vi.fn<typeof globalThis.fetch>();
-    const flushEdits = vi.fn<() => Promise<void>>();
-    const transaction = createClientWithTransaction(
-      "ri.transactions..transaction.test",
-      flushEdits,
-      baseUrl,
-      fauxFoundry.defaultOntologyRid,
-      auth,
-      {},
-      fetchFunction,
-    );
-    await expect(
-      transaction(weatherAgent).experimental_createSession({ city: "London" }),
-    ).rejects.toThrow("Agent sessions are not supported in transactions");
-    expect(flushEdits).not.toHaveBeenCalled();
-    expect(fetchFunction).not.toHaveBeenCalled();
-  });
-
-  it.each(["ri.foundry.main.branch.test", "feature/test branch"])(
-    "rejects branch %s before making requests",
-    async (branch) => {
-      const fetchFunction = vi.fn<typeof globalThis.fetch>();
-      const branchClient = createClient(
-        baseUrl,
-        fauxFoundry.defaultOntologyRid,
-        auth,
-        { UNSTABLE_DO_NOT_USE_BRANCH: branch },
-        fetchFunction,
       );
-      await expect(
-        branchClient(weatherAgent).experimental_createSession({
-          city: "London",
-        }),
-      ).rejects.toThrow("Agent sessions are not supported on branches");
+      const result = transaction(noArgumentsAgent).experimental_createSession();
+      await expect(result).rejects.toThrow(
+        "Agent sessions are not supported in transactions",
+      );
+      expect(flushEdits).not.toHaveBeenCalled();
       expect(fetchFunction).not.toHaveBeenCalled();
-    },
-  );
-
-  it("creates a session", async () => {
-    const experimental_createSession =
-      client(weatherAgent).experimental_createSession;
-    type InferredParamType = Parameters<typeof experimental_createSession>[0];
-    expectTypeOf<InferredParamType>().toEqualTypeOf<
-      Record<string, unknown> | undefined
-    >();
-
-    const session = await client(weatherAgent).experimental_createSession({
-      city: "London",
     });
 
-    expectTypeOf<typeof session>().toEqualTypeOf<AgentSession>();
-    expect(session).toEqual({ id: stubData.weatherAgentResponse.id });
-  });
+    it.each(["ri.foundry.main.branch.test", "feature/test branch"])(
+      "rejects branch %s before making requests",
+      async (branch) => {
+        const fetchFunction = vi.fn<typeof globalThis.fetch>();
+        const branchClient = createClient(
+          baseUrl,
+          fauxFoundry.defaultOntologyRid,
+          auth,
+          { UNSTABLE_DO_NOT_USE_BRANCH: branch },
+          fetchFunction,
+        );
+        const result =
+          branchClient(noArgumentsAgent).experimental_createSession();
+        await expect(result).rejects.toThrow(
+          "Agent sessions are not supported on branches",
+        );
+        expect(fetchFunction).not.toHaveBeenCalled();
+      },
+    );
 
-  it("creates sessions with the pinned version", async () => {
-    const session = await client({
-      ...weatherAgent,
-      version: "2.0.0",
-    }).experimental_createSession({ city: "London" });
-    expect(session).toEqual({
-      id: stubData.weatherAgentOtherVersionResponse.id,
+    it("works for generic agents", async () => {
+      const generic: AgentDefinition = {
+        type: "agent",
+        apiName: noArgumentsAgent.apiName,
+        version: noArgumentsAgent.version,
+      };
+
+      const clientBoundCreateSession =
+        client(generic).experimental_createSession;
+
+      expectTypeOf<Parameters<typeof clientBoundCreateSession>>().toEqualTypeOf<
+        [args?: Record<string, unknown>]
+      >();
+
+      const session = await clientBoundCreateSession();
+
+      expect(session).toMatchObject({
+        id: stubData.noArgumentsAgentResponse.id,
+      });
     });
-  });
 
-  it("supports a detached experimental_createSession method", async () => {
-    const { experimental_createSession } = client(weatherAgent);
-    const session = await experimental_createSession({ city: "London" });
-    expect(session).toEqual({ id: stubData.weatherAgentResponse.id });
+    it("works without arguments", async () => {
+      const clientBoundCreateSession =
+        client(noArgumentsAgent).experimental_createSession;
+
+      expectTypeOf<Parameters<typeof clientBoundCreateSession>>().toEqualTypeOf<
+        [args?: Record<string, never>]
+      >();
+      expectTypeOf<[]>().toMatchTypeOf<
+        Parameters<typeof clientBoundCreateSession>
+      >();
+      expectTypeOf<[{}]>().toMatchTypeOf<
+        Parameters<typeof clientBoundCreateSession>
+      >();
+      expectTypeOf<[{ unexpected: string }]>().not.toMatchTypeOf<
+        Parameters<typeof clientBoundCreateSession>
+      >();
+
+      for (const args of [undefined, {}]) {
+        const session = await clientBoundCreateSession(args);
+        expect(session).toMatchObject({
+          id: stubData.noArgumentsAgentResponse.id,
+        });
+      }
+    });
+
+    it("works with optional arguments", async () => {
+      const clientBoundCreateSession = client(
+        optionalArgumentsAgent,
+      ).experimental_createSession;
+
+      expectTypeOf<Parameters<typeof clientBoundCreateSession>>().toEqualTypeOf<
+        [args?: optionalArgumentsAgent.CreateSessionArguments]
+      >();
+      expectTypeOf<[]>().toMatchTypeOf<
+        Parameters<typeof clientBoundCreateSession>
+      >();
+      expectTypeOf<[{}]>().toMatchTypeOf<
+        Parameters<typeof clientBoundCreateSession>
+      >();
+      expectTypeOf<[{ city: string }]>().toMatchTypeOf<
+        Parameters<typeof clientBoundCreateSession>
+      >();
+      expectTypeOf<[{ city: null }]>().toMatchTypeOf<
+        Parameters<typeof clientBoundCreateSession>
+      >();
+      expectTypeOf<[{ city: number }]>().not.toMatchTypeOf<
+        Parameters<typeof clientBoundCreateSession>
+      >();
+
+      for (const args of [undefined, {}, { city: "London" }]) {
+        const session = await clientBoundCreateSession(args);
+        expect(session).toMatchObject({
+          id: stubData.optionalArgumentsAgentResponse.id,
+        });
+      }
+    });
+
+    it("works with object and object-set arguments", async () => {
+      const clientBoundCreateSession =
+        client(objectArgumentsAgent).experimental_createSession;
+
+      type InferredParamType = Parameters<typeof clientBoundCreateSession>[0];
+      type EmployeeType = InferredParamType["employee"];
+      type EmployeesType = InferredParamType["employees"];
+
+      expectTypeOf<EmployeeType>().toEqualTypeOf<
+        AgentParam.ObjectType<Employee>
+      >();
+      expectTypeOf<number>().toMatchTypeOf<EmployeeType>();
+      expectTypeOf<Osdk.Instance<Employee>>().toMatchTypeOf<EmployeeType>();
+      expectTypeOf<{
+        $apiName: "Employee";
+        $primaryKey: number;
+      }>().toMatchTypeOf<EmployeeType>();
+      expectTypeOf<string>().not.toMatchTypeOf<EmployeeType>();
+      expectTypeOf<Osdk.Instance<Office>>().not.toMatchTypeOf<EmployeeType>();
+      expectTypeOf<{
+        $apiName: "Office";
+        $primaryKey: number;
+      }>().not.toMatchTypeOf<EmployeeType>();
+
+      expectTypeOf<EmployeesType>().toEqualTypeOf<
+        AgentParam.ObjectSetType<Employee>
+      >();
+      expectTypeOf<ObjectSet<Employee>>().toMatchTypeOf<EmployeesType>();
+      expectTypeOf<{
+        type: "base";
+        objectType: string;
+      }>().not.toMatchTypeOf<EmployeesType>();
+      expectTypeOf<string>().not.toMatchTypeOf<EmployeesType>();
+      expectTypeOf<ObjectSet<Office>>().not.toMatchTypeOf<EmployeesType>();
+
+      const employee = await client(Employee).fetchOne(50030);
+      const employees = client(Employee).where({ employeeId: 50030 });
+
+      const session = await clientBoundCreateSession({ employee, employees });
+
+      expect(session).toMatchObject({
+        id: stubData.objectArgumentsAgentResponse.id,
+      });
+    });
+
+    it("works with structured arguments", async () => {
+      const clientBoundCreateSession = client(
+        structuredArgumentsAgent,
+      ).experimental_createSession;
+
+      type InferredParamType = Parameters<typeof clientBoundCreateSession>[0];
+
+      expectTypeOf<InferredParamType["nested"]["label"]>().toEqualTypeOf<
+        string | null
+      >();
+      expectTypeOf<
+        Omit<InferredParamType["nested"], "label">
+      >().not.toMatchTypeOf<InferredParamType["nested"]>();
+
+      const employee = await client(Employee).fetchOne(50030);
+      const parameters = {
+        requiredText: "hello",
+        nested: {
+          label: null,
+          enabled: true,
+          count: 1,
+          date: "2026-01-01",
+          timestamp: "2026-01-01T00:00:00Z",
+          float: 1.5,
+          long: 123456789,
+          short: 12,
+          tags: ["tag"],
+          scores: { score: 1 },
+          empty: {},
+        },
+        selection: { kind: "employee", employee },
+        future: { newShape: true },
+        optionalText: "text",
+      } as const satisfies InferredParamType;
+
+      expectTypeOf<Parameters<typeof clientBoundCreateSession>>().toEqualTypeOf<
+        [args: structuredArgumentsAgent.CreateSessionArguments]
+      >();
+
+      const session = await clientBoundCreateSession(parameters);
+
+      expect(session).toMatchObject({
+        id: stubData.structuredArgumentsAgentResponse.id,
+      });
+    });
+
+    it("works with a pinned version", async () => {
+      const session = await client({
+        ...noArgumentsAgent,
+        version: "2.0.0",
+      }).experimental_createSession();
+
+      expect(session).toMatchObject({
+        id: stubData.noArgumentsAgentOtherVersionResponse.id,
+      });
+    });
+
+    it("works with a detached method", async () => {
+      const { experimental_createSession } = client(noArgumentsAgent);
+
+      const session = await experimental_createSession();
+
+      expect(session).toMatchObject({
+        id: stubData.noArgumentsAgentResponse.id,
+      });
+    });
   });
 
   it("exports agents through $Agents", () => {
-    expect(Object.keys($Agents)).toEqual([
-      "noArgsAgent",
+    const agentNames = Object.keys($Agents);
+    expect(agentNames).toEqual([
+      "noArgumentsAgent",
       "objectArgumentsAgent",
+      "optionalArgumentsAgent",
+      "structuredArgumentsAgent",
       "weatherAgent",
     ]);
     expect($Agents.weatherAgent).toBe(weatherAgent);
   });
 
-  it("creates a session without arguments", async () => {
-    const session = await client(noArgsAgent).experimental_createSession();
-    expect(session).toEqual({ id: stubData.noArgsAgentResponse.id });
-  });
+  describe("event sending", () => {
+    let session: AgentSession;
+    let agentImpl: FauxAgentImpl;
+    const notReady: SendEventResponse = { result: { type: "sessionNotReady" } };
 
-  it("creates a session with object and object-set arguments", async () => {
-    const employee = await client(Employee).fetchOne(50030);
-    const employees = client(Employee).where({ employeeId: 50030 });
-
-    const session = await client(
-      objectArgumentsAgent,
-    ).experimental_createSession({
-      employee,
-      employees,
+    beforeEach(async () => {
+      session = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+      agentImpl = fauxFoundry
+        .getOntology(fauxFoundry.defaultOntologyRid)
+        .getAgentImpl(weatherAgent.apiName, weatherAgent.version);
     });
 
-    expect(session).toEqual({ id: stubData.objectArgumentsAgentResponse.id });
+    it("sends an event and resolves on acceptance", async () => {
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+    });
+
+    it("supports a detached experimental_sendEvent method", async () => {
+      const { experimental_sendEvent } = session;
+      await experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+    });
+
+    it("forwards unknown event payloads", async () => {
+      await session.experimental_sendEvent({
+        unknownEvent: { raw: [1, null, "value"] },
+      });
+    });
+
+    it("converts event payloads", async () => {
+      const employees = client(Employee).where({ employeeId: 50030 });
+      const objectSession = await client(
+        objectArgumentsAgent,
+      ).experimental_createSession({
+        employee: 50030,
+        employees,
+      });
+      await objectSession.experimental_sendEvent({
+        SelectEmployees: employees,
+      });
+    });
+
+    it.each([{}, { first: {}, second: {} }])(
+      "requires exactly one event: %j",
+      async (event) => {
+        const result = session.experimental_sendEvent(event);
+        await expect(result).rejects.toThrow("requires exactly one event");
+      },
+    );
+
+    it("propagates API errors", async () => {
+      const result = session.experimental_sendEvent({ invalid: {} });
+      await expect(result).rejects.toMatchObject({
+        errorName: "Invalid Agent Event",
+      });
+    });
+
+    it("retries until the event is accepted", async () => {
+      vi.useFakeTimers();
+      const send = vi
+        .spyOn(agentImpl, "sendEvent")
+        .mockReturnValueOnce(notReady);
+      const result = session.experimental_sendEvent(
+        { LookupWeather: { city: "Paris" } },
+        { $timeoutMs: 100, $pollIntervalMs: 10 },
+      );
+      await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(1), {
+        interval: 1,
+      });
+      await vi.advanceTimersByTimeAsync(5);
+      expect(send).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(5);
+      await result;
+      expect(send).toHaveBeenCalledTimes(2);
+      expect(send.mock.calls[0][0]).toEqual(send.mock.calls[1][0]);
+    });
+
+    it("times out when the event is never accepted", async () => {
+      vi.useFakeTimers();
+      const send = vi.spyOn(agentImpl, "sendEvent").mockReturnValue(notReady);
+      const result = session.experimental_sendEvent(
+        { LookupWeather: { city: "Paris" } },
+        { $timeoutMs: 100, $pollIntervalMs: 10 },
+      );
+      const rejected = expect(result).rejects.toBeInstanceOf(
+        AgentSendEventTimeoutError,
+      );
+      await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(1), {
+        interval: 1,
+      });
+      await vi.advanceTimersByTimeAsync(100);
+      await rejected;
+    });
+
+    it("does not retry with a zero timeout", async () => {
+      const send = vi.spyOn(agentImpl, "sendEvent").mockReturnValue(notReady);
+      const result = session.experimental_sendEvent(
+        { LookupWeather: { city: "Paris" } },
+        { $timeoutMs: 0 },
+      );
+      await expect(result).rejects.toBeInstanceOf(AgentSendEventTimeoutError);
+      expect(send).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([-1, NaN, Infinity])(
+      "rejects invalid timeout %s",
+      async ($timeoutMs) => {
+        const result = session.experimental_sendEvent(
+          { LookupWeather: { city: "Paris" } },
+          { $timeoutMs },
+        );
+        await expect(result).rejects.toThrow(
+          "$timeoutMs must be a finite non-negative number",
+        );
+      },
+    );
+
+    it.each([0, -1, NaN, Infinity])(
+      "rejects invalid polling interval %s",
+      async ($pollIntervalMs) => {
+        const result = session.experimental_sendEvent(
+          { LookupWeather: { city: "Paris" } },
+          { $pollIntervalMs },
+        );
+        await expect(result).rejects.toThrow(
+          "$pollIntervalMs must be a finite positive number",
+        );
+      },
+    );
+  });
+
+  describe("state reading", () => {
+    let session: AgentSession;
+    let agentImpl: FauxAgentImpl;
+
+    beforeEach(async () => {
+      session = await client(weatherAgent).experimental_createSession({
+        city: "London",
+      });
+      agentImpl = fauxFoundry
+        .getOntology(fauxFoundry.defaultOntologyRid)
+        .getAgentImpl(weatherAgent.apiName, weatherAgent.version);
+    });
+
+    it.each(["live", "completed", "failed", "canceled"] as const)(
+      "reads %s session state and preserves context item order",
+      async (type) => {
+        vi.spyOn(agentImpl, "getState").mockReturnValue({
+          ...stubData.weatherAgentState,
+          status: { type },
+        });
+        const state = await session.experimental_getState();
+        expectTypeOf(state).toEqualTypeOf<AgentSessionState>();
+        expect(state).toEqual({
+          arguments: { city: "London" },
+          status: type,
+          agentState: { data: { temperature: 20 } },
+          contextItems: {
+            first: { type: "weather-result", data: "Warm" },
+            second: { type: "weather-result", data: "Sunny" },
+            unknown: {
+              type: "future-result",
+              data: { value: "Future" },
+            },
+          },
+          contextItemOrder: ["first", "second", "unknown"],
+        });
+      },
+    );
+
+    it("supports a detached experimental_getState method", async () => {
+      const { experimental_getState } = session;
+      const state = await experimental_getState();
+      expect(state.agentState.data).toEqual({ temperature: 20 });
+    });
+
+    it("tracks accepted sends and successful reads", async () => {
+      const read = vi.spyOn(agentImpl, "getState");
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      await session.experimental_getState();
+      expect(read.mock.calls[0][0]).toEqual({
+        sessionId: session.id,
+        consistencyKey: "accepted-event",
+      });
+      await session.experimental_getState();
+      expect(read.mock.calls[1][0].consistencyKey).toBe("weather-state");
+    });
+
+    it("does not share consistency keys between handles", async () => {
+      const otherSession = await client(
+        weatherAgent,
+      ).experimental_createSession({
+        city: "London",
+      });
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      const read = vi.spyOn(agentImpl, "getState");
+      await otherSession.experimental_getState();
+      expect(read.mock.calls[0][0].consistencyKey).toBeUndefined();
+    });
+
+    it("keeps a read's captured key while another send completes", async () => {
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      const first = pDefer<GetStateResponse>();
+      const read = vi
+        .spyOn(agentImpl, "getState")
+        .mockReturnValueOnce(first.promise);
+      const result = session.experimental_getState({ $pollIntervalMs: 10 });
+      await vi.waitFor(() => expect(read).toHaveBeenCalledTimes(1));
+      vi.spyOn(agentImpl, "sendEvent").mockReturnValue({
+        result: { type: "accepted", consistencyKey: "later-send" },
+      });
+      await session.experimental_sendEvent({
+        LookupWeather: { city: "Paris" },
+      });
+      first.resolve({ type: "behind" });
+      await result;
+      expect(read.mock.calls[1][0].consistencyKey).toBe("accepted-event");
+    });
+
+    it.each(["notReady", "behind"] as const)(
+      "retries %s until state is available",
+      async (type) => {
+        vi.useFakeTimers();
+        const read = vi
+          .spyOn(agentImpl, "getState")
+          .mockReturnValueOnce({ type });
+        const result = session.experimental_getState({
+          $timeoutMs: 100,
+          $pollIntervalMs: 10,
+        });
+        await vi.waitFor(() => expect(read).toHaveBeenCalledTimes(1), {
+          interval: 1,
+        });
+        await vi.advanceTimersByTimeAsync(5);
+        expect(read).toHaveBeenCalledTimes(1);
+        await vi.advanceTimersByTimeAsync(5);
+        const state = await result;
+        expect(state.agentState.data).toEqual({ temperature: 20 });
+        expect(read).toHaveBeenCalledTimes(2);
+        expect(read.mock.calls[0][0]).toEqual(read.mock.calls[1][0]);
+      },
+    );
+
+    it("times out when state remains behind", async () => {
+      vi.useFakeTimers();
+      const read = vi
+        .spyOn(agentImpl, "getState")
+        .mockReturnValue({ type: "behind" });
+      const result = session.experimental_getState({
+        $timeoutMs: 100,
+        $pollIntervalMs: 10,
+      });
+      const rejected = expect(result).rejects.toBeInstanceOf(
+        AgentGetStateTimeoutError,
+      );
+      await vi.waitFor(() => expect(read).toHaveBeenCalledTimes(1), {
+        interval: 1,
+      });
+      await vi.advanceTimersByTimeAsync(100);
+      await rejected;
+    });
+
+    it("does not retry with a zero timeout", async () => {
+      const read = vi
+        .spyOn(agentImpl, "getState")
+        .mockReturnValue({ type: "notReady" });
+      const result = session.experimental_getState({ $timeoutMs: 0 });
+      await expect(result).rejects.toBeInstanceOf(AgentGetStateTimeoutError);
+      expect(read).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([-1, NaN, Infinity])(
+      "rejects invalid timeout %s",
+      async ($timeoutMs) => {
+        const result = session.experimental_getState({ $timeoutMs });
+        await expect(result).rejects.toThrow(
+          "$timeoutMs must be a finite non-negative number",
+        );
+      },
+    );
+
+    it.each([0, -1, NaN, Infinity])(
+      "rejects invalid polling interval %s",
+      async ($pollIntervalMs) => {
+        const result = session.experimental_getState({ $pollIntervalMs });
+        await expect(result).rejects.toThrow(
+          "$pollIntervalMs must be a finite positive number",
+        );
+      },
+    );
+
+    it("propagates API failures", async () => {
+      vi.spyOn(agentImpl, "getState").mockRejectedValueOnce(
+        new Error("State read failed"),
+      );
+      const result = session.experimental_getState();
+      await expect(result).rejects.toThrow("State read failed");
+    });
   });
 });

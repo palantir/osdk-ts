@@ -1,5 +1,45 @@
 # @osdk/widget.client
 
+## 3.87.0
+
+### Minor Changes
+
+- 1fd9dc4: Forward host theme updates to widgets and expose the theme through the React provider.
+
+### Patch Changes
+
+- Updated dependencies [1fd9dc4]
+  - @osdk/widget.api@3.87.0
+
+## 3.86.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.86.0
+
+## 3.85.0
+
+### Minor Changes
+
+- a3e7101: Forward hotkeys from custom widget to host
+
+### Patch Changes
+
+- Updated dependencies [a3e7101]
+  - @osdk/widget.api@3.85.0
+
+## 3.84.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.84.0
+
+## 3.83.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.83.0
+
 ## 3.82.0
 
 ### Patch Changes

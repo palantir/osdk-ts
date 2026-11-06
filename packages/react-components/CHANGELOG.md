@@ -1,5 +1,51 @@
 # @osdk/react-components
 
+## 0.69.0
+
+### Minor Changes
+
+- e479175: Add section support to ActionForm via formContentDefinitions prop
+- a0703ee: Add markingType filtering to marking hooks and request only CBAC markings and categories in CbacPicker and CbacPickerDialog, ordering categories by descending priority and markings by common, uncommon, then unspecified prominence with descending priority within each group. Apply the same ordering to CbacBannerPopover. Honor markingType filters in FauxFoundry's marking and category handlers.
+- 960ecf0: Restore workspace-derived OSDK peer requirements and stop release tooling from replacing them with older versions inferred from changelog history. Published peer ranges now require at least the workspace versions used to build these packages.
+- 9c93e57: Export getClientBranch from @osdk/client/internal. Inherit the OSDK client's global branch in WorkshopModule and support an explicit branchRid in BaseWorkshopModule, including navigation back to main.
+- 15340f7: Inherit the initial OsdkThemeProvider theme in WorkshopModule and allow an explicit initial theme in BaseWorkshopModule, resolving the system preference before loading the iframe.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [a0703ee]
+- Updated dependencies [3c3014d]
+- Updated dependencies [960ecf0]
+- Updated dependencies [e674a83]
+- Updated dependencies [8300415]
+- Updated dependencies [9c93e57]
+  - @osdk/api@2.87.0
+  - @osdk/client@2.87.0
+  - @osdk/react@2.87.0
+  - @osdk/aip-core@0.13.0
+
+## 0.68.0
+
+### Minor Changes
+
+- c804188: Add an experimental WorkshopModule component to embed the latest or published version of a Workshop module by RID.
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
+## 0.67.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- @osdk/aip-core@0.13.0
+
 ## 0.66.0
 
 ### Minor Changes

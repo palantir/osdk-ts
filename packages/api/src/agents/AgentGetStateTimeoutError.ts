@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export * from "./build/cjs/public/experimental.cjs";
+/** @beta */
+export class AgentGetStateTimeoutError extends Error {
+  constructor() {
+    super("Agent session state reading timed out");
+    this.name = "AgentGetStateTimeoutError";
+  }
+}

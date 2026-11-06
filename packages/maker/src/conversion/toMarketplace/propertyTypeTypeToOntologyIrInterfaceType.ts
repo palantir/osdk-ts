@@ -19,7 +19,11 @@ import type {
   OntologyIrInterfaceStructFieldType,
 } from "@osdk/client.unstable";
 
-import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js";
+import {
+  DEFAULT_DECIMAL_PRECISION,
+  DEFAULT_DECIMAL_SCALE,
+  type PropertyTypeType,
+} from "../../api/properties/PropertyTypeType.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 
 export function propertyTypeTypeToOntologyIrInterfaceType(
@@ -109,8 +113,8 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
       return {
         type: "decimal",
         decimal: {
-          precision: type.precision,
-          scale: type.scale,
+          precision: type.precision ?? DEFAULT_DECIMAL_PRECISION,
+          scale: type.scale ?? DEFAULT_DECIMAL_SCALE,
         },
       };
 
@@ -129,7 +133,13 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
       return { type: "geohash", geohash: {} };
 
     case type === "decimal":
-      return { type, [type]: { precision: undefined, scale: undefined } };
+      return {
+        type,
+        [type]: {
+          precision: DEFAULT_DECIMAL_PRECISION,
+          scale: DEFAULT_DECIMAL_SCALE,
+        },
+      };
 
     case type === "string":
       return {

@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
-export type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
+export type {
+  AgentDefinition,
+  AgentParam,
+  AgentContextItem,
+  AgentGetStateOptions,
+  AgentSessionState,
+  AgentSessionStatus,
+  AgentSendEventOptions,
+  AgentSession,
+} from "@osdk/api/unstable";
+
+export {
+  AgentGetStateTimeoutError,
+  AgentSendEventTimeoutError,
+} from "@osdk/api/unstable";
 
 export { createClientWithTransaction } from "../createClient.js";
 export { createClientFromWriteableClient } from "../createClientFromWriteableClient.js";
