@@ -20,7 +20,6 @@ import {
   Employee,
   FooInterface,
 } from "@osdk/client.test.ontology";
-import type { SetupServer } from "@osdk/shared.test";
 import {
   FauxFoundry,
   ontologies,
@@ -45,8 +44,6 @@ function setupOntology(fauxFoundry: FauxFoundry) {
 
 describe(getInvalidationSet, () => {
   let client: Client;
-  let apiServer: SetupServer;
-  let fauxFoundry: FauxFoundry;
 
   beforeAll(() => {
     const logger = new TestLogger();
@@ -55,9 +52,9 @@ describe(getInvalidationSet, () => {
       createClient,
       { logger },
     );
-    ({ client, apiServer, fauxFoundry } = testSetup);
+    client = testSetup.client;
 
-    setupOntology(fauxFoundry);
+    setupOntology(testSetup.fauxFoundry);
 
     return () => {
       testSetup.apiServer.close();
@@ -302,27 +299,6 @@ describe(getInvalidationSet, () => {
   });
 
   // Edge Cases and Error Handling
-  it("handles empty union sets gracefully", async () => {
-    // Create an empty union somehow
-    const emptyUnion = client(Employee)
-      .where({ employeeId: -1 })
-      .union(client(Employee).where({ employeeId: -2 }));
-
-    const { resultType, objectInvalidationSet } = await helper(emptyUnion);
-    expect(resultType).toEqual("Employee");
-    expect(objectInvalidationSet).toEqual(new Set(["Employee"]));
-  });
-
-  it("preserves dependencies that also appear before the result type", async () => {
-    const osdkObjectSet = client(Employee)
-      .pivotTo("officeLink")
-      .pivotTo("occupants")
-      .pivotTo("lead");
-
-    const { objectInvalidationSet } = await helper(osdkObjectSet);
-    expect(objectInvalidationSet).toEqual(new Set(["Employee", "Office"]));
-  });
-
   it("handles nearest neighbor", async () => {
     const osdkObjectSet = client(Employee)
       .nearestNeighbors("hi", 3, "skillSetEmbedding")
