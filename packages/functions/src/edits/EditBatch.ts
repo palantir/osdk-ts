@@ -21,6 +21,7 @@ import type {
 } from "@osdk/client";
 
 import type {
+  AddInterfaceLink,
   AddLink,
   AnyEdit,
   CreateInterfaceInputProps,
@@ -31,6 +32,7 @@ import type {
   DeleteObjectForInterface,
   InterfaceLocator,
   ObjectLocator,
+  RemoveInterfaceLink,
   RemoveLink,
   UpdateInterfaceInputProps,
   UpdateObject,
@@ -45,12 +47,28 @@ interface ObjectTypeDefinitionForLocator<
   apiName: OL["$apiName"];
 }
 
+interface InterfaceDefinitionForLocator<
+  IL extends InterfaceLocator,
+> extends InterfaceDefinition {
+  apiName: IL["$apiName"];
+}
+
 // AddLink helper types
 export type AddLinkSources<X extends AnyEdit> =
-  X extends AddLink<infer OTD, any> ? ObjectLocator<OTD> : never;
+  X extends AddLink<infer OTD, any>
+    ? ObjectLocator<OTD>
+    : X extends AddInterfaceLink<infer ID, string>
+      ? InterfaceLocator<ID>
+      : never;
 
 export type AddLinkApiNames<X extends AnyEdit, SOL extends ObjectLocator<any>> =
-  X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, infer A> ? A : never;
+  X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, infer A>
+    ? A
+    : SOL extends InterfaceLocator
+      ? X extends AddInterfaceLink<InterfaceDefinitionForLocator<SOL>, infer A>
+        ? A
+        : never
+      : never;
 
 export type AddLinkTargets<
   X extends AnyEdit,
@@ -63,11 +81,23 @@ export type AddLinkTargets<
         ? Array<X["target"]> | X["target"]
         : X["target"]
       : never
-    : never;
+    : SOL extends InterfaceLocator
+      ? X extends AddInterfaceLink<InterfaceDefinitionForLocator<SOL>, A>
+        ? X extends AddInterfaceLink<infer ID, A>
+          ? CompileTimeMetadata<ID>["links"][A]["multiplicity"] extends true
+            ? Array<X["target"]> | X["target"]
+            : X["target"]
+          : never
+        : never
+      : never;
 
 // RemoveLink helper types
 export type RemoveLinkSources<X extends AnyEdit> =
-  X extends RemoveLink<infer OTD, any> ? ObjectLocator<OTD> : never;
+  X extends RemoveLink<infer OTD, any>
+    ? ObjectLocator<OTD>
+    : X extends RemoveInterfaceLink<infer ID, string>
+      ? InterfaceLocator<ID>
+      : never;
 
 export type RemoveLinkApiNames<
   X extends AnyEdit,
@@ -75,7 +105,14 @@ export type RemoveLinkApiNames<
 > =
   X extends RemoveLink<ObjectTypeDefinitionForLocator<SOL>, infer L>
     ? L
-    : never;
+    : SOL extends InterfaceLocator
+      ? X extends RemoveInterfaceLink<
+          InterfaceDefinitionForLocator<SOL>,
+          infer L
+        >
+        ? L
+        : never
+      : never;
 
 export type RemoveLinkTargets<
   X extends AnyEdit,
@@ -88,7 +125,15 @@ export type RemoveLinkTargets<
         ? Array<X["target"]> | X["target"]
         : X["target"]
       : never
-    : never;
+    : SOL extends InterfaceLocator
+      ? X extends RemoveInterfaceLink<InterfaceDefinitionForLocator<SOL>, A>
+        ? X extends RemoveInterfaceLink<infer ID, A>
+          ? CompileTimeMetadata<ID>["links"][A]["multiplicity"] extends true
+            ? Array<X["target"]> | X["target"]
+            : X["target"]
+          : never
+        : never
+      : never;
 
 // CreateObject helper types
 export type CreatableObjectOrInterfaceTypes<X extends AnyEdit> =
