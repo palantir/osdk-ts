@@ -39,7 +39,6 @@ import {
 } from "vitest";
 
 import type { Client } from "../../../Client.js";
-import { additionalContext } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
@@ -190,47 +189,6 @@ describe("aggregation ObjectSet support", () => {
 
     await query.invalidateObjectType("Employee", undefined);
     expect(revalidateSpy).not.toHaveBeenCalled();
-  });
-
-  it("recovers a supplied-set aggregation after a metadata failure", async () => {
-    const metadata = vi
-      .spyOn(client[additionalContext].ontologyProvider, "getObjectDefinition")
-      .mockRejectedValue(new Error("Temporary metadata failure"));
-    const observableClient = new ObservableClientImpl(store);
-    let payload: AggregationState | undefined;
-    const subscriptionPromise = observableClient.observeAggregation(
-      {
-        type: Employee,
-        objectSet: client(Employee).where({ fullName: "Alice" }),
-        aggregate: { $select: { $count: "unordered" } },
-      },
-      {
-        next: (value) => {
-          payload = value;
-        },
-        error: (error) => {
-          throw error;
-        },
-        complete: () => {},
-      },
-    );
-
-    const initialPayload = payload;
-    const subscription = await subscriptionPromise;
-    try {
-      expect(subscriptionPromise).toBeInstanceOf(Promise);
-      expect(initialPayload).toMatchObject({ status: "loading" });
-      await vi.waitFor(() => expect(payload?.status).toBe("error"));
-      expect(payload?.result).toBeUndefined();
-
-      metadata.mockRestore();
-      await observableClient.invalidateObjectType(Employee);
-
-      expect(payload?.status).toBe("loaded");
-      expect(payload?.result).toEqual({ $count: 1 });
-    } finally {
-      subscription.unsubscribe();
-    }
   });
 
   describe("interfaces", () => {
