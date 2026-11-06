@@ -16,6 +16,7 @@
 
 import type {
   ActionEditResponse,
+  ActionReturnValueResponse,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
@@ -25,8 +26,13 @@ import type {
 
 export type ActionReturnTypeForOptions<
   Op extends ApplyActionOptions | ApplyBatchActionOptions,
+  TReturnValue = never,
 > = Op extends { $validateOnly: true }
   ? ActionValidationResponse
   : Op extends { $returnEdits: true }
-    ? ActionEditResponse
-    : undefined;
+    ? [TReturnValue] extends [never]
+      ? ActionEditResponse
+      : ActionEditResponse & ActionReturnValueResponse<TReturnValue>
+    : [TReturnValue] extends [never]
+      ? undefined
+      : ActionReturnValueResponse<TReturnValue>;
