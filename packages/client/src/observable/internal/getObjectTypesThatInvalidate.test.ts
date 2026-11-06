@@ -60,7 +60,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const wireObjectSet = objectSetDefinitions.get(osdkObjectSet);
     invariant(wireObjectSet);
 
-    const { resultType, invalidationSet, counts } =
+    const { resultType, objectInvalidationSet, counts } =
       await getObjectTypesThatInvalidate(
         client[additionalContext],
         wireObjectSet,
@@ -68,7 +68,7 @@ describe(getObjectTypesThatInvalidate, () => {
 
     return {
       resultType: resultType.apiName,
-      invalidationSet,
+      objectInvalidationSet,
       counts,
     };
   }
@@ -76,34 +76,34 @@ describe(getObjectTypesThatInvalidate, () => {
   it("supports basic object set", async () => {
     const osdkObjectSet = client(Employee);
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual([]);
+    expect([...objectInvalidationSet]).toEqual([]);
   });
 
   it("supports basic pivotTo another type", async () => {
     const osdkObjectSet = client(Employee).pivotTo("officeLink");
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
 
     expect(resultType).toEqual("Office");
-    expect([...invalidationSet]).toEqual(["Employee"]);
+    expect([...objectInvalidationSet]).toEqual(["Employee"]);
   });
 
   it("supports basic pivotTo same type", async () => {
     const osdkObjectSet = client(Employee).pivotTo("lead");
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual(["Employee"]);
+    expect([...objectInvalidationSet]).toEqual(["Employee"]);
   });
 
   it("supports A -> B -> A", async () => {
     const empOS = client(Employee).pivotTo("officeLink").pivotTo("occupants");
 
-    const { resultType, invalidationSet } = await helper(empOS);
+    const { resultType, objectInvalidationSet } = await helper(empOS);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual(["Employee", "Office"]);
+    expect([...objectInvalidationSet]).toEqual(["Employee", "Office"]);
   });
 
   it("supports basic pivot property rdps", async () => {
@@ -111,9 +111,9 @@ describe(getObjectTypesThatInvalidate, () => {
       x: (b) => b.pivotTo("officeLink").selectProperty("name"),
     });
 
-    const { resultType, invalidationSet } = await helper(empOS);
+    const { resultType, objectInvalidationSet } = await helper(empOS);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual(["Office"]);
+    expect([...objectInvalidationSet]).toEqual(["Office"]);
   });
 
   it("supports basic localized", async () => {
@@ -121,9 +121,9 @@ describe(getObjectTypesThatInvalidate, () => {
       x: (b) => b.selectProperty("employeeId"),
     });
 
-    const { resultType, invalidationSet } = await helper(empOS);
+    const { resultType, objectInvalidationSet } = await helper(empOS);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual([]);
+    expect([...objectInvalidationSet]).toEqual([]);
   });
 
   // Filter Operations Tests
@@ -132,9 +132,9 @@ describe(getObjectTypesThatInvalidate, () => {
       employeeId: { $gt: 100 },
     });
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual([]);
+    expect([...objectInvalidationSet]).toEqual([]);
   });
 
   it("supports filter with chained pivots", async () => {
@@ -143,9 +143,9 @@ describe(getObjectTypesThatInvalidate, () => {
       .pivotTo("officeLink")
       .where({ capacity: { $gte: 10 } });
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Office");
-    expect([...invalidationSet]).toEqual(["Employee"]);
+    expect([...objectInvalidationSet]).toEqual(["Employee"]);
   });
 
   // Union/Intersect/Subtract Tests
@@ -154,10 +154,11 @@ describe(getObjectTypesThatInvalidate, () => {
     const set2 = client(Employee).where({ employeeId: { $gt: 200 } });
     const unionSet = set1.union(set2);
 
-    const { resultType, invalidationSet, counts } = await helper(unionSet);
+    const { resultType, objectInvalidationSet, counts } =
+      await helper(unionSet);
     console.log(counts);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual([]);
+    expect([...objectInvalidationSet]).toEqual([]);
   });
 
   it("supports crazy unions union of same type", async () => {
@@ -168,10 +169,11 @@ describe(getObjectTypesThatInvalidate, () => {
     const set2 = client(Employee).where({ employeeId: { $gt: 200 } });
     const unionSet = set1.union(set2);
 
-    const { resultType, invalidationSet, counts } = await helper(unionSet);
+    const { resultType, objectInvalidationSet, counts } =
+      await helper(unionSet);
     console.log(counts);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual(["Employee"]);
+    expect([...objectInvalidationSet]).toEqual(["Employee"]);
   });
 
   it("supports crazy unions union of different types", async () => {
@@ -179,10 +181,11 @@ describe(getObjectTypesThatInvalidate, () => {
     const set2 = client(Employee).where({ employeeId: { $gt: 200 } });
     const unionSet = set1.union(set2);
 
-    const { resultType, invalidationSet, counts } = await helper(unionSet);
+    const { resultType, objectInvalidationSet, counts } =
+      await helper(unionSet);
     console.log(counts);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual(["Employee", "Office"]);
+    expect([...objectInvalidationSet]).toEqual(["Employee", "Office"]);
   });
 
   it("supports intersect with pivoted sets", async () => {
@@ -192,9 +195,9 @@ describe(getObjectTypesThatInvalidate, () => {
       .pivotTo("officeLink");
     const intersectSet = set1.intersect(set2);
 
-    const { resultType, invalidationSet } = await helper(intersectSet);
+    const { resultType, objectInvalidationSet } = await helper(intersectSet);
     expect(resultType).toEqual("Office");
-    expect([...invalidationSet]).toEqual(["Employee"]);
+    expect([...objectInvalidationSet]).toEqual(["Employee"]);
   });
 
   it("supports intersect with reference object set", async () => {
@@ -210,12 +213,13 @@ describe(getObjectTypesThatInvalidate, () => {
       ],
     };
 
-    const { resultType, invalidationSet } = await getObjectTypesThatInvalidate(
-      client[additionalContext],
-      wireObjectSet as any,
-    );
+    const { resultType, objectInvalidationSet } =
+      await getObjectTypesThatInvalidate(
+        client[additionalContext],
+        wireObjectSet as any,
+      );
     expect(resultType.apiName).toEqual("Employee");
-    expect([...invalidationSet]).toEqual([]);
+    expect([...objectInvalidationSet]).toEqual([]);
   });
 
   it("supports subtract operations", async () => {
@@ -223,16 +227,17 @@ describe(getObjectTypesThatInvalidate, () => {
     const managers = client(Employee).where({ employeeId: 5 });
     const nonManagers = allEmployees.subtract(managers);
 
-    const { resultType, invalidationSet } = await helper(nonManagers);
+    const { resultType, objectInvalidationSet } = await helper(nonManagers);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual([]);
+    expect([...objectInvalidationSet]).toEqual([]);
   });
 
   // Interface Tests
   it("supports interface base object sets", async () => {
     const osdkObjectSet = client(FooInterface);
 
-    const { resultType, invalidationSet, counts } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet, counts } =
+      await helper(osdkObjectSet);
     expect(resultType).toEqual("FooInterface");
     // Should bump counts for all implementing types
     expect(Object.keys(counts).length).toBeGreaterThan(0);
@@ -254,7 +259,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const narrowedObject = narrowedInterface.narrowToType(Employee);
     const objectResult = await helper(narrowedObject);
     expect(objectResult.resultType).toBe("Employee");
-    expect(objectResult.invalidationSet).toEqual(
+    expect(objectResult.objectInvalidationSet).toEqual(
       new Set(["Employee", "Office", "Person"]),
     );
   });
@@ -263,7 +268,7 @@ describe(getObjectTypesThatInvalidate, () => {
     // FIXME, we don't have a good interface link example right now
     // Assuming FooInterface has links - skip if not available
     // const osdkObjectSet = client(FooInterface).pivotTo("someLink");
-    // const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    // const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     // Verify it handles interface pivots correctly
   });
 
@@ -275,10 +280,10 @@ describe(getObjectTypesThatInvalidate, () => {
       localProp: (b) => b.selectProperty("employeeId"),
     });
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toContain("Office");
-    expect([...invalidationSet]).toContain("Employee"); // from lead pivot
+    expect([...objectInvalidationSet]).toContain("Office");
+    expect([...objectInvalidationSet]).toContain("Employee"); // from lead pivot
   });
 
   it("supports nested RDP operations", async () => {
@@ -289,9 +294,9 @@ describe(getObjectTypesThatInvalidate, () => {
           .add(b.pivotTo("officeLink").aggregate("$count")),
     });
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual(["Office"]);
+    expect([...objectInvalidationSet]).toEqual(["Office"]);
   });
 
   // Edge Cases and Error Handling
@@ -301,9 +306,9 @@ describe(getObjectTypesThatInvalidate, () => {
       .where({ employeeId: -1 })
       .union(client(Employee).where({ employeeId: -2 }));
 
-    const { resultType, invalidationSet } = await helper(emptyUnion);
+    const { resultType, objectInvalidationSet } = await helper(emptyUnion);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual([]);
+    expect([...objectInvalidationSet]).toEqual([]);
   });
 
   it("verifies counts are calculated correctly", async () => {
@@ -321,11 +326,12 @@ describe(getObjectTypesThatInvalidate, () => {
   it("handles count adjustment for result type", async () => {
     const osdkObjectSet = client(Employee);
 
-    const { resultType, counts, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, counts, objectInvalidationSet } =
+      await helper(osdkObjectSet);
     // Result type should not be in invalidation set even if in counts
     expect(resultType).toEqual("Employee");
     expect(counts.Employee).toBeDefined();
-    expect([...invalidationSet]).not.toContain("Employee");
+    expect([...objectInvalidationSet]).not.toContain("Employee");
   });
 
   it("handles nearest neighbor", async () => {
@@ -333,9 +339,9 @@ describe(getObjectTypesThatInvalidate, () => {
       .nearestNeighbors("hi", 3, "skillSetEmbedding")
       .pivotTo("officeLink");
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Office");
-    expect([...invalidationSet]).toContain("Employee");
+    expect([...objectInvalidationSet]).toContain("Employee");
   });
 
   // Test for Unhandled Types
@@ -373,8 +379,8 @@ describe(getObjectTypesThatInvalidate, () => {
       extracted: (b) => b.selectProperty("startDate").extractPart("YEARS"),
     });
 
-    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    const { resultType, objectInvalidationSet } = await helper(osdkObjectSet);
     expect(resultType).toEqual("Employee");
-    expect([...invalidationSet]).toEqual([]);
+    expect([...objectInvalidationSet]).toEqual([]);
   });
 });

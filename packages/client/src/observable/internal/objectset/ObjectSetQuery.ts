@@ -221,7 +221,7 @@ export class ObjectSetQuery extends BaseListQuery<
       !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType, invalidationSet } =
+      const { resultType, objectInvalidationSet } =
         await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
           wireObjectSet,
@@ -234,7 +234,7 @@ export class ObjectSetQuery extends BaseListQuery<
           wireObjectSet,
         ),
       );
-      this.#rdpInvalidationSet = invalidationSet;
+      this.#rdpInvalidationSet = objectInvalidationSet;
     }
 
     if (
@@ -484,11 +484,11 @@ export class ObjectSetQuery extends BaseListQuery<
     wireObjectSet: WireObjectSet,
   ): Promise<Set<string>> {
     try {
-      const { invalidationSet } = await getObjectTypesThatInvalidate(
+      const { objectInvalidationSet } = await getObjectTypesThatInvalidate(
         this.store.client[additionalContext],
         wireObjectSet,
       );
-      return invalidationSet;
+      return objectInvalidationSet;
     } catch (error) {
       this.store.logger?.error(
         "Failed to compute invalidation types for object set query, falling back to empty set",

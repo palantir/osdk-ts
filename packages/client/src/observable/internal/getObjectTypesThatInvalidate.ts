@@ -46,15 +46,15 @@ export async function getObjectTypesThatInvalidate(
 ): Promise<{
   resultType: FetchedObjectTypeDefinition | InterfaceMetadata;
   counts: Record<string, number>;
-  interfaceTypes: Set<string>;
-  invalidationSet: Set<string>;
+  interfaceInvalidationSet: Set<string>;
+  objectInvalidationSet: Set<string>;
 }> {
   const counts: Record<string, number> = {};
-  const interfaceTypes = new Set<string>();
+  const interfaceInvalidationSet = new Set<string>();
 
   const resultType = await calcObjectSet(objectSet, {
     counts,
-    interfaceTypes,
+    interfaceInvalidationSet,
     methodInput: undefined,
     ontologyProvider: mc.ontologyProvider,
     narrowTypeInterfaceOrObjectMapping: mc.narrowTypeInterfaceOrObjectMapping,
@@ -69,8 +69,8 @@ export async function getObjectTypesThatInvalidate(
   return {
     resultType,
     counts,
-    interfaceTypes,
-    invalidationSet: new Set(
+    interfaceInvalidationSet,
+    objectInvalidationSet: new Set(
       Object.entries(tweaked)
         .filter(([, v]) => v > 0)
         .map(([k]) => k),
@@ -80,7 +80,7 @@ export async function getObjectTypesThatInvalidate(
 
 interface Ctx {
   counts: Record<string, number>;
-  interfaceTypes: Set<string>;
+  interfaceInvalidationSet: Set<string>;
   methodInput: WireObjectSet | undefined;
   ontologyProvider: OntologyProvider;
   narrowTypeInterfaceOrObjectMapping: MinimalClient["narrowTypeInterfaceOrObjectMapping"];
@@ -101,7 +101,7 @@ async function calcObjectSet(
 
   async function bumpInterface(apiName: string) {
     const interfaceDef = await op.getInterfaceDefinition(apiName);
-    ctx.interfaceTypes.add(apiName);
+    ctx.interfaceInvalidationSet.add(apiName);
     for (const s of interfaceDef.implementedBy ?? []) {
       ctx.counts[s] = (ctx.counts[s] ?? 0) + 1;
     }
