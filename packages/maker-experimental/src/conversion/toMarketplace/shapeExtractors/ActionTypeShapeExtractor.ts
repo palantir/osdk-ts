@@ -25,6 +25,7 @@ import type {
   BaseParameterType,
   FunctionInputShape,
   FunctionInputType,
+  InputPreset,
   InputShape,
   LocalizedTitleAndDescription,
   OutputShape,
@@ -746,18 +747,28 @@ export class ActionTypeShapeExtractor {
     });
 
     const allInputShapes = new Map<ReadableId, InputShape>();
+    const inputPresets = new Map<ReadableId, InputPreset>();
     const allInputMappings: InputMappingEntry[] = [];
     const functionRule = actionType.actionType.actionTypeLogic.logic.rules.find(
       (r) => r.type === "functionRule",
     );
     if (functionRule && functionsIr) {
+      let discoveredFunction = functionsIr.discoveredFunctions.find((f) => {
+        return (
+          f.externalMetadata?.functionRid ===
+          functionRule.functionRule.functionRid
+        );
+      });
       const functionApiName =
+        discoveredFunction?.locator.typescript?.functionName ??
         functionRule.functionRule.functionRid.split(".").pop() ??
         functionRule.functionRule.functionRid;
 
-      const discoveredFunction = functionsIr.discoveredFunctions.find(
-        (f) => f.locator.typescript?.functionName === functionApiName,
-      );
+      if (!discoveredFunction) {
+        discoveredFunction = functionsIr.discoveredFunctions.find(
+          (f) => f.locator.typescript?.functionName === functionApiName,
+        );
+      }
 
       if (discoveredFunction) {
         const functionShape = buildFunctionShape(
@@ -779,15 +790,42 @@ export class ActionTypeShapeExtractor {
           type: "function",
           function: functionShape,
         });
-        allInputMappings.push({
-          input: readableFunctionId,
-          output: ReadableIdGenerator.getForFunction(functionApiName),
-        });
+        if (discoveredFunction.externalMetadata) {
+          // Imported functions remain in Foundry; the bundle does not publish them.
+          inputPresets.set(readableFunctionId, {
+            value: {
+              type: "fromSource",
+              fromSource: {
+                resolver: {
+                  type: "resolvedShapeResolver",
+                  resolvedShapeResolver: {
+                    type: "function",
+                    function: {
+                      functionRid:
+                        discoveredFunction.externalMetadata.functionRid,
+                      functionVersion:
+                        discoveredFunction.externalMetadata.functionVersion,
+                    },
+                  },
+                },
+              },
+            },
+            exportCompatibility: "INCOMPATIBLE",
+            enforcement: "SUGGESTED",
+            isDefault: false,
+          });
+        } else {
+          allInputMappings.push({
+            input: readableFunctionId,
+            output: ReadableIdGenerator.getForFunction(functionApiName),
+          });
+        }
       }
     }
 
     return {
       inputShapes: allInputShapes,
+      inputPresets,
       outputShapes: allOutputShapes,
       inputShapeMetadata: new Map(),
       inputMappings: allInputMappings,

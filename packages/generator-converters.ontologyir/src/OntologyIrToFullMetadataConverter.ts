@@ -56,7 +56,10 @@ export interface IDataType {
 }
 
 export interface IDiscoveredFunction {
-  locator: { type: string; typescript?: { functionName: string } };
+  locator: {
+    type: string;
+    typescript?: { functionName: string; filePath?: string };
+  };
   inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output:
     | { type?: "single"; single: { dataType: IDataType } }
@@ -66,6 +69,10 @@ export interface IDiscoveredFunction {
     editedLinks: Record<string, {}>;
     editedObjects: Record<string, {}>;
     editedInterfaces: Record<string, {}>;
+  };
+  externalMetadata?: {
+    functionRid: string;
+    functionVersion: string;
   };
 }
 
@@ -103,6 +110,13 @@ interface IPythonCustomType {
 interface IPythonDiscoveryResult {
   functions: IPythonDiscoveredFunction[];
   errors?: Array<unknown>;
+}
+
+interface IFunctionMetadata {
+  functions: Record<string, {
+    functionRid: string;
+    functionVersion: string;
+  }>;
 }
 
 function discoverPythonFunctions(
@@ -361,6 +375,21 @@ export class OntologyIrToFullMetadataConverter {
       functionsDir,
     );
 
+    const importedFunctionsDir = path.join(
+      projectDir,
+      "functions",
+      "external-imports",
+    );
+    const importedFunctionsMetadataPath = path.join(
+      importedFunctionsDir,
+      "functions-metadata.json",
+    );
+    const importedFunctionsMetadata: IFunctionMetadata = fs.existsSync(
+        importedFunctionsMetadataPath,
+      )
+      ? JSON.parse(fs.readFileSync(importedFunctionsMetadataPath, "utf-8"))
+      : { functions: {} };
+
     const program = this.createProgram(
       tsConfigPath,
       projectDir,
@@ -430,12 +459,39 @@ export class OntologyIrToFullMetadataConverter {
     // Normalize to forward slashes to match TypeScript's internal path format
     const normalizedFunctionsDir = functionsDir.replace(/\\/g, "/");
     const fd = new FunctionDiscoverer(
-      program,
+      {
+        ...program,
+        // Keep declarations available to the type checker without discovering them.
+        getRootFileNames: () =>
+          program.getRootFileNames().filter(fileName =>
+            fileName.endsWith(".ts") && !fileName.endsWith(".d.ts")
+          ),
+      },
       projectDir,
       normalizedFunctionsDir,
       entityMetadataMapping,
     );
     const functions = fd.discover();
+    const importedFunctionsPathPrefix = path.resolve(importedFunctionsDir)
+      + path.sep;
+    // Imported sources can include transitive dependencies that are not imported functions.
+    functions.discoveredFunctions = functions.discoveredFunctions.filter(
+      func => {
+        const locator = func.locator.typescript;
+        if (func.locator.type !== "typescript" || !locator?.filePath) {
+          return true;
+        }
+        const sourcePath = path.resolve(
+          projectDir,
+          locator.filePath.replace(/\\/g, "/"),
+        );
+        return !sourcePath.startsWith(importedFunctionsPathPrefix)
+          || Object.prototype.hasOwnProperty.call(
+            importedFunctionsMetadata.functions,
+            locator.functionName,
+          );
+      },
+    );
 
     if (irOutputFile) {
       fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
@@ -464,8 +520,14 @@ export class OntologyIrToFullMetadataConverter {
       );
     }
 
+    for (const func of tsFunctions) {
+      func.externalMetadata = importedFunctionsMetadata.functions[
+        func.locator.typescript!.functionName
+      ];
+    }
+
     if (irOutputFile) {
-      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions, null, 2));
     }
 
     return tsFunctions.flatMap((func: IDiscoveredFunction) => {
@@ -474,8 +536,9 @@ export class OntologyIrToFullMetadataConverter {
         return [
           {
             apiName: functionName,
-            rid: `ri.function-registry.main.function.${functionName}`,
-            version: "0.0.0",
+            rid: func.externalMetadata?.functionRid
+              ?? `ri.function-registry.main.function.${functionName}`,
+            version: func.externalMetadata?.functionVersion ?? "0.0.0",
             parameters: func.inputs.reduce<
               Record<ApiName, Ontologies.QueryParameterV2>
             >((acc, input, index) => {

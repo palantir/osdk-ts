@@ -23,7 +23,11 @@ import type {
   ParameterRequiredConfiguration,
   VectorPropertyType,
 } from "@osdk/client.unstable";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+import type * as ts from "typescript";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
 import {
@@ -31,19 +35,22 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
 
-const { discoveredFunctions, entityMetadataMappings } = vi.hoisted(() => ({
-  discoveredFunctions: [] as IDiscoveredFunction[],
-  entityMetadataMappings: [] as unknown[],
-}));
+const { discoveredFunctions, discoveryPrograms, entityMetadataMappings } = vi
+  .hoisted(() => ({
+    discoveredFunctions: [] as IDiscoveredFunction[],
+    discoveryPrograms: [] as ts.Program[],
+    entityMetadataMappings: [] as unknown[],
+  }));
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
   FunctionDiscoverer: class {
     constructor(
-      _program: unknown,
+      program: ts.Program,
       _entryPointPath: string,
       _fullFilePath: string,
       entityMetadataMapping?: unknown,
     ) {
+      discoveryPrograms.push(program);
       entityMetadataMappings.push(entityMetadataMapping);
     }
 
@@ -3968,4 +3975,218 @@ describe(OntologyIrToFullMetadataConverter, () => {
       createProgramSpy.mockRestore();
     }
   });
+
+  it.each([
+    ["relative", "present"],
+    ["absolute", "present"],
+    ["backslashes", "present"],
+    ["relative", "empty"],
+    ["relative", "missing"],
+  ])(
+    "only keeps external TypeScript imports listed in metadata (%s paths, %s metadata)",
+    async (pathStyle, metadataState) => {
+      const projectDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "function-import-filter-"),
+      );
+      const functionsDir = path.join(projectDir, "functions");
+      const importsDir = path.join(functionsDir, "external-imports");
+      const metadata = {
+        functionRid: "ri.function-registry.main.function.imported",
+        functionVersion: "1.2.3",
+      };
+      fs.mkdirSync(importsDir, { recursive: true });
+      if (metadataState !== "missing") {
+        fs.writeFileSync(
+          path.join(importsDir, "functions-metadata.json"),
+          JSON.stringify({
+            functions: metadataState === "present"
+              ? { importedFunction: metadata, nestedFunction: metadata }
+              : {},
+          }),
+        );
+      }
+      const createProgramSpy = vi.spyOn(
+        OntologyIrToFullMetadataConverter,
+        "createProgram",
+      ).mockReturnValue({} as never);
+      const sources = [
+        ["localFunction", "functions/localFunction.ts"],
+        ["importedFunction", "functions/external-imports/importedFunction.ts"],
+        [
+          "nestedFunction",
+          "functions/external-imports/nested/nestedFunction.ts",
+        ],
+        [
+          "localFunction",
+          "functions/external-imports/dependency/localFunction.ts",
+        ],
+        ["unlistedFunction", "functions/external-imports/unlistedFunction.ts"],
+        [
+          "neighborFunction",
+          "functions/external-imports-other/neighborFunction.ts",
+        ],
+      ];
+      discoveredFunctions.splice(
+        0,
+        discoveredFunctions.length,
+        ...sources.map(([functionName, filePath]): IDiscoveredFunction => ({
+          locator: {
+            type: "typescript",
+            typescript: {
+              functionName,
+              filePath: pathStyle === "absolute"
+                ? path.join(projectDir, filePath)
+                : pathStyle === "backslashes"
+                ? filePath.replace(/\//g, "\\")
+                : filePath,
+            },
+          },
+          inputs: [],
+          output: { single: { dataType: { type: "string" } } },
+          customTypes: {},
+        })),
+      );
+
+      try {
+        const irOutputFile = path.join(projectDir, "functions-ir.json");
+        const queries = await OntologyIrToFullMetadataConverter
+          .discoverTypeScriptFunctions(
+            functionsDir,
+            undefined,
+            irOutputFile,
+          );
+        const expectedNames = metadataState === "present"
+          ? [
+            "localFunction",
+            "importedFunction",
+            "nestedFunction",
+            "neighborFunction",
+          ]
+          : ["localFunction", "neighborFunction"];
+        expect(queries.map(query => query.apiName)).toEqual(expectedNames);
+        const writtenFunctions: IDiscoveredFunction[] = JSON.parse(
+          fs.readFileSync(irOutputFile, "utf-8"),
+        ).discoveredFunctions;
+        expect(
+          writtenFunctions.map(func => func.locator.typescript?.functionName),
+        )
+          .toEqual(expectedNames);
+        expect(writtenFunctions[0].locator.typescript?.filePath).toEqual(
+          pathStyle === "absolute"
+            ? path.join(functionsDir, "localFunction.ts")
+            : pathStyle === "backslashes"
+            ? "functions\\localFunction.ts"
+            : "functions/localFunction.ts",
+        );
+        if (metadataState === "present") {
+          expect(queries[1]).toMatchObject({
+            rid: metadata.functionRid,
+            version: metadata.functionVersion,
+          });
+          expect(writtenFunctions[1].externalMetadata).toEqual(metadata);
+        }
+      } finally {
+        createProgramSpy.mockRestore();
+        discoveredFunctions.splice(0);
+        fs.rmSync(projectDir, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it.each([false, true])(
+    "keeps JavaScript imports and declarations out of discovery roots (metadata: %s)",
+    async (hasMetadata) => {
+      const componentDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "function-imports-"),
+      );
+      const projectDir = path.join(componentDir, "src");
+      const functionsDir = path.join(projectDir, "functions");
+      const importsDir = path.join(functionsDir, "external-imports");
+      const importedFunctionPath = path.join(importsDir, "importedFunction.js");
+      const metadata = {
+        functionRid: "ri.function-registry.main.function.local",
+        functionVersion: "1.2.3",
+      };
+      fs.mkdirSync(importsDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(projectDir, "tsconfig.json"),
+        JSON.stringify({
+          compilerOptions: { noLib: true, types: [] },
+          include: ["**/*.ts", "**/*.js"],
+        }),
+      );
+      fs.writeFileSync(
+        path.join(functionsDir, "localFunction.ts"),
+        `import importedFunction from "./external-imports/importedFunction.js";
+export default function localFunction(): string { return importedFunction("local"); }`,
+      );
+      fs.writeFileSync(
+        importedFunctionPath,
+        "export default function importedFunction(value) { return value; }",
+      );
+      fs.writeFileSync(
+        path.join(importsDir, "importedFunction.d.ts"),
+        "export default function importedFunction(value: string): string;",
+      );
+      if (hasMetadata) {
+        fs.writeFileSync(
+          path.join(importsDir, "functions-metadata.json"),
+          JSON.stringify({
+            functions: { localFunction: metadata, importedFunction: metadata },
+          }),
+        );
+      }
+      discoveredFunctions.splice(0, discoveredFunctions.length, {
+        locator: {
+          type: "typescript",
+          typescript: { functionName: "localFunction" },
+        },
+        inputs: [],
+        output: { single: { dataType: { type: "string" } } },
+        customTypes: {},
+      });
+      discoveryPrograms.splice(0);
+
+      try {
+        const irOutputFile = path.join(
+          projectDir,
+          "build",
+          "functions-ir.json",
+        );
+        const queries = await OntologyIrToFullMetadataConverter
+          .discoverTypeScriptFunctions(
+            functionsDir,
+            undefined,
+            irOutputFile,
+          );
+        const program = discoveryPrograms[0];
+        expect(program.getRootFileNames()).toEqual([
+          path.join(functionsDir, "localFunction.ts"),
+        ]);
+        expect(program.getSourceFile(importedFunctionPath)).toBeUndefined();
+        expect(program.getSourceFile(
+          path.join(importsDir, "importedFunction.d.ts"),
+        )).toBeDefined();
+        expect(program.getCompilerOptions().allowJs).toBeUndefined();
+        expect(fs.existsSync(path.join(componentDir, ".dev-server"))).toBe(
+          false,
+        );
+        expect(queries).toMatchObject([{
+          apiName: "localFunction",
+          rid: hasMetadata
+            ? metadata.functionRid
+            : "ri.function-registry.main.function.localFunction",
+          version: hasMetadata ? metadata.functionVersion : "0.0.0",
+        }]);
+        expect(
+          JSON.parse(fs.readFileSync(irOutputFile, "utf-8"))
+            .discoveredFunctions[0].externalMetadata,
+        ).toEqual(hasMetadata ? metadata : undefined);
+      } finally {
+        fs.rmSync(componentDir, { recursive: true, force: true });
+        discoveredFunctions.splice(0);
+        discoveryPrograms.splice(0);
+      }
+    },
+  );
 });

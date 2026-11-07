@@ -24,6 +24,7 @@ import type {
   FilesDatasourceLocator,
   GeotimeSeriesIntegrationRid,
   GroupId,
+  InputPreset,
   InputShape,
   InputShapeMetadata,
   InterfaceActionTypeConstraintRid,
@@ -211,6 +212,7 @@ export interface BiMap<K, V> {
  * BlockShapes container for input and output shapes
  */
 export interface BlockShapes {
+  inputPresets?: Map<ReadableId, InputPreset>;
   inputShapes: Map<ReadableId, InputShape>;
   outputShapes: Map<ReadableId, OutputShape>;
   inputShapeMetadata: Map<ReadableId, InputShapeMetadata>;
