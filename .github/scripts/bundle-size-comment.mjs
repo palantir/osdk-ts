@@ -20,19 +20,24 @@
 //
 // Both inputs are `size-limit --json` output. Either may be missing or garbage
 // (the measurement steps tolerate failure), so treat an unreadable file as an
-// empty result set rather than crashing the job.
+// empty result set rather than crashing the job. On failure size-limit writes
+// `{ "error": <stack> }` instead of an array; that is surfaced in the comment.
 
 import { readFileSync } from "node:fs";
 
 const [currentPath, basePath] = process.argv.slice(2);
 
-function readSizes(path) {
+const errors = [];
+
+function readSizes(path, label) {
   try {
     const parsed = JSON.parse(readFileSync(path, "utf8"));
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed?.error) {
+      errors.push(`${label}: ${String(parsed.error).split("\n")[0]}`);
+    }
+  } catch {}
+  return [];
 }
 
 function formatBytes(bytes) {
@@ -52,8 +57,8 @@ function formatChange(current, base) {
   return `${pct > 0 ? "+" : ""}${pct.toFixed(2)}%${pct > 0 ? " 🔺" : " 🔽"}`;
 }
 
-const current = readSizes(currentPath);
-const base = readSizes(basePath);
+const current = readSizes(currentPath, "this PR");
+const base = readSizes(basePath, "base branch");
 
 const currentMap = Object.fromEntries(current.map((e) => [e.name, e.size]));
 const baseMap = Object.fromEntries(base.map((e) => [e.name, e.size]));
@@ -76,6 +81,10 @@ if (names.length === 0) {
       `| \`${name}\` | ${formatBytes(cur)} | ${formatChange(cur, bas)} |`,
     );
   }
+}
+
+for (const error of errors) {
+  lines.push("", `size-limit failed for ${error}`);
 }
 
 console.log(lines.join("\n"));
