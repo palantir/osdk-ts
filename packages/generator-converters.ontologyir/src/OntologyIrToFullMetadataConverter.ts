@@ -58,7 +58,7 @@ export interface IDataType {
 export interface IDiscoveredFunction {
   locator: {
     type: string;
-    typescript?: { functionName: string };
+    typescript?: { functionName: string; filePath?: string };
   };
   inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output:
@@ -472,6 +472,26 @@ export class OntologyIrToFullMetadataConverter {
       entityMetadataMapping,
     );
     const functions = fd.discover();
+    const importedFunctionsPathPrefix = path.resolve(importedFunctionsDir)
+      + path.sep;
+    // Imported sources can include transitive dependencies that are not imported functions.
+    functions.discoveredFunctions = functions.discoveredFunctions.filter(
+      func => {
+        const locator = func.locator.typescript;
+        if (func.locator.type !== "typescript" || !locator?.filePath) {
+          return true;
+        }
+        const sourcePath = path.resolve(
+          projectDir,
+          locator.filePath.replace(/\\/g, "/"),
+        );
+        return !sourcePath.startsWith(importedFunctionsPathPrefix)
+          || Object.prototype.hasOwnProperty.call(
+            importedFunctionsMetadata.functions,
+            locator.functionName,
+          );
+      },
+    );
 
     if (irOutputFile) {
       fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
