@@ -51,6 +51,7 @@ export interface FormFieldRendererProps {
   onFieldBlur?: () => void;
   isEdited: boolean;
   error: string | undefined;
+  validationError?: string;
   portalContainer?: PortalContainer;
 }
 
@@ -63,6 +64,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
     onFieldBlur,
     isEdited,
     error,
+    validationError,
     portalContainer,
   }: FormFieldRendererProps): React.ReactElement {
     const { label, isRequired, helperText, helperTextPlacement } =
@@ -77,6 +79,7 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
         helperTextPlacement={helperTextPlacement}
         isEdited={isEdited}
         error={error}
+        validationError={validationError}
         onBlur={onBlur}
       >
         {renderFieldComponent(

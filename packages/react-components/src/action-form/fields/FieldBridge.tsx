@@ -31,6 +31,8 @@ export interface FieldBridgeProps {
   control: Control<Record<string, unknown>>;
   onExternalChange?: (fieldKey: string, value: unknown) => void;
   portalContainer?: PortalContainer;
+  validationError?: string;
+  hasAttemptedSubmit?: boolean;
 }
 const SELECT_LIKE_FIELDS: ReadonlySet<FieldComponent> = new Set<FieldComponent>(
   ["RADIO_BUTTONS", "SWITCH"],
@@ -42,6 +44,8 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     control,
     onExternalChange,
     portalContainer,
+    validationError,
+    hasAttemptedSubmit,
   }: FieldBridgeProps): React.ReactElement {
     const rules = useMemo(() => extractValidationRules(fieldDef), [fieldDef]);
 
@@ -60,6 +64,8 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     // based. The tag represents an actual user edit, so set it from the
     // field change path and keep it visible even if the value is restored.
     const [isEdited, setIsEdited] = useState(false);
+    const showValidationError =
+      (isEdited || hasAttemptedSubmit === true) && validationError != null;
 
     const handleChange = useCallback(
       (newValue: unknown) => {
@@ -100,7 +106,11 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         onBlur={isDropdown ? undefined : handleBlur}
         onFieldBlur={isDropdown ? onBlur : undefined}
         isEdited={isEdited}
-        error={fieldError?.message}
+        error={
+          fieldError?.message ??
+          (showValidationError ? "The parameter value is invalid" : undefined)
+        }
+        validationError={showValidationError ? validationError : undefined}
         portalContainer={portalContainer}
       />
     );

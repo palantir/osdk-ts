@@ -192,6 +192,7 @@ export type BaseFormProps = BaseFormCommonProps &
 export interface FormErrorEntry {
   label?: string;
   message: string;
+  details?: ReadonlyArray<string>;
 }
 
 interface BaseFormCommonProps {
@@ -222,4 +223,12 @@ interface BaseFormCommonProps {
    * @default undefined (no external errors)
    */
   validationErrors?: ReadonlyArray<FormErrorEntry>;
+  /**
+   * Per-field validation errors from server-side validation, keyed by field key.
+   * Shown inline next to each field alongside any client-side validation errors.
+   * Controlled: the caller owns the map and clears it on field change.
+   *
+   * @default undefined (no field-level server errors)
+   */
+  fieldValidationErrors?: Readonly<Record<string, string>>;
 }

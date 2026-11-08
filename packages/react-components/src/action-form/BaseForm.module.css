@@ -86,7 +86,19 @@
   height: var(--osdk-input-min-height);
 }
 
+.osdkFormErrorContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-surface-spacing);
+}
+
 .osdkFormErrorList {
+  list-style: disc;
+  margin: 0;
+  padding-left: calc(var(--osdk-surface-spacing) * 2.5);
+}
+
+.osdkFormErrorDetailList {
   list-style: disc;
   margin: 0;
   padding-left: calc(var(--osdk-surface-spacing) * 2.5);

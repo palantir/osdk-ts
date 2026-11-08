@@ -16,6 +16,7 @@
 
 import { Popover } from "@base-ui/react/popover";
 import { InfoSign } from "@blueprintjs/icons";
+import classNames from "classnames";
 import React, { memo } from "react";
 
 import styles from "./FormField.module.css";
@@ -28,6 +29,7 @@ interface FormFieldProps {
   helperTextPlacement?: "bottom" | "tooltip";
   isEdited?: boolean;
   error?: string;
+  validationError?: string;
   onBlur?: (e: React.FocusEvent<HTMLDivElement>) => void;
   children: React.ReactNode;
 }
@@ -40,6 +42,7 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
   helperTextPlacement = "tooltip",
   isEdited,
   error,
+  validationError,
   onBlur,
   children,
 }: FormFieldProps): React.ReactElement {
@@ -84,6 +87,17 @@ export const FormField: React.FC<FormFieldProps> = memo(function FormFieldFn({
         // verify that validation errors do not shift the layout.
         data-osdk-form-field-error-slot=""
       >
+        {validationError != null && (
+          <div
+            className={classNames(
+              styles.osdkFormFieldError,
+              styles.osdkFormFieldValidationError,
+            )}
+            role="alert"
+          >
+            {validationError}
+          </div>
+        )}
         {error != null && (
           <div className={styles.osdkFormFieldError} role="alert">
             {error}

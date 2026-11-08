@@ -48,6 +48,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   submitButtonText = "Submit",
   submitButtonVariant = "primary",
   validationErrors,
+  fieldValidationErrors,
 }: BaseFormProps): React.ReactElement {
   const portalContainerRef = useRef<HTMLFormElement>(null);
   const isControlled = controlledFormState != null;
@@ -120,20 +121,40 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     [allFieldDefinitions],
   );
 
-  // RHF reuses the same errors object reference across renders so we cannot memoize errorEntries
-  const fieldErrorEntries: FormErrorEntry[] = Object.entries(errors).map(
-    ([key, entry]) => ({
-      label: labelByFieldKey.get(key) ?? key,
-      message: entry?.message ?? "The parameter value is invalid",
-    }),
-  );
-  const errorEntries: ReadonlyArray<FormErrorEntry> =
-    validationErrors != null && validationErrors.length > 0
-      ? [...fieldErrorEntries, ...validationErrors]
-      : fieldErrorEntries;
+  // Merge RHF field errors and server validation errors into a single
+  // footer display. Parameter-level errors are grouped under one entry
+  // ("The values for these parameters are invalid:") with display names.
+  const rhfErrorKeys = Object.keys(errors);
+  const serverErrorKeys =
+    validationErrors?.find((e) => e.details != null)?.details ?? [];
+
+  const allInvalidDisplayNames = new Set<string>(serverErrorKeys);
+  for (const key of rhfErrorKeys) {
+    allInvalidDisplayNames.add(labelByFieldKey.get(key) ?? key);
+  }
+
+  const errorEntries: FormErrorEntry[] = [];
+  if (validationErrors != null) {
+    for (const entry of validationErrors) {
+      if (entry.details == null) {
+        errorEntries.push(entry);
+      }
+    }
+  }
+  if (allInvalidDisplayNames.size > 0) {
+    errorEntries.push({
+      message:
+        allInvalidDisplayNames.size === 1
+          ? "The value for this parameter is invalid:"
+          : "The values for these parameters are invalid:",
+      details: Array.from(allInvalidDisplayNames),
+    });
+  }
+
+  const hasFieldErrors = rhfErrorKeys.length > 0 || serverErrorKeys.length > 0;
   const areErrorsPresent = errorEntries.length > 0;
   const buttonErrorMessage = areErrorsPresent
-    ? fieldErrorEntries.length > 0
+    ? hasFieldErrors
       ? "Some fields are invalid"
       : "Submission criteria not met"
     : submissionErrorMessage;
@@ -170,6 +191,10 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                 control={control}
                 onExternalChange={handleFieldChange}
                 portalContainer={portalContainerRef}
+                validationError={
+                  fieldValidationErrors?.[item.definition.fieldKey]
+                }
+                hasAttemptedSubmit={hasAttemptedSubmit}
               />
             );
           }
@@ -190,6 +215,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
                   control={control}
                   onExternalChange={handleFieldChange}
                   portalContainer={portalContainerRef}
+                  validationError={fieldValidationErrors?.[fieldDef.fieldKey]}
+                  hasAttemptedSubmit={hasAttemptedSubmit}
                 />
               ))}
             </FormSection>
@@ -322,7 +349,13 @@ function ErrorIndicator({
     return null;
   }
 
-  const count = errorEntries.length;
+  let count = 0;
+  for (const entry of errorEntries) {
+    count +=
+      entry.details != null && entry.details.length > 0
+        ? entry.details.length
+        : 1;
+  }
 
   return (
     <Tooltip.Root>
@@ -336,14 +369,30 @@ function ErrorIndicator({
         <Tooltip.Positioner>
           <Tooltip.Popup>
             <Tooltip.Arrow />
-            <ul className={styles.osdkFormErrorList}>
-              {errorEntries.map((entry) => (
-                <li key={`${entry.label ?? ""}:${entry.message}`}>
-                  {entry.label != null && <strong>{entry.label}: </strong>}
-                  {entry.message}
-                </li>
-              ))}
-            </ul>
+            <div className={styles.osdkFormErrorContent}>
+              {errorEntries.map((entry) =>
+                entry.details != null && entry.details.length > 0 ? (
+                  <div key={entry.message}>
+                    {entry.message}
+                    <ul className={styles.osdkFormErrorDetailList}>
+                      {entry.details.map((detail) => (
+                        <li key={detail}>{detail}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <ul
+                    key={`${entry.label ?? ""}:${entry.message}`}
+                    className={styles.osdkFormErrorList}
+                  >
+                    <li>
+                      {entry.label != null && <strong>{entry.label}: </strong>}
+                      {entry.message}
+                    </li>
+                  </ul>
+                ),
+              )}
+            </div>
           </Tooltip.Popup>
         </Tooltip.Positioner>
       </Tooltip.Portal>

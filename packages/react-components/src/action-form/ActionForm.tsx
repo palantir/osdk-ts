@@ -40,15 +40,26 @@ import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.j
 const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 const EMPTY_VALIDATION_ERRORS: ReadonlyArray<FormErrorEntry> = [];
+const EMPTY_FIELD_VALIDATION_ERRORS: Readonly<Record<string, string>> = {};
+const EMPTY_PARSED_VALIDATION: ParsedValidationErrors = {
+  formErrors: EMPTY_VALIDATION_ERRORS,
+  fieldErrors: EMPTY_FIELD_VALIDATION_ERRORS,
+};
 
-function getValidationErrors(
+interface ParsedValidationErrors {
+  formErrors: ReadonlyArray<FormErrorEntry>;
+  fieldErrors: Readonly<Record<string, string>>;
+}
+
+function parseValidationResponse(
   response: ActionValidationResponse,
-): ReadonlyArray<FormErrorEntry> {
-  const errors: FormErrorEntry[] = [];
+): ParsedValidationErrors {
+  const formErrors: FormErrorEntry[] = [];
+  const fieldErrors: Record<string, string> = {};
 
   for (const criterion of response.submissionCriteria) {
     if (criterion.result === "INVALID") {
-      errors.push({
+      formErrors.push({
         message:
           criterion.configuredFailureMessage ??
           "Submission criteria not met. Review the values and try again.",
@@ -56,37 +67,140 @@ function getValidationErrors(
     }
   }
 
+  const invalidParamKeys: string[] = [];
   for (const [paramKey, param] of Object.entries(response.parameters)) {
     if (param.result === "INVALID") {
-      errors.push({
-        label: paramKey,
-        message: getParameterErrorMessage(param.evaluatedConstraints),
-      });
+      const message = getParameterErrorMessage(param.evaluatedConstraints);
+      fieldErrors[paramKey] = message;
+      invalidParamKeys.push(paramKey);
     }
   }
-
-  if (errors.length === 0 && response.result === "INVALID") {
-    errors.push({ message: "Validation failed" });
+  if (invalidParamKeys.length > 0) {
+    formErrors.push({
+      message:
+        invalidParamKeys.length === 1
+          ? "The value for this parameter is invalid:"
+          : "The values for these parameters are invalid:",
+      details: invalidParamKeys,
+    });
   }
 
-  return errors.length > 0 ? errors : EMPTY_VALIDATION_ERRORS;
+  if (formErrors.length === 0 && response.result === "INVALID") {
+    formErrors.push({ message: "Validation failed" });
+  }
+
+  return {
+    formErrors: formErrors.length > 0 ? formErrors : EMPTY_VALIDATION_ERRORS,
+    fieldErrors:
+      Object.keys(fieldErrors).length > 0
+        ? fieldErrors
+        : EMPTY_FIELD_VALIDATION_ERRORS,
+  };
+}
+
+interface EvaluatedConstraint {
+  type: string;
+  configuredFailureMessage?: string;
+  lt?: unknown;
+  lte?: unknown;
+  gt?: unknown;
+  gte?: unknown;
+  options?: ReadonlyArray<{ displayName?: string; value?: unknown }>;
+  otherValuesAllowed?: boolean;
 }
 
 // TODO: Derive constraint-specific error messages from evaluatedConstraints
 // (e.g. "Must have at least 3 characters" for stringLength constraints)
 // and surface them inline next to the field, matching Foundry ActionForm behavior.
 function getParameterErrorMessage(
-  constraints: ReadonlyArray<{
-    type: string;
-    configuredFailureMessage?: string;
-  }>,
+  constraints: ReadonlyArray<EvaluatedConstraint>,
 ): string {
   for (const c of constraints) {
-    if ("configuredFailureMessage" in c && c.configuredFailureMessage != null) {
+    if (c.configuredFailureMessage != null) {
       return c.configuredFailureMessage;
+    }
+    const msg = getConstraintMessage(c);
+    if (msg != null) {
+      return msg;
     }
   }
   return "The parameter value is invalid";
+}
+
+function getConstraintMessage(
+  constraint: EvaluatedConstraint,
+): string | undefined {
+  switch (constraint.type) {
+    case "stringLength":
+      return formatBoundsMessage(constraint, "characters");
+    case "range":
+      return formatBoundsMessage(constraint);
+    case "arraySize":
+      return formatBoundsMessage(constraint, "items");
+    case "stringRegexMatch":
+      return "Must match the required pattern";
+    case "oneOf": {
+      const labels = constraint.options
+        ?.map((o) => o.displayName ?? String(o.value))
+        .filter(Boolean);
+      if (labels != null && labels.length > 0) {
+        return `Must be one of: ${labels.join(", ")}`;
+      }
+      return "Must be one of the allowed values";
+    }
+    case "groupMember":
+      return "Must be a valid group member";
+    case "objectPropertyValue":
+      return "The object property value is invalid";
+    case "objectQueryResult":
+      return "The object query result is invalid";
+    default:
+      return undefined;
+  }
+}
+
+function formatBoundsMessage(
+  constraint: EvaluatedConstraint,
+  unit?: string,
+): string | undefined {
+  const suffix = unit != null ? ` ${unit}` : "";
+  if (constraint.gte != null) {
+    return `Must have at least ${String(constraint.gte)}${suffix}`;
+  }
+  if (constraint.gt != null) {
+    return `Must have more than ${String(constraint.gt)}${suffix}`;
+  }
+  if (constraint.lte != null) {
+    return `Must have at most ${String(constraint.lte)}${suffix}`;
+  }
+  if (constraint.lt != null) {
+    return `Must have fewer than ${String(constraint.lt)}${suffix}`;
+  }
+  return undefined;
+}
+
+function resolveFormErrors(
+  formErrors: ReadonlyArray<FormErrorEntry>,
+  visibleParamKeys: ReadonlyArray<string>,
+  toDisplayName: (key: string) => string,
+): ReadonlyArray<FormErrorEntry> {
+  const result: FormErrorEntry[] = [];
+  for (const entry of formErrors) {
+    if (entry.details != null) {
+      if (visibleParamKeys.length > 0) {
+        result.push({
+          message:
+            visibleParamKeys.length === 1
+              ? "The value for this parameter is invalid:"
+              : "The values for these parameters are invalid:",
+          details: visibleParamKeys.map(toDisplayName),
+        });
+      }
+    } else {
+      result.push(entry);
+    }
+  }
+  return result.length > 0 ? result : EMPTY_VALIDATION_ERRORS;
 }
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
@@ -128,9 +242,10 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const parameters = metadata?.parameters;
 
-  const [validationErrors, setValidationErrors] = useState<
-    ReadonlyArray<FormErrorEntry>
-  >(EMPTY_VALIDATION_ERRORS);
+  const [parsedValidation, setParsedValidation] =
+    useState<ParsedValidationErrors>(EMPTY_PARSED_VALIDATION);
+  const editedFieldsRef = useRef<Set<string>>(new Set());
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
   const customFieldDefinitions: ReadonlyArray<RendererFieldDefinition> | null =
     useMemo(() => {
@@ -161,6 +276,11 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
         ? getDefaultFieldDefinitions(metadata)
         : EMPTY_FIELD_DEFINITIONS),
     [customFieldDefinitions, metadata],
+  );
+
+  const fieldLabelMap = useMemo(
+    () => new Map(rendererFieldDefinitions.map((d) => [d.fieldKey, d.label])),
+    [rendererFieldDefinitions],
   );
 
   const formContent = useMemo(
@@ -203,9 +323,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       if (validation != null) {
         onValidationResponse?.(validation);
         if (validation.result === "INVALID") {
-          setValidationErrors(getValidationErrors(validation));
+          setParsedValidation(parseValidationResponse(validation));
         } else {
-          setValidationErrors(EMPTY_VALIDATION_ERRORS);
+          setParsedValidation(EMPTY_PARSED_VALIDATION);
         }
       }
     } catch {
@@ -216,6 +336,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const handleSubmit = useCallback(
     async (rawFormState: Record<string, unknown>) => {
+      setHasAttemptedSubmit(true);
       const formState = coerceFormState(rawFormState) as FormState<Q>;
       try {
         if (onSubmit != null) {
@@ -225,11 +346,11 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           if (validation != null) {
             onValidationResponse?.(validation);
             if (validation.result === "INVALID") {
-              setValidationErrors(getValidationErrors(validation));
+              setParsedValidation(parseValidationResponse(validation));
               return;
             }
           }
-          setValidationErrors(EMPTY_VALIDATION_ERRORS);
+          setParsedValidation(EMPTY_PARSED_VALIDATION);
           const result = await osdkApplyAction(formState);
           onSuccess?.(result);
         }
@@ -251,7 +372,8 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
-      setValidationErrors(EMPTY_VALIDATION_ERRORS);
+      editedFieldsRef.current.add(fieldKey);
+      setParsedValidation(EMPTY_PARSED_VALIDATION);
       formStateRef.current = { ...formStateRef.current, [fieldKey]: value };
       onFormStateChange?.(
         (prev) =>
@@ -271,6 +393,45 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const isControlled = controlledFormState != null;
 
+  const visibleValidation = useMemo((): {
+    validationErrors: ReadonlyArray<FormErrorEntry>;
+    fieldValidationErrors: Readonly<Record<string, string>>;
+  } => {
+    const toDisplayName = (key: string) => fieldLabelMap.get(key) ?? key;
+
+    if (hasAttemptedSubmit) {
+      return {
+        validationErrors: resolveFormErrors(
+          parsedValidation.formErrors,
+          Object.keys(parsedValidation.fieldErrors),
+          toDisplayName,
+        ),
+        fieldValidationErrors: parsedValidation.fieldErrors,
+      };
+    }
+    const edited = editedFieldsRef.current;
+    const visibleFieldErrors: Record<string, string> = {};
+    const visibleParamKeys: string[] = [];
+    for (const [key, msg] of Object.entries(parsedValidation.fieldErrors)) {
+      if (edited.has(key)) {
+        visibleFieldErrors[key] = msg;
+        visibleParamKeys.push(key);
+      }
+    }
+
+    return {
+      validationErrors: resolveFormErrors(
+        parsedValidation.formErrors,
+        visibleParamKeys,
+        toDisplayName,
+      ),
+      fieldValidationErrors:
+        Object.keys(visibleFieldErrors).length > 0
+          ? visibleFieldErrors
+          : EMPTY_FIELD_VALIDATION_ERRORS,
+    };
+  }, [parsedValidation, hasAttemptedSubmit, fieldLabelMap]);
+
   const commonProps = {
     formTitle: resolvedTitle,
     formContent,
@@ -279,7 +440,8 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     isPending,
     isLoading: metadataLoading,
     onFieldValueChange: handleFieldValueChange,
-    validationErrors,
+    validationErrors: visibleValidation.validationErrors,
+    fieldValidationErrors: visibleValidation.fieldValidationErrors,
   };
 
   if (!isControlled) {

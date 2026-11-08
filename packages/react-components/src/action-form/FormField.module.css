@@ -36,6 +36,10 @@
   color: var(--osdk-form-error-color);
 }
 
+.osdkFormFieldValidationError {
+  text-align: end;
+}
+
 .osdkFormFieldErrorSlot {
   min-block-size: var(--osdk-form-error-reserved-block-size);
 }
