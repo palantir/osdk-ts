@@ -21,7 +21,6 @@ import type { EntityPermission } from "../common/EntityPermission.js";
 import type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
 import type { InterfaceImplementation } from "./InterfaceImplementation.js";
 import type { ObjectPropertyTypeUserDefinition } from "./ObjectPropertyTypeUserDefinition.js";
-import type { ObjectTypeDataSecurity } from "./ObjectTypeDataSecurity.js";
 import type { ObjectTypeDatasourceDefinition } from "./ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
 
@@ -43,9 +42,4 @@ export type ObjectTypeDefinition = {
   aliases?: Array<string>;
   includeEmptyBackingDatasource?: boolean;
   permission?: EntityPermission;
-  /**
-   * Datasource marking constraint settings for this object type. See
-   * {@link ObjectTypeDataSecurity}.
-   */
-  dataSecurity?: ObjectTypeDataSecurity;
 };

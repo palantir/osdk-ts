@@ -57,7 +57,7 @@ import type {
 } from "./links/LinkType.js";
 import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
 import type { ObjectType } from "./object/ObjectType.js";
-import type { ObjectTypeDataSecurity } from "./object/ObjectTypeDataSecurity.js";
+import type { ObjectTypeDatasourceMarkingConstraints } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 
 // type -> apiName -> entity
@@ -240,7 +240,7 @@ export function buildDatasource(
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
-  dataSecurity?: ObjectTypeDataSecurity,
+  markingConstraints?: ObjectTypeDatasourceMarkingConstraints,
 ): OntologyIrMarketplaceObjectTypeDatasource {
   const needsSecurity =
     classificationMarkingGroupName !== undefined ||
@@ -251,17 +251,14 @@ export function buildDatasource(
         classificationConstraint: classificationMarkingGroupName
           ? {
               markingGroupName: classificationMarkingGroupName,
-              ...(dataSecurity?.cbac?.allowEmptyMarkings !== undefined && {
-                allowEmptyMarkings: dataSecurity.cbac.allowEmptyMarkings,
-              }),
+              allowEmptyMarkings: markingConstraints?.cbac?.allowEmptyMarkings,
             }
           : undefined,
         markingConstraint: mandatoryMarkingGroupName
           ? {
               markingGroupName: mandatoryMarkingGroupName,
-              ...(dataSecurity?.mandatory?.allowEmptyMarkings !== undefined && {
-                allowEmptyMarkings: dataSecurity.mandatory.allowEmptyMarkings,
-              }),
+              allowEmptyMarkings:
+                markingConstraints?.mandatory?.allowEmptyMarkings,
             }
           : undefined,
       }

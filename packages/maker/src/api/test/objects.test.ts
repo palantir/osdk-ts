@@ -469,7 +469,7 @@ describe("Object Types", () => {
     expect(dumpOntologyFullMetadata()).toMatchSnapshot();
   });
 
-  it("Fails if dataSecurity.mandatory is set without a MANDATORY marking property", () => {
+  it("Fails if markingConstraints.mandatory is set without a MANDATORY marking property", () => {
     expect(() => {
       defineObject({
         titlePropertyApiName: "bar",
@@ -487,14 +487,19 @@ describe("Object Types", () => {
             },
           },
         },
-        dataSecurity: { mandatory: { allowEmptyMarkings: true } },
+        datasources: [
+          {
+            type: "dataset",
+            markingConstraints: { mandatory: { allowEmptyMarkings: true } },
+          },
+        ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Object "foo" sets dataSecurity.mandatory but has no MANDATORY marking property, so no mandatory marking constraint is emitted. Add a MANDATORY marking property or remove dataSecurity.mandatory.]`,
+      `[Error: Invariant failed: Object "foo" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.]`,
     );
   });
 
-  it("Fails if dataSecurity.cbac is set without a CBAC marking property", () => {
+  it("Fails if markingConstraints.cbac is set without a CBAC marking property", () => {
     expect(() => {
       defineObject({
         titlePropertyApiName: "bar",
@@ -512,10 +517,15 @@ describe("Object Types", () => {
             },
           },
         },
-        dataSecurity: { cbac: { allowEmptyMarkings: true } },
+        datasources: [
+          {
+            type: "dataset",
+            markingConstraints: { cbac: { allowEmptyMarkings: true } },
+          },
+        ],
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Object "foo" sets dataSecurity.cbac but has no CBAC marking property, so no classification constraint is emitted. Add a CBAC marking property or remove dataSecurity.cbac.]`,
+      `[Error: Invariant failed: Object "foo" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.]`,
     );
   });
 

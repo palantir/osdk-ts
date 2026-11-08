@@ -131,15 +131,19 @@ export function defineObject(
         property.type.type === "marking" &&
         property.type.markingType === markingType,
     );
-  invariant(
-    objectDef.dataSecurity?.mandatory === undefined ||
-      hasMarkingProperty("MANDATORY"),
-    `Object "${objectDef.apiName}" sets dataSecurity.mandatory but has no MANDATORY marking property, so no mandatory marking constraint is emitted. Add a MANDATORY marking property or remove dataSecurity.mandatory.`,
-  );
-  invariant(
-    objectDef.dataSecurity?.cbac === undefined || hasMarkingProperty("CBAC"),
-    `Object "${objectDef.apiName}" sets dataSecurity.cbac but has no CBAC marking property, so no classification constraint is emitted. Add a CBAC marking property or remove dataSecurity.cbac.`,
-  );
+  for (const datasource of objectDef.datasources ?? []) {
+    if (datasource.type === "derived") continue;
+    const { markingConstraints } = datasource;
+    invariant(
+      markingConstraints?.mandatory === undefined ||
+        hasMarkingProperty("MANDATORY"),
+      `Object "${objectDef.apiName}" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.`,
+    );
+    invariant(
+      markingConstraints?.cbac === undefined || hasMarkingProperty("CBAC"),
+      `Object "${objectDef.apiName}" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.`,
+    );
+  }
 
   if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
     const nonDatasetDatasources = objectDef.datasources.filter(

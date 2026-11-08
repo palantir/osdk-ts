@@ -30,6 +30,7 @@ import type {
 import type {
   ActionType,
   InterfaceType,
+  ObjectTypeDatasourceMarkingConstraints,
   PropertyTypeTypeVector,
   SecurityConditionDefinition,
 } from "@osdk/maker";
@@ -371,9 +372,9 @@ describe("Experimental Test Suite", () => {
       },
     );
 
-    describe("dataSecurity allowEmptyMarkings", () => {
+    describe("datasource markingConstraints allowEmptyMarkings", () => {
       function defineDocument(
-        dataSecurity: Parameters<typeof defineObject>[0]["dataSecurity"],
+        markingConstraints: ObjectTypeDatasourceMarkingConstraints | undefined,
         markingTypes: Array<"CBAC" | "MANDATORY"> = ["CBAC", "MANDATORY"],
       ) {
         return defineObject({
@@ -403,15 +404,15 @@ describe("Experimental Test Suite", () => {
               },
             }),
           },
-          dataSecurity,
+          datasources: [{ type: "dataset", markingConstraints }],
         });
       }
 
       async function getDataSecurity(
-        dataSecurity: Parameters<typeof defineObject>[0]["dataSecurity"],
+        markingConstraints: ObjectTypeDatasourceMarkingConstraints | undefined,
       ) {
         const result = await defineOntologyV2("com.palantir.", () => {
-          defineDocument(dataSecurity);
+          defineDocument(markingConstraints);
         });
         const document = Object.values(
           result.ontologyIr.ontology.objectTypes,
@@ -479,43 +480,43 @@ describe("Experimental Test Suite", () => {
       });
 
       it.each([
-        ["no dataSecurity", undefined],
-        ["empty dataSecurity", {}],
+        ["no markingConstraints", undefined],
+        ["empty markingConstraints", {}],
         ["empty constraint settings", { mandatory: {}, cbac: {} }],
-      ])("omits allowEmptyMarkings with %s", async (_, input) => {
+      ])("leaves allowEmptyMarkings unset with %s", async (_, input) => {
         const dataSecurity = await getDataSecurity(input);
         expect(dataSecurity).toEqual({
           classificationConstraint: { markings: ["classificationGroup"] },
           markingConstraint: { markingIds: ["mandatoryGroup"] },
         });
-        expect(dataSecurity?.markingConstraint).not.toHaveProperty(
-          "allowEmptyMarkings",
-        );
-        expect(dataSecurity?.classificationConstraint).not.toHaveProperty(
-          "allowEmptyMarkings",
-        );
+        expect(
+          dataSecurity?.markingConstraint?.allowEmptyMarkings,
+        ).toBeUndefined();
+        expect(
+          dataSecurity?.classificationConstraint?.allowEmptyMarkings,
+        ).toBeUndefined();
       });
 
-      it("throws when dataSecurity.mandatory is set without a MANDATORY marking property", async () => {
+      it("throws when markingConstraints.mandatory is set without a MANDATORY marking property", async () => {
         await defineOntologyV2("com.palantir.", () => {
           expect(() =>
             defineDocument({ mandatory: { allowEmptyMarkings: true } }, [
               "CBAC",
             ]),
           ).toThrowErrorMatchingInlineSnapshot(
-            `[Error: Invariant failed: Object "document" sets dataSecurity.mandatory but has no MANDATORY marking property, so no mandatory marking constraint is emitted. Add a MANDATORY marking property or remove dataSecurity.mandatory.]`,
+            `[Error: Invariant failed: Object "document" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.]`,
           );
         });
       });
 
-      it("throws when dataSecurity.cbac is set without a CBAC marking property", async () => {
+      it("throws when markingConstraints.cbac is set without a CBAC marking property", async () => {
         await defineOntologyV2("com.palantir.", () => {
           expect(() =>
             defineDocument({ cbac: { allowEmptyMarkings: true } }, [
               "MANDATORY",
             ]),
           ).toThrowErrorMatchingInlineSnapshot(
-            `[Error: Invariant failed: Object "document" sets dataSecurity.cbac but has no CBAC marking property, so no classification constraint is emitted. Add a CBAC marking property or remove dataSecurity.cbac.]`,
+            `[Error: Invariant failed: Object "document" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.]`,
           );
         });
       });

@@ -24,7 +24,6 @@ import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js
 import type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
 import type { InterfaceImplementation } from "./InterfaceImplementation.js";
 import type { ObjectPropertyType } from "./ObjectPropertyType.js";
-import type { ObjectTypeDataSecurity } from "./ObjectTypeDataSecurity.js";
 import type { ObjectTypeDatasourceDefinition } from "./ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
 
@@ -40,7 +39,6 @@ export type ObjectType = OntologyEntityBase &
     datasources?: Array<ObjectTypeDatasourceDefinition>;
     includeEmptyBackingDatasource?: boolean;
     permission?: EntityPermission;
-    dataSecurity?: ObjectTypeDataSecurity;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
 
