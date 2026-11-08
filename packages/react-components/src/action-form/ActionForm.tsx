@@ -16,8 +16,15 @@
 
 import type { ActionDefinition, ActionValidationResponse } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
+import { useDebouncedCallback } from "../shared/hooks/useDebouncedCallback.js";
 import { typedReactMemo } from "../shared/typedMemo.js";
 import type {
   ActionFormProps,
@@ -65,6 +72,9 @@ function getValidationErrors(
   return errors.length > 0 ? errors : EMPTY_VALIDATION_ERRORS;
 }
 
+// TODO: Derive constraint-specific error messages from evaluatedConstraints
+// (e.g. "Must have at least 3 characters" for stringLength constraints)
+// and surface them inline next to the field, matching Foundry ActionForm behavior.
 function getParameterErrorMessage(
   constraints: ReadonlyArray<{
     type: string;
@@ -76,7 +86,7 @@ function getParameterErrorMessage(
       return c.configuredFailureMessage;
     }
   }
-  return "Invalid value";
+  return "The parameter value is invalid";
 }
 
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
@@ -174,6 +184,36 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     [parameters],
   );
 
+  const formStateRef = useRef<Record<string, unknown>>(
+    controlledFormState != null
+      ? (controlledFormState as Record<string, unknown>)
+      : {},
+  );
+  if (controlledFormState != null) {
+    formStateRef.current = controlledFormState as Record<string, unknown>;
+  }
+
+  const debouncedValidate = useDebouncedCallback(async () => {
+    if (onSubmit != null) {
+      return;
+    }
+    const formState = coerceFormState(formStateRef.current);
+    try {
+      const validation = await osdkValidateAction(formState);
+      if (validation != null) {
+        onValidationResponse?.(validation);
+        if (validation.result === "INVALID") {
+          setValidationErrors(getValidationErrors(validation));
+        } else {
+          setValidationErrors(EMPTY_VALIDATION_ERRORS);
+        }
+      }
+    } catch {
+      // Validation errors from the network are not surfaced inline;
+      // they will be caught at submit time.
+    }
+  }, 500);
+
   const handleSubmit = useCallback(
     async (rawFormState: Record<string, unknown>) => {
       const formState = coerceFormState(rawFormState) as FormState<Q>;
@@ -195,6 +235,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
         }
       } catch (e) {
         onError?.({ type: "submission", error: e });
+        throw e;
       }
     },
     [
@@ -211,6 +252,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
       setValidationErrors(EMPTY_VALIDATION_ERRORS);
+      formStateRef.current = { ...formStateRef.current, [fieldKey]: value };
       onFormStateChange?.(
         (prev) =>
           ({
@@ -218,8 +260,9 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
             [fieldKey]: value,
           }) as FormState<Q>,
       );
+      void debouncedValidate();
     },
-    [onFormStateChange],
+    [onFormStateChange, debouncedValidate],
   );
 
   const resolvedTitle = showFormTitle

@@ -124,7 +124,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   const fieldErrorEntries: FormErrorEntry[] = Object.entries(errors).map(
     ([key, entry]) => ({
       label: labelByFieldKey.get(key) ?? key,
-      message: entry?.message ?? "Invalid",
+      message: entry?.message ?? "The parameter value is invalid",
     }),
   );
   const errorEntries: ReadonlyArray<FormErrorEntry> =

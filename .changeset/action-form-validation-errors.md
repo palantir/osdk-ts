@@ -2,4 +2,4 @@
 "@osdk/react-components": minor
 ---
 
-Surface action submission criteria errors in ActionForm footer ErrorIndicator
+Fix ActionForm validation: change error message to match Foundry, fix stuck submit button after validation error, add debounced server-side validation on field change
