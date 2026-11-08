@@ -116,6 +116,8 @@ interface IFunctionMetadata {
   functions: Record<string, {
     functionRid: string;
     functionVersion: string;
+    repositoryRid: string;
+    containerHash: string;
   }>;
 }
 
@@ -458,45 +460,45 @@ export class OntologyIrToFullMetadataConverter {
 
     // Normalize to forward slashes to match TypeScript's internal path format
     const normalizedFunctionsDir = functionsDir.replace(/\\/g, "/");
+    const importedFunctionsPathPrefix = path.resolve(importedFunctionsDir)
+      + path.sep;
     const fd = new FunctionDiscoverer(
       {
         ...program,
-        // Keep declarations available to the type checker without discovering them.
+        // Keep dependencies available to the type checker without discovering them.
         getRootFileNames: () =>
-          program.getRootFileNames().filter(fileName =>
-            fileName.endsWith(".ts") && !fileName.endsWith(".d.ts")
-          ),
+          program.getRootFileNames().filter(fileName => {
+            if (!fileName.endsWith(".ts") || fileName.endsWith(".d.ts")) {
+              return false;
+            }
+            const sourcePath = path.resolve(
+              fileName.replace(/\\/g, "/"),
+            );
+            if (!sourcePath.startsWith(importedFunctionsPathPrefix)) {
+              return true;
+            }
+            // FunctionDiscoverer uses the source filename as the function name.
+            const functionName = path.basename(sourcePath, ".ts");
+            if (
+              !Object.prototype.hasOwnProperty.call(
+                importedFunctionsMetadata.functions,
+                functionName,
+              )
+            ) {
+              return false;
+            }
+            const metadata = importedFunctionsMetadata.functions[functionName];
+            return sourcePath.startsWith(
+              path.resolve(importedFunctionsDir, metadata.containerHash)
+                + path.sep,
+            );
+          }),
       },
       projectDir,
       normalizedFunctionsDir,
       entityMetadataMapping,
     );
     const functions = fd.discover();
-    const importedFunctionsPathPrefix = path.resolve(importedFunctionsDir)
-      + path.sep;
-    // Imported sources can include transitive dependencies that are not imported functions.
-    functions.discoveredFunctions = functions.discoveredFunctions.filter(
-      func => {
-        const locator = func.locator.typescript;
-        if (func.locator.type !== "typescript" || !locator?.filePath) {
-          return true;
-        }
-        const sourcePath = path.resolve(
-          projectDir,
-          locator.filePath.replace(/\\/g, "/"),
-        );
-        return !sourcePath.startsWith(importedFunctionsPathPrefix)
-          || Object.prototype.hasOwnProperty.call(
-            importedFunctionsMetadata.functions,
-            locator.functionName,
-          );
-      },
-    );
-
-    if (irOutputFile) {
-      fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
-      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
-    }
 
     const tsFunctions = functions.discoveredFunctions.filter(
       (func: IDiscoveredFunction) => func.locator.type === "typescript",
@@ -527,6 +529,7 @@ export class OntologyIrToFullMetadataConverter {
     }
 
     if (irOutputFile) {
+      fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
       fs.writeFileSync(irOutputFile, JSON.stringify(functions, null, 2));
     }
 
