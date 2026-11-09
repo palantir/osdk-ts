@@ -70,8 +70,18 @@ const metadataWithMissingInterface = (): OntologyFullMetadata => ({
       linkTypes: [],
       implementsInterfaces: ["com.example.Present", "com.example.Missing"],
       implementsInterfaces2: {
-        "com.example.Present": { properties: {}, propertiesV2: {}, links: {} },
-        "com.example.Missing": { properties: {}, propertiesV2: {}, links: {} },
+        "com.example.Present": {
+          properties: {},
+          propertiesV2: {},
+          links: {},
+          actionTypes: {},
+        },
+        "com.example.Missing": {
+          properties: {},
+          propertiesV2: {},
+          links: {},
+          actionTypes: {},
+        },
       },
       sharedPropertyTypeMapping: {},
     },
