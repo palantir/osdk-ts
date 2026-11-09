@@ -32,7 +32,7 @@ export const WORKSHOP_EMBED_QUERY_PARAM = "workshopEmbed";
 export const WORKSHOP_EMBED_QUERY_VALUE = "1";
 
 // @public
-export type WorkshopModuleConnectHandler<TVariables extends WorkshopVariableMap = WorkshopVariableMap> = (connection: WorkshopModuleConnection<TVariables>) => void | (() => void);
+export type WorkshopModuleConnectHandler<TVariables extends WorkshopVariableMap = WorkshopVariableMap> = (connection: WorkshopModuleHostConnection<TVariables>) => void | (() => void);
 
 // @public
 export interface WorkshopModuleConnection<TVariables extends WorkshopVariableMap = WorkshopVariableMap> {
@@ -44,9 +44,23 @@ export interface WorkshopModuleConnection<TVariables extends WorkshopVariableMap
 }
 
 // @public
+export interface WorkshopModuleHostConnection<TVariables extends WorkshopVariableMap = WorkshopVariableMap> extends WorkshopModuleConnection<TVariables> {
+    	setModuleSchema: (schema: WorkshopModuleSchema) => void;
+}
+
+// @public
+export type WorkshopModuleSchema = Readonly<Record<string, WorkshopVariableSchema>>;
+
+// @public
 export type WorkshopVariableMap = {
     	[externalId: string]: WorkshopVariableValue
 };
+
+// @public
+export interface WorkshopVariableSchema {
+    	readonly isList: false;
+    	readonly type: "string" | "number" | "boolean";
+}
 
 // @public
 export type WorkshopVariableValue = string | number | boolean | null;
