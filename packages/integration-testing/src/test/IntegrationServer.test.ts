@@ -18,10 +18,65 @@ import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { createIntegrationServer } from "../createIntegrationServer.js";
 import { EMPTY_ONTOLOGY_METADATA } from "./emptyOntologyMetadata.js";
+
+/**
+ * Metadata for a single object type that claims two interfaces, only one of
+ * which — `com.example.Present` — is actually defined here.
+ */
+const metadataWithMissingInterface = (): OntologyFullMetadata => ({
+  ...EMPTY_ONTOLOGY_METADATA,
+  interfaceTypes: {
+    "com.example.Present": {
+      rid: "ri.ontology.main.interface.present",
+      apiName: "com.example.Present",
+      displayName: "Present",
+      properties: {},
+      allProperties: {},
+      propertiesV2: {},
+      allPropertiesV2: {},
+      extendsInterfaces: [],
+      allExtendsInterfaces: [],
+      implementedByObjectTypes: ["Todo"],
+      links: {},
+      allLinks: {},
+    },
+  },
+  objectTypes: {
+    Todo: {
+      objectType: {
+        apiName: "Todo",
+        displayName: "Todo",
+        pluralDisplayName: "Todos",
+        status: "ACTIVE",
+        icon: { type: "blueprint", name: "document", color: "blue" },
+        primaryKey: "id",
+        titleProperty: "id",
+        properties: {
+          id: {
+            dataType: { type: "string" },
+            rid: "ri.a.b.property.id",
+            typeClasses: [],
+          },
+        },
+        rid: "ri.ontology.main.object-type.todo",
+        aliases: [],
+        datasources: [],
+      },
+      linkTypes: [],
+      implementsInterfaces: ["com.example.Present", "com.example.Missing"],
+      implementsInterfaces2: {
+        "com.example.Present": { properties: {}, propertiesV2: {}, links: {} },
+        "com.example.Missing": { properties: {}, propertiesV2: {}, links: {} },
+      },
+      sharedPropertyTypeMapping: {},
+    },
+  },
+});
 
 /**
  * Creating a server only lays out its directory — nothing is spawned until
@@ -77,6 +132,27 @@ describe("createIntegrationServer", () => {
         readFile(join(projectPath, run, "ontology-metadata.json")),
       ).resolves.toBeDefined();
     }
+  });
+
+  it("drops interfaces an object claims that the metadata never defines", async () => {
+    // A caller can hand us metadata whose object types reference an interface
+    // that was never imported alongside them; the ontology server rejects the
+    // dangling reference, so it has to be stripped before we write the file.
+    await createIntegrationServer({
+      metadata: metadataWithMissingInterface(),
+      projectPath,
+    });
+
+    const [run] = await runDirs();
+    const written = JSON.parse(
+      await readFile(join(projectPath, run, "ontology-metadata.json"), "utf-8"),
+    ) as OntologyFullMetadata;
+
+    const todo = written.objectTypes.Todo;
+    expect(todo.implementsInterfaces).toEqual(["com.example.Present"]);
+    expect(Object.keys(todo.implementsInterfaces2)).toEqual([
+      "com.example.Present",
+    ]);
   });
 
   it("removes only its own run directory when stopped", async () => {
