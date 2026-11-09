@@ -18,8 +18,9 @@ import type { ObjectSet } from "@osdk/api";
 import { Employee, Office } from "@osdk/client.test.ontology";
 import type { DataType } from "@osdk/foundry.agents";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -432,6 +433,63 @@ describe(fromDataValueAgents, () => {
       });
     },
   );
+
+  describe.each([
+    new Error("Ontology unavailable"),
+    new PalantirApiError(
+      "Ontology unavailable",
+      "PermissionDenied",
+      "PERMISSION_DENIED",
+      "Access denied",
+      403,
+      "error-instance-id",
+      { resource: "Employee" },
+    ),
+  ])("ontology lookup failures (%s)", (cause) => {
+    it.each([
+      {
+        name: "object",
+        dataType: employeeType,
+        value: () => employeeReference(50030),
+        target: "an object identifier",
+      },
+      {
+        name: "object set",
+        dataType: employeeSetType,
+        value: () => "set-rid",
+        target: "an object set",
+      },
+    ])(
+      "reports $name ontology lookup failures with the field path and cause",
+      async ({ dataType, value, target }) => {
+        const ctx: MinimalClient = {
+          ...createMinimalClient(
+            { ontologyRid },
+            fauxFoundry.baseUrl,
+            () => Promise.resolve("token"),
+            {},
+          ),
+          fetch: vi.fn<typeof fetch>().mockRejectedValue(cause),
+        };
+        const result = fromDataValueAgents({ employees: [value()] }, ctx, {
+          type: "struct",
+          fields: [
+            {
+              name: "employees",
+              dataType: { type: "list", elementType: dataType },
+            },
+          ],
+        });
+
+        await expect(result).rejects.toBeInstanceOf(cause.constructor);
+        await expect(result).rejects.toMatchObject({
+          ...cause,
+          message: `Failed to convert agent value "employees[0]" to ${target}`,
+          cause,
+        });
+      },
+    );
+  });
 
   it.each([
     {
