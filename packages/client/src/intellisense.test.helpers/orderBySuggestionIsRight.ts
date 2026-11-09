@@ -39,3 +39,38 @@ void client(Employee).fetchPage({
   // @ts-expect-error
   $orderBy: "",
 });
+
+void client(Employee).fetchPage({
+  $orderBy: {},
+});
+
+void client(Employee).fetchPageWithErrors({
+  $orderBy: {},
+});
+
+void client(Employee).asyncIter({
+  $orderBy: {},
+});
+
+const nearestNeighbors = client(Employee).nearestNeighbors(
+  "coffee",
+  5,
+  "skillSetEmbedding",
+);
+
+void nearestNeighbors.fetchPage({
+  $orderBy: {},
+});
+
+void nearestNeighbors.fetchPageWithErrors({
+  $orderBy: {},
+});
+
+void nearestNeighbors.asyncIter({
+  $orderBy: {},
+});
+
+void client(Employee).fetchPage({
+  // @ts-expect-error
+  $orderBy: { fullName: "" },
+});

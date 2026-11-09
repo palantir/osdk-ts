@@ -180,7 +180,7 @@ describe("intellisense", () => {
       offset: 15,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    expect(resp.body?.entries.map((e) => e.name)).toEqual([
+    const propertyNames = [
       "bonusHistory",
       "class",
       "employeeId",
@@ -195,6 +195,31 @@ describe("intellisense", () => {
       "skillSet",
       "skillSetEmbedding",
       "startDate",
+    ];
+    expect(resp.body?.entries.map((e) => e.name)).toEqual(propertyNames);
+
+    for (const line of [44, 48, 52, 62, 66, 70]) {
+      const { resp: properties } = await tsServer.sendCompletionsRequest({
+        file: intellisenseFilePath,
+        line,
+        offset: 14,
+        triggerKind: ts.CompletionTriggerKind.Invoked,
+      });
+      expect(properties.body?.isMemberCompletion).toBe(true);
+      expect(properties.body?.entries.map((e) => e.name)).toEqual(
+        propertyNames,
+      );
+    }
+
+    const { resp: directions } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 75,
+      offset: 26,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(directions.body?.entries.map((e) => e.name)).toEqual([
+      "asc",
+      "desc",
     ]);
 
     const { resp: resp2 } = await tsServer.sendQuickInfoRequest({
