@@ -18,11 +18,28 @@ import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { IntervalRule } from "./IntervalRule.js";
 import type { Just } from "./Just.js";
 
+interface PhoneticSearchOptions {
+  term: string;
+  phoneticSearch?: boolean;
+}
+
+type FuzzyOrPhoneticSearchOptions =
+  | {
+      term: string;
+      fuzzySearch?: boolean;
+      phoneticSearch?: false;
+    }
+  | {
+      term: string;
+      fuzzySearch?: false;
+      phoneticSearch?: boolean;
+    };
+
 interface StringFilterOptions extends BaseFilterOptions<string> {
-  $startsWith: string;
-  $containsAllTermsInOrder: string;
-  $containsAnyTerm: string | { term: string; fuzzySearch?: boolean };
-  $containsAllTerms: string | { term: string; fuzzySearch?: boolean };
+  $startsWith: string | PhoneticSearchOptions;
+  $containsAllTermsInOrder: string | PhoneticSearchOptions;
+  $containsAnyTerm: string | FuzzyOrPhoneticSearchOptions;
+  $containsAllTerms: string | FuzzyOrPhoneticSearchOptions;
   $interval: IntervalRule;
   /**
    * Matches any of the provided values. If an empty array is provided, the filter will match all objects.

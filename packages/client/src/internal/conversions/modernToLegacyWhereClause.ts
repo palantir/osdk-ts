@@ -289,18 +289,44 @@ function handleWherePair(
   }
 
   if (firstKey === "$containsAllTerms" || firstKey === "$containsAnyTerm") {
+    const searchOptions = filter[firstKey];
+    invariant(
+      typeof searchOptions === "string" ||
+        !(
+          searchOptions.fuzzySearch === true &&
+          searchOptions.phoneticSearch === true
+        ),
+      "fuzzySearch and phoneticSearch cannot both be true.",
+    );
     return {
       type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
       ...(propertyIdentifier != null && { propertyIdentifier }),
       field,
       value:
-        typeof filter[firstKey] === "string"
-          ? filter[firstKey]
-          : filter[firstKey].term,
+        typeof searchOptions === "string" ? searchOptions : searchOptions.term,
       fuzzy:
-        typeof filter[firstKey] === "string"
+        typeof searchOptions === "string"
           ? false
-          : (filter[firstKey].fuzzySearch ?? false),
+          : (searchOptions.fuzzySearch ?? false),
+      ...(typeof searchOptions !== "string" &&
+        searchOptions.phoneticSearch === true && {
+          analyzerSelection: "PHONETIC_ANALYZER" as const,
+        }),
+    };
+  }
+
+  if (firstKey === "$startsWith" || firstKey === "$containsAllTermsInOrder") {
+    const searchOptions = filter[firstKey];
+    return {
+      type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      value:
+        typeof searchOptions === "string" ? searchOptions : searchOptions.term,
+      ...(typeof searchOptions !== "string" &&
+        searchOptions.phoneticSearch === true && {
+          analyzerSelection: "PHONETIC_ANALYZER" as const,
+        }),
     };
   }
 

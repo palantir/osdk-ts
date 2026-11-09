@@ -1,5 +1,26 @@
 # @osdk/maker-experimental
 
+## 0.82.0
+
+### Minor Changes
+
+- e837c76: Default decimal properties to precision 5 and scale 2 when unspecified, matching OMS defaults.
+- 0f211db: defineFunctionBackedAction now accepts additional simple configurations.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [e837c76]
+- Updated dependencies [ff00439]
+- Updated dependencies [ef3e772]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/maker@0.86.0
+  - @osdk/generator-converters.preview@0.61.0
+  - @osdk/client.unstable@2.87.0
+  - @osdk/generator-converters.ontologyir@2.87.0
+  - @osdk/maker-import@0.51.0
+
 ## 0.81.0
 
 ### Minor Changes

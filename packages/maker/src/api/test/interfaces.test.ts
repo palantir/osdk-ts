@@ -149,6 +149,36 @@ describe("Interfaces", () => {
       ).toBe(true);
     });
 
+    it("Decimal IDPs default precision and scale", () => {
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          bare: { type: "decimal" },
+          partial: { type: { type: "decimal", precision: 10 } },
+        },
+      });
+
+      const props =
+        dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.bar"]
+          .interfaceType.propertiesV3;
+      const typeOf = (apiName: string) => {
+        const prop = props[apiName];
+        if (prop.type !== "interfaceDefinedPropertyType") {
+          throw new Error("expected interfaceDefinedPropertyType");
+        }
+        return prop.interfaceDefinedPropertyType.type;
+      };
+      expect(typeOf("bare")).toEqual({
+        type: "decimal",
+        decimal: { precision: 5, scale: 2 },
+      });
+      expect(typeOf("partial")).toEqual({
+        type: "decimal",
+        decimal: { precision: 10, scale: 2 },
+      });
+    });
+
     it("doesn't let you make a vector IDP an array", () => {
       defineInterface({
         apiName: "bar",

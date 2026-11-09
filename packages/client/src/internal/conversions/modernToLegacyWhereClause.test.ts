@@ -902,6 +902,128 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
+
+      it("converts phonetic text search options", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>(
+            {
+              string: {
+                $startsWith: { term: "Jon", phoneticSearch: true },
+              },
+            },
+            objectTypeWithAllPropertyTypes,
+          ),
+        ).toMatchInlineSnapshot(`
+          {
+            "analyzerSelection": "PHONETIC_ANALYZER",
+            "field": "string",
+            "type": "startsWith",
+            "value": "Jon",
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>(
+            {
+              string: {
+                $containsAllTermsInOrder: {
+                  term: "Jon Smith",
+                  phoneticSearch: true,
+                },
+              },
+            },
+            objectTypeWithAllPropertyTypes,
+          ),
+        ).toMatchInlineSnapshot(`
+          {
+            "analyzerSelection": "PHONETIC_ANALYZER",
+            "field": "string",
+            "type": "containsAllTermsInOrder",
+            "value": "Jon Smith",
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>(
+            {
+              string: {
+                $containsAnyTerm: { term: "Jon", phoneticSearch: true },
+              },
+            },
+            objectTypeWithAllPropertyTypes,
+          ),
+        ).toMatchInlineSnapshot(`
+          {
+            "analyzerSelection": "PHONETIC_ANALYZER",
+            "field": "string",
+            "fuzzy": false,
+            "type": "containsAnyTerm",
+            "value": "Jon",
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>(
+            {
+              string: {
+                $containsAllTerms: {
+                  term: "Jon Smith",
+                  fuzzySearch: false,
+                  phoneticSearch: true,
+                },
+              },
+            },
+            objectTypeWithAllPropertyTypes,
+          ),
+        ).toMatchInlineSnapshot(`
+          {
+            "analyzerSelection": "PHONETIC_ANALYZER",
+            "field": "string",
+            "fuzzy": false,
+            "type": "containsAllTerms",
+            "value": "Jon Smith",
+          }
+        `);
+      });
+
+      it("omits analyzerSelection when phonetic search is disabled", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>(
+            {
+              string: {
+                $startsWith: { term: "Jon", phoneticSearch: false },
+              },
+            },
+            objectTypeWithAllPropertyTypes,
+          ),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "string",
+            "type": "startsWith",
+            "value": "Jon",
+          }
+        `);
+      });
+
+      it("rejects fuzzy and phonetic search when both are enabled", () => {
+        const whereClause = {
+          string: {
+            $containsAnyTerm: {
+              term: "Jon",
+              fuzzySearch: true,
+              phoneticSearch: true,
+            },
+          },
+        } as unknown as WhereClause<ObjAllProps>;
+
+        expect(() =>
+          modernToLegacyWhereClause(
+            whereClause,
+            objectTypeWithAllPropertyTypes,
+          ),
+        ).toThrowError("fuzzySearch and phoneticSearch cannot both be true.");
+      });
+
       it("converts $interval $match", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>(

@@ -2,4 +2,4 @@
 "@osdk/workshop-embed": minor
 ---
 
-Create the experimental Workshop embed package.
+Add bidirectional scalar variable messages with optional compile-time variable types to the shared Workshop embed protocol.
