@@ -1,5 +1,17 @@
 # @osdkkit/react
 
+## 2.88.0
+
+### Patch Changes
+
+- Updated dependencies [358fbfa]
+- Updated dependencies [1d0b110]
+- Updated dependencies [eb1fc8f]
+- Updated dependencies [e1ca298]
+  - @osdk/client@2.88.0
+  - @osdk/api@2.88.0
+  - @osdk/aip-core@0.13.0
+
 ## 2.87.0
 
 ### Minor Changes
