@@ -198,7 +198,7 @@ describe("intellisense", () => {
     ];
     expect(resp.body?.entries.map((e) => e.name)).toEqual(propertyNames);
 
-    for (const line of [44, 48, 52, 62, 66, 70]) {
+    for (const line of [44, 48, 52, 62, 66, 70, 101]) {
       const { resp: properties } = await tsServer.sendCompletionsRequest({
         file: intellisenseFilePath,
         line,
@@ -208,6 +208,20 @@ describe("intellisense", () => {
       expect(properties.body?.isMemberCompletion).toBe(true);
       expect(properties.body?.entries.map((e) => e.name)).toEqual(
         propertyNames,
+      );
+    }
+
+    for (const line of [83, 87, 91, 96]) {
+      const { resp: properties } = await tsServer.sendCompletionsRequest({
+        file: intellisenseFilePath,
+        line,
+        offset: line === 96 ? 15 : 14,
+        triggerKind: ts.CompletionTriggerKind.Invoked,
+      });
+      expect(properties.body?.isMemberCompletion).toBe(true);
+      expect(properties.body?.entries).toHaveLength(propertyNames.length + 1);
+      expect(properties.body?.entries.map((e) => e.name)).toEqual(
+        expect.arrayContaining([...propertyNames, "leadCount"]),
       );
     }
 
