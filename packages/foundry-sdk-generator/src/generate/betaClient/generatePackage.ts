@@ -46,6 +46,7 @@ export async function generatePackage(
     ontologyJsonOnly: boolean;
     packageRid: string | undefined;
     branch: string | undefined;
+    ontologyVersion?: string;
     exportOntologyMetadata: boolean | undefined;
   },
   logger: SlsLogger = new SlsLogger(),
@@ -102,7 +103,7 @@ export async function generatePackage(
     beta: options.beta,
     packageRid: options.packageRid,
     branch: options.branch,
-    ontologyVersion: ontologyInfo.ontologyVersion,
+    ontologyVersion: options.ontologyVersion,
     exportOntologyMetadata: options.exportOntologyMetadata ?? false,
   });
 

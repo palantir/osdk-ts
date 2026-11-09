@@ -48,6 +48,7 @@ describe("generatePackageJson", () => {
       beta: true,
       packageRid: "ri.foundry.main.package.dead-beef",
       branch: "master",
+      ontologyVersion: "0000000c-aaaa-bbbb-cccc-ddddeeeeffff",
       exportOntologyMetadata: true,
     });
 
@@ -60,7 +61,8 @@ describe("generatePackageJson", () => {
             "types": "./cjs/index.d.ts",
             "osdk": {
                 "packageRid": "ri.foundry.main.package.dead-beef",
-                "branch": "master"
+                "branch": "master",
+                "ontologyVersion": "0000000c-aaaa-bbbb-cccc-ddddeeeeffff"
             },
             "exports": {
                 ".": {
@@ -122,25 +124,5 @@ describe("generatePackageJson", () => {
     const written = await readFile(join(packagePath, "package.json"), "utf-8");
     expect(Object.keys(JSON.parse(written).exports)).toEqual(["."]);
     expect(written).not.toContain("experimental/ontology-metadata");
-  });
-
-  it("records the ontology version in the generated package", async () => {
-    const ontologyVersion = "0000000c-aaaa-bbbb-cccc-ddddeeeeffff";
-    await generatePackageJson({
-      packageName: "@my/generated-sdk",
-      packageVersion: "1.2.3",
-      packagePath,
-      dependencies: [],
-      peerDependencies: [],
-      beta: true,
-      packageRid: "ri.foundry.main.package.dead-beef",
-      ontologyVersion,
-      exportOntologyMetadata: false,
-    });
-
-    const written = JSON.parse(
-      await readFile(join(packagePath, "package.json"), "utf-8"),
-    );
-    expect(written.osdk.ontologyVersion).toBe(ontologyVersion);
   });
 });
