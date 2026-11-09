@@ -36,6 +36,7 @@ export async function generatePackageJson(options: {
   beta: boolean;
   packageRid?: string;
   branch?: string;
+  ontologyVersion?: string;
   exportOntologyMetadata: boolean;
 }): Promise<{
   name: string;
@@ -54,7 +55,11 @@ export async function generatePackageJson(options: {
     scripts: options.scripts,
     main: "./cjs/index.js",
     types: "./cjs/index.d.ts",
-    osdk: { packageRid: options.packageRid, branch: options.branch },
+    osdk: {
+      packageRid: options.packageRid,
+      branch: options.branch,
+      ontologyVersion: options.ontologyVersion,
+    },
     exports: {
       ".": {
         script: {

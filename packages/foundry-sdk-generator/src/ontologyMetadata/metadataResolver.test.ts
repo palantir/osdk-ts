@@ -23,10 +23,21 @@ import {
 } from "@osdk/shared.test";
 import { http, HttpResponse } from "msw";
 import type { SetupServerApi } from "msw/node";
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
 describe("Load Ontologies Metadata", () => {
+  const ontologyRid =
+    "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361";
+  const currentOntologyVersion = "0000000c-aaaa-bbbb-cccc-ddddeeeeffff";
   let ontologyMetadataResolver: OntologyMetadataResolver;
   let apiServer: SetupServerApi;
 
@@ -42,6 +53,154 @@ describe("Load Ontologies Metadata", () => {
     return () => {
       testSetup.apiServer.close();
     };
+  });
+
+  afterEach(() => {
+    apiServer.resetHandlers();
+  });
+
+  beforeEach(() => {
+    apiServer.use(
+      http.post(
+        "https://stack.palantir.com/ontology-metadata/api/ontology/ontology/ontologies/load",
+        authHandlerMiddleware(() => {
+          return HttpResponse.json({
+            ontology: {
+              apiName: "default-ontology",
+              currentOntologyVersion,
+              defaultBranchRid:
+                "ri.ontology.main.branch.122438ac-a6b7-46e9-825f-6c911ffff857",
+              description: "The default ontology",
+              displayName: "Ontology",
+            },
+          });
+        }),
+      ),
+    );
+  });
+
+  describe("ontology version resolution", () => {
+    it("returns the ontology version when no version is requested", async () => {
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        { objectTypesApiNamesToLoad: ["Employee"] },
+      );
+
+      expect(result.isOk()).toBe(true);
+      if (result.isErr()) {
+        throw new Error("Expected ontology metadata to load");
+      }
+      expect(result.value.ontologyVersion).toBe(currentOntologyVersion);
+    });
+
+    it("returns the ontology version when it remains current", async () => {
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        { objectTypesApiNamesToLoad: ["Employee"] },
+        new Map(),
+        undefined,
+        currentOntologyVersion,
+      );
+
+      expect(result.isOk()).toBe(true);
+      if (result.isErr()) {
+        throw new Error("Expected ontology metadata to load");
+      }
+      expect(result.value.ontologyVersion).toBe(currentOntologyVersion);
+    });
+
+    it("rejects a version that is no longer current", async () => {
+      const requestedOntologyVersion = "0000000c-1111-2222-3333-444444444444";
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        {},
+        new Map(),
+        undefined,
+        requestedOntologyVersion,
+      );
+
+      expect(result.isErr()).toBe(true);
+      if (result.isOk()) {
+        throw new Error("Expected stale ontology version to be rejected");
+      }
+      expect(errorDetails(result.error)).toEqual([{
+        message: "The requested ontology version is not current",
+        params: {
+          currentOntologyVersion,
+          ontologyVersion: requestedOntologyVersion,
+        },
+        unsafeParams: undefined,
+      }]);
+    });
+
+    it("rejects metadata when the ontology changes while loading", async () => {
+      const updatedOntologyVersion = "0000000c-1111-2222-3333-555555555555";
+      let versionRequestCount = 0;
+      apiServer.use(
+        http.post(
+          "https://stack.palantir.com/ontology-metadata/api/ontology/ontology/ontologies/load",
+          authHandlerMiddleware(() => {
+            versionRequestCount++;
+            return HttpResponse.json({
+              ontology: {
+                apiName: "default-ontology",
+                currentOntologyVersion: versionRequestCount === 1
+                  ? currentOntologyVersion
+                  : updatedOntologyVersion,
+                defaultBranchRid:
+                  "ri.ontology.main.branch.122438ac-a6b7-46e9-825f-6c911ffff857",
+                description: "The default ontology",
+                displayName: "Ontology",
+              },
+            });
+          }),
+        ),
+      );
+
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        { objectTypesApiNamesToLoad: ["Employee"] },
+        new Map(),
+        undefined,
+        currentOntologyVersion,
+      );
+
+      expect(result.isErr()).toBe(true);
+      if (result.isOk()) {
+        throw new Error("Expected ontology change to be rejected");
+      }
+      expect(errorDetails(result.error)).toEqual([{
+        message: "The ontology changed while metadata was loading",
+        params: {
+          currentOntologyVersion: updatedOntologyVersion,
+          ontologyVersion: currentOntologyVersion,
+        },
+        unsafeParams: undefined,
+      }]);
+    });
+
+    it("rejects ontology version pinning on a branch", async () => {
+      const branch =
+        "ri.ontology.main.branch.122438ac-a6b7-46e9-825f-6c911ffff857";
+      const result = await ontologyMetadataResolver.getWireOntologyDefinition(
+        ontologyRid,
+        {},
+        new Map(),
+        branch,
+        currentOntologyVersion,
+      );
+
+      expect(result.isErr()).toBe(true);
+      if (result.isOk()) {
+        throw new Error("Expected branch and ontology version to conflict");
+      }
+      expect(errorDetails(result.error)).toEqual([{
+        message:
+          "Ontology version pinning is not supported together with a branch",
+        params: { branch, ontologyVersion: currentOntologyVersion },
+        unsafeParams: undefined,
+      }]);
+    });
   });
 
   describe("request trace propagation", () => {
@@ -65,15 +224,20 @@ describe("Load Ontologies Metadata", () => {
               { objectTypesApiNamesToLoad: ["Employee"] },
             );
           expect(result.isOk()).toBe(true);
-          expect(requests.map(request => request.method)).toEqual([
+          const metadataRequests = requests.filter(request =>
+            !new URL(request.url).pathname.endsWith("/ontologies/load")
+          );
+          expect(metadataRequests.map(request => request.method)).toEqual([
             "GET",
             "POST",
           ]);
-          expect(new URL(requests[1].url).pathname).toMatch(/\/metadata$/);
-          const spanIds = requests.map(request =>
+          expect(new URL(metadataRequests[1].url).pathname).toMatch(
+            /\/metadata$/,
+          );
+          const spanIds = metadataRequests.map(request =>
             request.headers.get("X-B3-SpanId")
           );
-          for (const request of requests) {
+          for (const request of metadataRequests) {
             expect(request.headers.get("X-B3-TraceId")).toBe(traceId || null);
             const spanId = request.headers.get("X-B3-SpanId");
             if (traceId) {
@@ -90,9 +254,9 @@ describe("Load Ontologies Metadata", () => {
             expect(request.headers.has("X-B3-Sampled")).toBe(false);
           }
           if (traceId) {
-            expect(new Set(spanIds).size).toBe(requests.length);
+            expect(new Set(spanIds).size).toBe(metadataRequests.length);
           }
-          expect(await requests[1].clone().json()).toMatchObject({
+          expect(await metadataRequests[1].clone().json()).toMatchObject({
             objectTypes: ["Employee"],
           });
         } finally {
@@ -126,6 +290,7 @@ describe("Load Ontologies Metadata", () => {
         "agentVersionReferences": Map {},
         "externalInterfaces": Map {},
         "externalObjects": Map {},
+        "ontologyVersion": "0000000c-aaaa-bbbb-cccc-ddddeeeeffff",
         "queryVersionReferences": Map {},
         "requestedMetadata": {
           "actionTypes": {},

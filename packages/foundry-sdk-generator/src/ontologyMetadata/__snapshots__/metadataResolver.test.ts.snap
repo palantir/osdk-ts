@@ -5,6 +5,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
   "agentVersionReferences": Map {},
   "externalInterfaces": Map {},
   "externalObjects": Map {},
+  "ontologyVersion": "0000000c-aaaa-bbbb-cccc-ddddeeeeffff",
   "queryVersionReferences": Map {},
   "requestedMetadata": {
     "actionTypes": {
@@ -616,6 +617,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
   "agentVersionReferences": Map {},
   "externalInterfaces": Map {},
   "externalObjects": Map {},
+  "ontologyVersion": "0000000c-aaaa-bbbb-cccc-ddddeeeeffff",
   "queryVersionReferences": Map {},
   "requestedMetadata": {
     "actionTypes": {
@@ -1011,6 +1013,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
   "agentVersionReferences": Map {},
   "externalInterfaces": Map {},
   "externalObjects": Map {},
+  "ontologyVersion": "0000000c-aaaa-bbbb-cccc-ddddeeeeffff",
   "queryVersionReferences": Map {},
   "requestedMetadata": {
     "actionTypes": {

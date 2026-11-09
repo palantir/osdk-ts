@@ -42,6 +42,7 @@ export interface generatePackageCommandArgs {
   sdkPackages?: Map<string, string>;
   packageRid?: string;
   branch?: string;
+  ontologyVersion?: string;
   experimentalOntologyMetadata?: boolean;
 }
 
@@ -183,6 +184,14 @@ export class GeneratePackageCommand implements
         defaultDescription:
           `By default, no arguments will load data from the main branch of the ontology you selected`,
       })
+      .option("ontologyVersion", {
+        type: "string",
+        demandOption: false,
+        description:
+          "The ontology version that must remain current while metadata is loaded. Generation fails if the ontology is at a different version or changes while metadata is loading.",
+        default: undefined,
+      })
+      .conflicts("ontologyVersion", "branch")
       .options("sdkPackages", {
         array: true,
         string: true,
@@ -262,6 +271,7 @@ export class GeneratePackageCommand implements
               },
               packageInfo,
               args.branch,
+              args.ontologyVersion,
             ),
           { unsafeParams: { ontologyRid } },
         );
@@ -285,6 +295,12 @@ export class GeneratePackageCommand implements
 
         // Narrowing doesn't carry into the closure below, so extract here.
         const ontologyInfo = wireOntologyDefinition.value;
+
+        if (ontologyInfo.ontologyVersion != null) {
+          logger.info("Ontology version resolved.", {
+            params: { ontologyVersion: ontologyInfo.ontologyVersion },
+          });
+        }
 
         await logDuration(logger, "Rendering OSDK", () =>
           generatePackage(

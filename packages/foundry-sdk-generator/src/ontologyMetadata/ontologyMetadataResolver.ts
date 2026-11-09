@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { loadOntologyInformation } from "@osdk/client.unstable";
 import type { Sdk, SdkPackage } from "@osdk/client.unstable.tpsa";
 import { getSdk, getSdkPackage } from "@osdk/client.unstable.tpsa";
 import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
@@ -65,6 +66,7 @@ type PackageInfo = Map<string, {
 
 export interface OntologyInfo {
   requestedMetadata: WireOntologyDefinition;
+  ontologyVersion?: string;
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
   queryVersionReferences: ReadonlyMap<string, string>;
@@ -94,6 +96,33 @@ export class OntologyMetadataResolver {
       undefined,
       traceHeaders,
     );
+  }
+
+  private getConjureContext(servicePath: string) {
+    const baseUrl = this.stackName.match(/^https?:\/\//)
+      ? this.stackName
+      : `https://${this.stackName}`;
+    return {
+      baseUrl: baseUrl.replace(/\/+$/, ""),
+      servicePath,
+      tokenProvider: () => Promise.resolve(this.#authToken),
+    };
+  }
+
+  private async getCurrentOntologyVersion(ontologyRid: string) {
+    const response = await loadOntologyInformation(
+      this.getConjureContext("/ontology-metadata/api"),
+      { ontologyRid },
+    );
+    const ontologyInformation = response.ontology;
+    if (ontologyInformation == null) {
+      throw new GeneratorError(
+        "Unable to find the specified Ontology while resolving its version",
+        undefined,
+        { ontologyRid },
+      );
+    }
+    return ontologyInformation.currentOntologyVersion;
   }
 
   private filterMetadataByApiName(
@@ -222,9 +251,20 @@ export class OntologyMetadataResolver {
     },
     extPackageInfo: PackageInfo = new Map(),
     branch: string | undefined = undefined,
+    ontologyVersion: string | undefined = undefined,
   ): Promise<
     Result<OntologyInfo, GeneratorError[]>
   > {
+    if (branch != null && ontologyVersion != null) {
+      return Result.err([
+        new GeneratorError(
+          "Ontology version pinning is not supported together with a branch",
+          undefined,
+          { branch, ontologyVersion },
+        ),
+      ]);
+    }
+
     let ontology: Ontology;
 
     const { OntologiesV2 } = await import("@osdk/foundry.ontologies");
@@ -241,6 +281,39 @@ export class OntologyMetadataResolver {
           { error: JSON.stringify(e) },
         ),
       ]);
+    }
+
+    let resolvedOntologyVersion: string | undefined;
+    if (branch == null) {
+      try {
+        resolvedOntologyVersion = await this.getCurrentOntologyVersion(
+          ontology.rid,
+        );
+        if (
+          ontologyVersion != null
+          && resolvedOntologyVersion !== ontologyVersion
+        ) {
+          return Result.err([
+            new GeneratorError(
+              "The requested ontology version is not current",
+              undefined,
+              {
+                currentOntologyVersion: resolvedOntologyVersion,
+                ontologyVersion,
+              },
+            ),
+          ]);
+        }
+      } catch (error) {
+        return Result.err([
+          error instanceof GeneratorError
+            ? error
+            : new GeneratorError(
+              "Unable to resolve the current ontology version",
+              { error: String(error) },
+            ),
+        ]);
+      }
     }
 
     const agents: WireOntologyDefinition["agents"] = {};
@@ -412,13 +485,17 @@ export class OntologyMetadataResolver {
       if (validData.isErr()) {
         return Result.err(validData.error);
       }
-      return Result.ok({
-        requestedMetadata: { ...filteredFullMetadata, agents },
-        agentVersionReferences,
-        externalInterfaces,
-        externalObjects,
-        queryVersionReferences: new Map(),
-      });
+      return await this.validateOntologyVersion(
+        {
+          requestedMetadata: { ...filteredFullMetadata, agents },
+          agentVersionReferences,
+          externalInterfaces,
+          externalObjects,
+          queryVersionReferences: new Map(),
+        },
+        ontology.rid,
+        resolvedOntologyVersion,
+      );
     } else {
       const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
       const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
@@ -499,13 +576,52 @@ export class OntologyMetadataResolver {
       if (validData.isErr()) {
         return Result.err(validData.error);
       }
-      return Result.ok({
-        requestedMetadata: { ...requestedMetadata, agents },
-        agentVersionReferences,
-        externalInterfaces: new Map(),
-        externalObjects: new Map(),
-        queryVersionReferences,
-      });
+      return await this.validateOntologyVersion(
+        {
+          requestedMetadata: { ...requestedMetadata, agents },
+          agentVersionReferences,
+          externalInterfaces: new Map(),
+          externalObjects: new Map(),
+          queryVersionReferences,
+        },
+        ontology.rid,
+        resolvedOntologyVersion,
+      );
+    }
+  }
+
+  private async validateOntologyVersion(
+    ontologyInfo: OntologyInfo,
+    ontologyRid: string,
+    ontologyVersion: string | undefined,
+  ): Promise<Result<OntologyInfo, GeneratorError[]>> {
+    if (ontologyVersion == null) {
+      return Result.ok(ontologyInfo);
+    }
+
+    try {
+      const currentOntologyVersion = await this.getCurrentOntologyVersion(
+        ontologyRid,
+      );
+      if (currentOntologyVersion !== ontologyVersion) {
+        return Result.err([
+          new GeneratorError(
+            "The ontology changed while metadata was loading",
+            undefined,
+            { currentOntologyVersion, ontologyVersion },
+          ),
+        ]);
+      }
+      return Result.ok({ ...ontologyInfo, ontologyVersion });
+    } catch (error) {
+      return Result.err([
+        error instanceof GeneratorError
+          ? error
+          : new GeneratorError(
+            "Unable to verify the ontology version after loading metadata",
+            { error: String(error) },
+          ),
+      ]);
     }
   }
 

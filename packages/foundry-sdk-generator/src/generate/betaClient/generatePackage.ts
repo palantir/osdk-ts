@@ -102,6 +102,7 @@ export async function generatePackage(
     beta: options.beta,
     packageRid: options.packageRid,
     branch: options.branch,
+    ontologyVersion: ontologyInfo.ontologyVersion,
     exportOntologyMetadata: options.exportOntologyMetadata ?? false,
   });
 
