@@ -377,11 +377,7 @@ export class OntologyIrToFullMetadataConverter {
       functionsDir,
     );
 
-    const importedFunctionsDir = path.join(
-      projectDir,
-      "functions",
-      "external-imports",
-    );
+    const importedFunctionsDir = path.join(functionsDir, "external-imports");
     const importedFunctionsMetadataPath = path.join(
       importedFunctionsDir,
       "functions-metadata.json",

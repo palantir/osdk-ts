@@ -756,7 +756,9 @@ export class ActionTypeShapeExtractor {
       let discoveredFunction = functionsIr.discoveredFunctions.find((f) => {
         return (
           f.externalMetadata?.functionRid ===
-          functionRule.functionRule.functionRid
+            functionRule.functionRule.functionRid &&
+          f.externalMetadata?.functionVersion ===
+            functionRule.functionRule.functionVersion
         );
       });
       const functionApiName =
