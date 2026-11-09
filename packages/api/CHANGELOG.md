@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.88.0
+
+### Minor Changes
+
+- eb1fc8f: Add experimental support for reading agent session state.
+
 ## 2.87.0
 
 ### Minor Changes

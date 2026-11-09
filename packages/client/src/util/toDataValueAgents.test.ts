@@ -16,6 +16,7 @@
 
 import { Employee, Office } from "@osdk/client.test.ontology";
 import type { DataType } from "@osdk/foundry.agents";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
 import { afterEach, assert, beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -466,47 +467,77 @@ describe(toDataValueAgents, () => {
     },
   );
 
-  it("reports metadata lookup failures with the argument path and cause", async () => {
-    const cause = new Error("Metadata unavailable");
-    vi.spyOn(
-      clientCtx.ontologyProvider,
-      "getObjectDefinition",
-    ).mockRejectedValue(cause);
+  it.each([
+    new Error("Metadata unavailable"),
+    new PalantirApiError(
+      "Metadata unavailable",
+      "PermissionDenied",
+      "PERMISSION_DENIED",
+      "Access denied",
+      403,
+      "error-instance-id",
+      { resource: "Employee" },
+    ),
+  ])(
+    "reports metadata lookup failures with the argument path and cause (%s)",
+    async (cause) => {
+      vi.spyOn(
+        clientCtx.ontologyProvider,
+        "getObjectDefinition",
+      ).mockRejectedValue(cause);
 
-    const result = toDataValueAgents({ employees: [50030] }, clientCtx, {
-      type: "struct",
-      fields: [
-        {
-          name: "employees",
-          dataType: { type: "list", elementType: employeeType },
-        },
-      ],
-    });
-
-    await expect(result).rejects.toMatchObject({
-      message:
-        'Failed to convert agent argument "employees[0]" to an object reference',
-      cause,
-    });
-  });
-
-  it("reports temporary object set failures with the argument path and cause", async () => {
-    const cause = new Error("Temporary object set creation failed");
-    vi.spyOn(ObjectSets, "createTemporaryObjectSet").mockRejectedValue(cause);
-
-    const result = toDataValueAgents(
-      { employees: client(Employee) },
-      clientCtx,
-      {
+      const result = toDataValueAgents({ employees: [50030] }, clientCtx, {
         type: "struct",
-        fields: [{ name: "employees", dataType: employeeSetType }],
-      },
-    );
+        fields: [
+          {
+            name: "employees",
+            dataType: { type: "list", elementType: employeeType },
+          },
+        ],
+      });
 
-    await expect(result).rejects.toMatchObject({
-      message:
-        'Failed to convert agent argument "employees" to an object set RID',
-      cause,
-    });
-  });
+      await expect(result).rejects.toBeInstanceOf(cause.constructor);
+      await expect(result).rejects.toMatchObject({
+        ...cause,
+        message:
+          'Failed to convert agent argument "employees[0]" to an object reference',
+        cause,
+      });
+    },
+  );
+
+  it.each([
+    new Error("Temporary object set creation failed"),
+    new PalantirApiError(
+      "Temporary object set creation failed",
+      "PermissionDenied",
+      "PERMISSION_DENIED",
+      "Access denied",
+      403,
+      "error-instance-id",
+      { resource: "Employee" },
+    ),
+  ])(
+    "reports temporary object set failures with the argument path and cause (%s)",
+    async (cause) => {
+      vi.spyOn(ObjectSets, "createTemporaryObjectSet").mockRejectedValue(cause);
+
+      const result = toDataValueAgents(
+        { employees: client(Employee) },
+        clientCtx,
+        {
+          type: "struct",
+          fields: [{ name: "employees", dataType: employeeSetType }],
+        },
+      );
+
+      await expect(result).rejects.toBeInstanceOf(cause.constructor);
+      await expect(result).rejects.toMatchObject({
+        ...cause,
+        message:
+          'Failed to convert agent argument "employees" to an object set RID',
+        cause,
+      });
+    },
+  );
 });

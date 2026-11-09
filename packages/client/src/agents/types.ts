@@ -20,6 +20,9 @@ import type { AgentDefinition, AgentSession } from "@osdk/api/unstable";
 /** @beta */
 export interface AgentSignatureFromDef<D extends AgentDefinition<unknown>> {
   /** @beta */
+  experimental_getSession(sessionId: string): Promise<AgentSession>;
+
+  /** @beta */
   experimental_createSession: CompileTimeMetadata<D>["signatures"] extends never
     ? AgentSignature
     : CompileTimeMetadata<D>["signatures"] extends {

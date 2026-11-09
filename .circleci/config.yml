@@ -449,7 +449,7 @@ jobs:
   bundle-size:
     executor:
       name: node
-      resource-class: large
+      resource-class: xlarge
     steps:
       - prepare
       - restore-turbo-cache:
