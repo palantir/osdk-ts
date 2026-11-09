@@ -16,9 +16,27 @@
 
 import type { DataType, StructField } from "@osdk/foundry.agents";
 import * as Ontologies from "@osdk/foundry.ontologies/OntologyV2";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
+
+export function wrapConversionError(message: string, cause: unknown): Error {
+  if (cause instanceof PalantirApiError) {
+    const error = new PalantirApiError(
+      message,
+      cause.errorName,
+      cause.errorCode,
+      cause.errorDescription,
+      cause.statusCode,
+      cause.errorInstanceId,
+      cause.parameters,
+    );
+    error.cause = cause;
+    return error;
+  }
+  return new Error(message, { cause });
+}
 
 export async function remapFields(
   value: Record<string, unknown>,

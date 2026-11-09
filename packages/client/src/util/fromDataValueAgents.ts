@@ -24,6 +24,7 @@ import {
   checkOntology,
   getPropertyPath,
   remapFields,
+  wrapConversionError,
 } from "./dataValueAgentsUtils.js";
 
 export function fromDataValueAgents(
@@ -85,9 +86,9 @@ export async function fromDataValueAgents(
           apiName: desiredType.objectTypeApiName,
         });
       } catch (cause) {
-        throw new Error(
+        throw wrapConversionError(
           `Failed to convert agent value "${path}" to an object identifier`,
-          { cause },
+          cause,
         );
       }
     }
@@ -112,9 +113,9 @@ export async function fromDataValueAgents(
           },
         );
       } catch (cause) {
-        throw new Error(
+        throw wrapConversionError(
           `Failed to convert agent value "${path}" to an object set`,
-          { cause },
+          cause,
         );
       }
     }
