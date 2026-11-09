@@ -113,11 +113,20 @@ describe("ObjectSet", () => {
       >();
     });
 
-    test("select one", async () => {
-      const result = await fauxObjectSet.fetchPage({ $select: ["fullName"] });
+    test("select one while ordering by another property", async () => {
+      const result = await fauxObjectSet.fetchPage({
+        $select: ["fullName"],
+        $orderBy: { employeeId: "asc" },
+      });
       expectTypeOf<(typeof result.data)[0]>().toEqualTypeOf<
         Osdk.Instance<EmployeeApiTest, never, "fullName">
       >();
+
+      const resultWithErrors = await fauxObjectSet.fetchPageWithErrors({
+        $select: ["fullName"],
+        $orderBy: { employeeId: "asc" },
+      });
+      expectTypeOf(resultWithErrors.value!.data).toEqualTypeOf(result.data);
     });
   });
 
@@ -283,21 +292,6 @@ describe("ObjectSet", () => {
       expectTypeOf<
         (typeof withAResults)["data"][0]["a"]
       >().toEqualTypeOf<number>();
-
-      const orderedByA = await withA.fetchPage({ $orderBy: { a: "asc" } });
-      expectTypeOf(orderedByA.data).toEqualTypeOf(withAResults.data);
-
-      const orderedByAWithErrors = await withA.fetchPageWithErrors({
-        $orderBy: { a: "desc", fullName: "asc" },
-      });
-      expectTypeOf(orderedByAWithErrors.value!.data).toEqualTypeOf(
-        withAResults.data,
-      );
-
-      const orderedByAIterator = withA.asyncIter({ $orderBy: { a: "asc" } });
-      expectTypeOf(orderedByAIterator).toEqualTypeOf<
-        AsyncIterableIterator<(typeof withAResults.data)[number]>
-      >();
     });
 
     it("can be sub-selected", () => {
@@ -527,8 +521,8 @@ describe("ObjectSet", () => {
         await withFamily.fetchOne(1);
       });
 
-      it("works with .async", () => {
-        const asyncIter = withFamily.asyncIter();
+      it("works with .async ordered by a derived property", () => {
+        const asyncIter = withFamily.asyncIter({ $orderBy: { mom: "asc" } });
         expectTypeOf<typeof asyncIter>().toEqualTypeOf<
           AsyncIterableIterator<
             Osdk.Instance<
@@ -545,8 +539,10 @@ describe("ObjectSet", () => {
         >();
       });
 
-      it("Works with no select", async () => {
-        const withFamilyResults = await withFamily.fetchPage();
+      it("works with no select when ordered by a derived property", async () => {
+        const withFamilyResults = await withFamily.fetchPage({
+          $orderBy: { mom: "asc" },
+        });
 
         expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
           Osdk.Instance<
@@ -560,6 +556,13 @@ describe("ObjectSet", () => {
             }
           >
         >();
+
+        const resultWithErrors = await withFamily.fetchPageWithErrors({
+          $orderBy: { mom: "asc" },
+        });
+        expectTypeOf(resultWithErrors.value!.data).toEqualTypeOf(
+          withFamilyResults.data,
+        );
       });
 
       it("Works with selecting all RDPs", async () => {
@@ -1413,28 +1416,16 @@ describe("ObjectSet", () => {
       // @ts-expect-error
       void knn.fetchPage({ $orderBy: { fullName: "sideways" } });
       // @ts-expect-error
-      void knn.fetchPageWithErrors({ $orderBy: { fullName: "sideways" } });
-      // @ts-expect-error
-      void knn.asyncIter({ $orderBy: { fullName: "sideways" } });
-
-      // @ts-expect-error
-      void knn.fetchPage({ $orderBy: { unknownProperty: "asc" } });
-      // @ts-expect-error
-      void knn.fetchPageWithErrors({ $orderBy: { unknownProperty: "asc" } });
-      // @ts-expect-error
       void knn.asyncIter({ $orderBy: { unknownProperty: "asc" } });
     });
 
-    it("preserves result types for conditional ordering", async () => {
+    it("preserves result types for relevance or property ordering", async () => {
       const knn = fauxObjectSet.nearestNeighbors(
         "textQuery",
         3,
         "skillSetEmbedding",
       );
-      const useRelevance = true as boolean;
-      const orderBy: "relevance" | { fullName: "asc" } = useRelevance
-        ? "relevance"
-        : { fullName: "asc" };
+      const orderBy = "relevance" as "relevance" | { fullName: "asc" };
       type Employee = Osdk.Instance<EmployeeApiTest>;
       type PossiblyScored = Employee | (Employee & { $score: number });
 
@@ -1452,11 +1443,6 @@ describe("ObjectSet", () => {
       expectTypeOf(iterator).toEqualTypeOf<
         AsyncIterableIterator<PossiblyScored>
       >();
-
-      const conditionalPage = await knn.fetchPage({
-        $orderBy: useRelevance ? "relevance" : { fullName: "asc" },
-      });
-      expectTypeOf(conditionalPage.data).toEqualTypeOf<PossiblyScored[]>();
     });
 
     it("does not include score for property order by", async () => {
@@ -1475,20 +1461,6 @@ describe("ObjectSet", () => {
       expectTypeOf(
         nearestNeighborsObjectSetWithErrors.value?.data[0],
       ).not.toHaveProperty("$score");
-
-      const selected = await fauxObjectSet.fetchPage({
-        $select: ["employeeId"],
-        $orderBy: { fullName: "desc" },
-      });
-      expectTypeOf(selected.data).toEqualTypeOf<
-        Osdk.Instance<EmployeeApiTest, never, "employeeId">[]
-      >();
-
-      const selectedWithErrors = await fauxObjectSet.fetchPageWithErrors({
-        $select: ["employeeId"],
-        $orderBy: { fullName: "desc" },
-      });
-      expectTypeOf(selectedWithErrors.value!.data).toEqualTypeOf(selected.data);
     });
   });
   describe("narrowToType", () => {

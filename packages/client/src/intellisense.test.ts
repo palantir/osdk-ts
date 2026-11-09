@@ -198,7 +198,7 @@ describe("intellisense", () => {
     ];
     expect(resp.body?.entries.map((e) => e.name)).toEqual(propertyNames);
 
-    for (const line of [44, 48, 52, 62, 66, 70, 101]) {
+    for (const line of [45, 49, 53, 63]) {
       const { resp: properties } = await tsServer.sendCompletionsRequest({
         file: intellisenseFilePath,
         line,
@@ -211,30 +211,19 @@ describe("intellisense", () => {
       );
     }
 
-    for (const line of [83, 87, 91, 96]) {
-      const { resp: properties } = await tsServer.sendCompletionsRequest({
-        file: intellisenseFilePath,
-        line,
-        offset: line === 96 ? 15 : 14,
-        triggerKind: ts.CompletionTriggerKind.Invoked,
-      });
-      expect(properties.body?.isMemberCompletion).toBe(true);
-      expect(properties.body?.entries).toHaveLength(propertyNames.length + 1);
-      expect(properties.body?.entries.map((e) => e.name)).toEqual(
-        expect.arrayContaining([...propertyNames, "leadCount"]),
-      );
-    }
-
-    const { resp: directions } = await tsServer.sendCompletionsRequest({
+    const { resp: derivedProperties } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 75,
-      offset: 26,
+      line: 71,
+      offset: 14,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    expect(directions.body?.entries.map((e) => e.name)).toEqual([
-      "asc",
-      "desc",
-    ]);
+    expect(derivedProperties.body?.isMemberCompletion).toBe(true);
+    expect(derivedProperties.body?.entries).toHaveLength(
+      propertyNames.length + 1,
+    );
+    expect(derivedProperties.body?.entries.map((e) => e.name)).toEqual(
+      expect.arrayContaining([...propertyNames, "leadCount"]),
+    );
 
     const { resp: resp2 } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,

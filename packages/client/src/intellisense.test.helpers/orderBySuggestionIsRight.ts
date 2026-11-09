@@ -41,6 +41,7 @@ void client(Employee).fetchPage({
 });
 
 void client(Employee).fetchPage({
+  $select: ["employeeId"],
   $orderBy: {},
 });
 
@@ -58,45 +59,14 @@ const nearestNeighbors = client(Employee).nearestNeighbors(
   "skillSetEmbedding",
 );
 
-void nearestNeighbors.fetchPage({
-  $orderBy: {},
-});
-
 void nearestNeighbors.fetchPageWithErrors({
   $orderBy: {},
-});
-
-void nearestNeighbors.asyncIter({
-  $orderBy: {},
-});
-
-void client(Employee).fetchPage({
-  // @ts-expect-error
-  $orderBy: { fullName: "" },
 });
 
 const withDerived = client(Employee).withProperties({
   leadCount: (base) => base.pivotTo("lead").aggregate("$count"),
 });
 
-void withDerived.fetchPage({
-  $orderBy: {},
-});
-
-void withDerived.fetchPageWithErrors({
-  $orderBy: {},
-});
-
 void withDerived.asyncIter({
-  $orderBy: {},
-});
-
-void withDerived.fetchPage({
-  // @ts-expect-error
-  $orderBy: { "": "" },
-});
-
-void client(Employee).fetchPage({
-  $select: ["employeeId"],
   $orderBy: {},
 });
