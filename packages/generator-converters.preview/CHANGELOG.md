@@ -1,5 +1,13 @@
 # @osdk/generator-converters.preview
 
+## 0.62.0
+
+### Patch Changes
+
+- @osdk/foundry-sdk-generator@2.88.0
+- @osdk/client.unstable@2.88.0
+- @osdk/generator-converters.ontologyir@2.88.0
+
 ## 0.61.0
 
 ### Minor Changes
