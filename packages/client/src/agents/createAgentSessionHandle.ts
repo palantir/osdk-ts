@@ -24,7 +24,7 @@ import { sendEventToAgentSession } from "./sendEventToAgentSession.js";
 export function createAgentSessionHandle(
   client: MinimalClient,
   id: string,
-  agentDefinition: AgentDefinitionVersion,
+  sessionAgentDefinition: AgentDefinitionVersion,
 ): AgentSession {
   let consistencyKey: string | undefined;
 
@@ -37,7 +37,7 @@ export function createAgentSessionHandle(
       consistencyKey = await sendEventToAgentSession(
         client,
         id,
-        agentDefinition.eventDefinitions,
+        sessionAgentDefinition.eventDefinitions,
         event,
         options,
       );
@@ -46,6 +46,7 @@ export function createAgentSessionHandle(
       const result = await getAgentSessionState(
         client,
         id,
+        sessionAgentDefinition,
         consistencyKey,
         options,
       );
