@@ -15,7 +15,10 @@
  */
 
 import type { Client, ObjectSet } from "@osdk/client";
-import type { AllowedObjectSetParameterType } from "@osdk/widget.api";
+import type {
+  AllowedObjectSetParameterType,
+  HostMessage,
+} from "@osdk/widget.api";
 import {
   type AsyncValue,
   createFoundryWidgetClient,
@@ -91,6 +94,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   >({
     type: "not-started",
   });
+  const [theme, setTheme] = React.useState<unknown>();
 
   const objectSetCache = useRef<
     Map<string, { objectSetRid: string; objectSet: ObjectSet }>
@@ -141,7 +145,14 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   );
 
   useEffect(() => {
+    let hostHotkeys: HostMessage.Payload.SetHotkeys["hotkeys"] = [];
     client.subscribe();
+    client.hostEventTarget.addEventListener("host.set-hotkeys", (payload) => {
+      hostHotkeys = payload.detail.hotkeys;
+    });
+    client.hostEventTarget.addEventListener("host.set-theme", (payload) => {
+      setTheme(payload.detail.theme);
+    });
     client.hostEventTarget.addEventListener(
       "host.update-parameters",
       (payload) => {
@@ -260,12 +271,41 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
       import.meta.hot.on("vite:beforeFullReload", handleFullReload);
     }
 
+    const handleHotkey = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || event.isComposing) {
+        return;
+      }
+      const matches = hostHotkeys.some(
+        (hotkey) =>
+          hotkey.key.toLowerCase() === event.key.toLowerCase() &&
+          hotkey.altKey === event.altKey &&
+          hotkey.ctrlKey === event.ctrlKey &&
+          hotkey.metaKey === event.metaKey &&
+          hotkey.shiftKey === event.shiftKey,
+      );
+      if (!matches) {
+        return;
+      }
+      event.preventDefault();
+      client.hotkey({
+        hotkey: {
+          key: event.key,
+          altKey: event.altKey,
+          ctrlKey: event.ctrlKey,
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey,
+        },
+      });
+    };
+    window.addEventListener("keydown", handleHotkey);
+
     return () => {
       client.unsubscribe();
       resizeObserver.disconnect();
       if (import.meta.hot?.off) {
         import.meta.hot.off("vite:beforeFullReload", handleFullReload);
       }
+      window.removeEventListener("keydown", handleHotkey);
     };
   }, []);
 
@@ -280,6 +320,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
             values: allParameterValues.value ?? {},
             state: allParameterValues.type,
           },
+          theme,
           // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
         } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
       }

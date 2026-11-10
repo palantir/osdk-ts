@@ -56,7 +56,31 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
       ) => void;
     });
 
-interface ActionFormConfigProps<
+/**
+ * Determines how the form fields are specified. Exactly one of the three
+ * branches may be used:
+ *
+ * 1. Neither prop — fields are auto-generated from action metadata.
+ * 2. `formFieldDefinitions` — a flat list of field definitions.
+ * 3. `formContentDefinitions` — fields and sections for richer layout.
+ */
+type ActionFormContentConfig<Q extends ActionDefinition<unknown>> =
+  | { formFieldDefinitions?: undefined; formContentDefinitions?: undefined }
+  | {
+      /** Custom flat list of field definitions. */
+      formFieldDefinitions: ReadonlyArray<FormFieldDefinition<Q>>;
+      formContentDefinitions?: never;
+    }
+  | {
+      /** Ordered list of fields and sections that define the form layout. */
+      formContentDefinitions: ReadonlyArray<ActionFormContentItem<Q>>;
+      formFieldDefinitions?: never;
+    };
+
+type ActionFormConfigProps<Q extends ActionDefinition<unknown>> =
+  ActionFormBaseConfigProps<Q> & ActionFormContentConfig<Q>;
+
+interface ActionFormBaseConfigProps<
   Q extends ActionDefinition<unknown>,
 > extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled"> {
   /**
@@ -71,11 +95,6 @@ interface ActionFormConfigProps<
    * @default false
    */
   showFormTitle?: boolean;
-
-  /**
-   * If not supplied, field definitions are constructed from action metadata.
-   */
-  formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
 
   /**
    * If supplied, this will override the default submit action.
@@ -129,30 +148,74 @@ export type FormError =
   | { type: "unknown"; error: unknown };
 
 /**
+ * Generic content item parameterized by its field-definition type.
+ * Both the OSDK-typed and renderer-level content items derive from this
+ * so their structure cannot diverge.
+ */
+type BaseContentItem<F, S extends BaseSectionDefinition<F>> =
+  | { type: "field"; definition: F }
+  | { type: "section"; key: string; definition: S };
+
+/**
+ * Generic section definition parameterized by its field-definition type.
+ */
+interface BaseSectionDefinition<F> {
+  /** Section heading. */
+  title: string;
+  /** Optional description below the heading. */
+  description?: string;
+  /** The fields rendered inside this section. */
+  fields: ReadonlyArray<F>;
+  /**
+   * Whether the section starts collapsed.
+   * @default false
+   */
+  collapsedByDefault?: boolean;
+  /**
+   * Whether to show the title bar.
+   * @default true
+   */
+  showTitleBar?: boolean;
+  /**
+   * Number of columns for fields.
+   * @default 1
+   */
+  columnCount?: 1 | 2;
+  /**
+   * Visual style. `"box"` = bordered card, `"minimal"` = heading only.
+   * @default "box"
+   */
+  style?: "box" | "minimal";
+}
+
+/**
+ * A single item in the ActionForm content array — either a standalone
+ * field or a section that groups multiple fields.
+ */
+export type ActionFormContentItem<Q extends ActionDefinition<unknown>> =
+  BaseContentItem<FormFieldDefinition<Q>, ActionFormSectionDefinition<Q>>;
+
+/**
+ * Configuration for a section in the ActionForm.
+ */
+export interface ActionFormSectionDefinition<
+  Q extends ActionDefinition<unknown>,
+> extends BaseSectionDefinition<FormFieldDefinition<Q>> {}
+
+/**
  * A single item in the form content array — either a standalone field
  * or a section that groups multiple fields.
  */
-export type FormContentItem =
-  | { type: "field"; definition: RendererFieldDefinition }
-  | { type: "section"; key: string; definition: FormSectionDefinition };
+export type FormContentItem = BaseContentItem<
+  RendererFieldDefinition,
+  FormSectionDefinition
+>;
 
 /**
  * Configuration for a form section — a visual group of fields with
  * optional title bar, collapse behavior, and multi-column layout.
  */
-export interface FormSectionDefinition {
-  title: string;
-  description?: string;
-  fields: ReadonlyArray<RendererFieldDefinition>;
-  /** Whether the section starts collapsed. Default `false`. */
-  collapsedByDefault?: boolean;
-  /** Whether to show the title bar. Default `true`. */
-  showTitleBar?: boolean;
-  /** Number of columns for fields. Default `1`. */
-  columnCount?: 1 | 2;
-  /** Visual style. `"box"` = bordered card, `"minimal"` = heading only. Default `"box"`. */
-  style?: "box" | "minimal";
-}
+export interface FormSectionDefinition extends BaseSectionDefinition<RendererFieldDefinition> {}
 
 /**
  * Props for the `BaseForm` component, which renders a form without

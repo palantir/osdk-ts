@@ -92,6 +92,11 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
   getScenarioReference(): string;
 
   /**
+   * Rebase this scenario onto the latest data from its base
+   */
+  rebase(): Promise<void>;
+
+  /**
    * List the object types and many-to-many link types that have been modified within this scenario. Useful as a
    * pre-step before paginating individual edited objects per type.
    */
@@ -258,6 +263,13 @@ export function buildScenarioClient(
   });
 
   const innerCtx: MinimalClient = inner[additionalContext];
+
+  async function rebase(): Promise<void> {
+    const ontologyRid = await innerCtx.ontologyRid;
+    await OntologyScenarios.rebaseScenario(innerCtx, ontologyRid, scenarioRid, {
+      preview: true,
+    });
+  }
 
   async function getEditedEntityTypes(): Promise<ScenarioEditedEntityTypes> {
     const ontologyRid = await innerCtx.ontologyRid;
@@ -465,6 +477,9 @@ export function buildScenarioClient(
   return Object.defineProperties(inner, {
     getScenarioReference: {
       value: () => scenarioRid,
+    },
+    rebase: {
+      value: rebase,
     },
     getEditedEntityTypes: {
       value: getEditedEntityTypes,

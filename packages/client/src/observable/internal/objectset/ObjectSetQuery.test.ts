@@ -207,3 +207,37 @@ describe("ObjectSetQuery cache reconciliation", () => {
     });
   });
 });
+
+describe("ObjectSetQuery websocket out of date", () => {
+  let client: Client;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+    ontologies.addEmployeeOntology(testSetup.fauxFoundry.getDefaultOntology());
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+  });
+
+  it("forces a revalidate when the subscription goes out of date", () => {
+    const query = store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<typeof Employee>,
+      mode: "offline",
+    });
+    const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
+
+    (query as unknown as { onOswOutOfDate(): void }).onOswOutOfDate();
+
+    expect(revalidate).toHaveBeenCalledWith(true);
+  });
+});

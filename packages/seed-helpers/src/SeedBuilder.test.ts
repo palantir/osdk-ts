@@ -148,6 +148,32 @@ describe("SeedBuilder", () => {
   });
 
   describe("update", () => {
+    it("allows setting a non-primary-key property to undefined", () => {
+      const employeeType = makeObjectType(
+        Employee.apiName,
+        Employee.primaryKeyApiName,
+        { employeeId: "integer", fullName: "string" },
+        "fullName",
+      );
+      employeeType.objectType.properties.fullName.dataConstraints = {
+        nullability: "NOT_NULLABLE",
+      };
+      const sb = new SeedBuilder(makeMetadata({ Employee: employeeType }));
+      const ref = sb.create(Employee, { employeeId: 1, fullName: undefined });
+      expect(ref.fullName).toBeUndefined();
+
+      sb.update(ref, { fullName: "Alice" });
+      sb.update(ref, {});
+      expect(sb.ref(Employee, 1)?.fullName).toBe("Alice");
+
+      sb.update(ref, { fullName: undefined });
+      expect(sb.ref(Employee, 1)?.fullName).toBeUndefined();
+      expect(sb.ref(Employee, 1)?.$title).toBeUndefined();
+      expect(sb.build().objects.Employee).toStrictEqual([
+        { employeeId: 1, fullName: undefined },
+      ]);
+    });
+
     it("merges props into the existing object, preserving the primary key, and returns the same ref", () => {
       const sb = newBuilder();
       const ref = sb.create(Employee, { employeeId: 1, fullName: "Alice" });

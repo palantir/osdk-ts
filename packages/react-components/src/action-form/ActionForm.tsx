@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionValidationResponse } from "@osdk/api";
+import type {
+  ActionDefinition,
+  ActionMetadata,
+  ActionValidationResponse,
+} from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import React, {
   useCallback,
@@ -33,11 +37,13 @@ import type {
   FormState,
 } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
-import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import type {
+  FormFieldDefinition,
+  RendererFieldDefinition,
+} from "./FormFieldApi.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
-const EMPTY_FIELD_DEFINITIONS: ReadonlyArray<RendererFieldDefinition> = [];
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 const EMPTY_VALIDATION_ERRORS: ReadonlyArray<FormErrorEntry> = [];
 
@@ -89,6 +95,22 @@ function getParameterErrorMessage(
   return "The parameter value is invalid";
 }
 
+function toRendererDef<Q extends ActionDefinition<unknown>>(
+  def: FormFieldDefinition<Q>,
+  parameters: ActionMetadata["parameters"] | undefined,
+): RendererFieldDefinition {
+  const { defaultValue, ...fieldDefinition } = def;
+  return {
+    ...fieldDefinition,
+    fieldKey: String(def.fieldKey),
+    fieldType: parameters?.[String(def.fieldKey)]?.type,
+    fieldComponentProps:
+      defaultValue === undefined
+        ? def.fieldComponentProps
+        : { ...def.fieldComponentProps, defaultValue },
+  } as RendererFieldDefinition;
+}
+
 export const ActionForm: <Q extends ActionDefinition<unknown>>(
   props: ActionFormProps<Q>,
 ) => React.ReactElement = typedReactMemo(function ActionFormFn<
@@ -98,6 +120,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   formTitle,
   showFormTitle = false,
   formFieldDefinitions,
+  formContentDefinitions,
   formState: controlledFormState,
   onFormStateChange,
   isSubmitDisabled,
@@ -132,46 +155,60 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     ReadonlyArray<FormErrorEntry>
   >(EMPTY_VALIDATION_ERRORS);
 
-  const customFieldDefinitions: ReadonlyArray<RendererFieldDefinition> | null =
-    useMemo(() => {
-      if (formFieldDefinitions == null) {
-        return null;
-      }
-      // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
-      // TypeScript can't verify that the spread preserves the fieldComponent ↔
-      // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
-      return formFieldDefinitions.map((def) => {
-        const { defaultValue, ...fieldDefinition } = def;
-        return {
-          ...fieldDefinition,
-          fieldKey: String(def.fieldKey),
-          fieldType: parameters?.[String(def.fieldKey)]?.type,
-          fieldComponentProps:
-            defaultValue === undefined
-              ? def.fieldComponentProps
-              : { ...def.fieldComponentProps, defaultValue },
-        } as RendererFieldDefinition;
-      });
-    }, [formFieldDefinitions, parameters]);
-
-  const rendererFieldDefinitions = useMemo(
-    () =>
-      customFieldDefinitions ??
-      (metadata != null
-        ? getDefaultFieldDefinitions(metadata)
-        : EMPTY_FIELD_DEFINITIONS),
-    [customFieldDefinitions, metadata],
+  const extractFieldDefinition = useCallback(
+    (def: FormFieldDefinition<Q>): RendererFieldDefinition =>
+      toRendererDef(def, parameters),
+    [parameters],
   );
 
-  const formContent = useMemo(
-    (): ReadonlyArray<FormContentItem> =>
-      rendererFieldDefinitions.length === 0
+  const customFieldDefinitions = useMemo(():
+    | ReadonlyArray<FormContentItem>
+    | undefined => {
+    if (formContentDefinitions != null) {
+      return formContentDefinitions.map(
+        (item): FormContentItem =>
+          item.type === "field"
+            ? {
+                type: "field",
+                definition: extractFieldDefinition(item.definition),
+              }
+            : {
+                type: "section",
+                key: item.key,
+                definition: {
+                  ...item.definition,
+                  fields: item.definition.fields.map(extractFieldDefinition),
+                },
+              },
+      );
+    }
+    if (formFieldDefinitions != null) {
+      return formFieldDefinitions.map(
+        (def): FormContentItem => ({
+          type: "field",
+          definition: extractFieldDefinition(def),
+        }),
+      );
+    }
+    return undefined;
+  }, [formContentDefinitions, formFieldDefinitions, extractFieldDefinition]);
+
+  const rendererFieldDefinitions = useMemo(():
+    | ReadonlyArray<FormContentItem>
+    | undefined => {
+    if (metadata != null && customFieldDefinitions == null) {
+      const defaults = getDefaultFieldDefinitions(metadata);
+      return defaults.length === 0
         ? EMPTY_FORM_CONTENT
-        : rendererFieldDefinitions.map(
+        : defaults.map(
             (def): FormContentItem => ({ type: "field", definition: def }),
-          ),
-    [rendererFieldDefinitions],
-  );
+          );
+    }
+    return undefined;
+  }, [metadata, customFieldDefinitions]);
+
+  const formContent =
+    customFieldDefinitions ?? rendererFieldDefinitions ?? EMPTY_FORM_CONTENT;
 
   const coerceFormState = useCallback(
     (rawState: Record<string, unknown>): Record<string, unknown> => {

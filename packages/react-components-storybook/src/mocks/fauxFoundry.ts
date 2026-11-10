@@ -298,6 +298,7 @@ export async function setupFauxFoundry(): Promise<void> {
       description: "Overall classification level of the data",
       categoryType: "DISJUNCTIVE" as const,
       markingType: "MANDATORY" as const,
+      priority: "100",
       markings: [
         "m-unclassified",
         "m-confidential",
@@ -313,6 +314,7 @@ export async function setupFauxFoundry(): Promise<void> {
       description: "Compartmented information access controls",
       categoryType: "CONJUNCTIVE" as const,
       markingType: "CBAC" as const,
+      priority: "2",
       markings: ["m-alpha", "m-bravo", "m-charlie"],
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
@@ -323,6 +325,7 @@ export async function setupFauxFoundry(): Promise<void> {
       description: "Release restrictions for data sharing",
       categoryType: "CONJUNCTIVE" as const,
       markingType: "CBAC" as const,
+      priority: "10",
       markings: ["m-rel-usa", "m-rel-allied", "m-no-foreign"],
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
@@ -334,6 +337,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-unclassified",
       categoryId: "cat-classification",
       name: "Unclassified",
+      priority: "0",
+      prominence: "COMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -341,6 +346,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-confidential",
       categoryId: "cat-classification",
       name: "Confidential",
+      priority: "10",
+      prominence: "COMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -348,6 +355,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-secret",
       categoryId: "cat-classification",
       name: "Secret",
+      priority: "20",
+      prominence: "COMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -355,6 +364,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-top-secret",
       categoryId: "cat-classification",
       name: "Top Secret",
+      priority: "30",
+      prominence: "COMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -362,6 +373,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-alpha",
       categoryId: "cat-compartment",
       name: "ALPHA",
+      priority: "2",
+      prominence: "COMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -369,6 +382,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-bravo",
       categoryId: "cat-compartment",
       name: "BRAVO",
+      priority: "10",
+      // Intentionally omit prominence
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -376,6 +391,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-charlie",
       categoryId: "cat-compartment",
       name: "CHARLIE",
+      priority: "100",
+      prominence: "UNCOMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -383,6 +400,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-rel-usa",
       categoryId: "cat-releasability",
       name: "REL USA",
+      priority: "2",
+      prominence: "COMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -390,6 +409,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-rel-allied",
       categoryId: "cat-releasability",
       name: "REL ALLIED",
+      priority: "10",
+      prominence: "COMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -397,6 +418,8 @@ export async function setupFauxFoundry(): Promise<void> {
       id: "m-no-foreign",
       categoryId: "cat-releasability",
       name: "NO FOREIGN",
+      priority: "2",
+      prominence: "COMMON" as const,
       createdTime: "2024-01-01T00:00:00Z",
       deleted: false,
     },
@@ -424,10 +447,10 @@ export async function setupFauxFoundry(): Promise<void> {
   const admin = fauxFoundry.getAdmin();
 
   for (const category of cbacCategories) {
-    admin.registerMarkingCategory(category);
+    admin.registerMarkingCategory({ ...category, deleted: false });
   }
   for (const marking of cbacMarkings) {
-    admin.registerMarking(marking);
+    admin.registerMarking({ ...marking, deleted: false });
   }
 
   const categoryColors: Record<string, { textColor: string; bg: string }> = {

@@ -1,5 +1,33 @@
 # @osdk/api
 
+## 2.88.0
+
+### Minor Changes
+
+- eb1fc8f: Add experimental support for reading agent session state.
+
+## 2.87.0
+
+### Minor Changes
+
+- 093d27c: Add experimental support for sending events to agent sessions.
+- ff00439: Adding support for phonetic search
+- 8300415: Add generated argument types for agent session creation.
+
+## 2.86.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+## 2.85.0
+
+### Minor Changes
+
+- a0c6e14: New TimeSeriesReference action parameter
+
+## 2.84.0
+
 ## 2.83.0
 
 ## 2.82.0

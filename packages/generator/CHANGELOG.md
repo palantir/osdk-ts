@@ -1,5 +1,54 @@
 # @osdk/generator
 
+## 2.88.0
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/generator-converters@2.88.0
+
+## 2.87.0
+
+### Minor Changes
+
+- 8300415: Add generated argument types for agent session creation.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/generator-converters@2.87.0
+
+## 2.86.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+
+## 2.85.0
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/generator-converters@2.84.0
+
 ## 2.83.0
 
 ### Patch Changes

@@ -30,21 +30,13 @@ import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalS
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
+import type { ListObjectChanges } from "../base-list/reconcileListChanges.js";
 import type { Changes } from "../Changes.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import { reloadDataAsFullObjects } from "../utils/reloadDataAsFullObjects.js";
 import { ListQuery, PIVOT_IDX, RDP_IDX, RIDS_IDX } from "./ListQuery.js";
-
-type ExtractRelevantObjectsResult = Record<
-  "added" | "modified",
-  {
-    all: (ObjectHolder | InterfaceHolder)[];
-    strictMatches: Set<ObjectHolder | InterfaceHolder>;
-    sortaMatches: Set<ObjectHolder | InterfaceHolder>;
-  }
->;
 
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
@@ -134,9 +126,7 @@ export class InterfaceListQuery extends ListQuery {
     };
   }
 
-  protected extractRelevantObjects(
-    changes: Changes,
-  ): ExtractRelevantObjectsResult {
+  protected extractRelevantObjects(changes: Changes): ListObjectChanges {
     const matchesApiName = ([, object]: [unknown, ObjectHolder]) => {
       return this.apiName in object[ObjectDefRef].interfaceMap;
     };
@@ -149,18 +139,7 @@ export class InterfaceListQuery extends ListQuery {
       .filter(matchesApiName)
       .map(([, object]) => this.wrapObject(object));
 
-    return {
-      added: {
-        all: added,
-        strictMatches: new Set(),
-        sortaMatches: new Set(),
-      },
-      modified: {
-        all: modified,
-        strictMatches: new Set(),
-        sortaMatches: new Set(),
-      },
-    };
+    return { added, modified };
   }
 }
 

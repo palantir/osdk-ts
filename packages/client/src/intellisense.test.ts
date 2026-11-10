@@ -108,7 +108,15 @@ describe("intellisense", () => {
       offset: 12,
     });
     expect(resp.body?.displayString).toMatchInlineSnapshot(
-      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_createSession: (args?: Record<string, unknown>) => Promise<AgentSession>"`,
+      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_createSession: (args: weatherAgent.CreateSessionArguments) => Promise<AgentSession>"`,
+    );
+    const { resp: lookup } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 24,
+      offset: 12,
+    });
+    expect(lookup.body?.displayString).toMatchInlineSnapshot(
+      `"(method) AgentSignatureFromDef<weatherAgent>.experimental_getSession(sessionId: string): Promise<AgentSession>"`,
     );
   });
 
