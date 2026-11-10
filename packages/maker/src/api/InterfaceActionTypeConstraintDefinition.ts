@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyIrBaseParameterConstraintType } from "@osdk/client.unstable";
+import type {
+  OntologyIrBaseParameterConstraintType,
+  OntologyIrInterfaceActionTypeEditsValidation,
+} from "@osdk/client.unstable";
 
 import type { InterfaceType } from "./interface/InterfaceType.js";
 
@@ -33,4 +36,10 @@ export interface InterfaceActionTypeConstraintDefinition {
   description: string;
   requireImplementation: boolean;
   parameters: Array<ParameterConstraintDefinition>;
+  /**
+   * Requires the implementing Action to perform these edits. Use API names for
+   * object, interface, link, and parameter references, and stable RIDs for entries.
+   * Parameters must belong to this constraint; links must belong to this interface or an ancestor.
+   */
+  editsValidation?: OntologyIrInterfaceActionTypeEditsValidation | null;
 }

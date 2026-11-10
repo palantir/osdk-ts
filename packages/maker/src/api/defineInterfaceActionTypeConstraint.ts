@@ -80,6 +80,9 @@ export function defineInterfaceActionTypeConstraint(
       description: def.description,
     },
     parameters,
+    ...(def.editsValidation !== undefined
+      ? { editsValidation: def.editsValidation }
+      : {}),
     requireImplementation: def.requireImplementation,
   });
 }

@@ -39,14 +39,14 @@ export function convertOntologyDefinition(
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,
-    allOntologies,
-    functionsIr,
-    packageForEdge,
+    { allOntologies, functionsIr, packageForEdge },
   );
 
   const importedOntology = convertOntologyDefinitionToWireBlockData(
     importedTypes,
     ridGenerator,
+    // Input shapes do not carry edit validations; the target owns these policies.
+    { includeEditsValidation: false },
   );
 
   validateInterfaceActionImplementations(ontology, importedTypes, [
@@ -102,6 +102,7 @@ export function convertOntologyDefinition(
   const transitiveImportedOntology = convertOntologyDefinitionToWireBlockData(
     transitiveOntology,
     throwawayRidGenerator,
+    { includeEditsValidation: false },
   );
 
   const valueTypes = convertValueTypeToWireBlockData(ontology, ridGenerator);

@@ -20,16 +20,19 @@ import type {
   OntologyIrBaseParameterConstraintType,
   OntologyIrInterfaceActionTypeConstraint,
 } from "@osdk/client.unstable";
-import type { InterfaceType } from "@osdk/maker";
+import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { resolveInterfaceTypeRid } from "./convertActionParameters.js";
+import { convertInterfaceEditsValidation } from "./convertInterfaceEditsValidation.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
+  ontologies: OntologyDefinition[],
+  includeEditsValidation: boolean,
 ): MarketplaceInterfaceType {
   const {
     __type,
@@ -107,8 +110,25 @@ export function convertInterface(
       ),
     })),
     actionTypeConstraints: (interfaceType.actionTypeConstraints ?? []).map(
-      (constraint: OntologyIrInterfaceActionTypeConstraint) => ({
+      ({
+        editsValidation,
+        ...constraint
+      }: OntologyIrInterfaceActionTypeConstraint) => ({
         ...constraint,
+        ...(includeEditsValidation && editsValidation !== undefined
+          ? {
+              editsValidation:
+                editsValidation == null
+                  ? null
+                  : convertInterfaceEditsValidation(
+                      editsValidation,
+                      interfaceType,
+                      constraint,
+                      ridGenerator,
+                      ontologies,
+                    ),
+            }
+          : {}),
         rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
           constraint.metadata.apiName,
           interfaceType.apiName,

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OntologyIrInterfaceActionTypeEditsValidation } from "@osdk/client.unstable";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { defineInterface } from "../defineInterface.js";
@@ -334,6 +335,43 @@ describe("Interfaces", () => {
   });
 
   describe("Action Type Constraints", () => {
+    it.each([
+      undefined,
+      null,
+      {
+        condition: {
+          type: "entry",
+          entry: {
+            rid: "ri.ontology.main.interface-action-type-edits-validation-entry.00000000-0000-0000-0000-000000000001",
+            subject: {
+              type: "implementingObject",
+              implementingObject: {
+                type: "create",
+                create: { requiredInterfaceLinkCreations: [] },
+              },
+            },
+          },
+        },
+      } satisfies OntologyIrInterfaceActionTypeEditsValidation,
+    ])("preserves authored edit validation %j in IR", (editsValidation) => {
+      const iface = defineInterface({ apiName: "Task" });
+      defineInterfaceActionTypeConstraint({
+        interfaceType: iface,
+        apiName: "editTask",
+        displayName: "Edit Task",
+        description: "Edit a task",
+        requireImplementation: false,
+        parameters: [],
+        ...(editsValidation !== undefined ? { editsValidation } : {}),
+      });
+      const constraint =
+        dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.Task"]
+          .interfaceType.actionTypeConstraints[0];
+      expect(constraint.editsValidation).toEqual(editsValidation);
+      if (editsValidation === undefined)
+        expect(constraint).not.toHaveProperty("editsValidation");
+    });
+
     it("preserves implementing-object parameter markers in ontology IR", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
