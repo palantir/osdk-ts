@@ -337,7 +337,6 @@ describe("Interfaces", () => {
   describe("Action Type Constraints", () => {
     it.each([
       undefined,
-      null,
       {
         condition: {
           type: "entry",
@@ -367,7 +366,7 @@ describe("Interfaces", () => {
       const constraint =
         dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.Task"]
           .interfaceType.actionTypeConstraints[0];
-      if (editsValidation == null) {
+      if (editsValidation === undefined) {
         expect(constraint.editsValidation).toEqual(editsValidation);
       } else {
         expect(constraint.editsValidation).toEqual({

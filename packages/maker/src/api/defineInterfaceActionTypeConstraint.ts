@@ -83,14 +83,11 @@ export function defineInterfaceActionTypeConstraint(
     parameters,
     ...(def.editsValidation !== undefined
       ? {
-          editsValidation:
-            def.editsValidation == null
-              ? null
-              : convertEditsValidationToIr(
-                  def.editsValidation,
-                  def.interfaceType.apiName,
-                  apiNameWithNamespace,
-                ),
+          editsValidation: convertEditsValidationToIr(
+            def.editsValidation,
+            def.interfaceType.apiName,
+            apiNameWithNamespace,
+          ),
         }
       : {}),
     requireImplementation: def.requireImplementation,

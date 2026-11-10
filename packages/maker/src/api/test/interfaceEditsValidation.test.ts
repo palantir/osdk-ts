@@ -23,10 +23,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { InterfaceType } from "../../index.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
+import { defineObject } from "../defineObject.js";
 import { initializeOntologyState } from "../defineOntology.js";
 import type {
   InterfaceActionTypeEditsValidationConditionDefinition,
   InterfaceActionTypeEditsValidationDefinition,
+  InterfaceActionTypeEditsValidationSubjectDefinition,
 } from "../interface/InterfaceActionTypeEditsValidationDefinition.js";
 
 const NS = "com.palantir.";
@@ -147,6 +149,105 @@ describe("edit validation entry IDs", () => {
       "must not be blank",
     );
     expect(iface.actionTypeConstraints).toEqual([]);
+  });
+
+  it("converts object and interface definitions into API names without copying their metadata", () => {
+    const owner = defineInterface({ apiName: "Owner" });
+    const task = defineInterface({ apiName: "Task" });
+    const object = defineObject({
+      apiName: "TaskObject",
+      displayName: "Task",
+      pluralDisplayName: "Tasks",
+      primaryKeyPropertyApiName: "id",
+      titlePropertyApiName: "id",
+      properties: { id: { type: "string" } },
+    });
+    const authored: InterfaceActionTypeEditsValidationDefinition = {
+      condition: {
+        type: "and",
+        and: {
+          conditions: [
+            {
+              type: "entry",
+              entry: {
+                id: "create-object",
+                subject: {
+                  type: "concreteObject",
+                  concreteObject: {
+                    objectType: object,
+                    operation: { type: "create", create: {} },
+                  },
+                },
+              },
+            },
+            {
+              type: "entry",
+              entry: {
+                id: "create-interface-object",
+                subject: {
+                  type: "interfaceObject",
+                  interfaceObject: {
+                    interfaceType: task,
+                    operation: { type: "create", create: {} },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+    const original = structuredClone(authored);
+    const validation = defineConstraint(owner, authored);
+    expect(validation).toEqual({
+      condition: {
+        type: "and",
+        and: {
+          conditions: [
+            {
+              type: "entry",
+              entry: {
+                rid: expect.any(String),
+                subject: {
+                  type: "concreteObject",
+                  concreteObject: {
+                    rid: `${NS}TaskObject`,
+                    operation: { type: "create", create: {} },
+                  },
+                },
+              },
+            },
+            {
+              type: "entry",
+              entry: {
+                rid: expect.any(String),
+                subject: {
+                  type: "interfaceObject",
+                  interfaceObject: {
+                    rid: `${NS}Task`,
+                    operation: { type: "create", create: {} },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+    expect(authored).toEqual(original);
+  });
+
+  it("rejects unknown subject variants before adding the constraint", () => {
+    const task = defineInterface({ apiName: "Task" });
+    const subject = {
+      type: "futureSubject",
+    } as unknown as InterfaceActionTypeEditsValidationSubjectDefinition;
+    expect(() =>
+      defineConstraint(task, {
+        condition: { type: "entry", entry: { id: "unknown", subject } },
+      }),
+    ).toThrow("Unsupported edit validation variant");
+    expect(task.actionTypeConstraints).toEqual([]);
   });
 
   it("requires an authored ID instead of accepting a handwritten RID", () => {

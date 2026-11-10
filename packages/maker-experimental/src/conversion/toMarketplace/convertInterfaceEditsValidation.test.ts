@@ -42,6 +42,10 @@ type InterfaceActionTypeEditsValidationDefinition = NonNullable<
 >;
 type InterfaceActionTypeEditsValidationConditionDefinition =
   InterfaceActionTypeEditsValidationDefinition["condition"];
+type EditsValidationSubject = Extract<
+  InterfaceActionTypeEditsValidationConditionDefinition,
+  { type: "entry" }
+>["entry"]["subject"];
 
 const NS = "com.palantir.";
 const REFERENCES = {
@@ -80,7 +84,7 @@ describe("interface action type constraint edit validations", () => {
     const link = iface.links[0].rid;
     expect(constraint.editsValidation).toEqual(
       withEntryRids(
-        allEdits({
+        allEditsIr({
           object: object.rid,
           interface: iface.rid,
           link,
@@ -95,7 +99,9 @@ describe("interface action type constraint edit validations", () => {
     expect(
       getOntologyDefinition().INTERFACE_TYPE[`${NS}Task`]
         .actionTypeConstraints[0].editsValidation,
-    ).toEqual(withEntryRids(original, constraint.editsValidation!));
+    ).toEqual(
+      withEntryRids(allEditsIr(REFERENCES), constraint.editsValidation!),
+    );
     const known = ontology.knownIdentifiers;
     for (const [rid, mapping] of [
       [object.rid, known.objectTypes],
@@ -112,11 +118,15 @@ describe("interface action type constraint edit validations", () => {
   });
 
   it.each([undefined, null])(
-    "preserves an absent validation (%s)",
+    "preserves an absent validation from IR (%s)",
     async (editsValidation) => {
-      const result = await defineOntologyV2(NS, () =>
-        defineConstraint(defineInterface({ apiName: "Task" }), editsValidation),
-      );
+      const result = await defineOntologyV2(NS, () => {
+        const iface = defineInterface({ apiName: "Task" });
+        defineConstraint(iface);
+        if (editsValidation !== undefined) {
+          iface.actionTypeConstraints[0].editsValidation = editsValidation;
+        }
+      });
       const constraint = Object.values(
         result.ontologyIr.ontology.interfaceTypes,
       )[0].interfaceType.actionTypeConstraints[0];
@@ -156,7 +166,7 @@ describe("interface action type constraint edit validations", () => {
             entry({
               type: "concreteObject",
               concreteObject: {
-                rid: object.apiName,
+                objectType: object,
                 operation: { type: "create", create: {} },
               },
             }),
@@ -164,7 +174,7 @@ describe("interface action type constraint edit validations", () => {
               {
                 type: "interfaceObject",
                 interfaceObject: {
-                  rid: imported.apiName,
+                  interfaceType: imported,
                   operation: { type: "create", create: {} },
                 },
               },
@@ -195,14 +205,14 @@ describe("interface action type constraint edit validations", () => {
             type: "and",
             and: {
               conditions: [
-                entry({
+                entryIr({
                   type: "concreteObject",
                   concreteObject: {
                     rid: objectRid,
                     operation: { type: "create", create: {} },
                   },
                 }),
-                entry(
+                entryIr(
                   {
                     type: "interfaceObject",
                     interfaceObject: {
@@ -428,8 +438,8 @@ describe("interface action type constraint edit validations", () => {
         validation.condition.entry.subject.implementingObjectInterfaceLink;
       invariant(operation.type === "create");
       operation.create[endpoint] = {
-        type: "interfaceParameterConstraintRid",
-        interfaceParameterConstraintRid: "missing",
+        type: "interfaceParameterConstraintApiName" as const,
+        interfaceParameterConstraintApiName: "missing",
       };
       await expect(
         defineOntologyV2(NS, () => {
@@ -448,14 +458,17 @@ describe("interface action type constraint edit validations", () => {
   it.each(["concreteObject", "interfaceObject"] as const)(
     "rejects a missing %s reference",
     async (type) => {
-      const payload = {
-        rid: "com.missing.Type",
-        operation: { type: "create" as const, create: {} },
-      };
-      const subject: OntologyIrInterfaceActionTypeEditsValidationConditionSubject =
+      const operation = { type: "create" as const, create: {} };
+      const subject: EditsValidationSubject =
         type === "concreteObject"
-          ? { type, concreteObject: payload }
-          : { type, interfaceObject: payload };
+          ? {
+              type,
+              concreteObject: { objectType: "com.missing.Type", operation },
+            }
+          : {
+              type,
+              interfaceObject: { interfaceType: "com.missing.Type", operation },
+            };
       await expect(
         defineOntologyV2(NS, () =>
           defineConstraint(defineInterface({ apiName: "Task" }), {
@@ -519,7 +532,7 @@ function defineObjectType() {
 
 function defineConstraint(
   interfaceType: InterfaceType,
-  editsValidation?: InterfaceActionTypeEditsValidationDefinition | null,
+  editsValidation?: InterfaceActionTypeEditsValidationDefinition,
   apiName = "editTask",
 ) {
   defineInterfaceActionTypeConstraint({
@@ -542,7 +555,7 @@ function defineConstraint(
 }
 
 function entry(
-  subject: OntologyIrInterfaceActionTypeEditsValidationConditionSubject,
+  subject: EditsValidationSubject,
   id = 1,
 ): InterfaceActionTypeEditsValidationConditionDefinition {
   return {
@@ -554,7 +567,274 @@ function entry(
   };
 }
 
-function fromParameters(
+function fromParameters(...names: string[]) {
+  return {
+    type: "objectsFromParameterRequirement" as const,
+    objectsFromParameterRequirement: {
+      interfaceParameterConstraintApiNames: names,
+    },
+  };
+}
+
+function linkValidation(
+  link = REFERENCES.link,
+): InterfaceActionTypeEditsValidationDefinition {
+  return {
+    condition: entry({
+      type: "implementingObjectInterfaceLink" as const,
+      implementingObjectInterfaceLink: {
+        type: "create",
+        create: {
+          interfaceLinkTypeApiName: link,
+          source: {
+            type: "anyCompatibleObject" as const,
+            anyCompatibleObject: {},
+          },
+          target: {
+            type: "anyCompatibleObject" as const,
+            anyCompatibleObject: {},
+          },
+        },
+      },
+    }),
+  };
+}
+
+function allEdits(
+  refs: typeof REFERENCES,
+): InterfaceActionTypeEditsValidationDefinition {
+  const requirement = fromParameters(refs.source, refs.target);
+  const anyObject = {
+    type: "anyObjectOfType" as const,
+    anyObjectOfType: {},
+  };
+  const linkRequirement = {
+    type: "implementingObjectInterfaceLink" as const,
+    implementingObjectInterfaceLink: {
+      interfaceLinkTypeApiName: refs.link,
+      interfaceLinkedObjectRequirement: {
+        type: "interfaceParameterConstraintApiName" as const,
+        interfaceParameterConstraintApiName: refs.target,
+      },
+    },
+  };
+  const anyLink = {
+    type: "implementingObjectInterfaceLink" as const,
+    implementingObjectInterfaceLink: {
+      interfaceLinkTypeApiName: refs.link,
+      interfaceLinkedObjectRequirement: {
+        type: "anyCompatibleObject" as const,
+        anyCompatibleObject: {},
+      },
+    },
+  };
+  const link = {
+    interfaceLinkTypeApiName: refs.link,
+    source: {
+      type: "interfaceParameterConstraintApiName" as const,
+      interfaceParameterConstraintApiName: refs.source,
+    },
+    target: {
+      type: "interfaceParameterConstraintApiName" as const,
+      interfaceParameterConstraintApiName: refs.target,
+    },
+  };
+  const subjects: EditsValidationSubject[] = [
+    {
+      type: "concreteObject",
+      concreteObject: {
+        objectType: refs.object,
+        operation: { type: "create", create: {} },
+      },
+    },
+    {
+      type: "concreteObject",
+      concreteObject: {
+        objectType: refs.object,
+        operation: {
+          type: "modify",
+          modify: { editRequirement: requirement },
+        },
+      },
+    },
+    {
+      type: "concreteObject",
+      concreteObject: {
+        objectType: refs.object,
+        operation: { type: "delete", delete: { editRequirement: anyObject } },
+      },
+    },
+    {
+      type: "interfaceObject",
+      interfaceObject: {
+        interfaceType: refs.interface,
+        operation: { type: "create", create: {} },
+      },
+    },
+    {
+      type: "interfaceObject",
+      interfaceObject: {
+        interfaceType: refs.interface,
+        operation: { type: "modify", modify: { editRequirement: anyObject } },
+      },
+    },
+    {
+      type: "interfaceObject",
+      interfaceObject: {
+        interfaceType: refs.interface,
+        operation: {
+          type: "delete",
+          delete: { editRequirement: requirement },
+        },
+      },
+    },
+    {
+      type: "implementingObject",
+      implementingObject: {
+        type: "create",
+        create: {
+          requiredInterfaceLinkCreations: [linkRequirement, anyLink],
+        },
+      },
+    },
+    {
+      type: "implementingObject",
+      implementingObject: {
+        type: "modify",
+        modify: {
+          editRequirement: requirement,
+          requiredInterfaceLinkCreations: [linkRequirement],
+          requiredInterfaceLinkDeletions: [anyLink],
+        },
+      },
+    },
+    {
+      type: "implementingObject",
+      implementingObject: {
+        type: "delete",
+        delete: {
+          editRequirement: requirement,
+          requiredInterfaceLinkDeletions: [linkRequirement],
+        },
+      },
+    },
+    {
+      type: "implementingObjectInterfaceLink" as const,
+      implementingObjectInterfaceLink: { type: "create", create: link },
+    },
+    {
+      type: "implementingObjectInterfaceLink" as const,
+      implementingObjectInterfaceLink: {
+        type: "delete",
+        delete: {
+          ...link,
+          target: {
+            type: "anyCompatibleObject" as const,
+            anyCompatibleObject: {},
+          },
+        },
+      },
+    },
+  ];
+  const conditions = subjects.map((subject, index) =>
+    entry(subject, index + 1),
+  );
+  return {
+    condition: {
+      type: "and",
+      and: {
+        conditions: [
+          conditions[0],
+          { type: "and", and: { conditions: conditions.slice(1) } },
+        ],
+      },
+    },
+  };
+}
+
+function assertInheritedLink(
+  result: Awaited<ReturnType<typeof defineOntologyV2>>,
+  imported: boolean,
+) {
+  const ontology = result.ontologyIr.ontology;
+  const parentOntology = imported
+    ? result.ontologyIr.importedOntology
+    : ontology;
+  const parent = Object.values(parentOntology.interfaceTypes).find(
+    (block) => block.interfaceType.apiName === `${NS}Parent`,
+  )!.interfaceType;
+  const child = Object.values(ontology.interfaceTypes).find(
+    (block) => block.interfaceType.apiName === `${NS}Task`,
+  )!.interfaceType;
+  const linkRid = parent.links[0].rid;
+  expect(child.actionTypeConstraints[0].editsValidation).toEqual(
+    withEntryRids(
+      linkValidationIr(linkRid),
+      getOntologyDefinition().INTERFACE_TYPE[`${NS}Task`]
+        .actionTypeConstraints[0].editsValidation!,
+    ),
+  );
+  const readableId = ReadableIdGenerator.getForInterfaceLinkType(
+    `${NS}Parent`,
+    REFERENCES.link,
+  );
+  expect(
+    (imported ? result.shapes.inputShapes : result.shapes.outputShapes).get(
+      readableId,
+    )?.type,
+  ).toBe("interfaceLinkType");
+  expect(ontology.knownIdentifiers.interfaceLinkTypes[linkRid]).toBe(
+    result.blockDataAddOn.idToBlockShapeId[readableId],
+  );
+  expect(
+    result.shapes.outputShapes.has(
+      ReadableIdGenerator.getForInterfaceLinkType(`${NS}Task`, REFERENCES.link),
+    ),
+  ).toBe(false);
+}
+
+function withEntryRids(
+  expected: OntologyIrInterfaceActionTypeEditsValidation,
+  ir: OntologyIrInterfaceActionTypeEditsValidation,
+): OntologyIrInterfaceActionTypeEditsValidation {
+  function convert(
+    condition: OntologyIrInterfaceActionTypeEditsValidationCondition,
+    irCondition: OntologyIrInterfaceActionTypeEditsValidationCondition,
+  ): OntologyIrInterfaceActionTypeEditsValidationCondition {
+    if (condition.type === "entry") {
+      invariant(irCondition.type === "entry");
+      return {
+        type: "entry",
+        entry: { rid: irCondition.entry.rid, subject: condition.entry.subject },
+      };
+    }
+    invariant(irCondition.type === "and");
+    return {
+      type: "and",
+      and: {
+        conditions: condition.and.conditions.map((child, index) =>
+          convert(child, irCondition.and.conditions[index]),
+        ),
+      },
+    };
+  }
+  return { condition: convert(expected.condition, ir.condition) };
+}
+
+function entryIr(
+  subject: OntologyIrInterfaceActionTypeEditsValidationConditionSubject,
+  id = 1,
+): OntologyIrInterfaceActionTypeEditsValidationCondition {
+  return {
+    type: "entry",
+    entry: {
+      rid: `entry-${id}`,
+      subject,
+    },
+  };
+}
+
+function fromParametersIr(
   ...names: string[]
 ): OntologyIrExistingObjectEditRequirement {
   return {
@@ -565,11 +845,11 @@ function fromParameters(
   };
 }
 
-function linkValidation(
+function linkValidationIr(
   link = REFERENCES.link,
-): InterfaceActionTypeEditsValidationDefinition {
+): OntologyIrInterfaceActionTypeEditsValidation {
   return {
-    condition: entry({
+    condition: entryIr({
       type: "implementingObjectInterfaceLink",
       implementingObjectInterfaceLink: {
         type: "create",
@@ -583,10 +863,10 @@ function linkValidation(
   };
 }
 
-function allEdits(
+function allEditsIr(
   refs: typeof REFERENCES,
-): InterfaceActionTypeEditsValidationDefinition {
-  const requirement = fromParameters(refs.source, refs.target);
+): OntologyIrInterfaceActionTypeEditsValidation {
+  const requirement = fromParametersIr(refs.source, refs.target);
   const anyObject: OntologyIrExistingObjectEditRequirement = {
     type: "anyObjectOfType",
     anyObjectOfType: {},
@@ -718,7 +998,7 @@ function allEdits(
       },
     ];
   const conditions = subjects.map((subject, index) =>
-    entry(subject, index + 1),
+    entryIr(subject, index + 1),
   );
   return {
     condition: {
@@ -731,73 +1011,4 @@ function allEdits(
       },
     },
   };
-}
-
-function assertInheritedLink(
-  result: Awaited<ReturnType<typeof defineOntologyV2>>,
-  imported: boolean,
-) {
-  const ontology = result.ontologyIr.ontology;
-  const parentOntology = imported
-    ? result.ontologyIr.importedOntology
-    : ontology;
-  const parent = Object.values(parentOntology.interfaceTypes).find(
-    (block) => block.interfaceType.apiName === `${NS}Parent`,
-  )!.interfaceType;
-  const child = Object.values(ontology.interfaceTypes).find(
-    (block) => block.interfaceType.apiName === `${NS}Task`,
-  )!.interfaceType;
-  const linkRid = parent.links[0].rid;
-  expect(child.actionTypeConstraints[0].editsValidation).toEqual(
-    withEntryRids(
-      linkValidation(linkRid),
-      getOntologyDefinition().INTERFACE_TYPE[`${NS}Task`]
-        .actionTypeConstraints[0].editsValidation!,
-    ),
-  );
-  const readableId = ReadableIdGenerator.getForInterfaceLinkType(
-    `${NS}Parent`,
-    REFERENCES.link,
-  );
-  expect(
-    (imported ? result.shapes.inputShapes : result.shapes.outputShapes).get(
-      readableId,
-    )?.type,
-  ).toBe("interfaceLinkType");
-  expect(ontology.knownIdentifiers.interfaceLinkTypes[linkRid]).toBe(
-    result.blockDataAddOn.idToBlockShapeId[readableId],
-  );
-  expect(
-    result.shapes.outputShapes.has(
-      ReadableIdGenerator.getForInterfaceLinkType(`${NS}Task`, REFERENCES.link),
-    ),
-  ).toBe(false);
-}
-
-function withEntryRids(
-  authored: InterfaceActionTypeEditsValidationDefinition,
-  ir: OntologyIrInterfaceActionTypeEditsValidation,
-): OntologyIrInterfaceActionTypeEditsValidation {
-  function convert(
-    condition: InterfaceActionTypeEditsValidationConditionDefinition,
-    irCondition: OntologyIrInterfaceActionTypeEditsValidationCondition,
-  ): OntologyIrInterfaceActionTypeEditsValidationCondition {
-    if (condition.type === "entry") {
-      invariant(irCondition.type === "entry");
-      return {
-        type: "entry",
-        entry: { rid: irCondition.entry.rid, subject: condition.entry.subject },
-      };
-    }
-    invariant(irCondition.type === "and");
-    return {
-      type: "and",
-      and: {
-        conditions: condition.and.conditions.map((child, index) =>
-          convert(child, irCondition.and.conditions[index]),
-        ),
-      },
-    };
-  }
-  return { condition: convert(authored.condition, ir.condition) };
 }

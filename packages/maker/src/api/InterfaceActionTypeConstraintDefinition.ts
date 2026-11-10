@@ -34,11 +34,5 @@ export interface InterfaceActionTypeConstraintDefinition {
   description: string;
   requireImplementation: boolean;
   parameters: Array<ParameterConstraintDefinition>;
-  /**
-   * Requires the implementing Action to perform these edits. Use API names for
-   * object, interface, link, and parameter references. Give each entry a stable `id`;
-   * Maker generates its RID from the interface name, constraint name, and entry ID.
-   * Parameters must belong to this constraint; links must belong to this interface or an ancestor.
-   */
-  editsValidation?: InterfaceActionTypeEditsValidationDefinition | null;
+  editsValidation?: InterfaceActionTypeEditsValidationDefinition;
 }

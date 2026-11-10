@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import type { OntologyIrInterfaceActionTypeEditsValidationConditionSubject } from "@osdk/client.unstable";
+import type { ObjectType } from "../object/ObjectType.js";
+import type { ObjectTypeDefinition } from "../object/ObjectTypeDefinition.js";
+import type { InterfaceType } from "./InterfaceType.js";
 
 export interface InterfaceActionTypeEditsValidationDefinition {
   condition: InterfaceActionTypeEditsValidationConditionDefinition;
@@ -30,10 +32,98 @@ export type InterfaceActionTypeEditsValidationConditionDefinition =
     };
 
 export interface InterfaceActionTypeEditsValidationEntryDefinition {
-  /**
-   * An ID that is not blank and is unique within this action type constraint, including nested conditions.
-   * Keep this ID when editing or moving the rule so installations recognize the same entry.
-   */
   id: string;
-  subject: OntologyIrInterfaceActionTypeEditsValidationConditionSubject;
+  subject: InterfaceActionTypeEditsValidationSubjectDefinition;
 }
+
+export type InterfaceActionTypeEditsValidationSubjectDefinition =
+  | {
+      type: "concreteObject";
+      concreteObject: {
+        objectType: ObjectType | ObjectTypeDefinition | string;
+        operation: ObjectEditsOperationDefinition;
+      };
+    }
+  | {
+      type: "interfaceObject";
+      interfaceObject: {
+        interfaceType: InterfaceType | string;
+        operation: ObjectEditsOperationDefinition;
+      };
+    }
+  | {
+      type: "implementingObject";
+      implementingObject: ImplementingObjectEditsDefinition;
+    }
+  | {
+      type: "implementingObjectInterfaceLink";
+      implementingObjectInterfaceLink: InterfaceLinkEditsDefinition;
+    };
+
+export type ObjectEditsOperationDefinition =
+  | { type: "create"; create: Record<string, never> }
+  | {
+      type: "modify";
+      modify: { editRequirement: ExistingObjectEditRequirementDefinition };
+    }
+  | {
+      type: "delete";
+      delete: { editRequirement: ExistingObjectEditRequirementDefinition };
+    };
+
+export type ExistingObjectEditRequirementDefinition =
+  | { type: "anyObjectOfType"; anyObjectOfType: Record<string, never> }
+  | {
+      type: "objectsFromParameterRequirement";
+      objectsFromParameterRequirement: {
+        interfaceParameterConstraintApiNames: string[];
+      };
+    };
+
+export type ImplementingObjectEditsDefinition =
+  | {
+      type: "create";
+      create: {
+        requiredInterfaceLinkCreations: InterfaceLinkRequirementDefinition[];
+      };
+    }
+  | {
+      type: "modify";
+      modify: {
+        editRequirement: ExistingObjectEditRequirementDefinition;
+        requiredInterfaceLinkCreations: InterfaceLinkRequirementDefinition[];
+        requiredInterfaceLinkDeletions: InterfaceLinkRequirementDefinition[];
+      };
+    }
+  | {
+      type: "delete";
+      delete: {
+        editRequirement: ExistingObjectEditRequirementDefinition;
+        requiredInterfaceLinkDeletions: InterfaceLinkRequirementDefinition[];
+      };
+    };
+
+export interface InterfaceLinkRequirementDefinition {
+  type: "implementingObjectInterfaceLink";
+  implementingObjectInterfaceLink: {
+    interfaceLinkTypeApiName: string;
+    interfaceLinkedObjectRequirement: InterfaceLinkedObjectRequirementDefinition;
+  };
+}
+
+export type InterfaceLinkEditsDefinition =
+  | { type: "create"; create: InterfaceLinkEditDefinition }
+  | { type: "delete"; delete: InterfaceLinkEditDefinition };
+
+export interface InterfaceLinkEditDefinition {
+  interfaceLinkTypeApiName: string;
+  source: InterfaceLinkedObjectRequirementDefinition;
+  target: InterfaceLinkedObjectRequirementDefinition;
+}
+
+export type InterfaceLinkedObjectRequirementDefinition =
+  | { type: "anyCompatibleObject"; anyCompatibleObject: Record<string, never> }
+  | {
+      type: "interfaceParameterConstraintApiName";
+      interfaceParameterConstraintApiName: string;
+    };
