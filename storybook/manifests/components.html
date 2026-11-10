@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">43/43 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">43/43 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">14/196 story errors</a></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">43/43 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">43/43 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">14/197 story errors</a></div>
   </div>
 </header>
 <main>
@@ -21610,7 +21610,7 @@ export const ActivePage: Story = {
       <div class="badges">
         <label for="c-40-components-actionform-features-err" class="badge err as-toggle">prop type error</label>
         <label for="c-40-components-actionform-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-40-components-actionform-features-stories" class="badge err as-toggle">10/13 story errors</label>
+        <label for="c-40-components-actionform-features-stories" class="badge err as-toggle">10/14 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx">components-actionform-features · ./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx</div>
@@ -21632,13 +21632,13 @@ export const ActivePage: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;UpdateEmployeeActionFormStory&quot; component.
-  337 | }
-  338 |
-&gt; 339 | const meta = {
+  338 | }
+  339 |
+&gt; 340 | const meta = {
       | ^
-  340 |   title: &quot;Components/ActionForm/Features&quot;,
-  341 |   component: UpdateEmployeeActionFormStory,
-  342 |   tags: [&quot;beta&quot;],
+  341 |   title: &quot;Components/ActionForm/Features&quot;,
+  342 |   component: UpdateEmployeeActionFormStory,
+  343 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx:
 /*
@@ -21670,6 +21670,7 @@ import React, { useCallback, useState } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
 
 import {
+  submissionCriteriaStoryAction,
   unsupportedFieldsStoryAction,
   updateEmployeeStoryAction,
 } from &quot;../../../mocks/fauxFoundry.js&quot;;
@@ -22649,6 +22650,88 @@ function ControlledActionFormStory(): React.ReactElement {
     &lt;/FormStoryLayout&gt;
   );
 }
+
+const submissionCriteriaActionDefinition =
+  submissionCriteriaStoryAction.actionDefinition;
+
+function SubmissionCriteriaActionFormStory(): React.ReactElement {
+  const [submission, setSubmission] = useState&lt;StorySubmissionSnapshot&gt;({
+    status: &quot;idle&quot;,
+  });
+
+  const handleSuccess = useCallback(
+    (result: ActionEditResponse | undefined) =&gt; {
+      setSubmission({
+        status: &quot;success&quot;,
+        submittedValues: {},
+        response: result,
+      });
+      successSpy(result);
+    },
+    [],
+  );
+
+  const handleError = useCallback((error: { type: string; error: unknown }) =&gt; {
+    setSubmission((prev) =&gt; ({ ...prev, status: &quot;error&quot;, error }));
+    errorSpy(error);
+  }, []);
+
+  return (
+    &lt;FormStoryLayout
+      output={
+        &lt;SubmissionOutputPanel
+          idleMessage=&quot;Submit the form to see the validation response.&quot;
+          snapshot={submission}
+        /&gt;
+      }
+    &gt;
+      &lt;ActionForm
+        actionDefinition={submissionCriteriaActionDefinition}
+        onError={handleError}
+        onSuccess={handleSuccess}
+        showFormTitle={true}
+      /&gt;
+    &lt;/FormStoryLayout&gt;
+  );
+}
+
+export const SubmissionCriteriaFailure: Story = {
+  render: () =&gt; &lt;SubmissionCriteriaActionFormStory /&gt;,
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
+      name: /^fullName/u,
+    });
+    const submitButton = await canvas.findByRole(&quot;button&quot;, {
+      name: /submit/iu,
+    });
+
+    await userEvent.type(fullNameInput, &quot;Ada Lovelace&quot;);
+    await userEvent.click(submitButton);
+
+    await waitFor(() =&gt;
+      expect(canvas.getByText(&quot;2 issues&quot;)).toBeInTheDocument(),
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Demonstrates server-side submission criteria validation. The action&#39;s validate endpoint returns INVALID submission criteria, which appear in the footer error indicator without applying the action.&quot;,
+      },
+      source: {
+        code: `// When the action has submission criteria configured in Foundry,
+// ActionForm validates before applying. Failed criteria appear in the
+// footer error indicator alongside any field-level errors.
+&lt;ActionForm
+  actionDefinition={submissionCriteriaStoryAction}
+  onError={(error) =&gt; console.log(&quot;Error&quot;, error)}
+  onSuccess={(result) =&gt; console.log(&quot;Applied&quot;, result)}
+/&gt;`,
+      },
+    },
+  },
+};
 </code></pre></div>
     </div>
         </div>
@@ -22800,6 +22883,15 @@ function ControlledActionFormStory(): React.ReactElement {
               
               
               <pre><code>const WithSections = () =&gt; &lt;SectionsActionFormStory /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Submission Criteria Failure</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SubmissionCriteriaFailure = () =&gt; &lt;SubmissionCriteriaActionFormStory /&gt;;</code></pre>
             </div>
         </div>
   </div>
@@ -39535,7 +39627,7 @@ export const ActivePage: Story = {
       <div class="badges">
         <label for="c-error-31-components-actionform-features-err" class="badge err as-toggle">prop type error</label>
         <label for="c-error-31-components-actionform-features-info" class="badge info as-toggle">1 info</label>
-        <label for="c-error-31-components-actionform-features-stories" class="badge err as-toggle">10/13 story errors</label>
+        <label for="c-error-31-components-actionform-features-stories" class="badge err as-toggle">10/14 story errors</label>
       </div>
     </div>
     <div class="meta" title="./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx">components-actionform-features · ./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx</div>
@@ -39557,13 +39649,13 @@ export const ActivePage: Story = {
     <div class="note err">
       <div class="note-title">Prop type error</div>
       <div class="note-body"><pre><code>No component file found for the &quot;UpdateEmployeeActionFormStory&quot; component.
-  337 | }
-  338 |
-&gt; 339 | const meta = {
+  338 | }
+  339 |
+&gt; 340 | const meta = {
       | ^
-  340 |   title: &quot;Components/ActionForm/Features&quot;,
-  341 |   component: UpdateEmployeeActionFormStory,
-  342 |   tags: [&quot;beta&quot;],
+  341 |   title: &quot;Components/ActionForm/Features&quot;,
+  342 |   component: UpdateEmployeeActionFormStory,
+  343 |   tags: [&quot;beta&quot;],
 
 ./src/stories/ActionForm/Features/ActionFormFeatures.stories.tsx:
 /*
@@ -39595,6 +39687,7 @@ import React, { useCallback, useState } from &quot;react&quot;;
 import { expect, fn, userEvent, waitFor, within } from &quot;storybook/test&quot;;
 
 import {
+  submissionCriteriaStoryAction,
   unsupportedFieldsStoryAction,
   updateEmployeeStoryAction,
 } from &quot;../../../mocks/fauxFoundry.js&quot;;
@@ -40574,6 +40667,88 @@ function ControlledActionFormStory(): React.ReactElement {
     &lt;/FormStoryLayout&gt;
   );
 }
+
+const submissionCriteriaActionDefinition =
+  submissionCriteriaStoryAction.actionDefinition;
+
+function SubmissionCriteriaActionFormStory(): React.ReactElement {
+  const [submission, setSubmission] = useState&lt;StorySubmissionSnapshot&gt;({
+    status: &quot;idle&quot;,
+  });
+
+  const handleSuccess = useCallback(
+    (result: ActionEditResponse | undefined) =&gt; {
+      setSubmission({
+        status: &quot;success&quot;,
+        submittedValues: {},
+        response: result,
+      });
+      successSpy(result);
+    },
+    [],
+  );
+
+  const handleError = useCallback((error: { type: string; error: unknown }) =&gt; {
+    setSubmission((prev) =&gt; ({ ...prev, status: &quot;error&quot;, error }));
+    errorSpy(error);
+  }, []);
+
+  return (
+    &lt;FormStoryLayout
+      output={
+        &lt;SubmissionOutputPanel
+          idleMessage=&quot;Submit the form to see the validation response.&quot;
+          snapshot={submission}
+        /&gt;
+      }
+    &gt;
+      &lt;ActionForm
+        actionDefinition={submissionCriteriaActionDefinition}
+        onError={handleError}
+        onSuccess={handleSuccess}
+        showFormTitle={true}
+      /&gt;
+    &lt;/FormStoryLayout&gt;
+  );
+}
+
+export const SubmissionCriteriaFailure: Story = {
+  render: () =&gt; &lt;SubmissionCriteriaActionFormStory /&gt;,
+  play: async ({ canvasElement }) =&gt; {
+    const canvas = within(canvasElement);
+    const fullNameInput = await canvas.findByRole(&quot;textbox&quot;, {
+      name: /^fullName/u,
+    });
+    const submitButton = await canvas.findByRole(&quot;button&quot;, {
+      name: /submit/iu,
+    });
+
+    await userEvent.type(fullNameInput, &quot;Ada Lovelace&quot;);
+    await userEvent.click(submitButton);
+
+    await waitFor(() =&gt;
+      expect(canvas.getByText(&quot;2 issues&quot;)).toBeInTheDocument(),
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          &quot;Demonstrates server-side submission criteria validation. The action&#39;s validate endpoint returns INVALID submission criteria, which appear in the footer error indicator without applying the action.&quot;,
+      },
+      source: {
+        code: `// When the action has submission criteria configured in Foundry,
+// ActionForm validates before applying. Failed criteria appear in the
+// footer error indicator alongside any field-level errors.
+&lt;ActionForm
+  actionDefinition={submissionCriteriaStoryAction}
+  onError={(error) =&gt; console.log(&quot;Error&quot;, error)}
+  onSuccess={(result) =&gt; console.log(&quot;Applied&quot;, result)}
+/&gt;`,
+      },
+    },
+  },
+};
 </code></pre></div>
     </div>
         </div>
@@ -40725,6 +40900,15 @@ function ControlledActionFormStory(): React.ReactElement {
               
               
               <pre><code>const WithSections = () =&gt; &lt;SectionsActionFormStory /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Submission Criteria Failure</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SubmissionCriteriaFailure = () =&gt; &lt;SubmissionCriteriaActionFormStory /&gt;;</code></pre>
             </div>
         </div>
   </div>
