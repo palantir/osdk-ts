@@ -97,6 +97,7 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
 
     this.#requiresServerEvaluation = !!(
+      (baseWire.type !== "base" && baseWire.type !== "interfaceBase") ||
       operations.pivotTo ||
       (operations.union && operations.union.length > 0) ||
       (operations.intersect && operations.intersect.length > 0) ||
@@ -220,11 +221,13 @@ export class ObjectSetQuery extends BaseListQuery<
       !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType, invalidationSet } =
+      const { resultType, counts, invalidationSet } =
         await getObjectTypesThatInvalidate(
           this.store.client[additionalContext],
           wireObjectSet,
         );
+      this.#resultTypeApiName = resultType.apiName;
+      this.#objectTypes = new Set([resultType.apiName, ...Object.keys(counts)]);
       this.sortingStrategy = new OrderBySortingStrategy(
         resultType.apiName,
         this.#operations.orderBy,
@@ -238,7 +241,8 @@ export class ObjectSetQuery extends BaseListQuery<
 
     if (
       this.#rdpInvalidationSet == null &&
-      this.#operations.withProperties != null
+      (this.#requiresServerEvaluation ||
+        this.#operations.withProperties != null)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
       this.#rdpInvalidationSet =
@@ -452,10 +456,13 @@ export class ObjectSetQuery extends BaseListQuery<
     wireObjectSet: WireObjectSet,
   ): Promise<Set<string>> {
     try {
-      const { invalidationSet } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
+      const { resultType, counts, invalidationSet } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+      this.#resultTypeApiName = resultType.apiName;
+      this.#objectTypes = new Set([resultType.apiName, ...Object.keys(counts)]);
       return invalidationSet;
     } catch (error) {
       this.store.logger?.error(

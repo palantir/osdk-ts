@@ -15,8 +15,13 @@
  */
 
 import type { ObjectSet } from "@osdk/api";
-import { Employee, Office } from "@osdk/client.test.ontology";
-import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
+import { Employee, moveOffice, Office } from "@osdk/client.test.ontology";
+import {
+  FauxFoundry,
+  ontologies,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it, vitest } from "vitest";
 
 import type { Client } from "../../../Client.js";
@@ -50,6 +55,13 @@ describe("ObjectSetQuery cache reconciliation", () => {
 
     const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
     ontologies.addEmployeeOntology(fauxOntology);
+    fauxOntology.registerActionType(stubData.MoveOffice, (batch, payload) => {
+      batch.modifyObject<typeof Office>(
+        Office.apiName,
+        payload.parameters.officeId as string,
+        { capacity: payload.parameters.newCapacity as number },
+      );
+    });
 
     return () => {
       testSetup.apiServer.close();
@@ -257,6 +269,153 @@ describe("ObjectSetQuery cache reconciliation", () => {
         expect.objectContaining({ $primaryKey: 2, fullName: "Robert" }),
       ]),
     );
+    expect(observer.error).not.toHaveBeenCalled();
+  });
+
+  it("refreshes a filtered base after actions and explicit invalidation without admitting nonmembers", async () => {
+    const { dataStore } = setupEmployees();
+    const shared = dataStore.registerObject(Office, {
+      officeId: "shared",
+      capacity: 20,
+    });
+    dataStore.registerObject(Office, { officeId: "other", capacity: 1 });
+    const observableClient = createObservableClient(client);
+    const observer = mockObserver<ObserveObjectSetArgs<typeof Office>>();
+    defer(
+      observableClient.observeObjectSet(
+        client(Office).where({ capacity: { $gt: 10 } }),
+        {},
+        observer,
+      ),
+    );
+    const initial = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(initial.resolvedList?.map((o) => o.$primaryKey)).toEqual(["shared"]);
+
+    observer.next.mockClear();
+    await observableClient.applyAction(moveOffice, {
+      officeId: "other",
+      newCapacity: 5,
+    });
+    const afterExcludedEdit = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(afterExcludedEdit.resolvedList?.map((o) => o.$primaryKey)).toEqual([
+      "shared",
+    ]);
+
+    observer.next.mockClear();
+    await observableClient.applyAction(moveOffice, {
+      officeId: "other",
+      newCapacity: 30,
+    });
+    const afterMatchingEdit = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(
+      new Set(afterMatchingEdit.resolvedList?.map((o) => o.$primaryKey)),
+    ).toEqual(new Set(["shared", "other"]));
+
+    observer.next.mockClear();
+    dataStore.replaceObjectOrThrow({ ...shared, capacity: 5 });
+    await observableClient.invalidateObjectType(Office);
+    const afterInvalidation = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(afterInvalidation.resolvedList?.map((o) => o.$primaryKey)).toEqual([
+      "other",
+    ]);
+    expect(observer.error).not.toHaveBeenCalled();
+  });
+
+  it("refreshes a pivoted base when its source or result objects change without admitting unrelated objects", async () => {
+    const { dataStore, alice, bob } = setupEmployees();
+    const shared = dataStore.registerObject(Office, {
+      officeId: "shared",
+      capacity: 5,
+    });
+    const other = dataStore.registerObject(Office, {
+      officeId: "other",
+      capacity: 20,
+    });
+    dataStore.registerLink(alice, "officeLink", shared, "occupants");
+    dataStore.registerLink(bob, "officeLink", other, "occupants");
+    const linkedAlice = dataStore.getObjectOrThrow(Employee.apiName, 1);
+    const observableClient = createObservableClient(client);
+    const observer = mockObserver<ObserveObjectSetArgs<typeof Office>>();
+    defer(
+      observableClient.observeObjectSet(
+        client(Employee).where({ fullName: "Alice" }).pivotTo("officeLink"),
+        { where: { capacity: { $gt: 10 } } },
+        observer,
+      ),
+    );
+    const initial = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(initial.resolvedList).toEqual([]);
+
+    observer.next.mockClear();
+    await observableClient.applyAction(moveOffice, {
+      officeId: "shared",
+      newCapacity: 30,
+    });
+    const afterAction = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(afterAction.resolvedList?.map((o) => o.$primaryKey)).toEqual([
+      "shared",
+    ]);
+
+    observer.next.mockClear();
+    const sibling = mockObserver<ObserveObjectsCallbackArgs<typeof Office>>();
+    defer(
+      observableClient.observeList({ type: Office, mode: "force" }, sibling),
+    );
+    await waitForPayload(sibling, (p) => p.status === "loaded");
+    const afterCacheLoad = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(afterCacheLoad.resolvedList?.map((o) => o.$primaryKey)).toEqual([
+      "shared",
+    ]);
+
+    observer.next.mockClear();
+    dataStore.replaceObjectOrThrow({ ...linkedAlice, fullName: "Alison" });
+    await loadAllEmployees(observableClient);
+    const afterSourceEdit = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(afterSourceEdit.resolvedList).toEqual([]);
+
+    observer.next.mockClear();
+    dataStore.replaceObjectOrThrow(linkedAlice);
+    await observableClient.invalidateObjectType(Employee);
+    const afterSourceInvalidation = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(
+      afterSourceInvalidation.resolvedList?.map((o) => o.$primaryKey),
+    ).toEqual(["shared"]);
+
+    observer.next.mockClear();
+    dataStore.replaceObjectOrThrow({ ...shared, capacity: 5 });
+    await observableClient.invalidateObjectType(Office);
+    const afterResultInvalidation = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(afterResultInvalidation.resolvedList).toEqual([]);
     expect(observer.error).not.toHaveBeenCalled();
   });
 
