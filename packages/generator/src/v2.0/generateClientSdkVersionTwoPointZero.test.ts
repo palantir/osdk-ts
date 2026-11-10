@@ -1059,7 +1059,7 @@ describe("generator", () => {
           }
 
           export interface SessionState extends $AgentSessionState {
-            arguments: { city: string };
+            arguments: { city: $AgentResult.PrimitiveType<'string'> };
             agentState: { data: Record<string, never> };
             contextItems: Record<string, ContextItem>;
           }
@@ -1073,7 +1073,7 @@ describe("generator", () => {
           export type Events = Record<never, never>;
 
           export interface CreateSessionArguments {
-            readonly city: string;
+            readonly city: $AgentParam.PrimitiveType<'string'>;
           }
         }
 
@@ -1827,7 +1827,7 @@ describe("generator", () => {
           }
 
           export interface SessionState extends $AgentSessionState {
-            arguments: { city: string };
+            arguments: { city: $AgentResult.PrimitiveType<'string'> };
             agentState: { data: Record<string, never> };
             contextItems: Record<string, ContextItem>;
           }
@@ -1841,7 +1841,7 @@ describe("generator", () => {
           export type Events = Record<never, never>;
 
           export interface CreateSessionArguments {
-            readonly city: string;
+            readonly city: $AgentParam.PrimitiveType<'string'>;
           }
         }
 
