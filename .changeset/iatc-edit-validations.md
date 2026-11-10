@@ -1,6 +1,5 @@
 ---
 "@osdk/maker": patch
-"@osdk/maker-experimental": patch
 ---
 
-Support edit validation in interface action type constraints
+Support interface action type constraint edit validations with stable entry IDs and named entity references.
