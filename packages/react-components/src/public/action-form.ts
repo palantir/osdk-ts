@@ -25,6 +25,7 @@ export type {
   ActionFormProps,
   ActionFormSectionDefinition,
   BaseFormProps,
+  FormErrorEntry,
   FormContentItem,
   FormError,
   FormSectionDefinition,
