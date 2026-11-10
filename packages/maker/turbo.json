@@ -1,0 +1,13 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "test": {
+      "dependsOn": [
+        "^transpileEsm",
+        "transpileEsm",
+        "@osdk/api#transpileTypes",
+        "@osdk/client#transpileTypes"
+      ]
+    }
+  }
+}

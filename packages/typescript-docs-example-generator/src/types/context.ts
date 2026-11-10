@@ -65,6 +65,7 @@ export interface BaseTemplateContext {
   hasAttachmentUpload: boolean;
   hasAttachmentProperty: boolean;
   hasParameters: boolean;
+  useTypedActionParameters: boolean;
   actionParameterSampleValuesV2: string | ActionParameterSampleValue[];
   last: boolean;
   needsImports: boolean;

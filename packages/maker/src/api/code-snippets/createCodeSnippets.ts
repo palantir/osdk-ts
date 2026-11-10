@@ -17,6 +17,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
+import { getActionTypeSdkName } from "@osdk/generator-converters";
 import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import { consola } from "consola";
 import Mustache from "mustache";
@@ -99,8 +100,9 @@ function generateObjectSnippet(objectType: ObjectType, packageName: string) {
 
 function generateActionSnippet(actionType: ActionType, packageName: string) {
   const actionContext = {
-    actionApiName: actionType.apiName,
+    actionApiName: getActionTypeSdkName(actionType.apiName).split(".").pop(),
     packageName: packageName,
+    useTypedActionParameters: (actionType.parameters?.length ?? 0) > 0,
   };
   return getSnippets(actionSnippets, actionContext);
 }
@@ -112,7 +114,7 @@ function getSnippets(
     | typeof objectSnippets,
   context: {},
 ) {
-  const allSnippets = {};
+  const allSnippets: Record<string, string> = {};
   for (const templateName of Object.keys(snippetType).filter((key) =>
     isNaN(Number(key)),
   )) {
@@ -126,7 +128,7 @@ function getSnippets(
     const renderedTemplate = Mustache.render(latestTemplate, context);
     const snippetName = snippetNameMapping.get(templateName);
 
-    (allSnippets as any)[
+    allSnippets[
       snippetName !== undefined
         ? Mustache.render(snippetName, context)
         : templateName

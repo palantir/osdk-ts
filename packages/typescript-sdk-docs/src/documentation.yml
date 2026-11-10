@@ -1296,7 +1296,7 @@ versions:
             {{/hasAttachmentProperty}}
             import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            async function callAction() {
+            async function callAction({{#useTypedActionParameters}}parameters: {{actionApiName}}.Params{{/useTypedActionParameters}}) {
             {{#hasAttachmentProperty}}
                 // Create attachment upload
                 const attachmentFile = await fetch("file.json");
@@ -1317,11 +1317,11 @@ versions:
 
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
-                    {
+                    {{#useTypedActionParameters}}parameters{{/useTypedActionParameters}}{{^useTypedActionParameters}}{
                         {{#actionParameterSampleValuesV2}}
                         "{{key}}": {{{value}}},
                         {{/actionParameterSampleValuesV2}}
-                    },
+                    }{{/useTypedActionParameters}},
                     {
                         $returnEdits: true,
                     }
@@ -1353,7 +1353,7 @@ versions:
             {{/hasAttachmentProperty}}
             import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            async function callBatchAction() {
+            async function callBatchAction({{#useTypedActionParameters}}parameters: ReadonlyArray<{{actionApiName}}.Params>{{/useTypedActionParameters}}) {
             {{#hasAttachmentProperty}}
                 // Create attachment upload
                 const attachmentFile = await fetch("file.json");
@@ -1371,7 +1371,7 @@ versions:
                 const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
 
             {{/hasMediaParameter}}
-                const result = await client({{actionApiName}}).batchApplyAction([
+                const result = await client({{actionApiName}}).batchApplyAction({{#useTypedActionParameters}}parameters{{/useTypedActionParameters}}{{^useTypedActionParameters}}[
                         {
                             {{#actionParameterSampleValuesV2}}
                             "{{key}}": {{{value}}},
@@ -1382,7 +1382,7 @@ versions:
                             "{{key}}": {{{value}}},
                             {{/actionParameterSampleValuesV2}}
                         },
-                    ],
+                    ]{{/useTypedActionParameters}},
                     {
                         $returnEdits: true,
                     }
@@ -2246,7 +2246,7 @@ versions:
             {{/hasAttachmentProperty}}
             import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            async function callAction() {
+            async function callAction({{#useTypedActionParameters}}parameters: {{actionApiName}}.Params{{/useTypedActionParameters}}) {
             {{#hasAttachmentProperty}}
                 // Create attachment upload
                 const attachmentFile = await fetch("file.json");
@@ -2268,11 +2268,11 @@ versions:
 
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
-                    {
+                    {{#useTypedActionParameters}}parameters{{/useTypedActionParameters}}{{^useTypedActionParameters}}{
                         {{#actionParameterSampleValuesV2}}
                         "{{key}}": {{{value}}},
                         {{/actionParameterSampleValuesV2}}
-                    },
+                    }{{/useTypedActionParameters}},
                     {
                         $returnEdits: true,
                     }
@@ -2304,7 +2304,7 @@ versions:
             {{/hasAttachmentProperty}}
             import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            async function callBatchAction() {
+            async function callBatchAction({{#useTypedActionParameters}}parameters: ReadonlyArray<{{actionApiName}}.Params>{{/useTypedActionParameters}}) {
             {{#hasAttachmentProperty}}
                 // Create attachment upload
                 const attachmentFile = await fetch("file.json");
@@ -2323,7 +2323,7 @@ versions:
                 const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
 
             {{/hasMediaParameter}}
-                const result = await client({{actionApiName}}).batchApplyAction([
+                const result = await client({{actionApiName}}).batchApplyAction({{#useTypedActionParameters}}parameters{{/useTypedActionParameters}}{{^useTypedActionParameters}}[
                         {
                             {{#actionParameterSampleValuesV2}}
                             "{{key}}": {{{value}}},
@@ -2334,7 +2334,7 @@ versions:
                             "{{key}}": {{{value}}},
                             {{/actionParameterSampleValuesV2}}
                         },
-                    ],
+                    ]{{/useTypedActionParameters}},
                     {
                         $returnEdits: true,
                     }
