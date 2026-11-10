@@ -1,5 +1,7 @@
 # @osdk/api
 
+## 2.89.0
+
 ## 2.88.0
 
 ### Minor Changes

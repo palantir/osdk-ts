@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.89.0
+
+### Minor Changes
+
+- 62ebddd: Add typed event names and payloads to agent sessions.
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+- @osdk/client.unstable@2.89.0
+- @osdk/generator-converters@2.89.0
+- @osdk/shared.test@2.61.0
+
 ## 2.88.0
 
 ### Minor Changes

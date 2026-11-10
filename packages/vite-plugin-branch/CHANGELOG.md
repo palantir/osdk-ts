@@ -1,5 +1,7 @@
 # @osdk/vite-plugin-branch
 
+## 2.89.0
+
 ## 2.88.0
 
 ## 2.87.0
