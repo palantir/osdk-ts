@@ -22,3 +22,7 @@ declare const client: Client;
 const agent = client(weatherAgent);
 void agent.experimental_createSession({ city: "London" });
 void agent.experimental_getSession("session-id");
+const created = await agent.experimental_createSession({ city: "London" });
+const retrieved = await agent.experimental_getSession("session-id");
+void created.experimental_sendEvent({ LookupWeather: { city: "Paris" } });
+void retrieved.experimental_sendEvent({ LookupWeather: { city: "Paris" } });

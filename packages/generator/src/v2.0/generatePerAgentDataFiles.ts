@@ -98,6 +98,19 @@ async function generateAgentFile(
   const createSessionArgs = agent.raw.argumentDefinitions;
   // TODO(mhogberg): Use isOptional instead of checking nullable here once it is available in the public API.
   const optional = createSessionArgs.every(p => p.dataType.type === "nullable");
+  const eventNames = agent.raw.eventDefinitions.map(event => event.eventType);
+  const sendEventArguments =
+    eventNames.map(name =>
+      `{ ${
+        eventNames.map(eventName =>
+          eventName === name
+            ? `readonly ${JSON.stringify(eventName)}: Events[${
+              JSON.stringify(eventName)
+            }];`
+            : `readonly ${JSON.stringify(eventName)}?: never;`
+        ).join("\n")
+      } }`
+    ).join(" | ") || "never";
 
   await fs.writeFile(
     path.join(outDir, `${name}.ts`),
@@ -105,7 +118,7 @@ async function generateAgentFile(
       import type { VersionBound as $VersionBound } from "${
       forInternalUse ? "@osdk/api" : "@osdk/client"
     }";
-      import type { AgentDefinition as $AgentDefinition, AgentParam as $AgentParam, AgentSession as $AgentSession } from "${
+      import type { AgentDefinition as $AgentDefinition, AgentParam as $AgentParam, AgentSession as $AgentSession, AgentSendEventOptions as $AgentSendEventOptions } from "${
       forInternalUse ? "@osdk/api/unstable" : "@osdk/client/experimental"
     }";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
@@ -117,8 +130,32 @@ async function generateAgentFile(
         export interface Signatures {
           experimental_createSession(args${
       optional ? "?" : ""
-    }: ${name}.CreateSessionArguments): Promise<$AgentSession>;
+    }: ${name}.CreateSessionArguments): Promise<${name}.Session>;
+          experimental_getSession(sessionId: string): Promise<${name}.Session>;
         }
+
+        export interface Session extends $AgentSession {
+          experimental_sendEvent(
+            event: SendEventArguments,
+            $options?: $AgentSendEventOptions,
+          ): Promise<void>;
+        }
+
+        export type SendEventArguments = ${sendEventArguments};
+
+        ${
+      agent.raw.eventDefinitions.length === 0
+        ? "export type Events = Record<never, never>;"
+        : `export interface Events { ${
+          agentFields(
+            ontology,
+            agent.raw.eventDefinitions.map(event => ({
+              name: event.eventType,
+              dataType: event.payloadType,
+            })),
+          )
+        } }`
+    }
 
         ${
       createSessionArgs.length === 0
