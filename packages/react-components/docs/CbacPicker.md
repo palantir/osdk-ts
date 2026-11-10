@@ -48,7 +48,7 @@ function ClassificationForm() {
 }
 ```
 
-This renders a marking picker that fetches categories and markings via the OSDK, displays them grouped by category, and shows a classification banner. The server enforces marking restrictions automatically — the picker reflects which markings are implied, disallowed, or required based on the current selection.
+This renders a marking picker that fetches CBAC categories and markings via the OSDK, displays them grouped by category, and shows a classification banner. The server enforces marking restrictions automatically — the picker reflects which markings are implied, disallowed, or required based on the current selection.
 
 ### Picker in a Dialog
 
@@ -299,6 +299,8 @@ function groupMarkingsByCategory(
 ```
 
 Groups a flat list of markings into `CategoryMarkingGroup` arrays, ordered by category.
+
+Categories are ordered by descending `priority`. Within a category, `COMMON` markings come first, then `UNCOMMON`, then markings without a `prominence`, each group by descending `priority`. `CbacBannerPopover` uses the same order.
 
 ## Examples
 

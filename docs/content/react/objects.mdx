@@ -120,14 +120,14 @@ const { data } = useOsdkObjects(Employee, {
 
 ### Search text
 
-String properties support four search operators. `$containsAnyTerm` and `$containsAllTerms` also accept `{ term, fuzzySearch: true }` to tolerate small typos.
+String properties support four search operators. `$containsAnyTerm` and `$containsAllTerms` also accept `{ term, fuzzySearch: true }` to tolerate small typos. All four accept `{ term, phoneticSearch: true }`, which matches similarly pronounced terms, such as `Jon` and `John`, on properties with phonetic search enabled. A filter cannot set both `fuzzySearch` and `phoneticSearch`; combine the two with `$or`.
 
-| Operator | Matches | Fuzzy | Example value | Matches `"Senior Software Engineer"` |
-| --- | --- | --- | --- | --- |
-| `$startsWith` | Values that begin with the prefix | No | `"Senior"` | Yes |
-| `$containsAnyTerm` | Values that contain any of the space-separated terms | Yes | `"designer engineer"` | Yes |
-| `$containsAllTerms` | Values that contain every term, in any order | Yes | `"engineer senior"` | Yes |
-| `$containsAllTermsInOrder` | Values that contain every term, in this order | No | `"engineer senior"` | No |
+| Operator | Matches | Fuzzy | Phonetic | Example value | Matches `"Senior Software Engineer"` |
+| --- | --- | --- | --- | --- | --- |
+| `$startsWith` | Values that begin with the prefix | No | Yes | `"Senior"` | Yes |
+| `$containsAnyTerm` | Values that contain any of the space-separated terms | Yes | Yes | `"designer engineer"` | Yes |
+| `$containsAllTerms` | Values that contain every term, in any order | Yes | Yes | `"engineer senior"` | Yes |
+| `$containsAllTermsInOrder` | Values that contain every term, in this order | No | Yes | `"engineer senior"` | No |
 
 A search box that waits for two characters before it queries:
 

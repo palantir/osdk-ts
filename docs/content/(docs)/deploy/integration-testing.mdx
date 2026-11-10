@@ -154,7 +154,7 @@ export const baseSeed = createSeedWithMetadata(metadata, (seed) => {
 });
 ```
 
-`create` throws when an object of that type with the same primary key already exists, and when the properties do not match the metadata.
+`create` throws when an object of that type with the same primary key already exists, and when the properties do not match the metadata. A non-primary-key property set to `undefined` is allowed, even when the metadata marks it required, and is left empty.
 
 </Step>
 <Step>
@@ -248,7 +248,7 @@ Returns a `Promise<IntegrationServer>`. Creating the server writes the metadata 
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `metadata` | `OntologyFullMetadata` | | The Ontology metadata to serve. Required. |
+| `metadata` | `OntologyFullMetadata` | | The Ontology metadata to serve. Required. Interfaces that object types implement but the metadata does not include are dropped, with a warning. |
 | `foundryCliPath` | `string` | `foundry` on `PATH` | Path to the Foundry CLI binary. |
 | `projectPath` | `string` | The working directory | An existing directory to create the server's `.test-run-*` directory in. Servers that share a `projectPath` stay isolated. |
 
@@ -273,7 +273,7 @@ Every method applies the full seed to the server before it resolves.
 | `set(output?)` | Replaces the whole seed with `output` and applies it. With no argument, clears all data. |
 | `addAll(output)` | Merges a `SeedOutput` into the current seed. |
 | `create(type, props)` | Creates an object and resolves to its reference. Throws if the primary key already exists. |
-| `update(ref, props)` | Merges `props` into the object, leaving other properties unchanged. Creates the object if it does not exist. |
+| `update(ref, props)` | Merges `props` into the object, leaving omitted properties unchanged. A property set to `undefined` is cleared. Creates the object if it does not exist. |
 | `delete(ref)` | Removes the object. Does nothing if it does not exist. |
 | `link(source, linkName, target)` | Links `source` to one reference, or an array for many-valued links. Re-adding a link does nothing. |
 | `unlink(source, linkName, target)` | Removes matching links. Does nothing if none exist. |

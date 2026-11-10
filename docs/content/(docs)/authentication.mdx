@@ -289,7 +289,7 @@ const ontologyRid = import.meta.env.VITE_FOUNDRY_ONTOLOGY_RID;
 export const client = createClient(foundryUrl, ontologyRid, createAuthlessClient());
 ```
 
-The **React (Public)** template of `@osdk/create-app` sets this up, including the request proxy it relies on.
+The **React (Public)** template of `@osdk/create-app` sets this up, including the request proxy it relies on. It reads the Foundry URL and Ontology RID from the `osdk-foundryUrl` and `osdk-ontologyRid` `<meta>` tags instead of environment variables, so a Marketplace installation uses its destination's Foundry URL and Ontology.
 
 ## Use an existing token
 

@@ -98,7 +98,7 @@ A version mismatch usually shows up as one of these errors:
 | Error | Cause | Fix |
 | --- | --- | --- |
 | `"<name>" is not exported by @osdk/client/.../observable.js` (or `@osdk/api/...`) | `@osdk/client` or `@osdk/api` is on a different release line than `@osdk/react`, often a prerelease paired with stable versions. | Install the exact `@osdk/client` and `@osdk/api` versions that match `@osdk/react`. |
-| npm or pnpm peer warning for `@osdk/client` or `@osdk/api` | The declared peer ranges are broader than the real coupling. | Pin the matching versions instead of ignoring the warning. |
+| npm or pnpm peer warning for `@osdk/client` or `@osdk/api` | The declared peer ranges allow newer `@osdk/client` and `@osdk/api` releases than `@osdk/react` was built with, and, since `2.87.0`, warn on older ones. | Pin the matching versions instead of ignoring the warning. |
 
 <Accordions>
   <Accordion title="Find matching versions for an older @osdk/react">

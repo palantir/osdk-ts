@@ -6,7 +6,10 @@
 
 ```typescript
 import { ActionForm } from "@osdk/react-components/action-form";
-import type { FormFieldDefinition } from "@osdk/react-components/action-form";
+import type {
+  ActionFormContentItem,
+  FormFieldDefinition,
+} from "@osdk/react-components/action-form";
 ```
 
 ## Basic Usage
@@ -57,7 +60,8 @@ Type parameters: `Q extends ActionDefinition<unknown>`
 | Render a form directly from an OSDK action and submit with `applyAction` | `ActionForm`                             |
 | Override generated fields for an OSDK action                             | `ActionForm` with `formFieldDefinitions` |
 | Build a form from manually-authored field definitions                    | `BaseForm`                               |
-| Compose sections, standalone fields, or custom form layouts              | `BaseForm`                               |
+| Group an OSDK action's fields into sections, or order standalone fields | `ActionForm` with `formContentDefinitions` |
+| Build a custom form layout without an OSDK action                        | `BaseForm`                               |
 
 ## Default Field Rendering
 
@@ -85,7 +89,7 @@ Required validation is inferred from the action parameter's nullability. Additio
 | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Backend action validation                   | The form does not call backend validation before submit and does not process validation-derived displays, allowed values, defaults, or section results.                                                       | Use `formFieldDefinitions` validation props, field-level `validate`, `onSubmit`, and `onError` for app-owned checks and submission error handling.      |
 | Unsupported generated parameter types       | `marking`, `geohash`, `geoshape`, `objectType`, `interface`, and `struct` render as disabled unsupported fields by default.                                                                                   | Override those parameters with `fieldComponent: "CUSTOM"` or another compatible component in `formFieldDefinitions`.                                    |
-| Action-authored layout metadata             | Action-defined sections, form content ordering, section validation, and layout toggles are not read from metadata. Fields render in metadata parameter order unless fully replaced by `formFieldDefinitions`. | Use `BaseForm` with explicit `FormContentItem` sections when you need custom grouping, or control field order with `formFieldDefinitions`.              |
+| Action-authored layout metadata             | Action-defined sections, form content ordering, section validation, and layout toggles are not read from metadata. Fields render in metadata parameter order unless fully replaced by `formFieldDefinitions`. | Group fields with `formContentDefinitions` sections, or control field order with `formFieldDefinitions`.                                                |
 | Conditional logic and dynamic display state | Backend-driven hidden, disabled, required, and allowed-value rules are not evaluated as the user edits the form.                                                                                              | Encode static display state in field definitions, or manage dynamic state in your app and pass updated `formFieldDefinitions` / controlled `formState`. |
 | Defaults and prefills                       | Backend prefills, type-class defaults, current timestamp defaults, and validation-derived default values are not applied automatically.                                                                       | Provide `defaultValue` in field definitions, seed controlled `formState`, or compute defaults in app code before rendering.                             |
 
@@ -123,6 +127,39 @@ const fields = [
 
 <ActionForm actionDefinition={updateEmployee} formFieldDefinitions={fields} />;
 ```
+
+## Sections
+
+Use `formContentDefinitions` instead of `formFieldDefinitions` to group fields into sections. Each item is either `{ type: "field", definition }` or `{ type: "section", key, definition }`, and items render in array order. Like `formFieldDefinitions`, the list replaces the generated fields.
+
+```tsx
+const content = [
+  { type: "field", definition: fields[0] },
+  {
+    type: "section",
+    key: "details",
+    definition: {
+      title: "Details",
+      description: "Optional employment details",
+      columnCount: 2,
+      collapsedByDefault: true,
+      fields: [fields[1], fields[2]],
+    },
+  },
+] satisfies Array<ActionFormContentItem<typeof updateEmployee>>;
+
+<ActionForm actionDefinition={updateEmployee} formContentDefinitions={content} />;
+```
+
+| Section option       | Default | Description                                                    |
+| -------------------- | ------- | -------------------------------------------------------------- |
+| `title`              |         | Section heading.                                               |
+| `description`        |         | Text under the heading.                                        |
+| `fields`             |         | The fields in the section.                                     |
+| `collapsedByDefault` | `false` | Starts collapsed.                                              |
+| `showTitleBar`       | `true`  | Shows the title bar.                                           |
+| `columnCount`        | `1`     | `1` or `2` columns.                                            |
+| `style`              | `"box"` | `"box"` renders a bordered card, `"minimal"` only the heading. |
 
 ### Rich dropdown labels
 
@@ -209,6 +246,7 @@ const fields = [
 ## Behavior Notes
 
 - `formFieldDefinitions` replaces generated fields. Passing one custom field means only that field renders.
+- Pass `formFieldDefinitions` or `formContentDefinitions`, not both.
 - `fieldKey` must match the action parameter key; submitted form state uses the same keys.
 - `fieldComponentProps` should not include `value`, `onChange`, or `id`; form state wiring provides those.
 - Controlled mode requires both `formState` and `onFormStateChange`.

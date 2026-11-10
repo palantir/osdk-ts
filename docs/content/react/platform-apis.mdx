@@ -163,6 +163,7 @@ export function MarkingList() {
 | --- | --- | --- | --- |
 | `useMarkings` | `includeDeleted` | `true` | `markings`: `Marking[]`, each with `id`, `categoryId`, `name`, `description`, and `deleted`. |
 | `useMarkingCategories` | `includeDeleted` | `true` | `categories`: `MarkingCategory[]`, each with `id`, `name`, `description`, `markings` (marking IDs), and `deleted`. |
+| Both | `markingType` | All types | Only markings or categories of this type, such as `"CBAC"`. |
 
 Both accept `enabled` and return `isLoading`, `error`, and `refetch`. Deleted entries are included unless you pass `includeDeleted: false`.
 

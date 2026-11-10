@@ -94,7 +94,7 @@ Each entry in `properties` maps an API name to a property definition. Only `type
 | --- | --- | --- |
 | Boolean | `"boolean"` | |
 | Integers | `"byte"`, `"short"`, `"integer"`, `"long"` | |
-| Decimals | `"float"`, `"double"`, `"decimal"` | `{ type: "decimal", precision?: number, scale?: number }` sets precision and scale. |
+| Decimals | `"float"`, `"double"`, `"decimal"` | `{ type: "decimal", precision?: number, scale?: number }` sets precision and scale, which default to 5 and 2. |
 | String | `"string"` | `{ type: "string", ... }` sets search options; see below. |
 | Date and time | `"date"`, `"timestamp"` | |
 | Attachment | `"attachment"` | |

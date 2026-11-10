@@ -40,10 +40,10 @@ const page = await client(Employee)
 | `$in` | Non-array, non-geo | An array of values | Any value in the array. An empty array matches every object. |
 | `$isNull` | All | `boolean` | `true`: the property has no value. `false`: it has one. |
 | `$gt`, `$gte`, `$lt`, `$lte` | Numbers, strings, dates, timestamps | A value of the property's type | Greater than, greater or equal, less than, less or equal. Strings compare lexicographically. |
-| `$startsWith` | `string` | `string` | Values that contain the terms adjacent and in order, with the last term matched as a prefix. The match can start anywhere in the value. |
-| `$containsAnyTerm` | `string` | `string`, or `{ term, fuzzySearch? }` | Values that contain any of the whitespace-separated terms. |
-| `$containsAllTerms` | `string` | `string`, or `{ term, fuzzySearch? }` | Values that contain all the terms, in any order. |
-| `$containsAllTermsInOrder` | `string` | `string` | Values that contain all the terms, adjacent and in order. |
+| `$startsWith` | `string` | `string`, or `{ term, phoneticSearch? }` | Values that contain the terms adjacent and in order, with the last term matched as a prefix. The match can start anywhere in the value. |
+| `$containsAnyTerm` | `string` | `string`, `{ term, fuzzySearch? }`, or `{ term, phoneticSearch? }` | Values that contain any of the whitespace-separated terms. |
+| `$containsAllTerms` | `string` | `string`, `{ term, fuzzySearch? }`, or `{ term, phoneticSearch? }` | Values that contain all the terms, in any order. |
+| `$containsAllTermsInOrder` | `string` | `string`, or `{ term, phoneticSearch? }` | Values that contain all the terms, adjacent and in order. |
 | `$interval` | `string` | An interval rule | Term proximity, ordering, prefix, and fuzzy matches. See [Interval rules](#interval-rules). |
 | `$matchesRegex` | `string` | `string` | Beta. Values that match the regular expression, in the Foundry search syntax. |
 | `$contains` | Array properties | An element value, or a filter on elements | Arrays with at least one element that matches. |
@@ -103,6 +103,19 @@ import { client } from "./client";
 
 const engineers = client(Employee).where({
   jobTitle: { $containsAnyTerm: { term: "enginer", fuzzySearch: true } },
+});
+```
+
+### Phonetic matching
+
+Every text operator also takes `{ term, phoneticSearch: true }`, which matches similarly pronounced terms, such as `Jon` and `John`. The property must support phonetic search, set with `supportsPhonetic` in [Ontology as code](/ontology-as-code/object-types). `fuzzySearch` and `phoneticSearch` cannot both be `true`; use `$or` to combine them.
+
+```ts title="src/phonetic.ts"
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const soundsLikeJon = client(Employee).where({
+  fullName: { $containsAnyTerm: { term: "Jon", phoneticSearch: true } },
 });
 ```
 
