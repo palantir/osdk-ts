@@ -45,6 +45,15 @@ describe("ObjectSpecifier Utilities", () => {
       const primaryKey = extractPrimaryKeyFromObjectSpecifier(specifier);
       expect(primaryKey).toBe("12345");
     });
+
+    it("keeps colons that are part of the primary key", () => {
+      const specifier = createObjectSpecifierFromPrimaryKey(
+        mockObjectTypeDefinition,
+        "2024-01-01T12:30:00Z",
+      );
+      const primaryKey = extractPrimaryKeyFromObjectSpecifier(specifier);
+      expect(primaryKey).toBe("2024-01-01T12:30:00Z");
+    });
   });
 
   describe("extractObjectTypeFromObjectSpecifier", () => {
