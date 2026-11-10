@@ -21,11 +21,7 @@ import type {
   OntologyIrInterfaceActionTypeEditsValidationConditionSubject,
   OntologyIrInterfaceLinkRequirement,
 } from "@osdk/client.unstable";
-import type {
-  InterfaceActionTypeEditsValidationConditionDefinition,
-  InterfaceActionTypeEditsValidationDefinition,
-  InterfaceType,
-} from "@osdk/maker";
+import type { InterfaceType } from "@osdk/maker";
 import {
   defineInterface,
   defineInterfaceActionTypeConstraint,
@@ -40,6 +36,12 @@ import { describe, expect, it } from "vitest";
 
 import { defineOntologyV2 } from "../../api/defineOntologyV2.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
+
+type InterfaceActionTypeEditsValidationDefinition = NonNullable<
+  Parameters<typeof defineInterfaceActionTypeConstraint>[0]["editsValidation"]
+>;
+type InterfaceActionTypeEditsValidationConditionDefinition =
+  InterfaceActionTypeEditsValidationDefinition["condition"];
 
 const NS = "com.palantir.";
 const REFERENCES = {

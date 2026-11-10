@@ -20,14 +20,14 @@ import type {
 } from "@osdk/client.unstable";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import type {
-  InterfaceActionTypeEditsValidationConditionDefinition,
-  InterfaceActionTypeEditsValidationDefinition,
-  InterfaceType,
-} from "../../index.js";
+import type { InterfaceType } from "../../index.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
 import { initializeOntologyState } from "../defineOntology.js";
+import type {
+  InterfaceActionTypeEditsValidationConditionDefinition,
+  InterfaceActionTypeEditsValidationDefinition,
+} from "../interface/InterfaceActionTypeEditsValidationDefinition.js";
 
 const NS = "com.palantir.";
 
