@@ -29,8 +29,6 @@ jobs:
           # Anyone with write access can post a status, so take only the job
           # number from it and confirm with CircleCI that the job really is a
           # successful build-storybook of this commit.
-          # CircleCI has linked statuses both by job number and, since Nov 2026,
-          # by workflow and job UUID; the latter is resolved to a job number.
           uuid='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
           job=
           if [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
