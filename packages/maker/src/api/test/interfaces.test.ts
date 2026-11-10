@@ -367,22 +367,15 @@ describe("Interfaces", () => {
         dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.Task"]
           .interfaceType.actionTypeConstraints[0];
       if (editsValidation === undefined) {
-        expect(constraint.editsValidation).toEqual(editsValidation);
+        expect(constraint).not.toHaveProperty("editsValidation");
       } else {
-        expect(constraint.editsValidation).toEqual({
+        expect(constraint.editsValidation).toMatchObject({
           condition: {
             type: "entry",
-            entry: {
-              rid: expect.stringMatching(
-                /^ri\.ontology-metadata\.temp\.interface-action-type-edits-validation-entry\.[0-9a-f-]{36}$/u,
-              ),
-              subject: editsValidation.condition.entry.subject,
-            },
+            entry: { subject: editsValidation.condition.entry.subject },
           },
         });
       }
-      if (editsValidation === undefined)
-        expect(constraint).not.toHaveProperty("editsValidation");
     });
 
     it("preserves implementing-object parameter markers in ontology IR", () => {

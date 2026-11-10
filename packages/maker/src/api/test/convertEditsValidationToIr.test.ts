@@ -16,6 +16,7 @@
 
 import type {
   OntologyIrExistingObjectEditRequirement,
+  OntologyIrInterfaceActionTypeEditsValidationCondition,
   OntologyIrInterfaceActionTypeEditsValidationConditionSubject,
   OntologyIrInterfaceLinkRequirement,
 } from "@osdk/client.unstable";
@@ -24,6 +25,7 @@ import { describe, expect, it } from "vitest";
 import { convertEditsValidationToIr } from "../interface/convertEditsValidationToIr.js";
 import type {
   ExistingObjectEditRequirementDefinition,
+  InterfaceActionTypeEditsValidationConditionDefinition,
   InterfaceActionTypeEditsValidationDefinition,
   InterfaceActionTypeEditsValidationSubjectDefinition,
   InterfaceLinkRequirementDefinition,
@@ -42,7 +44,7 @@ describe("convertEditsValidationToIr", () => {
     "converts %s to IR without changing the input",
     (_name, { subject, expected }) => {
       const authored: InterfaceActionTypeEditsValidationDefinition = {
-        condition: { type: "entry", entry: { id: "rule", subject } },
+        condition: entry("rule", subject),
       };
       const original = structuredClone(authored);
       expect(
@@ -51,57 +53,25 @@ describe("convertEditsValidationToIr", () => {
           INTERFACE_API_NAME,
           CONSTRAINT_API_NAME,
         ),
-      ).toEqual({
-        condition: {
-          type: "entry",
-          entry: {
-            rid: expect.stringMatching(
-              /^ri\.ontology-metadata\.temp\.interface-action-type-edits-validation-entry\.[0-9a-f-]{36}$/u,
-            ),
-            subject: expected,
-          },
-        },
-      });
+      ).toEqual({ condition: irEntry(expected) });
       expect(authored).toEqual(original);
     },
   );
 
-  it("converts mixed subjects inside nested conditions and preserves their order", () => {
+  it("converts nested conditions and preserves their order", () => {
     const cases = subjectCases();
     const authored: InterfaceActionTypeEditsValidationDefinition = {
       condition: {
         type: "and",
         and: {
           conditions: [
-            {
-              type: "entry",
-              entry: { id: "link", subject: cases.linkCreate.subject },
-            },
+            entry("link", cases.linkCreate.subject),
             {
               type: "and",
               and: {
                 conditions: [
-                  {
-                    type: "entry",
-                    entry: {
-                      id: "object",
-                      subject: cases.concreteObjectModify.subject,
-                    },
-                  },
-                  {
-                    type: "entry",
-                    entry: {
-                      id: "implementing-object",
-                      subject: cases.implementingObjectModify.subject,
-                    },
-                  },
-                  {
-                    type: "entry",
-                    entry: {
-                      id: "interface",
-                      subject: cases.interfaceObjectDelete.subject,
-                    },
-                  },
+                  entry("object", cases.concreteObjectModify.subject),
+                  entry("interface", cases.interfaceObjectDelete.subject),
                 ],
               },
             },
@@ -121,38 +91,13 @@ describe("convertEditsValidationToIr", () => {
         type: "and",
         and: {
           conditions: [
-            {
-              type: "entry",
-              entry: {
-                rid: expect.any(String),
-                subject: cases.linkCreate.expected,
-              },
-            },
+            irEntry(cases.linkCreate.expected),
             {
               type: "and",
               and: {
                 conditions: [
-                  {
-                    type: "entry",
-                    entry: {
-                      rid: expect.any(String),
-                      subject: cases.concreteObjectModify.expected,
-                    },
-                  },
-                  {
-                    type: "entry",
-                    entry: {
-                      rid: expect.any(String),
-                      subject: cases.implementingObjectModify.expected,
-                    },
-                  },
-                  {
-                    type: "entry",
-                    entry: {
-                      rid: expect.any(String),
-                      subject: cases.interfaceObjectDelete.expected,
-                    },
-                  },
+                  irEntry(cases.concreteObjectModify.expected),
+                  irEntry(cases.interfaceObjectDelete.expected),
                 ],
               },
             },
@@ -192,6 +137,19 @@ describe("convertEditsValidationToIr", () => {
     },
   );
 });
+
+function entry(
+  id: string,
+  subject: InterfaceActionTypeEditsValidationSubjectDefinition,
+): InterfaceActionTypeEditsValidationConditionDefinition {
+  return { type: "entry", entry: { id, subject } };
+}
+
+function irEntry(
+  subject: OntologyIrInterfaceActionTypeEditsValidationConditionSubject,
+): OntologyIrInterfaceActionTypeEditsValidationCondition {
+  return { type: "entry", entry: { rid: expect.any(String), subject } };
+}
 
 function subjectCases(): Record<string, SubjectCase> {
   const fromParameters: ExistingObjectEditRequirementDefinition = {

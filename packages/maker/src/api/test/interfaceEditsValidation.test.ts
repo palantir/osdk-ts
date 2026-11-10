@@ -18,7 +18,7 @@ import type {
   OntologyIrInterfaceActionTypeEditsValidation,
   OntologyIrInterfaceActionTypeEditsValidationCondition,
 } from "@osdk/client.unstable";
-import { beforeEach, describe, expect, it } from "vitest";
+import { assert, beforeEach, describe, expect, it } from "vitest";
 
 import type { InterfaceType } from "../../index.js";
 import { defineInterface } from "../defineInterface.js";
@@ -199,41 +199,27 @@ describe("edit validation entry IDs", () => {
     };
     const original = structuredClone(authored);
     const validation = defineConstraint(owner, authored);
-    expect(validation).toEqual({
-      condition: {
-        type: "and",
-        and: {
-          conditions: [
-            {
-              type: "entry",
-              entry: {
-                rid: expect.any(String),
-                subject: {
-                  type: "concreteObject",
-                  concreteObject: {
-                    rid: `${NS}TaskObject`,
-                    operation: { type: "create", create: {} },
-                  },
-                },
-              },
-            },
-            {
-              type: "entry",
-              entry: {
-                rid: expect.any(String),
-                subject: {
-                  type: "interfaceObject",
-                  interfaceObject: {
-                    rid: `${NS}Task`,
-                    operation: { type: "create", create: {} },
-                  },
-                },
-              },
-            },
-          ],
+    assert(validation.condition.type === "and");
+    const subjects = validation.condition.and.conditions.map((condition) => {
+      assert(condition.type === "entry");
+      return condition.entry.subject;
+    });
+    expect(subjects).toEqual([
+      {
+        type: "concreteObject",
+        concreteObject: {
+          rid: `${NS}TaskObject`,
+          operation: { type: "create", create: {} },
         },
       },
-    });
+      {
+        type: "interfaceObject",
+        interfaceObject: {
+          rid: `${NS}Task`,
+          operation: { type: "create", create: {} },
+        },
+      },
+    ]);
     expect(authored).toEqual(original);
   });
 
