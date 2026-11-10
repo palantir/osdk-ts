@@ -195,7 +195,7 @@ export function objectSetToSearchJsonV2(
 export function resolveInterfaceObjectSet(
   objectSet: ObjectSet,
   interfaceTypeApiName: string,
-  args: FetchPageArgs<any, any, any, any, any, any>,
+  args: { $includeAllBaseObjectProperties?: boolean },
 ): ObjectSet {
   return args?.$includeAllBaseObjectProperties
     ? {
@@ -310,17 +310,32 @@ export async function fetchStaticRidPage<
 }
 
 async function fetchInterfacePage<
-  Q extends InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
+  A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
+  PROPERTY_SECURITIES extends boolean,
 >(
   client: MinimalClient,
-  interfaceType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
+  interfaceType: Q & InterfaceDefinition,
+  args: FetchPageArgs<
+    Q,
+    L,
+    R,
+    A,
+    S,
+    T,
+    never,
+    ORDER_BY_OPTIONS,
+    PROPERTY_SECURITIES
+  >,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+): Promise<
+  FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
+> {
   const extractedInterfaceTypeApiName =
     (await extractObjectOrInterfaceType(client, objectSet))?.apiName ??
     interfaceType.apiName;
@@ -410,7 +425,9 @@ async function fetchInterfacePage<
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
+  }) as unknown as Promise<
+    FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
+  >;
 }
 
 /** @internal */
@@ -441,39 +458,23 @@ export async function fetchPageInternal<
 ): Promise<
   FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
 > {
-  if (objectType.type === "interface") {
-    return (await fetchInterfacePage(
-      client,
-      objectType,
-      args as FetchPageArgs<
-        InterfaceDefinition,
-        L,
-        R,
-        A,
-        S,
-        T,
-        never,
-        ORDER_BY_OPTIONS
-      >,
-      objectSet,
-    )) as any; // fixme
+  if (isInterfaceDefinition(objectType)) {
+    return await fetchInterfacePage(client, objectType, args, objectSet);
   } else {
-    return (await fetchObjectPage(
+    // TS does not narrow a generic in the false branch of a type guard
+    return await fetchObjectPage(
       client,
-      objectType,
-      args as FetchPageArgs<
-        ObjectTypeDefinition,
-        L,
-        R,
-        A,
-        S,
-        T,
-        never,
-        ORDER_BY_OPTIONS
-      >,
+      objectType as Q & ObjectTypeDefinition,
+      args,
       objectSet,
-    )) as any; // fixme
+    );
   }
+}
+
+function isInterfaceDefinition<Q extends ObjectOrInterfaceDefinition>(
+  objectType: Q,
+): objectType is Q & InterfaceDefinition {
+  return objectType.type === "interface";
 }
 
 /** @internal */
@@ -484,12 +485,26 @@ export async function fetchPageWithErrorsInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
+  PROPERTY_SECURITIES extends boolean = false,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T> = {},
-): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
+  args: FetchPageArgs<
+    Q,
+    L,
+    R,
+    A,
+    S,
+    T,
+    never,
+    ORDER_BY_OPTIONS,
+    PROPERTY_SECURITIES
+  > = {},
+): Promise<
+  Result<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>>
+> {
   try {
     const result = await fetchPageInternal(client, objectType, objectSet, args);
     return { value: result };
@@ -552,6 +567,8 @@ async function buildAndRemapRequestBody<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
+  PROPERTY_SECURITIES extends boolean,
   RequestBody extends {
     objectSet: ObjectSet;
     orderBy?: SearchOrderByV2;
@@ -562,7 +579,17 @@ async function buildAndRemapRequestBody<
     loadPropertySecurity?: boolean;
   },
 >(
-  args: FetchPageArgs<Q, L, R, A, S, T>,
+  args: FetchPageArgs<
+    Q,
+    L,
+    R,
+    A,
+    S,
+    T,
+    never,
+    ORDER_BY_OPTIONS,
+    PROPERTY_SECURITIES
+  >,
   baseBody: RequestBody,
   client: MinimalClient,
   objectType: Q,
@@ -726,18 +753,32 @@ async function applyFetchArgs<
 
 /** @internal */
 export async function fetchObjectPage<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
+  A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
+  PROPERTY_SECURITIES extends boolean,
 >(
   client: MinimalClient,
-  objectType: Q,
-  args: FetchPageArgs<Q, L, R, Augments, S, T, never, ORDER_BY_OPTIONS>,
+  objectType: Q & ObjectTypeDefinition,
+  args: FetchPageArgs<
+    Q,
+    L,
+    R,
+    A,
+    S,
+    T,
+    never,
+    ORDER_BY_OPTIONS,
+    PROPERTY_SECURITIES
+  >,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
+): Promise<
+  FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
+> {
   // For simple object fetches, since we know the object type up front
   // we can parallelize network requests for loading metadata and loading the actual objects
   // In our object factory we await and block on loading the metadata, which if this call finishes, should already be cached on the client
@@ -815,5 +856,7 @@ export async function fetchObjectPage<
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>>;
+  }) as unknown as Promise<
+    FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
+  >;
 }

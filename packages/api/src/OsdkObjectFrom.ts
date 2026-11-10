@@ -239,10 +239,21 @@ export type Osdk<
             ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>
           >;
 
+/**
+ * Adds `$score` only when ordering by exactly `"relevance"`. The outer check
+ * distributes (which keeps implementations assignable to the generic
+ * signatures); `_ALL_ORDER_BY_OPTIONS` captures the undistributed type so the
+ * default `OrderByOptions` union (no `$orderBy` given) does not add `$score`.
+ */
 export type MaybeScore<
   T extends Osdk.Instance<any>,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>,
-> = ORDER_BY_OPTIONS extends "relevance" ? T & { $score: number } : T;
+  _ALL_ORDER_BY_OPTIONS = ORDER_BY_OPTIONS,
+> = ORDER_BY_OPTIONS extends "relevance"
+  ? [_ALL_ORDER_BY_OPTIONS] extends ["relevance"]
+    ? T & { $score: number }
+    : T
+  : T;
 
 type ReducedValues<Q extends ObjectOrInterfaceDefinition> =
   | `${PropsWithOnlyMainValue<Q> & string}:applyMainValue`

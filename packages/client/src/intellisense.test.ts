@@ -265,8 +265,8 @@ describe("intellisense", () => {
   it("orderBySuggestionIsRight", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 30,
-      offset: 15,
+      line: 29,
+      offset: 14,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
     expect(resp.body?.entries.map((e) => e.name)).toEqual([
@@ -296,12 +296,36 @@ describe("intellisense", () => {
     // order by relevance
     const { resp: resp3 } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 40,
+      line: 39,
       offset: 14,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
 
     expect(resp3.body?.entries.map((e) => e.name)).toEqual(["relevance"]);
+
+    // order by properties that are not selected
+    const { resp: resp4 } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 44,
+      offset: 14,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(resp4.body?.entries.map((e) => e.name)).toEqual([
+      "bonusHistory",
+      "class",
+      "employeeId",
+      "employeeLocation",
+      "employeeProfile",
+      "employeeSensor",
+      "employeeStatus",
+      "favoriteRestaurants",
+      "fullName",
+      "office",
+      "performanceScores",
+      "skillSet",
+      "skillSetEmbedding",
+      "startDate",
+    ]);
   });
 
   it(
