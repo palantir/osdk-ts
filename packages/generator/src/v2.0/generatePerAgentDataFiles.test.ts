@@ -15,6 +15,7 @@
  */
 
 import { LegacyFauxFoundry, stubData } from "@osdk/shared.test";
+import * as ts from "typescript";
 import { describe, expect, it } from "vitest";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
@@ -215,6 +216,7 @@ describe(generatePerAgentDataFiles, () => {
       }],
     };
     const helper = createMockMinimalFiles();
+
     await generatePerAgentDataFiles({
       fs: helper.minimalFiles,
       outDir: "/foo",
@@ -228,7 +230,164 @@ describe(generatePerAgentDataFiles, () => {
       importExt: ".js",
       agentVersionReferences: new Map(),
     });
+    const files = helper.getFiles();
+    const sourceFile = ts.createSourceFile(
+      "escapingAgent.ts",
+      files["/foo/ontology/agents/escapingAgent.ts"],
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    const parseDiagnostics =
+      (sourceFile as unknown as { parseDiagnostics: ts.Diagnostic[] })
+        .parseDiagnostics;
+
+    expect(files).toMatchSnapshot();
+    expect(parseDiagnostics).toHaveLength(0);
+  });
+
+  it("generates special schema keys", async () => {
+    const definition: WireAgentDefinitionVersion = {
+      ...agent,
+      argumentDefinitions: ["constructor", "toString", "__proto__"].map(
+        name => ({
+          name,
+          dataType: {
+            type: "discriminatedUnion",
+            discriminatorKey: "kind",
+            members: [{
+              discriminatorValue: name,
+              fields: [{ name, dataType: { type: "string" } }],
+            }],
+          },
+        }),
+      ),
+      eventDefinitions: [{
+        eventType: "__proto__",
+        payloadType: { type: "string" },
+      }],
+      contextItemDefinitions: [{
+        contextItemType: "constructor",
+        dataType: { type: "string" },
+      }],
+    };
+    const helper = createMockMinimalFiles();
+    const ontology = enhanceOntology({
+      sanitized: {
+        ...ontologyMetadata,
+        agents: { [definition.apiName]: definition },
+      },
+      importExt: ".js",
+    });
+
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology,
+      importExt: ".js",
+      agentVersionReferences: new Map(),
+    });
+
+    const files = helper.getFiles();
+    const sourceFile = ts.createSourceFile(
+      `${definition.apiName}.ts`,
+      files[`/foo/ontology/agents/${definition.apiName}.ts`],
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    const parseDiagnostics =
+      (sourceFile as unknown as { parseDiagnostics: ts.Diagnostic[] })
+        .parseDiagnostics;
+
+    expect(files).toMatchSnapshot();
+    expect(parseDiagnostics).toHaveLength(0);
+  });
+
+  it("preserves unknown types", async () => {
+    const definition: WireAgentDefinitionVersion = {
+      ...agent,
+      agentStateType: {
+        type: "futureType",
+      } as unknown as WireAgentDefinitionVersion["agentStateType"],
+    };
+    const helper = createMockMinimalFiles();
+    const ontology = enhanceOntology({
+      sanitized: {
+        ...ontologyMetadata,
+        agents: { [definition.apiName]: definition },
+      },
+      importExt: ".js",
+    });
+
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology,
+      importExt: ".js",
+      agentVersionReferences: new Map(),
+    });
+
     expect(helper.getFiles()).toMatchSnapshot();
+  });
+
+  it("generates identical definitions regardless of schema field ordering", async () => {
+    const cases = [false, true].map(reverse => {
+      const ordered = <T>(values: T[]): T[] =>
+        reverse ? [...values].reverse() : values;
+      const fields: WireAgentDefinitionVersion["argumentDefinitions"] = ordered(
+        [
+          { name: "z", dataType: { type: "string" } },
+          { name: "a", dataType: { type: "integer" } },
+        ],
+      );
+      const definition: WireAgentDefinitionVersion = {
+        ...agent,
+        argumentDefinitions: ordered([
+          { name: "z", dataType: { type: "struct", fields } },
+          {
+            name: "a",
+            dataType: {
+              type: "discriminatedUnion",
+              discriminatorKey: "kind",
+              members: ordered([
+                { discriminatorValue: "z", fields },
+                { discriminatorValue: "a", fields },
+              ]),
+            },
+          },
+        ]),
+        eventDefinitions: ordered([
+          { eventType: "z", payloadType: { type: "struct", fields } },
+          { eventType: "a", payloadType: { type: "string" } },
+        ]),
+        contextItemDefinitions: ordered([
+          { contextItemType: "z", dataType: { type: "struct", fields } },
+          { contextItemType: "a", dataType: { type: "string" } },
+        ]),
+        agentStateType: { type: "struct", fields },
+      };
+      const helper = createMockMinimalFiles();
+      const ontology = enhanceOntology({
+        sanitized: {
+          ...ontologyMetadata,
+          agents: { [definition.apiName]: definition },
+        },
+        importExt: ".js",
+      });
+      return { helper, ontology };
+    });
+
+    for (const { helper, ontology } of cases) {
+      await generatePerAgentDataFiles({
+        fs: helper.minimalFiles,
+        outDir: "/foo",
+        ontology,
+        importExt: ".js",
+        agentVersionReferences: new Map(),
+      });
+    }
+    const generated = cases.map(({ helper }) => helper.getFiles());
+
+    expect(generated[0]).toEqual(generated[1]);
   });
 
   it.each(["empty", "omitted"])(
