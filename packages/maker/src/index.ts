@@ -116,6 +116,11 @@ export type {
   InterfaceSchemaMigrations,
   InterfaceSchemaTransition,
 } from "./api/interface/InterfaceSchemaMigrations.js";
+export type {
+  InterfaceActionTypeEditsValidationConditionDefinition,
+  InterfaceActionTypeEditsValidationDefinition,
+  InterfaceActionTypeEditsValidationEntryDefinition,
+} from "./api/interface/InterfaceActionTypeEditsValidationDefinition.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type {
   LinkType,

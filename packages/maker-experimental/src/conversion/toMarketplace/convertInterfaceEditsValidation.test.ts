@@ -21,7 +21,11 @@ import type {
   OntologyIrInterfaceActionTypeEditsValidationConditionSubject,
   OntologyIrInterfaceLinkRequirement,
 } from "@osdk/client.unstable";
-import type { InterfaceType } from "@osdk/maker";
+import type {
+  InterfaceActionTypeEditsValidationConditionDefinition,
+  InterfaceActionTypeEditsValidationDefinition,
+  InterfaceType,
+} from "@osdk/maker";
 import {
   defineInterface,
   defineInterfaceActionTypeConstraint,
@@ -73,19 +77,23 @@ describe("interface action type constraint edit validations", () => {
     )![0];
     const link = iface.links[0].rid;
     expect(constraint.editsValidation).toEqual(
-      allEdits({
-        object: object.rid,
-        interface: iface.rid,
-        link,
-        source,
-        target,
-      }),
+      withEntryRids(
+        allEdits({
+          object: object.rid,
+          interface: iface.rid,
+          link,
+          source,
+          target,
+        }),
+        getOntologyDefinition().INTERFACE_TYPE[`${NS}Task`]
+          .actionTypeConstraints[0].editsValidation!,
+      ),
     );
     expect(authored).toEqual(original);
     expect(
       getOntologyDefinition().INTERFACE_TYPE[`${NS}Task`]
         .actionTypeConstraints[0].editsValidation,
-    ).toEqual(original);
+    ).toEqual(withEntryRids(original, constraint.editsValidation!));
     const known = ontology.knownIdentifiers;
     for (const [rid, mapping] of [
       [object.rid, known.objectTypes],
@@ -138,7 +146,7 @@ describe("interface action type constraint edit validations", () => {
     defineObjectType();
     const object = getOntologyDefinition().OBJECT_TYPE[REFERENCES.object];
     const imported = defineInterface({ apiName: "Imported" });
-    const validation: OntologyIrInterfaceActionTypeEditsValidation = {
+    const validation: InterfaceActionTypeEditsValidationDefinition = {
       condition: {
         type: "and",
         and: {
@@ -178,32 +186,38 @@ describe("interface action type constraint edit validations", () => {
     const constraint = Object.values(
       result.ontologyIr.ontology.interfaceTypes,
     )[0].interfaceType.actionTypeConstraints[0];
-    expect(constraint.editsValidation).toEqual({
-      condition: {
-        type: "and",
-        and: {
-          conditions: [
-            entry({
-              type: "concreteObject",
-              concreteObject: {
-                rid: objectRid,
-                operation: { type: "create", create: {} },
-              },
-            }),
-            entry(
-              {
-                type: "interfaceObject",
-                interfaceObject: {
-                  rid: interfaceRid,
-                  operation: { type: "create", create: {} },
-                },
-              },
-              2,
-            ),
-          ],
+    expect(constraint.editsValidation).toEqual(
+      withEntryRids(
+        {
+          condition: {
+            type: "and",
+            and: {
+              conditions: [
+                entry({
+                  type: "concreteObject",
+                  concreteObject: {
+                    rid: objectRid,
+                    operation: { type: "create", create: {} },
+                  },
+                }),
+                entry(
+                  {
+                    type: "interfaceObject",
+                    interfaceObject: {
+                      rid: interfaceRid,
+                      operation: { type: "create", create: {} },
+                    },
+                  },
+                  2,
+                ),
+              ],
+            },
+          },
         },
-      },
-    });
+        getOntologyDefinition().INTERFACE_TYPE[`${NS}Task`]
+          .actionTypeConstraints[0].editsValidation!,
+      ),
+    );
     expect(
       result.shapes.inputShapes.get(
         ReadableIdGenerator.getForObjectType(object.apiName),
@@ -481,7 +495,7 @@ describe("interface action type constraint edit validations", () => {
   it("rejects unknown variants instead of copying their references", async () => {
     const editsValidation = {
       condition: { type: "futureCondition" },
-    } as unknown as OntologyIrInterfaceActionTypeEditsValidation;
+    } as unknown as InterfaceActionTypeEditsValidationDefinition;
     await expect(
       defineOntologyV2(NS, () =>
         defineConstraint(defineInterface({ apiName: "Task" }), editsValidation),
@@ -503,7 +517,7 @@ function defineObjectType() {
 
 function defineConstraint(
   interfaceType: InterfaceType,
-  editsValidation?: OntologyIrInterfaceActionTypeEditsValidation | null,
+  editsValidation?: InterfaceActionTypeEditsValidationDefinition | null,
   apiName = "editTask",
 ) {
   defineInterfaceActionTypeConstraint({
@@ -528,11 +542,11 @@ function defineConstraint(
 function entry(
   subject: OntologyIrInterfaceActionTypeEditsValidationConditionSubject,
   id = 1,
-): OntologyIrInterfaceActionTypeEditsValidationCondition {
+): InterfaceActionTypeEditsValidationConditionDefinition {
   return {
     type: "entry",
     entry: {
-      rid: `ri.ontology.main.interface-action-type-edits-validation-entry.00000000-0000-0000-0000-${String(id).padStart(12, "0")}`,
+      id: `entry-${id}`,
       subject,
     },
   };
@@ -551,7 +565,7 @@ function fromParameters(
 
 function linkValidation(
   link = REFERENCES.link,
-): OntologyIrInterfaceActionTypeEditsValidation {
+): InterfaceActionTypeEditsValidationDefinition {
   return {
     condition: entry({
       type: "implementingObjectInterfaceLink",
@@ -569,7 +583,7 @@ function linkValidation(
 
 function allEdits(
   refs: typeof REFERENCES,
-): OntologyIrInterfaceActionTypeEditsValidation {
+): InterfaceActionTypeEditsValidationDefinition {
   const requirement = fromParameters(refs.source, refs.target);
   const anyObject: OntologyIrExistingObjectEditRequirement = {
     type: "anyObjectOfType",
@@ -733,7 +747,11 @@ function assertInheritedLink(
   )!.interfaceType;
   const linkRid = parent.links[0].rid;
   expect(child.actionTypeConstraints[0].editsValidation).toEqual(
-    linkValidation(linkRid),
+    withEntryRids(
+      linkValidation(linkRid),
+      getOntologyDefinition().INTERFACE_TYPE[`${NS}Task`]
+        .actionTypeConstraints[0].editsValidation!,
+    ),
   );
   const readableId = ReadableIdGenerator.getForInterfaceLinkType(
     `${NS}Parent`,
@@ -752,4 +770,32 @@ function assertInheritedLink(
       ReadableIdGenerator.getForInterfaceLinkType(`${NS}Task`, REFERENCES.link),
     ),
   ).toBe(false);
+}
+
+function withEntryRids(
+  authored: InterfaceActionTypeEditsValidationDefinition,
+  ir: OntologyIrInterfaceActionTypeEditsValidation,
+): OntologyIrInterfaceActionTypeEditsValidation {
+  function convert(
+    condition: InterfaceActionTypeEditsValidationConditionDefinition,
+    irCondition: OntologyIrInterfaceActionTypeEditsValidationCondition,
+  ): OntologyIrInterfaceActionTypeEditsValidationCondition {
+    if (condition.type === "entry") {
+      invariant(irCondition.type === "entry");
+      return {
+        type: "entry",
+        entry: { rid: irCondition.entry.rid, subject: condition.entry.subject },
+      };
+    }
+    invariant(irCondition.type === "and");
+    return {
+      type: "and",
+      and: {
+        conditions: condition.and.conditions.map((child, index) =>
+          convert(child, irCondition.and.conditions[index]),
+        ),
+      },
+    };
+  }
+  return { condition: convert(authored.condition, ir.condition) };
 }

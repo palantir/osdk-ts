@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import type {
-  OntologyIrBaseParameterConstraintType,
-  OntologyIrInterfaceActionTypeEditsValidation,
-} from "@osdk/client.unstable";
+import type { OntologyIrBaseParameterConstraintType } from "@osdk/client.unstable";
 
+import type { InterfaceActionTypeEditsValidationDefinition } from "./interface/InterfaceActionTypeEditsValidationDefinition.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 
 export interface ParameterConstraintDefinition {
@@ -38,8 +36,9 @@ export interface InterfaceActionTypeConstraintDefinition {
   parameters: Array<ParameterConstraintDefinition>;
   /**
    * Requires the implementing Action to perform these edits. Use API names for
-   * object, interface, link, and parameter references, and stable RIDs for entries.
+   * object, interface, link, and parameter references. Give each entry a stable `id`;
+   * Maker generates its RID from the interface name, constraint name, and entry ID.
    * Parameters must belong to this constraint; links must belong to this interface or an ancestor.
    */
-  editsValidation?: OntologyIrInterfaceActionTypeEditsValidation | null;
+  editsValidation?: InterfaceActionTypeEditsValidationDefinition | null;
 }

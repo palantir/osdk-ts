@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { OntologyIrInterfaceActionTypeEditsValidation } from "@osdk/client.unstable";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { defineInterface } from "../defineInterface.js";
@@ -22,6 +21,7 @@ import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTyp
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import type { InterfaceActionTypeEditsValidationDefinition } from "../interface/InterfaceActionTypeEditsValidationDefinition.js";
 
 describe("Interfaces", () => {
   beforeEach(async () => {
@@ -342,7 +342,7 @@ describe("Interfaces", () => {
         condition: {
           type: "entry",
           entry: {
-            rid: "ri.ontology.main.interface-action-type-edits-validation-entry.00000000-0000-0000-0000-000000000001",
+            id: "create-object",
             subject: {
               type: "implementingObject",
               implementingObject: {
@@ -352,7 +352,7 @@ describe("Interfaces", () => {
             },
           },
         },
-      } satisfies OntologyIrInterfaceActionTypeEditsValidation,
+      } satisfies InterfaceActionTypeEditsValidationDefinition,
     ])("preserves authored edit validation %j in IR", (editsValidation) => {
       const iface = defineInterface({ apiName: "Task" });
       defineInterfaceActionTypeConstraint({
@@ -367,7 +367,21 @@ describe("Interfaces", () => {
       const constraint =
         dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.Task"]
           .interfaceType.actionTypeConstraints[0];
-      expect(constraint.editsValidation).toEqual(editsValidation);
+      if (editsValidation == null) {
+        expect(constraint.editsValidation).toEqual(editsValidation);
+      } else {
+        expect(constraint.editsValidation).toEqual({
+          condition: {
+            type: "entry",
+            entry: {
+              rid: expect.stringMatching(
+                /^ri\.ontology-metadata\.temp\.interface-action-type-edits-validation-entry\.[0-9a-f-]{36}$/u,
+              ),
+              subject: editsValidation.condition.entry.subject,
+            },
+          },
+        });
+      }
       if (editsValidation === undefined)
         expect(constraint).not.toHaveProperty("editsValidation");
     });

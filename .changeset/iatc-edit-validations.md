@@ -3,4 +3,4 @@
 "@osdk/maker-experimental": patch
 ---
 
-Allow interface action type constraints to require edits and convert their references when producing Marketplace block data.
+Support edit validation in interface action type constraints
