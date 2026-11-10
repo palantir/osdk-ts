@@ -1037,7 +1037,10 @@ describe("generator", () => {
         import type {
           AgentDefinition as $AgentDefinition,
           AgentParam as $AgentParam,
+          AgentResult as $AgentResult,
           AgentSession as $AgentSession,
+          AgentSessionState as $AgentSessionState,
+          AgentGetStateOptions as $AgentGetStateOptions,
           AgentSendEventOptions as $AgentSendEventOptions,
         } from '@osdk/client/experimental';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -1051,8 +1054,19 @@ describe("generator", () => {
           }
 
           export interface Session extends $AgentSession {
+            experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
             experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
           }
+
+          export interface SessionState extends $AgentSessionState {
+            arguments: { city: string };
+            agentState: { data: Record<string, never> };
+            contextItems: Record<string, ContextItem>;
+          }
+
+          export type ContextItem = never;
+
+          export type ContextItems = Record<never, never>;
 
           export type SendEventArguments = never;
 
@@ -1791,7 +1805,10 @@ describe("generator", () => {
         import type {
           AgentDefinition as $AgentDefinition,
           AgentParam as $AgentParam,
+          AgentResult as $AgentResult,
           AgentSession as $AgentSession,
+          AgentSessionState as $AgentSessionState,
+          AgentGetStateOptions as $AgentGetStateOptions,
           AgentSendEventOptions as $AgentSendEventOptions,
         } from '@osdk/api/unstable';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -1805,8 +1822,19 @@ describe("generator", () => {
           }
 
           export interface Session extends $AgentSession {
+            experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
             experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
           }
+
+          export interface SessionState extends $AgentSessionState {
+            arguments: { city: string };
+            agentState: { data: Record<string, never> };
+            contextItems: Record<string, ContextItem>;
+          }
+
+          export type ContextItem = never;
+
+          export type ContextItems = Record<never, never>;
 
           export type SendEventArguments = never;
 
