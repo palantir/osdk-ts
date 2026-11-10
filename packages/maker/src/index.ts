@@ -132,6 +132,8 @@ export type {
   ObjectTypeDatasourceDefinition_dataset,
   ObjectTypeDatasourceDefinition_derived,
   ObjectTypeDatasourceDefinition_direct,
+  ObjectTypeDatasourceMarkingConstraints,
+  ObjectTypeMarkingConstraintSettings,
 } from "./api/object/ObjectTypeDatasourceDefinition.js";
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
 export { resolveDerivedPropertyLinks } from "./api/object/resolveDerivedPropertyLinks.js";
