@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DataType } from "@osdk/foundry.agents";
+import type { AgentDataTypeDefinition } from "@osdk/api/unstable";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -30,19 +30,19 @@ import {
 export function fromDataValueAgents(
   value: Record<string, unknown>,
   client: MinimalClient,
-  desiredType: Extract<DataType, { type: "struct" }>,
+  desiredType: Extract<AgentDataTypeDefinition, { type: "struct" }>,
   path?: string,
 ): Promise<Record<string, unknown>>;
 export function fromDataValueAgents(
   value: unknown,
   client: MinimalClient,
-  desiredType?: DataType,
+  desiredType?: AgentDataTypeDefinition,
   path?: string,
 ): Promise<unknown>;
 export async function fromDataValueAgents(
   value: unknown,
   client: MinimalClient,
-  desiredType?: DataType,
+  desiredType?: AgentDataTypeDefinition,
   path = "",
 ): Promise<unknown> {
   if (value == null) {
@@ -50,14 +50,6 @@ export async function fromDataValueAgents(
   }
 
   switch (desiredType?.type) {
-    case "nullable":
-      return await fromDataValueAgents(
-        value,
-        client,
-        desiredType.wrappedType,
-        path,
-      );
-
     case "object": {
       assertRecord(value, path, "value");
       assertRecord(value.primaryKey, path, "value");
@@ -65,7 +57,7 @@ export async function fromDataValueAgents(
         await checkOntology(client, desiredType.ontologyApiName, path, "value");
         if (
           value.ontologyRid !== (await client.ontologyRid) ||
-          value.objectTypeApiName !== desiredType.objectTypeApiName
+          value.objectTypeApiName !== desiredType.object
         ) {
           throw new TypeError(
             "Object reference does not match the schema's ontology and object type",
@@ -83,7 +75,7 @@ export async function fromDataValueAgents(
         }
         return createQueryObjectResponse(primaryKey, {
           type: "object",
-          apiName: desiredType.objectTypeApiName,
+          apiName: desiredType.object,
         });
       } catch (cause) {
         throw wrapConversionError(
@@ -102,12 +94,12 @@ export async function fromDataValueAgents(
       try {
         await checkOntology(client, desiredType.ontologyApiName, path, "value");
         return createObjectSet(
-          { type: "object", apiName: desiredType.objectTypeApiName },
+          { type: "object", apiName: desiredType.objectSet },
           client,
           {
             type: "intersect",
             objectSets: [
-              { type: "base", objectType: desiredType.objectTypeApiName },
+              { type: "base", objectType: desiredType.objectSet },
               { type: "reference", reference: value },
             ],
           },
@@ -120,7 +112,7 @@ export async function fromDataValueAgents(
       }
     }
 
-    case "list":
+    case "array":
       if (!Array.isArray(value)) {
         throw new TypeError(
           `Invalid agent value "${path}": expected an array.`,
@@ -131,7 +123,7 @@ export async function fromDataValueAgents(
           fromDataValueAgents(
             item,
             client,
-            desiredType.elementType,
+            desiredType.array,
             `${path}[${index}]`,
           ),
         ),
@@ -158,21 +150,23 @@ export async function fromDataValueAgents(
       return await remapFields(
         value,
         client,
-        desiredType.fields,
+        desiredType.struct,
         path,
         fromDataValueAgents,
       );
 
     case "discriminatedUnion": {
       assertRecord(value, path, "value");
-      const member = desiredType.members.find(
-        (candidate) =>
-          candidate.discriminatorValue === value[desiredType.discriminatorKey],
-      );
+      const discriminator = value[desiredType.discriminatorKey];
+      const member =
+        typeof discriminator === "string" &&
+        Object.hasOwn(desiredType.members, discriminator)
+          ? desiredType.members[discriminator]
+          : undefined;
       return await remapFields(
         value,
         client,
-        member?.fields ?? [],
+        member ?? {},
         path,
         fromDataValueAgents,
       );

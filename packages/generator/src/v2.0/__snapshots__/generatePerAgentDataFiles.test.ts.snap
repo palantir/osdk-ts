@@ -56,16 +56,33 @@ export namespace escapingAgent {
 export interface escapingAgent
   extends $AgentDefinition<escapingAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'escapingAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {
+      'escaped"argument': {
+        discriminatorKey: 'escaped"key';
+        members: { 'escaped"value': { 'escaped"field': { nullable: false; type: 'string' } } };
+        nullable: false;
+        type: 'discriminatedUnion';
+      };
+    };
+    events: { 'escaped"event': { nullable: false; type: 'string' } };
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: { 'escaped"context': { nullable: false; type: 'string' } };
+    signatures: escapingAgent.Signatures;
+  };
   apiName: 'escapingAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const escapingAgent: escapingAgent = {
-  type: 'agent',
   apiName: 'escapingAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -123,16 +140,26 @@ export namespace noArgumentsAgent {
 export interface noArgumentsAgent
   extends $AgentDefinition<noArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'noArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {};
+    events: {};
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {};
+    signatures: noArgumentsAgent.Signatures;
+  };
   apiName: 'noArgumentsAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const noArgumentsAgent: noArgumentsAgent = {
-  type: 'agent',
   apiName: 'noArgumentsAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -190,16 +217,26 @@ export namespace noArgumentsAgent {
 export interface noArgumentsAgent
   extends $AgentDefinition<noArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'noArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {};
+    events: {};
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {};
+    signatures: noArgumentsAgent.Signatures;
+  };
   apiName: 'noArgumentsAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const noArgumentsAgent: noArgumentsAgent = {
-  type: 'agent',
   apiName: 'noArgumentsAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -269,16 +306,89 @@ export namespace objectArgumentsAgent {
 export interface objectArgumentsAgent
   extends $AgentDefinition<objectArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'objectArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {
+      employee: {
+        nullable: false;
+        object: 'Employee';
+        ontologyApiName: 'default-ontology';
+        type: 'object';
+        __OsdkTargetType?: Employee;
+      };
+      employees: {
+        nullable: false;
+        objectSet: 'Employee';
+        ontologyApiName: 'default-ontology';
+        type: 'objectSet';
+        __OsdkTargetType?: Employee;
+      };
+    };
+    events: {
+      SelectEmployees: {
+        nullable: false;
+        objectSet: 'Employee';
+        ontologyApiName: 'default-ontology';
+        type: 'objectSet';
+        __OsdkTargetType?: Employee;
+      };
+    };
+    agentState: {
+      nullable: false;
+      struct: {
+        employee: {
+          nullable: false;
+          object: 'Employee';
+          ontologyApiName: 'default-ontology';
+          type: 'object';
+          __OsdkTargetType?: Employee;
+        };
+        employees: {
+          nullable: false;
+          objectSet: 'Employee';
+          ontologyApiName: 'default-ontology';
+          type: 'objectSet';
+          __OsdkTargetType?: Employee;
+        };
+      };
+      type: 'struct';
+    };
+    contextItems: {
+      selection: {
+        nullable: false;
+        struct: {
+          employee: {
+            nullable: false;
+            object: 'Employee';
+            ontologyApiName: 'default-ontology';
+            type: 'object';
+            __OsdkTargetType?: Employee;
+          };
+          employees: {
+            nullable: false;
+            objectSet: 'Employee';
+            ontologyApiName: 'default-ontology';
+            type: 'objectSet';
+            __OsdkTargetType?: Employee;
+          };
+        };
+        type: 'struct';
+      };
+    };
+    signatures: objectArgumentsAgent.Signatures;
+  };
   apiName: 'objectArgumentsAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const objectArgumentsAgent: objectArgumentsAgent = {
-  type: 'agent',
   apiName: 'objectArgumentsAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -340,16 +450,26 @@ export namespace optionalArgumentsAgent {
 export interface optionalArgumentsAgent
   extends $AgentDefinition<optionalArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'optionalArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: { city: { nullable: true; type: 'string' } };
+    events: {};
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {};
+    signatures: optionalArgumentsAgent.Signatures;
+  };
   apiName: 'optionalArgumentsAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const optionalArgumentsAgent: optionalArgumentsAgent = {
-  type: 'agent',
   apiName: 'optionalArgumentsAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -450,16 +570,72 @@ export namespace structuredArgumentsAgent {
 export interface structuredArgumentsAgent
   extends $AgentDefinition<structuredArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'structuredArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {
+      future: { nullable: false; type: 'unknown' };
+      nested: {
+        nullable: false;
+        struct: {
+          count: { nullable: false; type: 'integer' };
+          date: { nullable: false; type: 'date' };
+          empty: { nullable: false; struct: {}; type: 'struct' };
+          enabled: { nullable: false; type: 'boolean' };
+          float: { nullable: false; type: 'float' };
+          label: { nullable: true; type: 'string' };
+          long: { nullable: false; type: 'long' };
+          scores: { nullable: false; type: 'record'; valueType: { nullable: false; type: 'double' } };
+          short: { nullable: false; type: 'short' };
+          tags: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+          timestamp: { nullable: false; type: 'timestamp' };
+        };
+        type: 'struct';
+      };
+      optionalText: { nullable: true; type: 'string' };
+      requiredText: { nullable: false; type: 'string' };
+      selection: {
+        discriminatorKey: 'kind';
+        members: {
+          employee: {
+            employee: {
+              nullable: false;
+              object: 'Employee';
+              ontologyApiName: 'default-ontology';
+              type: 'object';
+              __OsdkTargetType?: Employee;
+            };
+          };
+          employees: {
+            employees: {
+              nullable: false;
+              objectSet: 'Employee';
+              ontologyApiName: 'default-ontology';
+              type: 'objectSet';
+              __OsdkTargetType?: Employee;
+            };
+          };
+        };
+        nullable: false;
+        type: 'discriminatedUnion';
+      };
+    };
+    events: {};
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {};
+    signatures: structuredArgumentsAgent.Signatures;
+  };
   apiName: 'structuredArgumentsAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const structuredArgumentsAgent: structuredArgumentsAgent = {
-  type: 'agent',
   apiName: 'structuredArgumentsAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -503,8 +679,8 @@ export namespace weatherAgent {
   }
 
   export type ContextItem =
-    | { type: 'weather-result'; data: ContextItems['weather-result'] }
-    | { type: 'temperature'; data: ContextItems['temperature'] };
+    | { type: 'temperature'; data: ContextItems['temperature'] }
+    | { type: 'weather-result'; data: ContextItems['weather-result'] };
 
   export interface ContextItems {
     temperature: number | null;
@@ -527,16 +703,32 @@ export namespace weatherAgent {
 
 /** @beta */
 export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'weatherAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: { city: { nullable: false; type: 'string' } };
+    events: {
+      LookupWeather: { nullable: false; struct: { city: { nullable: false; type: 'string' } }; type: 'struct' };
+      SetTemperature: { nullable: true; type: 'double' };
+    };
+    agentState: { nullable: false; struct: { temperature: { nullable: false; type: 'integer' } }; type: 'struct' };
+    contextItems: {
+      temperature: { nullable: true; type: 'integer' };
+      'weather-result': { nullable: false; type: 'string' };
+    };
+    signatures: weatherAgent.Signatures;
+  };
   apiName: 'weatherAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const weatherAgent: weatherAgent = {
-  type: 'agent',
   apiName: 'weatherAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -586,39 +778,39 @@ export namespace noArgumentsAgent {
 
   export type SendEventArguments =
     | {
-        readonly requiredText: Events['requiredText'];
-        readonly optionalText?: never;
-        readonly nested?: never;
-        readonly selection?: never;
-        readonly future?: never;
-      }
-    | {
-        readonly requiredText?: never;
-        readonly optionalText: Events['optionalText'];
-        readonly nested?: never;
-        readonly selection?: never;
-        readonly future?: never;
-      }
-    | {
-        readonly requiredText?: never;
-        readonly optionalText?: never;
-        readonly nested: Events['nested'];
-        readonly selection?: never;
-        readonly future?: never;
-      }
-    | {
-        readonly requiredText?: never;
-        readonly optionalText?: never;
-        readonly nested?: never;
-        readonly selection: Events['selection'];
-        readonly future?: never;
-      }
-    | {
-        readonly requiredText?: never;
-        readonly optionalText?: never;
-        readonly nested?: never;
-        readonly selection?: never;
         readonly future: Events['future'];
+        readonly nested?: never;
+        readonly optionalText?: never;
+        readonly requiredText?: never;
+        readonly selection?: never;
+      }
+    | {
+        readonly future?: never;
+        readonly nested: Events['nested'];
+        readonly optionalText?: never;
+        readonly requiredText?: never;
+        readonly selection?: never;
+      }
+    | {
+        readonly future?: never;
+        readonly nested?: never;
+        readonly optionalText: Events['optionalText'];
+        readonly requiredText?: never;
+        readonly selection?: never;
+      }
+    | {
+        readonly future?: never;
+        readonly nested?: never;
+        readonly optionalText?: never;
+        readonly requiredText: Events['requiredText'];
+        readonly selection?: never;
+      }
+    | {
+        readonly future?: never;
+        readonly nested?: never;
+        readonly optionalText?: never;
+        readonly requiredText?: never;
+        readonly selection: Events['selection'];
       };
 
   export interface Events {
@@ -650,16 +842,72 @@ export namespace noArgumentsAgent {
 export interface noArgumentsAgent
   extends $AgentDefinition<noArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'noArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {};
+    events: {
+      future: { nullable: false; type: 'unknown' };
+      nested: {
+        nullable: false;
+        struct: {
+          count: { nullable: false; type: 'integer' };
+          date: { nullable: false; type: 'date' };
+          empty: { nullable: false; struct: {}; type: 'struct' };
+          enabled: { nullable: false; type: 'boolean' };
+          float: { nullable: false; type: 'float' };
+          label: { nullable: true; type: 'string' };
+          long: { nullable: false; type: 'long' };
+          scores: { nullable: false; type: 'record'; valueType: { nullable: false; type: 'double' } };
+          short: { nullable: false; type: 'short' };
+          tags: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+          timestamp: { nullable: false; type: 'timestamp' };
+        };
+        type: 'struct';
+      };
+      optionalText: { nullable: true; type: 'string' };
+      requiredText: { nullable: false; type: 'string' };
+      selection: {
+        discriminatorKey: 'kind';
+        members: {
+          employee: {
+            employee: {
+              nullable: false;
+              object: 'Employee';
+              ontologyApiName: 'default-ontology';
+              type: 'object';
+              __OsdkTargetType?: Employee;
+            };
+          };
+          employees: {
+            employees: {
+              nullable: false;
+              objectSet: 'Employee';
+              ontologyApiName: 'default-ontology';
+              type: 'objectSet';
+              __OsdkTargetType?: Employee;
+            };
+          };
+        };
+        nullable: false;
+        type: 'discriminatedUnion';
+      };
+    };
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {};
+    signatures: noArgumentsAgent.Signatures;
+  };
   apiName: 'noArgumentsAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const noArgumentsAgent: noArgumentsAgent = {
-  type: 'agent',
   apiName: 'noArgumentsAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -740,16 +988,76 @@ export namespace noArgumentsAgent {
 export interface noArgumentsAgent
   extends $AgentDefinition<noArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'noArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {};
+    events: {};
+    agentState: {
+      nullable: false;
+      struct: {
+        future: { nullable: false; type: 'unknown' };
+        nested: {
+          nullable: false;
+          struct: {
+            count: { nullable: false; type: 'integer' };
+            date: { nullable: false; type: 'date' };
+            empty: { nullable: false; struct: {}; type: 'struct' };
+            enabled: { nullable: false; type: 'boolean' };
+            float: { nullable: false; type: 'float' };
+            label: { nullable: true; type: 'string' };
+            long: { nullable: false; type: 'long' };
+            scores: { nullable: false; type: 'record'; valueType: { nullable: false; type: 'double' } };
+            short: { nullable: false; type: 'short' };
+            tags: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+            timestamp: { nullable: false; type: 'timestamp' };
+          };
+          type: 'struct';
+        };
+        optionalText: { nullable: true; type: 'string' };
+        requiredText: { nullable: false; type: 'string' };
+        selection: {
+          discriminatorKey: 'kind';
+          members: {
+            employee: {
+              employee: {
+                nullable: false;
+                object: 'Employee';
+                ontologyApiName: 'default-ontology';
+                type: 'object';
+                __OsdkTargetType?: Employee;
+              };
+            };
+            employees: {
+              employees: {
+                nullable: false;
+                objectSet: 'Employee';
+                ontologyApiName: 'default-ontology';
+                type: 'objectSet';
+                __OsdkTargetType?: Employee;
+              };
+            };
+          };
+          nullable: false;
+          type: 'discriminatedUnion';
+        };
+      };
+      type: 'struct';
+    };
+    contextItems: {};
+    signatures: noArgumentsAgent.Signatures;
+  };
   apiName: 'noArgumentsAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const noArgumentsAgent: noArgumentsAgent = {
-  type: 'agent',
   apiName: 'noArgumentsAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -830,16 +1138,186 @@ export namespace noArgumentsAgent {
 export interface noArgumentsAgent
   extends $AgentDefinition<noArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'noArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {};
+    events: {};
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {
+      result: {
+        nullable: false;
+        struct: {
+          future: { nullable: false; type: 'unknown' };
+          nested: {
+            nullable: false;
+            struct: {
+              count: { nullable: false; type: 'integer' };
+              date: { nullable: false; type: 'date' };
+              empty: { nullable: false; struct: {}; type: 'struct' };
+              enabled: { nullable: false; type: 'boolean' };
+              float: { nullable: false; type: 'float' };
+              label: { nullable: true; type: 'string' };
+              long: { nullable: false; type: 'long' };
+              scores: { nullable: false; type: 'record'; valueType: { nullable: false; type: 'double' } };
+              short: { nullable: false; type: 'short' };
+              tags: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+              timestamp: { nullable: false; type: 'timestamp' };
+            };
+            type: 'struct';
+          };
+          optionalText: { nullable: true; type: 'string' };
+          requiredText: { nullable: false; type: 'string' };
+          selection: {
+            discriminatorKey: 'kind';
+            members: {
+              employee: {
+                employee: {
+                  nullable: false;
+                  object: 'Employee';
+                  ontologyApiName: 'default-ontology';
+                  type: 'object';
+                  __OsdkTargetType?: Employee;
+                };
+              };
+              employees: {
+                employees: {
+                  nullable: false;
+                  objectSet: 'Employee';
+                  ontologyApiName: 'default-ontology';
+                  type: 'objectSet';
+                  __OsdkTargetType?: Employee;
+                };
+              };
+            };
+            nullable: false;
+            type: 'discriminatedUnion';
+          };
+        };
+        type: 'struct';
+      };
+    };
+    signatures: noArgumentsAgent.Signatures;
+  };
   apiName: 'noArgumentsAgent';
+  type: 'agent';
   version: '1.2.3';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const noArgumentsAgent: noArgumentsAgent = {
-  type: 'agent',
   apiName: 'noArgumentsAgent',
+  type: 'agent',
+  version: '1.2.3',
+  osdkMetadata: $osdkMetadata,
+};
+",
+}
+`;
+
+exports[`generatePerAgentDataFiles > generates special schema keys 1`] = `
+{
+  "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
+",
+  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
+  AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
+  AgentSendEventOptions as $AgentSendEventOptions,
+} from '@osdk/client/experimental';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+/** @beta */
+export namespace noArgumentsAgent {
+  export interface Signatures {
+    experimental_createSession(args: noArgumentsAgent.CreateSessionArguments): Promise<noArgumentsAgent.Session>;
+    experimental_getSession(sessionId: string): Promise<noArgumentsAgent.Session>;
+  }
+
+  export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+    experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: {
+      __proto__: { kind: '__proto__'; __proto__: string };
+      constructor: { kind: 'constructor'; constructor: string };
+      toString: { kind: 'toString'; toString: string };
+    };
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = { type: 'constructor'; data: ContextItems['constructor'] };
+
+  export interface ContextItems {
+    constructor: string;
+  }
+
+  export type SendEventArguments = { readonly __proto__: Events['__proto__'] };
+
+  export interface Events {
+    readonly __proto__: string;
+  }
+
+  export interface CreateSessionArguments {
+    readonly __proto__: { readonly kind: '__proto__'; readonly __proto__: string };
+    readonly constructor: { readonly kind: 'constructor'; readonly constructor: string };
+    readonly toString: { readonly kind: 'toString'; readonly toString: string };
+  }
+}
+
+/** @beta */
+export interface noArgumentsAgent
+  extends $AgentDefinition<noArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
+  __DefinitionMetadata?: {
+    apiName: 'noArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {
+      __proto__: {
+        discriminatorKey: 'kind';
+        members: { __proto__: { __proto__: { nullable: false; type: 'string' } } };
+        nullable: false;
+        type: 'discriminatedUnion';
+      };
+      constructor: {
+        discriminatorKey: 'kind';
+        members: { constructor: { constructor: { nullable: false; type: 'string' } } };
+        nullable: false;
+        type: 'discriminatedUnion';
+      };
+      toString: {
+        discriminatorKey: 'kind';
+        members: { toString: { toString: { nullable: false; type: 'string' } } };
+        nullable: false;
+        type: 'discriminatedUnion';
+      };
+    };
+    events: { __proto__: { nullable: false; type: 'string' } };
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: { constructor: { nullable: false; type: 'string' } };
+    signatures: noArgumentsAgent.Signatures;
+  };
+  apiName: 'noArgumentsAgent';
+  type: 'agent';
+  version: '1.2.3';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+/** @beta */
+export const noArgumentsAgent: noArgumentsAgent = {
+  apiName: 'noArgumentsAgent',
+  type: 'agent',
   version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
@@ -897,17 +1375,104 @@ export namespace noArgumentsAgent {
 export interface noArgumentsAgent
   extends $AgentDefinition<noArgumentsAgent.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'noArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {};
+    events: {};
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {};
+    signatures: noArgumentsAgent.Signatures;
+  };
   apiName: 'noArgumentsAgent';
+  type: 'agent';
   version: '^1.0.0';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const noArgumentsAgent: noArgumentsAgent = {
-  type: 'agent',
   apiName: 'noArgumentsAgent',
+  type: 'agent',
   version: '^1.0.0',
+  osdkMetadata: $osdkMetadata,
+};
+",
+}
+`;
+
+exports[`generatePerAgentDataFiles > preserves unknown types 1`] = `
+{
+  "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
+",
+  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
+  AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
+  AgentSendEventOptions as $AgentSendEventOptions,
+} from '@osdk/client/experimental';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+/** @beta */
+export namespace noArgumentsAgent {
+  export interface Signatures {
+    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<noArgumentsAgent.Session>;
+    experimental_getSession(sessionId: string): Promise<noArgumentsAgent.Session>;
+  }
+
+  export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+    experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: Record<string, never>;
+    agentState: { data: unknown };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
+
+  export type SendEventArguments = never;
+
+  export type Events = Record<never, never>;
+
+  export type CreateSessionArguments = Record<string, never>;
+}
+
+/** @beta */
+export interface noArgumentsAgent
+  extends $AgentDefinition<noArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
+  __DefinitionMetadata?: {
+    apiName: 'noArgumentsAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: {};
+    events: {};
+    agentState: { nullable: false; type: 'unknown' };
+    contextItems: {};
+    signatures: noArgumentsAgent.Signatures;
+  };
+  apiName: 'noArgumentsAgent';
+  type: 'agent';
+  version: '1.2.3';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+/** @beta */
+export const noArgumentsAgent: noArgumentsAgent = {
+  apiName: 'noArgumentsAgent',
+  type: 'agent',
+  version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
 ",

@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+
+/** @beta */
+export interface AgentMetadata {
+  type: "agent";
+  apiName: string;
+  version: string;
+  arguments: Record<string, AgentDataTypeDefinition>;
+  events: Record<string, AgentDataTypeDefinition>;
+  agentState: AgentDataTypeDefinition;
+  contextItems: Record<string, AgentDataTypeDefinition>;
+}
 
 /** @beta */
 export interface AgentCompileTimeMetadata<T> {
@@ -27,5 +39,80 @@ export interface AgentDefinition<T = never> {
   apiName: string;
   version: string;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: AgentCompileTimeMetadata<T>;
+  __DefinitionMetadata?: AgentCompileTimeMetadata<T> & Partial<AgentMetadata>;
+}
+
+/** @beta */
+export type AgentDataTypeDefinition<
+  T_Target extends ObjectTypeDefinition = any,
+> =
+  | PrimitiveAgentDataType
+  | ObjectAgentDataType<T_Target>
+  | ObjectSetAgentDataType<T_Target>
+  | DiscriminatedUnionAgentDataType
+  | StructAgentDataType
+  | RecordAgentDataType
+  | ArrayAgentDataType
+  | BaseAgentDataTypeDefinition<"unknown">;
+
+/** @beta */
+export type BaseAgentDataTypeDefinition<T extends string> = {
+  nullable?: boolean;
+  type: T;
+};
+
+/** @beta */
+export type WireAgentDataTypes =
+  | "double"
+  | "float"
+  | "integer"
+  | "long"
+  | "short"
+  | "boolean"
+  | "string"
+  | "date"
+  | "timestamp";
+
+/** @beta */
+export type PrimitiveAgentDataType<
+  Q extends WireAgentDataTypes = WireAgentDataTypes,
+> = BaseAgentDataTypeDefinition<Q>;
+
+/** @beta */
+export interface ObjectAgentDataType<
+  T_Target extends ObjectTypeDefinition = never,
+> extends BaseAgentDataTypeDefinition<"object"> {
+  object: string;
+  ontologyApiName: string;
+  __OsdkTargetType?: T_Target;
+}
+
+/** @beta */
+export interface ObjectSetAgentDataType<
+  T_Target extends ObjectTypeDefinition = never,
+> extends BaseAgentDataTypeDefinition<"objectSet"> {
+  objectSet: string;
+  ontologyApiName: string;
+  __OsdkTargetType?: T_Target;
+}
+
+/** @beta */
+export interface ArrayAgentDataType extends BaseAgentDataTypeDefinition<"array"> {
+  array: AgentDataTypeDefinition;
+}
+
+/** @beta */
+export interface DiscriminatedUnionAgentDataType extends BaseAgentDataTypeDefinition<"discriminatedUnion"> {
+  discriminatorKey: string;
+  members: Record<string, Record<string, AgentDataTypeDefinition>>;
+}
+
+/** @beta */
+export interface StructAgentDataType extends BaseAgentDataTypeDefinition<"struct"> {
+  struct: Record<string, AgentDataTypeDefinition>;
+}
+
+/** @beta */
+export interface RecordAgentDataType extends BaseAgentDataTypeDefinition<"record"> {
+  valueType: AgentDataTypeDefinition;
 }

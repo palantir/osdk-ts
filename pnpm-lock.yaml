@@ -4509,6 +4509,9 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
+      '@osdk/foundry.agents':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.87.0
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.87.0

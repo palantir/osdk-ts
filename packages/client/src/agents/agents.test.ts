@@ -18,6 +18,7 @@ import type { ObjectSet, Osdk, OsdkBase } from "@osdk/api";
 import type {
   AgentDefinition,
   AgentGetStateOptions,
+  AgentMetadata,
   AgentParam,
   AgentResult,
   AgentSession,
@@ -83,6 +84,47 @@ describe("agents", () => {
     vi.useRealTimers();
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
+  });
+
+  it("exposes normalized generated schema metadata without runtime schema properties", () => {
+    type Metadata = NonNullable<objectArgumentsAgent["__DefinitionMetadata"]>;
+    type Structured = NonNullable<
+      structuredArgumentsAgent["__DefinitionMetadata"]
+    >;
+
+    const definition = objectArgumentsAgent;
+
+    expectTypeOf<Metadata>().toMatchTypeOf<AgentMetadata>();
+    expectTypeOf<
+      Metadata["arguments"]["employee"]["__OsdkTargetType"]
+    >().toEqualTypeOf<Employee | undefined>();
+    expectTypeOf<
+      Metadata["arguments"]["employees"]["__OsdkTargetType"]
+    >().toEqualTypeOf<Employee | undefined>();
+    expectTypeOf<
+      Structured["arguments"]["nested"]["struct"]["label"]["nullable"]
+    >().toEqualTypeOf<true>();
+    expectTypeOf<
+      Structured["arguments"]["nested"]["nullable"]
+    >().toEqualTypeOf<false>();
+    expect(definition).not.toHaveProperty("__DefinitionMetadata");
+  });
+
+  it("accepts older definitions carrying only signatures", () => {
+    interface LegacyAgent extends AgentDefinition<weatherAgent.Signatures> {
+      __DefinitionMetadata?: { signatures: weatherAgent.Signatures };
+    }
+    const legacy: LegacyAgent = {
+      type: "agent",
+      apiName: "weatherAgent",
+      version: "1.2.3",
+    };
+
+    const bound = client(legacy);
+
+    expectTypeOf<typeof bound.experimental_createSession>().toEqualTypeOf<
+      weatherAgent.Signatures["experimental_createSession"]
+    >();
   });
 
   describe("createSession", () => {

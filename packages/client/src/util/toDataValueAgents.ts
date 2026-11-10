@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DataType } from "@osdk/foundry.agents";
+import type { AgentDataTypeDefinition } from "@osdk/api/unstable";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isObjectSet } from "../objectSet/createObjectSet.js";
@@ -32,19 +32,19 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export function toDataValueAgents(
   value: Record<string, unknown>,
   client: MinimalClient,
-  desiredType: Extract<DataType, { type: "struct" }>,
+  desiredType: Extract<AgentDataTypeDefinition, { type: "struct" }>,
   path?: string,
 ): Promise<Record<string, unknown>>;
 export function toDataValueAgents(
   value: unknown,
   client: MinimalClient,
-  desiredType: DataType,
+  desiredType: AgentDataTypeDefinition,
   path?: string,
 ): Promise<unknown>;
 export async function toDataValueAgents(
   value: unknown,
   client: MinimalClient,
-  desiredType: DataType,
+  desiredType: AgentDataTypeDefinition,
   path = "",
 ): Promise<unknown> {
   if (value == null) {
@@ -52,14 +52,6 @@ export async function toDataValueAgents(
   }
 
   switch (desiredType.type) {
-    case "nullable":
-      return await toDataValueAgents(
-        value,
-        client,
-        desiredType.wrappedType,
-        path,
-      );
-
     case "object": {
       const primaryKey = isObjectSpecifiersObject(value)
         ? value.$primaryKey
@@ -78,7 +70,7 @@ export async function toDataValueAgents(
         );
         const objectTypeApiName = isObjectSpecifiersObject(value)
           ? value.$apiName
-          : desiredType.objectTypeApiName;
+          : desiredType.object;
         const objectTypeDefinition =
           await client.ontologyProvider.getObjectDefinition(objectTypeApiName);
         // TODO(mhogberg): Update the agent APIs to accept simple object primary keys and remove the conversion here.
@@ -122,7 +114,7 @@ export async function toDataValueAgents(
       }
     }
 
-    case "list":
+    case "array":
       if (!Array.isArray(value)) {
         throw new TypeError(
           `Invalid agent argument "${path}": expected an array.`,
@@ -133,7 +125,7 @@ export async function toDataValueAgents(
           toDataValueAgents(
             item,
             client,
-            desiredType.elementType,
+            desiredType.array,
             `${path}[${index}]`,
           ),
         ),
@@ -160,21 +152,23 @@ export async function toDataValueAgents(
       return await remapFields(
         value,
         client,
-        desiredType.fields,
+        desiredType.struct,
         path,
         toDataValueAgents,
       );
 
     case "discriminatedUnion": {
       assertRecord(value, path, "argument");
-      const member = desiredType.members.find(
-        (candidate) =>
-          candidate.discriminatorValue === value[desiredType.discriminatorKey],
-      );
+      const discriminator = value[desiredType.discriminatorKey];
+      const member =
+        typeof discriminator === "string" &&
+        Object.hasOwn(desiredType.members, discriminator)
+          ? desiredType.members[discriminator]
+          : undefined;
       return await remapFields(
         value,
         client,
-        member?.fields ?? [],
+        member ?? {},
         path,
         toDataValueAgents,
       );

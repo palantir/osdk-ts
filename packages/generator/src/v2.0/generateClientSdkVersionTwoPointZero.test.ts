@@ -1079,16 +1079,26 @@ describe("generator", () => {
 
         /** @beta */
         export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
-          type: 'agent';
+          __DefinitionMetadata?: {
+            apiName: 'weatherAgent';
+            type: 'agent';
+            version: '1.2.3';
+            arguments: { city: { nullable: false; type: 'string' } };
+            events: {};
+            agentState: { nullable: false; struct: {}; type: 'struct' };
+            contextItems: {};
+            signatures: weatherAgent.Signatures;
+          };
           apiName: 'weatherAgent';
+          type: 'agent';
           version: '1.2.3';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         /** @beta */
         export const weatherAgent: weatherAgent = {
-          type: 'agent',
           apiName: 'weatherAgent',
+          type: 'agent',
           version: '1.2.3',
           osdkMetadata: $osdkMetadata,
         };
@@ -1847,16 +1857,26 @@ describe("generator", () => {
 
         /** @beta */
         export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
-          type: 'agent';
+          __DefinitionMetadata?: {
+            apiName: 'foo.bar.weatherAgent';
+            type: 'agent';
+            version: '1.2.3';
+            arguments: { city: { nullable: false; type: 'string' } };
+            events: {};
+            agentState: { nullable: false; struct: {}; type: 'struct' };
+            contextItems: {};
+            signatures: weatherAgent.Signatures;
+          };
           apiName: 'foo.bar.weatherAgent';
+          type: 'agent';
           version: '1.2.3';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         /** @beta */
         export const weatherAgent: weatherAgent = {
-          type: 'agent',
           apiName: 'foo.bar.weatherAgent',
+          type: 'agent',
           version: '1.2.3',
           osdkMetadata: $osdkMetadata,
         };
