@@ -15,7 +15,10 @@
  */
 
 import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+} from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 
 import { additionalContext } from "../../../Client.js";
@@ -54,16 +57,15 @@ export class ObjectSetQuery extends BaseListQuery<
   ObjectSetPayload,
   ObjectSetQueryOptions
 > {
-  #baseObjectSetWire: string;
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
 
-  // Object types this query's RDPs traverse; an edit to any of these triggers
-  // revalidation. Lazily populated on first fetch when `withProperties` is set.
-  #rdpInvalidationSet: ReadonlySet<string> | undefined;
+  #invalidationTypes: ReadonlySet<string> | undefined;
+  #dependenciesPromise: Promise<void> | undefined;
+  #rdpConfig: Canonical<Rdp> | undefined;
 
   constructor(
     store: Store,
@@ -90,22 +92,30 @@ export class ObjectSetQuery extends BaseListQuery<
         : undefined,
     );
 
-    this.#baseObjectSetWire = baseObjectSetWire;
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
 
     const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
-    this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
-
-    this.#requiresServerEvaluation = !!(
-      operations.pivotTo ||
-      (operations.union && operations.union.length > 0) ||
-      (operations.intersect && operations.intersect.length > 0) ||
-      (operations.subtract && operations.subtract.length > 0)
+    this.#objectTypes = new Set(
+      baseWire.type === "base" ? [baseWire.objectType] : [],
     );
-
+    this.#requiresServerEvaluation =
+      baseWire.type !== "base" ||
+      operations.pivotTo != null ||
+      operations.union != null ||
+      operations.intersect != null ||
+      operations.subtract != null ||
+      operations.withProperties != null;
     this.#resultTypeApiName =
-      ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire) ?? "";
+      baseWire.type === "base" ? baseWire.objectType : "";
+
+    const definitions = getResultDerivedProperties(
+      getWireObjectSet(this.#composedObjectSet),
+    );
+    this.#rdpConfig =
+      Object.keys(definitions).length > 0
+        ? store.rdpCanonicalizer.canonicalizeDefinitions(definitions)
+        : undefined;
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -121,7 +131,7 @@ export class ObjectSetQuery extends BaseListQuery<
   }
 
   public override get rdpConfig(): Canonical<Rdp> | undefined {
-    return this.#operations.withProperties;
+    return this.#rdpConfig;
   }
 
   public get selectFields(): Canonical<readonly string[]> | undefined {
@@ -157,48 +167,26 @@ export class ObjectSetQuery extends BaseListQuery<
     return result;
   }
 
-  #extractObjectTypes(
-    baseWire: WireObjectSet,
-    opts: ObjectSetQueryOptions,
-  ): Set<string> {
-    const types = new Set<string>();
-    const baseTypeName = ObjectSetQuery.#extractTypeFromWireObjectSet(baseWire);
-    if (baseTypeName) {
-      types.add(baseTypeName);
-    }
-    ObjectSetQuery.#addTypesFromObjectSets(opts.union, types);
-    ObjectSetQuery.#addTypesFromObjectSets(opts.intersect, types);
-    ObjectSetQuery.#addTypesFromObjectSets(opts.subtract, types);
-    return types;
-  }
-
-  static #addTypesFromObjectSets(
-    sets: ReadonlyArray<ObjectSet<any, any>> | undefined,
-    types: Set<string>,
-  ): void {
-    if (!sets) {
-      return;
-    }
-    for (const os of sets) {
-      const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
-        getWireObjectSet(os),
-      );
-      if (typeName) {
-        types.add(typeName);
-      }
-    }
-  }
-
-  static #extractTypeFromWireObjectSet(
-    wire: WireObjectSet,
-  ): string | undefined {
-    if (wire.type === "base") {
-      return wire.objectType;
-    }
-    if (wire.type === "interfaceBase") {
-      return wire.interfaceType;
-    }
-    return undefined;
+  async #ensureDependenciesReady(): Promise<void> {
+    if (this.#invalidationTypes != null) return;
+    this.#dependenciesPromise ??= getInvalidationSet(
+      this.store.client[additionalContext],
+      getWireObjectSet(this.#composedObjectSet),
+    )
+      .then(
+        ({ resultType, objectInvalidationSet, interfaceInvalidationSet }) => {
+          this.#resultTypeApiName = resultType.apiName;
+          this.#objectTypes = objectInvalidationSet;
+          this.#invalidationTypes = new Set([
+            ...objectInvalidationSet,
+            ...interfaceInvalidationSet,
+          ]);
+        },
+      )
+      .finally(() => {
+        this.#dependenciesPromise = undefined;
+      });
+    await this.#dependenciesPromise;
   }
 
   /**
@@ -215,34 +203,21 @@ export class ObjectSetQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    await this.#ensureDependenciesReady();
     if (
       this.#operations.orderBy &&
       Object.keys(this.#operations.orderBy).length > 0 &&
       !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType, objectInvalidationSet } = await getInvalidationSet(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
       this.sortingStrategy = new OrderBySortingStrategy(
-        resultType.apiName,
+        this.#resultTypeApiName,
         this.#operations.orderBy,
         await extractRdpDefinition(
           this.store.client[additionalContext],
           wireObjectSet,
         ),
       );
-      this.#rdpInvalidationSet = objectInvalidationSet;
-    }
-
-    if (
-      this.#rdpInvalidationSet == null &&
-      this.#operations.withProperties != null
-    ) {
-      const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      this.#rdpInvalidationSet =
-        await this.#computeInvalidationTypes(wireObjectSet);
     }
 
     // Fetch the data with pagination
@@ -316,6 +291,10 @@ export class ObjectSetQuery extends BaseListQuery<
 
     try {
       if (this.#requiresServerEvaluation) {
+        if (optimisticId) {
+          this.#removeOptimisticallyDeletedObjects(changes, optimisticId);
+          return;
+        }
         return this.#handleServerRevalidation(changes);
       }
       return this.#handleLocalUpdate(changes, optimisticId);
@@ -327,6 +306,28 @@ export class ObjectSetQuery extends BaseListQuery<
       }
     }
   };
+
+  #removeOptimisticallyDeletedObjects(
+    changes: Changes,
+    optimisticId: OptimisticId,
+  ): void {
+    if (changes.deleted.size === 0) return;
+    this.store.batch({ optimisticId, changes }, (batch) => {
+      const existing = batch.read(this.cacheKey)?.value;
+      if (!existing) return;
+      const remaining = existing.data.filter(
+        (key) => !changes.deleted.has(key),
+      );
+      if (remaining.length === existing.data.length) return;
+      this._updateList(
+        remaining,
+        "loading",
+        batch,
+        { type: "serverOrdered", append: false },
+        existing.totalCount,
+      );
+    });
+  }
 
   #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
     for (const objectType of this.#objectTypes) {
@@ -479,24 +480,6 @@ export class ObjectSetQuery extends BaseListQuery<
     return { definite, uncertain };
   }
 
-  async #computeInvalidationTypes(
-    wireObjectSet: WireObjectSet,
-  ): Promise<Set<string>> {
-    try {
-      const { objectInvalidationSet } = await getInvalidationSet(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
-      return objectInvalidationSet;
-    } catch (error) {
-      this.store.logger?.error(
-        "Failed to compute invalidation types for object set query, falling back to empty set",
-        error,
-      );
-      return new Set();
-    }
-  }
-
   #getObjectCacheKey(obj: {
     $objectType: string;
     $primaryKey: string | number;
@@ -522,16 +505,12 @@ export class ObjectSetQuery extends BaseListQuery<
     );
   }
 
-  // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
-  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   invalidateObjectOrInterfaceType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (
-      this.#objectTypes.has(objectType) ||
-      (this.#rdpInvalidationSet?.has(objectType) ?? false)
-    ) {
+    await this.#ensureDependenciesReady();
+    if (this.#invalidationTypes?.has(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
@@ -555,6 +534,23 @@ export class ObjectSetQuery extends BaseListQuery<
       objectSet: this.#composedObjectSet,
       totalCount: params.totalCount,
     };
+  }
+}
+
+function getResultDerivedProperties(
+  objectSet: WireObjectSet,
+): Record<string, DerivedPropertyDefinition> {
+  switch (objectSet.type) {
+    case "withProperties":
+      return {
+        ...getResultDerivedProperties(objectSet.objectSet),
+        ...objectSet.derivedProperties,
+      };
+    case "filter":
+    case "nearestNeighbors":
+      return getResultDerivedProperties(objectSet.objectSet);
+    default:
+      return {};
   }
 }
 

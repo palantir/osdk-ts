@@ -35,13 +35,18 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
-import type { OrderBy } from "../../ObservableClient.js";
+import {
+  createObservableClient,
+  type OrderBy,
+  type ObserveObjectsCallbackArgs,
+} from "../../ObservableClient.js";
 import { Store } from "../Store.js";
 import {
   createDefer,
   expectNoMoreCalls,
   expectSingleListCallAndClear,
   mockListSubCallback,
+  mockObserver,
   updateList,
   waitForCall,
   waitForPayload,
@@ -837,6 +842,125 @@ describe("ListQuery pivotTo tests", () => {
   beforeEach(() => {
     apiServer.resetHandlers();
     store = new Store(client);
+  });
+
+  it("refreshes a pivot when its source changes without admitting unrelated targets", async () => {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    const employee = dataStore.registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alison",
+    });
+    const office = dataStore.registerObject(Office, {
+      officeId: "shared",
+      name: "London",
+    });
+    dataStore.registerObject(Office, { officeId: "other", name: "Paris" });
+    dataStore.registerLink(employee, "officeLink", office, "occupants");
+    const linkedEmployee = dataStore.getObjectOrThrow(Employee.apiName, 1);
+    const observableClient = createObservableClient(client);
+    const observer =
+      mockObserver<ObserveObjectsCallbackArgs<typeof Employee>>();
+    defer(
+      observableClient.observeList(
+        {
+          type: Employee,
+          where: { fullName: "Alice" },
+          pivotTo: "officeLink",
+        },
+        observer,
+      ),
+    );
+    expect(
+      (await waitForPayload(observer, (p) => p.status === "loaded"))
+        .resolvedList,
+    ).toEqual([]);
+
+    observer.next.mockClear();
+    dataStore.replaceObjectOrThrow({ ...linkedEmployee, fullName: "Alice" });
+    const employees =
+      mockObserver<ObserveObjectsCallbackArgs<typeof Employee>>();
+    defer(
+      observableClient.observeList(
+        { type: Employee, mode: "force" },
+        employees,
+      ),
+    );
+    await waitForPayload(employees, (p) => p.status === "loaded");
+    expect(
+      (
+        await waitForPayload(observer, (p) => p.status === "loaded")
+      ).resolvedList?.map((o) => o.$primaryKey),
+    ).toEqual(["shared"]);
+
+    observer.next.mockClear();
+    const offices = mockObserver<ObserveObjectsCallbackArgs<typeof Office>>();
+    defer(
+      observableClient.observeList({ type: Office, mode: "force" }, offices),
+    );
+    await waitForPayload(offices, (p) => p.status === "loaded");
+    expect(
+      (
+        await waitForPayload(observer, (p) => p.status === "loaded")
+      ).resolvedList?.map((o) => o.$primaryKey),
+    ).toEqual(["shared"]);
+
+    observer.next.mockClear();
+    dataStore.replaceObjectOrThrow(linkedEmployee);
+    await observableClient.invalidateObjectOrInterfaceType(Employee);
+    expect(
+      (await waitForPayload(observer, (p) => p.status === "loaded"))
+        .resolvedList,
+    ).toEqual([]);
+    expect(observer.error).not.toHaveBeenCalled();
+  });
+
+  it("refreshes derived values when a linked dependency enters the cache", async () => {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    const employee = dataStore.registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+    const office = dataStore.registerObject(Office, {
+      officeId: "shared",
+      name: "London",
+    });
+    dataStore.registerLink(employee, "officeLink", office, "occupants");
+    const observableClient = createObservableClient(client);
+    const observer =
+      mockObserver<
+        ObserveObjectsCallbackArgs<typeof Employee, { officeName: "string" }>
+      >();
+    defer(
+      observableClient.observeList(
+        {
+          type: Employee,
+          withProperties: {
+            officeName: (base) =>
+              base.pivotTo("officeLink").selectProperty("name"),
+          },
+        },
+        observer,
+      ),
+    );
+    expect(
+      (await waitForPayload(observer, (p) => p.status === "loaded"))
+        .resolvedList,
+    ).toMatchObject([{ employeeId: 1, officeName: "London" }]);
+
+    observer.next.mockClear();
+    dataStore.replaceObjectOrThrow({ ...office, name: "Paris" });
+    const offices = mockObserver<ObserveObjectsCallbackArgs<typeof Office>>();
+    defer(
+      observableClient.observeList({ type: Office, mode: "force" }, offices),
+    );
+    await waitForPayload(offices, (p) => p.status === "loaded");
+    expect(
+      (await waitForPayload(observer, (p) => p.status === "loaded"))
+        .resolvedList,
+    ).toMatchObject([{ employeeId: 1, officeName: "Paris" }]);
+    expect(observer.error).not.toHaveBeenCalled();
   });
 
   it("pivotTo with where clause filters source objects before pivot", async () => {
