@@ -25,6 +25,7 @@ import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 import type { DerivedPropertyAggregation } from "../object/ObjectTypeDatasourceDefinition.js";
 import type { PropertyTypeTypeVector } from "../properties/PropertyTypeType.js";
+import { defaultTypeClasses } from "../propertyConversionUtils.js";
 
 const VECTOR: PropertyTypeTypeVector = {
   type: "vector",
@@ -64,6 +65,48 @@ describe("Object Types", () => {
         uploadProperties: ["file"],
       },
     });
+  });
+
+  it("defaults string struct field type classes", () => {
+    defineObject({
+      titlePropertyApiName: "id",
+      displayName: "Building",
+      pluralDisplayName: "Buildings",
+      apiName: "Building",
+      primaryKeyPropertyApiName: "id",
+      properties: {
+        id: { type: "string" },
+        address: {
+          type: {
+            type: "struct",
+            structDefinition: {
+              street: "string",
+              number: "integer",
+              zip: {
+                fieldType: "string",
+                displayMetadata: { displayName: "Zip" },
+                typeClasses: [],
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const type =
+      dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.Building"]
+        .objectType.propertyTypes["address"].type;
+    if (type.type !== "struct") {
+      throw new Error("expected struct");
+    }
+    expect(
+      Object.fromEntries(
+        type.struct.structFields.map((field) => [
+          field.apiName,
+          field.typeClasses,
+        ]),
+      ),
+    ).toEqual({ street: defaultTypeClasses, number: [], zip: [] });
   });
 
   it("rejects an empty backing Media Set for other property types", () => {

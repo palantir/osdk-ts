@@ -25,6 +25,7 @@ import {
   type PropertyTypeType,
 } from "../../api/properties/PropertyTypeType.js";
 import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
+import { resolveStructFieldTypeClasses } from "../../api/propertyConversionUtils.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 import { convertMainValue } from "./convertMainValue.js";
 
@@ -49,7 +50,10 @@ export function propertyTypeTypeToOntologyIrType(
           field = {
             apiName: key,
             displayMetadata: { displayName: key, description: undefined },
-            typeClasses: [],
+            typeClasses: resolveStructFieldTypeClasses(
+              fieldTypeDefinition,
+              undefined,
+            ),
             aliases: [],
             fieldType: propertyTypeTypeToOntologyIrType(fieldTypeDefinition),
           };
@@ -66,14 +70,20 @@ export function propertyTypeTypeToOntologyIrType(
                 displayName: key,
                 description: undefined,
               },
-              typeClasses: fieldTypeDefinition.typeClasses ?? [],
+              typeClasses: resolveStructFieldTypeClasses(
+                fieldTypeDefinition.fieldType,
+                fieldTypeDefinition.typeClasses,
+              ),
               aliases: fieldTypeDefinition.aliases ?? [],
             };
           } else {
             field = {
               apiName: key,
               displayMetadata: { displayName: key, description: undefined },
-              typeClasses: [],
+              typeClasses: resolveStructFieldTypeClasses(
+                fieldTypeDefinition,
+                undefined,
+              ),
               aliases: [],
               fieldType: propertyTypeTypeToOntologyIrType(fieldTypeDefinition),
             };

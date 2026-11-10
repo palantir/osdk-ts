@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrMarketplaceInterfacePropertyType } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
 
 import {
   type InterfacePropertyType,
@@ -23,7 +24,11 @@ import {
   isInterfaceSharedPropertyType,
 } from "../../api/interface/InterfacePropertyType.js";
 import {
+  getPropertyTypeName,
+  hasRenderHints,
+  resolveTypeClasses,
   shouldBeIndexedForSearch,
+  shouldNotHaveRenderHints,
   validateVectorProperty,
 } from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
@@ -46,6 +51,12 @@ export function convertInterfaceProperty(
       },
     ];
   } else {
+    invariant(
+      !shouldNotHaveRenderHints(prop.type) || !hasRenderHints(prop.typeClasses),
+      `Interface property ${apiName} of type '${getPropertyTypeName(
+        prop.type,
+      )}' should not have render hints`,
+    );
     validateVectorProperty(apiName, prop.type, prop.array);
     return [
       apiName,
@@ -70,7 +81,7 @@ export function convertInterfaceProperty(
             primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
             requireImplementation: isInterfacePropertyRequired(prop),
             indexedForSearch: shouldBeIndexedForSearch(prop.type),
-            typeClasses: prop.typeClasses ?? [],
+            typeClasses: resolveTypeClasses(prop.type, prop.typeClasses),
             dataConstraints: convertNullabilityToDataConstraint({
               type: prop.type,
               nullability: prop.nullability,

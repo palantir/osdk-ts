@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isDeepStrictEqual } from "node:util";
+
 import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unstable";
 
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
@@ -34,6 +36,7 @@ import {
 } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
+import { resolveTypeClasses } from "../api/propertyConversionUtils.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
   LockedInterfaceSchema,
@@ -131,7 +134,7 @@ function lockExtensions(interfaceType: InterfaceType): string[] | undefined {
 }
 
 function lockProperty(property: InterfacePropertyType): LockedProperty {
-  const typeClasses = lockTypeClasses(interfacePropertyTypeClasses(property));
+  const typeClasses = lockTypeClasses(property);
   const primaryKeyConstraint = interfacePropertyPrimaryKeyConstraint(property);
   const nullability = lockNullability(interfacePropertyNullability(property));
   const valueType = lockValueType(interfacePropertyValueType(property));
@@ -185,12 +188,16 @@ function lockNullability(
 }
 
 function lockTypeClasses(
-  typeClasses: TypeClass[] | undefined,
+  property: InterfacePropertyType,
 ): TypeClass[] | undefined {
-  if (typeClasses === undefined || typeClasses.length === 0) {
-    return undefined;
-  }
+  const typeClasses = sortTypeClasses(interfacePropertyTypeClasses(property));
+  const defaults = sortTypeClasses(
+    resolveTypeClasses(getInterfacePropertyTypeType(property), undefined),
+  );
+  return isDeepStrictEqual(typeClasses, defaults) ? undefined : typeClasses;
+}
 
+function sortTypeClasses(typeClasses: readonly TypeClass[]): TypeClass[] {
   return [...typeClasses].sort(
     (a, b) => compare(a.kind, b.kind) || compare(a.name, b.name),
   );

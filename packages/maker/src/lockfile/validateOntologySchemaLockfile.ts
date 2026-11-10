@@ -43,6 +43,7 @@ import {
   nullabilityOf,
   own,
   primaryKeyConstraintOf,
+  typeClassesOf,
   tightensNullability,
 } from "./OntologySchemaLockfile.js";
 
@@ -591,8 +592,8 @@ function validatePropertyDiff(
       code: "propertyTypeClassesChanged",
       interfaceApiName,
       property,
-      previousTypeClasses: previous.property.typeClasses ?? [],
-      nextTypeClasses: next.property.typeClasses ?? [],
+      previousTypeClasses: typeClassesOf(previous.property),
+      nextTypeClasses: typeClassesOf(next.property),
     });
     return;
   }

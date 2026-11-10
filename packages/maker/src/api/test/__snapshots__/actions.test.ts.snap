@@ -1931,7 +1931,16 @@ exports[`Action Types > Interface Actions > Interface actions with customization
                   "indexedForSearch": true,
                   "primaryKeyConstraint": "NO_RESTRICTION",
                   "requireImplementation": true,
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
                 "displayMetadata": {
@@ -1960,7 +1969,16 @@ exports[`Action Types > Interface Actions > Interface actions with customization
                   "indexedForSearch": true,
                   "primaryKeyConstraint": "NO_RESTRICTION",
                   "requireImplementation": true,
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
                 "displayMetadata": {
@@ -3662,7 +3680,16 @@ exports[`Action Types > Interface Actions > Interface delete action with action 
                   "indexedForSearch": true,
                   "primaryKeyConstraint": "NO_RESTRICTION",
                   "requireImplementation": true,
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
                 "displayMetadata": {
@@ -3890,7 +3917,16 @@ exports[`Action Types > Interface Actions > Interface delete action with customi
                   "indexedForSearch": true,
                   "primaryKeyConstraint": "NO_RESTRICTION",
                   "requireImplementation": true,
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
                 "displayMetadata": {
@@ -4549,7 +4585,16 @@ exports[`Action Types > Interface Actions > Simple interface actions (with objec
                           },
                           "type": "string",
                         },
-                        "typeClasses": [],
+                        "typeClasses": [
+                          {
+                            "kind": "render_hint",
+                            "name": "SELECTABLE",
+                          },
+                          {
+                            "kind": "render_hint",
+                            "name": "SORTABLE",
+                          },
+                        ],
                       },
                     ],
                   },
@@ -4637,7 +4682,16 @@ exports[`Action Types > Interface Actions > Simple interface actions (with objec
                             },
                             "type": "string",
                           },
-                          "typeClasses": [],
+                          "typeClasses": [
+                            {
+                              "kind": "render_hint",
+                              "name": "SELECTABLE",
+                            },
+                            {
+                              "kind": "render_hint",
+                              "name": "SORTABLE",
+                            },
+                          ],
                         },
                       ],
                     },
@@ -4657,7 +4711,16 @@ exports[`Action Types > Interface Actions > Simple interface actions (with objec
                   "indexedForSearch": true,
                   "primaryKeyConstraint": "NO_RESTRICTION",
                   "requireImplementation": true,
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
                 "displayMetadata": {
@@ -4894,7 +4957,16 @@ exports[`Action Types > Interface Actions > Simple interface actions (with objec
                         },
                         "type": "string",
                       },
-                      "typeClasses": [],
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
                     },
                   ],
                 },
@@ -4988,7 +5060,16 @@ exports[`Action Types > Interface Actions > Simple interface actions (with objec
                     },
                     "type": "string",
                   },
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                 },
               ],
             },
@@ -5430,7 +5511,16 @@ exports[`Action Types > Interface Actions > Simple interface actions (without ob
                   "indexedForSearch": true,
                   "primaryKeyConstraint": "NO_RESTRICTION",
                   "requireImplementation": true,
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
                 "displayMetadata": {
@@ -5658,7 +5748,16 @@ exports[`Action Types > Interface Actions > Simple interface delete action is pr
                   "indexedForSearch": true,
                   "primaryKeyConstraint": "NO_RESTRICTION",
                   "requireImplementation": true,
-                  "typeClasses": [],
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
                   "valueType": undefined,
                 },
                 "displayMetadata": {

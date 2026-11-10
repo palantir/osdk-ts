@@ -24,6 +24,7 @@ import {
   DEFAULT_DECIMAL_SCALE,
   type PropertyTypeType,
 } from "../../api/properties/PropertyTypeType.js";
+import { resolveStructFieldTypeClasses } from "../../api/propertyConversionUtils.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 
 export function propertyTypeTypeToOntologyIrInterfaceType(
@@ -46,7 +47,10 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
           field = {
             apiName: key,
             displayMetadata: { displayName: key, description: undefined },
-            typeClasses: [],
+            typeClasses: resolveStructFieldTypeClasses(
+              fieldTypeDefinition,
+              undefined,
+            ),
             aliases: [],
             fieldType:
               propertyTypeTypeToOntologyIrInterfaceType(fieldTypeDefinition),
@@ -68,7 +72,10 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
                 displayName: key,
                 description: undefined,
               },
-              typeClasses: fieldTypeDefinition.typeClasses ?? [],
+              typeClasses: resolveStructFieldTypeClasses(
+                fieldTypeDefinition.fieldType,
+                fieldTypeDefinition.typeClasses,
+              ),
               aliases: fieldTypeDefinition.aliases ?? [],
               requireImplementation:
                 fieldTypeDefinition.requireImplementation ?? true,
@@ -77,7 +84,10 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
             field = {
               apiName: key,
               displayMetadata: { displayName: key, description: undefined },
-              typeClasses: [],
+              typeClasses: resolveStructFieldTypeClasses(
+                fieldTypeDefinition,
+                undefined,
+              ),
               aliases: [],
               fieldType:
                 propertyTypeTypeToOntologyIrInterfaceType(fieldTypeDefinition),

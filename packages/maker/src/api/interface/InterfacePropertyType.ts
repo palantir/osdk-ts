@@ -26,6 +26,7 @@ import type {
   PropertyType,
   SharedPropertyType,
 } from "../properties/SharedPropertyType.js";
+import { resolveTypeClasses } from "../propertyConversionUtils.js";
 
 export type InterfacePropertyType =
   | InterfaceSharedPropertyType
@@ -74,18 +75,20 @@ export function isInterfacePropertyArray(
 }
 
 /**
- * The type classes this property carries, or `undefined` if it declares none.
+ * The type classes this property publishes, with the type's defaults applied when it declares none.
  *
  * Type classes drive render hints like sorting and filtering, so they are part of what an
  * implementing object type has to satisfy rather than presentation-only metadata.
  */
 export function interfacePropertyTypeClasses(
   interfacePropertyType: InterfacePropertyType,
-): TypeClass[] | undefined {
-  const { typeClasses } = isInterfaceSharedPropertyType(interfacePropertyType)
+): TypeClass[] {
+  const { type, typeClasses } = isInterfaceSharedPropertyType(
+    interfacePropertyType,
+  )
     ? interfacePropertyType.sharedPropertyType
     : interfacePropertyType;
-  return typeClasses;
+  return resolveTypeClasses(type, typeClasses);
 }
 
 /**

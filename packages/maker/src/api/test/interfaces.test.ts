@@ -21,6 +21,7 @@ import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTyp
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import { defaultTypeClasses } from "../propertyConversionUtils.js";
 
 describe("Interfaces", () => {
   beforeEach(async () => {
@@ -199,6 +200,85 @@ describe("Interfaces", () => {
         dumpOntologyFullMetadata(),
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Vector property 'embedding' cannot be an array]`,
+      );
+    });
+
+    it("defaults IDP and string struct field type classes like object type properties", () => {
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          name: { type: "string" },
+          optedOut: { type: "string", typeClasses: [] },
+          shape: { type: "geoshape" },
+          address: {
+            type: {
+              type: "struct",
+              structDefinition: {
+                street: "string",
+                number: "integer",
+                location: "geoshape",
+                zip: {
+                  fieldType: "string",
+                  displayMetadata: { displayName: "Zip" },
+                  typeClasses: [],
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const props =
+        dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.bar"]
+          .interfaceType.propertiesV3;
+      const idp = (apiName: string) => {
+        const prop = props[apiName];
+        if (prop.type !== "interfaceDefinedPropertyType") {
+          throw new Error("expected interfaceDefinedPropertyType");
+        }
+        return prop.interfaceDefinedPropertyType;
+      };
+      expect(idp("name").constraints.typeClasses).toEqual(defaultTypeClasses);
+      expect(idp("optedOut").constraints.typeClasses).toEqual([]);
+      expect(idp("shape").constraints.typeClasses).toEqual([]);
+      expect(idp("address").constraints.typeClasses).toEqual([]);
+
+      const addressType = idp("address").type;
+      if (addressType.type !== "struct") {
+        throw new Error("expected struct");
+      }
+      expect(
+        Object.fromEntries(
+          addressType.struct.structFields.map((field) => [
+            field.apiName,
+            field.typeClasses,
+          ]),
+        ),
+      ).toEqual({
+        street: defaultTypeClasses,
+        number: [],
+        location: [],
+        zip: [],
+      });
+    });
+
+    it("doesn't let you put render hints on an IDP whose type can't have them", () => {
+      defineInterface({
+        apiName: "bar",
+        displayName: "Bar",
+        properties: {
+          shape: {
+            type: "geoshape",
+            typeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
+          },
+        },
+      });
+
+      expect(() =>
+        dumpOntologyFullMetadata(),
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Interface property shape of type 'geoshape' should not have render hints]`,
       );
     });
 

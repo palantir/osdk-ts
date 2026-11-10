@@ -24,7 +24,6 @@ import {
 } from "../../api/defineOntology.js";
 import { defineSharedPropertyType } from "../../api/defineSpt.js";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
-import { defaultTypeClasses } from "../../api/propertyConversionUtils.js";
 import {
   censusOfSource,
   generateOntologySchemaLockfile,
@@ -146,7 +145,6 @@ describe("generateOntologySchemaLockfile", () => {
       expect(lockedProperty("com.palantir.nicknames")).toEqual({
         type: { type: "array", subtype: "string" },
         required: false,
-        typeClasses: defaultTypeClasses,
         declaredBy: "sharedPropertyType",
       });
     });
@@ -170,7 +168,6 @@ describe("generateOntologySchemaLockfile", () => {
       const email = defineSharedPropertyType({
         apiName: "email",
         type: "string",
-        typeClasses: [],
       });
       defineInterface({
         apiName: "Person",
@@ -399,14 +396,50 @@ describe("generateOntologySchemaLockfile", () => {
       });
     });
 
-    it("omits the key for a property that declares an empty list", () => {
+    it("locks an omitted list and its type's defaults the same", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: {
+          omitted: { type: "string" },
+          explicit: { type: "string", typeClasses: [SORTABLE, SELECTABLE] },
+        },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedProperty("omitted"))).toEqual([
+        "type",
+        "required",
+      ]);
+      expect(lockedProperty("explicit")).toStrictEqual(
+        lockedProperty("omitted"),
+      );
+    });
+
+    it("records an empty list on a type that defaults to render hints", () => {
       defineInterface({
         apiName: "Person",
         properties: { name: { type: "string", typeClasses: [] } },
         schemaMigrations: { transitions: [] },
       });
 
-      expect(Object.keys(lockedProperty("name"))).toEqual(["type", "required"]);
+      expect(lockedProperty("name")).toEqual({
+        type: "string",
+        required: true,
+        typeClasses: [],
+      });
+    });
+
+    it("omits the key for an empty list on a type with no default render hints", () => {
+      defineInterface({
+        apiName: "Person",
+        properties: { shape: { type: "geoshape", typeClasses: [] } },
+        schemaMigrations: { transitions: [] },
+      });
+
+      expect(Object.keys(lockedProperty("shape"))).toEqual([
+        "type",
+        "required",
+      ]);
     });
 
     it("sorts type classes, so reordering them in source is not a change", async () => {

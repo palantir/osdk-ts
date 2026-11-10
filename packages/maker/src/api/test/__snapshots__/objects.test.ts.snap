@@ -3051,7 +3051,16 @@ exports[`Object Types > Reducers and struct main properties are defined correctl
                                   },
                                   "type": "string",
                                 },
-                                "typeClasses": [],
+                                "typeClasses": [
+                                  {
+                                    "kind": "render_hint",
+                                    "name": "SELECTABLE",
+                                  },
+                                  {
+                                    "kind": "render_hint",
+                                    "name": "SORTABLE",
+                                  },
+                                ],
                               },
                               {
                                 "aliases": [],
@@ -3070,7 +3079,16 @@ exports[`Object Types > Reducers and struct main properties are defined correctl
                                   },
                                   "type": "string",
                                 },
-                                "typeClasses": [],
+                                "typeClasses": [
+                                  {
+                                    "kind": "render_hint",
+                                    "name": "SELECTABLE",
+                                  },
+                                  {
+                                    "kind": "render_hint",
+                                    "name": "SORTABLE",
+                                  },
+                                ],
                               },
                             ],
                           },
@@ -3095,7 +3113,16 @@ exports[`Object Types > Reducers and struct main properties are defined correctl
                             },
                             "type": "string",
                           },
-                          "typeClasses": [],
+                          "typeClasses": [
+                            {
+                              "kind": "render_hint",
+                              "name": "SELECTABLE",
+                            },
+                            {
+                              "kind": "render_hint",
+                              "name": "SORTABLE",
+                            },
+                          ],
                         },
                         {
                           "aliases": [],
@@ -3114,7 +3141,16 @@ exports[`Object Types > Reducers and struct main properties are defined correctl
                             },
                             "type": "string",
                           },
-                          "typeClasses": [],
+                          "typeClasses": [
+                            {
+                              "kind": "render_hint",
+                              "name": "SELECTABLE",
+                            },
+                            {
+                              "kind": "render_hint",
+                              "name": "SORTABLE",
+                            },
+                          ],
                         },
                       ],
                     },
@@ -3194,7 +3230,16 @@ exports[`Object Types > Reducers and struct main properties are defined correctl
                             },
                             "type": "string",
                           },
-                          "typeClasses": [],
+                          "typeClasses": [
+                            {
+                              "kind": "render_hint",
+                              "name": "SELECTABLE",
+                            },
+                            {
+                              "kind": "render_hint",
+                              "name": "SORTABLE",
+                            },
+                          ],
                         },
                         {
                           "aliases": [],
@@ -3213,7 +3258,16 @@ exports[`Object Types > Reducers and struct main properties are defined correctl
                             },
                             "type": "string",
                           },
-                          "typeClasses": [],
+                          "typeClasses": [
+                            {
+                              "kind": "render_hint",
+                              "name": "SELECTABLE",
+                            },
+                            {
+                              "kind": "render_hint",
+                              "name": "SORTABLE",
+                            },
+                          ],
                         },
                       ],
                     },
@@ -3303,7 +3357,16 @@ exports[`Object Types > Reducers and struct main properties are defined correctl
                         },
                         "type": "string",
                       },
-                      "typeClasses": [],
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
                     },
                     {
                       "aliases": [],
@@ -3322,7 +3385,16 @@ exports[`Object Types > Reducers and struct main properties are defined correctl
                         },
                         "type": "string",
                       },
-                      "typeClasses": [],
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
                     },
                   ],
                 },

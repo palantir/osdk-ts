@@ -21,6 +21,7 @@ import { defineInterface } from "../defineInterface.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import { defaultTypeClasses } from "../propertyConversionUtils.js";
 describe("SPTs", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
@@ -146,6 +147,40 @@ describe("SPTs", () => {
       ].sharedPropertyType;
     expect(spt.type).toMatchSnapshot();
     expect(spt.indexedForSearch).toBe(true);
+  });
+
+  it("defaults string struct field type classes", () => {
+    defineSharedPropertyType({
+      apiName: "address",
+      type: {
+        type: "struct",
+        structDefinition: {
+          street: "string",
+          number: "integer",
+          zip: {
+            fieldType: "string",
+            displayMetadata: { displayName: "Zip" },
+            typeClasses: [],
+          },
+        },
+      },
+    });
+
+    const type =
+      dumpOntologyFullMetadata().ontology.sharedPropertyTypes[
+        "com.palantir.address"
+      ].sharedPropertyType.type;
+    if (type.type !== "struct") {
+      throw new Error("expected struct");
+    }
+    expect(
+      Object.fromEntries(
+        type.struct.structFields.map((field) => [
+          field.apiName,
+          field.typeClasses,
+        ]),
+      ),
+    ).toEqual({ street: defaultTypeClasses, number: [], zip: [] });
   });
 
   it("doesn't let you make a vector SPT an array", () => {

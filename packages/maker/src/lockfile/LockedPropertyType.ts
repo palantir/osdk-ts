@@ -69,6 +69,12 @@ export function describeType(type: LockedPropertyType): string {
     : JSON.stringify(type);
 }
 
+/** The name of the type a property holds, looking through an array to its element type. */
+export function scalarTypeName(type: LockedPropertyType): string {
+  const scalar = isArrayType(type) ? type.subtype : type;
+  return typeof scalar === "object" ? scalar.type : scalar;
+}
+
 function isArrayType(type: LockedPropertyType): type is LockedArrayType {
   return typeof type === "object" && type.type === "array";
 }

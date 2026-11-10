@@ -727,7 +727,7 @@ describe("validateOntologySchemaLockfile", () => {
 
     it("rejects adding a type class to a property", () => {
       const result = validate(
-        person({ firstName: REQUIRED_STRING }),
+        person({ firstName: { ...REQUIRED_STRING, typeClasses: [] } }),
         person({ firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] } }),
       );
       expect(result.breakingChanges).toEqual([
@@ -744,7 +744,7 @@ describe("validateOntologySchemaLockfile", () => {
     it("rejects dropping a type class from a property", () => {
       const result = validate(
         person({ firstName: { ...REQUIRED_STRING, typeClasses: [SORTABLE] } }),
-        person({ firstName: REQUIRED_STRING }),
+        person({ firstName: { ...REQUIRED_STRING, typeClasses: [] } }),
       );
       expect(result.breakingChanges).toEqual([
         {
@@ -752,6 +752,22 @@ describe("validateOntologySchemaLockfile", () => {
           interfaceApiName: "Person",
           property: "firstName",
           previousTypeClasses: [SORTABLE],
+          nextTypeClasses: [],
+        },
+      ]);
+    });
+
+    it("reports an absent list as its type's defaults", () => {
+      const result = validate(
+        person({ firstName: REQUIRED_STRING }),
+        person({ firstName: { ...REQUIRED_STRING, typeClasses: [] } }),
+      );
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "propertyTypeClassesChanged",
+          interfaceApiName: "Person",
+          property: "firstName",
+          previousTypeClasses: [SELECTABLE, SORTABLE],
           nextTypeClasses: [],
         },
       ]);

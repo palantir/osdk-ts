@@ -42,7 +42,16 @@ exports[`Interfaces > Auto IDPs > Auto creates IDPs 1`] = `
                 "indexedForSearch": true,
                 "primaryKeyConstraint": "NO_RESTRICTION",
                 "requireImplementation": true,
-                "typeClasses": [],
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
                 "valueType": undefined,
               },
               "displayMetadata": {
@@ -231,7 +240,16 @@ exports[`Interfaces > Interface properties > Complex interface properties 1`] = 
                 "indexedForSearch": true,
                 "primaryKeyConstraint": "MUST_BE_PK",
                 "requireImplementation": false,
-                "typeClasses": [],
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
                 "valueType": undefined,
               },
               "displayMetadata": {
@@ -442,7 +460,16 @@ exports[`Interfaces > Interface properties > IDPs and SPTs on the same interface
                 "indexedForSearch": true,
                 "primaryKeyConstraint": "NO_RESTRICTION",
                 "requireImplementation": true,
-                "typeClasses": [],
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
                 "valueType": undefined,
               },
               "displayMetadata": {
@@ -579,7 +606,16 @@ exports[`Interfaces > Interface properties > Struct IDPs 1`] = `
                         "type": "string",
                       },
                       "requireImplementation": true,
-                      "typeClasses": [],
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
                     },
                     {
                       "aliases": [],
@@ -599,7 +635,16 @@ exports[`Interfaces > Interface properties > Struct IDPs 1`] = `
                         "type": "string",
                       },
                       "requireImplementation": true,
-                      "typeClasses": [],
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
                     },
                   ],
                 },
@@ -757,7 +802,16 @@ exports[`Interfaces > Interface properties > supports optional properties 1`] = 
                 "indexedForSearch": true,
                 "primaryKeyConstraint": "NO_RESTRICTION",
                 "requireImplementation": false,
-                "typeClasses": [],
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
                 "valueType": undefined,
               },
               "displayMetadata": {
@@ -890,7 +944,16 @@ exports[`Interfaces > allows extends interfaces with apiName provided 1`] = `
                     "indexedForSearch": true,
                     "primaryKeyConstraint": "NO_RESTRICTION",
                     "requireImplementation": true,
-                    "typeClasses": [],
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
                     "valueType": undefined,
                   },
                   "displayMetadata": {
@@ -933,7 +996,16 @@ exports[`Interfaces > allows extends interfaces with apiName provided 1`] = `
                 "indexedForSearch": true,
                 "primaryKeyConstraint": "NO_RESTRICTION",
                 "requireImplementation": true,
-                "typeClasses": [],
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
                 "valueType": undefined,
               },
               "displayMetadata": {
@@ -993,7 +1065,16 @@ exports[`Interfaces > allows extends interfaces with apiName provided 1`] = `
                 "indexedForSearch": true,
                 "primaryKeyConstraint": "NO_RESTRICTION",
                 "requireImplementation": true,
-                "typeClasses": [],
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
                 "valueType": undefined,
               },
               "displayMetadata": {

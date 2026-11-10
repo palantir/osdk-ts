@@ -29,20 +29,48 @@ export const defaultTypeClasses: TypeClass[] = [
 ];
 
 // ExperimentalTimeDependentV1 and Attachment types should be included here once supported
+const TYPES_WITHOUT_RENDER_HINTS = [
+  "struct",
+  "geoshape",
+  "mediaReference",
+  "geotimeSeries",
+  "attachment",
+  "vector",
+];
+
 export function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
-  return [
-    "struct",
-    "geoshape",
-    "mediaReference",
-    "geotimeSeries",
-    "attachment",
-    "vector",
-  ].includes(getPropertyTypeName(type));
+  return TYPES_WITHOUT_RENDER_HINTS.includes(getPropertyTypeName(type));
 }
 
 export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
   return (typeClasses ?? []).some(
     (tc) => tc.kind.toLowerCase() === "render_hint",
+  );
+}
+
+/** The type classes a property of the named type publishes when it declares none. */
+export function defaultTypeClassesFor(typeName: string): TypeClass[] {
+  return TYPES_WITHOUT_RENDER_HINTS.includes(typeName)
+    ? []
+    : defaultTypeClasses;
+}
+
+/** The type classes a property publishes: the declared ones, or the defaults for its type. */
+export function resolveTypeClasses(
+  type: PropertyTypeType,
+  typeClasses: TypeClass[] | undefined,
+): TypeClass[] {
+  return typeClasses ?? defaultTypeClassesFor(getPropertyTypeName(type));
+}
+
+/** The type classes a struct field publishes: the declared ones, or render hints for strings. */
+export function resolveStructFieldTypeClasses(
+  fieldType: PropertyTypeType,
+  typeClasses: TypeClass[] | undefined,
+): TypeClass[] {
+  return (
+    typeClasses ??
+    (getPropertyTypeName(fieldType) === "string" ? defaultTypeClasses : [])
   );
 }
 

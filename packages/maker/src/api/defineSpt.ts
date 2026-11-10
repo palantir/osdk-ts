@@ -35,7 +35,7 @@ import { type PropertyTypeType } from "./properties/PropertyTypeType.js";
 import type { ReducerType } from "./properties/ReducerType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 import {
-  defaultTypeClasses,
+  resolveTypeClasses,
   getPropertyTypeName,
   hasRenderHints,
   shouldNotHaveRenderHints,
@@ -86,9 +86,7 @@ export function defineSharedPropertyType(
     apiName,
     nonNameSpacedApiName: sptDef.apiName,
     displayName: sptDef.displayName ?? sptDef.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
-    typeClasses:
-      sptDef.typeClasses ??
-      (shouldNotHaveRenderHints(sptDef.type) ? [] : defaultTypeClasses),
+    typeClasses: resolveTypeClasses(sptDef.type, sptDef.typeClasses),
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
   const context = `Shared property type "${apiName}"`;

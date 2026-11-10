@@ -24,7 +24,11 @@ import type {
   InterfaceSchemaMigrationInstruction,
 } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { Nullability } from "../api/properties/Nullability.js";
-import type { LockedPropertyType } from "./LockedPropertyType.js";
+import { defaultTypeClassesFor } from "../api/propertyConversionUtils.js";
+import {
+  type LockedPropertyType,
+  scalarTypeName,
+} from "./LockedPropertyType.js";
 
 export const ONTOLOGY_SCHEMA_LOCKFILE_VERSION = 1;
 export const DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME =
@@ -104,7 +108,7 @@ export interface LockedProperty {
   nullability?: Nullability;
   /** The value type this property is an instance of, or absent if it's not backed by one. */
   valueType?: LockedValueType;
-  /** The property's (sorted) type classes. Absent when it declares none. */
+  /** The property's (sorted) type classes. Absent when they are the defaults for its type. */
   typeClasses?: TypeClass[];
 }
 
@@ -126,6 +130,12 @@ export function primaryKeyConstraintOf(
   property: LockedProperty,
 ): PrimaryKeyConstraint {
   return property.primaryKeyConstraint ?? "NO_RESTRICTION";
+}
+
+export function typeClassesOf(property: LockedProperty): TypeClass[] {
+  return (
+    property.typeClasses ?? defaultTypeClassesFor(scalarTypeName(property.type))
+  );
 }
 
 export const UNCONSTRAINED_NULLABILITY: Nullability = {

@@ -20,7 +20,7 @@ import invariant from "tiny-invariant";
 import { convertObjectStatus, namespace } from "../../api/defineOntology.js";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import {
-  defaultTypeClasses,
+  resolveTypeClasses,
   getPropertyTypeName,
   hasRenderHints,
   shouldBeIndexedForSearch,
@@ -75,9 +75,7 @@ export function convertObjectPropertyType(
           },
         }
       : propertyTypeTypeToOntologyIrType(property.type, property.apiName),
-    typeClasses:
-      property.typeClasses ??
-      (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
+    typeClasses: resolveTypeClasses(property.type, property.typeClasses),
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
     dataConstraints: property.valueType
