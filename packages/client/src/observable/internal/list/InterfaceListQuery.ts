@@ -94,23 +94,6 @@ export class InterfaceListQuery extends ListQuery {
     return objectSet.where(this.canonicalWhere);
   }
 
-  async revalidateObjectType(objectType: string): Promise<boolean> {
-    if (await super.revalidateObjectType(objectType)) return true;
-
-    // For interface queries: also check if the invalidated concrete type
-    // implements this query's interface. e.g. invalidating "Employee"
-    // should revalidate a query for "Assignable" if Employee implements it.
-    try {
-      const objectMetadata = await this.store.client.fetchMetadata({
-        type: "object",
-        apiName: objectType,
-      });
-      return this.apiName in objectMetadata.interfaceMap;
-    } catch {
-      return true;
-    }
-  }
-
   // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   protected async postProcessFetchedData(

@@ -63,6 +63,7 @@ import {
   ORDER_BY_IDX,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
   SELECT_IDX,
   WHERE_IDX,
 } from "./ListCacheKey.js";
@@ -117,9 +118,8 @@ export abstract class ListQuery extends BaseListQuery<
   #fetchedObjectType: string | undefined;
   #objectTypesCache: ReadonlySet<string> | undefined;
 
-  // Object types this query's RDPs traverse; an edit to any of these triggers
-  // revalidation. Undefined for ObjectSets the walker doesn't support.
-  #rdpInvalidationSet: ReadonlySet<string> | undefined;
+  #invalidationTypes: ReadonlySet<string> | undefined;
+  #dependenciesPromise: ReturnType<typeof getInvalidationSet> | undefined;
 
   public override get rdpConfig(): Canonical<Rdp> | undefined {
     return this.cacheKey.otherKeys[RDP_IDX];
@@ -209,12 +209,24 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#objectTypesCache ?? new Set([this.apiName]);
   }
 
-  #updateFetchedObjectType(fetchedApiName: string): void {
-    this.#fetchedObjectType = fetchedApiName;
-    this.#objectTypesCache =
-      fetchedApiName !== this.apiName
-        ? new Set([this.apiName, fetchedApiName])
-        : new Set([this.apiName]);
+  #loadDependencies(): ReturnType<typeof getInvalidationSet> {
+    return (this.#dependenciesPromise ??= getInvalidationSet(
+      this.store.client[additionalContext],
+      getWireObjectSet(this.#objectSet),
+    )
+      .then((dependencies) => {
+        this.#fetchedObjectType = dependencies.resultType.apiName;
+        this.#objectTypesCache = dependencies.objectInvalidationSet;
+        this.#invalidationTypes = new Set([
+          ...dependencies.objectInvalidationSet,
+          ...dependencies.interfaceInvalidationSet,
+        ]);
+        return dependencies;
+      })
+      .catch((error: unknown) => {
+        this.#dependenciesPromise = undefined;
+        throw error;
+      }));
   }
 
   protected createPayload(params: CollectionConnectableParams): ListPayload {
@@ -245,13 +257,7 @@ export abstract class ListQuery extends BaseListQuery<
 
     if (needsResultType) {
       const wireObjectSet = getWireObjectSet(this.#objectSet);
-      const { resultType, objectInvalidationSet } = await getInvalidationSet(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
-
-      this.#updateFetchedObjectType(resultType.apiName);
-      this.#rdpInvalidationSet = objectInvalidationSet;
+      const { resultType } = await this.#loadDependencies();
 
       if (
         Object.keys(this.#orderBy).length > 0 &&
@@ -313,15 +319,9 @@ export abstract class ListQuery extends BaseListQuery<
     // resolution, so we fall back to apiName.
     if (this.#fetchedObjectType == null) {
       try {
-        const wireObjectSet = getWireObjectSet(this.#objectSet);
-        const { resultType, objectInvalidationSet } = await getInvalidationSet(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        );
-        this.#updateFetchedObjectType(resultType.apiName);
-        this.#rdpInvalidationSet = objectInvalidationSet;
-      } catch {
-        this.#updateFetchedObjectType(this.apiName);
+        await this.#loadDependencies();
+      } catch (error) {
+        if (this.cacheKey.otherKeys[RIDS_IDX] == null) throw error;
       }
     }
 
@@ -387,14 +387,14 @@ export abstract class ListQuery extends BaseListQuery<
    * Subclasses override to add type-specific logic (e.g. interface
    * implementation checks).
    */
-  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   async revalidateObjectType(objectType: string): Promise<boolean> {
-    return (
-      this.apiName === objectType ||
-      (this.#fetchedObjectType != null &&
-        this.#fetchedObjectType === objectType) ||
-      (this.#rdpInvalidationSet?.has(objectType) ?? false)
-    );
+    try {
+      await this.#loadDependencies();
+    } catch (error) {
+      if (this.cacheKey.otherKeys[RIDS_IDX] == null) throw error;
+      return true;
+    }
+    return this.#invalidationTypes?.has(objectType) ?? false;
   }
 
   /**
@@ -441,29 +441,47 @@ export abstract class ListQuery extends BaseListQuery<
     // mark ourselves as updated so we don't infinite recurse.
     changes.modified.add(this.cacheKey);
 
-    // When the fetched object type differs from apiName (e.g. a query that
-    // traverses a link), we can't locally evaluate whether result-type
-    // changes affect this query -- that depends on link relationships the
-    // client doesn't have. Fall back to a full server revalidation.
     if (
-      this.#fetchedObjectType != null &&
-      this.#fetchedObjectType !== this.apiName
+      this.#pivotInfo != null ||
+      this.rdpConfig != null ||
+      this.#intersectWith != null
     ) {
-      const fetchedType = this.#fetchedObjectType;
-      if (
-        (changes.addedObjects.get(fetchedType)?.length ?? 0) > 0 ||
-        (changes.modifiedObjects.get(fetchedType)?.length ?? 0) > 0
-      ) {
-        return this.revalidate(true);
+      if (optimisticId) {
+        this.store.batch({ optimisticId, changes }, (batch) => {
+          const existing = batch.read(this.cacheKey)?.value;
+          if (!existing) return;
+          const remaining = existing.data.filter(
+            (key) => !changes.deleted.has(key),
+          );
+          if (remaining.length !== existing.data.length) {
+            this._updateList(
+              remaining,
+              "loading",
+              batch,
+              { type: "serverOrdered", append: false },
+              existing.totalCount,
+            );
+          }
+        });
+        return;
       }
-      for (const key of changes.deleted) {
+      for (const type of this.objectTypes) {
         if (
-          key.type === "object" &&
-          key.otherKeys[OBJECT_API_NAME_IDX] === fetchedType
+          (changes.addedObjects.get(type)?.length ?? 0) > 0 ||
+          (changes.modifiedObjects.get(type)?.length ?? 0) > 0
         ) {
           return this.revalidate(true);
         }
       }
+      for (const key of changes.deleted) {
+        if (
+          key.type === "object" &&
+          this.objectTypes.has(key.otherKeys[OBJECT_API_NAME_IDX])
+        ) {
+          return this.revalidate(true);
+        }
+      }
+      return;
     }
 
     try {
