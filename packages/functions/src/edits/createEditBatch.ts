@@ -42,9 +42,10 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     apiName: A,
     target: AddLinkTargets<X, SOL, A>,
   ): void {
+    const type = isInterfaceLocator(source) ? "addInterfaceLink" : "addLink";
     if (!Array.isArray(target)) {
       this.edits.push({
-        type: "addLink",
+        type,
         source,
         apiName,
         target,
@@ -54,7 +55,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 
     for (const elem of target) {
       this.edits.push({
-        type: "addLink",
+        type,
         source,
         apiName,
         target: elem,
@@ -66,9 +67,12 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     SOL extends RemoveLinkSources<X>,
     A extends RemoveLinkApiNames<X, SOL>,
   >(source: SOL, apiName: A, target: RemoveLinkTargets<X, SOL, A>): void {
+    const type = isInterfaceLocator(source)
+      ? "removeInterfaceLink"
+      : "removeLink";
     if (!Array.isArray(target)) {
       this.edits.push({
-        type: "removeLink",
+        type,
         source,
         apiName,
         target,
@@ -78,7 +82,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
 
     for (const elem of target) {
       this.edits.push({
-        type: "removeLink",
+        type,
         source,
         apiName,
         target: elem,

@@ -14,6 +14,7 @@ import { Geometry } from 'geojson';
 import { GeometryCollection } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import type { InterfaceMetadata } from '@osdk/client';
 import type * as InternalAliases from '@osdk/aliases/internal';
 import { LineString } from 'geojson';
 import type { Media } from '@osdk/client';
@@ -144,6 +145,14 @@ export namespace Edits {
     //
     // (undocumented)
     export type Interface<S extends InterfaceDefinition> = CreateObjectForInterface<S> | UpdateObjectForInterface<S> | DeleteObjectForInterface<S>;
+    	// Warning: (ae-forgotten-export) The symbol "AddInterfaceLink" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "RemoveInterfaceLink" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type InterfaceLink<
+    		S extends InterfaceDefinition,
+    		L extends keyof CompileTimeMetadata<S>["links"]
+    	> = { [K in L] : AddInterfaceLink<S, K> | RemoveInterfaceLink<S, K> }[L];
     	// Warning: (ae-forgotten-export) The symbol "AddLink" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "RemoveLink" needs to be exported by the entry point index.d.ts
     //
