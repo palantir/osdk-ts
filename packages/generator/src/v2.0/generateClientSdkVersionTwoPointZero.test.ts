@@ -1089,16 +1089,16 @@ describe("generator", () => {
             contextItems: {};
             signatures: weatherAgent.Signatures;
           };
-          apiName: 'weatherAgent';
           type: 'agent';
+          apiName: 'weatherAgent';
           version: '1.2.3';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         /** @beta */
         export const weatherAgent: weatherAgent = {
-          apiName: 'weatherAgent',
           type: 'agent',
+          apiName: 'weatherAgent',
           version: '1.2.3',
           osdkMetadata: $osdkMetadata,
         };
@@ -1867,16 +1867,16 @@ describe("generator", () => {
             contextItems: {};
             signatures: weatherAgent.Signatures;
           };
-          apiName: 'foo.bar.weatherAgent';
           type: 'agent';
+          apiName: 'foo.bar.weatherAgent';
           version: '1.2.3';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         /** @beta */
         export const weatherAgent: weatherAgent = {
-          apiName: 'foo.bar.weatherAgent',
           type: 'agent',
+          apiName: 'foo.bar.weatherAgent',
           version: '1.2.3',
           osdkMetadata: $osdkMetadata,
         };
@@ -2779,6 +2779,42 @@ describe("generator", () => {
           };
           "
         `);
+    });
+  });
+
+  describe("agents with versions", () => {
+    it("can generate agents with requested and resolved versions", async () => {
+      const agent = TodoWireOntology.agents!.weatherAgent;
+      const ontology: WireOntologyDefinition = {
+        ...TodoWireOntology,
+        agents: {
+          weatherAgent: agent,
+          otherAgent: { ...agent, apiName: "otherAgent", version: "2.3.4" },
+        },
+      };
+
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        [],
+        false,
+        new Map(),
+        new Map([["weatherAgent", "1.x"]]),
+      );
+      const files = helper.getFiles();
+      const agents = {
+        weatherAgent: files[`${BASE_PATH}/ontology/agents/weatherAgent.ts`],
+        otherAgent: files[`${BASE_PATH}/ontology/agents/otherAgent.ts`],
+      };
+
+      expect(agents).toMatchSnapshot();
     });
   });
 

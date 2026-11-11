@@ -110,6 +110,76 @@ describe(generatePerAgentDataFiles, () => {
     expect(helper.getFiles()).toMatchSnapshot();
   });
 
+  it("generates nested arrays and object containers for agents", async () => {
+    const fields: WireAgentDefinitionVersion["argumentDefinitions"] = [
+      {
+        name: "nestedListField",
+        dataType: {
+          type: "list",
+          elementType: { type: "list", elementType: { type: "string" } },
+        },
+      },
+      ...(["object", "objectSet"] as const).flatMap(type => {
+        const dataType = {
+          type,
+          ontologyApiName: ontologyMetadata.ontology.apiName,
+          objectTypeApiName: type === "object" ? "Employee" : "Office",
+        };
+        return (["list", "record"] as const).map(container => ({
+          name: `${type}${container === "list" ? "Array" : "Record"}`,
+          dataType: {
+            type: "nullable" as const,
+            wrappedType: container === "list"
+              ? {
+                type: "list" as const,
+                elementType: {
+                  type: "nullable" as const,
+                  wrappedType: dataType,
+                },
+              }
+              : {
+                type: "record" as const,
+                valueType: {
+                  type: "nullable" as const,
+                  wrappedType: dataType,
+                },
+              },
+          },
+        }));
+      }),
+    ];
+    const definition: WireAgentDefinitionVersion = {
+      ...agent,
+      argumentDefinitions: fields,
+      eventDefinitions: [{
+        eventType: "update",
+        payloadType: { type: "struct", fields },
+      }],
+      agentStateType: { type: "struct", fields },
+      contextItemDefinitions: [{
+        contextItemType: "result",
+        dataType: { type: "struct", fields },
+      }],
+    };
+    const helper = createMockMinimalFiles();
+
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology: enhanceOntology({
+        sanitized: {
+          ...ontologyMetadata,
+          agents: { [definition.apiName]: definition },
+        },
+        importExt: ".js",
+      }),
+      importExt: ".js",
+      agentVersionReferences: new Map(),
+    });
+
+    expect(helper.getFiles()).toMatchSnapshot();
+  });
+
   it("generates payload types and imports objects used by events", async () => {
     const definition: WireAgentDefinitionVersion = {
       ...agent,
@@ -348,21 +418,21 @@ describe(generatePerAgentDataFiles, () => {
             dataType: {
               type: "discriminatedUnion",
               discriminatorKey: "kind",
-              members: ordered([
+              members: [
                 { discriminatorValue: "z", fields },
                 { discriminatorValue: "a", fields },
-              ]),
+              ],
             },
           },
         ]),
-        eventDefinitions: ordered([
+        eventDefinitions: [
           { eventType: "z", payloadType: { type: "struct", fields } },
           { eventType: "a", payloadType: { type: "string" } },
-        ]),
-        contextItemDefinitions: ordered([
+        ],
+        contextItemDefinitions: [
           { contextItemType: "z", dataType: { type: "struct", fields } },
           { contextItemType: "a", dataType: { type: "string" } },
-        ]),
+        ],
         agentStateType: { type: "struct", fields },
       };
       const helper = createMockMinimalFiles();

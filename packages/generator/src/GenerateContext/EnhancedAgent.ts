@@ -19,25 +19,7 @@ import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
 export class EnhancedAgent extends EnhancedBase<WireAgentDefinitionVersion> {
-  constructor(common: EnhanceCommon, public raw: WireAgentDefinitionVersion) {
+  constructor(common: EnhanceCommon, raw: WireAgentDefinitionVersion) {
     super(common, raw, raw.apiName, "./ontology/agents");
-  }
-
-  get argumentDefinitions(): WireAgentDefinitionVersion["argumentDefinitions"] {
-    return this.raw.argumentDefinitions;
-  }
-
-  get eventDefinitions(): WireAgentDefinitionVersion["eventDefinitions"] {
-    return this.raw.eventDefinitions;
-  }
-
-  get agentStateType(): WireAgentDefinitionVersion["agentStateType"] {
-    return this.raw.agentStateType;
-  }
-
-  get contextItemDefinitions(): WireAgentDefinitionVersion[
-    "contextItemDefinitions"
-  ] {
-    return this.raw.contextItemDefinitions;
   }
 }

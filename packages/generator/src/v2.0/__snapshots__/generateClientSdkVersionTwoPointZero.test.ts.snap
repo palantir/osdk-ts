@@ -1,0 +1,146 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`generator > agents with versions > can generate agents with requested and resolved versions 1`] = `
+{
+  "otherAgent": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
+  AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
+  AgentSendEventOptions as $AgentSendEventOptions,
+} from '@osdk/client/experimental';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+/** @beta */
+export namespace otherAgent {
+  export interface Signatures {
+    experimental_createSession(args: otherAgent.CreateSessionArguments): Promise<otherAgent.Session>;
+    experimental_getSession(sessionId: string): Promise<otherAgent.Session>;
+  }
+
+  export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+    experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: { city: string };
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
+
+  export type SendEventArguments = never;
+
+  export type Events = Record<never, never>;
+
+  export interface CreateSessionArguments {
+    readonly city: string;
+  }
+}
+
+/** @beta */
+export interface otherAgent extends $AgentDefinition<otherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
+  __DefinitionMetadata?: {
+    apiName: 'otherAgent';
+    type: 'agent';
+    version: '2.3.4';
+    arguments: { city: { nullable: false; type: 'string' } };
+    events: {};
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {};
+    signatures: otherAgent.Signatures;
+  };
+  type: 'agent';
+  apiName: 'otherAgent';
+  version: '2.3.4';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+/** @beta */
+export const otherAgent: otherAgent = {
+  type: 'agent',
+  apiName: 'otherAgent',
+  version: '2.3.4',
+  osdkMetadata: $osdkMetadata,
+};
+",
+  "weatherAgent": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
+  AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
+  AgentSendEventOptions as $AgentSendEventOptions,
+} from '@osdk/client/experimental';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+/** @beta */
+export namespace weatherAgent {
+  export interface Signatures {
+    experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<weatherAgent.Session>;
+    experimental_getSession(sessionId: string): Promise<weatherAgent.Session>;
+  }
+
+  export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+    experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: { city: string };
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
+
+  export type SendEventArguments = never;
+
+  export type Events = Record<never, never>;
+
+  export interface CreateSessionArguments {
+    readonly city: string;
+  }
+}
+
+/** @beta */
+export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
+  __DefinitionMetadata?: {
+    apiName: 'weatherAgent';
+    type: 'agent';
+    version: '1.2.3';
+    arguments: { city: { nullable: false; type: 'string' } };
+    events: {};
+    agentState: { nullable: false; struct: {}; type: 'struct' };
+    contextItems: {};
+    signatures: weatherAgent.Signatures;
+  };
+  type: 'agent';
+  apiName: 'weatherAgent';
+  version: '1.x';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+/** @beta */
+export const weatherAgent: weatherAgent = {
+  type: 'agent',
+  apiName: 'weatherAgent',
+  version: '1.x',
+  osdkMetadata: $osdkMetadata,
+};
+",
+}
+`;
