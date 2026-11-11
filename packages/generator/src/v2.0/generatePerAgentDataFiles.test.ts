@@ -372,7 +372,7 @@ describe(generatePerAgentDataFiles, () => {
     expect(parseDiagnostics).toHaveLength(0);
   });
 
-  it("preserves unknown types", async () => {
+  it("rejects unsupported types", async () => {
     const definition: WireAgentDefinitionVersion = {
       ...agent,
       agentStateType: {
@@ -388,7 +388,7 @@ describe(generatePerAgentDataFiles, () => {
       importExt: ".js",
     });
 
-    await generatePerAgentDataFiles({
+    const result = generatePerAgentDataFiles({
       fs: helper.minimalFiles,
       outDir: "/foo",
       ontology,
@@ -396,7 +396,9 @@ describe(generatePerAgentDataFiles, () => {
       agentVersionReferences: new Map(),
     });
 
-    expect(helper.getFiles()).toMatchSnapshot();
+    await expect(result).rejects.toThrow(
+      "Unsupported AgentDataType.type futureType",
+    );
   });
 
   it("generates identical definitions regardless of schema field ordering", async () => {

@@ -28,7 +28,7 @@ export namespace otherAgent {
   }
 
   export interface SessionState extends $AgentSessionState {
-    arguments: { city: string };
+    arguments: { city: $AgentResult.PrimitiveType<'string'> };
     agentState: { data: Record<string, never> };
     contextItems: Record<string, ContextItem>;
   }
@@ -42,7 +42,7 @@ export namespace otherAgent {
   export type Events = Record<never, never>;
 
   export interface CreateSessionArguments {
-    readonly city: string;
+    readonly city: $AgentParam.PrimitiveType<'string'>;
   }
 }
 
@@ -50,6 +50,8 @@ export namespace otherAgent {
 export interface otherAgent extends $AgentDefinition<otherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'otherAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '2.3.4';
     arguments: { city: { nullable: false; type: 'string' } };
@@ -98,7 +100,7 @@ export namespace weatherAgent {
   }
 
   export interface SessionState extends $AgentSessionState {
-    arguments: { city: string };
+    arguments: { city: $AgentResult.PrimitiveType<'string'> };
     agentState: { data: Record<string, never> };
     contextItems: Record<string, ContextItem>;
   }
@@ -112,7 +114,7 @@ export namespace weatherAgent {
   export type Events = Record<never, never>;
 
   export interface CreateSessionArguments {
-    readonly city: string;
+    readonly city: $AgentParam.PrimitiveType<'string'>;
   }
 }
 
@@ -120,6 +122,8 @@ export namespace weatherAgent {
 export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'weatherAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: { city: { nullable: false; type: 'string' } };
