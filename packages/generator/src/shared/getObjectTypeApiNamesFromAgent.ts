@@ -14,23 +14,66 @@
  * limitations under the License.
  */
 
-import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
+import type { DataType } from "@osdk/foundry.agents";
 import type { EnhancedAgent } from "../GenerateContext/EnhancedAgent.js";
-import { getObjectTypesFromAgentDataType } from "./getObjectTypesFromAgentDataType.js";
 
-export function getObjectTypeApiNamesFromAgent(
-  agent: AgentDefinitionVersion | EnhancedAgent,
-): string[] {
+export function getObjectTypeApiNamesFromAgent(agent: EnhancedAgent): string[] {
   const types = new Set<string>();
-  for (const { dataType } of agent.argumentDefinitions) {
+  for (const { dataType } of agent.raw.argumentDefinitions) {
     getObjectTypesFromAgentDataType(dataType, types);
   }
-  for (const { payloadType } of agent.eventDefinitions) {
+  for (const { payloadType } of agent.raw.eventDefinitions) {
     getObjectTypesFromAgentDataType(payloadType, types);
   }
-  getObjectTypesFromAgentDataType(agent.agentStateType, types);
-  for (const { dataType } of agent.contextItemDefinitions) {
+  getObjectTypesFromAgentDataType(agent.raw.agentStateType, types);
+  for (const { dataType } of agent.raw.contextItemDefinitions) {
     getObjectTypesFromAgentDataType(dataType, types);
   }
   return Array.from(types);
+}
+
+function getObjectTypesFromAgentDataType(
+  dataType: DataType,
+  types: Set<string>,
+): void {
+  switch (dataType.type) {
+    case "object":
+    case "objectSet":
+      types.add(dataType.objectTypeApiName);
+      return;
+    case "nullable":
+      getObjectTypesFromAgentDataType(dataType.wrappedType, types);
+      return;
+    case "list":
+      getObjectTypesFromAgentDataType(dataType.elementType, types);
+      return;
+    case "record":
+      getObjectTypesFromAgentDataType(dataType.valueType, types);
+      return;
+    case "struct":
+      for (const field of dataType.fields) {
+        getObjectTypesFromAgentDataType(field.dataType, types);
+      }
+      return;
+    case "discriminatedUnion":
+      for (const member of dataType.members) {
+        for (const field of member.fields) {
+          getObjectTypesFromAgentDataType(field.dataType, types);
+        }
+      }
+      return;
+    case "boolean":
+    case "date":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "short":
+    case "string":
+    case "timestamp":
+      return;
+    default:
+      const _: never = dataType;
+      return;
+  }
 }

@@ -15,59 +15,64 @@
  */
 
 import type { AgentDataTypeDefinition } from "@osdk/api/unstable";
-import type { DataType, StructField } from "@osdk/foundry.agents";
+import type { DataType } from "@osdk/foundry.agents";
 
 export function wireAgentDataTypeToAgentDataTypeDefinition(
   input: DataType,
 ): AgentDataTypeDefinition {
   switch (input.type) {
-    case "boolean":
-    case "string":
-    case "date":
-    case "timestamp":
+    case "double":
+    case "float":
     case "integer":
     case "long":
     case "short":
-    case "double":
-    case "float":
-      return { type: input.type, nullable: false };
+    case "boolean":
+    case "date":
+    case "string":
+    case "timestamp":
+      return {
+        type: input.type,
+        nullable: false,
+      };
+
+    case "object":
+      return {
+        type: "object",
+        object: input.objectTypeApiName,
+        ontologyApiName: input.ontologyApiName,
+        nullable: false,
+      };
+
+    case "objectSet":
+      return {
+        type: "objectSet",
+        objectSet: input.objectTypeApiName,
+        ontologyApiName: input.ontologyApiName,
+        nullable: false,
+      };
+    case "list":
+      return {
+        array: wireAgentDataTypeToAgentDataTypeDefinition(input.elementType),
+        type: "array",
+        nullable: false,
+      };
+
     case "nullable":
       return {
         ...wireAgentDataTypeToAgentDataTypeDefinition(input.wrappedType),
         nullable: true,
       };
-    case "object":
-      return {
-        type: "object",
-        ontologyApiName: input.ontologyApiName,
-        object: input.objectTypeApiName,
-        nullable: false,
-      };
-    case "objectSet":
-      return {
-        type: "objectSet",
-        ontologyApiName: input.ontologyApiName,
-        objectSet: input.objectTypeApiName,
-        nullable: false,
-      };
-    case "list":
-      return {
-        type: "array",
-        array: wireAgentDataTypeToAgentDataTypeDefinition(input.elementType),
-        nullable: false,
-      };
-    case "record":
-      return {
-        type: "record",
-        valueType: wireAgentDataTypeToAgentDataTypeDefinition(input.valueType),
-        nullable: false,
-      };
+
     case "struct":
       return {
         type: "struct",
-        struct: wireAgentFieldsToDefinitions(input.fields),
+        struct: Object.fromEntries(input.fields.map(f => [
+          f.name,
+          wireAgentDataTypeToAgentDataTypeDefinition(f.dataType),
+        ])),
         nullable: false,
       };
+
     case "discriminatedUnion":
       return {
         type: "discriminatedUnion",
@@ -76,27 +81,25 @@ export function wireAgentDataTypeToAgentDataTypeDefinition(
           input.members.map(
             member => [
               member.discriminatorValue,
-              wireAgentFieldsToDefinitions(member.fields),
+              Object.fromEntries(member.fields.map(f => [
+                f.name,
+                wireAgentDataTypeToAgentDataTypeDefinition(f.dataType),
+              ])),
             ],
           ),
         ),
         nullable: false,
       };
+
+    case "record":
+      return {
+        type: "record",
+        valueType: wireAgentDataTypeToAgentDataTypeDefinition(input.valueType),
+        nullable: false,
+      };
+
     default:
       const _: never = input;
       return { type: "unknown", nullable: false };
   }
-}
-
-export function wireAgentFieldsToDefinitions(
-  fields: ReadonlyArray<StructField>,
-): Record<string, AgentDataTypeDefinition> {
-  return Object.fromEntries(
-    fields.map(
-      field => [
-        field.name,
-        wireAgentDataTypeToAgentDataTypeDefinition(field.dataType),
-      ],
-    ),
-  );
 }
