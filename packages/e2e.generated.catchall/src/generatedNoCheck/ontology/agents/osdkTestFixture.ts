@@ -24,8 +24,8 @@ export namespace osdkTestFixture {
   }
 
   export interface SessionState extends $AgentSessionState {
-    arguments: { defaultCity: $AgentResult.PrimitiveType<'string'> };
-    agentState: { data: { defaultCity: $AgentResult.PrimitiveType<'string'> } };
+    arguments: { defaultCity: string };
+    agentState: { data: { defaultCity: string } };
     contextItems: Record<string, ContextItem>;
   }
 
@@ -38,54 +38,43 @@ export namespace osdkTestFixture {
   export interface ContextItems {
     '@platform/assistant-message': {
       parts: Array<
-        | { type: 'text'; text: $AgentResult.PrimitiveType<'string'> }
+        | { type: 'text'; text: string }
         | {
             type: 'thinking';
             thinking:
-              | {
-                  type: 'anthropic';
-                  signature: $AgentResult.PrimitiveType<'string'>;
-                  thinking: $AgentResult.PrimitiveType<'string'>;
-                }
-              | { type: 'anthropicRedacted'; data: $AgentResult.PrimitiveType<'string'> }
+              | { type: 'anthropic'; signature: string; thinking: string }
+              | { type: 'anthropicRedacted'; data: string }
+              | { type: 'google'; content: string }
+              | { type: 'googleSignature'; signature: string }
               | {
                   type: 'openAi';
-                  content: Array<$AgentResult.PrimitiveType<'string'>> | null;
-                  encryptedContent: $AgentResult.PrimitiveType<'string'>;
-                  id: $AgentResult.PrimitiveType<'string'>;
-                  summary: Array<$AgentResult.PrimitiveType<'string'>>;
+                  content: Array<string> | null;
+                  encryptedContent: string;
+                  id: string;
+                  summary: Array<string>;
                 }
               | {
                   type: 'spaceXAi';
-                  content: Array<$AgentResult.PrimitiveType<'string'>> | null;
-                  encryptedContent: $AgentResult.PrimitiveType<'string'>;
-                  id: $AgentResult.PrimitiveType<'string'>;
-                  summary: Array<$AgentResult.PrimitiveType<'string'>>;
-                }
-              | { type: 'google'; content: $AgentResult.PrimitiveType<'string'> }
-              | { type: 'googleSignature'; signature: $AgentResult.PrimitiveType<'string'> };
+                  content: Array<string> | null;
+                  encryptedContent: string;
+                  id: string;
+                  summary: Array<string>;
+                };
           }
-        | {
-            type: 'toolRequest';
-            arguments: $AgentResult.PrimitiveType<'string'>;
-            id: $AgentResult.PrimitiveType<'string'>;
-            name: $AgentResult.PrimitiveType<'string'>;
-          }
+        | { type: 'toolRequest'; arguments: string; id: string; name: string }
       >;
       status:
-        | { type: 'generating' }
         | { type: 'completed' }
-        | { type: 'terminated'; reason: { type: 'genericError'; message: $AgentResult.PrimitiveType<'string'> } };
+        | { type: 'generating' }
+        | { type: 'terminated'; reason: { type: 'genericError'; message: string } };
       toolResults: Record<
         string,
-        | { type: 'notStarted' }
-        | { type: 'executing' }
-        | { type: 'complete'; contextItemIds: Array<$AgentResult.PrimitiveType<'string'>> }
+        { type: 'complete'; contextItemIds: Array<string> } | { type: 'executing' } | { type: 'notStarted' }
       >;
     };
-    '@platform/tool-execution-error': { message: $AgentResult.PrimitiveType<'string'> };
-    '@platform/user-message': { parts: Array<{ type: 'text'; text: $AgentResult.PrimitiveType<'string'> }> };
-    'weather-result': { text: $AgentResult.PrimitiveType<'string'> };
+    '@platform/tool-execution-error': { message: string };
+    '@platform/user-message': { parts: Array<{ type: 'text'; text: string }> };
+    'weather-result': { text: string };
   }
 
   export type SendEventArguments =
@@ -107,14 +96,14 @@ export namespace osdkTestFixture {
 
   export interface Events {
     readonly '@platform/send-user-message': {
-      readonly parts: ReadonlyArray<{ readonly type: 'text'; readonly text: $AgentParam.PrimitiveType<'string'> }>;
+      readonly parts: ReadonlyArray<{ readonly type: 'text'; readonly text: string }>;
     };
-    readonly LookupWeather: { readonly city: $AgentParam.PrimitiveType<'string'> | null };
-    readonly SetDefaultCity: { readonly city: $AgentParam.PrimitiveType<'string'> };
+    readonly LookupWeather: { readonly city: string | null };
+    readonly SetDefaultCity: { readonly city: string };
   }
 
   export interface CreateSessionArguments {
-    readonly defaultCity: $AgentParam.PrimitiveType<'string'>;
+    readonly defaultCity: string;
   }
 }
 
@@ -122,16 +111,152 @@ export namespace osdkTestFixture {
 export interface osdkTestFixture
   extends $AgentDefinition<osdkTestFixture.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'osdkTestFixture';
+    type: 'agent';
+    version: '0.5.0';
+    arguments: { defaultCity: { nullable: false; type: 'string' } };
+    events: {
+      '@platform/send-user-message': {
+        nullable: false;
+        struct: {
+          parts: {
+            array: {
+              discriminatorKey: 'type';
+              members: { text: { text: { nullable: false; type: 'string' } } };
+              nullable: false;
+              type: 'discriminatedUnion';
+            };
+            nullable: false;
+            type: 'array';
+          };
+        };
+        type: 'struct';
+      };
+      LookupWeather: { nullable: false; struct: { city: { nullable: true; type: 'string' } }; type: 'struct' };
+      SetDefaultCity: { nullable: false; struct: { city: { nullable: false; type: 'string' } }; type: 'struct' };
+    };
+    agentState: { nullable: false; struct: { defaultCity: { nullable: false; type: 'string' } }; type: 'struct' };
+    contextItems: {
+      '@platform/assistant-message': {
+        nullable: false;
+        struct: {
+          parts: {
+            array: {
+              discriminatorKey: 'type';
+              members: {
+                text: { text: { nullable: false; type: 'string' } };
+                thinking: {
+                  thinking: {
+                    discriminatorKey: 'type';
+                    members: {
+                      anthropic: {
+                        signature: { nullable: false; type: 'string' };
+                        thinking: { nullable: false; type: 'string' };
+                      };
+                      anthropicRedacted: { data: { nullable: false; type: 'string' } };
+                      google: { content: { nullable: false; type: 'string' } };
+                      googleSignature: { signature: { nullable: false; type: 'string' } };
+                      openAi: {
+                        content: { array: { nullable: false; type: 'string' }; nullable: true; type: 'array' };
+                        encryptedContent: { nullable: false; type: 'string' };
+                        id: { nullable: false; type: 'string' };
+                        summary: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+                      };
+                      spaceXAi: {
+                        content: { array: { nullable: false; type: 'string' }; nullable: true; type: 'array' };
+                        encryptedContent: { nullable: false; type: 'string' };
+                        id: { nullable: false; type: 'string' };
+                        summary: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+                      };
+                    };
+                    nullable: false;
+                    type: 'discriminatedUnion';
+                  };
+                };
+                toolRequest: {
+                  arguments: { nullable: false; type: 'string' };
+                  id: { nullable: false; type: 'string' };
+                  name: { nullable: false; type: 'string' };
+                };
+              };
+              nullable: false;
+              type: 'discriminatedUnion';
+            };
+            nullable: false;
+            type: 'array';
+          };
+          status: {
+            discriminatorKey: 'type';
+            members: {
+              completed: {};
+              generating: {};
+              terminated: {
+                reason: {
+                  discriminatorKey: 'type';
+                  members: { genericError: { message: { nullable: false; type: 'string' } } };
+                  nullable: false;
+                  type: 'discriminatedUnion';
+                };
+              };
+            };
+            nullable: false;
+            type: 'discriminatedUnion';
+          };
+          toolResults: {
+            nullable: false;
+            type: 'record';
+            valueType: {
+              discriminatorKey: 'type';
+              members: {
+                complete: {
+                  contextItemIds: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+                };
+                executing: {};
+                notStarted: {};
+              };
+              nullable: false;
+              type: 'discriminatedUnion';
+            };
+          };
+        };
+        type: 'struct';
+      };
+      '@platform/tool-execution-error': {
+        nullable: false;
+        struct: { message: { nullable: false; type: 'string' } };
+        type: 'struct';
+      };
+      '@platform/user-message': {
+        nullable: false;
+        struct: {
+          parts: {
+            array: {
+              discriminatorKey: 'type';
+              members: { text: { text: { nullable: false; type: 'string' } } };
+              nullable: false;
+              type: 'discriminatedUnion';
+            };
+            nullable: false;
+            type: 'array';
+          };
+        };
+        type: 'struct';
+      };
+      'weather-result': { nullable: false; struct: { text: { nullable: false; type: 'string' } }; type: 'struct' };
+    };
+    signatures: osdkTestFixture.Signatures;
+  };
   apiName: 'osdkTestFixture';
+  type: 'agent';
   version: '0.5.0';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const osdkTestFixture: osdkTestFixture = {
-  type: 'agent',
   apiName: 'osdkTestFixture',
+  type: 'agent',
   version: '0.5.0',
   osdkMetadata: $osdkMetadata,
 };
