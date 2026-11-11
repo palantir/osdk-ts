@@ -101,6 +101,18 @@ describe("intellisense", () => {
     tsServer = undefined as any;
   });
 
+  it("fetchesAgentMetadata", { timeout: 40_000 }, async () => {
+    const { resp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 22,
+      offset: 7,
+    });
+
+    expect(resp.body?.displayString).toMatchInlineSnapshot(
+      `"const metadata: AgentMetadata"`,
+    );
+  });
+
   it("callsAgent", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
