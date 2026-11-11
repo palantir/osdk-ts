@@ -314,6 +314,36 @@ describe("interface action type constraint edit validations", () => {
     assertInheritedLink(result, true);
   });
 
+  it("finds an inherited link after visiting a shortened parent definition", async () => {
+    initializeOntologyState(NS);
+    const parent = defineInterface({ apiName: "Parent" });
+    defineInterfaceLinkConstraint({
+      apiName: "relatedTasks",
+      from: parent,
+      toMany: parent,
+    });
+    const middle = defineInterface({ apiName: "Middle", extends: parent });
+    const left = defineInterface({ apiName: "Left", extends: middle });
+    const right = defineInterface({
+      apiName: "Right",
+      // Maker exports repeated definitions without their parent or linked interfaces.
+      extends: { ...middle, extendsInterfaces: [], linkedInterfaces: [] },
+    });
+    const imported = defineInterface({
+      apiName: "Imported",
+      extends: [left, right],
+    });
+    const result = await defineOntologyV2(NS, () => {
+      importOntologyEntity(parent);
+      importOntologyEntity(imported);
+      defineConstraint(
+        defineInterface({ apiName: "Task", extends: imported }),
+        linkValidation(),
+      );
+    });
+    assertInheritedLink(result, true);
+  });
+
   it("rejects an embedded ancestor without a packaged input", async () => {
     initializeOntologyState(NS);
     const parent = defineInterface({ apiName: "Parent" });
@@ -369,7 +399,7 @@ describe("interface action type constraint edit validations", () => {
           linkValidation(),
         );
       }),
-    ).rejects.toThrow("must belong to that interface or an ancestor");
+    ).rejects.toThrow("must belong to that interface or a parent interface");
   });
 
   it("rejects a link whose target interface is not packaged", async () => {

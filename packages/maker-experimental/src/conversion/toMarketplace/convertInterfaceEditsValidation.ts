@@ -41,6 +41,7 @@ import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { collectInterfaceDefinitions } from "./collectInterfaceDefinitions.js";
 
 export function convertInterfaceEditsValidation(
   validation: OntologyIrInterfaceActionTypeEditsValidation,
@@ -52,6 +53,10 @@ export function convertInterfaceEditsValidation(
   const interfaces = new Map(
     ontologies.flatMap((ontology) => Object.entries(ontology.INTERFACE_TYPE)),
   );
+  const interfaceDefinitions = collectInterfaceDefinitions([
+    ...interfaces.values(),
+    interfaceType,
+  ]);
   const objectApiNames = new Set(
     ontologies.flatMap((ontology) => Object.keys(ontology.OBJECT_TYPE)),
   );
@@ -83,7 +88,7 @@ export function convertInterfaceEditsValidation(
       const embedded = queue.pop()!;
       if (seen.has(embedded.apiName)) continue;
       seen.add(embedded.apiName);
-      const current = interfaces.get(embedded.apiName) ?? embedded;
+      const current = interfaceDefinitions.get(embedded.apiName) ?? embedded;
       if (current.links.some((link) => link.metadata.apiName === apiName)) {
         declarations.add(current.apiName);
       }
@@ -91,7 +96,7 @@ export function convertInterfaceEditsValidation(
     }
     invariant(
       declarations.size > 0,
-      `Interface link "${apiName}" referenced by ${location} must belong to that interface or an ancestor`,
+      `Interface link "${apiName}" referenced by ${location} must belong to that interface or a parent interface`,
     );
     invariant(
       declarations.size === 1,

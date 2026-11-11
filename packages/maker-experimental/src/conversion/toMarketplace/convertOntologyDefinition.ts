@@ -15,13 +15,14 @@
  */
 
 import type { ActionTypeBlockDataV2 } from "@osdk/client.unstable";
-import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
+import type { OntologyDefinition } from "@osdk/maker";
 import { getImportedTypes } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyIrV2 } from "../../api/OntologyIrV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
+import { collectInterfaceDefinitions } from "./collectInterfaceDefinitions.js";
 import { flattenInterface } from "./convertObject.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
 import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
@@ -45,7 +46,6 @@ export function convertOntologyDefinition(
   const importedOntology = convertOntologyDefinitionToWireBlockData(
     importedTypes,
     ridGenerator,
-    // Input shapes do not carry edit validations; the target owns these policies.
     { includeEditsValidation: false },
   );
 
@@ -58,27 +58,9 @@ export function convertOntologyDefinition(
     Object.keys(importedTypes.INTERFACE_TYPE),
   );
 
-  const relatedInterfaces = (iface: InterfaceType): InterfaceType[] =>
-    [...(iface.linkedInterfaces ?? []), ...iface.extendsInterfaces].filter(
-      (related): related is InterfaceType => typeof related !== "string",
-    );
-
-  const fullImportedInterfaces = new Map<string, InterfaceType>();
-  const queue: InterfaceType[] = Object.values(importedTypes.INTERFACE_TYPE);
-  while (queue.length > 0) {
-    const iface = queue.pop();
-    if (iface === undefined) continue;
-    const related = relatedInterfaces(iface);
-    const existing = fullImportedInterfaces.get(iface.apiName);
-    // Register on first sight, or replace a truncated stub with a full copy
-    if (
-      existing === undefined ||
-      (relatedInterfaces(existing).length === 0 && related.length > 0)
-    ) {
-      fullImportedInterfaces.set(iface.apiName, iface);
-      queue.push(...related);
-    }
-  }
+  const fullImportedInterfaces = collectInterfaceDefinitions(
+    Object.values(importedTypes.INTERFACE_TYPE),
+  );
 
   const transitiveInterfaces: OntologyDefinition["INTERFACE_TYPE"] = {};
   for (const [apiName, iface] of fullImportedInterfaces) {
