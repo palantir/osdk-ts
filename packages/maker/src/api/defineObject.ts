@@ -51,6 +51,7 @@ import type {
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import { resolveDerivedPropertyLinks } from "./object/resolveDerivedPropertyLinks.js";
+import { validateMediaReferences } from "./object/validateMediaReferences.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
 import {
@@ -70,6 +71,7 @@ export function defineObject(
   objectDefInput: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
   const objectDef = cloneDefinition(objectDefInput);
+  validateMediaReferences(objectDef);
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = objectDef.properties
     ? Object.keys(objectDef.properties)

@@ -54,6 +54,37 @@ export function convertObject(
     .filter((prop) => !derivedPropertyNames.includes(prop.apiName))
     .flatMap((prop) => extractPropertyDatasource(prop, objectType.apiName));
 
+  const mediaDatasources = [...(objectType.referenceSources ?? [])]
+    .sort((a, b) => a.mediaSet.rid.localeCompare(b.mediaSet.rid))
+    .flatMap(({ mediaSet }) => {
+      const properties = (objectType.properties ?? [])
+        .filter((property) =>
+          property.reference?.sources.some(
+            (source) => source.rid === mediaSet.rid,
+          ),
+        )
+        .sort((a, b) => a.apiName.localeCompare(b.apiName));
+      if (properties.length === 0) return [];
+      return [
+        buildDatasource(`${objectType.apiName}.media.${mediaSet.rid}`, {
+          type: "mediaSetView",
+          mediaSetView: {
+            assumedMarkings: [],
+            clearOnDeleteProperties: [],
+            mediaSetViewLocator: mediaSet.rid,
+            properties: properties.map((property) => property.apiName),
+            uploadProperties: properties
+              .filter(
+                (property) =>
+                  property.reference?.uploadDestination?.rid === mediaSet.rid,
+              )
+              .map((property) => property.apiName),
+          },
+        }),
+      ];
+    });
+  propertyDatasources.push(...mediaDatasources);
+
   const classificationGroupMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],
     "CBAC",
@@ -202,6 +233,7 @@ export function extractPropertyDatasource(
       };
       return [buildDatasource(property.apiName, geotimeDefinition)];
     case "mediaReference":
+      if (property.reference !== undefined) return [];
       const mediaSetDefinition: OntologyIrObjectTypeDatasourceDefinition = {
         type: "mediaSetView",
         mediaSetView: {

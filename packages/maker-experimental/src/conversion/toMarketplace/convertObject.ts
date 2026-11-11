@@ -126,6 +126,54 @@ export function convertObject(
       extractPropertyDatasource(prop, objectType.apiName, ridGenerator),
     );
 
+  const mediaDatasources = [...(objectType.referenceSources ?? [])]
+    .sort((a, b) => a.mediaSet.rid.localeCompare(b.mediaSet.rid))
+    .flatMap(({ mediaSet }) => {
+      const properties = (objectType.properties ?? [])
+        .filter((property) =>
+          property.reference?.sources.some(
+            (source) => source.rid === mediaSet.rid,
+          ),
+        )
+        .sort((a, b) => a.apiName.localeCompare(b.apiName));
+      if (properties.length === 0) return [];
+      return [
+        buildDatasource(
+          `${objectType.apiName}.media.${mediaSet.rid}`,
+          {
+            type: "mediaSetView",
+            mediaSetView: {
+              assumedMarkings: [],
+              clearOnDeleteProperties: [],
+              mediaSetViewLocator: ridGenerator.generateMediaSetViewLocator(
+                mediaSet.rid,
+                mediaSet.rid,
+              ),
+              properties: properties.map((property) =>
+                ridGenerator.generatePropertyRid(
+                  property.apiName,
+                  objectType.apiName,
+                ),
+              ),
+              uploadProperties: properties
+                .filter(
+                  (property) =>
+                    property.reference?.uploadDestination?.rid === mediaSet.rid,
+                )
+                .map((property) =>
+                  ridGenerator.generatePropertyRid(
+                    property.apiName,
+                    objectType.apiName,
+                  ),
+                ),
+            },
+          },
+          ridGenerator,
+        ),
+      ];
+    });
+  propertyDatasources.push(...mediaDatasources);
+
   const classificationGroupMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],
     "CBAC",
@@ -458,6 +506,7 @@ export function extractPropertyDatasource(
         buildDatasource(property.apiName, geotimeDefinition, ridGenerator),
       ];
     case "mediaReference":
+      if (property.reference !== undefined) return [];
       const propertyRid = ridGenerator.generatePropertyRid(
         property.apiName,
         objectTypeApiName,

@@ -184,7 +184,10 @@ export interface OntologyRidGenerator {
     restrictedViewName: string,
     columnNames: Set<string>,
   ): RestrictedViewLocator;
-  generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator;
+  generateMediaSetViewLocator(
+    mediaSetViewName: string,
+    sourceMediaSetRid?: string,
+  ): MediaSetViewLocator;
   toBlockInternalId(readableId: ReadableId): string;
   generateObjectTypeId(objectTypeApiName: string): string;
   getObjectTypeIds(): BiMap<ReadableId, string>;
@@ -1093,10 +1096,15 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     return { rid: restrictedViewRid };
   }
 
-  generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator {
-    const mediaSetRid = `ri.ontology-metadata.temp.media-set.${this.hashString(
-      mediaSetViewName,
-    )}`;
+  generateMediaSetViewLocator(
+    mediaSetViewName: string,
+    sourceMediaSetRid?: string,
+  ): MediaSetViewLocator {
+    const mediaSetRid =
+      sourceMediaSetRid ??
+      `ri.ontology-metadata.temp.media-set.${this.hashString(
+        mediaSetViewName,
+      )}`;
     const mediaSetBranchRid = `ri.ontology-metadata.temp.media-set-branch.${this.hashString(
       mediaSetViewName,
     )}`;

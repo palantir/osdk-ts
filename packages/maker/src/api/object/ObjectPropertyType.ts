@@ -25,6 +25,7 @@ import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
 import type { ReducerType } from "../properties/ReducerType.js";
 import type { SharedPropertyType } from "../properties/SharedPropertyType.js";
 import type { ValueTypeDefinitionVersion } from "../values/ValueTypeDefinitionVersion.js";
+import type { MediaPropertyReference } from "./MediaReference.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
 
 export type ObjectPropertyType = RequiredFields<
@@ -57,4 +58,5 @@ export interface ObjectPropertyTypeInner {
   editOnly?: boolean;
   /** Creates an empty multimodal Media Set to back this media reference when the ontology is installed. */
   includeEmptyBackingMediaSet?: boolean;
+  reference?: MediaPropertyReference;
 }
