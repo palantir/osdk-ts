@@ -30,7 +30,7 @@ export function collectInterfaceDefinitions(
     seen.add(iface);
     const related = relatedInterfaces(iface);
     const existing = definitions.get(iface.apiName);
-    // Exports shorten repeated definitions. Prefer a copy with its parent or linked interfaces.
+    // If we see two copies of the same interface, use the one that includes its parents.
     if (
       existing === undefined ||
       (relatedInterfaces(existing).length === 0 && related.length > 0)
