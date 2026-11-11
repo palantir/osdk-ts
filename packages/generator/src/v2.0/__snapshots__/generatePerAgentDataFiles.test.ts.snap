@@ -58,6 +58,8 @@ export interface escapingAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'escapingAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {
@@ -142,6 +144,8 @@ export interface noArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'noArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {};
@@ -219,6 +223,8 @@ export interface noArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'noArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {};
@@ -308,6 +314,8 @@ export interface objectArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'objectArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {
@@ -452,6 +460,8 @@ export interface optionalArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'optionalArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: { city: { nullable: true; type: 'string' } };
@@ -511,7 +521,6 @@ export namespace structuredArgumentsAgent {
 
   export interface SessionState extends $AgentSessionState {
     arguments: {
-      future: unknown;
       nested: {
         count: number;
         date: string;
@@ -544,7 +553,6 @@ export namespace structuredArgumentsAgent {
   export type Events = Record<never, never>;
 
   export interface CreateSessionArguments {
-    readonly future: unknown;
     readonly nested: {
       readonly count: number;
       readonly date: string;
@@ -572,10 +580,11 @@ export interface structuredArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'structuredArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {
-      future: { nullable: false; type: 'unknown' };
       nested: {
         nullable: false;
         struct: {
@@ -705,6 +714,8 @@ export namespace weatherAgent {
 export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'weatherAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: { city: { nullable: false; type: 'string' } };
@@ -826,6 +837,8 @@ export interface noArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'noArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {
@@ -1113,39 +1126,27 @@ export namespace noArgumentsAgent {
         readonly optionalText?: never;
         readonly nested?: never;
         readonly selection?: never;
-        readonly future?: never;
       }
     | {
         readonly requiredText?: never;
         readonly optionalText: Events['optionalText'];
         readonly nested?: never;
         readonly selection?: never;
-        readonly future?: never;
       }
     | {
         readonly requiredText?: never;
         readonly optionalText?: never;
         readonly nested: Events['nested'];
         readonly selection?: never;
-        readonly future?: never;
       }
     | {
         readonly requiredText?: never;
         readonly optionalText?: never;
         readonly nested?: never;
         readonly selection: Events['selection'];
-        readonly future?: never;
-      }
-    | {
-        readonly requiredText?: never;
-        readonly optionalText?: never;
-        readonly nested?: never;
-        readonly selection?: never;
-        readonly future: Events['future'];
       };
 
   export interface Events {
-    readonly future: unknown;
     readonly nested: {
       readonly count: number;
       readonly date: string;
@@ -1175,11 +1176,12 @@ export interface noArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'noArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {};
     events: {
-      future: { nullable: false; type: 'unknown' };
       nested: {
         nullable: false;
         struct: {
@@ -1280,7 +1282,6 @@ export namespace noArgumentsAgent {
     arguments: Record<string, never>;
     agentState: {
       data: {
-        future: unknown;
         nested: {
           count: number;
           date: string;
@@ -1321,6 +1322,8 @@ export interface noArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'noArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {};
@@ -1328,7 +1331,6 @@ export interface noArgumentsAgent
     agentState: {
       nullable: false;
       struct: {
-        future: { nullable: false; type: 'unknown' };
         nested: {
           nullable: false;
           struct: {
@@ -1436,7 +1438,6 @@ export namespace noArgumentsAgent {
 
   export interface ContextItems {
     result: {
-      future: unknown;
       nested: {
         count: number;
         date: string;
@@ -1471,6 +1472,8 @@ export interface noArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'noArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {};
@@ -1480,7 +1483,6 @@ export interface noArgumentsAgent
       result: {
         nullable: false;
         struct: {
-          future: { nullable: false; type: 'unknown' };
           nested: {
             nullable: false;
             struct: {
@@ -1612,6 +1614,8 @@ export interface noArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'noArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {
@@ -1708,6 +1712,8 @@ export interface noArgumentsAgent
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'noArgumentsAgent';
+    createdBy: 'user';
+    createdTime: '2026-01-01T00:00:00Z';
     type: 'agent';
     version: '1.2.3';
     arguments: {};
@@ -1727,83 +1733,6 @@ export const noArgumentsAgent: noArgumentsAgent = {
   type: 'agent',
   apiName: 'noArgumentsAgent',
   version: '^1.0.0',
-  osdkMetadata: $osdkMetadata,
-};
-",
-}
-`;
-
-exports[`generatePerAgentDataFiles > preserves unknown types 1`] = `
-{
-  "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
-",
-  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
-import type {
-  AgentDefinition as $AgentDefinition,
-  AgentParam as $AgentParam,
-  AgentResult as $AgentResult,
-  AgentSession as $AgentSession,
-  AgentSessionState as $AgentSessionState,
-  AgentGetStateOptions as $AgentGetStateOptions,
-  AgentSendEventOptions as $AgentSendEventOptions,
-} from '@osdk/client/experimental';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-import { $osdkMetadata } from '../../OntologyMetadata.js';
-
-/** @beta */
-export namespace noArgumentsAgent {
-  export interface Signatures {
-    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<noArgumentsAgent.Session>;
-    experimental_getSession(sessionId: string): Promise<noArgumentsAgent.Session>;
-  }
-
-  export interface Session extends $AgentSession {
-    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
-    experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
-  }
-
-  export interface SessionState extends $AgentSessionState {
-    arguments: Record<string, never>;
-    agentState: { data: unknown };
-    contextItems: Record<string, ContextItem>;
-  }
-
-  export type ContextItem = never;
-
-  export type ContextItems = Record<never, never>;
-
-  export type SendEventArguments = never;
-
-  export type Events = Record<never, never>;
-
-  export type CreateSessionArguments = Record<string, never>;
-}
-
-/** @beta */
-export interface noArgumentsAgent
-  extends $AgentDefinition<noArgumentsAgent.Signatures>,
-    $VersionBound<$ExpectedClientVersion> {
-  __DefinitionMetadata?: {
-    apiName: 'noArgumentsAgent';
-    type: 'agent';
-    version: '1.2.3';
-    arguments: {};
-    events: {};
-    agentState: { nullable: false; type: 'unknown' };
-    contextItems: {};
-    signatures: noArgumentsAgent.Signatures;
-  };
-  type: 'agent';
-  apiName: 'noArgumentsAgent';
-  version: '1.2.3';
-  osdkMetadata: typeof $osdkMetadata;
-}
-
-/** @beta */
-export const noArgumentsAgent: noArgumentsAgent = {
-  type: 'agent',
-  apiName: 'noArgumentsAgent',
-  version: '1.2.3',
   osdkMetadata: $osdkMetadata,
 };
 ",

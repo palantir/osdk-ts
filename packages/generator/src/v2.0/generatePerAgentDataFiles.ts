@@ -317,7 +317,10 @@ export function getAgentDataType(
           .getImportedDefinitionIdentifier(true)
       }>`;
     default:
-      return "unknown";
+      const _: never = input;
+      throw new Error(
+        `Unsupported AgentDataTypeDefinition.type ${(input as any).type}`,
+      );
   }
 }
 

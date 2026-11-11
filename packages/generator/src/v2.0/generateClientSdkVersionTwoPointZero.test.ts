@@ -1081,6 +1081,8 @@ describe("generator", () => {
         export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
           __DefinitionMetadata?: {
             apiName: 'weatherAgent';
+            createdBy: 'user';
+            createdTime: '2026-01-01T00:00:00Z';
             type: 'agent';
             version: '1.2.3';
             arguments: { city: { nullable: false; type: 'string' } };
@@ -1859,6 +1861,8 @@ describe("generator", () => {
         export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
           __DefinitionMetadata?: {
             apiName: 'foo.bar.weatherAgent';
+            createdBy: 'user';
+            createdTime: '2026-01-01T00:00:00Z';
             type: 'agent';
             version: '1.2.3';
             arguments: { city: { nullable: false; type: 'string' } };

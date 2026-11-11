@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { DataType } from "@osdk/foundry.agents";
 import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
 import { beforeEach, expect, it, vi } from "vitest";
 
@@ -46,6 +47,35 @@ beforeEach(() => {
   });
 });
 
+it("rejects unsupported types", async () => {
+  const client = {
+    ontologyRid: "ri.ontology.main.ontology.sdk-ontology",
+  } as MinimalClient;
+  vi.mocked(AgentDefinitionVersions.get).mockResolvedValueOnce({
+    version: "1.4.0",
+    createdTime: "2026-01-01T00:00:00Z",
+    createdBy: "user",
+    argumentDefinitions: [],
+    eventDefinitions: [],
+    agentStateType: {
+      type: "struct",
+      fields: [
+        {
+          name: "value",
+          dataType: { type: "futureType" } as unknown as DataType,
+        },
+      ],
+    },
+    contextItemDefinitions: [],
+  });
+
+  const result = loadAgentMetadata(client, "weatherAgent:1.x");
+
+  await expect(result).rejects.toThrow(
+    "Unsupported AgentDataType.type futureType",
+  );
+});
+
 it("loads a version range", async () => {
   const client = {
     ontologyRid: "ri.ontology.main.ontology.sdk-ontology",
@@ -63,6 +93,8 @@ it("loads a version range", async () => {
     type: "agent",
     apiName: "weatherAgent",
     version: "1.4.0",
+    createdTime: "2026-01-01T00:00:00Z",
+    createdBy: "user",
     arguments: { city: { type: "string", nullable: false } },
     events: { SetTemperature: { type: "double", nullable: true } },
     agentState: {

@@ -26,6 +26,8 @@ export function wireAgentDefinitionVersionToSdkAgentMetadata(
     type: "agent",
     apiName,
     version: input.version,
+    createdTime: input.createdTime,
+    createdBy: input.createdBy,
     arguments: Object.fromEntries(
       [...input.argumentDefinitions].sort((a, b) =>
         a.name.localeCompare(b.name)
@@ -63,10 +65,14 @@ export function wireAgentDefinitionVersionToSdkAgentDefinitionNoParams(
   type: string;
   apiName: string;
   version: string;
+  createdTime: string;
+  createdBy: string;
 } {
   return {
     type: "agent",
     apiName,
     version: input.version,
+    createdTime: input.createdTime,
+    createdBy: input.createdBy,
   };
 }

@@ -113,6 +113,8 @@ export interface osdkTestFixture
     $VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
     apiName: 'osdkTestFixture';
+    createdBy: '59a138e5-881f-4171-841c-eb3e124fe166';
+    createdTime: '2026-09-30T10:59:49.13834977Z';
     type: 'agent';
     version: '0.5.0';
     arguments: { defaultCity: { nullable: false; type: 'string' } };

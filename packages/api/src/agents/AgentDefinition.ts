@@ -22,6 +22,8 @@ export interface AgentMetadata {
   type: "agent";
   apiName: string;
   version: string;
+  createdTime: string;
+  createdBy: string;
   arguments: Record<string, AgentDataTypeDefinition>;
   events: Record<string, AgentDataTypeDefinition>;
   agentState: AgentDataTypeDefinition;
@@ -39,7 +41,7 @@ export interface AgentDefinition<T = never> {
   apiName: string;
   version: string;
   osdkMetadata?: OsdkMetadata;
-  __DefinitionMetadata?: AgentCompileTimeMetadata<T> & Partial<AgentMetadata>;
+  __DefinitionMetadata?: AgentCompileTimeMetadata<T> & AgentMetadata;
 }
 
 /** @beta */
@@ -52,8 +54,7 @@ export type AgentDataTypeDefinition<
   | DiscriminatedUnionAgentDataType
   | StructAgentDataType
   | RecordAgentDataType
-  | ArrayAgentDataType
-  | BaseAgentDataTypeDefinition<"unknown">;
+  | ArrayAgentDataType;
 
 /** @beta */
 export type BaseAgentDataTypeDefinition<T extends string> = {
