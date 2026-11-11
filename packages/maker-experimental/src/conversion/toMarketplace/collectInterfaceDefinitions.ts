@@ -30,7 +30,7 @@ export function collectInterfaceDefinitions(
     seen.add(iface);
     const related = relatedInterfaces(iface);
     const existing = definitions.get(iface.apiName);
-    // If we see two copies of the same interface, use the one that includes its parents.
+    // Register on first sight, or replace a truncated stub with a full copy
     if (
       existing === undefined ||
       (relatedInterfaces(existing).length === 0 && related.length > 0)
