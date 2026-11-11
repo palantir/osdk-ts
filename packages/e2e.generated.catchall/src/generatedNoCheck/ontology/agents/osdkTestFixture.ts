@@ -44,6 +44,8 @@ export namespace osdkTestFixture {
             thinking:
               | { type: 'anthropic'; signature: string; thinking: string }
               | { type: 'anthropicRedacted'; data: string }
+              | { type: 'google'; content: string }
+              | { type: 'googleSignature'; signature: string }
               | {
                   type: 'openAi';
                   content: Array<string> | null;
@@ -57,19 +59,17 @@ export namespace osdkTestFixture {
                   encryptedContent: string;
                   id: string;
                   summary: Array<string>;
-                }
-              | { type: 'google'; content: string }
-              | { type: 'googleSignature'; signature: string };
+                };
           }
         | { type: 'toolRequest'; arguments: string; id: string; name: string }
       >;
       status:
-        | { type: 'generating' }
         | { type: 'completed' }
+        | { type: 'generating' }
         | { type: 'terminated'; reason: { type: 'genericError'; message: string } };
       toolResults: Record<
         string,
-        { type: 'notStarted' } | { type: 'executing' } | { type: 'complete'; contextItemIds: Array<string> }
+        { type: 'complete'; contextItemIds: Array<string> } | { type: 'executing' } | { type: 'notStarted' }
       >;
     };
     '@platform/tool-execution-error': { message: string };
@@ -111,16 +111,152 @@ export namespace osdkTestFixture {
 export interface osdkTestFixture
   extends $AgentDefinition<osdkTestFixture.Signatures>,
     $VersionBound<$ExpectedClientVersion> {
-  type: 'agent';
+  __DefinitionMetadata?: {
+    apiName: 'osdkTestFixture';
+    type: 'agent';
+    version: '0.5.0';
+    arguments: { defaultCity: { nullable: false; type: 'string' } };
+    events: {
+      '@platform/send-user-message': {
+        nullable: false;
+        struct: {
+          parts: {
+            array: {
+              discriminatorKey: 'type';
+              members: { text: { text: { nullable: false; type: 'string' } } };
+              nullable: false;
+              type: 'discriminatedUnion';
+            };
+            nullable: false;
+            type: 'array';
+          };
+        };
+        type: 'struct';
+      };
+      LookupWeather: { nullable: false; struct: { city: { nullable: true; type: 'string' } }; type: 'struct' };
+      SetDefaultCity: { nullable: false; struct: { city: { nullable: false; type: 'string' } }; type: 'struct' };
+    };
+    agentState: { nullable: false; struct: { defaultCity: { nullable: false; type: 'string' } }; type: 'struct' };
+    contextItems: {
+      '@platform/assistant-message': {
+        nullable: false;
+        struct: {
+          parts: {
+            array: {
+              discriminatorKey: 'type';
+              members: {
+                text: { text: { nullable: false; type: 'string' } };
+                thinking: {
+                  thinking: {
+                    discriminatorKey: 'type';
+                    members: {
+                      anthropic: {
+                        signature: { nullable: false; type: 'string' };
+                        thinking: { nullable: false; type: 'string' };
+                      };
+                      anthropicRedacted: { data: { nullable: false; type: 'string' } };
+                      google: { content: { nullable: false; type: 'string' } };
+                      googleSignature: { signature: { nullable: false; type: 'string' } };
+                      openAi: {
+                        content: { array: { nullable: false; type: 'string' }; nullable: true; type: 'array' };
+                        encryptedContent: { nullable: false; type: 'string' };
+                        id: { nullable: false; type: 'string' };
+                        summary: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+                      };
+                      spaceXAi: {
+                        content: { array: { nullable: false; type: 'string' }; nullable: true; type: 'array' };
+                        encryptedContent: { nullable: false; type: 'string' };
+                        id: { nullable: false; type: 'string' };
+                        summary: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+                      };
+                    };
+                    nullable: false;
+                    type: 'discriminatedUnion';
+                  };
+                };
+                toolRequest: {
+                  arguments: { nullable: false; type: 'string' };
+                  id: { nullable: false; type: 'string' };
+                  name: { nullable: false; type: 'string' };
+                };
+              };
+              nullable: false;
+              type: 'discriminatedUnion';
+            };
+            nullable: false;
+            type: 'array';
+          };
+          status: {
+            discriminatorKey: 'type';
+            members: {
+              completed: {};
+              generating: {};
+              terminated: {
+                reason: {
+                  discriminatorKey: 'type';
+                  members: { genericError: { message: { nullable: false; type: 'string' } } };
+                  nullable: false;
+                  type: 'discriminatedUnion';
+                };
+              };
+            };
+            nullable: false;
+            type: 'discriminatedUnion';
+          };
+          toolResults: {
+            nullable: false;
+            type: 'record';
+            valueType: {
+              discriminatorKey: 'type';
+              members: {
+                complete: {
+                  contextItemIds: { array: { nullable: false; type: 'string' }; nullable: false; type: 'array' };
+                };
+                executing: {};
+                notStarted: {};
+              };
+              nullable: false;
+              type: 'discriminatedUnion';
+            };
+          };
+        };
+        type: 'struct';
+      };
+      '@platform/tool-execution-error': {
+        nullable: false;
+        struct: { message: { nullable: false; type: 'string' } };
+        type: 'struct';
+      };
+      '@platform/user-message': {
+        nullable: false;
+        struct: {
+          parts: {
+            array: {
+              discriminatorKey: 'type';
+              members: { text: { text: { nullable: false; type: 'string' } } };
+              nullable: false;
+              type: 'discriminatedUnion';
+            };
+            nullable: false;
+            type: 'array';
+          };
+        };
+        type: 'struct';
+      };
+      'weather-result': { nullable: false; struct: { text: { nullable: false; type: 'string' } }; type: 'struct' };
+    };
+    signatures: osdkTestFixture.Signatures;
+  };
   apiName: 'osdkTestFixture';
+  type: 'agent';
   version: '0.5.0';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const osdkTestFixture: osdkTestFixture = {
-  type: 'agent',
   apiName: 'osdkTestFixture',
+  type: 'agent',
   version: '0.5.0',
   osdkMetadata: $osdkMetadata,
 };
