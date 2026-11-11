@@ -100,6 +100,6 @@ export function wireAgentDataTypeToAgentDataTypeDefinition(
 
     default:
       const _: never = input;
-      return { type: "unknown", nullable: false };
+      throw new Error(`Unsupported AgentDataType.type ${(input as any).type}`);
   }
 }

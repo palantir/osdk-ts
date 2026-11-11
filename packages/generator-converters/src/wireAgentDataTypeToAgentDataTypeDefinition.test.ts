@@ -186,11 +186,11 @@ describe(wireAgentDataTypeToAgentDataTypeDefinition, () => {
     expect(result).toEqual({ type: "string", nullable: true });
   });
 
-  it("preserves the fallback for future wire types", () => {
+  it("rejects unsupported wire types", () => {
     const input = { type: "futureType" } as unknown as DataType;
 
-    const result = wireAgentDataTypeToAgentDataTypeDefinition(input);
+    const convert = () => wireAgentDataTypeToAgentDataTypeDefinition(input);
 
-    expect(result).toEqual({ type: "unknown", nullable: false });
+    expect(convert).toThrow("Unsupported AgentDataType.type futureType");
   });
 });

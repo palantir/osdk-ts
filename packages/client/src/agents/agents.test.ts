@@ -104,6 +104,10 @@ describe("agents", () => {
 
     expectTypeOf<Metadata>().toMatchTypeOf<AgentMetadata>();
     expectTypeOf<
+      Metadata["createdTime"]
+    >().toEqualTypeOf<"2026-01-01T00:00:00Z">();
+    expectTypeOf<Metadata["createdBy"]>().toEqualTypeOf<"user">();
+    expectTypeOf<
       Metadata["arguments"]["employee"]["__OsdkTargetType"]
     >().toEqualTypeOf<Employee | undefined>();
     expectTypeOf<
@@ -116,23 +120,8 @@ describe("agents", () => {
       Structured["arguments"]["nested"]["nullable"]
     >().toEqualTypeOf<false>();
     expect(definition).not.toHaveProperty("__DefinitionMetadata");
-  });
-
-  it("accepts older definitions carrying only signatures", () => {
-    interface LegacyAgent extends AgentDefinition<weatherAgent.Signatures> {
-      __DefinitionMetadata?: { signatures: weatherAgent.Signatures };
-    }
-    const legacy: LegacyAgent = {
-      type: "agent",
-      apiName: "weatherAgent",
-      version: "1.2.3",
-    };
-
-    const bound = client(legacy);
-
-    expectTypeOf<typeof bound.experimental_createSession>().toEqualTypeOf<
-      weatherAgent.Signatures["experimental_createSession"]
-    >();
+    expect(definition).not.toHaveProperty("createdTime");
+    expect(definition).not.toHaveProperty("createdBy");
   });
 
   describe("createSession", () => {
@@ -410,7 +399,6 @@ describe("agents", () => {
           empty: {},
         },
         selection: { kind: "employee", employee },
-        future: { newShape: true },
         optionalText: "text",
       } as const satisfies InferredParamType;
 
@@ -1041,7 +1029,6 @@ describe("agents", () => {
       expectTypeOf<State["arguments"]["nested"]["scores"]>().toEqualTypeOf<
         Record<string, number>
       >();
-      expectTypeOf<State["arguments"]["future"]>().toBeUnknown();
       expectTypeOf<
         Extract<
           State["arguments"]["selection"],

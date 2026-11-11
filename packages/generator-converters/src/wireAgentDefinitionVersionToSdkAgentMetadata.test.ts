@@ -16,7 +16,35 @@
 
 import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
 import { expect, it } from "vitest";
-import { wireAgentDefinitionVersionToSdkAgentMetadata } from "./wireAgentDefinitionVersionToSdkAgentMetadata.js";
+import {
+  wireAgentDefinitionVersionToSdkAgentDefinitionNoParams,
+  wireAgentDefinitionVersionToSdkAgentMetadata,
+} from "./wireAgentDefinitionVersionToSdkAgentMetadata.js";
+
+it.each([
+  wireAgentDefinitionVersionToSdkAgentMetadata,
+  wireAgentDefinitionVersionToSdkAgentDefinitionNoParams,
+])("%s preserves publication metadata", convert => {
+  const input: AgentDefinitionVersion = {
+    version: "1.4.0",
+    createdTime: "2026-01-01T00:00:00Z",
+    createdBy: "user",
+    argumentDefinitions: [],
+    eventDefinitions: [],
+    contextItemDefinitions: [],
+    agentStateType: { type: "struct", fields: [] },
+  };
+
+  const result = convert(input, "agent");
+
+  expect(result).toMatchObject({
+    type: "agent",
+    apiName: "agent",
+    version: "1.4.0",
+    createdTime: "2026-01-01T00:00:00Z",
+    createdBy: "user",
+  });
+});
 
 it("sorts arguments without changing the source or nested field order", () => {
   const input: AgentDefinitionVersion = {
