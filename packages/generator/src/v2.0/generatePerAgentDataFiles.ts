@@ -15,7 +15,10 @@
  */
 
 import type { AgentDataTypeDefinition } from "@osdk/api/unstable";
-import { wireAgentDefinitionVersionToSdkAgentMetadata } from "@osdk/generator-converters";
+import {
+  wireAgentDefinitionVersionToSdkAgentDefinitionNoParams,
+  wireAgentDefinitionVersionToSdkAgentMetadata,
+} from "@osdk/generator-converters";
 import path from "node:path";
 import type { EnhancedAgent } from "../GenerateContext/EnhancedAgent.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
@@ -97,33 +100,32 @@ async function generateAgentFile(
     agent.raw,
     agent.fullApiName,
   );
-  const baseProps = {
-    type: metadata.type,
-    apiName: metadata.apiName,
-    version: metadata.version,
-  };
-  const requestedVersion = agentVersionReferences.get(agent.fullApiName);
-  const runtimeProps = requestedVersion === undefined
-    ? baseProps
-    : { ...baseProps, version: requestedVersion };
+  const baseProps = deleteUndefineds(
+    wireAgentDefinitionVersionToSdkAgentDefinitionNoParams(
+      agent.raw,
+      agent.fullApiName,
+    ),
+  );
+
+  const apiName = JSON.stringify(agent.fullApiName);
+  const version = JSON.stringify(
+    agentVersionReferences.get(agent.fullApiName) ?? agent.raw.version,
+  );
   const createSessionArgs = metadata.arguments;
   // TODO(mhogberg): Use isOptional instead of checking nullable here once it is available in the public API.
   const optional = Object.values(createSessionArgs).every(p => p.nullable);
-  const eventNames = Object.keys(metadata.events).sort((a, b) =>
-    a.localeCompare(b)
-  );
+  const eventNames = agent.raw.eventDefinitions.map(event => event.eventType);
   const contextItem =
-    Object.keys(metadata.contextItems).sort((a, b) => a.localeCompare(b)).map(
-      contextItemType =>
-        `{ type: ${JSON.stringify(contextItemType)}; data: ContextItems[${
-          JSON.stringify(contextItemType)
-        }]; }`,
+    agent.raw.contextItemDefinitions.map(item =>
+      `{ type: ${JSON.stringify(item.contextItemType)}; data: ContextItems[${
+        JSON.stringify(item.contextItemType)
+      }]; }`
     ).join(" | ") || "never";
   const sendEventArguments =
-    eventNames.map(selectedEvent =>
+    eventNames.map(name =>
       `{ ${
         eventNames.map(eventName =>
-          eventName === selectedEvent
+          eventName === name
             ? `readonly ${JSON.stringify(eventName)}: Events[${
               JSON.stringify(eventName)
             }];`
@@ -168,10 +170,10 @@ async function generateAgentFile(
           arguments: ${
       Object.keys(createSessionArgs).length === 0
         ? "Record<string, never>"
-        : `{ ${agentParameters(ontology, createSessionArgs, "Result", true)} }`
+        : `{ ${agentFields(ontology, createSessionArgs, "Result", true)} }`
     };
           agentState: { data: ${
-      getAgentParamType(ontology, metadata.agentState, "Result")
+      getAgentDataType(ontology, metadata.agentState, "Result")
     }; };
           contextItems: Record<string, ContextItem>;
         }
@@ -182,7 +184,7 @@ async function generateAgentFile(
       Object.keys(metadata.contextItems).length === 0
         ? "export type ContextItems = Record<never, never>;"
         : `export interface ContextItems { ${
-          agentParameters(
+          agentFields(
             ontology,
             metadata.contextItems,
             "Result",
@@ -196,7 +198,7 @@ async function generateAgentFile(
       eventNames.length === 0
         ? "export type Events = Record<never, never>;"
         : `export interface Events { ${
-          agentParameters(
+          agentFields(
             ontology,
             metadata.events,
             "Param",
@@ -208,7 +210,7 @@ async function generateAgentFile(
       Object.keys(createSessionArgs).length === 0
         ? "export type CreateSessionArguments = Record<string, never>;"
         : `export interface CreateSessionArguments { ${
-          agentParameters(ontology, createSessionArgs, "Param", true)
+          agentFields(ontology, createSessionArgs, "Param", true)
         } }`
     }
       }
@@ -225,52 +227,50 @@ async function generateAgentFile(
     } };
           signatures: ${name}.Signatures;
         };
-        ${stringify(runtimeProps)};
+        type: "agent";
+        apiName: ${apiName};
+        version: ${version};
         osdkMetadata: typeof $osdkMetadata;
       }
 
       /** @beta */
       export const ${name}: ${name} = {
-        ${stringify(runtimeProps)},
+        type: "agent",
+        apiName: ${apiName},
+        version: ${version},
         osdkMetadata: $osdkMetadata,
       };
     `),
   );
 }
 
-function agentParameters(
+function agentFields(
   ontology: EnhancedOntologyDefinition,
   fields: Record<string, AgentDataTypeDefinition>,
   type: "Param" | "Result",
   topLevel = false,
 ): string {
-  const customizer = {
-    "*": (
-      parameter: AgentDataTypeDefinition,
-      _formatter: unknown,
-      apiName: string,
-    ): [string, string] => {
+  return stringify(fields, {
+    "*": (dataType, _formatter, name) => {
       // TODO(mhogberg): Use isOptional instead of checking nullable here once it is available in the public API.
-      const optional = topLevel && parameter.nullable;
+      const optional = topLevel && dataType.nullable;
       return [
-        `${type === "Param" ? "readonly " : ""}${JSON.stringify(apiName)}${
+        `${type === "Param" ? "readonly " : ""}${JSON.stringify(name)}${
           optional ? "?" : ""
         }`,
-        getAgentParamType(ontology, parameter, type),
+        getAgentDataType(ontology, dataType, type),
       ];
     },
-  };
-  Object.setPrototypeOf(customizer, null);
-  return stringify(fields, customizer);
+  });
 }
 
-export function getAgentParamType(
+export function getAgentDataType(
   ontology: EnhancedOntologyDefinition,
   input: AgentDataTypeDefinition,
   type: "Param" | "Result",
 ): string {
   const recurse = (dataType: AgentDataTypeDefinition) =>
-    getAgentParamType(ontology, dataType, type);
+    getAgentDataType(ontology, dataType, type);
   if (input.nullable) {
     return `(${recurse({ ...input, nullable: false })}) | null`;
   }
@@ -298,15 +298,13 @@ export function getAgentParamType(
     case "struct":
       return Object.keys(input.struct).length === 0
         ? "Record<string, never>"
-        : `{ ${agentParameters(ontology, input.struct, type)} }`;
+        : `{ ${agentFields(ontology, input.struct, type)} }`;
     case "discriminatedUnion":
-      return Object.entries(input.members).sort(([a], [b]) =>
-        a.localeCompare(b)
-      ).map(([discriminator, fields]) =>
+      return Object.entries(input.members).map(([discriminator, fields]) =>
         `{ ${type === "Param" ? "readonly " : ""}${
           JSON.stringify(input.discriminatorKey)
         }: ${JSON.stringify(discriminator)};
-          ${agentParameters(ontology, fields, type)} }`
+          ${agentFields(ontology, fields, type)} }`
       ).join(" | ") || "never";
     case "object":
     case "objectSet":
@@ -327,12 +325,9 @@ function parameterDefsForType(
   ontology: EnhancedOntologyDefinition,
   parameters: Record<string, AgentDataTypeDefinition>,
 ): string {
-  const customizer = {
-    "*": (parameter: AgentDataTypeDefinition) =>
-      `{ ${dataTypeDefForType(ontology, parameter)} }`,
-  };
-  Object.setPrototypeOf(customizer, null);
-  return stringify(parameters, customizer);
+  return stringify(parameters, {
+    "*": parameter => `{ ${dataTypeDefForType(ontology, parameter)} }`,
+  });
 }
 
 function dataTypeDefForType(
@@ -352,12 +347,11 @@ function dataTypeDefForType(
           return `{ ${parameterDefsForType(ontology, input.struct)} }`;
         }
         if (key === "members" && input.type === "discriminatedUnion") {
-          const customizer = {
-            "*": (fields: Record<string, AgentDataTypeDefinition>) =>
-              `{ ${parameterDefsForType(ontology, fields)} }`,
-          };
-          Object.setPrototypeOf(customizer, null);
-          return `{ ${stringify(input.members, customizer)} }`;
+          return `{ ${
+            stringify(input.members, {
+              "*": fields => `{ ${parameterDefsForType(ontology, fields)} }`,
+            })
+          } }`;
         }
         return formatter(value);
       },
@@ -368,12 +362,12 @@ function dataTypeDefForType(
 
 function getLineFor__OsdkTargetType(
   ontology: EnhancedOntologyDefinition,
-  input: AgentDataTypeDefinition,
+  adt: AgentDataTypeDefinition,
 ): string {
-  if (input.type === "object" || input.type === "objectSet") {
+  if (adt.type === "object" || adt.type === "objectSet") {
     return `__OsdkTargetType?: ${
       ontology.requireObjectType(
-        input.type === "object" ? input.object : input.objectSet,
+        adt.type === "object" ? adt.object : adt.objectSet,
       ).getImportedDefinitionIdentifier(true)
     }`;
   }

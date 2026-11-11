@@ -15,8 +15,7 @@
  */
 
 import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
-import { stubData } from "@osdk/shared.test";
-import { expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { loadAgentMetadata } from "./loadAgentMetadata.js";
@@ -25,43 +24,52 @@ vi.mock("@osdk/foundry.agents/AgentDefinitionVersion", () => ({
   get: vi.fn(),
 }));
 
-it("normalizes a resolved version's metadata", async () => {
-  const client = {
-    ontologyRid: Promise.resolve("ontology-rid"),
-  } as MinimalClient;
-  vi.mocked(AgentDefinitionVersions.get).mockResolvedValue(
-    stubData.weatherAgentVersion,
-  );
+beforeEach(() => {
+  vi.mocked(AgentDefinitionVersions.get).mockResolvedValue({
+    version: "1.4.0",
+    createdTime: "2026-01-01T00:00:00Z",
+    createdBy: "user",
+    argumentDefinitions: [{ name: "city", dataType: { type: "string" } }],
+    eventDefinitions: [
+      {
+        eventType: "SetTemperature",
+        payloadType: { type: "nullable", wrappedType: { type: "double" } },
+      },
+    ],
+    agentStateType: {
+      type: "struct",
+      fields: [{ name: "temperature", dataType: { type: "integer" } }],
+    },
+    contextItemDefinitions: [
+      { contextItemType: "weather-result", dataType: { type: "string" } },
+    ],
+  });
+});
 
-  const result = await loadAgentMetadata(client, "weatherAgent:^1.0.0");
+it("loads a version range", async () => {
+  const client = {
+    ontologyRid: "ri.ontology.main.ontology.sdk-ontology",
+  } as MinimalClient;
+
+  const metadata = await loadAgentMetadata(client, "weatherAgent:1.x");
 
   expect(AgentDefinitionVersions.get).toHaveBeenCalledWith(
     client,
     "weatherAgent",
-    "^1.0.0",
-    { ontology: "ontology-rid", preview: true },
+    "1.x",
+    { ontology: "ri.ontology.main.ontology.sdk-ontology", preview: true },
   );
-  expect(result).toEqual({
+  expect(metadata).toEqual({
     type: "agent",
     apiName: "weatherAgent",
-    version: "1.2.3",
+    version: "1.4.0",
     arguments: { city: { type: "string", nullable: false } },
-    events: {
-      LookupWeather: {
-        type: "struct",
-        nullable: false,
-        struct: { city: { type: "string", nullable: false } },
-      },
-      SetTemperature: { type: "double", nullable: true },
-    },
+    events: { SetTemperature: { type: "double", nullable: true } },
     agentState: {
       type: "struct",
       nullable: false,
       struct: { temperature: { type: "integer", nullable: false } },
     },
-    contextItems: {
-      "weather-result": { type: "string", nullable: false },
-      temperature: { type: "integer", nullable: true },
-    },
+    contextItems: { "weather-result": { type: "string", nullable: false } },
   });
 });

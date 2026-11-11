@@ -15,9 +15,9 @@
  */
 
 import {
-  type AgentMetadata,
   type AgentGetStateOptions,
   AgentGetStateTimeoutError,
+  type AgentMetadata,
   type AgentSessionState,
 } from "@osdk/api/unstable";
 import * as Sessions from "@osdk/foundry.agents/AgentSession";

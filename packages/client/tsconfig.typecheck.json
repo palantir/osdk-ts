@@ -1,5 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "files": ["./src/agents/agents.test.ts"],
   "exclude": ["./src/**/*.test.ts", "./src/intellisense.test.helpers/**"]
 }

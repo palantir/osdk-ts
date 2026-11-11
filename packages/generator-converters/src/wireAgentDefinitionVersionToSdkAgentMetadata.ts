@@ -16,10 +16,7 @@
 
 import type { AgentMetadata } from "@osdk/api/unstable";
 import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
-import {
-  wireAgentDataTypeToAgentDataTypeDefinition,
-  wireAgentFieldsToDefinitions,
-} from "./wireAgentDataTypeToAgentDataTypeDefinition.js";
+import { wireAgentDataTypeToAgentDataTypeDefinition } from "./wireAgentDataTypeToAgentDataTypeDefinition.js";
 
 export function wireAgentDefinitionVersionToSdkAgentMetadata(
   input: AgentDefinitionVersion,
@@ -29,10 +26,13 @@ export function wireAgentDefinitionVersionToSdkAgentMetadata(
     type: "agent",
     apiName,
     version: input.version,
-    arguments: wireAgentFieldsToDefinitions(
+    arguments: Object.fromEntries(
       [...input.argumentDefinitions].sort((a, b) =>
         a.name.localeCompare(b.name)
-      ),
+      ).map(f => [
+        f.name,
+        wireAgentDataTypeToAgentDataTypeDefinition(f.dataType),
+      ]),
     ),
     events: Object.fromEntries(
       input.eventDefinitions.map(
@@ -53,5 +53,20 @@ export function wireAgentDefinitionVersionToSdkAgentMetadata(
         ],
       ),
     ),
+  };
+}
+
+export function wireAgentDefinitionVersionToSdkAgentDefinitionNoParams(
+  input: AgentDefinitionVersion,
+  apiName: string,
+): {
+  type: string;
+  apiName: string;
+  version: string;
+} {
+  return {
+    type: "agent",
+    apiName,
+    version: input.version,
   };
 }

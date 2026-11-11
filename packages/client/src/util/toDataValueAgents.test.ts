@@ -76,44 +76,47 @@ describe(toDataValueAgents, () => {
   it.each(["constructor", "toString", "__proto__"])(
     "converts declared special fields and union members (%s)",
     async (name) => {
-      const schema: AgentDataTypeDefinition = {
+      const dataType: AgentDataTypeDefinition = {
         type: "discriminatedUnion",
         discriminatorKey: "kind",
         members: { [name]: { [name]: employeeType } },
       };
       const input = { kind: name, [name]: 50030 };
 
-      const result = await toDataValueAgents(input, clientCtx, schema);
+      const converted = await toDataValueAgents(input, clientCtx, dataType);
 
-      expect(result).toEqual({ kind: name, [name]: employeeReference(50030) });
+      expect(converted).toEqual({
+        kind: name,
+        [name]: employeeReference(50030),
+      });
     },
   );
 
   it.each(["constructor", "toString", "__proto__"])(
     "passes through undeclared special fields (%s)",
     async (name) => {
-      const schema: AgentDataTypeDefinition = { type: "struct", struct: {} };
+      const dataType: AgentDataTypeDefinition = { type: "struct", struct: {} };
       const input = { [name]: { untouched: true } };
 
-      const result = await toDataValueAgents(input, clientCtx, schema);
+      const converted = await toDataValueAgents(input, clientCtx, dataType);
 
-      expect(result).toStrictEqual(input);
+      expect(converted).toStrictEqual(input);
     },
   );
 
   it.each(["constructor", "toString", "__proto__"])(
     "passes through undeclared special union members (%s)",
     async (name) => {
-      const schema: AgentDataTypeDefinition = {
+      const dataType: AgentDataTypeDefinition = {
         type: "discriminatedUnion",
         discriminatorKey: "kind",
         members: {},
       };
       const input = { kind: name, value: { untouched: true } };
 
-      const result = await toDataValueAgents(input, clientCtx, schema);
+      const converted = await toDataValueAgents(input, clientCtx, dataType);
 
-      expect(result).toStrictEqual(input);
+      expect(converted).toStrictEqual(input);
     },
   );
 

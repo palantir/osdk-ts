@@ -44,8 +44,6 @@ export namespace osdkTestFixture {
             thinking:
               | { type: 'anthropic'; signature: string; thinking: string }
               | { type: 'anthropicRedacted'; data: string }
-              | { type: 'google'; content: string }
-              | { type: 'googleSignature'; signature: string }
               | {
                   type: 'openAi';
                   content: Array<string> | null;
@@ -59,17 +57,19 @@ export namespace osdkTestFixture {
                   encryptedContent: string;
                   id: string;
                   summary: Array<string>;
-                };
+                }
+              | { type: 'google'; content: string }
+              | { type: 'googleSignature'; signature: string };
           }
         | { type: 'toolRequest'; arguments: string; id: string; name: string }
       >;
       status:
-        | { type: 'completed' }
         | { type: 'generating' }
+        | { type: 'completed' }
         | { type: 'terminated'; reason: { type: 'genericError'; message: string } };
       toolResults: Record<
         string,
-        { type: 'complete'; contextItemIds: Array<string> } | { type: 'executing' } | { type: 'notStarted' }
+        { type: 'notStarted' } | { type: 'executing' } | { type: 'complete'; contextItemIds: Array<string> }
       >;
     };
     '@platform/tool-execution-error': { message: string };
@@ -247,16 +247,16 @@ export interface osdkTestFixture
     };
     signatures: osdkTestFixture.Signatures;
   };
-  apiName: 'osdkTestFixture';
   type: 'agent';
+  apiName: 'osdkTestFixture';
   version: '0.5.0';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 /** @beta */
 export const osdkTestFixture: osdkTestFixture = {
-  apiName: 'osdkTestFixture',
   type: 'agent',
+  apiName: 'osdkTestFixture',
   version: '0.5.0',
   osdkMetadata: $osdkMetadata,
 };
