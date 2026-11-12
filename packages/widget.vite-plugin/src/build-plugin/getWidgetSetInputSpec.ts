@@ -28,7 +28,7 @@ import { visitNpmPackages } from "../common/visitNpmPackages.js";
 
 export async function getWidgetSetInputSpec(
   packageJsonPath: string,
-  resourcesJsonPath: string,
+  resourcesJsonPath: string | undefined,
 ): Promise<WidgetSetInputSpec> {
   const [sdks, authorizations] = await Promise.all([
     discoverOntologySdkInputSpecs(packageJsonPath),
@@ -66,7 +66,7 @@ const fromKey = (key: string): OntologySdkInputSpec => {
 };
 
 async function getAuthorizations(
-  resourcesJsonPath: string,
+  resourcesJsonPath: string | undefined,
 ): Promise<WidgetSetAuthorizationsInputSpec | undefined> {
   const parsedResourcesJson: ResourcesJson | undefined =
     await parseResourcesJson(resourcesJsonPath);
@@ -81,8 +81,11 @@ async function getAuthorizations(
 }
 
 async function parseResourcesJson(
-  resourcesJsonPath: string,
+  resourcesJsonPath: string | undefined,
 ): Promise<ResourcesJson | undefined> {
+  if (resourcesJsonPath == null) {
+    return undefined;
+  }
   let content: string;
   try {
     content = await readFile(resourcesJsonPath, "utf-8");

@@ -215,3 +215,15 @@ test("getWidgetSetInputSpec throws when resources.json is invalid", async () => 
     getWidgetSetInputSpec("/path/to/package.json", "/path/to/resources.json"),
   ).rejects.toThrow(/Failed to parse resources\.json/u);
 });
+
+test("getWidgetSetInputSpec skips resources.json when there is no public directory", async () => {
+  mockSingleRootPackage();
+
+  const widgetSetInputSpec = await getWidgetSetInputSpec(
+    "/path/to/package.json",
+    undefined,
+  );
+
+  expect(readFile).not.toHaveBeenCalled();
+  expect(widgetSetInputSpec.discovered?.authorizations).toBeUndefined();
+});
