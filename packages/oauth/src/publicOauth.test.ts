@@ -502,6 +502,13 @@ describe(createPublicOauthClient, () => {
             expect.anything(),
             initialState.sessionStorage.oldUrl,
           );
+
+          // code_verifier and state were only needed to redeem this
+          // authorization code, they should not be left sitting in
+          // sessionStorage after a successful exchange.
+          expect(mockSessionStorage.removeItem).toHaveBeenCalledWith(
+            `@osdk/oauth : refresh : ${clientArgs.clientId}`,
+          );
         });
       }
 
