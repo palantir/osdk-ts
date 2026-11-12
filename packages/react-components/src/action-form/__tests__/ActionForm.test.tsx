@@ -314,6 +314,52 @@ describe("ActionForm", () => {
           error,
         });
       });
+
+      // When onError is provided, the error should not bubble to BaseForm's
+      // submission error tooltip — the consumer owns the display.
+      expect(screen.queryByText("Submit failed")).toBeNull();
+    });
+
+    it("shows submission error on button when onError is not provided", async () => {
+      const error = new Error("Something broke");
+      mockApplyAction.mockRejectedValue(error);
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Alice" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(screen.getByText("Something broke")).toBeDefined();
+      });
+    });
+
+    it("extracts user-facing message from FunctionEncounteredUserFacingError", async () => {
+      const error = new Error("INVALID_ARGUMENT");
+      error.name = "PalantirApiError";
+      Object.assign(error, {
+        errorName: "FunctionEncounteredUserFacingError",
+        errorCode: "INVALID_ARGUMENT",
+        parameters: {
+          message: "Timestamp cannot be at midnight",
+        },
+      });
+      mockApplyAction.mockRejectedValue(error);
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Alice" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(
+          screen.getByText("Timestamp cannot be at midnight"),
+        ).toBeDefined();
+      });
     });
 
     it("blocks submission when required fields are empty", async () => {

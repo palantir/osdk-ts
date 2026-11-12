@@ -271,8 +271,11 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
           onSuccess?.(result);
         }
       } catch (e) {
-        onError?.({ type: "submission", error: e });
-        throw e;
+        if (onError != null) {
+          onError({ type: "submission", error: e });
+        } else {
+          throw e;
+        }
       }
     },
     [
