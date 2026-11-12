@@ -17,19 +17,25 @@
 import type { OntologyIrMarketplaceInterfaceType } from "@osdk/client.unstable";
 
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
+import { resolveSchemaMigrationsOptIn } from "../../api/interface/schemaMigrationsOptIn.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrMarketplaceInterfaceType {
-  const { __type, schemaMigrations, ...other } = interfaceType;
+  const {
+    __type,
+    schemaMigrations: _schemaMigrations,
+    schemaMigrationsEnabled: _schemaMigrationsEnabled,
+    ...other
+  } = interfaceType;
   return {
     ...other,
     // schema migrations travel in their own block data section rather than on the interface type
     // directly; we only use the declared object to determine if the IT is opted in,
     // but exclude the migrations themselves from the IT definition
-    ...(schemaMigrations !== undefined
+    ...(resolveSchemaMigrationsOptIn(interfaceType) === true
       ? { schemaMigrationsEnabled: true }
       : {}),
     propertiesV2: Object.fromEntries(
