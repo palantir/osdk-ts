@@ -60,6 +60,11 @@ export function FoundryWidgetBuildPlugin(
      */
     configResolved(_config) {
       config = _config;
+      if (config.base !== "/") {
+        throw new Error(
+          `Foundry serves widget files from the root path, so Vite's base must be "/". Remove base from your Vite config or set it to "/". Found base "${config.base}".`,
+        );
+      }
     },
 
     /**
