@@ -227,6 +227,53 @@ describe(generatePerActionDataFiles, () => {
       );
     });
 
+    it("imports object and interface types used only by the return type", async () => {
+      const files = await generateActions({
+        returnsTodoSummary: actionReturning("returnsTodoSummary", {
+          type: "struct",
+          fields: [
+            {
+              name: "todo",
+              fieldType: {
+                type: "object",
+                objectApiName: "Todo",
+                objectTypeApiName: "Todo",
+              },
+            },
+            {
+              name: "people",
+              fieldType: {
+                type: "objectSet",
+                objectApiName: "Person",
+                objectTypeApiName: "Person",
+              },
+            },
+            {
+              name: "related",
+              fieldType: {
+                type: "array",
+                subType: {
+                  type: "interfaceObject",
+                  interfaceTypeApiName: "SomeInterface",
+                },
+              },
+            },
+          ],
+        }),
+      });
+      const generated = files["/foo/ontology/actions/returnsTodoSummary.ts"];
+
+      expect(generated).toContain(
+        "import type { Todo } from '../objects/Todo';",
+      );
+      expect(generated).toContain(
+        "import type { Person } from '../objects/Person';",
+      );
+      expect(generated).toContain(
+        "import type { SomeInterface } from '../interfaces/SomeInterface';",
+      );
+    });
+
     it("leaves actions without a return type unchanged", async () => {
       const files = await generateActions(TodoWireOntology.actionTypes);
       const generated = files["/foo/ontology/actions/markTodoCompleted.ts"];

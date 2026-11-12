@@ -16,6 +16,7 @@
 
 import type {
   ActionEditResponse,
+  ActionReturnValueResponse,
   ActionValidationResponse,
   AttachmentUpload,
   MediaReference,
@@ -34,6 +35,7 @@ import {
   Employee,
   moveOffice,
   promoteEmployee,
+  renameOffice,
 } from "@osdk/client.test.ontology";
 import type {
   BatchApplyActionResponseV2,
@@ -206,6 +208,61 @@ describe.each([
         submissionCriteria: [],
       });
     }
+  });
+
+  it("returns the value from a function-backed action", async () => {
+    const result = await client(renameOffice).applyAction({
+      officeId: "NYC",
+      newName: "Manhattan",
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<
+      ActionReturnValueResponse<renameOffice.ReturnType>
+    >();
+    expect(result).toEqual({
+      returnValue: {
+        office: {
+          $apiName: "Office",
+          $objectType: "Office",
+          $primaryKey: "NYC",
+          $objectSpecifier: "Office:NYC",
+        },
+        newName: "Manhattan",
+        previousName: "New York City",
+      },
+    });
+  });
+
+  it("returns the value alongside edits from a function-backed action", async () => {
+    const result = await client(renameOffice).applyAction(
+      { officeId: "SEA", newName: "Bellevue" },
+      { $returnEdits: true },
+    );
+
+    expectTypeOf<typeof result>().toEqualTypeOf<
+      ActionEditResponse & ActionReturnValueResponse<renameOffice.ReturnType>
+    >();
+    expect(result).toEqual({
+      type: "edits",
+      addedObjects: [],
+      modifiedObjects: [{ objectType: "Office", primaryKey: "SEA" }],
+      deletedObjects: [],
+      addedLinks: [],
+      deletedLinks: [],
+      deletedObjectsCount: 0,
+      deletedLinksCount: 0,
+      editedObjectTypes: ["Office"],
+      returnValue: {
+        office: {
+          $apiName: "Office",
+          $objectType: "Office",
+          $primaryKey: "SEA",
+          $objectSpecifier: "Office:SEA",
+        },
+        newName: "Bellevue",
+        previousName: "Seattle Office",
+      },
+    });
   });
 
   it("Accepts structs", async () => {
@@ -870,6 +927,7 @@ describe("ActionResponse remapping", () => {
       "moveOffice",
       "promoteEmployee",
       "promoteEmployeeObject",
+      "renameOffice",
     ]);
   });
 });
