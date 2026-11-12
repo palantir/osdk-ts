@@ -23,6 +23,11 @@ export const UnderlyingOsdkObject = Symbol(
 );
 
 /** @internal */
+export const FullyLoadedProperties = Symbol(
+  process.env.MODE !== "production" ? "Fully Loaded Properties" : undefined,
+);
+
+/** @internal */
 export const ObjectDefRef = Symbol(
   process.env.MODE !== "production" ? "ObjectDefinition" : undefined,
 );

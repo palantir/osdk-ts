@@ -37,6 +37,11 @@ import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder
 import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
 import type { SimpleOsdkProperties } from "./SimpleOsdkProperties.js";
 
+interface ObjectLoadOptions {
+  includeAllBaseObjectProperties?: boolean;
+  fullyLoadedProperties?: ReadonlyArray<string>;
+}
+
 /**
  * If interfaceApiName is not undefined, converts the instances of the
  * interface into their respective
@@ -71,6 +76,7 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   >,
   objectDefsByApiName?: Record<string, ObjectMetadata>,
+  loadOptions?: ObjectLoadOptions,
 ): Promise<Array<InterfaceHolder>>;
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
@@ -90,6 +96,7 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   >,
   objectDefsByApiName?: Record<string, ObjectMetadata>,
+  loadOptions?: ObjectLoadOptions,
 ): Promise<Array<ObjectHolder>>;
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
@@ -109,6 +116,7 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   >,
   objectDefsByApiName?: Record<string, ObjectMetadata>,
+  loadOptions?: ObjectLoadOptions,
 ): Promise<Array<ObjectHolder | InterfaceHolder>>;
 /**
  * @internal
@@ -131,6 +139,7 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   > = {},
   objectDefsByApiName?: Record<string, ObjectMetadata>,
+  loadOptions: ObjectLoadOptions = {},
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
@@ -203,6 +212,25 @@ export async function convertWireToOsdkObjects(
       rawObj,
       derivedPropertyTypeByName,
       propertySecurities,
+      new Set(
+        loadOptions.fullyLoadedProperties ??
+          (loadOptions.includeAllBaseObjectProperties
+            ? Object.keys(objectDef.properties)
+            : isInterfaceScoped
+              ? Object.entries(interfaceToObjMapping ?? {})
+                  .filter(
+                    ([interfaceProperty]) =>
+                      (selectedProps == null ||
+                        selectedProps.length === 0 ||
+                        selectedProps.includes(interfaceProperty)) &&
+                      (objectDef.interfaceImplementations?.[
+                        interfaceApiName!
+                      ]?.[interfaceProperty]?.type ?? "localProperty") ===
+                        "localProperty",
+                  )
+                  .map(([, objectProperty]) => objectProperty)
+              : (selectedProps ?? Object.keys(rawObj))),
+      ),
     );
     if (interfaceApiName && isInterfaceScoped)
       osdkObject = osdkObject.$as(interfaceApiName);
