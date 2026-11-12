@@ -16,6 +16,8 @@
 
 import invariant from "tiny-invariant";
 
+import { namespace } from "../defineOntology.js";
+import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
   type InterfacePropertyType,
@@ -106,7 +108,7 @@ export function validateInterfaceSchemaMigrations(
         const conflict = claimedBy.get(claim);
         invariant(
           conflict === undefined,
-          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property may be migrated by at most one in-flight transition.`,
+          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". Each element of an interface schema may be migrated by at most one in-flight transition.`,
         );
         claimedBy.set(claim, {
           transitionId: id,
@@ -186,6 +188,10 @@ function validateInstruction(
       );
       return;
     }
+    case "addRequiredActionTypeConstraint":
+      // action type constraints aren't defined by defineInterface, so these are checked post-facto
+      // once the the ontology is fully-defined
+      return;
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(
@@ -206,6 +212,13 @@ function getClaims(
   switch (instruction.type) {
     case "addRequiredProperty":
       return [`property:${instruction.property}`];
+    case "addRequiredActionTypeConstraint":
+      return [
+        `actionTypeConstraint:${combineApiNamespaceIfMissing(
+          namespace,
+          instruction.actionTypeConstraint,
+        )}`,
+      ];
     default:
       // TODO: add a never exhaustiveness check once there's more than one instruction type
       throw new Error(

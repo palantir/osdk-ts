@@ -155,6 +155,10 @@ export {
   shouldNotHaveRenderHints,
   validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
+export {
+  type OntologyValidationContext,
+  validateOntology,
+} from "./api/validateOntology.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export type {
   AuthoringDataConstraint,
