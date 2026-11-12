@@ -309,6 +309,72 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("rejects an empty `actionTypeConstraints`", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: { properties: {}, actionTypeConstraints: {} },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(
+      /schema\.actionTypeConstraints: Expected at least one action type constraint/u,
+    );
+  });
+
+  /** A lockfile whose sole interface declares `sendEmail` with the given parameters. */
+  function withParameters(parameters: unknown) {
+    return withInterface({
+      schema: {
+        properties: {},
+        actionTypeConstraints: {
+          sendEmail: { requireImplementation: false, parameters },
+        },
+      },
+      transitions: [],
+    });
+  }
+
+  it("accepts parameter constraints", () => {
+    const parameters = {
+      body: { requireImplementation: false },
+      subject: {
+        requireImplementation: true,
+        isRequiredParameterOnConcreteAction: true,
+      },
+    };
+    const parsed = parse(withParameters(parameters));
+    expect(
+      parsed.interfaces.Person.schema.actionTypeConstraints?.sendEmail
+        .parameters,
+    ).toEqual(parameters);
+  });
+
+  it.each([
+    [
+      "an empty `parameters`",
+      {},
+      /parameters: Expected at least one parameter constraint/u,
+    ],
+    [
+      "a parameter not required on the concrete action recorded longhand",
+      {
+        subject: {
+          requireImplementation: true,
+          isRequiredParameterOnConcreteAction: false,
+        },
+      },
+      /subject\.isRequiredParameterOnConcreteAction: Expected `true`, or no value at all/u,
+    ],
+    [
+      "a parameter without `requireImplementation`",
+      { subject: {} },
+      /subject\.requireImplementation: Expected a boolean/u,
+    ],
+  ])("rejects %s", (_name, parameters, message) => {
+    expect(() => parse(withParameters(parameters))).toThrowError(message);
+  });
+
   it("accepts a property that records a value type", () => {
     const valueType = { packageNamespace: "com.example", apiName: "Ssn" };
     const parsed = parse(withPropertyDefinition({ ...property, valueType }));

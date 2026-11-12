@@ -27,6 +27,7 @@ import {
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedActionTypeConstraint,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
@@ -37,11 +38,13 @@ import type {
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
 import {
+  actionTypeConstraintsOf,
   authoredKeyOf,
   declarationOf,
   extensionsOf,
   nullabilityOf,
   own,
+  parametersOf,
   primaryKeyConstraintOf,
   tightensNullability,
 } from "./OntologySchemaLockfile.js";
@@ -87,6 +90,34 @@ export type LockfileBreakingChange =
       transitionId: string;
       previousInstructions: readonly LockedInstruction[];
       nextInstructions: readonly LockedInstruction[];
+    }
+  | {
+      code: "actionTypeConstraintBecameRequired";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  | {
+      code: "requiredActionTypeConstraintAdded";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  | {
+      code: "parameterBecameRequired";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
+    }
+  | {
+      code: "requiredParameterAdded";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
+    }
+  | {
+      code: "parameterBecameRequiredOnConcreteAction";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
     }
   | {
       code: "interfaceExtensionAdded";
@@ -191,6 +222,31 @@ export type LockfileWarning =
       code: "interfaceExtensionRemoved";
       interfaceApiName: string;
       extendedInterfaceApiName: string;
+    }
+  /** An action type constraint implementing object types had to implement no longer has to be. */
+  | {
+      code: "actionTypeConstraintRequirementRelaxed";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  | {
+      code: "actionTypeConstraintRemoved";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+    }
+  /** A parameter that implementing actions had to map no longer has to be. */
+  | {
+      code: "parameterRequirementRelaxed";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
+    }
+  /** A parameter that implementing actions had to declare required no longer has to be. */
+  | {
+      code: "parameterNoLongerRequiredOnConcreteAction";
+      interfaceApiName: string;
+      actionTypeConstraint: string;
+      parameter: string;
     };
 
 export interface LockfileValidationResult {
@@ -279,9 +335,12 @@ function validateInterface(
     nextInterface.transitions.map((transition) => [transition.id, transition]),
   );
 
-  // Authored keys whose change is already explained by a finalization or deletion, and so must be
-  // exempt from the general breaking-change checks below.
-  const propertiesAccountedFor = new Set<string>();
+  // Schema elements whose change is already explained by a finalization or deletion, and so must
+  // be exempt from the general breaking-change checks below.
+  const accountedFor: AccountedFor = {
+    properties: new Set(),
+    actionTypeConstraints: new Set(),
+  };
 
   for (const previousTransition of previousInterface.transitions) {
     const nextTransition = nextTransitions.get(previousTransition.id);
@@ -310,7 +369,7 @@ function validateInterface(
       // Whether the disappearance was legal or not, its target properties have been reported on;
       // re-reporting them as raw schema breaks would only add noise.
       for (const property of targetPropertiesOf(previousTransition)) {
-        propertiesAccountedFor.add(authoredKeyOf(property));
+        accountedFor.properties.add(authoredKeyOf(property));
       }
       continue;
     }
@@ -334,9 +393,149 @@ function validateInterface(
     interfaceApiName,
     previousInterface.schema,
     nextInterface.schema,
-    propertiesAccountedFor,
+    accountedFor.properties,
     result,
   );
+
+  validateActionTypeConstraintsDiff(
+    interfaceApiName,
+    previousInterface.schema,
+    nextInterface.schema,
+    accountedFor.actionTypeConstraints,
+    result,
+  );
+}
+
+interface AccountedFor {
+  /** Authored keys. */
+  properties: Set<string>;
+  /** Fully-qualified api names. */
+  actionTypeConstraints: Set<string>;
+}
+
+/**
+ * Reports changes to the action type constraints the interface declares directly.
+ */
+function validateActionTypeConstraintsDiff(
+  interfaceApiName: string,
+  previousSchema: LockedInterfaceSchema,
+  nextSchema: LockedInterfaceSchema,
+  accountedFor: ReadonlySet<string>,
+  result: LockfileValidationResult,
+): void {
+  const { breakingChanges, warnings } = result;
+  const previousConstraints = actionTypeConstraintsOf(previousSchema);
+  const nextConstraints = actionTypeConstraintsOf(nextSchema);
+
+  for (const [actionTypeConstraint, previous] of Object.entries(
+    previousConstraints,
+  )) {
+    const next = own(nextConstraints, actionTypeConstraint);
+    // A transition only ever accounts for the constraint's own requirement, never its parameters'
+    if (next !== undefined) {
+      validateParameterConstraintsDiff(
+        interfaceApiName,
+        actionTypeConstraint,
+        previous,
+        next,
+        result,
+      );
+    }
+
+    if (accountedFor.has(actionTypeConstraint)) {
+      continue;
+    }
+
+    if (next === undefined) {
+      warnings.push({
+        code: "actionTypeConstraintRemoved",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+      continue;
+    }
+
+    if (!previous.requireImplementation && next.requireImplementation) {
+      breakingChanges.push({
+        code: "actionTypeConstraintBecameRequired",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    } else if (previous.requireImplementation && !next.requireImplementation) {
+      warnings.push({
+        code: "actionTypeConstraintRequirementRelaxed",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    }
+  }
+
+  for (const [actionTypeConstraint, next] of Object.entries(nextConstraints)) {
+    if (
+      accountedFor.has(actionTypeConstraint) ||
+      own(previousConstraints, actionTypeConstraint) !== undefined
+    ) {
+      continue;
+    }
+
+    if (next.requireImplementation) {
+      breakingChanges.push({
+        code: "requiredActionTypeConstraintAdded",
+        interfaceApiName,
+        actionTypeConstraint,
+      });
+    }
+  }
+}
+
+/**
+ * Reports changes to the parameters of an action type constraint declared both before and after.
+ *
+ * Unlike the constraint's own requirement, these apply to every object type that implements the
+ * constraint, required or not, and no interface schema migration can phase them in.
+ */
+function validateParameterConstraintsDiff(
+  interfaceApiName: string,
+  actionTypeConstraint: string,
+  previousConstraint: LockedActionTypeConstraint,
+  nextConstraint: LockedActionTypeConstraint,
+  { breakingChanges, warnings }: LockfileValidationResult,
+): void {
+  const previousParameters = parametersOf(previousConstraint);
+  for (const [parameter, next] of Object.entries(
+    parametersOf(nextConstraint),
+  )) {
+    const where = { interfaceApiName, actionTypeConstraint, parameter };
+    const previous = own(previousParameters, parameter);
+    if (previous === undefined) {
+      // No implementing action maps a new parameter yet, so only requiring it to be mapped breaks
+      if (next.requireImplementation) {
+        breakingChanges.push({ code: "requiredParameterAdded", ...where });
+      }
+      continue;
+    }
+
+    if (!previous.requireImplementation && next.requireImplementation) {
+      breakingChanges.push({ code: "parameterBecameRequired", ...where });
+    } else if (previous.requireImplementation && !next.requireImplementation) {
+      warnings.push({ code: "parameterRequirementRelaxed", ...where });
+    }
+
+    const previousOnConcrete =
+      previous.isRequiredParameterOnConcreteAction === true;
+    const nextOnConcrete = next.isRequiredParameterOnConcreteAction === true;
+    if (!previousOnConcrete && nextOnConcrete) {
+      breakingChanges.push({
+        code: "parameterBecameRequiredOnConcreteAction",
+        ...where,
+      });
+    } else if (previousOnConcrete && !nextOnConcrete) {
+      warnings.push({
+        code: "parameterNoLongerRequiredOnConcreteAction",
+        ...where,
+      });
+    }
+  }
 }
 
 function validateExtensionsDiff(
