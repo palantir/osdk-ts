@@ -78,7 +78,11 @@ export function FoundryWidgetDevPlugin(
      * setup page and trigger module parsing.
      */
     buildStart(options) {
-      htmlEntrypoints = getInputHtmlEntrypoints(options);
+      // Builds default to index.html, but Vite leaves the input unset in dev mode
+      htmlEntrypoints =
+        options.input == null
+          ? ["index.html"]
+          : getInputHtmlEntrypoints(options);
     },
 
     /**

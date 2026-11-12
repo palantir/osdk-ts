@@ -9,9 +9,4 @@ export default defineConfig({
     port: 8080,
     cors: true,
   },
-  build: {
-    rollupOptions: {
-      input: ["./index.html"],
-    },
-  },
 });

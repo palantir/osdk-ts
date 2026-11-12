@@ -43,20 +43,31 @@ afterEach(async () => {
 
 test.each([
   { layout: "the project directory", htmlDir: "", cwd: "project", arg: "" },
+  {
+    layout: "a config without an input",
+    htmlDir: "",
+    cwd: "project",
+    arg: "",
+    noInput: true,
+  },
   { layout: "a root set to src", htmlDir: "src", cwd: "project", arg: "" },
   { layout: "a parent directory", htmlDir: "", cwd: "", arg: "project" },
-])("builds from $layout", async ({ htmlDir, cwd, arg }) => {
+])("builds from $layout", async ({ htmlDir, cwd, arg, noInput }) => {
   parent = await realpath(await mkdtemp(path.join(tmpdir(), "widget-build-")));
   const project = path.join(parent, "project");
   const files = {
     "vite.config.mjs": `import { fileURLToPath } from "node:url";
       export default {
         ${htmlDir === "" ? "" : `root: "${htmlDir}",`}
-        build: {
+        ${
+          noInput === true
+            ? ""
+            : `build: {
           rollupOptions: {
             input: [fileURLToPath(new URL("./${htmlDir}/index.html", import.meta.url))],
           },
-        },
+        },`
+        }
       };`,
     "foundry.config.json": JSON.stringify({
       foundryUrl: "https://example.com",
