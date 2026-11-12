@@ -17,6 +17,7 @@
 import { readFile } from "fs/promises";
 
 import type {
+  DatasetInputSpec,
   OntologySdkInputSpec,
   WidgetSetAuthorizationsInputSpec,
   WidgetSetInputSpec,
@@ -24,20 +25,24 @@ import type {
 
 import type { PackageJson } from "../common/PackageJson.js";
 import type { ResourcesJson } from "../common/ResourcesJson.js";
+import { validateAliases } from "../common/validateAliases.js";
+import { validateDatasets } from "../common/validateDatasets.js";
 import { visitNpmPackages } from "../common/visitNpmPackages.js";
 
 export async function getWidgetSetInputSpec(
   packageJsonPath: string,
   resourcesJsonPath: string | undefined,
 ): Promise<WidgetSetInputSpec> {
-  const [sdks, authorizations] = await Promise.all([
+  const [sdks, resourcesJson] = await Promise.all([
     discoverOntologySdkInputSpecs(packageJsonPath),
-    getAuthorizations(resourcesJsonPath),
+    parseResourcesJson(resourcesJsonPath),
   ]);
+  const { datasets } = getResources(resourcesJson);
   return {
     discovered: {
       sdks,
-      authorizations,
+      datasets,
+      authorizations: getAuthorizations(resourcesJson),
     },
   };
 }
@@ -65,15 +70,28 @@ const fromKey = (key: string): OntologySdkInputSpec => {
   };
 };
 
-async function getAuthorizations(
-  resourcesJsonPath: string | undefined,
-): Promise<WidgetSetAuthorizationsInputSpec | undefined> {
-  const parsedResourcesJson: ResourcesJson | undefined =
-    await parseResourcesJson(resourcesJsonPath);
-  if (parsedResourcesJson == null) {
+function getResources(resourcesJson: ResourcesJson | undefined): {
+  datasets: Array<DatasetInputSpec>;
+} {
+  const datasets: unknown = resourcesJson?.resources?.datasets ?? [];
+  validateDatasets(datasets);
+  validateAliases({ datasets });
+  return {
+    datasets: datasets.map(({ identifier, usage, alias }) => ({
+      identifier: { rid: identifier.rid },
+      usage: [...new Set(usage)],
+      alias,
+    })),
+  };
+}
+
+function getAuthorizations(
+  resourcesJson: ResourcesJson | undefined,
+): WidgetSetAuthorizationsInputSpec | undefined {
+  if (resourcesJson == null) {
     return undefined;
   }
-  const { read, requiredRead } = parsedResourcesJson.authorizations ?? {};
+  const { read, requiredRead } = resourcesJson.authorizations ?? {};
   return {
     read,
     requiredRead,

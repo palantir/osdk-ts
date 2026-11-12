@@ -23,6 +23,9 @@ import type { PackageJson } from "../../common/PackageJson.js";
 import { visitNpmPackages } from "../../common/visitNpmPackages.js";
 import { getWidgetSetInputSpec } from "../getWidgetSetInputSpec.js";
 
+const DATASET_RID_1 = "ri.foundry.main.dataset.1";
+const DATASET_RID_2 = "ri.foundry.main.dataset.2";
+
 vi.mock("../../common/visitNpmPackages.ts");
 vi.mock("fs/promises");
 
@@ -117,6 +120,7 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
         { rid: "ridPackage4", version: "0.4.0" },
         { rid: "ridPackage4", version: "0.4.1" },
       ],
+      datasets: [],
     },
   });
 });
@@ -127,6 +131,10 @@ function mockSingleRootPackage(): void {
     onVisit(packageJsonPath, rootPackageJson);
     return Promise.resolve();
   });
+}
+
+function mockResourcesJson(resourcesJson: object): void {
+  vi.mocked(readFile).mockResolvedValue(JSON.stringify(resourcesJson));
 }
 
 test("getWidgetSetInputSpec reads authorizations from resources.json", async () => {
@@ -225,5 +233,87 @@ test("getWidgetSetInputSpec skips resources.json when there is no public directo
   );
 
   expect(readFile).not.toHaveBeenCalled();
+  expect(widgetSetInputSpec.discovered?.datasets).toEqual([]);
   expect(widgetSetInputSpec.discovered?.authorizations).toBeUndefined();
+});
+
+test("getWidgetSetInputSpec reads datasets from resources.json", async () => {
+  mockSingleRootPackage();
+  mockResourcesJson({
+    resources: {
+      datasets: [
+        {
+          identifier: { rid: DATASET_RID_1 },
+          usage: ["read"],
+          alias: "employees",
+        },
+        {
+          identifier: { rid: DATASET_RID_2 },
+          usage: ["read"],
+          alias: "offices",
+        },
+      ],
+    },
+    version: 1,
+  });
+
+  const widgetSetInputSpec = await getWidgetSetInputSpec(
+    "/path/to/package.json",
+    "/path/to/resources.json",
+  );
+
+  expect(widgetSetInputSpec.discovered?.datasets).toEqual([
+    { identifier: { rid: DATASET_RID_1 }, usage: ["read"], alias: "employees" },
+    { identifier: { rid: DATASET_RID_2 }, usage: ["read"], alias: "offices" },
+  ]);
+});
+
+test("getWidgetSetInputSpec returns no datasets when resources.json is missing", async () => {
+  mockSingleRootPackage();
+
+  const widgetSetInputSpec = await getWidgetSetInputSpec(
+    "/path/to/package.json",
+    "/path/to/resources.json",
+  );
+
+  expect(widgetSetInputSpec.discovered?.datasets).toEqual([]);
+});
+
+test("getWidgetSetInputSpec returns no datasets when resources.json declares none", async () => {
+  mockSingleRootPackage();
+  mockResourcesJson({ authorizations: { read: [["OrgA"]] }, version: 1 });
+
+  const widgetSetInputSpec = await getWidgetSetInputSpec(
+    "/path/to/package.json",
+    "/path/to/resources.json",
+  );
+
+  expect(widgetSetInputSpec.discovered?.datasets).toEqual([]);
+});
+
+test("getWidgetSetInputSpec throws when resource aliases in resources.json are not unique", async () => {
+  mockSingleRootPackage();
+  mockResourcesJson({
+    resources: {
+      datasets: [
+        {
+          identifier: { rid: DATASET_RID_1 },
+          usage: ["read"],
+          alias: "employees",
+        },
+        {
+          identifier: { rid: DATASET_RID_2 },
+          usage: ["read"],
+          alias: "employees",
+        },
+      ],
+    },
+    version: 1,
+  });
+
+  await expect(
+    getWidgetSetInputSpec("/path/to/package.json", "/path/to/resources.json"),
+  ).rejects.toThrow(
+    /Resource alias "employees" is used by more than one resource \(datasets\[0\] and datasets\[1\]\)/u,
+  );
 });

@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-import type { WidgetSetAuthorizationsInputSpec } from "@osdk/widget.api";
+import type {
+  DatasetInputSpec,
+  WidgetSetAuthorizationsInputSpec,
+} from "@osdk/widget.api";
 
 type DeclaredWidgetSetAuthorizations = Pick<
   WidgetSetAuthorizationsInputSpec,
   "read" | "requiredRead"
 >;
 
+interface Resources {
+  datasets?: Array<DatasetInputSpec>;
+}
+
+export type ResourceType = keyof Resources;
+
 interface ResourcesJsonV1 {
-  authorizations: DeclaredWidgetSetAuthorizations;
+  authorizations?: DeclaredWidgetSetAuthorizations;
+  resources?: Resources;
   version: 1;
 }
 
