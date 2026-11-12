@@ -316,6 +316,26 @@ describe("ActionForm", () => {
       });
     });
 
+    it("does not show submission error on button tooltip", async () => {
+      const onError = vi.fn();
+      const error = new Error("Something broke");
+      mockApplyAction.mockRejectedValue(error);
+
+      render(<ActionForm actionDefinition={TestAction} onError={onError} />);
+
+      fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
+        target: { value: "Alice" },
+      });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(onError).toHaveBeenCalled();
+      });
+
+      expect(screen.queryByText("Something broke")).toBeNull();
+      expect(screen.queryByText("Submission failed")).toBeNull();
+    });
+
     it("blocks submission when required fields are empty", async () => {
       const onSuccess = vi.fn();
       const result = { editedObjectTypes: [] };
