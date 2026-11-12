@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.90.0
+
+### Minor Changes
+
+- b8cfd7c: Add static typing for agent session state returned by `experimental_getState`.
+
 ## 2.89.0
 
 ## 2.88.0

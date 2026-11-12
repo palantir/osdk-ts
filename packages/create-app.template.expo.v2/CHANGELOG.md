@@ -1,5 +1,7 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.90.0
+
 ## 2.89.0
 
 ## 2.88.0

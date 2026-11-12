@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.89.0
+
+### Minor Changes
+
+- 7fed367: Add datasource-scoped `markingConstraints` with `mandatory.allowEmptyMarkings` and `cbac.allowEmptyMarkings` so installers can supply empty allowed marking sets independently for mandatory and classification constraints.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters.ontologyir@2.90.0
+
 ## 0.88.0
 
 ### Patch Changes
