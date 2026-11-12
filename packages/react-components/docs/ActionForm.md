@@ -26,7 +26,7 @@ function UpdateEmployeeForm() {
 }
 ```
 
-`ActionForm` fetches action metadata, renders fields for the action parameters, runs client-side validation, and calls the OSDK action when the user submits. The form title is hidden by default. Pass `showFormTitle={true}` to show it; the title uses `formTitle` when provided, otherwise the action display name, otherwise the action API name.
+`ActionForm` fetches action metadata, renders fields for the action parameters, runs client-side validation, validates the action with Foundry, and calls the OSDK action when the user submits. The form title is hidden by default. Pass `showFormTitle={true}` to show it; the title uses `formTitle` when provided, otherwise the action display name, otherwise the action API name.
 
 ## Props Reference
 
@@ -43,7 +43,7 @@ Type parameters: `Q extends ActionDefinition<unknown>`
 | `actionDefinition`       | `Q`                                                                                                                                         | **Required.** The OSDK action definition. Its parameters drive the rendered fields and the submission.                                                               |
 | `showFormTitle`          | `boolean`                                                                                                                                   | Whether to show the form title. Defaults to `false`.                                                                                                                 |
 | `onSubmit`               | `(formState: FormState<Q>, applyAction: (formState: FormState<Q>) => Promise<ActionEditResponse \| undefined>) => Promise<unknown> \| void` | If supplied, this will override the default submit action. By default, the action's applyAction will be called.                                                      |
-| `onValidationResponse`   | `(results: ActionValidationResponse) => void`                                                                                               | Called when the validation response is returned from a validateOnly submission                                                                                       |
+| `onValidationResponse`   | `(results: ActionValidationResponse) => void`                                                                                               | Called with the validation response each time the form validates the action: 500 ms after a field change and before submit. Not called when `onSubmit` is provided.  |
 | `onSuccess`              | `(results: ActionEditResponse \| undefined) => void`                                                                                        | Called when the action is successfully executed from a non-validateOnly submission                                                                                   |
 | `onError`                | `(error: FormError) => void`                                                                                                                | Called when action metadata fails to load or form submission fails.                                                                                                  |
 | `formFieldDefinitions`   | `ReadonlyArray<FormFieldDefinition<Q>>`                                                                                                     | Custom flat list of field definitions.                                                                                                                               |
@@ -55,13 +55,13 @@ Type parameters: `Q extends ActionDefinition<unknown>`
 
 ## Choosing ActionForm vs BaseForm
 
-| Use case                                                                 | Use this API                             |
-| ------------------------------------------------------------------------ | ---------------------------------------- |
-| Render a form directly from an OSDK action and submit with `applyAction` | `ActionForm`                             |
-| Override generated fields for an OSDK action                             | `ActionForm` with `formFieldDefinitions` |
-| Build a form from manually-authored field definitions                    | `BaseForm`                               |
-| Group an OSDK action's fields into sections, or order standalone fields | `ActionForm` with `formContentDefinitions` |
-| Build a custom form layout without an OSDK action                        | `BaseForm`                               |
+| Use case                                                                 | Use this API                               |
+| ------------------------------------------------------------------------ | ------------------------------------------ |
+| Render a form directly from an OSDK action and submit with `applyAction` | `ActionForm`                               |
+| Override generated fields for an OSDK action                             | `ActionForm` with `formFieldDefinitions`   |
+| Build a form from manually-authored field definitions                    | `BaseForm`                                 |
+| Group an OSDK action's fields into sections, or order standalone fields  | `ActionForm` with `formContentDefinitions` |
+| Build a custom form layout without an OSDK action                        | `BaseForm`                                 |
 
 ## Default Field Rendering
 
@@ -85,13 +85,13 @@ Required validation is inferred from the action parameter's nullability. Additio
 
 `ActionForm` is a lightweight OSDK component and does not yet match the full ActionForm in Foundry. The table below lists the main gaps to account for when adopting it.
 
-| Feature                                     | Current behavior                                                                                                                                                                                              | Workaround                                                                                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backend action validation                   | The form does not call backend validation before submit and does not process validation-derived displays, allowed values, defaults, or section results.                                                       | Use `formFieldDefinitions` validation props, field-level `validate`, `onSubmit`, and `onError` for app-owned checks and submission error handling.      |
-| Unsupported generated parameter types       | `marking`, `geohash`, `geoshape`, `objectType`, `interface`, and `struct` render as disabled unsupported fields by default.                                                                                   | Override those parameters with `fieldComponent: "CUSTOM"` or another compatible component in `formFieldDefinitions`.                                    |
-| Action-authored layout metadata             | Action-defined sections, form content ordering, section validation, and layout toggles are not read from metadata. Fields render in metadata parameter order unless fully replaced by `formFieldDefinitions`. | Group fields with `formContentDefinitions` sections, or control field order with `formFieldDefinitions`.                                                |
-| Conditional logic and dynamic display state | Backend-driven hidden, disabled, required, and allowed-value rules are not evaluated as the user edits the form.                                                                                              | Encode static display state in field definitions, or manage dynamic state in your app and pass updated `formFieldDefinitions` / controlled `formState`. |
-| Defaults and prefills                       | Backend prefills, type-class defaults, current timestamp defaults, and validation-derived default values are not applied automatically.                                                                       | Provide `defaultValue` in field definitions, seed controlled `formState`, or compute defaults in app code before rendering.                             |
+| Feature                                     | Current behavior                                                                                                                                                                                                                                                                                                                                                                                               | Workaround                                                                                                                                                               |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Backend action validation                   | When `onSubmit` is omitted, the form validates the action with Foundry 500 ms after each field change and again before submit. If the result is `INVALID`, the action is not applied, and failed submission criteria and parameter errors are listed in the footer. Validation-derived displays, allowed values, defaults, and section results are not processed. With `onSubmit`, no backend validation runs. | Read the full response with `onValidationResponse`. Use `formFieldDefinitions` validation props, field-level `validate`, `onSubmit`, and `onError` for app-owned checks. |
+| Unsupported generated parameter types       | `marking`, `geohash`, `geoshape`, `objectType`, `interface`, and `struct` render as disabled unsupported fields by default.                                                                                                                                                                                                                                                                                    | Override those parameters with `fieldComponent: "CUSTOM"` or another compatible component in `formFieldDefinitions`.                                                     |
+| Action-authored layout metadata             | Action-defined sections, form content ordering, section validation, and layout toggles are not read from metadata. Fields render in metadata parameter order unless fully replaced by `formFieldDefinitions`.                                                                                                                                                                                                  | Group fields with `formContentDefinitions` sections, or control field order with `formFieldDefinitions`.                                                                 |
+| Conditional logic and dynamic display state | Backend-driven hidden, disabled, required, and allowed-value rules are not evaluated as the user edits the form.                                                                                                                                                                                                                                                                                               | Encode static display state in field definitions, or manage dynamic state in your app and pass updated `formFieldDefinitions` / controlled `formState`.                  |
+| Defaults and prefills                       | Backend prefills, type-class defaults, current timestamp defaults, and validation-derived default values are not applied automatically.                                                                                                                                                                                                                                                                        | Provide `defaultValue` in field definitions, seed controlled `formState`, or compute defaults in app code before rendering.                                              |
 
 ## Custom Field Definitions
 
@@ -148,7 +148,10 @@ const content = [
   },
 ] satisfies Array<ActionFormContentItem<typeof updateEmployee>>;
 
-<ActionForm actionDefinition={updateEmployee} formContentDefinitions={content} />;
+<ActionForm
+  actionDefinition={updateEmployee}
+  formContentDefinitions={content}
+/>;
 ```
 
 | Section option       | Default | Description                                                    |
@@ -250,7 +253,7 @@ const fields = [
 - `fieldKey` must match the action parameter key; submitted form state uses the same keys.
 - `fieldComponentProps` should not include `value`, `onChange`, or `id`; form state wiring provides those.
 - Controlled mode requires both `formState` and `onFormStateChange`.
-- Use `onSubmit` for custom submission behavior. If `onSubmit` is omitted, `ActionForm` calls `applyAction` and then `onSuccess`.
+- Use `onSubmit` for custom submission behavior; it skips backend validation. If `onSubmit` is omitted, `ActionForm` validates the action first. On an `INVALID` result it shows the errors in the footer and stops without calling `onSuccess` or `onError`. Otherwise it calls `applyAction` and then `onSuccess`.
 
 ## Examples
 

@@ -126,7 +126,7 @@ ReactDOM.createRoot(rootElement).render(
 
 | `devMode` field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `actionDelayMs` | `number` | `1000` | Delays the result of an action that has an optimistic update, so you can see the optimistic state. Set `0` to turn it off. |
+| `actionDelayMs` | `number` | `1000` | Delays the result of a single (non-batched) action that has an optimistic update, so you can see the optimistic state. Set `0` to turn it off. |
 | `logLevel` | `"trace" \| "debug" \| "info" \| "warn" \| "error" \| "fatal"` | `"error"` | Log level of the cache layer. `"debug"` shows its tracing. |
 | `debug.refCounts` | `boolean` | `false` | Logs cache entry reference counts and cleanup, and shortens retention so cleanup happens sooner. |
 | `debug.cacheKeys` | `boolean` | `false` | Logs cache key lookups. |
@@ -220,7 +220,7 @@ const employee = await client(Employee).fetchOne(12345);
 const office = await employee.$link.office.fetchOne();
 ```
 
-To process every matching object, iterate with `asyncIter`. It fetches page after page from a consistent snapshot, so each object arrives once even if the data changes during the loop:
+To process every matching object, iterate with `asyncIter`. It fetches page after page from a consistent snapshot, so each object arrives once even if the data changes during the loop. Stream-backed object types have no snapshot guarantee, and iteration throws if the snapshot expires:
 
 ```ts
 for await (const employee of client(Employee).asyncIter({ $select: ["fullName"] })) {

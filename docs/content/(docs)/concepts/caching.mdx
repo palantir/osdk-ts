@@ -131,7 +131,7 @@ const { data } = useOsdkObjects(Employee, {
 });
 ```
 
-When several mounted hooks share an entry, the smallest `dedupeIntervalMs` among them applies. In-flight requests are always shared, whatever the interval.
+When several mounted hooks share an entry, the smallest non-zero `dedupeIntervalMs` among them applies. In-flight requests are always shared, whatever the interval.
 
 ### Retention
 
@@ -148,7 +148,7 @@ When you apply an action with `useOsdkAction`, the client requests the action's 
 | Object deleted | The object is removed from the cache and from every list that contained it. |
 | Any edit to a type | Aggregations over that type refetch. Links to that type re-evaluate. Functions with `dependsOn` that include the type refetch. |
 
-The action's promise resolves after the edited objects are refetched. Aggregation and other type-wide refreshes continue in the background.
+The action's promise resolves after the edited objects are refetched. Aggregation and other type-wide refreshes continue in the background. When an action edits too many objects for the server to list them, the response names only the edited object types: every cached query for those types refetches in the background, and the promise resolves without waiting.
 
 ### How lists stay correct
 
@@ -156,7 +156,7 @@ For a modified or added object, each list of that type checks the object against
 
 - If the object matches, the list keeps it or inserts it.
 - If the object no longer matches, the list removes it.
-- If the clause uses a filter the browser cannot evaluate, such as full-text search, the list refetches from the server with `isLoading: true` and keeps its current data until the response arrives.
+- If the clause uses a filter the browser cannot evaluate, such as full-text search, the list removes a modified object, does not insert an added one, and refetches from the server with `isLoading: true`. The rest of the list stays in place until the response arrives.
 
 Lists that follow a link (`pivotTo`) or return a different object type than they start from always refetch from the server when objects of their result type change.
 
@@ -185,9 +185,9 @@ function EmployeeReport({ employee }: { employee: Employee.OsdkInstance }) {
 
 ## Optimistic updates
 
-`useOsdkAction` accepts `$optimisticUpdate`, which writes your predicted change to a temporary layer above the server data. Every view shows the predicted change at once and reports `isOptimistic: true`. When the action finishes, the layer is removed and the server's data replaces it. If the action fails, the layer is removed and the views return to the previous data.
+Pass `$optimisticUpdate` in the arguments to `applyAction` from `useOsdkAction`. It writes your predicted change to a temporary layer above the server data. Every view shows the predicted change at once and reports `isOptimistic: true`. When the action finishes, the layer is removed and the server's data replaces it. If the action fails, the layer is removed and the views return to the previous data.
 
-In development, an action with an optimistic update is delayed by 1000 ms so you can see the optimistic state. Set `devMode={{ actionDelayMs: 0 }}` on `OsdkProvider` to turn the delay off. The delay never applies in production builds.
+In development, a single (non-batched) action with an optimistic update is delayed by 1000 ms so you can see the optimistic state. Set `devMode={{ actionDelayMs: 0 }}` on `OsdkProvider` to turn the delay off. The delay never applies in production builds.
 
 See [Optimistic updates](/react/optimistic-updates) for the API.
 

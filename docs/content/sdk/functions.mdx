@@ -38,7 +38,7 @@ If your SDK was generated with a pinned function version, the client calls that 
 
 | Parameter type | Pass |
 | --- | --- |
-| Primitive | A value of the parameter's TypeScript type. Dates and timestamps are ISO 8601 strings. `long` and `decimal` accept a `number` or a `string`. |
+| Primitive | A value of the parameter's TypeScript type. Dates and timestamps are ISO 8601 strings. `long` accepts a `number` or a `string`. |
 | Object | A loaded object, its primary key, or `{ $apiName, $primaryKey }`. |
 | Interface | An object loaded through the interface, or `{ $objectType, $primaryKey }`, where `$objectType` is the concrete object type. |
 | Object set | An object set, such as `client(Employee).where({ ... })`. The server receives its definition, not its objects. |
@@ -63,8 +63,8 @@ const summary = await client(summarizeTeam).executeFunction({
 
 | Return type | You get |
 | --- | --- |
-| Primitive | The value. `long` and `decimal` are strings; dates and timestamps are ISO 8601 strings. |
-| List, set | An array. |
+| Primitive | The value. `long` is a string; dates and timestamps are ISO 8601 strings. |
+| List, set | An array. Set results are typed `Set<T>` in the generated SDK but arrive as arrays; wrap them with `new Set(result)` before using `Set` methods. |
 | Struct | A plain object. |
 | Map | A plain object keyed by the map's keys. Object keys become object specifier strings. |
 | Object | An object reference with `$apiName`, `$objectType`, and `$primaryKey`. It has no properties. |

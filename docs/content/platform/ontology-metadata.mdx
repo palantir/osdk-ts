@@ -40,7 +40,7 @@ export async function describeEmployee(client: Client) {
 | Load, filter, or aggregate objects | The OSDK. See [Objects](../sdk/objects.mdx). |
 | Discover object types, actions, or queries that are not in your SDK | `@osdk/foundry.ontologies` |
 | List the ontologies a user can see | `OntologiesV2.list` |
-| Datasources, release status, and other fields `fetchMetadata` does not return | `@osdk/foundry.ontologies` |
+| Datasources, aliases, and other fields `fetchMetadata` does not return | `@osdk/foundry.ontologies` |
 
 `@osdk/foundry.ontologies` also contains the raw object, link, action, and query endpoints that the OSDK calls. Prefer the OSDK for those: it adds types, pagination helpers, caching in React, and result conversion.
 
@@ -208,7 +208,7 @@ export async function describeOntology(client: Client) {
 | --- | --- | --- |
 | `OntologiesV2.list(client)` | `GET /v2/ontologies` | Stable |
 | `OntologiesV2.get(client, ontology)` | `GET /v2/ontologies/{ontology}` | Stable |
-| `OntologiesV2.getFullMetadata(client, ontology, query?)` | `GET /v2/ontologies/{ontology}/fullMetadata` | Beta |
+| `OntologiesV2.getFullMetadata(client, ontology, query?)` | `GET /v2/ontologies/{ontology}/fullMetadata` | Alpha |
 | `ObjectTypesV2.list(client, ontology, query?)` | `GET /v2/ontologies/{ontology}/objectTypes` | Stable |
 | `ObjectTypesV2.get(client, ontology, objectType, query?)` | `GET /v2/ontologies/{ontology}/objectTypes/{objectType}` | Stable |
 | `ObjectTypesV2.listOutgoingLinkTypes(client, ontology, objectType, query?)` | `GET .../objectTypes/{objectType}/outgoingLinkTypes` | Stable |

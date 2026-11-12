@@ -31,10 +31,8 @@ if (employee.resume != null) {
   console.log(metadata.filename, metadata.mediaType, metadata.sizeBytes);
 
   const response = await employee.resume.fetchContents();
-  if (response.ok) {
-    const blob = await response.blob();
-    console.log(`Downloaded ${blob.size} bytes`);
-  }
+  const blob = await response.blob();
+  console.log(`Downloaded ${blob.size} bytes`);
 }
 ```
 
@@ -64,14 +62,14 @@ if (full?.itemMetadata.type === "imagery") {
 }
 
 const response = await employee.photo?.fetchContents();
-if (response?.ok) {
+if (response != null) {
   const image = await response.blob();
 }
 ```
 
 `itemMetadata.type` is one of `"document"`, `"imagery"`, `"audio"`, `"video"`, `"dicom"`, `"email"`, `"model3d"`, `"spreadsheet"`, or `"untyped"`. When the server returns a type this client version does not know, `type` is `"unknown"` and the payload is on `raw`.
 
-`fetchContents` resolves to a standard `Response`. A non-2xx status does not reject, so check `response.ok`.
+`fetchContents` resolves to a standard `Response` on success and rejects with a `PalantirApiError` on a non-2xx status, so wrap it in `try`/`catch`.
 
 ## Upload through an action
 

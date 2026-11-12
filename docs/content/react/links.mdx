@@ -98,7 +98,7 @@ export function SeniorReports({ manager }: { manager: Employee.OsdkInstance }) {
 
 ## Wait for the source object
 
-The source can be `undefined`, which lets you chain `useLinks` after a hook that is still loading. Set `enabled` so it does not query until the source arrives:
+The source can be `undefined`, which lets you chain `useLinks` after a hook that is still loading. With no source, the hook makes no request and returns an empty `links` array. Set `enabled` if you want `links` to stay `undefined` until the source arrives:
 
 ```tsx title="src/ManagerReports.tsx"
 import { Employee } from "@my-app/sdk";
@@ -245,7 +245,7 @@ Derived properties avoid one `useLinks` call per row: the server computes the va
 | `where` | `WhereClause<L>` | | Filter the linked objects. |
 | `orderBy` | `{ [property]?: "asc" \| "desc" }` | | Sort the linked objects. |
 | `$select` | `PropertyKeys<L>[]` | Server default set | Properties to load for each linked object. |
-| `pageSize` | `number` | Server default | Linked objects per request. |
+| `pageSize` | `number` | `100` | Linked objects per page. |
 | `enabled` | `boolean` | `true` | When `false`, no request is made and `links` is `undefined`. |
 | `mode` | `"force" \| "offline"` | | Cache policy override. See [Control refetching](#control-refetching). |
 | `dedupeIntervalMs` | `number` | `2000` | Identical calls within this window share one request. |

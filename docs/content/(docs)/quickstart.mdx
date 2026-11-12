@@ -6,7 +6,7 @@ foundryDocs:
     path: developer-console/how-to-bootstrapping-typescript
 ---
 
-Use `@osdk/create-app` to generate a React and Vite app that already signs users in, creates an OSDK client, and installs your generated SDK. By the end of this page you have a local app that lists `Employee` objects and applies the `modifyEmployee` action.
+Use `@osdk/create-app` to generate a React and Vite app that already handles sign-in, creates an OSDK client, and installs your generated SDK. By the end of this page you have a local app that lists `Employee` objects and applies the `modifyEmployee` action.
 
 To add OSDK to an app you already have, see [Installation](./installation.mdx) instead.
 
@@ -52,7 +52,7 @@ npx @osdk/create-app@latest my-osdk-app
 | Do you know your production URL? | | `--applicationUrl` or `--skipApplicationUrl` |
 | Application RID | | `--application` |
 | OAuth client ID | | `--clientId` |
-| Will you use an OSDK? (No means Platform APIs only) | | `--skipOsdk` |
+| Will you use an OSDK? (No means Platform APIs only) | | `--skipOsdk` (also pass `--sdkVersion 2.x`) |
 | Ontology RID | | `--ontology` |
 | SDK package name | | `--osdkPackage` |
 | npm registry URL | | `--osdkRegistryUrl` |
@@ -73,6 +73,7 @@ npx @osdk/create-app@latest my-osdk-app \
   --ontology ri.ontology.main.ontology.<id> \
   --osdkPackage @my-app/sdk \
   --osdkRegistryUrl https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.<id>/contents/release/npm \
+  --scopes api:read-data api:write-data api:use-ontologies-read api:use-ontologies-write \
   --corsProxy true
 ```
 
@@ -100,7 +101,7 @@ A `401` or `404` for `@my-app/sdk` means `FOUNDRY_TOKEN` is missing, expired, or
 npm run dev
 ```
 
-Open `http://localhost:8080`. The app sends you to Foundry to sign in, Foundry redirects back to `/auth/callback`, and the app returns you to the home page. If Foundry reports an invalid redirect URL, add `http://localhost:8080/auth/callback` on **OAuth & scopes** in Developer Console.
+Open `http://localhost:8080` to see the starter page. The app does not sign you in until it makes its first OSDK request. Once you add the component in [Run your first query](#run-your-first-query), it sends you to Foundry to sign in, Foundry redirects back to `/auth/callback`, and the app returns you to the home page. If Foundry reports an invalid redirect URL, add `http://localhost:8080/auth/callback` on **OAuth & scopes** in Developer Console.
 
 </Step>
 </Steps>
@@ -137,7 +138,7 @@ Open `http://localhost:8080`. The app sends you to Foundry to sign in, Foundry r
 
 | File | Purpose |
 | --- | --- |
-| `.env.development`, `.env.production` | `VITE_FOUNDRY_API_URL`, `VITE_FOUNDRY_CLIENT_ID`, `VITE_FOUNDRY_REDIRECT_URL`, and `VITE_FOUNDRY_ONTOLOGY_RID` for each mode. With the CORS proxy, the development API URL is `http://localhost:8080`. |
+| `.env.development`, `.env.production` | `VITE_FOUNDRY_API_URL`, `VITE_FOUNDRY_CLIENT_ID`, `VITE_FOUNDRY_REDIRECT_URL`, and `VITE_FOUNDRY_ONTOLOGY_RID` for each mode. With the CORS proxy, the development API URL is `http://localhost:8080`. With `--skipApplicationUrl`, `VITE_FOUNDRY_REDIRECT_URL` in `.env.production` is commented out; fill it in before you deploy. |
 | `index.html` | Copies the env values into `<meta>` tags such as `osdk-foundryUrl` and `osdk-clientId`, so you can change configuration without rebuilding JavaScript. |
 | `src/client.ts` | Reads the meta tags, creates `auth` with `createPublicOauthClient`, and exports `client` from `createClient`. |
 | `src/main.tsx` | Renders the router inside `<OsdkProvider client={client}>`. |
@@ -146,7 +147,7 @@ Open `http://localhost:8080`. The app sends you to Foundry to sign in, Foundry r
 | `vite.config.ts` | Serves on port 8080, proxies `/api` and `/multipass/api` to Foundry when you chose the CORS proxy, and defines `process.env.NODE_ENV`. See [Use OSDK with Vite](./guides/vite.mdx). |
 | `.npmrc` | Points your SDK's npm scope at the Foundry registry and authenticates with `${FOUNDRY_TOKEN}`. |
 | `foundry.config.json` | Deployment settings for Foundry website hosting with `@osdk/cli`. Delete it if you host elsewhere. |
-| `src/env.test.ts` | A test that checks `.env.production` is filled in before you deploy. |
+| `src/env.test.ts` | A test that checks `.env.production` sets `VITE_FOUNDRY_API_URL`, `VITE_FOUNDRY_CLIENT_ID`, and `VITE_FOUNDRY_REDIRECT_URL`. It runs only when `VERIFY_ENV_PRODUCTION=true`. |
 
 The generated `src/client.ts` looks like this:
 
@@ -177,10 +178,18 @@ const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 const ontologyRid = getMetaTagContent("osdk-ontologyRid");
 
+const scopes = [
+  "api:read-data",
+  "api:write-data",
+  "api:use-ontologies-read",
+  "api:use-ontologies-write",
+];
+
 export const auth: PublicOauthClient = createPublicOauthClient(
   clientId,
   foundryUrl,
   redirectUrl,
+  { scopes },
 );
 
 export const client: Client = createClient(foundryUrl, ontologyRid, auth);

@@ -82,7 +82,7 @@ export const model = foundryModel({ client: platformClient, model: "gpt-4o" });
 | --- | --- |
 | One model call per request; you run the tool loop yourself. | `generateText`, `streamText` |
 | Tool `inputSchema` must be JSON Schema; Zod schemas are not converted. | `generateText`, `streamText` |
-| Text only: image and file parts are dropped with a warning. | `@osdk/aip-core`, `useChat` |
+| Text only: image and file parts are dropped, with a warning in `@osdk/aip-core` and silently in `useChat`. | `@osdk/aip-core`, `useChat` |
 | No structured JSON output, no `topK`. | `@osdk/aip-core`, `@osdk/aip-core/ai-sdk` |
 | No tools, multi-step loops, or stream resume. | `useChat`, `AipAgentChat` |
 

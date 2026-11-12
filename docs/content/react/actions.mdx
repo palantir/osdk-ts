@@ -231,7 +231,7 @@ How validation and application interact:
 - A new `validateAction` call supersedes one still in flight. The earlier result is discarded and resolves to `undefined`.
 - `validateAction` does nothing and resolves to `undefined` while `applyAction` is running.
 - `applyAction` discards any validation in flight.
-- `validationResult` keeps the last completed result until the next validation finishes, so it can describe older input. Gate submission on `isValidating` as well, as the example does.
+- `validationResult` keeps the last completed result, so it can describe older input. It is not updated during the debounce delay, and `isValidating` can turn `false` while a newer validation is still running. Treat it as a hint for the UI: `applyAction` validates again on the server and reports a failure in `error.actionValidation`.
 
 The debounced function also has `cancel()`, which drops a pending call, and `flush()`, which runs it immediately. A pending call is dropped when the component unmounts.
 

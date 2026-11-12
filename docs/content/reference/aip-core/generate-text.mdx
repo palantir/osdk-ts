@@ -17,7 +17,7 @@ Sends one request to the Foundry Language Model Service and resolves when the mo
 
 <auto-type-table path="../../../../packages/aip-core/src/generateText.ts" name="GenerateTextOptions" />
 
-Pass either `prompt` or `messages`, not both; passing both throws. The call also throws when `system`, `prompt`, and `messages` are all empty. Tool `inputSchema` must be a plain JSON Schema object.
+Pass either `prompt` or `messages`, not both; passing both throws. The call also throws when `system`, `prompt`, and `messages` are all empty. Tool `inputSchema` must be a plain JSON Schema object; any other value is sent as empty parameters and reported in `warnings`.
 
 ## Returns
 

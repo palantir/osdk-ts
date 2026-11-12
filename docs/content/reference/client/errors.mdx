@@ -20,7 +20,7 @@ class ActionValidationError extends Error {
 }
 ```
 
-Requests that Foundry rejects throw `PalantirApiError`. Network failures and responses that are not JSON also throw a `PalantirApiError` subclass, with `name` set to `"UnknownError"` and no `errorCode`. Applying an action whose parameters fail validation throws `ActionValidationError` instead. Check with `instanceof`.
+Requests that Foundry rejects throw `PalantirApiError`. Network failures and responses that are not JSON also throw a `PalantirApiError`, with no `errorCode` and the underlying error on `cause`. If your token provider throws, the client rethrows a plain `Error`. `applyAction` throws `ActionValidationError` when the server reports the parameters as `INVALID`; with `$validateOnly: true` it returns the validation response instead. Check with `instanceof`.
 
 ## `PalantirApiError`
 

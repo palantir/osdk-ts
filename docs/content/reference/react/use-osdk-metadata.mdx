@@ -11,7 +11,7 @@ function useOsdkMetadata<T extends ObjectOrInterfaceDefinition | ActionDefinitio
 ): UseOsdkMetadataResult<T>;
 ```
 
-Calls `client.fetchMetadata(type)` and returns the result. The metadata type follows the definition you pass: `ObjectMetadata` for an object type, `InterfaceMetadata` for an interface, and `ActionMetadata` for an action. The result is held in component state, not in the shared cache, so each component that calls the hook fetches once.
+Calls `client.fetchMetadata(type)` and returns the result. The metadata type follows the definition you pass: `ObjectMetadata` for an object type, `InterfaceMetadata` for an interface, and `ActionMetadata` for an action. The result is held in component state, not in the `ObservableClient` cache, and is not fetched again if `type` changes. The client caches Ontology metadata, so repeated calls for the same type do not repeat the network request.
 
 ## Returns
 

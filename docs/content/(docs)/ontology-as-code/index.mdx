@@ -9,7 +9,7 @@ foundryDocs:
 Ontology as code lets you define Ontology types in TypeScript files that live next to your app. `@osdk/maker` validates the definitions and compiles them into an Ontology intermediate representation (IR) file, and `@osdk/vite-plugin-oac` turns that IR into a generated SDK and a mock Foundry server for local development.
 
 <Callout type="warn">
-  Every ontology-as-code package is pre-1.0 (`@osdk/maker` 0.82, `@osdk/vite-plugin-oac` 0.85, `@osdk/maker-import` 0.48) and treated as experimental. Definitions, CLI flags, and the IR format can change in any release. Pin exact versions and read the changelog before you upgrade.
+  Every ontology-as-code package is pre-1.0 and treated as experimental. Definitions, CLI flags, and the IR format can change in any release. Pin exact versions and read the changelog before you upgrade.
 </Callout>
 
 ## Packages
@@ -166,7 +166,7 @@ Each `define*` function throws when its input is invalid, for example when a tit
 | Property, link side | Starts with a letter, then letters, digits, and `_`, at most 100 characters. |
 | Action type | Lowercase letters and digits, in segments separated by `-` or `.`. |
 | Link type | Converted to a lowercase, hyphenated ID (`officeOccupants` and `office_occupants` both become `office-occupants`), which must start with a letter. |
-| All | Cannot be a reserved word: `ontology`, `object`, `property`, `link`, `relation`, `rid`, `primaryKey`, `typeId`, or `ontologyObject`, in any case. |
+| Object types, interfaces, properties, and link sides | Cannot be a reserved word: `ontology`, `object`, `property`, `link`, `relation`, `rid`, `primaryKey`, `typeId`, or `ontologyObject`, in any case. |
 
 ## `maker` CLI
 

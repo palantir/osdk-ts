@@ -27,6 +27,9 @@ At runtime the host injects `window.__PALANTIR_WIDGET_API__` into the widget's p
 | `widget.emit-event` | Widget to host | `{ eventId, parameterUpdates }` | The widget fires one of its declared events. |
 | `widget.resize` | Widget to host | `{ width, height }` of the document body's border box | The widget's content changes size. |
 | `widget.reload` | Widget to host | `{}` | The widget needs a full reload, such as a Vite full-page reload in development. |
+| `host.set-hotkeys` | Host to widget | `{ hotkeys }` | The host tells the widget which key combinations to forward. |
+| `widget.hotkey` | Widget to host | `{ hotkey }` | The user pressed one of those key combinations inside the widget. |
+| `host.set-theme` | Host to widget | `{ theme }` | The host's theme changes. |
 
 `FoundryWidget` from `@osdk/widget.client-react` sends `widget.ready`, `widget.resize`, and `widget.reload` for you and exposes the rest through a hook. See [React widgets](./react.mdx).
 
@@ -245,11 +248,11 @@ createRoot(document.getElementById("root")!).render(
 );
 ```
 
-From there, query with the hooks in [Query objects](/react/objects) or read object sets the host passes in, as shown in [React widgets](./react.mdx#object-set-parameters). At build time, the Vite plugin also lists every installed package whose `package.json` has an `osdk.packageRid` field, with its version, in the manifest's `inputSpec`.
+From there, query with the hooks in [Query objects](/react/objects) or read object sets the host passes in, as shown in [React widgets](./react.mdx#object-set-parameters). At build time, the Vite plugin also lists every package reachable through `dependencies` (not `devDependencies`) whose `package.json` has an `osdk.packageRid` field, with its version, in the manifest's `inputSpec`.
 
 ## Build a widget without React
 
-`createFoundryWidgetClient` from `@osdk/widget.client` speaks the same protocol without a framework. Outside a Foundry host or developer mode, it throws `Invariant failed: [FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window`.
+`createFoundryWidgetClient` from `@osdk/widget.client` speaks the same protocol without a framework. Outside a Foundry host or developer mode, it throws `Invariant failed: [FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window` (production builds show only `Invariant failed`).
 
 ```ts title="src/main.ts"
 import { createFoundryWidgetClient } from "@osdk/widget.client";
@@ -287,8 +290,9 @@ widget.ready();
 | `emitEvent(eventId, { parameterUpdates })` | Sends `widget.emit-event`. Typed against the events in your config. |
 | `resize({ width, height })` | Sends `widget.resize`. |
 | `reload()` | Sends `widget.reload`. |
+| `hotkey(payload)` | Sends `widget.hotkey`. |
 | `sendMessage(message)` | Sends any widget message. Prefer the methods above. |
-| `hostEventTarget` | An `EventTarget` that dispatches `host.update-parameters` with the message payload in `event.detail`. |
+| `hostEventTarget` | An `EventTarget` that dispatches `host.update-parameters`, `host.set-hotkeys`, and `host.set-theme`, with the message payload in `event.detail`. |
 
 ## Next steps
 

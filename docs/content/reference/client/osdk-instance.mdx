@@ -10,7 +10,7 @@ namespace Osdk {
   type Instance<
     Q extends ObjectOrInterfaceDefinition,
     OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never,
-    P extends PropertyKeys<Q> = PropertyKeys<Q>,
+    P extends PropertyKeys<Q> | ReducedValues<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   >;
 }

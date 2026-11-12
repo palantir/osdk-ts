@@ -69,12 +69,11 @@ npx @osdk/cli unstable typescript generate \
   --clientId <your-client-id> \
   --outDir src/generatedNoCheck \
   --version dev \
-  --beta true \
   --packageType module \
   --experimentalOntologyMetadata
 ```
 
-The metadata lands in `experimental/ontology-metadata.json` inside `--outDir`. An SDK package generated with the flag also exports it as the `./experimental/ontology-metadata` subpath, which the examples below import. For the other generate options, see [Generate your SDK](./generate-sdk.mdx).
+The metadata lands in `experimental/ontology-metadata.json` inside `--outDir`. An SDK package generated with the flag, such as one built with `--asPackage` or published from Developer Console, also exports it as the `./experimental/ontology-metadata` subpath, which the examples below import. If you generate source files instead, import `../src/generatedNoCheck/experimental/ontology-metadata.json` with `resolveJsonModule` enabled. For the other generate options, see [Generate your SDK](./generate-sdk.mdx).
 
 ## Write a test
 
@@ -201,7 +200,7 @@ test("stubs a function", async ({ client }) => {
 });
 ```
 
-Replace `countEmployees` with a function from your SDK. Pass its parameters as the second argument of `whenQuery` to stub one call: `client.whenQuery(fn, params).thenReturn(result)`. Use `thenThrow(error)` to make the call fail.
+Replace `countEmployees` with a function from your SDK. A stub matches only calls whose parameters deep-equal the second argument of `whenQuery`, or calls with no parameters when you omit it: `client.whenQuery(fn, params).thenReturn(result)`. Use `thenThrow(error)` to make the call fail.
 
 </Step>
 <Step>
@@ -260,7 +259,7 @@ Returns a `Promise<IntegrationServer>`. Creating the server writes the metadata 
 | `getClient()` | Resolves to the `IntegrationClient` for this server. Repeated calls return the same client. |
 | `getSeedClient()` | Resolves to the `SeedClient` for this server. Repeated calls return the same seed client. |
 
-`getClient()` and `getSeedClient()` throw `Ontology server is not ready` when called before `start()` resolves.
+`getClient()` and `getSeedClient()` throw an error containing `Ontology server is not ready` when called before `start()` resolves.
 
 ### `SeedClient`
 

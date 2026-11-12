@@ -42,7 +42,7 @@ Check what is installed with `npm ls @osdk/api @osdk/client @osdk/react`. Do not
 
 ## Peer dependency warnings for `@osdk/client` or `@osdk/api`
 
-The peer ranges that `@osdk/react` declares, such as `^2.15.0`, are broader than what works. Pin `@osdk/api`, `@osdk/client`, and `@osdk/react` to the same version instead of ignoring the warning.
+The peer ranges that `@osdk/react` declares allow newer `@osdk/client` and `@osdk/api` minor versions than it was built with, and before 2.87.0 they also allowed older ones. Pin `@osdk/api`, `@osdk/client`, and `@osdk/react` to the same version instead of ignoring the warning.
 
 If the warning comes from your generated SDK, the SDK was built against a newer `@osdk/client` than you have. Upgrade the three OSDK packages, or generate a new SDK version. If npm still cannot resolve peers, use `overrides` as shown in [Installation](./installation.mdx#version-compatibility).
 
@@ -133,7 +133,7 @@ const { object } = useOsdkObject(Employee, employeeId, false);
 
 ## Actions take about a second in development
 
-In development, actions that have an `$optimisticUpdate` wait 1000 ms after the server responds so you can see the optimistic state. The console logs `[@osdk/client] Applied a 1000ms dev-mode delay…` the first time it happens. Production builds never delay. To turn it off in development:
+In development, single (non-batched) actions that have an `$optimisticUpdate` wait 1000 ms after the server responds so you can see the optimistic state. The console logs `[@osdk/client] Applied a 1000ms dev-mode delay…` the first time it happens. Production builds never delay. To turn it off in development:
 
 ```tsx
 <OsdkProvider client={client} devMode={{ actionDelayMs: 0 }}>

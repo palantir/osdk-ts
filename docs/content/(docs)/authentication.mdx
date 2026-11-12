@@ -83,7 +83,7 @@ export const auth = createPublicOauthClient(clientId, foundryUrl, redirectUrl, {
 2. Without one, it saves a PKCE verifier and the current URL in `sessionStorage`, then redirects to Foundry's sign-in page.
 3. Foundry redirects to `redirectUrl` with an authorization code.
 4. On that page, your app asks for a token again. The client exchanges the code, stores the refresh token, and navigates back to the page the user started on.
-5. The client refreshes the access token one minute before it expires. You do not schedule refreshes yourself.
+5. The client refreshes the access token one minute before it expires. You do not schedule refreshes yourself. With `tokenStorage: "none"` there is no refresh token, so users sign in again when the access token expires.
 
 Concurrent token requests share one sign-in, so several components asking for data at once trigger a single redirect.
 
@@ -200,7 +200,7 @@ export function SignOutButton() {
 }
 ```
 
-`signOut()` throws if nobody is signed in. The next token request after sign-out starts a new sign-in.
+`signOut()` throws if nobody is signed in. If revocation fails, it still clears local state but throws instead of emitting `signOut`. The next token request after sign-out starts a new sign-in.
 
 ### Listen for auth events
 

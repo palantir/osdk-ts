@@ -52,7 +52,7 @@ export function OpenRoles() {
 
 Use the client from `useOsdkClient` rather than importing one from a module, so the object set runs against the same client and cache as `OsdkProvider`. `where`, `orderBy`, `pageSize`, `$select`, `autoFetchMore`, `enabled`, and `streamUpdates` behave as they do in [`useOsdkObjects`](./objects.mdx). `useObjectSet` also accepts `undefined`, which disables the query until you have a set.
 
-When the options change, `useObjectSet` keeps returning the previous `data` while the new query loads, with `isLoading` set to `true`. Changing to an object set of a different type clears it.
+When the options change, `useObjectSet` keeps returning the previous `data` while the new query loads, with `isLoading` set to `true`. Changing to an object set that starts from a different object type clears it. A set pivoted from the same starting type does not count as a different type.
 
 ## Combine object sets
 
@@ -272,7 +272,7 @@ Queries with derived properties do not receive real-time updates. See [Stream re
 | `subtract` | `ObjectSet<T>[]` | | Remove the objects in these sets. |
 | `pivotTo` | Link name | | Follow a link. Prefer calling `pivotTo` on the object set, which types the results as the linked type. |
 | `orderBy` | `{ [property]?: "asc" \| "desc" }` | | Sort order, in key order. |
-| `pageSize` | `number` | Server default | Objects per request. |
+| `pageSize` | `number` | `100` | Objects per page. When several components observe the same query, requests use the largest `pageSize` among them. |
 | `autoFetchMore` | `boolean \| number` | | Load pages automatically: `true` for all, a number for at least that many. |
 | `$select` | `PropertyKeys<T>[]` | Server default set | Properties to load. Does not narrow the returned type. |
 | `streamUpdates` | `boolean` | `false` | Subscribe to live changes. Not with `pivotTo` or `withProperties`. |

@@ -8,7 +8,7 @@ import type { ObjectSet } from "@osdk/client";
 
 interface ObjectSet<
   Q extends ObjectOrInterfaceDefinition = any,
-  RDPs extends Record<string, SimplePropertyDef> = never,
+  UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> = never,
 > { /* methods below */ }
 ```
 

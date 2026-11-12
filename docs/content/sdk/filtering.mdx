@@ -29,7 +29,7 @@ const page = await client(Employee)
 - A bare value means equality. `{ department: "Engineering" }` is the same as `{ department: { $eq: "Engineering" } }`.
 - Each property takes one operator. `{ salary: { $gte: 100_000, $lt: 200_000 } }` does not typecheck, and throws at runtime. Use `$and` for a range.
 - Chained `where` calls also combine with AND.
-- The value must not be `null` or `undefined`. The client throws `Cannot filter on property "<name>" with an undefined or null value`. To match missing values, use `$isNull: true`.
+- The value must not be `null` or `undefined`. The client throws (in development, `Invariant failed: Cannot filter on property "<name>" with an undefined or null value`). To match missing values, use `$isNull: true`.
 
 ## Operator reference
 
@@ -108,7 +108,7 @@ const engineers = client(Employee).where({
 
 ### Phonetic matching
 
-Every text operator also takes `{ term, phoneticSearch: true }`, which matches similarly pronounced terms, such as `Jon` and `John`. The property must support phonetic search, set with `supportsPhonetic` in [Ontology as code](/ontology-as-code/object-types). `fuzzySearch` and `phoneticSearch` cannot both be `true`; use `$or` to combine them.
+`$startsWith`, `$containsAnyTerm`, `$containsAllTerms`, and `$containsAllTermsInOrder` also take `{ term, phoneticSearch: true }`, which matches similarly pronounced terms, such as `Jon` and `John`. The property must support phonetic search, set with `supportsPhonetic` in [Ontology as code](/ontology-as-code/object-types). `fuzzySearch` and `phoneticSearch` cannot both be `true`; use `$or` to combine them.
 
 ```ts title="src/phonetic.ts"
 import { Employee } from "@my-app/sdk";

@@ -133,10 +133,10 @@ The value of each `$select` key sets the order of the rows: `"asc"` or `"desc"` 
 
 | Strategy | Property types | Groups by |
 | --- | --- | --- |
-| `"exact"` | All | Each distinct value. |
-| `{ $exactWithLimit: n }` | All | Each distinct value, at most `n` groups. |
-| `{ $exact: { $limit?, $includeNullValue: true } }` | All | Each distinct value, plus a group for missing values. `$group` values are then nullable. |
-| `{ $exact: { $limit?, $defaultValue: "…" } }` | All | Each distinct value, with missing values grouped under the default. |
+| `"exact"` | String, boolean, numeric except `long`, date, timestamp | Each distinct value. |
+| `{ $exactWithLimit: n }` | String, boolean, numeric except `long`, date, timestamp | Each distinct value, at most `n` groups. |
+| `{ $exact: { $limit?, $includeNullValue: true } }` | String, boolean, numeric except `long`, date, timestamp | Each distinct value, plus a group for missing values. `$group` values are then nullable. |
+| `{ $exact: { $limit?, $defaultValue: "…" } }` | String, boolean, numeric except `long`, date, timestamp | Each distinct value, with missing values grouped under the default. |
 | `{ $fixedWidth: n }` | Numeric | Buckets of width `n`. |
 | `{ $ranges: [[start, end], …] }` | Numeric, date, timestamp | The ranges you list. `$group` holds `{ startValue, endValue }`. |
 | `{ $duration: [n, unit] }` | Date, timestamp | Time buckets, such as `[1, "years"]` or `[1, "month"]`. Dates accept day units and up; timestamps also accept seconds, minutes, and hours. |

@@ -101,7 +101,7 @@ Upload endpoints such as `Files.upload` and `MediaSets.upload` take the bytes as
 
 ## Paginate
 
-List and search endpoints return one page at a time as `{ data, nextPageToken }`. Pass `nextPageToken` back as `pageToken` to get the next page. The last page has no `nextPageToken`.
+Most list and search endpoints return one page at a time as `{ data, nextPageToken }`. A few, such as `Groups.listCurrent` and `OntologiesV2.list`, return every result in `data` with no token. Pass `nextPageToken` back as `pageToken` to get the next page. The last page has no `nextPageToken`.
 
 | Parameter | Type | Description |
 | --- | --- | --- |
@@ -185,7 +185,7 @@ export async function usernames(client: Client, userIds: string[]) {
 
 ## Handle errors
 
-A failed call rejects with a `PalantirApiError`, exported from `@osdk/client`. This includes network failures and error responses that are not JSON; those have no `errorName`, and the underlying error is on `cause`. If the token provider itself throws, the call rejects with a plain `Error`.
+A failed call rejects with a `PalantirApiError`, exported from `@osdk/client`. This includes network failures and error responses that are not JSON; those have no `errorName`, and `cause` is an `UnknownError` whose `originalError` holds the underlying error. If the token provider itself throws, the call rejects with a plain `Error`.
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -228,28 +228,24 @@ The client retries `429` and `503` responses up to three times before rejecting.
 
 Functions tagged `@beta` or `@alpha` in JSDoc call preview endpoints. They take a `preview` query parameter, and the server rejects the call with `ApiFeaturePreviewUsageOnly` unless you set it to `true`:
 
-```ts title="src/classificationBanner.ts"
+```ts title="src/myGroups.ts"
 import type { Client } from "@osdk/client";
-import { CbacBanners } from "@osdk/foundry.admin";
+import { Groups } from "@osdk/foundry.admin";
 
-export async function classificationBanner(client: Client, markingIds: string[]) {
-  const banner = await CbacBanners.get(client, { markingIds, preview: true });
-  return banner.classificationString;
+export async function myGroupNames(client: Client) {
+  const { data } = await Groups.listCurrent(client, { preview: true });
+  return data.map((group) => group.name);
 }
 ```
 
 `preview` always goes in the query-parameter object, after any body:
 
-```ts title="src/parseClassification.ts"
+```ts title="src/canonicalMarkings.ts"
 import type { Client } from "@osdk/client";
 import { Markings } from "@osdk/foundry.admin";
 
-export async function parseClassification(client: Client, classification: string) {
-  return Markings.parseClassifications(
-    client,
-    { classificationStrings: [classification] },
-    { preview: true },
-  );
+export async function canonicalMarkings(client: Client, markingIds: string[]) {
+  return Markings.canonicalize(client, { markingIds }, { preview: true });
 }
 ```
 

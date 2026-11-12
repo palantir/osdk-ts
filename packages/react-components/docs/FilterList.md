@@ -1,6 +1,6 @@
 # FilterList
 
-`FilterList` renders filter controls for an OSDK object type or object set, backed by aggregations, and reports the combined `where` clause or filtered object set.
+`FilterList` renders filter controls for an OSDK object type, optionally scoped to an object set, backed by aggregations. It reports the combined `where` clause, and the filtered object set when you pass `objectSet`.
 
 ## Prerequisites
 

@@ -52,7 +52,7 @@ export const model = foundryModel({ client: platformClient, model: "gpt-4o" });
 ```
 
 <Callout type="info">
-  Pass a client from `createPlatformClient`, not the `Client` from `createClient`: `foundryModel` reads `baseUrl`, `fetch`, and `tokenProvider` from the client, and an Ontology `Client` does not expose them. Reuse the same token provider for both clients so the user signs in once.
+  Pass a client from `createPlatformClient`, not the `Client` from `createClient`: `foundryModel` uses the client's `baseUrl` and authenticated `fetch`, and an Ontology `Client` does not expose them. Reuse the same token provider for both clients so the user signs in once.
 </Callout>
 
 OAuth applications must request the `api:use-language-models-execute` scope. The default scopes of `createPublicOauthClient` do not include it, so list every scope your app needs. See [Authentication](../(docs)/authentication.mdx) for the other token providers.
@@ -224,7 +224,7 @@ Models differ in which options they honor. The LMS proxy does not accept `topK`,
 
 ## Cancel a request
 
-Pass an `AbortSignal`. `generateText` rejects, and `streamText` errors its streams and rejects its promises. Calling `cancel()` on `textStream` or `fullStream` also aborts the request.
+Pass an `AbortSignal`. `generateText` rejects, and `streamText` errors its streams and rejects its promises. `textStream` and `fullStream` share one source, so cancelling one of them does not abort the request; it is aborted only when both are cancelled.
 
 ```ts title="src/cancel.ts"
 import { streamText } from "@osdk/aip-core";

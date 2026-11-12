@@ -3,7 +3,7 @@ title: TypeScript library
 description: Scaffold a standalone TypeScript package with the create-app typescript-library template, and add OSDK code that apps can share.
 ---
 
-{/* cspell:ignore Ultracite ultracite oxlint oxfmt nvmrc */}
+{/* cspell:ignore Ultracite ultracite oxlint oxfmt */}
 
 The `typescript-library` template of `@osdk/create-app` creates a TypeScript package that builds ESM and type declarations with `tsc`, tests with Vitest, and lints with Ultracite. Use it to start a package of shared code, such as Ontology helpers that several of your OSDK apps import.
 
@@ -27,7 +27,7 @@ Run `@osdk/create-app` with the template, and pass `--skipOsdk` to skip the SDK 
 npx @osdk/create-app@latest my-library --template typescript-library --sdkVersion 2.x --skipOsdk
 ```
 
-The CLI still asks for a Foundry URL, application RID, and client ID, and writes `.env.development`, `.env.production`, `.npmrc`, and `foundry.config.json` from them. The library does not read the `.env` files or `foundry.config.json`; delete them if you do not need them. Keep `.npmrc` if you will install your SDK from the Foundry registry.
+The CLI still asks for a Foundry URL, application RID, client ID, application URL, CORS proxy, and scopes, and writes `.env.development`, `.env.production`, `.npmrc`, and `foundry.config.json` from them. The library does not read the `.env` files or `foundry.config.json`; delete them if you do not need them. Keep `.npmrc` if you will install your SDK from the Foundry registry. It holds only the token line, so add your SDK's `@scope:registry=` line as described in [Installation](../installation.mdx).
 
 Then install and build:
 
@@ -40,7 +40,6 @@ npm run build
 ## Project structure
 
 <Files>
-  <File name=".nvmrc" />
   <File name="AGENTS.md" />
   <File name="oxfmt.config.ts" />
   <File name="oxlint.config.ts" />
@@ -68,7 +67,6 @@ npm run build
 | `package.json` | An ESM package (`"type": "module"`) whose `exports`, `main`, and `types` point at `dist/`. Only `dist/` is published. |
 | `tsconfig.json` | Strict settings that compile `src/` to `dist/` with declaration files, declaration maps, and source maps. Targets ES2022. |
 | `oxlint.config.ts`, `oxfmt.config.ts` | The Ultracite presets for oxlint and oxfmt. Lint warns on function expressions and prefers named function declarations. |
-| `.nvmrc` | Pins Node.js `v24.14.1`. |
 | `AGENTS.md`, `.claude/` | Coding standards for AI agents. `.claude/settings.json` runs `npx ultracite fix` after every file edit Claude Code makes. |
 | `.vscode/extensions.json` | Recommends the Oxc extension. |
 

@@ -207,7 +207,7 @@ The same values are available as constants on `BrowserPermission` from `@osdk/wi
 | `entrypointJs`, `entrypointCss` | The script and stylesheet tags in the built HTML file, in order, with the leading `/` removed. |
 | `parameters` | Copied from the config, except `objectSet`: `allowedType` becomes the type's RID, and `objectTypeRids` holds the object type RID, or is empty for an interface. |
 | `refreshHostDataOnAction` | The config's value, else the plugin's `defaults.refreshHostDataOnAction`. |
-| `inputSpec.discovered.sdks` | The `rid` and `version` of every installed package whose `package.json` has an `osdk.packageRid`. |
+| `inputSpec.discovered.sdks` | The `rid` and `version` of every package reachable through `dependencies` whose `package.json` has an `osdk.packageRid`. |
 | `inputSpec.discovered.authorizations` | `authorizations.read` and `authorizations.requiredRead` from `resources.json` in the project root, when that file exists. |
 
 Fields without a value, such as an unset `permissions`, are left out of the JSON. In developer mode the plugin sends Foundry the same widget entries, but with `entrypointJs` pointing at your dev server.

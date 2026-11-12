@@ -36,10 +36,10 @@ Start from the builder and chain:
 
 | Method | Available on | Returns |
 | --- | --- | --- |
-| `pivotTo(link)` | Every builder | A builder over the linked objects. After a many link, such as `reports`, the builder can only aggregate. |
+| `pivotTo(link)` | Every builder | A builder over the linked objects. After a many link, such as `reports`, the builder has `where`, `pivotTo`, and `aggregate`, but not `selectProperty`. |
 | `where(clause)` | Every builder | The builder, filtered. See [Filter objects](./filtering.mdx). |
 | `selectProperty(property)` | The base object, and builders reached through single links only | The property's value. |
-| `aggregate(metric, options?)` | Builders reached through a many link | One value computed over the linked objects. |
+| `aggregate(metric, options?)` | Builders reached through any link | One value computed over the linked objects. |
 
 `selectProperty` after a many link does not typecheck: an employee has many reports, so there is no single report name to select. Aggregate instead, for example with `collectList`.
 
@@ -92,7 +92,7 @@ const page = await client(Employee)
 
 ## Expressions
 
-A numeric definition, from `selectProperty` on a numeric property or a numeric aggregation, has expression methods. Each binary method takes a number or another numeric definition:
+A numeric definition, from `selectProperty` on an `integer`, `short`, `long`, `float`, or `double` property, or a numeric aggregation, has expression methods. Each binary method takes a number or another numeric definition:
 
 | Method | Result |
 | --- | --- |

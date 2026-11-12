@@ -12,7 +12,7 @@ npm install @osdk/foundry.admin @osdk/foundry.core
 All hooks share these behaviors:
 
 - Each hook instance fetches on mount and keeps its result in component state. Results are not shared through the OSDK cache, so two components that call the same hook make two requests.
-- `isLoading` is `true` while enabled and no response has arrived. When `enabled` is `false`, the hook does not fetch and `isLoading` is `false`.
+- `isLoading` is `true` while enabled and no successful response has arrived. If the request fails, `isLoading` stays `true` alongside `error`, so check `error` first. When `enabled` is `false`, the hook does not fetch and `isLoading` is `false`.
 - `refetch()` reruns the request. The data field is `undefined` until the new response arrives.
 - `error` holds the request error, if any.
 
@@ -105,7 +105,7 @@ Returns `{ markingIds, isLoading, error, refetch }`, where `markingIds` is a `st
 function useCbacBanner(options: UseCbacBannerOptions): UseCbacBannerResult;
 ```
 
-Gets the classification banner for a set of marking IDs. The hook does not fetch while `markingIds` is empty. It calls a preview endpoint.
+Gets the classification banner for a set of marking IDs. The hook does not fetch while `markingIds` is empty.
 
 <auto-type-table path="../../../../packages/react/src/new/platform-apis/admin/useCbacBanner.ts" name="UseCbacBannerOptions" />
 

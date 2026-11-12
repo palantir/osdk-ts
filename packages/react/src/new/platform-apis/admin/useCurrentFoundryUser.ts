@@ -32,7 +32,6 @@ export interface UseCurrentFoundryUserOptions {
    * - Conditional queries based on component state
    *
    * @default true
-   * });
    */
   enabled?: boolean;
 }

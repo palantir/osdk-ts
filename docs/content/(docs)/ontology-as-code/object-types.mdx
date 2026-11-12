@@ -205,7 +205,7 @@ export const contact = defineObject({
 | `status` | `"active" \| { type: "deprecated"; message: string; deadline: string; replacedBy?: string }` | `"active"` | Deprecate a version. |
 | `namespacePrefix` | `boolean` | `false` | Prefix the API name with `--apiNamespace`. |
 
-`type.type` is one of `boolean`, `binary`, `byte`, `short`, `integer`, `long`, `float`, `double`, `decimal`, `string`, `date`, `timestamp`, `array`, `map`, `optional`, or `structV2`. Each entry in `constraints` has a `constraint` for that base type and an optional `failureMessage`. String constraints are `regex`, `oneOf`, `length`, `isUuid`, and `isRid`:
+`type.type` is a type name (`boolean`, `binary`, `byte`, `short`, `integer`, `long`, `float`, `double`, `decimal`, `string`, `date`, or `timestamp`) or an object for a composite type: `{ type: "array", elementType }`, `{ type: "map", keyType, valueType }`, `{ type: "optional", wrappedType }`, or `{ type: "struct", fields: [{ identifier, baseType }] }`. Each entry in `constraints` has a `constraint` for that base type and an optional `failureMessage`. String constraints are `regex`, `oneOf`, `length`, `isUuid`, and `isRid`:
 
 ```ts title=".ontology/ontology.mts"
 import { defineValueType } from "@osdk/maker";
@@ -341,7 +341,7 @@ A `derived` datasource computes properties from objects reached through one or m
 | `{ type: "approximateCardinality" \| "exactCardinality", property }` | Primitive | The number of distinct values of `property`. |
 | `{ type: "collectList" \| "collectSet", property, limit }` | An array | Up to `limit` values of `property`, at most 100. |
 
-Aggregations skip linked objects where the property is null. Generated create and create-or-modify actions leave derived properties out of their parameters.
+Aggregations skip linked objects where the property is null. Generated create, modify, and create-or-modify actions leave derived properties out of their parameters.
 
 The link must be defined before the object that uses it. When the object is not defined yet, refer to it from the link by its API name:
 

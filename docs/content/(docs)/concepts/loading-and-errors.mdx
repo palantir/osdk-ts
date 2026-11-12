@@ -23,7 +23,8 @@ The states you can see are:
 | `undefined` | `true` | First load, nothing cached. | A placeholder or skeleton. |
 | Present | `true` | Refreshing cached data. | The data, with a small refreshing indicator. |
 | Present | `false` | Up to date. | The data. |
-| `undefined` | `false` | The hook is disabled with `enabled: false`, or the load failed. | An empty state, or the error. |
+| `undefined` | `false` | The hook is disabled with `enabled: false`. | An empty state. |
+| `undefined` | `true` or `false` | The first load failed and `error` is set. On `useOsdkObjects` and `useObjectSet`, `isLoading` stays `true`. | The error. |
 
 See [Caching and reactivity](./caching.mdx) for when hooks refetch.
 
@@ -41,7 +42,7 @@ export function EmployeeList() {
     { where: { department: "Engineering" }, orderBy: { fullName: "asc" } },
   );
 
-  if (data == null && isLoading) {
+  if (data == null && isLoading && error == null) {
     return <p>Loading employees…</p>;
   }
 
@@ -75,10 +76,10 @@ export function EmployeeList() {
 }
 ```
 
-The component checks `error` separately from `data`. A refresh can fail after earlier data loaded, so both can be set at once.
+The component checks `error` separately from `data`. On `useOsdkObjects` and `useObjectSet`, a refresh can fail after earlier data loaded, so both can be set at once. `useOsdkFunction` and `useOsdkAggregation` clear `data` on failure, and `useLinks` returns an empty `links` array.
 
 <Callout type="warn">
-  Do not write `if (isLoading) return <Spinner />`. Use `if (data == null && isLoading)` for the initial load, and render an inline indicator for refreshes.
+  Do not write `if (isLoading) return <Spinner />`. Use `if (data == null && isLoading && error == null)` for the initial load, and render an inline indicator for refreshes.
 </Callout>
 
 ## Loading and error fields by hook
@@ -98,7 +99,7 @@ The hooks do not all use the same field names. Check this table before you destr
 
 Details that differ between hooks:
 
-- **`refetch` scope.** On `useOsdkObjects`, `useObjectSet`, and `useOsdkAggregation`, `refetch` invalidates the whole object type, so every list and aggregation of that type refetches. On `useOsdkFunction`, it refetches only that function call with those parameters. To refetch more narrowly, use the methods in [Cache invalidation](/react/cache-invalidation).
+- **`refetch` scope.** On `useOsdkObjects`, `useObjectSet`, and `useOsdkAggregation`, `refetch` invalidates the whole object type, so every cached object, list, link, aggregation, and `dependsOn` function for that type refetches. On `useOsdkFunction`, it refetches only that function call with those parameters. To refetch more narrowly, use the methods in [Cache invalidation](/react/cache-invalidation).
 - **`useOsdkObject`.** `isLoading` is `false` as soon as `error` is set.
 - **`useObjectSet`.** When the object set changes, `data` keeps the last loaded result until the new set loads.
 - **`useOsdkFunction`.** `isLoading` is `true` only while a request is in flight, so the first render can report `isLoading: false` with no data. Treat `data === undefined && error == null` as the initial state, or check `lastUpdated === 0`.
@@ -107,7 +108,7 @@ Details that differ between hooks:
 
 ## Narrow API errors
 
-Errors from Foundry are instances of `PalantirApiError`, which `@osdk/client` exports. Data hooks type `error` as `Error`, so narrow it with `instanceof`:
+Errors from Foundry are instances of `PalantirApiError`, which `@osdk/client` exports. `useOsdkObjects`, `useObjectSet`, `useOsdkObject`, and `useOsdkFunction` pass it through, and type `error` as `Error`, so narrow it with `instanceof`. `useOsdkAggregation` and `useLinks` replace it with a generic `Error`:
 
 ```tsx title="src/describeError.ts"
 import { PalantirApiError } from "@osdk/client";
@@ -141,7 +142,7 @@ export function describeError(error: Error): string {
 
 Some errors carry only a message:
 
-- When a request fails before reaching Foundry, or the response is not JSON, the error is a `PalantirApiError` subclass whose `name` is `"UnknownError"`. `statusCode` is set if a response arrived.
+- When a request fails before reaching Foundry, or the response is not JSON, the error is a `PalantirApiError` with no `errorCode` or `errorName`, and the original error on `cause`. `statusCode` is set if a response arrived.
 - `useOsdkObject(Employee, id)` for an object that does not exist, or that you cannot see, reports a `PalantirApiError` with the message `Object not found: <id>` and no `errorCode` or `statusCode`.
 
 The client retries requests that fail with `429` or `503` up to three times, with exponential backoff, before the error reaches your hook.

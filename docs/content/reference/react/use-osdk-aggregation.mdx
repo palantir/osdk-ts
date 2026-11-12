@@ -25,7 +25,7 @@ function useOsdkAggregation<
 ): UseOsdkAggregationResult<Q, A>;
 ```
 
-Aggregates every object of `type` that matches `where`, or the objects in `objectSet` when you pass one. `aggregate` takes the same `$select` and `$groupBy` clauses as `ObjectSet.aggregate`.
+Aggregates the objects of `type`, or of `objectSet` when you pass one, after applying `where` and `intersectWith`. `aggregate` takes the same `$select` and `$groupBy` clauses as `ObjectSet.aggregate`.
 
 ## Options
 

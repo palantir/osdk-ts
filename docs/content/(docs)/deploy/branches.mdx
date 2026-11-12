@@ -38,8 +38,8 @@ npx @osdk/create-app@latest my-osdk-app --unstableFeatures
 For an app with an SDK, this adds three things to the generated project:
 
 - `@osdk/cli` as a dev dependency.
-- A `postinstall` script that runs `osdk branch sync`, so every install picks the SDK for your branch.
-- `@osdk/vite-plugin-branch`, registered in `vite.config.ts`, for the Vite templates.
+- A `postinstall` script that runs `./node_modules/.bin/osdk branch sync`, so every install picks the SDK for your branch.
+- `@osdk/vite-plugin-branch`, registered in `vite.config.ts` for the React and Vue 2.x templates. The Expo template instead passes `UNSTABLE_DO_NOT_USE_BRANCH: $branch` to `createClient`.
 
 ## Add to an existing app
 
@@ -151,7 +151,7 @@ A production build fixes the branch at build time. Rebuild to deploy for another
 2. The `foundryBranchRid` query parameter in the page URL, such as `?foundryBranchRid=ri.branch..branch.<id>`. This lets a page that embeds your app in an iframe choose the branch.
 3. The `osdk-foundry-branch-rid` meta tag from the Vite plugin.
 
-Blank values count as unset. Outside a browser, only the option applies.
+A blank query parameter or meta tag is skipped, and a blank `UNSTABLE_DO_NOT_USE_BRANCH` acts like `null`. Outside a browser, only the option applies.
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |

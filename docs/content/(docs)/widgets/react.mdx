@@ -184,7 +184,7 @@ import { useWidgetContext } from "./context.js";
 
 export function Header() {
   const { asyncParameterValues } = useWidgetContext();
-  const header = asyncParameterValues.headerText.value;
+  const header = asyncParameterValues.headerText?.value ?? { type: "not-started" as const };
 
   return (
     <h2 aria-busy={header.type === "loading" || header.type === "reloading"}>
@@ -332,7 +332,7 @@ export function useLogParameterUpdates() {
 
 ## Render outside Foundry
 
-`FoundryWidget` needs the host API that Foundry injects. Outside Foundry and developer mode, it throws `Invariant failed: [FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window` when it renders.
+`FoundryWidget` needs the host API that Foundry injects. Outside Foundry and developer mode, it throws `Invariant failed: [FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window` when it renders (production builds show only `Invariant failed`).
 
 Components below it still render on their own: without a `FoundryWidget` ancestor, `useFoundryWidgetContext` returns a default context whose `parameters.state` is `not-started`, whose `parameters.values` is `{}`, and whose `emitEvent` does nothing. Because widget components already handle empty values, you can render them directly in unit tests and Storybook.
 

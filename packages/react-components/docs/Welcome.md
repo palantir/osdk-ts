@@ -27,11 +27,12 @@ Each component has its own import path.
 
 Experimental components live under `@osdk/react-components/experimental/*`. Their APIs can change in any release.
 
-| Component                                     | Import path                                          | Description                                             |
-| --------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------- |
-| [`AipAgentChat`](./AipAgentChat.md)           | `@osdk/react-components/experimental/aip-agent-chat` | AI chat backed by a Foundry language model              |
-| [`CbacPicker`](./CbacPicker.md)               | `@osdk/react-components/experimental/cbac-picker`    | Picker for classification-based access control markings |
-| [`OsdkThemeProvider`](./OsdkThemeProvider.md) | `@osdk/react-components/experimental/theme`          | Light and dark theme for OSDK components                |
+| Component                                     | Import path                                           | Description                                             |
+| --------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------- |
+| [`AipAgentChat`](./AipAgentChat.md)           | `@osdk/react-components/experimental/aip-agent-chat`  | AI chat backed by a Foundry language model              |
+| [`CbacPicker`](./CbacPicker.md)               | `@osdk/react-components/experimental/cbac-picker`     | Picker for classification-based access control markings |
+| [`OsdkThemeProvider`](./OsdkThemeProvider.md) | `@osdk/react-components/experimental/theme`           | Light and dark theme for OSDK components                |
+| [`WorkshopModule`](./WorkshopModule.md)       | `@osdk/react-components/experimental/workshop-module` | Embeds a Workshop module                                |
 
 ## Quick start
 

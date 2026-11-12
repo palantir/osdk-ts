@@ -35,7 +35,7 @@ const subscription = client(Employee)
 subscription.unsubscribe();
 ```
 
-`subscribe` works on any object set, including filtered sets, pivots, and [interfaces](./interfaces.mdx). It returns immediately with `{ unsubscribe }`; the connection opens in the background.
+`subscribe` works on object type sets, filtered sets, set operations, and [interfaces](./interfaces.mdx). The server does not support subscriptions on link traversals (`pivotTo`, or a many-link `$link`) or on sets with `withProperties`. It returns immediately with `{ unsubscribe }`; the connection opens in the background.
 
 ## Callbacks
 
@@ -127,4 +127,4 @@ Call `unsubscribe` when you no longer need updates, such as when a component unm
 
 ## In React
 
-`useOsdkObjects` and `useObjectSet` accept `streamUpdates: true`, which subscribes for you and writes each change into the shared cache. See [Objects in React](/react/objects).
+`useOsdkObjects` and `useObjectSet` accept `streamUpdates: true`, except together with `pivotTo` or `withProperties`, which subscribes for you and writes each change into the shared cache. See [Objects in React](/react/objects).

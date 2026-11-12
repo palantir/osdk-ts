@@ -235,7 +235,7 @@ export function ClassificationBanner({ markingIds }: { markingIds: string[] }) {
 | `restrictions.disallowedMarkings` | `string[]` | Markings that are disallowed with the selection. |
 | `restrictions.requiredMarkings` | `string[][]` | Required marking constraints, as groups of marking IDs. |
 
-Both hooks take `{ markingIds, enabled? }`, return `isLoading`, `error`, and `refetch`, and make no request while `markingIds` is empty. They call preview CBAC endpoints, which must be available on your Foundry stack. For a ready-made picker, see the [CbacPicker component](/components/cbac-picker).
+Both hooks take `{ markingIds, enabled? }`, return `isLoading`, `error`, and `refetch`, and make no request while `markingIds` is empty. `useCbacMarkingRestrictions` calls a beta endpoint in preview mode, which must be enabled on your Foundry stack. For a ready-made picker, see the [CbacPicker component](/components/cbac-picker).
 
 ## How these hooks load data
 

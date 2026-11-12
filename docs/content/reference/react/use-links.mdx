@@ -13,7 +13,7 @@ function useLinks<T extends ObjectOrInterfaceDefinition, L extends LinkNames<T>>
 ): UseLinksResult<LinkedType<T, L>>;
 ```
 
-Follows `linkName` from each source object and returns the linked objects as one list. Pass `undefined` while the source object is still loading; until it arrives, the hook returns `links: []` with `isLoading: false`.
+Follows `linkName` from each source object and returns the linked objects as one list. Pass `undefined` while the source object is still loading; on the first render `links` is `undefined`, and once the hook subscribes it returns `links: []` with `isLoading: false` until the source arrives.
 
 ## Options
 

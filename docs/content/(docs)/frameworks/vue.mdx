@@ -337,7 +337,7 @@ export function useEmployees(department: () => string) {
 
 `watchEffect` resubscribes when `department()` changes and unsubscribes when the component unmounts. Call `useEmployees(() => props.department)` from `<script setup>`.
 
-Apply actions through `observableClient.applyAction(modifyEmployee, { ... })` instead of `client(modifyEmployee).applyAction(...)`. When it resolves, every subscribed list and object of the edited types refetches, so the component updates without a manual reload. It throws like `applyAction`, so await it in `try`/`catch`.
+Apply actions through `observableClient.applyAction(modifyEmployee, { ... })` instead of `client(modifyEmployee).applyAction(...)`. Before it resolves, the objects the action edited are fetched again. Subscribed lists of the edited types then refetch in the background, so the component updates without a manual reload. It throws like `applyAction`, so await it in `try`/`catch`.
 
 ## Deploy
 

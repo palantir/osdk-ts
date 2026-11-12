@@ -17,7 +17,7 @@ Starts the request immediately and returns streams and promises without awaiting
 
 <auto-type-table path="../../../../packages/aip-core/src/streamText.ts" name="StreamTextOptions" />
 
-Pass either `prompt` or `messages`, not both. `streamText` throws synchronously when both are set, or when `system`, `prompt`, and `messages` are all empty. Aborting `abortSignal` or cancelling the stream stops the request.
+Pass either `prompt` or `messages`, not both. `streamText` throws synchronously when both are set, or when `system`, `prompt`, and `messages` are all empty. Aborting `abortSignal` stops the request. Cancelling the streams stops it only when you cancel both `fullStream` and `textStream`.
 
 ## Returns
 

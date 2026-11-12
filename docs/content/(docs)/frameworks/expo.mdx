@@ -15,7 +15,7 @@ Run `@osdk/create-app` with the `expo` template:
 npx @osdk/create-app@latest my-expo-app --template expo --corsProxy false
 ```
 
-The CLI asks for your Foundry URL, application RID, OAuth client ID, and SDK package. [Quickstart](../quickstart.mdx#run-the-cli) lists every prompt and its flag. The Expo template supports SDK version 2.x only.
+The CLI asks for your Foundry URL, application RID, OAuth client ID, and SDK package. [Quickstart](../quickstart.mdx#run-the-cli) lists every prompt and its flag. The Expo template supports SDK version 2.x only. It ignores the scopes you enter: `app/(tabs)/login.tsx` hardcodes `api:read-data`, `api:write-data`, `api:use-ontologies-read`, and `api:use-ontologies-write`, so edit that list instead.
 
 <Callout type="warn">
   Answer **No** to the CORS proxy prompt, or pass `--corsProxy false`. The Expo template has no proxy server, but a **Yes** still sets `EXPO_PUBLIC_FOUNDRY_API_URL` to `http://localhost:8080` in `.env.development`, so every request goes to the Expo dev server instead of Foundry.
@@ -40,7 +40,7 @@ npm run dev
 | `web` | `expo start --web --port 8080` | Start and open the web build. |
 | `build` | `expo export -p web` | Export the web build to `dist/` for [hosting](../deploy/hosting.mdx). |
 | `test` | `vitest run --passWithNoTests` | Run tests. |
-| `reset-project` | `node ./scripts/reset-project.js` | Move the starter screens to `app-example/` and start from an empty `app/`. |
+| `reset-project` | `node ./scripts/reset-project.js` | Move `app/`, `components/`, `hooks/`, `constants/`, and `scripts/`, including the Login screen, to `app-example/`, and create a minimal `app/`. |
 
 ## What the template generates
 
@@ -208,7 +208,7 @@ On web, `promptAsync` opens Foundry in a popup. Foundry redirects the popup to y
 | --- | --- |
 | Web, local development | `http://localhost:8080`, with no `/auth/callback` path |
 | Web, hosted on Foundry | Your site's root URL, such as `https://<subdomain>.<your-domain>.palantirfoundry.com` |
-| iOS and Android | A URL with the `scheme` from `app.json`. The template's scheme is `my-app`; change it to one unique to your app. |
+| iOS and Android | In a development or standalone build, a URL with the `scheme` from `app.json`; in Expo Go, an `exp://<ip>:<port>` URL. The template's scheme is `my-app`; change it to one unique to your app. |
 
 To see the exact value on a device, render or log `redirectUri` from the **Login** screen and copy it into Developer Console.
 

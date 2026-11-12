@@ -177,7 +177,7 @@ Zips a directory and publishes it as a new widget set version. The version comes
 
 ## `osdk branch sync`
 
-Installs the version of each generated SDK that matches your current branch: the newest prerelease published for that branch, or the stable `latest` release when you are on `main`. [Develop on Foundry branches](./branches.mdx) explains the workflow.
+Installs the version of each generated SDK that matches your current branch: the newest prerelease published for that branch, or, on `main`, the stable `latest` release for any SDK currently installed from a branch. [Develop on Foundry branches](./branches.mdx) explains the workflow.
 
 ```sh
 npx @osdk/cli@latest branch sync
@@ -185,7 +185,7 @@ npx @osdk/cli@latest branch sync
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `--branchName` | `string` | The current git branch | The branch to sync to. `main`, `master`, and a detached `HEAD` mean the default branch. |
+| `--branchName` | `string` | The current git branch | The branch to sync to, used as given. Without it, the current git branch is used, and `main`, `master`, or a detached `HEAD` mean the default branch. |
 | `--packageName` | `string` | | Sync only this SDK instead of every SDK found. |
 | `--dryRun` | `boolean` | `false` | Print what would be installed without changing anything. |
 
@@ -206,7 +206,7 @@ npx @osdk/cli@latest unstable typescript generate \
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `--outDir` | `string` | | Where to write the generated files. Required. |
-| `--version` | `string` | | The SDK version: `dev` or a SemVer string. Sent in the request user agent, and used as the package version with `--asPackage`. Required. |
+| `--version` | `string` | | The SDK version: `dev` or a SemVer string. Written into the generated SDK's user agent string, and used as the package version with `--asPackage`. Required. |
 | `--foundryUrl` | `string` | | Load the Ontology from this stack. Requires `--clientId`. Alias: `--stack`. |
 | `--clientId` | `string` | | The OAuth client ID to sign in with. Requires `--foundryUrl`. |
 | `--ontologyRid` | `string` | | With `--foundryUrl`, use this Ontology. Needed when the client can see more than one. |
@@ -218,7 +218,7 @@ npx @osdk/cli@latest unstable typescript generate \
 | `--skipPackageJsonUpdate` | `boolean` | `false` | Do not add `@osdk/api` and `@osdk/client` to the nearest `package.json`. |
 | `--externalObjects` | `string` | | Import these object types from another generated SDK instead of generating them, as `ApiName:@scope/package` pairs separated by commas. |
 | `--externalInterfaces` | `string` | | The same, for interfaces. |
-| `--experimentalOntologyMetadata` | `boolean` | `false` | Also emit the raw Ontology metadata as an `./experimental/ontology-metadata` export. May change or be removed. |
+| `--experimentalOntologyMetadata` | `boolean` | `false` | Also write the raw Ontology metadata to `experimental/ontology-metadata.json` in `--outDir`. With `--asPackage`, it is also exported as `./experimental/ontology-metadata`. May change or be removed. |
 | `--asPackage` | `boolean` | | Generate a standalone package with its own `package.json`. Requires `--packageName` and `--beta`. |
 | `--packageName` | `string` | | The package name when using `--asPackage`. |
 | `--beta` | `boolean` | | Required with `--asPackage`. |

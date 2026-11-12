@@ -79,9 +79,9 @@ for (const group of groups) {
 
 | Grouping | Property types | `$group` value | Description |
 | --- | --- | --- | --- |
-| `"exact"` | All | The property's value | One group per distinct value. |
-| `{ $exactWithLimit: n }` | All | The property's value | At most `n` groups. |
-| `{ $exact: { $limit?, $includeNullValue: true } }` | All | The value, or `null` | Adds a group for objects with no value. |
+| `"exact"` | String, boolean, numeric except `long`, date, timestamp | The property's value | One group per distinct value. |
+| `{ $exactWithLimit: n }` | String, boolean, numeric except `long`, date, timestamp | The property's value | At most `n` groups. |
+| `{ $exact: { $limit?, $includeNullValue: true } }` | String, boolean, numeric except `long`, date, timestamp | The value, or `null` | Adds a group for objects with no value. |
 | `{ $fixedWidth: n }` | Numeric | The bucket's lower bound | Buckets of width `n`. |
 | `{ $ranges: [[start, end], ...] }` | Numeric, date, timestamp | `{ startValue, endValue }` | One group per range. `start` is inclusive and `end` exclusive. |
 | `{ $duration: [n, unit] }` | Date, timestamp | The bucket's start | Buckets of `n` time units. |

@@ -6,7 +6,7 @@ description: Add an in-app panel that shows Ontology usage, hook owners, console
 `@osdk/react-devtools` adds a panel to your `@osdk/react` app during development. Use it to see which components own OSDK hooks, how often reads hit the cache, and what your app logs to the console.
 
 <Callout type="warn">
-  `@osdk/react-devtools` is experimental. Its panels and metrics can change between minor versions.
+  `@osdk/react-devtools` is in beta. Its panels and metrics can change between minor versions.
 </Callout>
 
 ## Set up the panel
@@ -22,7 +22,7 @@ Add `@osdk/react-devtools` as a dev dependency:
 npm install -D @osdk/react-devtools
 ```
 
-The package has peer dependencies on `@osdk/api`, `@osdk/client`, `@osdk/react`, `react`, `react-dom`, `@types/react`, and `vite` 5, 6, or 7. An OSDK React app created with `@osdk/create-app` already has them.
+The package has peer dependencies on `@osdk/api`, `@osdk/client`, `@osdk/react`, `react`, `react-dom`, `@types/react`, and, optionally, `vite` 5, 6, or 7. An app created with `@osdk/create-app` has all of these except `@osdk/api`, which comes in through `@osdk/client`.
 
 </Step>
 <Step>
@@ -86,7 +86,7 @@ All options are optional.
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `enabled` | `boolean` | `true` unless `NODE_ENV` is `"production"` | Set to `false` to keep the plugin in your config without injecting the panel. |
-| `verbose` | `boolean` | `false` | Logs plugin diagnostics, including whether the scripts were injected into `index.html`. |
+| `verbose` | `boolean` | `false` | Logs plugin diagnostics in the terminal, including whether the scripts were injected into `index.html`, and hook-installation messages in the browser console. |
 
 ```ts title="vite.config.ts"
 osdkDevTools({ enabled: true, verbose: true });
@@ -104,7 +104,7 @@ The header controls apply to every tab:
 | --- | --- |
 | Theme | Cycles through dark (the default), light, and auto, which follows your system setting. |
 | Dock mode | Cycles through floating, docked to the bottom, and docked to the right. |
-| Reset metrics | Clears the metrics collected in this session. It does not change app data or the cache. |
+| Reset metrics | Clears the request, cache, and action metrics and the cache history. It does not clear console logs, change app data, or touch the cache. |
 | Minimize | Collapses the panel to the `</>` launcher. |
 
 Drag the header to move a floating panel, and drag an edge or corner to resize it. The panel saves its position, size, theme, dock mode, and collapsed state in `localStorage`, so they survive reloads.
@@ -123,16 +123,17 @@ Drag the header to move a floating panel, and drag an edge or corner to resize i
 The panel observes the app you already run. It does not send its own requests.
 
 - **Requests and cache.** The devtools wrap the observable client that `OsdkProvider` creates and record the cache reads, network requests, and actions that pass through it. Data you load with raw `fetch`, `axios`, or another state library does not appear.
-- **Components.** The injected Fiber hook attributes each `@osdk/react` hook to the component that mounted it. The hook must install before React loads. If React loads first, the panel still works but shows a notice that component inspection is unavailable.
-- **Console.** The monitor captures `console` calls made while the page is open.
+- **Components.** The injected Fiber hook attributes each `@osdk/react` hook to the component that mounted it. The hook must install before React loads. If React loads first, the panel still works but shows a **DevTools Hook Not Installed** notice and component attribution is limited.
+- **Console.** The monitor captures `console` calls from page load, whether the panel is open or minimized.
 
-Open the panel before you exercise the flow you want to inspect, and use **Reset metrics** to start from zero.
+Use **Reset metrics** before the flow you want to inspect to start from zero.
 
 ## Production builds
 
 The plugin applies only to `vite dev` and `vite serve`. It does nothing during `vite build`, in `production` mode, or under Vitest, so the panel does not ship to users. To turn it off during development, do one of the following:
 
 - Pass `osdkDevTools({ enabled: false })`.
+- Pass `enableDevTools={false}` to `OsdkProvider`.
 - Remove `osdkDevTools()` from `plugins`.
 - Uninstall `@osdk/react-devtools`.
 
@@ -146,5 +147,5 @@ Use compatible versions of `@osdk/react-devtools` and your other `@osdk/*` packa
 | --- | --- |
 | The panel does not appear. | Confirm `osdkDevTools()` is in `plugins`, `enabled` is not `false`, and you run `vite dev`. Set `verbose: true` and look for `Injected devtools into HTML` in the terminal. Your `index.html` needs a `</head>` or `</body>` tag. |
 | The panel appears but shows no data. | Confirm the app renders `OsdkProvider` and the screen reads data through `@osdk/react` hooks. |
-| Component inspection is unavailable. | Something loaded React before the injected script. Remove manual imports or scripts in `index.html` that load React ahead of it. |
+| The panel shows **DevTools Hook Not Installed** or **Fiber Access Unavailable**. | Something loaded React before the injected script. Remove manual imports or scripts in `index.html` that load React ahead of it. |
 | The panel appears in a deployed build. | Look for code that imports `@osdk/react-devtools` directly, or a stale development bundle on the server. |

@@ -124,7 +124,8 @@ Build errors from the plugin:
 | `Multiple widget config files found for entrypoint ...` | The entrypoint's bundle includes more than one `*.config` module. |
 | `No default export found in ...` | The config file has no default export. |
 | `Duplicate widget ID: ...` | Two configs share an `id`. |
-| `Entrypoint chunk not found for input file: ...` | The built HTML's script paths do not match a bundle entry. Keep Vite's `base` at its default, `/`. |
+| `Foundry serves widget files from the root path, so Vite's base must be "/". ...` | Vite's `base` is set to anything other than `/`, such as `./` or `/widgets/`. Remove `base` or set it to `/`. Developer mode is not affected. |
+| `Entrypoint chunk not found for input file: ...` | The built HTML's script paths do not match a bundle entry chunk, for example when an entry `<script>` points outside the bundle. |
 | `Unexpected inline content found in Vite HTML output` | The built HTML has an inline `<script>` or `<link>` with content. Load scripts with `src`. |
 | `Unexpected ... attribute found in Vite HTML output` | A `<script>` has attributes other than `src`, `type`, and `crossorigin`, or a stylesheet `<link>` has attributes other than `rel`, `href`, and `crossorigin`. |
 | `Invalid script type attribute found in Vite HTML output: ...` | A `<script>` `type` other than `module` or `text/javascript`. |

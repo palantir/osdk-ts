@@ -46,7 +46,7 @@ Each package exports one namespace per resource. Install only the packages you c
 | --- | --- | --- |
 | `@osdk/foundry.admin` | `Users`, `Groups`, `GroupMembers`, `GroupMemberships`, `Markings`, `MarkingCategories`, `MarkingMembers`, `Organizations`, `Roles`, `CbacBanners`, and more | Users, groups, memberships, markings, organizations, and classification banners. |
 | `@osdk/foundry.aipagents` | `Agents`, `AgentVersions`, `Sessions`, `Contents`, `SessionTraces` | Start and read conversations with AIP Agents. |
-| `@osdk/foundry.agents` | `AgentDefinitionVersions`, `AgentSessions` | Agent definitions and sessions. Published from version 2.83.0. |
+| `@osdk/foundry.agents` | `AgentDefinitionVersions`, `AgentSessions` | Agent definitions and sessions. Published from version 2.80.0. |
 | `@osdk/foundry.audit` | `LogFiles` | List and download audit log files. |
 | `@osdk/foundry.checkpoints` | `Records` | Read checkpoint records. |
 | `@osdk/foundry.connectivity` | `Connections`, `FileImports`, `TableImports`, `VirtualTables` | Data Connection sources, imports, and virtual tables. |
@@ -60,18 +60,18 @@ Each package exports one namespace per resource. Install only the packages you c
 | `@osdk/foundry.languagemodels` | `Anthropic`, `OpenAi` | Call language models hosted in Foundry. |
 | `@osdk/foundry.mediasets` | `MediaSets` | Upload media items, read their content and metadata, and run transformations. |
 | `@osdk/foundry.models` | `Models`, `ModelVersions`, `LiveDeployments`, `Experiments`, and more | Models, versions, deployments, and experiments. |
-| `@osdk/foundry.notepad` | `Templates`, `GenerationJobs`, `ExportJobs`, `Files` | Generate and export Notepad documents. |
+| `@osdk/foundry.notepad` | `Documents`, `Templates`, `GenerationJobs`, `ExportJobs`, `Files` | Generate and export Notepad documents. |
 | `@osdk/foundry.ontologies` | `OntologiesV2`, `ObjectTypesV2`, `ActionTypesV2`, `QueryTypes`, `OntologyInterfaces`, and more | Ontology metadata and the raw object, action, and query endpoints that the OSDK is built on. |
 | `@osdk/foundry.operations` | `AsyncOperations` | Poll long-running operations. |
 | `@osdk/foundry.orchestration` | `Builds`, `Jobs`, `Schedules`, `ScheduleVersions` | Start and monitor builds, and manage schedules. |
-| `@osdk/foundry.pack` | `Documents`, `DocumentTypes` | PACK documents and document types. |
+| `@osdk/foundry.pack` | `Documents`, `DocumentTypes`, `PublishedVersions` | PACK documents and document types. |
 | `@osdk/foundry.publicapis` | `ApiDefinitions`, `OpenApiDefinitions` | Fetch API specifications. |
 | `@osdk/foundry.sqlqueries` | `SqlQueries` | Run SQL queries and read their results. |
 | `@osdk/foundry.streams` | `Datasets`, `Streams`, `Subscribers` | Streaming datasets, streams, and subscribers. |
 | `@osdk/foundry.thirdpartyapplications` | `ThirdPartyApplications`, `Versions`, `Websites` | Developer Console applications and hosted website versions. |
 | `@osdk/foundry.widgets` | `WidgetSets`, `Releases`, `Repositories`, `WidgetsDevModeSettings`, `WidgetsDevModeSettingsV2` | Custom widget sets, releases, and dev mode. |
 
-`@osdk/foundry` re-exports every package as a namespace, such as `Admin` and `Datasets`. Prefer the individual packages: they version independently and keep your bundle small.
+`@osdk/foundry` re-exports each package except `@osdk/foundry.geojson` as a namespace, such as `Admin` and `Datasets`. Prefer the individual packages: they version independently and keep your bundle small.
 
 ```ts
 import { Admin } from "@osdk/foundry";

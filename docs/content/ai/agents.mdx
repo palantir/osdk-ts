@@ -138,22 +138,43 @@ console.log(session.id);
 | Behavior | Details |
 | --- | --- |
 | Arguments | A record keyed by argument name. OSDK objects and object sets are converted to the agent's argument types, including nested values. Omit the argument for agents that take none. |
-| Return value | `AgentSession`, with the session's `id`. |
+| Return value | An `AgentSession` with the session's `id`, `experimental_sendEvent`, and `experimental_getState`. |
 | Version | The version pinned in your generated SDK. Override it with `client({ ...employeeAssistant, version: "2.0.0" })`. |
 | Unsupported clients | Throws before sending a request on branch, scenario, and transaction clients. |
 | Scopes | Loads the agent definition (`api:agents-read`) and creates the session (`api:agents-write`). |
 
 Creating a session runs agent logic and can modify platform data.
 
-### Send events to a session
+### Send events and read state
 
-After creation, interact with the session through `AgentSessions` in `@osdk/foundry.agents`. These endpoints are alpha and take `{ preview: true }`.
+Use the session that `experimental_createSession` returns, or reopen one by ID with `experimental_getSession`. `experimental_sendEvent` retries until the session accepts the event, and `experimental_getState` waits until the state reflects your last event.
+
+```ts title="src/sendEvent.ts"
+import { employeeAssistant } from "@my-app/sdk";
+import { client } from "./client";
+
+export async function lookUp(sessionId: string) {
+  const session = await client(employeeAssistant).experimental_getSession(sessionId);
+  await session.experimental_sendEvent({ "<event-type>": { employeeId: 42 } });
+  return session.experimental_getState();
+}
+```
+
+| Method | Description |
+| --- | --- |
+| `experimental_getSession(sessionId)` | Opens an existing session. Throws if it belongs to a different agent or Ontology. |
+| `experimental_sendEvent(event, options?)` | Sends one event, keyed by its event type. Generated agents type the key and payload. |
+| `experimental_getState(options?)` | Resolves to the session's `status` (`"live"`, `"completed"`, `"failed"`, or `"canceled"`), `arguments`, `agentState`, and context items. |
+
+Both methods take `$timeoutMs` (default 30 seconds) and `$pollIntervalMs` (default 1 second), and throw `AgentSendEventTimeoutError` or `AgentGetStateTimeoutError` from `@osdk/client/experimental` when they run out of time.
+
+For an agent that is not in your generated SDK, call `AgentSessions` in `@osdk/foundry.agents` directly. These endpoints are alpha and take `{ preview: true }`, and you handle retries and the consistency key yourself.
 
 ```npm
 npm install @osdk/foundry.agents
 ```
 
-```ts title="src/sendEvent.ts"
+```ts title="src/sendEventRaw.ts"
 import { AgentSessions } from "@osdk/foundry.agents";
 import { client } from "./client";
 

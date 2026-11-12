@@ -249,7 +249,7 @@ export async function describeUserMarkings(client: Client, userId: string): Prom
 
 Listing who can view a marking, with `MarkingMembers.list`, needs `api:admin-write` because only marking administrators can see its members.
 
-For classification-based access control (CBAC), `CbacBanners.get` returns the banner text and colors for a set of marking IDs. It is a preview endpoint; see the example in [Call platform APIs](./calling-apis.mdx#preview-endpoints).
+For classification-based access control (CBAC), `CbacBanners.get(client, { markingIds })` returns the banner text and colors for a set of marking IDs.
 
 ## Reference
 
@@ -273,6 +273,6 @@ For classification-based access control (CBAC), `CbacBanners.get` returns the ba
 | `Markings.list(client, query?)` | `GET /v2/admin/markings` | `api:admin-read` | Stable |
 | `MarkingCategories.list(client, query?)` | `GET /v2/admin/markingCategories` | `api:admin-read` | Stable |
 | `MarkingMembers.list(client, markingId, query?)` | `GET /v2/admin/markings/{markingId}/markingMembers` | `api:admin-write` | Stable |
-| `CbacBanners.get(client, { markingIds, preview })` | `GET /v2/admin/cbacBanner` | `api:admin-read` | Beta |
+| `CbacBanners.get(client, { markingIds, displayType? })` | `GET /v2/admin/cbacBanner` | `api:admin-read` | Stable |
 
-The package also covers creating and deleting users and groups, organizations, roles, enrollments, and authentication providers. Browse the exports of `@osdk/foundry.admin` in your editor for the full list.
+The package also covers creating and deleting groups, deleting users, organizations, roles, enrollments, and authentication providers. Browse the exports of `@osdk/foundry.admin` in your editor for the full list.

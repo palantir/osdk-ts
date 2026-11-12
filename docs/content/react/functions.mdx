@@ -33,7 +33,7 @@ export function EmployeeMetrics({ department }: { department: string }) {
 }
 ```
 
-`params` is typed from the function's signature. Required parameters must be present, and optional ones can be left out. A function with no parameters takes no options:
+`params` is typed from the function's signature. Required parameters must be present, and optional ones can be left out. For a function with no parameters, leave out `params`, or pass no options at all:
 
 ```tsx title="src/EmployeeCount.tsx"
 import { countEmployees } from "@my-app/sdk";
@@ -63,7 +63,7 @@ export function EmployeeCount() {
 | `data` | Function return type `\| undefined` | The result. `undefined` before the first result arrives and after an error. |
 | `isLoading` | `boolean` | `true` while a call is in flight, including refetches. The previous `data` stays available while it refetches. |
 | `error` | `Error \| undefined` | Set when the last call failed. |
-| `lastUpdated` | `number` | Time of the last successful call, in milliseconds since the epoch. `0` before the first result. |
+| `lastUpdated` | `number` | Time of the last successful call, in milliseconds since the epoch. `0` before the first result and after a failed call. |
 | `refetch` | `() => Promise<void>` | Calls the function again with the same parameters, ignoring `dedupeIntervalMs`. |
 
 ## How results are cached
@@ -106,7 +106,7 @@ export function DepartmentHeadcount({ department }: { department: string }) {
 
 ### Refetch when specific objects change
 
-`dependsOnObjects` narrows the trigger. Pass object instances, and the function reruns only when one of those exact objects (matched by type and primary key) is edited:
+`dependsOnObjects` narrows the trigger. Pass object instances, and the function reruns only when one of those exact objects (matched by type and primary key) is added or modified. Deleting one does not rerun it; use `dependsOn` for that:
 
 ```tsx title="src/EmployeeReport.tsx"
 import { Employee, getEmployeeReport } from "@my-app/sdk";

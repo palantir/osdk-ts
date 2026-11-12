@@ -439,7 +439,7 @@ export function RefreshButton({ employee }: { employee: Employee.OsdkInstance })
 | --- | --- | --- | --- |
 | `where` | `WhereClause<T>` | | Filter clause. Can reference properties defined in `withProperties`. |
 | `orderBy` | `{ [property]?: "asc" \| "desc" }` | | Sort order, in key order. |
-| `pageSize` | `number` | Server default | Objects per request. |
+| `pageSize` | `number` | `100` | Objects per page. When several components observe the same query, requests use the largest `pageSize` among them. |
 | `autoFetchMore` | `boolean \| number` | | Load pages automatically: `true` for all, a number for at least that many. |
 | `$select` | `PropertyKeys<T>[]` | Server default set | Properties to load. Does not narrow the returned type. |
 | `rids` | `readonly string[]` | | Start from these objects instead of the whole type. Adds `$rid` to results. |
@@ -456,7 +456,7 @@ export function RefreshButton({ employee }: { employee: Employee.OsdkInstance })
 | Return | Type | Description |
 | --- | --- | --- |
 | `data` | `Osdk.Instance<T>[] \| undefined` | Loaded objects. `undefined` before the first page and while disabled. |
-| `isLoading` | `boolean` | `true` while a request is in flight, including revalidation with `data` present. |
+| `isLoading` | `boolean` | `true` while the first page or a `fetchMore` page is loading. During a background refetch it is `true` only if the list holds fewer than `pageSize` objects. |
 | `error` | `Error \| undefined` | The last error, if the query failed. |
 | `isOptimistic` | `boolean` | Whether the list order or membership includes unconfirmed optimistic changes. |
 | `fetchMore` | `(() => Promise<void>) \| undefined` | Load the next page. `undefined` when there are no more pages. |

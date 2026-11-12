@@ -228,7 +228,7 @@ Most actions create, change, or delete one object. The helpers below generate an
 | `defineCreateOrModifyObjectAction` | `create-or-modify-<object>` | `objectToCreateOrModifyParameter`, then every property except the primary key | Modifies the chosen object, or creates one. Each parameter defaults to the object's current value. |
 | `defineDeleteObjectAction` | `delete-object-<object>` | `objectToDeleteParameter` | Deletes the chosen object. |
 
-`<object>` is the object type's API name in lowercase with hyphens, so `Employee` gives `modify-object-employee`. Parameters skip vector properties, properties in `excludedProperties`, and properties set by `nonParameterMappings`; create and create-or-modify also skip derived properties. For interfaces, see [Interface actions](./interfaces.mdx#interface-actions).
+`<object>` is the object type's API name in lowercase with hyphens, so `Employee` gives `modify-object-employee`. Parameters skip vector properties, properties in `excludedProperties`, and properties set by `nonParameterMappings`; all three also skip properties backed by a `derived` datasource. For interfaces, see [Interface actions](./interfaces.mdx#interface-actions).
 
 ```ts title=".ontology/ontology.mts"
 import {
@@ -303,7 +303,7 @@ The parameter IDs of the chosen object are exported as constants:
 | `icon` | `{ locator: BlueprintIcon; color: string }` | | The action's icon. |
 | `permission` | `"roles" \| "publicProject" \| { type: "ontologyPackage"; ontologyPackageRid: string }` | | The permission model for the action. |
 
-`defineDeleteObjectAction` reads only `objectType`, `apiName`, `displayName`, `description`, `status`, `actionLevelValidation`, `icon`, and `permission`.
+`defineDeleteObjectAction` reads only `objectType`, `apiName`, `displayName`, `description`, `status`, `actionLevelValidation`, `icon`, `permission`, and `parameterConfiguration.objectToDeleteParameter`.
 
 ### Configure parameters
 
@@ -486,4 +486,4 @@ export const promoteEmployee = defineAction({
 });
 ```
 
-`defineAction` throws when there are no rules, when parameter IDs repeat, or when a rule or section references a parameter that is not defined.
+`defineAction` throws when there are no rules, when parameter IDs repeat, when a rule or section references a parameter that is not defined, or when a parameter condition refers to the same parameter or to one that comes later in the parameter order.

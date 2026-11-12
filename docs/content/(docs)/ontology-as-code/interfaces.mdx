@@ -212,7 +212,7 @@ export const workerManager = defineInterfaceLinkConstraint({
 
 ## Interface actions
 
-These helpers generate action types that work on any object that implements an interface. Their options match the [object action helpers](./links-and-actions.mdx#helper-options), with `interfaceType` in place of `objectType`.
+These helpers generate action types that work on any object that implements an interface. The create, modify, and delete helpers take the [object action helper](./links-and-actions.mdx#helper-options) options, with `interfaceType` in place of `objectType`. The link helpers take different options, described below.
 
 | Helper | Default API name | What it does |
 | --- | --- | --- |
@@ -299,7 +299,7 @@ The interface must be defined in this ontology, and the constraint's API name mu
   Interface schema migrations are in beta in Foundry and may not be available on your enrollment.
 </Callout>
 
-Changing a published interface can break the object types that implement it. A schema migration announces a change and gives implementers a grace period before it is enforced. Adding `schemaMigrations` to an interface also turns on compatibility checks, so maker rejects breaking changes that are not staged as a migration.
+Changing a published interface can break the object types that implement it. A schema migration announces a change and gives implementers a grace period before it is enforced. Adding `schemaMigrations` to an interface also turns on compatibility checks, so maker rejects breaking changes that are not staged as a migration. Every interface in an `extends` hierarchy must opt in together.
 
 The only migration is `addRequiredProperty`, which makes an optional property required. While the migration is active, the property stays `required: false`:
 

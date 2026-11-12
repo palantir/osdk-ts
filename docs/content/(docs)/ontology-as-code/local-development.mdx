@@ -9,7 +9,7 @@ foundryDocs:
 `@osdk/vite-plugin-oac` lets you build an app against your ontology-as-code definitions before they exist in Foundry. On every change to `.ontology/`, it compiles the ontology again, regenerates an SDK into `.osdk/src`, and answers OSDK requests from the Vite dev server with data from a seed file.
 
 <Callout type="warn">
-  In `@osdk/vite-plugin-oac` 0.85.0, the step that converts the IR to Ontology metadata reads a `blockData` key, but `@osdk/maker` 0.82.0 writes the IR under `ontology`. The conversion fails with `Cannot read properties of undefined (reading 'interfaceTypes')`, so no SDK is generated and the mock serves no types. Check the changelog for a fix before you adopt the plugin.
+  In current releases, the step in `@osdk/vite-plugin-oac` that converts the IR to Ontology metadata reads a `blockData` key, but `@osdk/maker` writes the IR under `ontology`. The conversion fails with `Cannot read properties of undefined (reading 'interfaceTypes')`, so no SDK is generated and the mock serves no types. Check the changelog for a fix before you adopt the plugin.
 </Callout>
 
 ## How it works
@@ -211,7 +211,7 @@ The mock is an approximation of Foundry built from the generated metadata.
 `seed-compiler` merges a directory of seed files into one JSON file:
 
 ```sh
-npx seed-compiler --metadata ontology-metadata.json --seed-dir seed --output seed-data.json
+npx @osdk/seed-compiler --metadata ontology-metadata.json --seed-dir seed --output seed-data.json
 ```
 
 | Option | Description |
