@@ -317,6 +317,12 @@ export function createPublicOauthClient(
         "signIn",
       );
 
+      // The code_verifier and state were only needed to redeem this
+      // authorization code. Clear them now rather than leaving them
+      // sitting in sessionStorage for the rest of the tab's life, same
+      // as the catch branch below already does on failure. Done before
+      // go(), since that may navigate away without awaiting.
+      removeSession(client);
       void go(oldUrl);
       return ret;
     } catch (e) {
