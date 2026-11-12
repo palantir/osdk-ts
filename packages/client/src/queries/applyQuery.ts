@@ -402,6 +402,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
       return false;
 
     case "union":
+    case "map":
       return true;
 
     case "struct":
