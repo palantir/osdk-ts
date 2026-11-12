@@ -174,7 +174,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeSubFn.next.mockClear();
 
       // Invalidate only the Employee type
-      await cache.invalidateObjectType(Employee, undefined);
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -211,7 +211,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeSubFn.next.mockClear();
 
       // Invalidate only the Office type
-      await cache.invalidateObjectType(Office, undefined);
+      await cache.invalidateObjectOrInterfaceType(Office, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -258,7 +258,7 @@ describe("Store Invalidation Type Isolation", () => {
       todoSubFn.next.mockClear();
 
       // Invalidate only the Todo type
-      await cache.invalidateObjectType(Todo, undefined);
+      await cache.invalidateObjectOrInterfaceType(Todo, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -322,7 +322,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeListSubFn.next.mockClear();
 
       // Invalidate only the Employee type
-      await cache.invalidateObjectType(Employee, undefined);
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -372,7 +372,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeLinkSubFn.next.mockClear();
 
       // Invalidate the Employee type
-      await cache.invalidateObjectType(Employee, undefined);
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -487,7 +487,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeOccupantsLinkSubFn.next.mockClear();
 
       // Invalidate only the Todo type
-      await cache.invalidateObjectType(Todo, undefined);
+      await cache.invalidateObjectOrInterfaceType(Todo, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));

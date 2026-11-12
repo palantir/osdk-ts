@@ -303,7 +303,16 @@ export class ObservableClientImpl implements ObservableClient {
   public invalidateObjectType<T extends ObjectTypeDefinition>(
     type: T | T["apiName"],
   ): Promise<void> {
-    return this.__experimentalStore.invalidateObjectType(type, undefined);
+    return this.invalidateObjectOrInterfaceType(type);
+  }
+
+  public invalidateObjectOrInterfaceType(
+    type: ObjectOrInterfaceDefinition | string,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateObjectOrInterfaceType(
+      type,
+      undefined,
+    );
   }
 
   public invalidateFunction(

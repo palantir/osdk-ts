@@ -351,7 +351,7 @@ export function useObjectSet<
 
   const refetch = React.useCallback(async () => {
     if (typeApiName) {
-      await observableClient.invalidateObjectType(typeApiName);
+      await observableClient.invalidateObjectOrInterfaceType(typeApiName);
     }
   }, [observableClient, typeApiName]);
 

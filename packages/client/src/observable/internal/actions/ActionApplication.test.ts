@@ -313,8 +313,11 @@ describe("ActionApplication invalidation", () => {
 
     // Simulate slow broad invalidation by making the touched query return a
     // promise that this test intentionally does not resolve yet.
-    const invalidateObjectType = vi.fn(() => delayedInvalidation.promise);
-    functionQuery.invalidateObjectType = invalidateObjectType;
+    const invalidateObjectOrInterfaceType = vi.fn(
+      () => delayedInvalidation.promise,
+    );
+    functionQuery.invalidateObjectOrInterfaceType =
+      invalidateObjectOrInterfaceType;
 
     // Batch apply avoids the dev-only single-action delay, keeping this test
     // focused on whether invalidation blocks action resolution.
@@ -324,7 +327,7 @@ describe("ActionApplication invalidation", () => {
     ]);
 
     await vi.waitFor(() => {
-      expect(invalidateObjectType).toHaveBeenCalledWith(
+      expect(invalidateObjectOrInterfaceType).toHaveBeenCalledWith(
         Todo.apiName,
         undefined,
       );

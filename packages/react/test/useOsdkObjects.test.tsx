@@ -34,13 +34,15 @@ const MockInterface = {
 
 describe("useOsdkObjects enabled option", () => {
   const mockObserveList = vitest.fn();
-  const mockInvalidateObjectType = vitest.fn().mockResolvedValue(undefined);
+  const mockInvalidateObjectOrInterfaceType = vitest
+    .fn()
+    .mockResolvedValue(undefined);
 
   const createWrapper = () => {
     const observableClient = {
       observeList: mockObserveList,
       canonicalizeOptions: vitest.fn((opts) => opts),
-      invalidateObjectType: mockInvalidateObjectType,
+      invalidateObjectOrInterfaceType: mockInvalidateObjectOrInterfaceType,
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
@@ -212,7 +214,7 @@ describe("useOsdkObjects enabled option", () => {
     expect(result.current.objectSet).toBe(mockObjectSet);
   });
 
-  it("should call invalidateObjectType when refetch is called", async () => {
+  it("should call invalidateObjectOrInterfaceType when refetch is called", async () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
@@ -223,7 +225,9 @@ describe("useOsdkObjects enabled option", () => {
       await result.current.refetch();
     });
 
-    expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
+    expect(mockInvalidateObjectOrInterfaceType).toHaveBeenCalledWith(
+      "MockObject",
+    );
   });
 
   it("should pass $includeAllBaseObjectProperties to observeList when true", () => {
@@ -255,7 +259,7 @@ describe("useOsdkObjects enabled option", () => {
         ...opts,
         withProperties: canonicalWithProperties,
       })),
-      invalidateObjectType: mockInvalidateObjectType,
+      invalidateObjectOrInterfaceType: mockInvalidateObjectOrInterfaceType,
     } as any;
 
     const wrapper = ({ children }: React.PropsWithChildren) => (

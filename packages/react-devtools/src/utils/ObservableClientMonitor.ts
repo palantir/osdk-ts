@@ -99,7 +99,6 @@ interface MockActionEdits {
 
 interface ExperimentalStore {
   invalidateObject?(objectType: string, primaryKey: string): Promise<void>;
-  invalidateObjectType?(objectType: string): Promise<void>;
 }
 
 function getDebugMetadata(value: unknown): ObservableDebugMetadata | undefined {
@@ -953,9 +952,7 @@ export class ObservableClientMonitor {
               }
 
               for (const objectType of mockResult.editedObjectTypes || []) {
-                if (store.invalidateObjectType) {
-                  promises.push(store.invalidateObjectType(objectType));
-                }
+                promises.push(this.invalidateObjectType(objectType));
               }
 
               await Promise.allSettled(promises);

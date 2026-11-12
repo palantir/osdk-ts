@@ -28,6 +28,7 @@ import {
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
+import defer from "p-defer";
 import {
   afterEach,
   beforeAll,
@@ -172,7 +173,7 @@ describe("aggregation ObjectSet support", () => {
       .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
-    await query.invalidateObjectType("Employee", undefined);
+    await query.invalidateObjectOrInterfaceType("Employee", undefined);
     expect(revalidateSpy).toHaveBeenCalledWith(true);
   });
 
@@ -187,20 +188,30 @@ describe("aggregation ObjectSet support", () => {
       .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
-    await query.invalidateObjectType("Employee", undefined);
+    await query.invalidateObjectOrInterfaceType("Employee", undefined);
     expect(revalidateSpy).not.toHaveBeenCalled();
   });
 
   describe("interfaces", () => {
-    it("observes narrowed interface sets and refreshes after invalidation", async () => {
+    it("refreshes narrowed interface aggregations invalidated during a fetch", async () => {
       let count = 1;
+      const firstRequest = defer<void>();
+      const firstResponse = defer<void>();
       apiServer.use(
         msw.http.post(
           "https://stack.palantir.com/api/v2/ontologies/:ontology/objectSets/aggregate",
-          () =>
-            msw.HttpResponse.json({
-              data: [{ group: {}, metrics: [{ name: "count", value: count }] }],
-            }),
+          async () => {
+            const result = count;
+            if (result === 1) {
+              firstRequest.resolve();
+              await firstResponse.promise;
+            }
+            return msw.HttpResponse.json({
+              data: [
+                { group: {}, metrics: [{ name: "count", value: result }] },
+              ],
+            });
+          },
         ),
       );
       const observableClient = new ObservableClientImpl(store);
@@ -224,11 +235,16 @@ describe("aggregation ObjectSet support", () => {
       );
 
       try {
-        await vi.waitFor(() => expect(payload?.result).toEqual({ $count: 1 }));
+        await firstRequest.promise;
         count = 2;
-        await observableClient.invalidateObjectType(Employee);
+        const invalidation =
+          observableClient.invalidateObjectOrInterfaceType(FooInterface);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        firstResponse.resolve();
+        await invalidation;
         expect(payload?.result).toEqual({ $count: 2 });
       } finally {
+        firstResponse.resolve();
         subscription.unsubscribe();
       }
     });
@@ -322,6 +338,14 @@ describe("aggregation ObjectSet support", () => {
         });
         await observableClient.invalidateObjectType(Employee);
         expect(payload?.result).toEqual({ $count: 0 });
+        dataStore.replaceObjectOrThrow({
+          ...dataStore.getObjectOrThrow("Employee", 1),
+          office: "NYC",
+        });
+        await observableClient.invalidateObjectOrInterfaceType(
+          FooInterface.apiName,
+        );
+        expect(payload?.result).toEqual({ $count: 1 });
       } finally {
         subscription.unsubscribe();
       }

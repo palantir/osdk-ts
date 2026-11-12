@@ -17,11 +17,8 @@
 import type {
   AggregateOpts,
   AggregationsResults,
-  DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Connectable, Observable, Subject } from "rxjs";
@@ -39,7 +36,7 @@ import type {
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
-import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
+import { getInvalidationSet } from "../getInvalidationSet.js";
 import type { Entry } from "../Layer.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -56,27 +53,6 @@ import {
   WHERE_IDX,
   WIRE_OBJECT_SET_IDX,
 } from "./AggregationCacheKey.js";
-
-export interface AggregationPayload<
-  Q extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<Q>,
-> {
-  result: AggregationsResults<Q, A> | undefined;
-  status: Status;
-  lastUpdated: number;
-  error?: Error;
-}
-
-export interface AggregationQueryOptions<
-  Q extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<Q>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> extends CommonObserveOptions {
-  type: Q;
-  where?: WhereClause<Q, RDPs>;
-  withProperties?: DerivedProperty.Clause<Q>;
-  aggregate: A;
-}
 
 export interface AggregationPayloadBase {
   result:
@@ -153,12 +129,15 @@ export class AggregationQuery extends Query<
     if (this.#invalidationTypes) {
       return this.#invalidationTypes;
     }
-    this.#invalidationTypesPromise ??= getObjectTypesThatInvalidate(
+    this.#invalidationTypesPromise ??= getInvalidationSet(
       this.store.client[additionalContext],
       getWireObjectSet(this.createObjectSet()),
     )
-      .then(({ counts }) => {
-        this.#invalidationTypes = new Set(Object.keys(counts));
+      .then(({ objectInvalidationSet, interfaceInvalidationSet }) => {
+        this.#invalidationTypes = new Set([
+          ...objectInvalidationSet,
+          ...interfaceInvalidationSet,
+        ]);
         return this.#invalidationTypes;
       })
       .finally(() => {
@@ -213,7 +192,7 @@ export class AggregationQuery extends Query<
       this.store.batch({}, (batch) => {
         this.writeToStore(result, "loaded", batch);
       });
-    } catch (err) {
+    } catch {
       this.store.batch({}, (batch) => {
         this.writeToStore(undefined, "error", batch);
       });
@@ -271,8 +250,8 @@ export class AggregationQuery extends Query<
     return batch.read(this.cacheKey)!;
   }
 
-  invalidateObjectType = async (
-    objectType: string,
+  invalidateObjectOrInterfaceType = async (
+    apiName: string,
     changes: Changes | undefined,
   ): Promise<void> => {
     let invalidationTypes: Set<string>;
@@ -286,8 +265,11 @@ export class AggregationQuery extends Query<
       return;
     }
 
-    if (invalidationTypes.has(objectType)) {
+    if (invalidationTypes.has(apiName)) {
       changes?.modified.add(this.cacheKey);
+      if (this.pendingFetch) {
+        await this.pendingFetch;
+      }
       return this.revalidate(true);
     }
   };

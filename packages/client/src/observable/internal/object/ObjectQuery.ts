@@ -228,7 +228,7 @@ export class ObjectQuery extends Query<
     return batch.read(this.cacheKey);
   }
 
-  invalidateObjectType = async (
+  invalidateObjectOrInterfaceType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {

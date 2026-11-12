@@ -293,8 +293,8 @@ export abstract class Query<
     optimisticId: OptimisticId | undefined,
   ) => Promise<void> | undefined;
 
-  abstract invalidateObjectType(
-    objectType: string,
+  abstract invalidateObjectOrInterfaceType(
+    apiName: string,
     changes: Changes | undefined,
   ): Promise<void>;
 }

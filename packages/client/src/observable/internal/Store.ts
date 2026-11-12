@@ -396,7 +396,7 @@ export class Store {
       if (!query) {
         continue;
       }
-      promises.push(query.invalidateObjectType(apiName, undefined));
+      promises.push(query.invalidateObjectOrInterfaceType(apiName, undefined));
     }
     return Promise.allSettled(promises).then(() => void 0);
   }
@@ -639,8 +639,8 @@ export class Store {
    * @param changes - Optional changes object to track what has been modified
    * @returns Promise that resolves when all invalidations are complete
    */
-  public invalidateObjectType<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
+  public invalidateObjectOrInterfaceType(
+    apiName: ObjectOrInterfaceDefinition | string,
     changes: Changes | undefined,
   ): Promise<void> {
     if (typeof apiName !== "string") {
@@ -648,7 +648,7 @@ export class Store {
     }
     if (process.env.NODE_ENV !== "production") {
       this.logger
-        ?.child({ methodName: "invalidateObjectType" })
+        ?.child({ methodName: "invalidateObjectOrInterfaceType" })
         .info(changes ? DEBUG_ONLY__changesToString(changes) : void 0);
     }
 
@@ -665,7 +665,7 @@ export class Store {
       const query = this.queries.peek(cacheKey);
       if (!query) continue;
 
-      promises.push(query.invalidateObjectType(apiName, changes));
+      promises.push(query.invalidateObjectOrInterfaceType(apiName, changes));
     }
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
