@@ -36,6 +36,8 @@ const schema = {
   enabled: { type: "boolean", isList: false },
   counts: { type: "number", isList: true },
   employees: { type: "objectSet", isList: false },
+  startedAt: { type: "timestamp", isList: false },
+  checkpoints: { type: "timestamp", isList: true },
 } as const satisfies WorkshopModuleSchema;
 
 describe("module schemas", () => {
@@ -190,6 +192,41 @@ describe("module schemas", () => {
     }
   });
 
+  it("validates timestamp inputs and outputs using the schema while preserving the strings", async () => {
+    await publish();
+    const startedAt = "2026-11-03T12:30:00.123456789+01:00";
+    for (const connection of [parent, workshop]) {
+      expect(() => connection.setVariables({ startedAt: "yesterday" })).toThrow(
+        "expects timestamp",
+      );
+      expect(() =>
+        connection.setVariables({ checkpoints: ["yesterday"] }),
+      ).toThrow("expects timestamp[]");
+      expect(() => connection.setVariables({ startedAt: [startedAt] })).toThrow(
+        "expects timestamp",
+      );
+      expect(() =>
+        validateVariableValues(schema, { searchText: "yesterday" }),
+      ).not.toThrow();
+      const peer = connection === parent ? workshop : parent;
+      const listener = vi.fn();
+      const unsubscribe = peer.onVariablesSet(listener);
+      const port = connection.port;
+      port.postMessage(variableMessage({ startedAt: "2026-02-30T12:30:00Z" }));
+      port.postMessage(variableMessage({ checkpoints: ["not a timestamp"] }));
+      const received = nextMessage(peer.port, (data) => data === "drained");
+      connection.setVariables({ startedAt, checkpoints: [startedAt] });
+      connection.setVariables({ startedAt: null, checkpoints: [] });
+      port.postMessage("drained");
+      await received;
+      expect(listener.mock.calls).toEqual([
+        [{ startedAt, checkpoints: [startedAt] }],
+        [{ startedAt: null, checkpoints: [] }],
+      ]);
+      unsubscribe();
+    }
+  });
+
   it("uses subsequent schemas without exposing a subscription to the parent", async () => {
     await publish();
     await publish({ count: { type: "string", isList: false } });
@@ -326,6 +363,44 @@ describe("schema validation", () => {
     expect(() =>
       validateVariableValues(ownSchema, JSON.parse('{"__proto__": 1}')),
     ).not.toThrow();
+  });
+
+  it("accepts the ISO formats supported by Workshop and rejects invalid dates", () => {
+    for (const startedAt of [
+      "2024-02-29T12:30:00Z",
+      "2026-11-03T12:30:00.1Z",
+      "2026-11-03T12:30:00.123Z",
+      "2026-11-03T12:30:00.123456789Z",
+      "+010000-01-01T00:00:00.000Z",
+      "2026-11-03",
+      "2026-11-03T12:30:00",
+      "2026-11-03T12:30:00+00:00",
+      "2026-11-03T12:30:00-05:00",
+      "2026-11-03T24:00:00Z",
+      "2026-11-03T12:30:00.1234567890Z",
+      // parseISO also accepts reduced-precision ISO dates.
+      "2026",
+      "25",
+    ]) {
+      expect(() =>
+        validateVariableValues(schema, { startedAt, checkpoints: [startedAt] }),
+      ).not.toThrow();
+    }
+    for (const startedAt of [
+      "",
+      "yesterday",
+      "2026-02-29T12:30:00Z",
+      "2026-02-30T12:30:00Z",
+      "2026-13-03T12:30:00Z",
+      "2026-11-03T25:00:00Z",
+      "2026-11-03T12:60:00Z",
+      "2026-11-03T12:30:60Z",
+      0,
+    ]) {
+      expect(() => validateVariableValues(schema, { startedAt })).toThrow(
+        "expects timestamp",
+      );
+    }
   });
 
   it("rejects malformed schemas and unsupported values", () => {

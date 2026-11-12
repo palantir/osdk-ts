@@ -228,3 +228,37 @@ const [variables, setVariables] = useState<WorkshopVariableValues<ModuleVariable
     },
   },
 };
+
+export const Timestamps: Story = {
+  args: {
+    variables: {
+      startedAt: "2026-11-03T12:30:00.000Z",
+      checkpoints: ["2026-11-03T14:00:00.000Z"],
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Timestamp values use UTC ISO strings; timestamp lists use string arrays. Requires timestamp-variable support in the Workshop embed integration, plus list support for arrays.",
+      },
+      source: {
+        code: `type ModuleVariables = { startedAt: string; checkpoints: readonly string[] };
+const [variables, setVariables] = useState<WorkshopVariableValues<ModuleVariables>>({
+  startedAt: "2026-11-03T12:30:00.000Z",
+  checkpoints: ["2026-11-03T14:00:00.000Z"],
+});
+
+<BaseWorkshopModule<ModuleVariables>
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  variables={variables}
+  onVariablesChanged={(changes) =>
+    setVariables((previous) => ({ ...previous, ...changes }))
+  }
+  style={{ height: "24rem" }}
+/>`,
+      },
+    },
+  },
+};

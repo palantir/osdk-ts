@@ -99,6 +99,24 @@ import type { WorkshopObjectSetValue } from "@osdk/react-components/experimental
 
 This requires a Foundry deployment with object-set support in the Workshop embed integration. Older deployments reject messages containing object-set references.
 
+## Timestamp variables
+
+Declare timestamp variables as `string` and timestamp lists as `readonly string[]`. Supply ISO 8601 strings, such as `"2026-11-03T12:30:00.000Z"`. Convert JavaScript dates with `toISOString()` before passing them; `Date` objects are not supported variable values.
+
+```tsx
+<WorkshopModule<{ startedAt: string; checkpoints: readonly string[] }>
+  moduleRid="ri.workshop.main.module.example"
+  variables={{
+    startedAt: "2026-11-03T12:30:00.000Z",
+    checkpoints: ["2026-11-03T14:00:00.000Z"],
+  }}
+/>
+```
+
+Values received through `onVariablesChanged` use the same string representation. Use `null` to clear a timestamp or list, and `[]` for an empty list. The shared connection validates timestamp syntax against the schema supplied by Workshop, then forwards the strings unchanged. Validation uses the same `date-fns` ISO parser as Workshop’s serialized inputs, accepting UTC and offset timestamps, ISO date-only strings, and timezone-less strings.
+
+Timestamp inputs and outputs require a Foundry deployment with timestamp support in the Workshop embed integration. Timestamp lists also require list-variable support.
+
 ## Branch
 
 `WorkshopModule` inherits the resolved global branch from the client in `OsdkProvider`, so the embedded module uses the same branch as the app's OSDK requests. Replacing the provider's client with one on a different branch navigates the iframe and resets the module's state.

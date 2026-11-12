@@ -89,6 +89,23 @@ Use `null` to clear the variable. The transport validates the object-set RID for
 
 Object-set inputs and outputs require object-set support in the Workshop embed integration. Older peers reject messages containing object-set references.
 
+## Timestamp variables
+
+Represent timestamps as ISO 8601 strings, such as `"2026-11-03T12:30:00.000Z"`, using `Date.prototype.toISOString()` when starting from a JavaScript `Date`. Declare timestamp fields as `string` and timestamp lists as `readonly string[]` in the variable contract.
+
+```ts
+connection.setVariables({
+  startedAt: "2026-11-03T12:30:00.000Z",
+  checkpoints: ["2026-11-03T12:30:00.000Z", "2026-11-03T14:00:00.000Z"],
+});
+```
+
+Workshop advertises timestamp variables with `{ type: "timestamp", isList: false }` and timestamp lists with `{ type: "timestamp", isList: true }`. The connection validates the strings against this schema before sending updates or delivering callbacks. Values remain strings on the wire, without per-value type tags.
+
+Timestamp validation uses `date-fns` `isValid(parseISO(value))`, matching Workshop’s serialized input validation. It accepts UTC and offset timestamps, as well as ISO date-only and timezone-less strings. Values are validated without normalization, so the original strings and their fractional precision are preserved. Use `toISOString()` when starting from a JavaScript `Date`. Strings declared as ordinary string variables are not checked as timestamps.
+
+Timestamp inputs and outputs require timestamp-variable support in the Workshop integration, including list support for timestamp arrays. Use `null` to clear a timestamp or list, and `[]` for an empty timestamp list.
+
 ## Receiving Workshop variable changes
 
 Subscribe before sending inputs:
