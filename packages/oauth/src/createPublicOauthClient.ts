@@ -58,6 +58,9 @@ export interface PublicOauthClientOptions {
    * the `_realm` authorize parameter. Users who already have a Foundry session keep that
    * session's identity.
    *
+   * Takes precedence over the domain's default authentication provider. If it does not
+   * match an enabled provider, Foundry shows the provider picker.
+   *
    * To ignore stored refresh tokens when `realmId` changes, also pass it as
    * `refreshTokenMarker`.
    */
