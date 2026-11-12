@@ -132,7 +132,29 @@ export interface LockedTransition {
 
 export type LockedInstruction =
   | { type: "addRequiredProperty"; property: string }
-  | { type: "addRequiredActionTypeConstraint"; actionTypeConstraint: string };
+  | { type: "addRequiredActionTypeConstraint"; actionTypeConstraint: string }
+  | { type: "replace"; replacement: LockedInterfaceTypeReplacement };
+
+export interface LockedInterfaceTypeReplacement {
+  /** The replacement's fully-qualified api name. */
+  interfaceType: string;
+  /** Replaced interface's property api name -> replacement's. Absent when empty. */
+  propertyMappings?: Record<string, string>;
+  /** Same as `propertyMappings`, for link type constraints. Absent when empty. */
+  linkTypeConstraintMappings?: Record<string, string>;
+  /** Replaced interface's action type constraint api name -> replacement's. Absent when empty. */
+  actionTypeConstraintMappings?: Record<
+    string,
+    LockedActionTypeConstraintReplacement
+  >;
+}
+
+export interface LockedActionTypeConstraintReplacement {
+  /** The replacement's action type constraint api name. */
+  actionTypeConstraint: string;
+  /** Replaced constraint's parameter api name -> replacement's. Absent when empty. */
+  parameterMappings?: Record<string, string>;
+}
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
   return property.declaredBy ?? "interface";

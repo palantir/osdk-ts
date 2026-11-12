@@ -22,6 +22,7 @@ import type { Nullability } from "../../api/properties/Nullability.js";
 import type { SourceCensus } from "../generateOntologySchemaLockfile.js";
 import type {
   LockedActionTypeConstraint,
+  LockedInterfaceSchema,
   LockedInterfaceType,
   LockedParameterConstraint,
   LockedProperty,
@@ -1400,6 +1401,89 @@ describe("validateOntologySchemaLockfile", () => {
           { code: "parameterNoLongerRequiredOnConcreteAction", ...where },
         ]);
       });
+    });
+  });
+
+  describe("replacement", () => {
+    const replace: LockedTransition = {
+      id: "replace",
+      gracePeriod: THIRTY_DAYS,
+      instructions: [
+        {
+          type: "replace",
+          replacement: { interfaceType: "PersonV2" },
+        },
+      ],
+    };
+
+    const PERSON_PROPERTIES: LockedInterfaceSchema["properties"] = {
+      firstName: REQUIRED_STRING,
+      lastName: OPTIONAL_STRING,
+    };
+
+    function lockedPerson(
+      transitions: LockedTransition[] = [],
+      properties = PERSON_PROPERTIES,
+    ): OntologySchemaLockfile {
+      return lockfile({ Person: { schema: { properties }, transitions } });
+    }
+
+    const replacementInFlight = lockedPerson([replace]);
+    const deleted = {
+      interfaceApiName: "Person",
+      transitionId: "replace",
+      kind: "deleted",
+    };
+
+    it("reads a vanished replace as a deletion, since it is never finalized", () => {
+      const result = validate(replacementInFlight, lockedPerson());
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([]);
+      expect(result.checkpoints).toEqual([deleted]);
+    });
+
+    it("still reports schema breaks made alongside deleting a replace", () => {
+      const result = validate(
+        replacementInFlight,
+        lockedPerson([], {
+          firstName: REQUIRED_STRING,
+          lastName: REQUIRED_STRING,
+        }),
+      );
+      expect(result.checkpoints).toEqual([deleted]);
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "propertyBecameRequired",
+          interfaceApiName: "Person",
+          property: "lastName",
+        },
+      ]);
+    });
+
+    it("accepts declaring another migration once the replace is deleted", () => {
+      const result = validate(
+        replacementInFlight,
+        lockedPerson([requireLastName]),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([deleted]);
+    });
+
+    it("rejects a changed replacement on an in-flight replace", () => {
+      const result = validate(
+        replacementInFlight,
+        lockedPerson([
+          {
+            ...replace,
+            instructions: [
+              { type: "replace", replacement: { interfaceType: "PersonV3" } },
+            ],
+          },
+        ]),
+      );
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
+        "instructionsChanged",
+      ]);
     });
   });
 

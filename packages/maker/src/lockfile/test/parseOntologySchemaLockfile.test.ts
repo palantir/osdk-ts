@@ -546,6 +546,22 @@ describe("parseLockfile", () => {
         actionTypeConstraint: "com.palantir.sendEmail",
       },
     ],
+    [
+      "a replace",
+      {
+        type: "replace",
+        replacement: {
+          interfaceType: "com.palantir.PersonV2",
+          propertyMappings: { name: "fullName" },
+          actionTypeConstraintMappings: {
+            "com.palantir.sendEmail": {
+              actionTypeConstraint: "com.palantir.notify",
+              parameterMappings: { subject: "title" },
+            },
+          },
+        },
+      },
+    ],
   ])("accepts %s instruction", (_name, instruction) => {
     const lockfile = withTransition({ instructions: [instruction] });
     expect(parse(lockfile)).toStrictEqual(lockfile);
@@ -560,6 +576,43 @@ describe("parseLockfile", () => {
       ),
     ).toThrowError(
       /instructions\[0\]\.actionTypeConstraint: Expected the api name of the action type constraint to require/u,
+    );
+  });
+
+  it("rejects a `replace` instruction that records no replacement", () => {
+    expect(() =>
+      parse(withTransition({ instructions: [{ type: "replace" }] })),
+    ).toThrowError(
+      /instructions\[0\]\.replacement: Expected an object recording the replacement interface/u,
+    );
+  });
+
+  it.each([
+    ["propertyMappings", { propertyMappings: {} }],
+    ["linkTypeConstraintMappings", { linkTypeConstraintMappings: {} }],
+    ["actionTypeConstraintMappings", { actionTypeConstraintMappings: {} }],
+    [
+      "parameterMappings",
+      {
+        actionTypeConstraintMappings: {
+          "com.palantir.sendEmail": {
+            actionTypeConstraint: "com.palantir.notify",
+            parameterMappings: {},
+          },
+        },
+      },
+    ],
+  ])("rejects a replacement that records an empty %s", (field, mappings) => {
+    const replacement = { interfaceType: "com.palantir.PersonV2", ...mappings };
+    expect(() =>
+      parse(
+        withTransition({ instructions: [{ type: "replace", replacement }] }),
+      ),
+    ).toThrowError(
+      new RegExp(
+        `${field}: Expected at least one .* mapping, or no value at all`,
+        "u",
+      ),
     );
   });
 

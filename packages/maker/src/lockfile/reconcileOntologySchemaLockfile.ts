@@ -18,7 +18,7 @@ import * as fs from "node:fs/promises";
 
 import { consola } from "consola";
 
-import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
+import type { OntologyValidationContext } from "../api/validateOntology.js";
 import {
   describeBreakingChange,
   describeWarning,
@@ -42,7 +42,7 @@ import type {
 import { validateOntologySchemaLockfile } from "./validateOntologySchemaLockfile.js";
 
 export interface ReconcileOntologySchemaLockfileOptions {
-  ontology: OntologyDefinition;
+  context: OntologyValidationContext;
   /** Absolute path to the lockfile, whether or not it exists yet. */
   lockfilePath: string;
   /** Whether the author asked us to bring the lockfile up to date, rather than just check it. */
@@ -61,10 +61,10 @@ export interface ReconcileOntologySchemaLockfileOptions {
 export async function reconcileOntologySchemaLockfile(
   options: ReconcileOntologySchemaLockfileOptions,
 ): Promise<void> {
-  const { ontology, lockfilePath, writeLocks, assumeYes } = options;
+  const { context, lockfilePath, writeLocks, assumeYes } = options;
 
-  const expected = generateOntologySchemaLockfile(ontology);
-  const census = censusOfSource(ontology);
+  const expected = generateOntologySchemaLockfile(context);
+  const census = censusOfSource(context.ontology);
   const persistedContents = await readIfExists(lockfilePath);
 
   if (persistedContents === undefined) {
