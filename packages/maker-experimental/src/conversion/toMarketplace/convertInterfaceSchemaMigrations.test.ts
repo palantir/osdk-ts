@@ -19,9 +19,15 @@ import type {
   InterfaceTypeSchemaTransition,
 } from "@osdk/client.unstable";
 import type { OutputShape } from "@osdk/client.unstable/api";
-import type { InterfaceSchemaTransition } from "@osdk/maker";
+import type {
+  InterfaceSchemaMigrationInstruction,
+  InterfaceSchemaMigrations,
+  InterfaceSchemaTransition,
+  InterfaceType,
+} from "@osdk/maker";
 import {
   defineInterface,
+  defineInterfaceActionTypeConstraint,
   defineOntology,
   defineSharedPropertyType,
 } from "@osdk/maker";
@@ -29,6 +35,7 @@ import invariant from "tiny-invariant";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { defineOntologyV2 } from "../../api/defineOntologyV2.js";
+import { toBlockShapeId } from "../../cli/marketplaceSerialization/CodeBlockSpec.js";
 import {
   type ReadableId,
   ReadableIdGenerator,
@@ -432,5 +439,148 @@ describe("interface type schema migration output shapes", () => {
         (shape) => shape.type === "interfaceTypeSchemaTransition",
       ),
     ).toEqual([]);
+  });
+});
+
+/** Schema migrations declaring a single-instruction transition. */
+function migrations(
+  instruction: InterfaceSchemaMigrationInstruction,
+): InterfaceSchemaMigrations {
+  return { transitions: [transition({ instructions: [instruction] })] };
+}
+
+function defineActionTypeConstraint(
+  interfaceType: InterfaceType,
+  apiName: string,
+  requireImplementation: boolean,
+  parameterApiNames: string[] = [],
+): void {
+  defineInterfaceActionTypeConstraint({
+    interfaceType,
+    apiName,
+    displayName: apiName,
+    description: apiName,
+    requireImplementation,
+    parameters: parameterApiNames.map((parameterApiName) => ({
+      apiName: parameterApiName,
+      displayName: parameterApiName,
+      type: { type: "string", string: {} },
+      requireImplementation: true,
+    })),
+  });
+}
+
+function onlyMigration(block: InterfaceTypeBlockDataV2) {
+  const convertedMigrations = transitionById(block, "t1").migrations;
+  invariant(
+    convertedMigrations.length === 1,
+    `expected one migration, got ${convertedMigrations.length}`,
+  );
+  return convertedMigrations[0];
+}
+
+function migrationReferences(block: InterfaceTypeBlockDataV2) {
+  const { schemaMigrations } = block;
+  invariant(schemaMigrations != null, "expected schema migrations");
+  const { schemaTransitions: _, ...references } = schemaMigrations;
+  return references;
+}
+
+async function convertShapes(body: () => void) {
+  return (await defineOntologyV2("com.palantir.", body)).shapes;
+}
+
+/** The output shape of the only migration in transition `t1`. */
+function migrationShape(
+  outputShapes: Map<ReadableId, OutputShape>,
+  interfaceApiName: string,
+) {
+  const shape = outputShapes.get(
+    ReadableIdGenerator.getForInterfaceSchemaTransition(interfaceApiName, "t1"),
+  );
+  invariant(shape?.type === "interfaceTypeSchemaTransition");
+  const [migration] = shape.interfaceTypeSchemaTransition.migrations;
+  return migration;
+}
+
+const blockId = (readableId: ReadableId) => toBlockShapeId(readableId);
+
+describe("addRequiredActionTypeConstraint schema migrations", () => {
+  it("targets an action type constraint by its published rid", async () => {
+    const block = await convertInterfaces(() => {
+      const foo = defineInterface({
+        apiName: "Foo",
+        schemaMigrations: migrations({
+          type: "addRequiredActionTypeConstraint",
+          actionTypeConstraint: "doThing",
+        }),
+      });
+      defineActionTypeConstraint(foo, "doThing", false);
+    });
+
+    const [constraint] = block.interfaceType.actionTypeConstraints;
+    expect(constraint.requireImplementation).toBe(false);
+    expect(onlyMigration(block)).toEqual({
+      type: "addRequiredActionTypeConstraint",
+      addRequiredActionTypeConstraint: {
+        actionTypeConstraintRid: constraint.rid,
+      },
+    });
+    expect(migrationReferences(block)).toEqual({
+      interfaceActionTypeConstraintRidsToApiNames: {
+        [constraint.rid]: "com.palantir.doThing",
+      },
+      interfaceLinkTypeRidsToApiNames: {},
+      interfaceParameterConstraintRidsToApiNames: {},
+      interfacePropertyTypeRidsToApiNames: {},
+      interfaceTypeRidsToApiNames: {},
+    });
+  });
+
+  it("runs the cross-entity checks once the body has attached constraints", async () => {
+    await expect(
+      convertOntology(() => {
+        const foo = defineInterface({
+          apiName: "Foo",
+          schemaMigrations: migrations({
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "doThing",
+          }),
+        });
+        defineActionTypeConstraint(foo, "doThing", true);
+      }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Schema migration transition "t1" on interface com.palantir.Foo declares addRequiredActionTypeConstraint("doThing"), but action type constraint "com.palantir.doThing" is \`requireImplementation: true\`. Only action type constraints declared \`requireImplementation: false\` may be targeted.]`,
+    );
+  });
+});
+
+describe("addRequiredActionTypeConstraint output shapes", () => {
+  it("references the targeted action type constraint's output shape", async () => {
+    const shapes = await convertShapes(() => {
+      const foo = defineInterface({
+        apiName: "Foo",
+        schemaMigrations: migrations({
+          type: "addRequiredActionTypeConstraint",
+          actionTypeConstraint: "doThing",
+        }),
+      });
+      defineActionTypeConstraint(foo, "doThing", false);
+    });
+    const constraintId =
+      ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+        "com.palantir.Foo",
+        "com.palantir.doThing",
+      );
+
+    expect(shapes.outputShapes.get(constraintId)?.type).toBe(
+      "interfaceActionTypeConstraint",
+    );
+    expect(migrationShape(shapes.outputShapes, "com.palantir.Foo")).toEqual({
+      type: "addRequiredActionTypeConstraint",
+      addRequiredActionTypeConstraint: {
+        actionTypeConstraint: blockId(constraintId),
+      },
+    });
   });
 });
