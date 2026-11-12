@@ -18,8 +18,10 @@ import type { ActionMetadata } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
-  ActionTypeV2,
+  QueryDataType,
 } from "@osdk/foundry.ontologies";
+
+import type { ActionTypeV2WithReturnType } from "./ActionTypeV2WithReturnType.js";
 
 import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
@@ -27,9 +29,10 @@ import {
   ensureStringEnumSupportedOrUndefined,
   supportedReleaseStatus,
 } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
+import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(
-  input: ActionTypeV2,
+  input: ActionTypeV2WithReturnType,
   unsanitizedApiName?: string,
 ): ActionMetadata {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
@@ -56,7 +59,31 @@ export function wireActionTypeV2ToSdkActionMetadata(
       input.status,
       supportedReleaseStatus,
     ),
+    ...(input.returnType != null
+      ? {
+        returnType: tryConvertActionReturnTypeToSdkReturnType(
+          input.apiName,
+          input.returnType,
+        ),
+      }
+      : {}),
   };
+}
+
+function tryConvertActionReturnTypeToSdkReturnType(
+  actionApiName: string,
+  returnType: QueryDataType,
+): ActionMetadata["returnType"] {
+  try {
+    return wireQueryDataTypeToQueryDataTypeDefinition(returnType);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Action "${actionApiName}" has a return type the OSDK cannot represent, so returnType was left out of its metadata.`,
+      e,
+    );
+    return undefined;
+  }
 }
 
 function wireActionParameterV2ToSdkParameterDefinition(

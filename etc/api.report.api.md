@@ -48,6 +48,8 @@ export interface ActionMetadata {
     	// (undocumented)
     parameters: Record<any, ActionMetadata.Parameter<any>>;
     	// (undocumented)
+    returnType?: QueryDataTypeDefinition;
+    	// (undocumented)
     rid: string;
     	// Warning: (ae-forgotten-export) The symbol "ReleaseStatus" needs to be exported by the entry point index.d.ts
     //
@@ -161,11 +163,19 @@ export namespace ActionParam {
 }
 
 // @public (undocumented)
-export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatchActionOptions> = Op extends {
+export type ActionReturnTypeForOptions<
+	Op extends ApplyActionOptions | ApplyBatchActionOptions,
+	TReturnValue = never
+> = Op extends {
     	$validateOnly: true
 } ? ActionValidationResponse : Op extends {
     	$returnEdits: true
-} ? ActionEditResponse : undefined;
+} ? [TReturnValue] extends [never] ? ActionEditResponse : ActionEditResponse & ActionReturnValueResponse<TReturnValue> : [TReturnValue] extends [never] ? undefined : ActionReturnValueResponse<TReturnValue>;
+
+// @public
+export interface ActionReturnValueResponse<TReturnValue> {
+    	returnValue: TReturnValue | undefined;
+}
 
 // Warning: (ae-forgotten-export) The symbol "ValidateActionResponseV2" needs to be exported by the entry point index.d.ts
 //
@@ -317,7 +327,7 @@ export interface Attachment {
 
 // @public (undocumented)
 export interface AttachmentMetadata {
-	// (undocumented)
+    	// (undocumented)
     filename: string;
     	// (undocumented)
     mediaType: string;
