@@ -28,15 +28,12 @@ import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import {
   LegacyFauxFoundry,
-  MockOntologiesV2,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
 import pDefer from "p-defer";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { additionalContext } from "../Client.js";
-import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import {
   buildSelectV2,
@@ -49,6 +46,10 @@ import {
   createObjectSet,
   getWireObjectSet,
 } from "../objectSet/createObjectSet.js";
+import {
+  createMockCaptureClient,
+  getLastObjectSetRequest,
+} from "../util/mockCaptureClient.js";
 
 const metadata = {
   ontologyRid: "asdf",
@@ -56,79 +57,6 @@ const metadata = {
 type TodoDef = Todo;
 
 describe(fetchPage, () => {
-  it("uses pivot targets for selections and ordering", async ({
-    onTestFinished,
-  }) => {
-    const { client, apiServer, fauxFoundry } = startNodeApiServer(
-      new LegacyFauxFoundry(),
-      createClient,
-    );
-    onTestFinished(() => apiServer.close());
-    const source: InterfaceDefinition = {
-      type: "interface",
-      apiName: "com.acme.Source",
-    };
-    fauxFoundry.getDefaultOntology().registerInterfaceType({
-      ...stubData.FooInterface,
-      apiName: source.apiName,
-      allLinks: {
-        employees: {
-          ...stubData.FooInterface.allLinks!.toBar,
-          linkedEntityApiName: {
-            type: "objectTypeApiName",
-            apiName: "Employee",
-          },
-        },
-        managers: {
-          ...stubData.FooInterface.allLinks!.toBar,
-          linkedEntityApiName: {
-            type: "interfaceTypeApiName",
-            apiName: "com.other.Manager",
-          },
-        },
-      },
-    });
-    fauxFoundry.getDefaultOntology().registerInterfaceType({
-      ...stubData.FooInterface,
-      apiName: "com.other.Manager",
-    });
-    let requestBody: unknown;
-    apiServer.use(
-      MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
-        fauxFoundry.baseUrl,
-        async ({ request }) => {
-          requestBody = await request.json();
-          return {
-            data: [],
-            totalCount: "0",
-            interfaceToObjectTypeMappings: {},
-            interfaceToObjectTypeMappingsV2: {},
-            propertySecurities: [],
-          };
-        },
-      ),
-    );
-
-    const objectSet = createObjectSet(source, client[additionalContext]);
-    await objectSet.pivotTo("employees").fetchPage({
-      $select: ["fullName"],
-      $orderBy: { fullName: "asc" },
-    });
-    expect(requestBody).toMatchObject({
-      selectV2: [{ type: "property", apiName: "fullName" }],
-      orderBy: { fields: [{ field: "fullName", direction: "asc" }] },
-    });
-
-    await objectSet.pivotTo("managers").fetchPage({
-      $select: ["fooSpt"],
-      $orderBy: { fooSpt: "desc" },
-    });
-    expect(requestBody).toMatchObject({
-      selectV2: [{ type: "property", apiName: "com.other.fooSpt" }],
-      orderBy: { fields: [{ field: "com.other.fooSpt", direction: "desc" }] },
-    });
-  });
-
   it("infers select properly", () => {
     // this helper lets us get return types of functions that are generic
     class Helper<
@@ -547,6 +475,56 @@ describe(fetchPage, () => {
       ]);
 
       expect(result).toEqual(["firstName", "lastName"]);
+    });
+
+    it("uses pivot targets for selections and ordering", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      const source: InterfaceDefinition = {
+        type: "interface",
+        apiName: "com.acme.Source",
+      };
+      fetchFn.mockResolvedValueOnce(
+        Response.json({
+          ...stubData.FooInterface,
+          apiName: source.apiName,
+          implementedByObjectTypes: [],
+          allLinks: {
+            employees: {
+              ...stubData.FooInterface.allLinks!.toBar,
+              linkedEntityApiName: {
+                type: "objectTypeApiName",
+                apiName: "Employee",
+              },
+            },
+            managers: {
+              ...stubData.FooInterface.allLinks!.toBar,
+              linkedEntityApiName: {
+                type: "interfaceTypeApiName",
+                apiName: "com.other.Manager",
+              },
+            },
+          },
+        }),
+      );
+
+      const objectSet = createObjectSet(source, client);
+      await objectSet.pivotTo("employees").fetchPage({
+        $select: ["fullName"],
+        $orderBy: { fullName: "asc" },
+      });
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        selectV2: [{ type: "property", apiName: "fullName" }],
+        orderBy: { fields: [{ field: "fullName", direction: "asc" }] },
+      });
+
+      await objectSet.pivotTo("managers").fetchPage({
+        $select: ["fooSpt"],
+        $orderBy: { fooSpt: "desc" },
+      });
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        selectV2: [{ type: "property", apiName: "com.other.fooSpt" }],
+        orderBy: { fields: [{ field: "com.other.fooSpt", direction: "desc" }] },
+      });
     });
   });
 
