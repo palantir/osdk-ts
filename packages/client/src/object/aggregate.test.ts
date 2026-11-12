@@ -235,6 +235,17 @@ describe("aggregate", () => {
     expect(
       JSON.parse(fetchFn.mock.lastCall![1]!.body as string).aggregation,
     ).toEqual([{ type: "max", name: "salary.max", field: "com.other.salary" }]);
+
+    fetchFn.mockClear();
+    await expect(
+      aggregate(
+        pivotClient,
+        employeeInterface,
+        { type: "reference", reference: "ri.object-set.main.object-set.1" },
+        { $select: { "salary:max": "unordered" } },
+      ),
+    ).rejects.toThrow("Unable to resolve object set type for aggregation");
+    expect(fetchFn).not.toHaveBeenCalled();
   });
 
   it("works", async () => {

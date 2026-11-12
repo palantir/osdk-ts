@@ -50,9 +50,12 @@ export async function aggregate<
 ): Promise<AggregationsResults<Q, AO>> {
   const resolvedObjectType =
     objectType.type === "interface"
-      ? ((await extractObjectOrInterfaceType(clientCtx, objectSet)) ??
-        objectType)
+      ? await extractObjectOrInterfaceType(clientCtx, objectSet)
       : objectType;
+  invariant(
+    resolvedObjectType,
+    "Unable to resolve object set type for aggregation",
+  );
   const derivedPropertyNames = getDerivedPropertyNames(objectSet);
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["$select"]>(
