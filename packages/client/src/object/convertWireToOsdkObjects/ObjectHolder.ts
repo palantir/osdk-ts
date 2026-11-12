@@ -20,7 +20,11 @@ import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { BaseHolder } from "./BaseHolder.js";
 import type { get$link } from "./getDollarLink.js";
-import type { ClientRef, ObjectDefRef } from "./InternalSymbols.js";
+import type {
+  ClientRef,
+  FullyLoadedProperties,
+  ObjectDefRef,
+} from "./InternalSymbols.js";
 
 /**
  * @internal
@@ -33,6 +37,7 @@ export interface ObjectHolder<
 > extends BaseHolder {
   readonly [ObjectDefRef]: FetchedObjectTypeDefinition;
   readonly [ClientRef]: MinimalClient;
+  readonly [FullyLoadedProperties]: ReadonlySet<string>;
 
   readonly $link: ReturnType<typeof get$link>;
 }

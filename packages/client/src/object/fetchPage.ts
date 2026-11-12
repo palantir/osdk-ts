@@ -293,6 +293,8 @@ export async function fetchStaticRidPage<
       false,
       result.interfaceToObjectTypeMappings,
       result.interfaceToObjectTypeMappingsV2,
+      undefined,
+      { includeAllBaseObjectProperties: args.$includeAllBaseObjectProperties },
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -407,6 +409,11 @@ async function fetchInterfacePage<
       false,
       result.interfaceToObjectTypeMappings,
       result.interfaceToObjectTypeMappingsV2,
+      undefined,
+      {
+        includeAllBaseObjectProperties: args.$includeAllBaseObjectProperties,
+        fullyLoadedProperties: hasModifiers ? [] : undefined,
+      },
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -812,6 +819,17 @@ export async function fetchObjectPage<
       !args.$includeRid,
       args.$select,
       false,
+      undefined,
+      undefined,
+      undefined,
+      {
+        includeAllBaseObjectProperties: !hasSelect && !hasModifiers,
+        fullyLoadedProperties: hasModifiers
+          ? (hasSelect ? [...args.$select!] : (allProperties ?? [])).filter(
+              (property) => modifiers?.[property] == null,
+            )
+          : undefined,
+      },
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
