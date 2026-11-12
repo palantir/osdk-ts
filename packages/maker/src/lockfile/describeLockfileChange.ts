@@ -35,7 +35,7 @@ import { authoredKeyOf } from "./OntologySchemaLockfile.js";
 import type {
   LockfileBreakingChange,
   LockfileWarning,
-  TargetPropertyState,
+  TargetState,
 } from "./validateOntologySchemaLockfile.js";
 
 /** Renders a breaking change as the report an author reads. */
@@ -55,7 +55,7 @@ export function describeBreakingChange(
       }
 
       const targets = breakingChange.targets
-        .map(({ propertyApiName }) => `"${authoredKeyOf(propertyApiName)}"`)
+        .map((target) => `"${authoredKeyOf(target.apiName)}"`)
         .join(", ");
       return (
         `${where}: schema migration "${breakingChange.transitionId}" is no longer declared, but ` +
@@ -383,11 +383,19 @@ function toAuthoredInstruction(
         type: "addRequiredProperty",
         property: authoredKeyOf(instruction.property),
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        actionTypeConstraint: authoredKeyOf(instruction.actionTypeConstraint),
+      };
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as LockedInstruction).type
+        }`,
       );
+    }
   }
 }
 
@@ -447,25 +455,40 @@ function describeInstructions(
     .join(", ")}]`;
 }
 
-/** Explains what actually happened to a transition's target properties, for the error message. */
-function describeTargetDrift(targets: readonly TargetPropertyState[]): string {
-  const descriptions = targets.map(({ propertyApiName, previous, next }) => {
-    const authoredPropertyName = authoredKeyOf(propertyApiName);
-    if (next === undefined) {
-      return `"${authoredPropertyName}" was removed from the interface`;
-    }
+/** Explains what actually happened to a transition's targets, for the error message. */
+function describeTargetDrift(targets: readonly TargetState[]): string {
+  const descriptions = targets.map((target) => {
+    const authoredName = authoredKeyOf(target.apiName);
+    switch (target.kind) {
+      case "property": {
+        const { previous, next } = target;
+        if (next === undefined) {
+          return `"${authoredName}" was removed from the interface`;
+        }
 
-    if (
-      previous !== undefined &&
-      !isDeepStrictEqual(previous.type, next.type)
-    ) {
-      return (
-        `"${authoredPropertyName}" changed type from ${describeType(previous.type)} to ` +
-        describeType(next.type)
-      );
-    }
+        if (
+          previous !== undefined &&
+          !isDeepStrictEqual(previous.type, next.type)
+        ) {
+          return (
+            `"${authoredName}" changed type from ${describeType(previous.type)} to ` +
+            describeType(next.type)
+          );
+        }
 
-    return `"${authoredPropertyName}" is \`required: ${next.required}\``;
+        return `"${authoredName}" is \`required: ${next.required}\``;
+      }
+
+      case "actionTypeConstraint":
+        return target.next === undefined
+          ? `action type constraint "${authoredName}" was removed from the interface`
+          : `"${authoredName}" is \`requireImplementation: ${target.next.requireImplementation}\``;
+
+      default: {
+        const unhandled: never = target;
+        throw new Error(`Unknown target: ${JSON.stringify(unhandled)}`);
+      }
+    }
   });
   return `Instead, ${descriptions.join(", ")}.`;
 }

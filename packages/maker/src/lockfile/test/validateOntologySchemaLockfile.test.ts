@@ -270,7 +270,8 @@ describe("validateOntologySchemaLockfile", () => {
           transitionId: "requireLastName",
           targets: [
             {
-              propertyApiName: "lastName",
+              kind: "property",
+              apiName: "lastName",
               previous: OPTIONAL_STRING,
               next: undefined,
             },
@@ -1086,6 +1087,17 @@ describe("validateOntologySchemaLockfile", () => {
       requireImplementation: true,
     };
 
+    const requireSendEmail: LockedTransition = {
+      id: "requireSendEmail",
+      gracePeriod: THIRTY_DAYS,
+      instructions: [
+        {
+          type: "addRequiredActionTypeConstraint",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ],
+    };
+
     /** A single-interface lockfile whose interface declares the given constraints. */
     function personConstrained(
       actionTypeConstraints: Record<string, LockedActionTypeConstraint>,
@@ -1103,6 +1115,97 @@ describe("validateOntologySchemaLockfile", () => {
         },
       });
     }
+
+    const sendEmailInFlight = personConstrained({ [SEND_EMAIL]: OPTIONAL }, [
+      requireSendEmail,
+    ]);
+
+    it("reads the constraint becoming required as a finalization", () => {
+      const result = validate(
+        sendEmailInFlight,
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "finalized",
+        },
+      ]);
+    });
+
+    it("still checks the target constraint's parameters across a finalization", () => {
+      const subject = { requireImplementation: false };
+      const result = validate(
+        personConstrained(
+          { [SEND_EMAIL]: { ...OPTIONAL, parameters: { subject } } },
+          [requireSendEmail],
+        ),
+        personConstrained({
+          [SEND_EMAIL]: {
+            ...REQUIRED,
+            parameters: {
+              subject: {
+                ...subject,
+                isRequiredParameterOnConcreteAction: true,
+              },
+            },
+          },
+        }),
+      );
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "finalized",
+        },
+      ]);
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "parameterBecameRequiredOnConcreteAction",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+          parameter: "subject",
+        },
+      ]);
+    });
+
+    it("reads the constraint staying optional as a deletion", () => {
+      const result = validate(
+        sendEmailInFlight,
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "deleted",
+        },
+      ]);
+    });
+
+    it("rejects a disappearance that removes the target constraint", () => {
+      const result = validate(sendEmailInFlight, personConstrained({}));
+      expect(result.warnings).toEqual([]);
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "ambiguousDisappearance",
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          targets: [
+            {
+              kind: "actionTypeConstraint",
+              apiName: SEND_EMAIL,
+              previous: OPTIONAL,
+              next: undefined,
+            },
+          ],
+          instructions: requireSendEmail.instructions,
+        },
+      ]);
+    });
 
     it("rejects making an existing constraint required without a migration", () => {
       const result = validate(

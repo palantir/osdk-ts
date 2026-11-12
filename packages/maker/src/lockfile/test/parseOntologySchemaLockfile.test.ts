@@ -534,6 +534,35 @@ describe("parseLockfile", () => {
     );
   });
 
+  it.each([
+    [
+      "an addRequiredProperty",
+      { type: "addRequiredProperty", property: "lastName" },
+    ],
+    [
+      "an addRequiredActionTypeConstraint",
+      {
+        type: "addRequiredActionTypeConstraint",
+        actionTypeConstraint: "com.palantir.sendEmail",
+      },
+    ],
+  ])("accepts %s instruction", (_name, instruction) => {
+    const lockfile = withTransition({ instructions: [instruction] });
+    expect(parse(lockfile)).toStrictEqual(lockfile);
+  });
+
+  it("rejects an `addRequiredActionTypeConstraint` instruction that names no constraint", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [{ type: "addRequiredActionTypeConstraint" }],
+        }),
+      ),
+    ).toThrowError(
+      /instructions\[0\]\.actionTypeConstraint: Expected the api name of the action type constraint to require/u,
+    );
+  });
+
   it("reports every problem at once, rather than one build at a time", () => {
     const badMerge = withInterface({
       schema: { properties: { lastName: { type: "string" } } },
