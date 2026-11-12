@@ -16,6 +16,7 @@
 
 import invariant from "tiny-invariant";
 
+import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -68,11 +69,14 @@ export function defineInterfaceLinkConstraint(
     `Cannot define a link constraint from imported interface ${linkDef.from.apiName}. The "from" side must be a locally defined interface.`,
   );
 
+  const collector = createValidationIssueCollector();
   const fromLinkMeta = getLinkMeta(linkDef);
   validateDisplayMetadataLengths(
     fromLinkMeta,
     `Interface "${linkDef.from.apiName}", link "${fromLinkMeta.apiName}"`,
+    collector,
   );
+  collector.throwIfAnyIssues();
 
   invariant(
     linkDef.from.links.find(
