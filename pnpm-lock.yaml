@@ -4734,12 +4734,15 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
+      '@osdk/generator-converters':
+        specifier: workspace:~
+        version: link:../generator-converters
       '@osdk/generator-converters.ontologyir':
         specifier: workspace:~
         version: link:../generator-converters.ontologyir
       '@osdk/typescript-sdk-docs':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: workspace:~
+        version: link:../typescript-sdk-docs
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -4765,9 +4768,15 @@ importers:
         specifier: ^3.25.76
         version: 3.25.76
     devDependencies:
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
       '@osdk/client.unstable':
         specifier: workspace:~
         version: link:../client.unstable
+      '@osdk/generator':
+        specifier: workspace:~
+        version: link:../generator
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor

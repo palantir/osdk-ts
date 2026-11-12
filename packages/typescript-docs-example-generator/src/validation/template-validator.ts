@@ -287,6 +287,7 @@ export class TemplateValidator {
       hasAttachmentUpload: false,
       hasAttachmentProperty: false,
       hasParameters: false,
+      useTypedActionParameters: false,
       actionParameterSampleValuesV2: "",
       last: false,
       needsImports: false,

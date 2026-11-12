@@ -86,12 +86,16 @@
 // See: ./applyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
 // See: ./applyAction_^hasAttachmentProperty.ts (Inverted block: hasAttachmentProperty = false)
 // See: ./applyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
+// See: ./applyAction_#useTypedActionParameters.ts (Standard block: useTypedActionParameters = true)
+// See: ./applyAction_^useTypedActionParameters.ts (Inverted block: useTypedActionParameters = false)
 // See: ./applyAction_#actionParameterSampleValuesV2.ts (Standard block: actionParameterSampleValuesV2 = true)
 
 // batchApplyAction (variations only)
 // See: ./batchApplyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
 // See: ./batchApplyAction_^hasAttachmentProperty.ts (Inverted block: hasAttachmentProperty = false)
 // See: ./batchApplyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
+// See: ./batchApplyAction_#useTypedActionParameters.ts (Standard block: useTypedActionParameters = true)
+// See: ./batchApplyAction_^useTypedActionParameters.ts (Inverted block: useTypedActionParameters = false)
 // See: ./batchApplyAction_#actionParameterSampleValuesV2.ts (Standard block: actionParameterSampleValuesV2 = true)
 
 // uploadAttachment

@@ -42,8 +42,9 @@
   "dependencies": {
     "@blueprintjs/icons": "^6.7.0",
     "@osdk/api": "workspace:~",
+    "@osdk/generator-converters": "workspace:~",
     "@osdk/generator-converters.ontologyir": "workspace:~",
-    "@osdk/typescript-sdk-docs": "^0.2.0",
+    "@osdk/typescript-sdk-docs": "workspace:~",
     "consola": "^3.4.2",
     "jiti": "^2.5.1",
     "mustache": "^4.2.0",
@@ -54,7 +55,9 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@osdk/client": "workspace:~",
     "@osdk/client.unstable": "workspace:~",
+    "@osdk/generator": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/mustache": "^4.2.6",
