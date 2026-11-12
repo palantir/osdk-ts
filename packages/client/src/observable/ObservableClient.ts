@@ -642,7 +642,7 @@ export interface ObservableClient extends ObserveLinks {
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
 
-  /** Returns the client used to create this observable client. */
+  /** Returns the underlying client used by the store. */
   getClient(): Client;
 
   /** Adds a request user agent until the returned cleanup function is called. */
@@ -755,7 +755,6 @@ export function createObservableClient(
   // any real state, this whole thing works.
   return new ObservableClientImpl(
     new Store(tweakedClient, options),
-    client,
     userAgents,
   );
 }

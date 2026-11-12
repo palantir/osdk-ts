@@ -52,7 +52,7 @@ root.render(
 );
 ```
 
-The `client` prop accepts either a plain client or an observable client. When you supply an observable client, `useOsdkClient()` returns the plain client used to create it. Set creation options such as `devMode` in `createObservableClient`; they cannot also be passed to the provider. The provider's `enableDevTools` option is available in either mode.
+The `client` prop accepts either a plain client or an observable client. When you supply an observable client, `useOsdkClient()` returns the underlying client used by its store. Set creation options such as `devMode` in `createObservableClient`; they cannot also be passed to the provider. The provider's `enableDevTools` option is available in either mode.
 
 Keep the observable client stable across renders. Replace it when the ontology, branch, or authentication context changes. The provider does not clear the shared cache when it unmounts. Each consumer must unsubscribe from its own observations.
 

@@ -92,7 +92,6 @@ export class ObservableClientImpl implements ObservableClient {
 
   constructor(
     store: Store,
-    private readonly client: Client = store.client,
     private readonly userAgents = new Map<symbol, string>(),
   ) {
     this.__experimentalStore = store;
@@ -102,7 +101,7 @@ export class ObservableClientImpl implements ObservableClient {
   }
 
   getClient(): Client {
-    return this.client;
+    return this.__experimentalStore.client;
   }
 
   registerUserAgent(agent: string): () => void {
