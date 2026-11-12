@@ -22,9 +22,15 @@ import type { OauthLogger } from "./Logger.js";
 
 interface ProcessedPublicOauthClientOptions extends Omit<
   Required<PublicOauthClientOptions>,
-  "loginPage" | "refreshTokenMarker" | "scopes" | "tokenStorage" | "logger"
+  | "loginPage"
+  | "realmId"
+  | "refreshTokenMarker"
+  | "scopes"
+  | "tokenStorage"
+  | "logger"
 > {
   loginPage?: string;
+  realmId?: string;
   refreshTokenMarker?: string;
   joinedScopes: string;
   tokenStorage: TokenStorageType;
@@ -67,6 +73,7 @@ export function processOptionsAndAssignDefaults(
   return {
     useHistory: options.useHistory ?? true,
     loginPage: options.loginPage,
+    realmId: options.realmId,
     postLoginPage: options.postLoginPage || window.location.toString(),
     joinedScopes: [
       ...(options.scopes ?? [
