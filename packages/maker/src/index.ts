@@ -111,10 +111,12 @@ export {
 } from "./api/interface/InterfacePropertyType.js";
 export { getFlattenedInterfaceProperties } from "./api/interface/getFlattenedInterfaceProperties.js";
 export type {
+  InterfaceActionTypeConstraintReplacement,
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaMigrations,
   InterfaceSchemaTransition,
+  InterfaceTypeReplacement,
 } from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type {
