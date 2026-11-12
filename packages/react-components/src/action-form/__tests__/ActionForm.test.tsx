@@ -317,10 +317,11 @@ describe("ActionForm", () => {
     });
 
     it("does not show submission error on button tooltip", async () => {
+      const onError = vi.fn();
       const error = new Error("Something broke");
       mockApplyAction.mockRejectedValue(error);
 
-      render(<ActionForm actionDefinition={TestAction} />);
+      render(<ActionForm actionDefinition={TestAction} onError={onError} />);
 
       fireEvent.input(screen.getByRole("textbox", { name: /^name/u }), {
         target: { value: "Alice" },
@@ -328,7 +329,7 @@ describe("ActionForm", () => {
       fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
 
       await vi.waitFor(() => {
-        expect(screen.getByRole("button", { name: /submit/iu })).toBeDefined();
+        expect(onError).toHaveBeenCalled();
       });
 
       expect(screen.queryByText("Something broke")).toBeNull();
