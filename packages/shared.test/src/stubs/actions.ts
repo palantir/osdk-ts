@@ -23,6 +23,7 @@ import invariant from "tiny-invariant";
 
 import { createLazyDoNothingActionImpl } from "../createLazyDoNothingActionImpl.js";
 import { moveOfficeImpl } from "./actions/moveOffice.js";
+import { renameOfficeImpl } from "./actions/renameOffice.js";
 import {
   ActionCreatesInterface,
   ActionTakesAnotherInterface,
@@ -38,6 +39,7 @@ import {
   MoveOffice,
   PromoteEmployee,
   PromoteEmployeeObject,
+  RenameOffice,
 } from "./actionTypes.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
@@ -245,6 +247,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
   );
 
   fauxOntology.registerActionType(MoveOffice, moveOfficeImpl);
+  fauxOntology.registerActionType(RenameOffice, renameOfficeImpl);
 
   fauxOntology.registerActionType(
     CreateOfficeAndEmployee,

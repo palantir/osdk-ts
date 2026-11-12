@@ -19,12 +19,15 @@ import type {
   ActionParameterType,
   ActionTypeV2,
 } from "@osdk/foundry.ontologies";
+import type { ActionTypeV2WithReturnType } from "@osdk/generator-converters";
 import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import path from "node:path";
 import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
+import { getInterfaceTypesFromQueryDataType } from "../shared/getInterfaceTypesFromQueryDataType.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
+import { getObjectTypesFromQueryDataType } from "../shared/getObjectTypesFromQueryDataType.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { escapeJsDocText } from "../util/escapeJsDocText.js";
 import { stringify } from "../util/stringify.js";
@@ -336,6 +339,26 @@ export async function generatePerActionDataFiles(
               );
             }
           }
+        }
+      }
+
+      const wireReturnType = (action.raw as ActionTypeV2WithReturnType)
+        .returnType;
+      if (returnType != null && wireReturnType != null) {
+        const returnObjectTypes = new Set<string>();
+        getObjectTypesFromQueryDataType(wireReturnType, returnObjectTypes);
+        for (const apiName of returnObjectTypes) {
+          referencedObjectDefs.add(enhancedOntology.requireObjectType(apiName));
+        }
+        const returnInterfaceTypes = new Set<string>();
+        getInterfaceTypesFromQueryDataType(
+          wireReturnType,
+          returnInterfaceTypes,
+        );
+        for (const apiName of returnInterfaceTypes) {
+          referencedObjectDefs.add(
+            enhancedOntology.requireInterfaceType(apiName),
+          );
         }
       }
 
