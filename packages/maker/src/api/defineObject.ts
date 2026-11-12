@@ -142,12 +142,12 @@ export function defineObject(
   for (const datasource of objectDef.datasources ?? []) {
     if (datasource.type === "derived") continue;
     const { markingConstraints } = datasource;
-    invariant(
+    addIssue(
       markingConstraints?.mandatory === undefined ||
         hasMarkingProperty("MANDATORY"),
       `Object "${objectDef.apiName}" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.`,
     );
-    invariant(
+    addIssue(
       markingConstraints?.cbac === undefined || hasMarkingProperty("CBAC"),
       `Object "${objectDef.apiName}" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.`,
     );
