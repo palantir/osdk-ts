@@ -34,6 +34,7 @@ const schema = {
   count: { type: "number", isList: false },
   searchText: { type: "string", isList: false },
   enabled: { type: "boolean", isList: false },
+  counts: { type: "number", isList: true },
 } as const satisfies WorkshopModuleSchema;
 
 describe("module schemas", () => {
@@ -117,6 +118,42 @@ describe("module schemas", () => {
       connection.setVariables({ count: 25 });
       await received;
       expect(listener).toHaveBeenCalledExactlyOnceWith({ count: 25 });
+      unsubscribe();
+    }
+  });
+
+  it("validates list element types and distinguishes lists from scalars in both directions", async () => {
+    await publish();
+    for (const connection of [parent, workshop]) {
+      expect(() => connection.setVariables({ counts: [1, 2] })).not.toThrow();
+      expect(() => connection.setVariables({ counts: [] })).not.toThrow();
+      expect(() => connection.setVariables({ counts: null })).not.toThrow();
+      expect(() => connection.setVariables({ counts: ["1"] })).toThrow(
+        "expects number[]",
+      );
+      expect(() => connection.setVariables({ counts: 1 })).toThrow(
+        "expects number[]",
+      );
+      expect(() => connection.setVariables({ count: [] })).toThrow(
+        "expects number",
+      );
+      const peer = connection === parent ? workshop : parent;
+      const listener = vi.fn();
+      const unsubscribe = peer.onVariablesSet(listener);
+      const port = connection.port;
+      port.postMessage(variableMessage({ counts: ["1"] }));
+      port.postMessage(variableMessage({ counts: 1 }));
+      port.postMessage(variableMessage({ count: [] }));
+      const received = nextMessage(peer.port, (data) => data === "drained");
+      connection.setVariables({ counts: [] });
+      port.postMessage("drained");
+      await received;
+      expect(listener.mock.calls).toEqual([
+        [{ counts: [1, 2] }],
+        [{ counts: [] }],
+        [{ counts: null }],
+        [{ counts: [] }],
+      ]);
       unsubscribe();
     }
   });
@@ -271,7 +308,6 @@ describe("schema validation", () => {
       { count: undefined },
       { count: Number.NaN },
       { count: Number.POSITIVE_INFINITY },
-      { count: [1] },
       { "": null },
       { count: 1, COUNT: 2 },
     ]) {
@@ -301,7 +337,7 @@ function nextMessage(
 const invalidSchemas: unknown[] = [
   null,
   [],
-  { count: { type: "number", isList: true } },
+  { count: { type: "number", isList: "true" } },
   { count: { type: "number" } },
   { count: { type: "unsupported", isList: false } },
   { count: null },

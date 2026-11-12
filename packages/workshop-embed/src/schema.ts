@@ -27,8 +27,8 @@ import type { WorkshopVariableValues } from "./variables.js";
 export interface WorkshopVariableSchema {
   /** Value type declared by Workshop. */
   readonly type: "string" | "number" | "boolean";
-  /** False for scalar variables. */
-  readonly isList: false;
+  /** Whether the variable contains an array of the declared type. */
+  readonly isList: boolean;
 }
 
 /** Supported module-interface variable definitions, keyed by external ID. @public */
@@ -76,7 +76,7 @@ function isModuleSchema(value: unknown): value is WorkshopModuleSchema {
     value,
     (schema) =>
       isRecord(schema) &&
-      schema.isList === false &&
+      typeof schema.isList === "boolean" &&
       (schema.type === "string" ||
         schema.type === "number" ||
         schema.type === "boolean"),
@@ -102,10 +102,18 @@ export function validateVariableValues(
     if (!Object.hasOwn(schema, externalId)) {
       throw new TypeError(`Unknown Workshop variable: ${externalId}.`);
     }
-    const expected = schema[externalId].type;
-    if (value != null && typeof value !== expected) {
+    if (value == null) continue;
+    const definition = schema[externalId];
+    const isList = Array.isArray(value);
+    const elements = isList ? value : [value];
+    if (
+      isList !== definition.isList ||
+      !elements.every((element) => typeof element === definition.type)
+    ) {
+      const expected = `${definition.type}${definition.isList ? "[]" : ""}`;
+      const received = isList ? "array" : typeof value;
       throw new TypeError(
-        `Workshop variable "${externalId}" expects ${expected}; received ${typeof value}.`,
+        `Workshop variable "${externalId}" expects ${expected}; received ${received}.`,
       );
     }
   }
