@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet } from "@osdk/api";
 import {
   BarInterface,
   ComplexImplementationInterface,
@@ -209,7 +209,8 @@ describe("ObjectSet", () => {
         ]);
         expect(ifaceObj.iReduced).toEqual(42);
 
-        const objectType: ObjectTypeDefinition = ComplexImplementationObject;
+        const objectType = ComplexImplementationObject;
+        // @ts-expect-error
         const object = ifaceObj.$as(objectType);
         expect(object).toMatchObject({
           $primaryKey: "k1",
@@ -223,7 +224,8 @@ describe("ObjectSet", () => {
           arrayValue: [1, 2, 3],
         });
         expect(
-          ifaceObj.$as<ObjectTypeDefinition>("ComplexImplementationObject"),
+          // @ts-expect-error
+          ifaceObj.$as<ComplexImplementationObject>(objectType.apiName),
         ).toBe(object);
       })();
     });
@@ -255,12 +257,14 @@ describe("ObjectSet", () => {
           $includeAllBaseObjectProperties: true,
         });
         expect(ifaceObj.iReduced).toEqual(6);
-        const objectType: ObjectTypeDefinition = ComplexImplementationObject;
+        const objectType = ComplexImplementationObject;
+        // @ts-expect-error
         expect(() => ifaceObj.$as(objectType)).toThrowError(
           /property 'iReduced' has a reduced implementation/u,
         );
         expect(() =>
-          ifaceObj.$as<ObjectTypeDefinition>(objectType.apiName),
+          // @ts-expect-error
+          ifaceObj.$as<ComplexImplementationObject>(objectType.apiName),
         ).toThrowError(/property 'iReduced' has a reduced implementation/u);
       })();
     });
