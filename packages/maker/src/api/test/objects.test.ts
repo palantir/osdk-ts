@@ -469,6 +469,66 @@ describe("Object Types", () => {
     expect(dumpOntologyFullMetadata()).toMatchSnapshot();
   });
 
+  it("Fails if markingConstraints.mandatory is set without a MANDATORY marking property", () => {
+    expect(() => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          classification: {
+            type: {
+              type: "marking",
+              markingType: "CBAC",
+              markingInputGroupName: "classificationGroup",
+            },
+          },
+        },
+        datasources: [
+          {
+            type: "dataset",
+            markingConstraints: { mandatory: { allowEmptyMarkings: true } },
+          },
+        ],
+      });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Object "foo" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.]`,
+    );
+  });
+
+  it("Fails if markingConstraints.cbac is set without a CBAC marking property", () => {
+    expect(() => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          mandatory: {
+            type: {
+              type: "marking",
+              markingType: "MANDATORY",
+              markingInputGroupName: "mandatoryGroup",
+            },
+          },
+        },
+        datasources: [
+          {
+            type: "dataset",
+            markingConstraints: { cbac: { allowEmptyMarkings: true } },
+          },
+        ],
+      });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Object "foo" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.]`,
+    );
+  });
+
   it("Fails if edit only property is primary key", () => {
     expect(() => {
       defineObject({

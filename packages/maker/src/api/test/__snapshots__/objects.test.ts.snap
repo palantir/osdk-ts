@@ -37,6 +37,7 @@ exports[`Object Types > Complex PSGs configurations are defined correctly 1`] = 
             "dataSecurity": {
               "classificationConstraint": undefined,
               "markingConstraint": {
+                "allowEmptyMarkings": undefined,
                 "markingGroupName": "myMarking",
               },
             },
