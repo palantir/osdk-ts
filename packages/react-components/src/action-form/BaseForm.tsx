@@ -85,7 +85,9 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   } = useAsyncAction(onSubmit);
   const submissionErrorMessage =
     submissionError != null
-      ? (extractUserFacingMessage(submissionError) ?? "Submission failed")
+      ? submissionError instanceof Error
+        ? submissionError.message
+        : "Submission failed"
       : undefined;
 
   const submitForm = useCallback(async () => {
@@ -346,28 +348,4 @@ function ErrorIndicator({
       </Tooltip.Portal>
     </Tooltip.Root>
   );
-}
-
-function extractUserFacingMessage(error: unknown): string | undefined {
-  if (!(error instanceof Error)) {
-    return undefined;
-  }
-  if (
-    error.name === "PalantirApiError" &&
-    "errorName" in error &&
-    (error as { errorName: unknown }).errorName ===
-      "FunctionEncounteredUserFacingError" &&
-    "parameters" in error
-  ) {
-    const params = (error as { parameters: unknown }).parameters;
-    if (
-      params != null &&
-      typeof params === "object" &&
-      "message" in params &&
-      typeof (params as { message: unknown }).message === "string"
-    ) {
-      return (params as { message: string }).message;
-    }
-  }
-  return error.message;
 }
