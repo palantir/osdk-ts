@@ -65,6 +65,7 @@ const MOCK_INPUT_SPEC = {
         version: "1.0.0",
       },
     ],
+    datasets: [],
   },
 };
 
