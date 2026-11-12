@@ -27,13 +27,13 @@ import {
   targetsOf,
 } from "./applyInterfaceSchemaTransition.js";
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
-import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
   LockedActionTypeConstraint,
   LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
   LockedProperty,
+  LockedPropertyType,
   LockedTransition,
   LockedValueType,
   OntologySchemaLockfile,

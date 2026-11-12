@@ -38,8 +38,8 @@ import {
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
+import { normalizePropertyType } from "../api/properties/normalizePropertyType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
-import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
   LockedActionTypeConstraint,
   LockedInstruction,
