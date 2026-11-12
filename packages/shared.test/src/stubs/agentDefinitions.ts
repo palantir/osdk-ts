@@ -37,6 +37,10 @@ export const weatherAgentVersion: AgentDefinitionVersion = {
         fields: [{ name: "city", dataType: { type: "string" } }],
       },
     },
+    {
+      eventType: "SetTemperature",
+      payloadType: { type: "nullable", wrappedType: { type: "double" } },
+    },
   ],
   agentStateType: {
     type: "struct",
@@ -44,6 +48,10 @@ export const weatherAgentVersion: AgentDefinitionVersion = {
   },
   contextItemDefinitions: [
     { contextItemType: "weather-result", dataType: { type: "string" } },
+    {
+      contextItemType: "temperature",
+      dataType: { type: "nullable", wrappedType: { type: "integer" } },
+    },
   ],
 };
 
@@ -95,8 +103,13 @@ export const objectArgumentsAgentVersion: AgentDefinitionVersion = {
   eventDefinitions: [
     { eventType: "SelectEmployees", payloadType: employeesField.dataType },
   ],
-  agentStateType: { type: "struct", fields: [] },
-  contextItemDefinitions: [],
+  agentStateType: { type: "struct", fields: [employeeField, employeesField] },
+  contextItemDefinitions: [
+    {
+      contextItemType: "selection",
+      dataType: { type: "struct", fields: [employeeField, employeesField] },
+    },
+  ],
 };
 
 export const optionalArgumentsAgentApiName = "optionalArgumentsAgent";
@@ -175,5 +188,25 @@ export const structuredArgumentsAgentVersion: AgentDefinitionVersion = {
       },
     },
     { name: "future", dataType: { type: "futureType" } as unknown as DataType },
+  ],
+};
+
+export const objectArgumentsAgentOtherVersion: AgentDefinitionVersion = {
+  ...objectArgumentsAgentVersion,
+  version: "2.0.0",
+  argumentDefinitions: [],
+  agentStateType: employeeField.dataType,
+  contextItemDefinitions: [
+    { contextItemType: "new-selection", dataType: employeeField.dataType },
+  ],
+  eventDefinitions: [
+    {
+      eventType: "SelectEmployees",
+      payloadType: {
+        type: "object",
+        ontologyApiName: defaultOntologyMetadata.apiName,
+        objectTypeApiName: "Employee",
+      },
+    },
   ],
 };

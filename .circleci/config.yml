@@ -21,9 +21,9 @@ executors:
   node:
     parameters:
       node-version:
-        description: cimg/node tag; MAJOR.MINOR.PATCH, or a variant like 24.19.0-browsers.
+        description: cimg/node tag; MAJOR.MINOR.PATCH, or a variant like 24.22.2-browsers.
         type: string
-        default: "24.19.0"
+        default: "24.22.2"
       resource-class:
         type: string
         default: large
@@ -42,7 +42,7 @@ executors:
   # The config is to disable verdaccio reaching the internet (by default its a proxy to the real npm registry)
   node-with-verdaccio:
     docker:
-      - image: cimg/node:24.19.0
+      - image: cimg/node:24.22.2
       - image: verdaccio/verdaccio:6.10.3
         command:
           - sh
@@ -367,6 +367,7 @@ jobs:
           command: pnpm publish -r --no-git-checks
 
   # Built once and stored as a navigable artifact, which is the PR preview.
+  # .github/workflows/storybook-preview-comment.yml links it from the PR.
   build-storybook:
     executor:
       name: node
@@ -397,7 +398,7 @@ jobs:
       name: node
       # The -browsers variant ships Chromium's system libraries, so
       # `playwright install` does not need --with-deps.
-      node-version: "24.19.0-browsers"
+      node-version: "24.22.2-browsers"
       resource-class: xlarge
     steps:
       - prepare
@@ -446,56 +447,6 @@ jobs:
           path: /tmp/test-results
       - verify-working-tree-clean
 
-  bundle-size:
-    executor:
-      name: node
-      resource-class: large
-    steps:
-      - prepare
-      - restore-turbo-cache:
-          scope: build
-      - run:
-          name: Build and measure this PR
-          command: |
-            pnpm exec turbo transpile
-            npx size-limit --json > /tmp/current.json || true
-      - run:
-          # The base checkout below replaces the working tree with a commit that
-          # predates these scripts.
-          name: Stash the CI scripts
-          command: cp -R .circleci /tmp/ci
-      - run:
-          name: Resolve the base commit
-          command: |
-            .circleci/scripts/base-ref.sh > /tmp/base-sha
-            echo "Comparing against $(cat /tmp/base-sha)"
-      - restore_cache:
-          name: Restore the base-branch measurement
-          keys:
-            - v1-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
-      - run:
-          name: Build and measure the base branch
-          command: |
-            if [ -s /tmp/base.json ]; then
-              echo "Base measurement restored from cache; skipping the base build."
-              exit 0
-            fi
-            git checkout --detach --force "$(cat /tmp/base-sha)"
-            pnpm exec turbo clean
-            pnpm install --frozen-lockfile
-            pnpm exec turbo transpile
-            npx size-limit --json > /tmp/base.json || true
-      - save_cache:
-          name: Save the base-branch measurement
-          key: v1-size-limit-base-{{ arch }}-{{ checksum "/tmp/base-sha" }}
-          paths:
-            - /tmp/base.json
-      - run:
-          name: Comment with the comparison
-          command: |
-            node /tmp/ci/scripts/bundle-size-comment.mjs /tmp/current.json /tmp/base.json > /tmp/bundle-size.md
-            /tmp/ci/scripts/pr-comment.sh "## size-limit report" /tmp/bundle-size.md
-
   ci-all:
     executor:
       name: node
@@ -522,14 +473,6 @@ workflows:
           requires: [install]
       - e2e:
           requires: [build]
-      - bundle-size:
-          requires: [build]
-          filters:
-            branches:
-              ignore:
-                - main
-                - next
-                - /release\/.*/
       - storybook-interaction-tests:
           requires: [install]
       - build:
@@ -543,7 +486,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              node-version: ["18.20.8", "20.20.2", "22.23.2", "24.19.0"]
+              node-version: ["18.20.8", "20.20.2", "22.23.4", "24.22.2"]
           requires: [build]
       - build-storybook:
           requires: [build]

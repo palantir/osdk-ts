@@ -32,11 +32,13 @@ import { afterEach, expect, test } from "vitest";
 import FoundryWidgetPlugin from "../../index.js";
 
 const originalCwd = process.cwd();
-let parent: string;
+let parent: string | undefined;
 
 afterEach(async () => {
   process.chdir(originalCwd);
-  await rm(parent, { recursive: true, force: true });
+  if (parent != null) {
+    await rm(parent, { recursive: true, force: true });
+  }
 });
 
 test.each([
@@ -61,7 +63,7 @@ test.each([
       widgetSet: { rid: "ri.widget-set", directory: "dist" },
     }),
     "package.json": JSON.stringify({ version: "1.2.3", type: "module" }),
-    "resources.json": JSON.stringify({
+    [path.join(htmlDir, "public", "resources.json")]: JSON.stringify({
       version: 1,
       authorizations: { read: { all: true } },
     }),
@@ -71,6 +73,7 @@ test.each([
     "src/widget.config.ts": `export default { id: "widget", name: "widget", type: "workshop", parameters: {}, events: {} };`,
   };
   await mkdir(path.join(project, "src"), { recursive: true });
+  await mkdir(path.join(project, htmlDir, "public"), { recursive: true });
   for (const [file, content] of Object.entries(files)) {
     await writeFile(path.join(project, file), content);
   }
@@ -101,4 +104,15 @@ test.each([
       },
     },
   });
+});
+
+test.each(["/widgets/", "./"])("rejects base %s", async (base) => {
+  await expect(
+    build({
+      base,
+      configFile: false,
+      logLevel: "silent",
+      plugins: [FoundryWidgetPlugin()],
+    }),
+  ).rejects.toThrow(`Found base "${base}"`);
 });

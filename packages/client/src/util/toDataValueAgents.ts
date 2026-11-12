@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import type { DataType, StructField } from "@osdk/foundry.agents";
-import * as Ontologies from "@osdk/foundry.ontologies/OntologyV2";
+import type { DataType } from "@osdk/foundry.agents";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { createAsyncClientCache } from "../object/Cache.js";
 import { isObjectSet } from "../objectSet/createObjectSet.js";
 import { createTemporaryObjectSet } from "../objectSet/createTemporaryObjectSet.js";
+import {
+  assertRecord,
+  checkOntology,
+  getPropertyPath,
+  remapFields,
+  wrapConversionError,
+} from "./dataValueAgentsUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
@@ -64,18 +69,30 @@ export async function toDataValueAgents(
           `Invalid agent argument "${path}": expected an OSDK object, object identifier, or string or number primary key.`,
         );
       }
-      await checkOntology(client, desiredType.ontologyApiName, path);
-      const objectTypeApiName = isObjectSpecifiersObject(value)
-        ? value.$apiName
-        : desiredType.objectTypeApiName;
-      const objectTypeDefinition =
-        await client.ontologyProvider.getObjectDefinition(objectTypeApiName);
-      // TODO(mhogberg): Update the agent APIs to accept simple object primary keys and remove the conversion here.
-      return {
-        ontologyRid: await client.ontologyRid,
-        objectTypeApiName,
-        primaryKey: { [objectTypeDefinition.primaryKeyApiName]: primaryKey },
-      };
+      try {
+        await checkOntology(
+          client,
+          desiredType.ontologyApiName,
+          path,
+          "argument",
+        );
+        const objectTypeApiName = isObjectSpecifiersObject(value)
+          ? value.$apiName
+          : desiredType.objectTypeApiName;
+        const objectTypeDefinition =
+          await client.ontologyProvider.getObjectDefinition(objectTypeApiName);
+        // TODO(mhogberg): Update the agent APIs to accept simple object primary keys and remove the conversion here.
+        return {
+          ontologyRid: await client.ontologyRid,
+          objectTypeApiName,
+          primaryKey: { [objectTypeDefinition.primaryKeyApiName]: primaryKey },
+        };
+      } catch (cause) {
+        throw wrapConversionError(
+          `Failed to convert agent argument "${path}" to an object reference`,
+          cause,
+        );
+      }
     }
 
     case "objectSet": {
@@ -87,10 +104,22 @@ export async function toDataValueAgents(
           `Invalid agent argument "${path}": expected an OSDK ObjectSet, object set definition, or object set RID string.`,
         );
       }
-      await checkOntology(client, desiredType.ontologyApiName, path);
-      // TODO(mhogberg): Update the agent APIs to accept both object set objects and object set RIDs and
-      //  remove the conversion here.
-      return await createTemporaryObjectSet(client, value);
+      try {
+        await checkOntology(
+          client,
+          desiredType.ontologyApiName,
+          path,
+          "argument",
+        );
+        // TODO(mhogberg): Update the agent APIs to accept both object set objects and object set RIDs and
+        //  remove the conversion here.
+        return await createTemporaryObjectSet(client, value);
+      } catch (cause) {
+        throw wrapConversionError(
+          `Failed to convert agent argument "${path}" to an object set RID`,
+          cause,
+        );
+      }
     }
 
     case "list":
@@ -111,7 +140,7 @@ export async function toDataValueAgents(
       );
 
     case "record":
-      assertRecord(value, path);
+      assertRecord(value, path, "argument");
       return Object.fromEntries(
         await Promise.all(
           Object.entries(value).map(async ([key, entry]) => [
@@ -127,95 +156,31 @@ export async function toDataValueAgents(
       );
 
     case "struct":
-      assertRecord(value, path);
-      return await remapFields(value, client, desiredType.fields, path);
+      assertRecord(value, path, "argument");
+      return await remapFields(
+        value,
+        client,
+        desiredType.fields,
+        path,
+        toDataValueAgents,
+      );
 
     case "discriminatedUnion": {
-      assertRecord(value, path);
+      assertRecord(value, path, "argument");
       const member = desiredType.members.find(
         (candidate) =>
           candidate.discriminatorValue === value[desiredType.discriminatorKey],
       );
-      return await remapFields(value, client, member?.fields ?? [], path);
+      return await remapFields(
+        value,
+        client,
+        member?.fields ?? [],
+        path,
+        toDataValueAgents,
+      );
     }
 
     default:
       return value;
   }
-}
-
-async function remapFields(
-  value: Record<string, unknown>,
-  client: MinimalClient,
-  fields: ReadonlyArray<StructField>,
-  path: string,
-): Promise<Record<string, unknown>> {
-  const types = new Map(fields.map((field) => [field.name, field.dataType]));
-  return Object.fromEntries(
-    await Promise.all(
-      Object.entries(value).map(async ([key, value]) => {
-        const desiredType = types.get(key);
-        if (desiredType === undefined) {
-          return [key, value];
-        }
-        return [
-          key,
-          await toDataValueAgents(
-            value,
-            client,
-            desiredType,
-            getPropertyPath(path, key),
-          ),
-        ];
-      }),
-    ),
-  );
-}
-
-function assertRecord(
-  value: unknown,
-  path: string,
-): asserts value is Record<string, unknown> {
-  if (value == null || typeof value !== "object" || Array.isArray(value)) {
-    throw new TypeError(
-      path === ""
-        ? "Invalid agent argument: expected an object."
-        : `Invalid agent argument "${path}": expected an object.`,
-    );
-  }
-}
-
-/**
- * Appends a property key to an argument path, preferring dot notation and falling back to quoted
- * brackets where necessary to disambiguate. For example, "groups" + "engineering" returns groups.engineering,
- * "groups" + "engineering.eu" returns groups["engineering.eu"].
- */
-function getPropertyPath(path: string, key: string): string {
-  if (/^[a-zA-Z_$][\w$]*$/u.test(key)) {
-    return path === "" ? key : `${path}.${key}`;
-  }
-  return `${path}[${JSON.stringify(key)}]`;
-}
-
-async function checkOntology(
-  client: MinimalClient,
-  ontologyApiName: string,
-  path: string,
-): Promise<void> {
-  const clientOntologyApiName = await getOntologyApiName(client);
-  if (ontologyApiName !== clientOntologyApiName) {
-    throw new Error(
-      `Agent argument "${path}" references ontology "${ontologyApiName}", but the client uses ontology "${clientOntologyApiName}".`,
-    );
-  }
-}
-
-const ontologyApiNameCache = createAsyncClientCache<string, string>(
-  async (client, ontologyRid) => {
-    return (await Ontologies.get(client, ontologyRid)).apiName;
-  },
-);
-
-async function getOntologyApiName(client: MinimalClient): Promise<string> {
-  return await ontologyApiNameCache.get(client, await client.ontologyRid);
 }

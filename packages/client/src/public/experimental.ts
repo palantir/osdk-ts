@@ -17,6 +17,7 @@
 export type {
   AgentDefinition,
   AgentParam,
+  AgentResult,
   AgentContextItem,
   AgentGetStateOptions,
   AgentSessionState,

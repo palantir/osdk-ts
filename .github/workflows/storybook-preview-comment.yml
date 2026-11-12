@@ -1,0 +1,121 @@
+name: Storybook Preview Comment
+
+# CircleCI's build-storybook job stores the preview as an artifact and reports a
+# commit status. This turns a successful status into a PR comment linking the
+# preview. `status` workflows always run main's copy of this file, so PR code
+# never runs next to the write token.
+on: status
+
+permissions: {}
+
+jobs:
+  comment:
+    name: Comment with the Storybook preview link
+    if: "github.event.context == 'ci/circleci: build-storybook' && github.event.state == 'success'"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment with the preview link
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.sha }}
+          TARGET_URL: ${{ github.event.target_url }}
+        run: |
+          set -euo pipefail
+
+          # Anyone with write access can post a status, so take only the job
+          # number from it and confirm with CircleCI that the job really is a
+          # successful build-storybook of this commit.
+          uuid='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          job=
+          if [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            if [[ "$TARGET_URL" =~ ^https://circleci\.com/gh/${REPO}/([0-9]+)$ ]]; then
+              job="${BASH_REMATCH[1]}"
+            elif [[ "$TARGET_URL" =~ ^https://app\.circleci\.com/workflow/($uuid)/job/($uuid)$ ]]; then
+              job=$(
+                curl -fsS "https://circleci.com/api/v2/workflow/${BASH_REMATCH[1]}/job" \
+                  | jq -r --arg id "${BASH_REMATCH[2]}" --arg slug "gh/$REPO" '[.items[] | select(.id == $id and .project_slug == $slug) | .job_number][0] // empty'
+              )
+            fi
+          fi
+          if ! [[ "$job" =~ ^[0-9]+$ ]]; then
+            echo "Unexpected status: sha '$SHA', target_url '$TARGET_URL'."
+            exit 1
+          fi
+          read -r name state revision < <(
+            curl -fsS "https://circleci.com/api/v1.1/project/gh/$REPO/$job" \
+              | jq -r '[.workflows.job_name, .status, .vcs_revision] | @tsv'
+          )
+          if [ "$name" != build-storybook ] || [ "$state" != success ] || [ "$revision" != "$SHA" ]; then
+            echo "CircleCI job $job is '$name' ($state) at $revision, not a successful build-storybook of $SHA."
+            exit 1
+          fi
+
+          url=$(
+            curl -fsS "https://circleci.com/api/v2/project/gh/$REPO/$job/artifacts" \
+              | jq -r '.items[] | select(.path == "storybook-static/index.html") | .url'
+          )
+          if ! [[ "$url" =~ ^https://output\.circle-artifacts\.com/output/job/[0-9a-f-]+/artifacts/[0-9]+/storybook-static/index\.html$ ]]; then
+            echo "CircleCI job $job has no Storybook index.html artifact."
+            exit 1
+          fi
+
+          pr=$(gh api "repos/$REPO/commits/$SHA/pulls" --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\")][0].number // empty")
+          if [ -z "$pr" ]; then
+            echo "No open PR has $SHA as its head; nothing to comment on."
+            exit 0
+          fi
+
+          # The invisible marker line lets later pushes edit this comment.
+          cat > /tmp/storybook-preview.md <<EOF
+          <!-- storybook-preview -->
+          <h3>$(gh api "repos/$REPO/commits/$SHA" --jq '.commit.message' | head -1)</h3>
+          Build artifact links for this commit: <strong><a href="$url">storybook</a></strong>
+
+          <em>This is an automated comment from the Storybook Preview Comment workflow.</em>
+          EOF
+
+          comment_id=$(gh api --paginate "repos/$REPO/issues/$pr/comments" --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- storybook-preview -->"))) | .id' | head -1)
+          if [ -n "$comment_id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$comment_id" -F body=@/tmp/storybook-preview.md > /dev/null
+          else
+            gh api "repos/$REPO/issues/$pr/comments" -F body=@/tmp/storybook-preview.md > /dev/null
+          fi
+
+      # Same marker as above, so the next successful run replaces this comment.
+      # target_url is left out of the body because whoever posted the status controls it.
+      - name: Comment that the preview link failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          if ! [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            exit 0
+          fi
+          pr=$(gh api "repos/$REPO/commits/$SHA/pulls" --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\")][0].number // empty")
+          if [ -z "$pr" ]; then
+            exit 0
+          fi
+
+          cat > /tmp/storybook-preview.md <<EOF
+          <!-- storybook-preview -->
+          <h3>:warning: Storybook preview link failed</h3>
+          CircleCI reported that build-storybook passed for $SHA, but this workflow could not post the preview link. Please check <a href="$RUN_URL">the workflow run</a>.
+
+          <em>This is an automated comment from the Storybook Preview Comment workflow.</em>
+          EOF
+
+          comment_id=$(gh api --paginate "repos/$REPO/issues/$pr/comments" --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- storybook-preview -->"))) | .id' | head -1)
+          if [ -n "$comment_id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$comment_id" -F body=@/tmp/storybook-preview.md > /dev/null
+          else
+            gh api "repos/$REPO/issues/$pr/comments" -F body=@/tmp/storybook-preview.md > /dev/null
+          fi
