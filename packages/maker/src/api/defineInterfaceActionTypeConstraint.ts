@@ -23,6 +23,7 @@ import invariant from "tiny-invariant";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { importedTypes, namespace } from "./defineOntology.js";
+import { convertEditsValidationToIr } from "./interface/convertEditsValidationToIr.js";
 import type { InterfaceActionTypeConstraintDefinition } from "./InterfaceActionTypeConstraintDefinition.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 
@@ -80,6 +81,15 @@ export function defineInterfaceActionTypeConstraint(
       description: def.description,
     },
     parameters,
+    ...(def.editsValidation !== undefined
+      ? {
+          editsValidation: convertEditsValidationToIr(
+            def.editsValidation,
+            def.interfaceType.apiName,
+            apiNameWithNamespace,
+          ),
+        }
+      : {}),
     requireImplementation: def.requireImplementation,
   });
 }
