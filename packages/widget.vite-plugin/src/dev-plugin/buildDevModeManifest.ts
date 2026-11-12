@@ -26,6 +26,7 @@ import { buildWidgetManifestConfig } from "../build-plugin/buildWidgetSetManifes
 import { getWidgetSetInputSpec } from "../build-plugin/getWidgetSetInputSpec.js";
 import { VITE_INJECTIONS_PATH } from "../common/constants.js";
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
+import { getResourcesJsonPath } from "../common/getResourcesJsonPath.js";
 import type { FoundryWidgetPluginOptions } from "../index.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 
@@ -79,7 +80,7 @@ export async function buildDevModeManifest(
 
   const inputSpec = await getWidgetSetInputSpec(
     path.resolve(server.config.root, "package.json"),
-    path.resolve(server.config.root, "resources.json"),
+    getResourcesJsonPath(server.config),
   );
 
   return {

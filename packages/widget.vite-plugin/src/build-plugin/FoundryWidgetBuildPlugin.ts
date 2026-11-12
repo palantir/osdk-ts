@@ -29,6 +29,7 @@ import {
   MODULE_EVALUATION_MODE,
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
+import { getResourcesJsonPath } from "../common/getResourcesJsonPath.js";
 import type { FoundryWidgetPluginOptions } from "../index.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
@@ -87,7 +88,7 @@ export function FoundryWidgetBuildPlugin(
         );
         const widgetSetInputSpec = await getWidgetSetInputSpec(
           path.resolve(process.cwd(), "package.json"),
-          path.resolve(process.cwd(), "resources.json"),
+          getResourcesJsonPath(config),
         );
         const widgetSetManifest = buildWidgetSetManifest(
           foundryConfig.foundryConfig.widgetSet.rid,
