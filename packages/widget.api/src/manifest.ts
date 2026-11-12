@@ -136,7 +136,7 @@ export interface WidgetSetDiscoveredInputSpecV1 {
    * The datasets the widget set depends on, read from the project's public/resources.json.
    * Empty when resources.json is missing or declares no datasets.
    */
-  datasets: Array<DatasetInputSpecV1>;
+  datasets?: Array<DatasetInputSpecV1>;
 
   /**
    * The widget set authorizations, read from the project's public/resources.json.

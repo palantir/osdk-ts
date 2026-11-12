@@ -15,12 +15,9 @@
  */
 
 import type { DatasetInputSpec } from "@osdk/widget.api";
-import { ResourceUsage } from "@osdk/widget.api";
 
-const DATASETS_MAX_COUNT = 50;
 const DATASET_RID_PATTERN =
   /^ri\.foundry\.([a-z0-9][a-z0-9-]*)?\.dataset\.[a-zA-Z0-9_\-.]+$/u;
-const SUPPORTED_USAGES = new Set<string>([ResourceUsage.READ]);
 
 /**
  * Validates the datasets declared in resources.json, since the file content is not type-checked.
@@ -32,11 +29,6 @@ export function validateDatasets(
   if (!Array.isArray(datasets)) {
     throw new Error('resources.json "resources.datasets" must be an array');
   }
-  if (datasets.length > DATASETS_MAX_COUNT) {
-    throw new Error(
-      `resources.json can declare at most ${DATASETS_MAX_COUNT} datasets, found ${datasets.length}`,
-    );
-  }
   datasets.forEach((dataset: unknown, index) => {
     if (typeof dataset !== "object" || dataset == null) {
       throw new Error(`Dataset at index ${index} must be an object`);
@@ -45,7 +37,6 @@ export function validateDatasets(
       Record<keyof DatasetInputSpec, unknown>
     >;
     validateIdentifier(identifier, index);
-    validateUsage(usage, index);
   });
 }
 
@@ -63,24 +54,5 @@ function validateIdentifier(identifier: unknown, index: number): void {
     throw new Error(
       `Dataset rid "${rid}" at index ${index} does not match allowed pattern (must be a dataset rid, e.g. ri.foundry.main.dataset.<id>)`,
     );
-  }
-}
-
-function validateUsage(usage: unknown, index: number): void {
-  if (!Array.isArray(usage) || usage.length === 0) {
-    throw new Error(
-      `Dataset at index ${index} must have a non-empty "usage" array`,
-    );
-  }
-  for (const value of usage) {
-    if (typeof value !== "string" || !SUPPORTED_USAGES.has(value)) {
-      throw new Error(
-        `Dataset at index ${index} has unsupported usage ${JSON.stringify(
-          value,
-        )}. Supported dataset usages are: ${[...SUPPORTED_USAGES]
-          .map((supportedUsage) => `"${supportedUsage}"`)
-          .join(", ")}.`,
-      );
-    }
   }
 }

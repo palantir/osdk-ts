@@ -47,16 +47,6 @@ describe("validateDatasets", () => {
     ).not.toThrow();
   });
 
-  test("accepts up to 50 datasets", () => {
-    expect(() => validateDatasets(createDatasets(50))).not.toThrow();
-  });
-
-  test("throws when there are more than 50 datasets", () => {
-    expect(() => validateDatasets(createDatasets(51))).toThrow(
-      /resources\.json can declare at most 50 datasets, found 51/u,
-    );
-  });
-
   test("accepts an empty array", () => {
     expect(() => validateDatasets([])).not.toThrow();
   });
@@ -126,36 +116,6 @@ describe("validateDatasets", () => {
         },
       ],
       error: /does not match allowed pattern/u,
-    },
-    {
-      name: "usage is empty",
-      datasets: [
-        { identifier: { rid: DATASET_RID_1 }, usage: [], alias: "employees" },
-      ],
-      error: /Dataset at index 0 must have a non-empty "usage" array/u,
-    },
-    {
-      name: "usage is unsupported",
-      datasets: [
-        {
-          identifier: { rid: DATASET_RID_1 },
-          usage: ["write"],
-          alias: "employees",
-        },
-      ],
-      error:
-        /Dataset at index 0 has unsupported usage "write"\. Supported dataset usages are: "read"\.$/u,
-    },
-    {
-      name: "usage is not lowercase",
-      datasets: [
-        {
-          identifier: { rid: DATASET_RID_1 },
-          usage: ["READ"],
-          alias: "employees",
-        },
-      ],
-      error: /Dataset at index 0 has unsupported usage "READ"/u,
     },
   ])("throws when $name", ({ datasets, error }) => {
     expect(() => validateDatasets(datasets)).toThrow(error);
