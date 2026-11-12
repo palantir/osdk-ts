@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  ActionReturnTypeForOptions,
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
@@ -35,7 +36,10 @@ import type {
 } from "@osdk/api";
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 
-import type { ActionSignatureFromDef } from "../actions/applyAction.js";
+import type {
+  ActionReturnValueFromDef,
+  ActionSignatureFromDef,
+} from "../actions/applyAction.js";
 import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
 import type { QueryReturnType } from "../queries/types.js";
@@ -63,6 +67,16 @@ export namespace ObservableClient {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
   }
+
+  /**
+   * The edits from applying a single action, plus its `returnValue` when the
+   * action returns a value.
+   */
+  export type ApplyActionResult<Q extends ActionDefinition<any>> =
+    ActionReturnTypeForOptions<
+      { $returnEdits: true },
+      ActionReturnValueFromDef<Q>
+    >;
 }
 
 export interface CacheSnapshot {
@@ -534,7 +548,8 @@ export interface ObservableClient extends ObserveLinks {
    * @param action - Action definition to execute
    * @param args - Arguments for the action
    * @param opts - Options including optimistic updates
-   * @returns Promise that resolves when the action completes
+   * @returns Promise that resolves to the action's edits and, when the action
+   * returns a value, its `returnValue`. Batches never include a return value.
    *
    * When providing optimistic updates:
    * - Changes appear immediately in the UI
@@ -542,13 +557,25 @@ export interface ObservableClient extends ObserveLinks {
    * - On success, server data replaces optimistic data
    * - On failure, optimistic changes automatically roll back
    */
-  applyAction: <Q extends ActionDefinition<any>>(
-    action: Q,
-    args:
-      | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
-      | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
-    opts?: ObservableClient.ApplyActionOptions,
-  ) => Promise<ActionEditResponse>;
+  applyAction: {
+    <Q extends ActionDefinition<any>>(
+      action: Q,
+      args: Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
+      opts?: ObservableClient.ApplyActionOptions,
+    ): Promise<ActionEditResponse>;
+    <Q extends ActionDefinition<any>>(
+      action: Q,
+      args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+      opts?: ObservableClient.ApplyActionOptions,
+    ): Promise<ObservableClient.ApplyActionResult<Q>>;
+    <Q extends ActionDefinition<any>>(
+      action: Q,
+      args:
+        | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+        | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
+      opts?: ObservableClient.ApplyActionOptions,
+    ): Promise<ActionEditResponse>;
+  };
 
   /**
    * Validate action parameters without executing the action.

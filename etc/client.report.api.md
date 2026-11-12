@@ -9,6 +9,7 @@ import { ActionEditResponse } from '@osdk/api';
 import { ActionMetadata } from '@osdk/api';
 import { ActionParam } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/api';
+import { ActionReturnValueResponse } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import type { AgentDefinition } from '@osdk/api/unstable';
 import type { AgentSession } from '@osdk/api/unstable';
@@ -86,6 +87,8 @@ export { ActionMetadata }
 export { ActionParam }
 
 export { ActionReturnTypeForOptions }
+
+export { ActionReturnValueResponse }
 
 // @public (undocumented)
 export class ActionValidationError extends Error {
