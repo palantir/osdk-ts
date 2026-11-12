@@ -23,7 +23,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import { getWireObjectSet, type ObjectTypeDefinition } from "@osdk/client";
+import { getWireObjectSet } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/observable";
 import React from "react";
 
@@ -94,7 +94,7 @@ export interface UseOsdkAggregationOptions<
 > extends UseOsdkAggregationBaseOptions<T, A, RDPs> {}
 
 export interface UseOsdkAggregationOptionsWithObjectSet<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > extends UseOsdkAggregationBaseOptions<T, A, RDPs> {
@@ -148,22 +148,6 @@ export interface UseOsdkAggregationResult<
  */
 export function useOsdkAggregation<
   Q extends ObjectOrInterfaceDefinition,
-  const A extends AggregateOpts<Q>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
->(
-  type: Q,
-  options: UseOsdkAggregationOptions<Q, A, RDPs>,
-): UseOsdkAggregationResult<Q, A>;
-export function useOsdkAggregation<
-  Q extends ObjectTypeDefinition,
-  const A extends AggregateOpts<Q>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
->(
-  type: Q,
-  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
-): UseOsdkAggregationResult<Q, A>;
-export function useOsdkAggregation<
-  Q extends ObjectTypeDefinition,
   const A extends AggregateOpts<Q>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
