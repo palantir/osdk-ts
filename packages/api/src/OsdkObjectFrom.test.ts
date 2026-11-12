@@ -869,7 +869,7 @@ describe("ExtractOptions", () => {
       expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
     });
 
-    it("interface → OT: any non-local impl rejects the cast", async () => {
+    it("interface → OT: non-local implementations require all base properties", async () => {
       const ifaceObj = (
         await createMockObjectSet<ReducerInterfaceApiTest>().fetchPage()
       ).data[0];
@@ -877,6 +877,55 @@ describe("ExtractOptions", () => {
       // @ts-expect-error — ReducerInterface has structField / reduced
       // implementations on Employee.
       ifaceObj.$as({} as EmployeeApiTest);
+
+      const withoutBaseProperties = (
+        await createMockObjectSet<ReducerInterfaceApiTest>().fetchPage({
+          $includeAllBaseObjectProperties: false,
+        })
+      ).data[0];
+
+      // @ts-expect-error
+      withoutBaseProperties.$as({} as EmployeeApiTest);
+
+      const maybeBaseProperties = (
+        await createMockObjectSet<ReducerInterfaceApiTest>().fetchPage({
+          $includeAllBaseObjectProperties: true as boolean,
+        })
+      ).data[0];
+
+      // @ts-expect-error
+      maybeBaseProperties.$as({} as EmployeeApiTest);
+    });
+
+    it("allows non-local implementations with all base properties and preserves the full object type", async () => {
+      const objectSet = createMockObjectSet<ReducerInterfaceApiTest>();
+      const ifaceObj = (
+        await objectSet.fetchPage({
+          $includeAllBaseObjectProperties: true,
+        })
+      ).data[0];
+
+      const result = ifaceObj.$as({} as EmployeeApiTest);
+      expectTypeOf(result).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, "$allBaseProperties">
+      >();
+      expectTypeOf(result.addressStruct).toEqualTypeOf<
+        { street: string; city: string; zipCode: string } | undefined
+      >();
+      expectTypeOf(result.salaryHistory).toEqualTypeOf<number[] | undefined>();
+
+      const byName = ifaceObj.$as<EmployeeApiTest>("EmployeeApiTest");
+      expectTypeOf(byName).toEqualTypeOf(result);
+
+      const withRid = (
+        await objectSet.fetchPage({
+          $includeAllBaseObjectProperties: true,
+          $includeRid: true,
+        })
+      ).data[0].$as({} as EmployeeApiTest);
+      expectTypeOf(withRid).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, "$allBaseProperties" | "$rid">
+      >();
     });
   });
 

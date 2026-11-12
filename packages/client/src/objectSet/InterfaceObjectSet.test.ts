@@ -184,7 +184,6 @@ describe("ObjectSet", () => {
         ]);
         expect(ifaceObj.iReduced).toEqual([1, 2, 3]);
 
-        // @ts-expect-error
         const object = ifaceObj.$as(ComplexImplementationObject);
         expect(object.$primaryKey).toEqual("k1");
         expect(object.localValue).toEqual("hello");
@@ -204,7 +203,6 @@ describe("ObjectSet", () => {
         expect(object.arrayValue).toEqual([1, 2, 3]);
         expect(
           ifaceObj.$as<ComplexImplementationObject>(
-            // @ts-expect-error
             "ComplexImplementationObject",
           ),
         ).toBe(object);

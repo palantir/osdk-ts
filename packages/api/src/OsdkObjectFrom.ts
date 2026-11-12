@@ -320,7 +320,9 @@ export namespace Osdk {
         type: [Q] extends [InterfaceDefinition]
           ? NEW_Q extends ObjectTypeDefinition
             ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true
-              ? never
+              ? "$allBaseProperties" extends OPTIONS
+                ? NEW_Q | string
+                : never
               : NEW_Q | string
             : NEW_Q | string
           : NEW_Q | string,
