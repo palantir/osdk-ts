@@ -30,6 +30,7 @@ import {
   ontologies,
   startNodeApiServer,
 } from "@osdk/shared.test";
+import pDefer from "p-defer";
 import type { Mock } from "vitest";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -118,6 +119,37 @@ describe(BulkObjectLoader, () => {
     });
 
     expect(mock).toHaveBeenCalled();
+  });
+
+  it("resolves objects from each page without waiting for later pages", async () => {
+    const secondPage = pDefer<{ data: typeof employees }>();
+    const objectSet = {
+      where: () => objectSet,
+      fetchPage: vi
+        .fn()
+        .mockResolvedValueOnce({
+          data: [employees[0]],
+          nextPageToken: "second",
+        })
+        .mockReturnValueOnce(secondPage.promise),
+    } as Pick<
+      ObjectSet<ObjectTypeDefinition>,
+      "fetchPage" | "where"
+    > as ObjectSet<ObjectTypeDefinition>;
+    client.mockReturnValueOnce(objectSet);
+    const loader = new BulkObjectLoader(client, 25, 2);
+
+    const first = loader.fetch("Employee", 0);
+    const second = loader.fetch("Employee", 1);
+    const secondResolved = vi.fn();
+    void second.then(secondResolved);
+
+    await expect(first).resolves.toEqual(employees[0]);
+    expect(secondResolved).not.toHaveBeenCalled();
+
+    secondPage.resolve({ data: [employees[1]] });
+    await expect(second).resolves.toEqual(employees[1]);
+    expect(secondResolved).toHaveBeenCalledOnce();
   });
 
   it("splits up work by time", async () => {
