@@ -107,11 +107,19 @@ function toSharedPropertyTypeRestrictionStatus(
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
-  allOntologies?: OntologyDefinition[],
-  functionsIr?: FunctionsIr,
-  packageForEdge = false,
+  {
+    allOntologies = [ontology],
+    functionsIr,
+    packageForEdge = false,
+    includeEditsValidation = true,
+  }: {
+    allOntologies?: OntologyDefinition[];
+    functionsIr?: FunctionsIr;
+    packageForEdge?: boolean;
+    includeEditsValidation?: boolean;
+  } = {},
 ): OntologyBlockDataV2 {
-  const ontologiesToScan = allOntologies ?? [ontology];
+  const ontologiesToScan = allOntologies;
 
   // Convert all entity types first to populate ridGenerator's BiMaps
   const objectTypes = Object.fromEntries(
@@ -147,7 +155,12 @@ export function convertOntologyDefinitionToWireBlockData(
       return [
         ridGenerator.generateRidForInterface(apiName),
         {
-          interfaceType: convertInterface(interfaceType, ridGenerator),
+          interfaceType: convertInterface(
+            interfaceType,
+            ridGenerator,
+            ontologiesToScan,
+            includeEditsValidation,
+          ),
           ...(schemaMigrations !== undefined ? { schemaMigrations } : {}),
         },
       ];
