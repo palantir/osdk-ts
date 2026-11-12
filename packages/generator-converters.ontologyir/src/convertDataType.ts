@@ -17,6 +17,11 @@
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { IDataType } from "./OntologyIrToFullMetadataConverter.js";
 
+interface IAnnotatedDataType extends IDataType {
+  type: "annotatedType";
+  annotatedType: { wrappedType: IDataType };
+}
+
 export interface IOptionalDataType extends IDataType {
   type: "optionalType";
   optionalType: { wrappedType: IDataType };
@@ -142,6 +147,23 @@ export function convertDataType(
   interfaceRidToApiName: Record<string, string>,
   required?: boolean,
 ): Ontologies.QueryDataType {
+  if (dataType.type === "annotatedType") {
+    const wrappedType = (dataType as IAnnotatedDataType).annotatedType
+      ?.wrappedType;
+    if (
+      wrappedType == null
+      || typeof wrappedType !== "object"
+      || typeof wrappedType.type !== "string"
+    ) {
+      throw new Error("Annotated type must contain a wrapped data type");
+    }
+    return convertDataType(
+      wrappedType,
+      customTypes,
+      interfaceRidToApiName,
+      required,
+    );
+  }
   if (required === false && dataType.type !== "optionalType") {
     return {
       type: "union",
@@ -158,6 +180,8 @@ export function convertDataType(
       return { type: "string" };
     case "boolean":
       return { type: "boolean" };
+    case "byte":
+    case "short":
     case "integer":
       return { type: "integer" };
     case "long":
