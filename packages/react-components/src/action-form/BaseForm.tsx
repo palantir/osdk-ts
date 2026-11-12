@@ -87,7 +87,8 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     submissionError != null
       ? submissionError instanceof Error
         ? submissionError.message
-        : "Submission failed"
+        : // TODO: provide better error message
+          "Submission failed"
       : undefined;
 
   const submitForm = useCallback(async () => {
