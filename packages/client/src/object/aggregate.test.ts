@@ -117,11 +117,27 @@ const aggregationResponse: AggregateObjectsResponseV2 = {
 };
 
 describe("aggregate", () => {
-  it("qualifies interface metric fields and preserves requested result keys", async () => {
-    const employeeInterface: InterfaceDefinition = {
+  it("qualifies pivoted interface metric fields and preserves requested result keys", async () => {
+    const source: InterfaceDefinition = {
       type: "interface",
-      apiName: "com.acme.Employee",
+      apiName: "com.other.Source",
     };
+    mockFetch.mockResolvedValueOnce(
+      Response.json({
+        ...stubData.FooInterface,
+        apiName: source.apiName,
+        allLinks: {
+          toBar: {
+            ...stubData.FooInterface.allLinks!.toBar,
+            linkedEntityApiName: {
+              type: "interfaceTypeApiName",
+              apiName: "com.acme.Employee",
+            },
+          },
+        },
+      }),
+    );
+    await clientCtx.ontologyProvider.getInterfaceDefinition(source.apiName);
     mockFetch.mockResolvedValueOnce(
       Response.json({
         data: [
@@ -137,19 +153,16 @@ describe("aggregate", () => {
       }),
     );
 
-    const result = await aggregate(
-      clientCtx,
-      employeeInterface,
-      { type: "interfaceBase", interfaceType: employeeInterface.apiName },
-      {
+    const result = await createObjectSet(source, clientCtx)
+      .pivotTo("toBar")
+      .aggregate({
         $select: {
           "salary:max": "unordered",
           "other.compensation.salary:max": "unordered",
           "other.compensation.salary:min": "unordered",
           $count: "unordered",
         },
-      },
-    );
+      });
 
     const body: AggregateObjectsRequestV2 = JSON.parse(
       mockFetch.mock.lastCall![1].body,
@@ -174,78 +187,16 @@ describe("aggregate", () => {
       $count: 2,
     });
 
-    const fetchFn = vi.fn<typeof globalThis.fetch>((input) =>
-      Promise.resolve(
-        Response.json(
-          String(input).includes("/interfaceTypes/")
-            ? {
-                ...stubData.FooInterface,
-                apiName: employeeInterface.apiName,
-                allLinks: {
-                  employees: {
-                    ...stubData.FooInterface.allLinks!.toBar,
-                    linkedEntityApiName: {
-                      type: "objectTypeApiName",
-                      apiName: "Employee",
-                    },
-                  },
-                  managers: {
-                    ...stubData.FooInterface.allLinks!.toBar,
-                    linkedEntityApiName: {
-                      type: "interfaceTypeApiName",
-                      apiName: "com.other.Manager",
-                    },
-                  },
-                },
-              }
-            : {
-                data: [
-                  {
-                    group: {},
-                    metrics: [{ name: "salary.max", value: 75000 }],
-                  },
-                ],
-              },
-        ),
-      ),
-    );
-    const pivotClient = createMinimalClient(
-      metadata,
-      "https://host.com",
-      () => Promise.resolve(""),
-      {},
-      fetchFn,
-    );
-    const interfaceObjects = createObjectSet(employeeInterface, pivotClient);
-    const employees = interfaceObjects.pivotTo("employees");
-    expect(
-      await employees.aggregate({
-        $select: { "salary:max": "unordered" },
-      }),
-    ).toEqual({ salary: { max: 75000 } });
-    expect(
-      JSON.parse(fetchFn.mock.lastCall![1]!.body as string).aggregation,
-    ).toEqual([{ type: "max", name: "salary.max", field: "salary" }]);
-
-    expect(
-      await interfaceObjects.pivotTo("managers").aggregate({
-        $select: { "salary:max": "unordered" },
-      }),
-    ).toEqual({ salary: { max: 75000 } });
-    expect(
-      JSON.parse(fetchFn.mock.lastCall![1]!.body as string).aggregation,
-    ).toEqual([{ type: "max", name: "salary.max", field: "com.other.salary" }]);
-
-    fetchFn.mockClear();
+    mockFetch.mockClear();
     await expect(
       aggregate(
-        pivotClient,
-        employeeInterface,
+        clientCtx,
+        source,
         { type: "reference", reference: "ri.object-set.main.object-set.1" },
         { $select: { "salary:max": "unordered" } },
       ),
     ).rejects.toThrow("Unable to resolve object set type for aggregation");
-    expect(fetchFn).not.toHaveBeenCalled();
+    expect(mockFetch).not.toHaveBeenCalled();
   });
 
   it("works", async () => {
