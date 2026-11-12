@@ -23,6 +23,9 @@ import type {
   ParameterRequiredConfiguration,
   VectorPropertyType,
 } from "@osdk/client.unstable";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
@@ -3910,6 +3913,61 @@ describe(OntologyIrToFullMetadataConverter, () => {
       ]);
     } finally {
       createProgramSpy.mockRestore();
+    }
+  });
+
+  it("retains annotated functions in SDK queries and preserves discovery annotations", async () => {
+    const createProgramSpy = vi.spyOn(
+      OntologyIrToFullMetadataConverter,
+      "createProgram",
+    ).mockReturnValue({} as never);
+    const temporary = mkdtempSync(join(tmpdir(), "annotated-functions-"));
+    const irOutputFile = join(temporary, "functions.json");
+    const dataType = {
+      type: "annotatedType",
+      annotatedType: {
+        wrappedType: { type: "double", double: {} },
+        annotations: {
+          type: "v1",
+          v1: { annotations: { unit: "pixels" } },
+        },
+      },
+    };
+    const discovered: IDiscoveredFunction = {
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "renderSymbol" },
+      },
+      inputs: [{ name: "size", dataType }],
+      output: { single: { dataType } },
+      customTypes: {},
+    };
+    const original = structuredClone(discovered);
+    discoveredFunctions.splice(0, discoveredFunctions.length, discovered);
+
+    try {
+      const queryTypes = await OntologyIrToFullMetadataConverter
+        .discoverTypeScriptFunctions(
+          fileURLToPath(new URL(".", import.meta.url)),
+          undefined,
+          irOutputFile,
+        );
+
+      expect(queryTypes).toMatchObject([{
+        apiName: "renderSymbol",
+        parameters: {
+          size: { dataType: { type: "double" }, required: true },
+        },
+        output: { type: "double" },
+      }]);
+      expect(JSON.parse(readFileSync(irOutputFile, "utf8"))).toEqual({
+        discoveredFunctions: [original],
+      });
+      expect(discovered).toEqual(original);
+    } finally {
+      discoveredFunctions.splice(0);
+      createProgramSpy.mockRestore();
+      rmSync(temporary, { recursive: true, force: true });
     }
   });
 

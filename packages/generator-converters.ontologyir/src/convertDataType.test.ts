@@ -21,6 +21,19 @@ import type { IDataType } from "./OntologyIrToFullMetadataConverter.js";
 const STRING: IDataType = { type: "string", string: {} } as IDataType;
 const INTEGER: IDataType = { type: "integer", integer: {} } as IDataType;
 
+function annotated(wrappedType: IDataType): IDataType {
+  return {
+    type: "annotatedType",
+    annotatedType: {
+      wrappedType,
+      annotations: {
+        type: "v1",
+        v1: { annotations: { unit: "pixels" } },
+      },
+    },
+  };
+}
+
 function convert(
   dataType: IDataType,
   customTypes: Record<string, unknown> = {},
@@ -29,6 +42,88 @@ function convert(
 }
 
 describe(convertDataType, () => {
+  it.each(["byte", "short"])("converts %s to integer", type => {
+    const dataType = { type, [type]: {} };
+    expect(convert(dataType)).toEqual({ type: "integer" });
+    expect(convert(annotated(dataType))).toEqual({ type: "integer" });
+  });
+
+  it("converts annotated types without modifying their metadata", () => {
+    const dataType = annotated(annotated(INTEGER));
+    const original = structuredClone(dataType);
+
+    expect(convert(dataType)).toEqual({ type: "integer" });
+    expect(dataType).toEqual(original);
+  });
+
+  it.each([true, false, undefined])(
+    "preserves annotated optional types when required is %s",
+    required => {
+      const optional = {
+        type: "optionalType",
+        optionalType: { wrappedType: annotated(INTEGER) },
+      };
+      expect(convertDataType(annotated(optional), {}, {}, required)).toEqual({
+        type: "union",
+        unionTypes: [{ type: "integer" }, { type: "null" }],
+      });
+    },
+  );
+
+  it("converts annotated elements in custom type fields", () => {
+    const shape = {
+      fields: {
+        labels: { type: "list", list: { elementsType: annotated(STRING) } },
+      },
+    };
+    const expected = {
+      type: "struct",
+      fields: [{
+        name: "labels",
+        fieldType: { type: "array", subType: { type: "string" } },
+      }],
+    };
+
+    for (
+      const dataType of [
+        { type: "functionCustomType", functionCustomType: "labels" },
+        { type: "anonymousCustomType", anonymousCustomType: shape },
+      ]
+    ) {
+      expect(convert(annotated(dataType), { labels: shape })).toEqual(expected);
+    }
+  });
+
+  it("preserves interface resolution through annotations", () => {
+    const dataType = annotated({
+      type: "interface",
+      interface: { interfaceTypeRid: "target-rid" },
+    });
+    expect(convertDataType(dataType, {}, { "target-rid": "Target" })).toEqual({
+      type: "interfaceObject",
+      interfaceTypeApiName: "Target",
+    });
+  });
+
+  it.each([
+    undefined,
+    null,
+    {},
+    { wrappedType: null },
+    { wrappedType: "double" },
+    { wrappedType: {} },
+  ])("rejects malformed annotated types: %j", annotatedType => {
+    expect(() => convert({ type: "annotatedType", annotatedType })).toThrow(
+      "Annotated type must contain a wrapped data type",
+    );
+  });
+
+  it("rejects unsupported types inside annotations", () => {
+    expect(() => convert(annotated({ type: "vector" }))).toThrow(
+      "Unsupported data type: vector",
+    );
+  });
+
   it("converts a media reference", () => {
     expect(convert({ type: "mediaReference", mediaReference: {} } as IDataType))
       .toEqual({ type: "mediaReference" });
