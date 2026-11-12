@@ -1,5 +1,3 @@
-import type { OntologyFullMetadata } from '@osdk/foundry.ontologies';
-
-declare const ontologyFullMetadata: OntologyFullMetadata;
+declare const ontologyFullMetadata: unknown;
 
 export = ontologyFullMetadata;

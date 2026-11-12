@@ -1,4 +1,4 @@
-import metadata from "@osdk/e2e.generated.catchall/experimental/ontology-metadata";
+import rawMetadata from "@osdk/e2e.generated.catchall/experimental/ontology-metadata";
 import type { Ontologies } from "@osdk/foundry";
 import {
   type IntegrationServer,
@@ -13,6 +13,7 @@ import {
 } from "@osdk/seed-helpers";
 import { test as baseTest } from "vitest";
 
+const metadata = rawMetadata as Ontologies.OntologyFullMetadata;
 const filteredObjectTypes = new Set(["Person", "Todo", "Game", "Book"]);
 const filteredInterfaceTypes = new Set(["LibraryItem"]);
 

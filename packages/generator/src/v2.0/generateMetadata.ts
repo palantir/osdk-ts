@@ -69,9 +69,7 @@ function getTypeShim(packageType: "commonjs" | "module") {
   const exportStatement = packageType === "commonjs"
     ? "export = ontologyFullMetadata;"
     : "export default ontologyFullMetadata;";
-  return `import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
-
-declare const ontologyFullMetadata: OntologyFullMetadata;
+  return `declare const ontologyFullMetadata: unknown;
 
 ${exportStatement}
 `;

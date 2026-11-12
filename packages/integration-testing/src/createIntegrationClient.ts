@@ -24,6 +24,7 @@ import type {
 } from "@osdk/api";
 import type { Experiment } from "@osdk/api/unstable";
 import { createClient, type Client } from "@osdk/client";
+import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import { createMockClient } from "@osdk/unit-testing";
 import invariant from "tiny-invariant";
 import { fetch as undiciFetch, Agent } from "undici";
@@ -54,7 +55,8 @@ export async function createIntegrationClient(
 export async function createIntegrationClientForRunningServer(
   config: IntegrationClientConfig,
 ): Promise<IntegrationClient> {
-  const { baseUrl, metadata, caCertPath } = config;
+  const { baseUrl, caCertPath } = config;
+  const metadata = config.metadata as OntologyFullMetadata;
   const agent = new Agent({
     connect: caCertPath
       ? {
