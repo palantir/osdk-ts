@@ -201,68 +201,179 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
   });
 
   describe("addRequiredActionTypeConstraint", () => {
-    const IN_FLIGHT = {
+    const personSendEmail = (
+      requireImplementation: boolean,
+      transitions: unknown[] = [],
+    ) => ({
       version: 1,
       interfaces: {
         Person: {
           schema: {
             properties: { firstName: { type: "string", required: true } },
-            actionTypeConstraints: {
-              sendEmail: { requireImplementation: false },
-            },
+            actionTypeConstraints: { sendEmail: { requireImplementation } },
           },
-          transitions: [
-            {
-              id: "requireSendEmail",
-              gracePeriod: { type: "afterInstall", days: 30 },
-              instructions: [
-                {
-                  type: "addRequiredActionTypeConstraint",
-                  actionTypeConstraint: "sendEmail",
-                },
-              ],
-            },
-          ],
+          transitions,
         },
       },
-    };
+    });
+    const OPTIONAL = personSendEmail(false);
+    const IN_FLIGHT = personSendEmail(false, [
+      {
+        id: "requireSendEmail",
+        gracePeriod: { type: "afterInstall", days: 30 },
+        instructions: [
+          {
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "sendEmail",
+          },
+        ],
+      },
+    ]);
+    const FINALIZED = personSendEmail(true);
 
     it("locks the in-flight migration with the lenient constraint", async () => {
       await run("personSendEmailInFlight", "--write-locks");
 
       expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
     });
+
+    it("does not write block data when the declared migration is not locked", async () => {
+      await run("personSendEmailOptional", "--write-locks");
+      await fs.rm(output);
+
+      await expect(run("personSendEmailInFlight")).rejects.toThrowError(
+        /is out of date[\s\S]*\n {2}Person\n/u,
+      );
+      expect(await exists(output)).toBe(false);
+      expect(await readLockfile()).toStrictEqual(OPTIONAL);
+    });
+
+    it("locks a migration declared on top of an existing lockfile", async () => {
+      await run("personSendEmailOptional", "--write-locks");
+
+      await run("personSendEmailInFlight", "--write-locks");
+
+      expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
+      await fs.rm(output);
+      await run("personSendEmailInFlight");
+      expect(await exists(output)).toBe(true);
+    });
+
+    it("finalizes the migration once the constraint is required", async () => {
+      await run("personSendEmailInFlight", "--write-locks");
+
+      await expect(
+        run("personSendEmailFinalized", "--write-locks"),
+      ).rejects.toThrowError(/cannot prompt\. Re-run with --yes/u);
+      expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
+
+      await run("personSendEmailFinalized", "--write-locks", "--yes");
+
+      expect(consola.warn).toHaveBeenCalledWith(
+        expect.stringMatching(/\nPerson:\n {2}FINALIZE requireSendEmail$/u),
+      );
+      expect(await readLockfile()).toStrictEqual(FINALIZED);
+      const contents = await fs.readFile(lockfile, "utf-8");
+      await run("personSendEmailFinalized", "--write-locks");
+      await run("personSendEmailFinalized");
+      expect(await fs.readFile(lockfile, "utf-8")).toBe(contents);
+    });
+
+    it("deletes the migration when the constraint stays optional", async () => {
+      await run("personSendEmailInFlight", "--write-locks");
+
+      await expect(
+        run("personSendEmailOptional", "--write-locks"),
+      ).rejects.toThrowError(/cannot prompt\. Re-run with --yes/u);
+      expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
+
+      await run("personSendEmailOptional", "--write-locks", "--yes");
+
+      expect(consola.warn).toHaveBeenCalledWith(
+        expect.stringMatching(/\nPerson:\n {2}DELETE requireSendEmail$/u),
+      );
+      expect(await readLockfile()).toStrictEqual(OPTIONAL);
+    });
   });
 
   describe("replace", () => {
+    const legacyPerson = (transitions: unknown[] = []) => ({
+      version: 1,
+      interfaces: {
+        LegacyPerson: {
+          schema: {
+            properties: { fullName: { type: "string", required: true } },
+          },
+          transitions,
+        },
+      },
+    });
+    const OPTED_IN = legacyPerson();
+    const IN_FLIGHT = legacyPerson([
+      {
+        id: "replaceWithPerson",
+        gracePeriod: { type: "afterInstall", days: 30 },
+        instructions: [
+          {
+            type: "replace",
+            replacement: {
+              interfaceType: "Person",
+              propertyMappings: { fullName: "firstName" },
+            },
+          },
+        ],
+      },
+    ]);
+
     it("locks the in-flight migration", async () => {
       await run("legacyPersonReplaceInFlight", "--write-locks");
 
-      expect(await readLockfile()).toStrictEqual({
-        version: 1,
-        interfaces: {
-          LegacyPerson: {
-            schema: {
-              properties: { fullName: { type: "string", required: true } },
-            },
-            transitions: [
-              {
-                id: "replaceWithPerson",
-                gracePeriod: { type: "afterInstall", days: 30 },
-                instructions: [
-                  {
-                    type: "replace",
-                    replacement: {
-                      interfaceType: "Person",
-                      propertyMappings: { fullName: "firstName" },
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-        },
-      });
+      expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
+    });
+
+    it("does not write block data when the declared migration is not locked", async () => {
+      await run("legacyPersonOptedIn", "--write-locks");
+      await fs.rm(output);
+
+      await expect(run("legacyPersonReplaceInFlight")).rejects.toThrowError(
+        /is out of date[\s\S]*\n {2}LegacyPerson\n/u,
+      );
+      expect(await exists(output)).toBe(false);
+      expect(await readLockfile()).toStrictEqual(OPTED_IN);
+    });
+
+    it("locks a migration declared on top of an existing lockfile", async () => {
+      await run("legacyPersonOptedIn", "--write-locks");
+
+      await run("legacyPersonReplaceInFlight", "--write-locks");
+
+      expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
+      await fs.rm(output);
+      await run("legacyPersonReplaceInFlight");
+      expect(await exists(output)).toBe(true);
+    });
+
+    // A replace is never finalized, so deleting it is the only way it leaves the lockfile.
+    it("deletes the migration", async () => {
+      await run("legacyPersonReplaceInFlight", "--write-locks");
+
+      await expect(
+        run("legacyPersonOptedIn", "--write-locks"),
+      ).rejects.toThrowError(/cannot prompt\. Re-run with --yes/u);
+      expect(await readLockfile()).toStrictEqual(IN_FLIGHT);
+
+      await run("legacyPersonOptedIn", "--write-locks", "--yes");
+
+      expect(consola.warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /\nLegacyPerson:\n {2}DELETE replaceWithPerson$/u,
+        ),
+      );
+      expect(await readLockfile()).toStrictEqual(OPTED_IN);
+      const contents = await fs.readFile(lockfile, "utf-8");
+      await run("legacyPersonOptedIn", "--write-locks");
+      await run("legacyPersonOptedIn");
+      expect(await fs.readFile(lockfile, "utf-8")).toBe(contents);
     });
   });
 
