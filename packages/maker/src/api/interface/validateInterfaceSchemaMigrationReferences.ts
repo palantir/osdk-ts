@@ -24,14 +24,13 @@ import type {
 import invariant from "tiny-invariant";
 
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
-import { namespace } from "../defineOntology.js";
-import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
+import { addNamespaceIfNone } from "../defineOntology.js";
 import {
   describePropertyType,
   type NormalizedPropertyType,
   normalizePropertyType,
 } from "../properties/normalizePropertyType.js";
-import type { OntologyValidationContext } from "../validateOntology.js";
+import type { OntologyContext } from "../validateOntology.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
   getInterfacePropertyTypeType,
@@ -58,7 +57,7 @@ import {
  * and extending interface types are all attached after `defineInterface` returns.
  */
 export function validateInterfaceSchemaMigrationReferences(
-  validationContext: OntologyValidationContext,
+  validationContext: OntologyContext,
 ): void {
   const interfaceTypes = Object.values(
     validationContext.ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
@@ -82,7 +81,7 @@ export function validateInterfaceSchemaMigrationReferences(
 }
 
 interface ReferenceContext {
-  validationContext: OntologyValidationContext;
+  validationContext: OntologyContext;
   interfaceType: InterfaceType;
   transitionId: string;
   /** The start of every error message, naming the transition, interface, and instruction. */
@@ -102,10 +101,7 @@ function validateInstructionReferences(
       // action type constraints are defined separately from defineInterface
       validateActionTypeConstraintTarget(
         context,
-        combineApiNamespaceIfMissing(
-          namespace,
-          instruction.actionTypeConstraint,
-        ),
+        addNamespaceIfNone(instruction.actionTypeConstraint),
       );
       return;
     case "replace": {

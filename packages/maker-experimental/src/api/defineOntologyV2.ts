@@ -22,7 +22,7 @@ import type {
   LinkType,
   ObjectType,
   OntologyDefinition,
-  OntologyValidationContext,
+  OntologyContext,
 } from "@osdk/maker";
 import {
   getFolderDefinitions,
@@ -92,7 +92,7 @@ export async function defineOntologyV2(
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
   packagingOptions: OntologyPackagingOptions = {},
   /** Runs once the ontology is fully converted, but before any block data is written to disk. */
-  beforeWrite?: (context: OntologyValidationContext) => void | Promise<void>,
+  beforeWrite?: (context: OntologyContext) => void | Promise<void>,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -125,8 +125,8 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
-  const validationContext = { ontology: ontologyDefinition, importedTypes };
-  validateOntology(validationContext);
+  const context = { ontology: ontologyDefinition, importedTypes };
+  validateOntology(context);
 
   const folderDefinitions = resolveFolderDefinitions(
     getFolderDefinitions(),
@@ -232,7 +232,7 @@ export async function defineOntologyV2(
   }
 
   // Runs last so that an ontology which fails conversion can't have already updated the lockfile.
-  await beforeWrite?.(validationContext);
+  await beforeWrite?.(context);
 
   if (outputDir) {
     writeStaticObjects(outputDir);

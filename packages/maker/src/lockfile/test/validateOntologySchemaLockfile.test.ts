@@ -190,7 +190,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       ]);
     });
@@ -351,7 +351,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyRemoved",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       ]);
     });
@@ -365,7 +365,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          propertyApiName: "firstName",
           previousType: "string",
           nextType: "integer",
         },
@@ -381,7 +381,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          propertyApiName: "firstName",
           previousType: "string",
           nextType: { type: "array", subtype: "string" },
         },
@@ -397,7 +397,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          propertyApiName: "firstName",
           previousType: { type: "array", subtype: "string" },
           nextType: "string",
         },
@@ -418,7 +418,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          propertyApiName: "firstName",
           previousType: { type: "array", subtype: "string" },
           nextType: { type: "array", subtype: "integer" },
         },
@@ -435,7 +435,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "requirementRelaxed",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       ]);
     });
@@ -463,7 +463,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "requirementRelaxed",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       ]);
     });
@@ -498,7 +498,7 @@ describe("validateOntologySchemaLockfile", () => {
           {
             code: "primaryKeyConstraintChanged",
             interfaceApiName: "Person",
-            property: "id",
+            propertyApiName: "id",
             previousConstraint: "NO_RESTRICTION",
             nextConstraint: primaryKeyConstraint,
           },
@@ -519,7 +519,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
-          property: "id",
+          propertyApiName: "id",
           previousConstraint: "MUST_BE_PK",
           nextConstraint: "CANNOT_BE_PK",
         },
@@ -538,7 +538,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "primaryKeyConstraintRelaxed",
           interfaceApiName: "Person",
-          property: "id",
+          propertyApiName: "id",
           previousConstraint: "MUST_BE_PK",
         },
       ]);
@@ -557,7 +557,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
-          property: "name",
+          propertyApiName: "name",
           previousNullability: UNCONSTRAINED,
           nextNullability: nullability,
         },
@@ -598,7 +598,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "nullabilityRelaxed",
           interfaceApiName: "Person",
-          property: "name",
+          propertyApiName: "name",
           previousNullability,
           nextNullability: UNCONSTRAINED,
         },
@@ -614,7 +614,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
-          property: "ssn",
+          propertyApiName: "ssn",
           previousValueType: undefined,
           nextValueType: SSN,
         },
@@ -630,7 +630,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
-          property: "ssn",
+          propertyApiName: "ssn",
           previousValueType: SSN,
           nextValueType: EIN,
         },
@@ -647,7 +647,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "valueTypeRemoved",
           interfaceApiName: "Person",
-          property: "ssn",
+          propertyApiName: "ssn",
           previousValueType: SSN,
         },
       ]);
@@ -662,7 +662,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          propertyApiName: "firstName",
           previousDeclaration: "interface",
           nextDeclaration: "sharedPropertyType",
         },
@@ -678,7 +678,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
-          property: "com.palantir.firstName",
+          propertyApiName: "com.palantir.firstName",
           previousDeclaration: "sharedPropertyType",
           nextDeclaration: "interface",
         },
@@ -710,8 +710,8 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyNamespaceChanged",
           interfaceApiName: "Person",
-          previousApiName: "com.palantir.firstName",
-          nextApiName: "com.example.firstName",
+          previousPropertyApiName: "com.palantir.firstName",
+          nextPropertyApiName: "com.example.firstName",
         },
       ]);
     });
@@ -738,7 +738,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          propertyApiName: "firstName",
           previousTypeClasses: [],
           nextTypeClasses: [SORTABLE],
         },
@@ -754,7 +754,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          propertyApiName: "firstName",
           previousTypeClasses: [SORTABLE],
           nextTypeClasses: [],
         },
@@ -772,7 +772,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
-          property: "firstName",
+          propertyApiName: "firstName",
           previousTypeClasses: [SORTABLE],
           nextTypeClasses: [SELECTABLE],
         },
@@ -804,7 +804,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       ]);
     });
@@ -818,7 +818,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       ]);
     });
@@ -1034,7 +1034,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyRemoved",
           interfaceApiName: "Person",
-          property: "toString",
+          propertyApiName: "toString",
         },
       ]);
     });
@@ -1048,7 +1048,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
-          property: "constructor",
+          propertyApiName: "constructor",
         },
       ]);
     });
@@ -1166,8 +1166,8 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "parameterBecameRequiredOnConcreteAction",
           interfaceApiName: "Person",
-          actionTypeConstraint: SEND_EMAIL,
-          parameter: "subject",
+          actionTypeConstraintApiName: SEND_EMAIL,
+          parameterApiName: "subject",
         },
       ]);
     });
@@ -1217,7 +1217,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "actionTypeConstraintBecameRequired",
           interfaceApiName: "Person",
-          actionTypeConstraint: SEND_EMAIL,
+          actionTypeConstraintApiName: SEND_EMAIL,
         },
       ]);
     });
@@ -1231,7 +1231,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "requiredActionTypeConstraintAdded",
           interfaceApiName: "Person",
-          actionTypeConstraint: SEND_EMAIL,
+          actionTypeConstraintApiName: SEND_EMAIL,
         },
       ]);
     });
@@ -1258,7 +1258,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "actionTypeConstraintRequirementRelaxed",
           interfaceApiName: "Person",
-          actionTypeConstraint: SEND_EMAIL,
+          actionTypeConstraintApiName: SEND_EMAIL,
         },
       ]);
     });
@@ -1278,7 +1278,7 @@ describe("validateOntologySchemaLockfile", () => {
           {
             code: "actionTypeConstraintRemoved",
             interfaceApiName: "Person",
-            actionTypeConstraint: SEND_EMAIL,
+            actionTypeConstraintApiName: SEND_EMAIL,
           },
         ]);
       },
@@ -1297,8 +1297,8 @@ describe("validateOntologySchemaLockfile", () => {
       };
       const where = {
         interfaceApiName: "Person",
-        actionTypeConstraint: SEND_EMAIL,
-        parameter: "subject",
+        actionTypeConstraintApiName: SEND_EMAIL,
+        parameterApiName: "subject",
       };
 
       /** `sendEmail`, with the given requirement and parameters. */
@@ -1455,7 +1455,7 @@ describe("validateOntologySchemaLockfile", () => {
         {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       ]);
     });

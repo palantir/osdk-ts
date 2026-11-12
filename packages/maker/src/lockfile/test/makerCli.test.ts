@@ -206,7 +206,7 @@ describe("maker CLI", () => {
     expect(await exists(output)).toBe(true);
   });
 
-  describe("an action type constraint phased in to required", () => {
+  describe("an action type constraint made required without a migration", () => {
     it("does not write an ontology when the constraint is required without a migration", async () => {
       await writeBaselineLockfile(
         "Person",

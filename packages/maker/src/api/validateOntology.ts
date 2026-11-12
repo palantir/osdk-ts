@@ -17,7 +17,7 @@
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { validateInterfaceSchemaMigrationReferences } from "./interface/validateInterfaceSchemaMigrationReferences.js";
 
-export interface OntologyValidationContext {
+export interface OntologyContext {
   /** Every entity defined in this ontology. */
   ontology: OntologyDefinition;
   /** Every entity imported into this ontology, including those imported after the body ran. */
@@ -30,6 +30,6 @@ export interface OntologyValidationContext {
  *
  * NOTE: Validations of a single entity belong in its `define*` function instead.
  */
-export function validateOntology(context: OntologyValidationContext): void {
+export function validateOntology(context: OntologyContext): void {
   validateInterfaceSchemaMigrationReferences(context);
 }

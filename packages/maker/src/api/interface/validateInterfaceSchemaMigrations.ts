@@ -16,8 +16,7 @@
 
 import invariant from "tiny-invariant";
 
-import { namespace } from "../defineOntology.js";
-import { combineApiNamespaceIfMissing } from "../namespace/combineApiNamespaceIfMissing.js";
+import { addNamespaceIfNone } from "../defineOntology.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
   type InterfacePropertyType,
@@ -197,19 +196,20 @@ function validateInstruction(
   switch (instruction.type) {
     case "addRequiredProperty": {
       const { property: propertyApiName } = instruction;
+      const prefix = `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${describeInstruction(instruction)}`;
       invariant(
         Object.hasOwn(propertiesV3, propertyApiName),
-        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} references property "${propertyApiName}" via ${instruction.type}, but interface ${interfaceApiName} does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
+        `${prefix}, but interface ${interfaceApiName} does not declare property "${propertyApiName}". Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
       );
       invariant(
         !isInterfacePropertyRequired(propertiesV3[propertyApiName]),
-        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} targets property "${propertyApiName}" via ${instruction.type}, but that property is required. Only properties declared required: false may be targeted.`,
+        `${prefix}, but property "${propertyApiName}" is required. Only properties declared \`required: false\` may be targeted.`,
       );
       return;
     }
     case "addRequiredActionTypeConstraint":
       // action type constraints aren't defined by defineInterface, so these are checked post-facto
-      // once the the ontology is fully-defined
+      // once the ontology is fully-defined
       return;
     case "replace": {
       const description = describeInstruction(instruction);
@@ -294,7 +294,7 @@ function validateReplacementMappings(
  * What an instruction claims exclusive use of for the duration of its transition.
  *
  * Stacked migrations (i.e. those which operate against the same property, etc.) are not allowed today,
- * so we reject any conflicting migrations that try to claim the same thing,
+ * so we reject any conflicting migrations that try to claim the same thing.
  */
 function getClaims(
   instruction: InterfaceSchemaMigrationInstruction,
@@ -304,10 +304,7 @@ function getClaims(
       return [`property:${instruction.property}`];
     case "addRequiredActionTypeConstraint":
       return [
-        `actionTypeConstraint:${combineApiNamespaceIfMissing(
-          namespace,
-          instruction.actionTypeConstraint,
-        )}`,
+        `actionTypeConstraint:${addNamespaceIfNone(instruction.actionTypeConstraint)}`,
       ];
     case "replace":
       // Always the only instruction of the only transition, so it can never conflict

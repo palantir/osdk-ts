@@ -48,7 +48,7 @@ export function describeBreakingChange(
       if (breakingChange.targets.length === 0) {
         return (
           `${where}: schema migration "${breakingChange.transitionId}" is no longer declared, but ` +
-          `it targets no property, so its disappearance cannot be read as either a ` +
+          `it targets nothing in the interface's schema, so its disappearance cannot be read as either a ` +
           `finalization or a deletion. Restore it, or remove it from the lockfile by hand once ` +
           `the last published release no longer declares it.`
         );
@@ -76,32 +76,38 @@ export function describeBreakingChange(
       );
 
     case "actionTypeConstraintBecameRequired": {
-      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      const constraint = authoredKeyOf(
+        breakingChange.actionTypeConstraintApiName,
+      );
       return (
         `${where}: action type constraint "${constraint}" became required without a schema ` +
         `migration. If there's any implementing object types of this interface that do not ` +
         `implement it already, the interface type will be blocked from upgrading. ` +
         `Keep it declared \`requireImplementation: false\` and phase it in instead ` +
         `through a migration like:\n` +
-        `  ${describeSuggestedAddRequiredActionTypeConstraintTransition(constraint)}`
+        `  ${describeSuggestedTransition({ type: "addRequiredActionTypeConstraint", actionTypeConstraint: constraint })}`
       );
     }
 
     case "requiredActionTypeConstraintAdded": {
-      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      const constraint = authoredKeyOf(
+        breakingChange.actionTypeConstraintApiName,
+      );
       return (
         `${where}: action type constraint "${constraint}" was added as required. Existing ` +
         `implementing object types do not implement it yet, so this is a breaking change. ` +
         `Declare it \`requireImplementation: false\` and phase it in instead through a ` +
         `migration like:\n` +
-        `  ${describeSuggestedAddRequiredActionTypeConstraintTransition(constraint)}`
+        `  ${describeSuggestedTransition({ type: "addRequiredActionTypeConstraint", actionTypeConstraint: constraint })}`
       );
     }
 
     case "parameterBecameRequired": {
-      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      const constraint = authoredKeyOf(
+        breakingChange.actionTypeConstraintApiName,
+      );
       return (
-        `${where}: parameter "${breakingChange.parameter}" of action type constraint ` +
+        `${where}: parameter "${breakingChange.parameterApiName}" of action type constraint ` +
         `"${constraint}" became required. Object types whose implementing action does not map it ` +
         `already are blocked from upgrading, and no currently-supported interface schema ` +
         `migration can phase that in. Declare it \`requireImplementation: false\` again.`
@@ -109,9 +115,11 @@ export function describeBreakingChange(
     }
 
     case "requiredParameterAdded": {
-      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      const constraint = authoredKeyOf(
+        breakingChange.actionTypeConstraintApiName,
+      );
       return (
-        `${where}: parameter "${breakingChange.parameter}" was added to action type constraint ` +
+        `${where}: parameter "${breakingChange.parameterApiName}" was added to action type constraint ` +
         `"${constraint}" as required. Existing implementing actions do not map it yet, so object ` +
         `types implementing "${constraint}" are blocked from upgrading, and no currently-supported ` +
         `interface schema migration can phase that in. Declare it ` +
@@ -120,9 +128,11 @@ export function describeBreakingChange(
     }
 
     case "parameterBecameRequiredOnConcreteAction": {
-      const constraint = authoredKeyOf(breakingChange.actionTypeConstraint);
+      const constraint = authoredKeyOf(
+        breakingChange.actionTypeConstraintApiName,
+      );
       return (
-        `${where}: parameter "${breakingChange.parameter}" of action type constraint ` +
+        `${where}: parameter "${breakingChange.parameterApiName}" of action type constraint ` +
         `"${constraint}" must now be required on the implementing action. Object types whose ` +
         `implementing action maps it to an optional parameter are blocked from upgrading, and no ` +
         `currently-supported interface schema migration can phase that in. Declare it ` +
@@ -141,7 +151,7 @@ export function describeBreakingChange(
     }
 
     case "propertyRemoved": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       return (
         `${where}: property "${property}" was removed. Removing a property from an ` +
         `interface is a breaking change, and no currently-supported interface schema migration can ` +
@@ -150,7 +160,7 @@ export function describeBreakingChange(
     }
 
     case "propertyDeclarationChanged": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       return (
         `${where}: property "${property}" moved from ` +
         `${describeDeclaration(breakingChange.previousDeclaration)} to ` +
@@ -162,20 +172,20 @@ export function describeBreakingChange(
     }
 
     case "propertyNamespaceChanged": {
-      const property = authoredKeyOf(breakingChange.previousApiName);
+      const property = authoredKeyOf(breakingChange.previousPropertyApiName);
       return (
         `${where}: property "${property}" is now backed by shared property type ` +
-        `"${breakingChange.nextApiName}" rather than "${breakingChange.previousApiName}". A property is ` +
+        `"${breakingChange.nextPropertyApiName}" rather than "${breakingChange.previousPropertyApiName}". A property is ` +
         `identified by the shared property type behind it, so this removes ` +
-        `"${breakingChange.previousApiName}" from the interface rather than renaming it, and ` +
-        `implementing object types would have to take up "${breakingChange.nextApiName}" in its place. ` +
+        `"${breakingChange.previousPropertyApiName}" from the interface rather than renaming it, and ` +
+        `implementing object types would have to take up "${breakingChange.nextPropertyApiName}" in its place. ` +
         `No currently-supported interface schema migration can phase that in. Back "${property}" ` +
-        `with "${breakingChange.previousApiName}" again.`
+        `with "${breakingChange.previousPropertyApiName}" again.`
       );
     }
 
     case "propertyTypeChanged": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       return (
         `${where}: property "${property}" changed type from ` +
         `${describePropertyType(breakingChange.previousType)} to ${describePropertyType(breakingChange.nextType)}. Changing a ` +
@@ -187,7 +197,7 @@ export function describeBreakingChange(
     }
 
     case "propertyTypeClassesChanged": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       return (
         `${where}: property "${property}" changed type classes from ` +
         `${describeTypeClasses(breakingChange.previousTypeClasses)} to ` +
@@ -200,7 +210,7 @@ export function describeBreakingChange(
     }
 
     case "primaryKeyConstraintChanged": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       return (
         `${where}: property "${property}" changed its primary key constraint from ` +
         `${describeConstraint(breakingChange.previousConstraint)} to ` +
@@ -212,7 +222,7 @@ export function describeBreakingChange(
     }
 
     case "nullabilityTightened": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       return (
         `${where}: property "${property}" tightened its nullability from ` +
         `${describeNullability(breakingChange.previousNullability)} to ` +
@@ -224,7 +234,7 @@ export function describeBreakingChange(
     }
 
     case "valueTypeChanged": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       const previous = breakingChange.previousValueType;
       return (
         `${where}: property "${property}" changed its value type from ` +
@@ -239,21 +249,21 @@ export function describeBreakingChange(
     }
 
     case "propertyBecameRequired": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       return (
         `${where}: property "${property}" became required without a schema migration. ` +
         `Keep it declared \`required: false\` and phase it in instead through a migration like:\n` +
-        `  ${describeSuggestedAddRequiredPropertyTransition(property)}`
+        `  ${describeSuggestedTransition({ type: "addRequiredProperty", property })}`
       );
     }
 
     case "requiredPropertyAdded": {
-      const property = authoredKeyOf(breakingChange.property);
+      const property = authoredKeyOf(breakingChange.propertyApiName);
       return (
         `${where}: property "${property}" was added as required. Existing implementing ` +
         `object types do not provide it yet, so this is a breaking change. Declare it ` +
         `\`required: false\` and phase it in instead through a migration like:\n` +
-        `  ${describeSuggestedAddRequiredPropertyTransition(property)}`
+        `  ${describeSuggestedTransition({ type: "addRequiredProperty", property })}`
       );
     }
   }
@@ -272,7 +282,7 @@ export function describeWarning(warning: LockfileWarning): string {
       );
 
     case "requirementRelaxed": {
-      const property = authoredKeyOf(warning.property);
+      const property = authoredKeyOf(warning.propertyApiName);
       return (
         `Interface ${warning.interfaceApiName}: property "${property}" is no longer required. ` +
         `Implementing object types need not provide it from this release on, so clients that ` +
@@ -282,7 +292,7 @@ export function describeWarning(warning: LockfileWarning): string {
     }
 
     case "primaryKeyConstraintRelaxed": {
-      const property = authoredKeyOf(warning.property);
+      const property = authoredKeyOf(warning.propertyApiName);
       return (
         `Interface ${warning.interfaceApiName}: property "${property}" no longer constrains ` +
         `primary key mapping, having been ` +
@@ -293,7 +303,7 @@ export function describeWarning(warning: LockfileWarning): string {
     }
 
     case "nullabilityRelaxed": {
-      const property = authoredKeyOf(warning.property);
+      const property = authoredKeyOf(warning.propertyApiName);
       return (
         `Interface ${warning.interfaceApiName}: property "${property}" relaxed its nullability ` +
         `from ${describeNullability(warning.previousNullability)} to ` +
@@ -305,7 +315,7 @@ export function describeWarning(warning: LockfileWarning): string {
     }
 
     case "valueTypeRemoved": {
-      const property = authoredKeyOf(warning.property);
+      const property = authoredKeyOf(warning.propertyApiName);
       return (
         `Interface ${warning.interfaceApiName}: property "${property}" no longer references ` +
         `value type ${describeValueType(warning.previousValueType)}. Implementing object types ` +
@@ -327,7 +337,7 @@ export function describeWarning(warning: LockfileWarning): string {
     }
 
     case "actionTypeConstraintRequirementRelaxed": {
-      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      const constraint = authoredKeyOf(warning.actionTypeConstraintApiName);
       return (
         `Interface ${warning.interfaceApiName}: action type constraint "${constraint}" no ` +
         `longer requires implementation. Implementing object types need not implement it from ` +
@@ -338,7 +348,7 @@ export function describeWarning(warning: LockfileWarning): string {
     }
 
     case "actionTypeConstraintRemoved": {
-      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      const constraint = authoredKeyOf(warning.actionTypeConstraintApiName);
       return (
         `Interface ${warning.interfaceApiName}: action type constraint "${constraint}" was ` +
         `removed. Clients that apply actions through it will stop finding it. Nothing to do if ` +
@@ -347,9 +357,9 @@ export function describeWarning(warning: LockfileWarning): string {
     }
 
     case "parameterRequirementRelaxed": {
-      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      const constraint = authoredKeyOf(warning.actionTypeConstraintApiName);
       return (
-        `Interface ${warning.interfaceApiName}: parameter "${warning.parameter}" of action type ` +
+        `Interface ${warning.interfaceApiName}: parameter "${warning.parameterApiName}" of action type ` +
         `constraint "${constraint}" no longer requires implementation. Implementing actions need ` +
         `not map it from this release on, so a value clients pass for it may not reach the action. ` +
         `Nothing to do if that was intended; declare it \`requireImplementation: true\` again if ` +
@@ -358,9 +368,9 @@ export function describeWarning(warning: LockfileWarning): string {
     }
 
     case "parameterNoLongerRequiredOnConcreteAction": {
-      const constraint = authoredKeyOf(warning.actionTypeConstraint);
+      const constraint = authoredKeyOf(warning.actionTypeConstraintApiName);
       return (
-        `Interface ${warning.interfaceApiName}: parameter "${warning.parameter}" of action type ` +
+        `Interface ${warning.interfaceApiName}: parameter "${warning.parameterApiName}" of action type ` +
         `constraint "${constraint}" no longer has to be required on the implementing action. ` +
         `Implementing actions may declare it optional from this release on, so clients that ` +
         `expect it to always be validated as present will start finding it missing. Nothing to do ` +
@@ -513,21 +523,4 @@ function describeFinalizations(
         describeFinalization(toAuthoredInstruction(instruction)) ?? [],
     )
     .join(", and ");
-}
-
-/** The transition an author should have declared to make `property` required. */
-function describeSuggestedAddRequiredPropertyTransition(
-  property: string,
-): string {
-  return describeSuggestedTransition({ type: "addRequiredProperty", property });
-}
-
-/** The transition an author should have declared to make `actionTypeConstraint` required. */
-function describeSuggestedAddRequiredActionTypeConstraintTransition(
-  actionTypeConstraint: string,
-): string {
-  return describeSuggestedTransition({
-    type: "addRequiredActionTypeConstraint",
-    actionTypeConstraint,
-  });
 }
