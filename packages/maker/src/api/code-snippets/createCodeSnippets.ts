@@ -24,6 +24,7 @@ import Mustache from "mustache";
 import type { ActionType } from "../action/ActionType.js";
 import type { OntologyDefinition } from "../common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
+import { withoutNamespace } from "../defineOntology.js";
 import type { InterfaceType } from "../interface/InterfaceType.js";
 import type { ObjectType } from "../object/ObjectType.js";
 import {
@@ -77,10 +78,11 @@ function generateInterfaceSnippet(
   interfaceType: InterfaceType,
   packageName: string,
 ) {
+  const identifier = withoutNamespace(interfaceType.apiName);
   const interfaceContext = {
-    interfaceApiName: interfaceType.apiName,
+    interfaceApiName: identifier,
     packageName: packageName,
-    objectOrInterfaceApiName: interfaceType.apiName,
+    objectOrInterfaceApiName: identifier,
     propertyNames: Object.keys(interfaceType.propertiesV3),
     interfaceName: interfaceType.displayMetadata.displayName,
   };
@@ -89,17 +91,21 @@ function generateInterfaceSnippet(
 }
 
 function generateObjectSnippet(objectType: ObjectType, packageName: string) {
+  const identifier = withoutNamespace(objectType.apiName);
   const objectContext = {
-    objectType: objectType.apiName,
+    objectType: identifier,
     packageName: packageName,
-    objectOrInterfaceApiName: objectType.apiName,
+    objectOrInterfaceApiName: identifier,
   };
   return getSnippets(objectSnippets, objectContext);
 }
 
 function generateActionSnippet(actionType: ActionType, packageName: string) {
   const actionContext = {
-    actionApiName: actionType.apiName,
+    actionApiName: withoutNamespace(actionType.apiName).replace(
+      /-./gu,
+      (segment) => segment.charAt(1).toUpperCase(),
+    ),
     packageName: packageName,
   };
   return getSnippets(actionSnippets, actionContext);
