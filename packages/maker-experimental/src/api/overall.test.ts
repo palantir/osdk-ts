@@ -504,7 +504,7 @@ describe("Experimental Test Suite", () => {
               "CBAC",
             ]),
           ).toThrowErrorMatchingInlineSnapshot(
-            `[Error: Invariant failed: Object "document" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.]`,
+            `[MakerValidationError: [validation_error] Object "document" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.]`,
           );
         });
       });
@@ -516,7 +516,7 @@ describe("Experimental Test Suite", () => {
               "MANDATORY",
             ]),
           ).toThrowErrorMatchingInlineSnapshot(
-            `[Error: Invariant failed: Object "document" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.]`,
+            `[MakerValidationError: [validation_error] Object "document" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.]`,
           );
         });
       });
