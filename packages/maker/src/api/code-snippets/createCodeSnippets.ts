@@ -102,13 +102,19 @@ function generateObjectSnippet(objectType: ObjectType, packageName: string) {
 
 function generateActionSnippet(actionType: ActionType, packageName: string) {
   const actionContext = {
-    actionApiName: withoutNamespace(actionType.apiName).replace(
-      /-./gu,
-      (segment) => segment.charAt(1).toUpperCase(),
-    ),
+    actionApiName: actionIdentifier(actionType.apiName),
     packageName: packageName,
   };
   return getSnippets(actionSnippets, actionContext);
+}
+
+// Snippets must use the name the TypeScript SDK generator exports. It drops
+// each hyphen and capitalizes the next character, but leaves the first letter
+// and any underscores alone.
+function actionIdentifier(apiName: string): string {
+  return withoutNamespace(apiName).replace(/-./gu, (segment) =>
+    segment.charAt(1).toUpperCase(),
+  );
 }
 
 function getSnippets(

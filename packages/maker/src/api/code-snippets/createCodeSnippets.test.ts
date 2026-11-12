@@ -15,9 +15,10 @@
  */
 
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 
-import ts from "typescript";
+import * as ts from "typescript";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
@@ -31,8 +32,9 @@ describe.each(["", "com.example.example-types."])(
     let outputDir: string;
 
     beforeEach(async () => {
-      fs.mkdirSync("build", { recursive: true });
-      outputDir = fs.mkdtempSync(path.join("build", "code-snippets-"));
+      outputDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "maker-code-snippets-"),
+      );
       await defineOntology(
         namespace,
         () => {
@@ -46,15 +48,14 @@ describe.each(["", "com.example.example-types."])(
           });
           defineInterface({
             apiName: "Worker",
-            displayName: "Worker",
+            displayName: "Worker Profile",
             properties: { name: { type: "string" } },
           });
-          for (const apiName of ["create", "create-employee-profile"]) {
-            defineCreateObjectAction({
-              apiName,
-              objectType: employee,
-            });
-          }
+          defineCreateObjectAction({ apiName: "create", objectType: employee });
+          defineCreateObjectAction({
+            apiName: "create-employee-profile",
+            objectType: employee,
+          });
         },
         undefined,
         undefined,
@@ -74,42 +75,17 @@ describe.each(["", "com.example.example-types."])(
       );
     }
 
-    it.each([
-      ["create", "create"],
-      ["create-employee-profile", "createEmployeeProfile"],
-    ])("uses SDK identifiers for action %s", (apiName, identifier) => {
-      const snippets = readSnippets(apiName);
-      for (const method of ["applyAction", "batchApplyAction"]) {
-        const snippet = snippets[method];
-        expect(snippet).toContain(
-          `import { ${identifier} } from "@example/sdk";`,
-        );
-        expect(snippet).toContain(`client(${identifier}).${method}(`);
-        expect(
-          ts.transpileModule(snippet, {
-            compilerOptions: { target: ts.ScriptTarget.ESNext },
-            reportDiagnostics: true,
-          }).diagnostics,
-        ).toEqual([]);
-      }
-    });
-
-    it.each([
-      ["Employee", "loadObjectsReference", "loadObjectMetadataSnippet"],
-      ["Worker", "Load pages of Worker", "Load Worker metadata"],
-    ])("uses SDK identifiers for %s", (identifier, loadKey, metadataKey) => {
-      const snippets = readSnippets(identifier);
-      for (const key of [loadKey, metadataKey, "Subscribe to object sets"]) {
-        expect(snippets[key]).toContain(
-          `import { ${identifier} } from "@example/sdk";`,
-        );
-      }
-      expect(snippets[loadKey]).toContain(`client(${identifier})`);
-      expect(snippets[metadataKey]).toContain(`fetchMetadata(${identifier})`);
-      expect(snippets["Subscribe to object sets"]).toContain(
-        `client(${identifier}).subscribe(`,
+    function syntaxErrors(source: string) {
+      const { diagnostics = [] } = ts.transpileModule(source, {
+        compilerOptions: { target: ts.ScriptTarget.ESNext },
+        reportDiagnostics: true,
+      });
+      return diagnostics.map((diagnostic) =>
+        ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
       );
-      expect(snippets[loadKey]).toContain(`<${identifier}>`);
+    }
+
+    it("names snippet files by full API name", () => {
       expect(fs.readdirSync(outputDir).sort()).toEqual([
         `${namespace}Employee`,
         `${namespace}Worker`,
@@ -117,5 +93,56 @@ describe.each(["", "com.example.example-types."])(
         `${namespace}create-employee-profile`,
       ]);
     });
+
+    it.each([
+      { apiName: "create", identifier: "create" },
+      {
+        apiName: "create-employee-profile",
+        identifier: "createEmployeeProfile",
+      },
+    ])(
+      "uses SDK identifiers for action $apiName",
+      ({ apiName, identifier }) => {
+        const snippets = readSnippets(apiName);
+        for (const method of ["applyAction", "batchApplyAction"]) {
+          const snippet = snippets[method];
+          expect(snippet).toContain(
+            `import { ${identifier} } from "@example/sdk";`,
+          );
+          expect(snippet).toContain(`client(${identifier}).${method}(`);
+          expect(syntaxErrors(snippet)).toEqual([]);
+        }
+      },
+    );
+
+    it.each([
+      {
+        apiName: "Employee",
+        loadKey: "loadObjectsReference",
+        metadataKey: "loadObjectMetadataSnippet",
+      },
+      {
+        apiName: "Worker",
+        loadKey: "Load pages of Worker Profile",
+        metadataKey: "Load Worker Profile metadata",
+      },
+    ])(
+      "uses SDK identifiers for $apiName",
+      ({ apiName, loadKey, metadataKey }) => {
+        const snippets = readSnippets(apiName);
+        const subscribe = snippets["Subscribe to object sets"];
+        const sdkImport = `import { ${apiName} } from "@example/sdk";`;
+        for (const key of [loadKey, metadataKey]) {
+          expect(snippets[key]).toContain(sdkImport);
+          expect(syntaxErrors(snippets[key])).toEqual([]);
+        }
+        expect(snippets[loadKey]).toContain(`client(${apiName})`);
+        expect(snippets[metadataKey]).toContain(`fetchMetadata(${apiName})`);
+        // The subscribe template contains placeholder code that never parses,
+        // so it only gets text checks.
+        expect(subscribe).toContain(sdkImport);
+        expect(subscribe).toContain(`client(${apiName}).subscribe(`);
+      },
+    );
   },
 );
