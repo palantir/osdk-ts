@@ -96,7 +96,7 @@ const meta: Meta<BaseWorkshopModuleProps> = {
     variables: {
       control: "object",
       description:
-        "Scalar or array values keyed by module-interface external ID. Workshop edits update these controls.",
+        "Variable values keyed by module-interface external ID. Workshop edits update these controls.",
     },
     onVariablesChanged: { control: false },
     branchRid: {
@@ -177,6 +177,42 @@ export const Arrays: Story = {
         code: `type ModuleVariables = { selectedNames: readonly string[] };
 const [variables, setVariables] = useState<WorkshopVariableValues<ModuleVariables>>({
   selectedNames: ["Ada", "Grace"],
+});
+
+<BaseWorkshopModule<ModuleVariables>
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  variables={variables}
+  onVariablesChanged={(changes) =>
+    setVariables((previous) => ({ ...previous, ...changes }))
+  }
+  style={{ height: "24rem" }}
+/>`,
+      },
+    },
+  },
+};
+
+export const ObjectSets: Story = {
+  args: {
+    variables: {
+      employees: {
+        objectSetRid: "ri.object-set.main.temporary-object-set.example",
+      },
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Supply an object-set RID that Workshop's signed-in user can access. Workshop edits return the same reference shape; null clears the variable. Requires object-set support in the Workshop embed integration.",
+      },
+      source: {
+        code: `import type { WorkshopObjectSetValue, WorkshopVariableValues } from "@osdk/react-components/experimental/workshop-module";
+
+type ModuleVariables = { employees: WorkshopObjectSetValue };
+const [variables, setVariables] = useState<WorkshopVariableValues<ModuleVariables>>({
+  employees: { objectSetRid: "ri.object-set.main.temporary-object-set.example" },
 });
 
 <BaseWorkshopModule<ModuleVariables>
