@@ -18,7 +18,7 @@ This guide covers how the OSDK React cache system works and how to manually cont
 
 ## How the Cache Works
 
-The `OsdkProvider` creates an `ObservableClient` that maintains a normalized cache of all queries and their results.
+The `OsdkProvider` creates an `ObservableClient`, or uses one you supply, to maintain a normalized cache of queries and their results.
 
 ### What Gets Cached
 
@@ -34,6 +34,29 @@ The `OsdkProvider` creates an `ObservableClient` that maintains a normalized cac
 Per-property security metadata is loaded alongside objects when `$loadPropertySecurityMetadata: true` is passed to `useOsdkObject` / `useOsdkObjects`.
 
 ### Cache Sharing
+
+To share a cache with code outside React, create an observable client and pass it to `OsdkProvider`:
+
+```tsx
+import { createObservableClient } from "@osdk/client/observable";
+import { OsdkProvider } from "@osdk/react";
+
+const observableClient = createObservableClient(client, undefined, {
+  devMode: { actionDelayMs: 0 },
+});
+
+root.render(
+  <OsdkProvider client={observableClient}>
+    <App />
+  </OsdkProvider>,
+);
+```
+
+The `client` prop accepts either a plain client or an observable client. When you supply an observable client, `useOsdkClient()` returns the plain client used to create it. Set creation options such as `devMode` in `createObservableClient`; they cannot also be passed to the provider. The provider's `enableDevTools` option is available in either mode.
+
+Keep the observable client stable across renders. Replace it when the ontology, branch, or authentication context changes. The provider does not clear the shared cache when it unmounts. Each consumer must unsubscribe from its own observations.
+
+Multiple providers can use the same observable client. Code outside React must use that client's observable APIs to share the cache; plain client fetches do not populate it. Cache sharing applies within the same JavaScript runtime.
 
 - **Same query = same cache entry**: Two components calling `useOsdkObjects(Todo, { where: { isComplete: false } })` share the same cached result
 - **Different filters = different entries**: `{ isComplete: false }` and `{ isComplete: true }` create separate cache entries

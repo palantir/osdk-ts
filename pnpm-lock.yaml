@@ -5133,6 +5133,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/shared.test':
+        specifier: workspace:~
+        version: link:../shared.test
       '@osdk/shared.test.intellisense':
         specifier: workspace:~
         version: link:../shared.test.intellisense

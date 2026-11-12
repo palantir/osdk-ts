@@ -33,7 +33,7 @@ import type {
 import { Subscription } from "rxjs";
 
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-import { additionalContext } from "../../Client.js";
+import { additionalContext, type Client } from "../../Client.js";
 import {
   getWireObjectSet,
   isObjectSet,
@@ -90,11 +90,27 @@ export class ObservableClientImpl implements ObservableClient {
   #intersectCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
   #subtractCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
 
-  constructor(store: Store) {
+  constructor(
+    store: Store,
+    private readonly client: Client = store.client,
+    private readonly userAgents = new Map<symbol, string>(),
+  ) {
     this.__experimentalStore = store;
 
     this.applyAction = store.applyAction.bind(store);
     this.validateAction = store.validateAction.bind(store);
+  }
+
+  getClient(): Client {
+    return this.client;
+  }
+
+  registerUserAgent(agent: string): () => void {
+    const registration = Symbol();
+    this.userAgents.set(registration, agent);
+    return () => {
+      this.userAgents.delete(registration);
+    };
   }
 
   public observeObject: <T extends ObjectOrInterfaceDefinition>(

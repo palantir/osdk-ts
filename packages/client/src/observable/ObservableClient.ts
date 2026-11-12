@@ -641,6 +641,12 @@ export interface ObservableClient extends ObserveLinks {
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
+
+  /** Returns the client used to create this observable client. */
+  getClient(): Client;
+
+  /** Adds a request user agent until the returned cleanup function is called. */
+  registerUserAgent(agent: string): () => void;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
@@ -720,6 +726,7 @@ export function createObservableClient(
   extraUserAgents?: () => string[],
   options?: ObservableClientOptions,
 ): ObservableClient {
+  const userAgents = new Map<symbol, string>();
   // First we need a modified client that adds an extra header so we know its
   // an observable client
   const tweakedClient = createClientFromContext({
@@ -734,6 +741,7 @@ export function createObservableClient(
             headers.get("Fetch-User-Agent"),
             OBSERVABLE_USER_AGENT,
             ...(extraUserAgents?.() ?? []),
+            ...new Set(userAgents.values()),
           ]
             .filter((x) => x && x?.length > 0)
             .join(" "),
@@ -745,7 +753,11 @@ export function createObservableClient(
 
   // Then we use that client instead. Because the `client` does not hold
   // any real state, this whole thing works.
-  return new ObservableClientImpl(new Store(tweakedClient, options));
+  return new ObservableClientImpl(
+    new Store(tweakedClient, options),
+    client,
+    userAgents,
+  );
 }
 
 export interface Unsubscribable {
