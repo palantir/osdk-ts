@@ -59,11 +59,13 @@ export function OsdkProvider(props: OsdkProviderOptions): React.JSX.Element {
   const devtoolsEnabled =
     __DEV__ && (enableDevTools ?? getRegisteredDevTools() != null);
 
-  const isObservableClient = "getClient" in providedClient;
-  const client = isObservableClient
+  const isProvidedClientObservable = isObservableClient(providedClient);
+  const client = isProvidedClientObservable
     ? providedClient.getClient()
     : providedClient;
-  const observableClient = isObservableClient ? providedClient : undefined;
+  const observableClient = isProvidedClientObservable
+    ? providedClient
+    : undefined;
 
   const actionDelayMs = devMode?.actionDelayMs;
   const logLevel = devMode?.logLevel;
@@ -118,4 +120,10 @@ export function OsdkProvider(props: OsdkProviderOptions): React.JSX.Element {
       </OsdkContext.Provider>
     </UserAgentContext.Provider>
   );
+}
+
+function isObservableClient(
+  client: Client | ObservableClient,
+): client is ObservableClient {
+  return "observeObject" in client;
 }
