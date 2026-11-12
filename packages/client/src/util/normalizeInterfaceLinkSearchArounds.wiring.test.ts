@@ -128,9 +128,13 @@ describe("normalizeInterfaceLinkSearchArounds wiring", () => {
         ),
       );
 
-      await buggySetFor(FooInterface).fetchPage();
+      await buggySetFor(FooInterface).narrowToType(FooInterface).fetchPage();
 
-      expect(sent.objectSet).toEqual(expectedNormalized);
+      expect(sent.objectSet).toEqual({
+        type: "asType",
+        entityType: "FooInterface",
+        objectSet: expectedNormalized,
+      });
     })();
   });
 

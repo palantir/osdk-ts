@@ -30,6 +30,7 @@ import type {
   AggregateObjectsRequestV2,
   AggregateObjectsResponseV2,
 } from "@osdk/foundry.ontologies";
+import { stubData } from "@osdk/shared.test";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import {
@@ -46,6 +47,7 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { aggregate } from "./aggregate.js";
 
 const metadata = {
@@ -171,6 +173,68 @@ describe("aggregate", () => {
       "other.compensation.salary": { max: 80000, min: undefined },
       $count: 2,
     });
+
+    const fetchFn = vi.fn<typeof globalThis.fetch>((input) =>
+      Promise.resolve(
+        Response.json(
+          String(input).includes("/interfaceTypes/")
+            ? {
+                ...stubData.FooInterface,
+                apiName: employeeInterface.apiName,
+                allLinks: {
+                  employees: {
+                    ...stubData.FooInterface.allLinks!.toBar,
+                    linkedEntityApiName: {
+                      type: "objectTypeApiName",
+                      apiName: "Employee",
+                    },
+                  },
+                  managers: {
+                    ...stubData.FooInterface.allLinks!.toBar,
+                    linkedEntityApiName: {
+                      type: "interfaceTypeApiName",
+                      apiName: "com.other.Manager",
+                    },
+                  },
+                },
+              }
+            : {
+                data: [
+                  {
+                    group: {},
+                    metrics: [{ name: "salary.max", value: 75000 }],
+                  },
+                ],
+              },
+        ),
+      ),
+    );
+    const pivotClient = createMinimalClient(
+      metadata,
+      "https://host.com",
+      () => Promise.resolve(""),
+      {},
+      fetchFn,
+    );
+    const interfaceObjects = createObjectSet(employeeInterface, pivotClient);
+    const employees = interfaceObjects.pivotTo("employees");
+    expect(
+      await employees.intersect(employees).aggregate({
+        $select: { "salary:max": "unordered" },
+      }),
+    ).toEqual({ salary: { max: 75000 } });
+    expect(
+      JSON.parse(fetchFn.mock.lastCall![1]!.body as string).aggregation,
+    ).toEqual([{ type: "max", name: "salary.max", field: "salary" }]);
+
+    expect(
+      await interfaceObjects.pivotTo("managers").aggregate({
+        $select: { "salary:max": "unordered" },
+      }),
+    ).toEqual({ salary: { max: 75000 } });
+    expect(
+      JSON.parse(fetchFn.mock.lastCall![1]!.body as string).aggregation,
+    ).toEqual([{ type: "max", name: "salary.max", field: "com.other.salary" }]);
   });
 
   it("works", async () => {

@@ -19,6 +19,7 @@ import invariant from "tiny-invariant";
 
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { extractObjectOrInterfaceType } from "./extractObjectOrInterfaceType.js";
 
 export async function extractRdpDefinition(
   clientCtx: MinimalClient,
@@ -195,10 +196,12 @@ async function extractRdpDefinitionInternal(
       return { definitions: {} };
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     case "interfaceLinkSearchAround":
-      invariant(
-        false,
-        `Unsupported object set type for Runtime Derived Properties`,
-      );
+      return {
+        definitions: {},
+        childObjectType: (
+          await extractObjectOrInterfaceType(clientCtx, objectSet)
+        )?.apiName,
+      };
     default:
       const _: never = objectSet;
       invariant(

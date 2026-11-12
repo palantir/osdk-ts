@@ -35,6 +35,7 @@ import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLeg
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
+import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
 
 /** @internal */
@@ -47,11 +48,13 @@ export async function aggregate<
   objectSet: ObjectSet,
   req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
+  const resolvedObjectType =
+    (await extractObjectOrInterfaceType(clientCtx, objectSet)) ?? objectType;
   const derivedPropertyNames = getDerivedPropertyNames(objectSet);
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["$select"]>(
       req.$select,
-      objectType,
+      resolvedObjectType,
       derivedPropertyNames,
     ),
     groupBy: [],

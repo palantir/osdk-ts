@@ -17,6 +17,7 @@
 import type {
   FetchPageArgs,
   FetchPageResult,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PageResult,
@@ -25,7 +26,11 @@ import type {
 } from "@osdk/api";
 import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import pDefer from "p-defer";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
@@ -48,6 +53,101 @@ const metadata = {
 type TodoDef = Todo;
 
 describe(fetchPage, () => {
+  it("uses pivot targets for selections and ordering", async () => {
+    const source: InterfaceDefinition = {
+      type: "interface",
+      apiName: "com.acme.Source",
+    };
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry());
+    testSetup.fauxFoundry.getDefaultOntology().registerInterfaceType({
+      ...stubData.FooInterface,
+      apiName: source.apiName,
+      allLinks: {
+        employees: {
+          ...stubData.FooInterface.allLinks!.toBar,
+          linkedEntityApiName: {
+            type: "objectTypeApiName",
+            apiName: "Employee",
+          },
+        },
+        managers: {
+          ...stubData.FooInterface.allLinks!.toBar,
+          linkedEntityApiName: {
+            type: "interfaceTypeApiName",
+            apiName: "com.other.Manager",
+          },
+        },
+      },
+    });
+    testSetup.fauxFoundry.getDefaultOntology().registerInterfaceType({
+      ...stubData.FooInterface,
+      apiName: "com.other.Manager",
+    });
+    const fetchFn = vi.fn<typeof globalThis.fetch>((input, init) =>
+      String(input).includes("/objectSets/loadObjects")
+        ? Promise.resolve(
+            Response.json({
+              data: String(input).endsWith("/loadObjects")
+                ? [{ ...stubData.employee1, copiedName: "John Doe" }]
+                : [],
+              totalCount: "1",
+            }),
+          )
+        : globalThis.fetch(input, init),
+    );
+    const client = createMinimalClient(
+      { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
+      testSetup.fauxFoundry.baseUrl,
+      testSetup.auth,
+      {},
+      fetchFn,
+    );
+    const objectSet = createObjectSet(source, client);
+
+    try {
+      const employees = objectSet.pivotTo("employees");
+      const result = await employees
+        .withProperties({
+          copiedName: (base) => base.selectProperty("fullName"),
+        })
+        .fetchPage({
+          $select: ["fullName", "copiedName"],
+          $orderBy: { fullName: "asc" },
+        });
+      const objectRequest = fetchFn.mock.calls.find(([input]) =>
+        String(input).includes("/objectSets/loadObjects"),
+      )!;
+      expect(JSON.parse(objectRequest[1]!.body as string)).toMatchObject({
+        selectV2: [
+          { type: "property", apiName: "fullName" },
+          { type: "property", apiName: "copiedName" },
+        ],
+        orderBy: { fields: [{ field: "fullName", direction: "asc" }] },
+      });
+      expect(String(objectRequest[0])).toMatch(/\/loadObjects$/u);
+      expect(result.data[0]).toMatchObject({
+        $apiName: "Employee",
+        fullName: "John Doe",
+        copiedName: "John Doe",
+      });
+
+      fetchFn.mockClear();
+      await objectSet.pivotTo("managers").fetchPage({
+        $select: ["fooSpt"],
+        $orderBy: { fooSpt: "desc" },
+      });
+      const interfaceRequest = fetchFn.mock.calls.find(([input]) =>
+        String(input).includes("/objectSets/loadObjects"),
+      )!;
+      expect(JSON.parse(interfaceRequest[1]!.body as string)).toMatchObject({
+        selectV2: [{ type: "property", apiName: "com.other.fooSpt" }],
+        orderBy: { fields: [{ field: "com.other.fooSpt", direction: "desc" }] },
+      });
+    } finally {
+      testSetup.apiServer.close();
+    }
+  });
+
   it("infers select properly", () => {
     // this helper lets us get return types of functions that are generic
     class Helper<

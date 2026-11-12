@@ -86,11 +86,7 @@ export async function extractObjectOrInterfaceType(
         (val) => val?.type === "interface",
       );
 
-      invariant(
-        firstInterfaceType,
-        `Missing interface type in intersect objectset scope'`,
-      );
-      return firstInterfaceType;
+      return firstInterfaceType ?? filteredObjectTypes[0];
     }
     case "subtract":
     case "union":
