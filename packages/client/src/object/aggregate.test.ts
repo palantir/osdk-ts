@@ -219,7 +219,7 @@ describe("aggregate", () => {
     const interfaceObjects = createObjectSet(employeeInterface, pivotClient);
     const employees = interfaceObjects.pivotTo("employees");
     expect(
-      await employees.intersect(employees).aggregate({
+      await employees.aggregate({
         $select: { "salary:max": "unordered" },
       }),
     ).toEqual({ salary: { max: 75000 } });

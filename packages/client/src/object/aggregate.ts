@@ -49,7 +49,10 @@ export async function aggregate<
   req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const resolvedObjectType =
-    (await extractObjectOrInterfaceType(clientCtx, objectSet)) ?? objectType;
+    objectType.type === "interface"
+      ? ((await extractObjectOrInterfaceType(clientCtx, objectSet)) ??
+        objectType)
+      : objectType;
   const derivedPropertyNames = getDerivedPropertyNames(objectSet);
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["$select"]>(

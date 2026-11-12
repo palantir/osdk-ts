@@ -124,16 +124,6 @@ describe("extractObjectOrInterfaceType", () => {
     );
 
     expect(result).toEqual({ apiName: "interface2", type: "interface" });
-    expect(
-      await extractObjectOrInterfaceType(mockClientCtx, {
-        type: "intersect",
-        objectSets: [
-          { type: "static", objects: ["object1"] },
-          { type: "base", objectType: "BaseType" },
-          { type: "base", objectType: "BaseType" },
-        ],
-      }),
-    ).toEqual({ apiName: "BaseType", type: "object" });
   });
 
   it("throws with intersect, subtract, or union having different child object types", async () => {

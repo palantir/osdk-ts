@@ -321,9 +321,12 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
+  const resolvedObjectType =
+    (await extractObjectOrInterfaceType(client, objectSet)) ?? interfaceType;
+  const extractedInterfaceTypeApiName = resolvedObjectType.apiName;
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
     objectSet,
-    interfaceType.apiName,
+    extractedInterfaceTypeApiName,
     args,
   );
   const shouldLoadPropertySecurities =
@@ -373,7 +376,7 @@ async function fetchInterfacePage<
       snapshot: args.$snapshot ?? false,
     },
     client,
-    interfaceType,
+    resolvedObjectType,
   );
 
   if (client.flushEdits != null) {
@@ -396,7 +399,7 @@ async function fetchInterfacePage<
     data: await client.objectFactory(
       client,
       result.data,
-      interfaceType.apiName,
+      extractedInterfaceTypeApiName,
       {},
       shouldLoadPropertySecurities ? result.propertySecurities : undefined,
       !args.$includeRid,
@@ -438,14 +441,10 @@ export async function fetchPageInternal<
 ): Promise<
   FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS, PROPERTY_SECURITIES>
 > {
-  const resolvedObjectType = {
-    ...objectType,
-    ...(await extractObjectOrInterfaceType(client, objectSet)),
-  };
-  if (resolvedObjectType.type === "interface") {
+  if (objectType.type === "interface") {
     return (await fetchInterfacePage(
       client,
-      resolvedObjectType,
+      objectType,
       args as FetchPageArgs<
         InterfaceDefinition,
         L,
@@ -461,7 +460,7 @@ export async function fetchPageInternal<
   } else {
     return (await fetchObjectPage(
       client,
-      resolvedObjectType,
+      objectType,
       args as FetchPageArgs<
         ObjectTypeDefinition,
         L,

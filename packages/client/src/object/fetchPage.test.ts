@@ -87,10 +87,8 @@ describe(fetchPage, () => {
       String(input).includes("/objectSets/loadObjects")
         ? Promise.resolve(
             Response.json({
-              data: String(input).endsWith("/loadObjects")
-                ? [{ ...stubData.employee1, copiedName: "John Doe" }]
-                : [],
-              totalCount: "1",
+              data: [],
+              totalCount: "0",
             }),
           )
         : globalThis.fetch(input, init),
@@ -105,30 +103,16 @@ describe(fetchPage, () => {
     const objectSet = createObjectSet(source, client);
 
     try {
-      const employees = objectSet.pivotTo("employees");
-      const result = await employees
-        .withProperties({
-          copiedName: (base) => base.selectProperty("fullName"),
-        })
-        .fetchPage({
-          $select: ["fullName", "copiedName"],
-          $orderBy: { fullName: "asc" },
-        });
+      await objectSet.pivotTo("employees").fetchPage({
+        $select: ["fullName"],
+        $orderBy: { fullName: "asc" },
+      });
       const objectRequest = fetchFn.mock.calls.find(([input]) =>
         String(input).includes("/objectSets/loadObjects"),
       )!;
       expect(JSON.parse(objectRequest[1]!.body as string)).toMatchObject({
-        selectV2: [
-          { type: "property", apiName: "fullName" },
-          { type: "property", apiName: "copiedName" },
-        ],
+        selectV2: [{ type: "property", apiName: "fullName" }],
         orderBy: { fields: [{ field: "fullName", direction: "asc" }] },
-      });
-      expect(String(objectRequest[0])).toMatch(/\/loadObjects$/u);
-      expect(result.data[0]).toMatchObject({
-        $apiName: "Employee",
-        fullName: "John Doe",
-        copiedName: "John Doe",
       });
 
       fetchFn.mockClear();
