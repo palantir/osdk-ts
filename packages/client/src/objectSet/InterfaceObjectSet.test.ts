@@ -136,7 +136,7 @@ describe("ObjectSet", () => {
       },
     };
 
-    it("derives interface property values from non-local implementations and rejects $as back to the OT", async () => {
+    it("derives interface property values from non-local implementations and casts back to the OT with all base properties", async () => {
       await apiServer.boundary(async () => {
         apiServer.use(
           MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
@@ -169,7 +169,9 @@ describe("ObjectSet", () => {
           ),
         );
 
-        const result = await client(ComplexImplementationInterface).fetchPage();
+        const result = await client(ComplexImplementationInterface).fetchPage({
+          $includeAllBaseObjectProperties: true,
+        });
         expect(result.data).toHaveLength(1);
 
         const ifaceObj = result.data[0];
@@ -183,9 +185,29 @@ describe("ObjectSet", () => {
         expect(ifaceObj.iReduced).toEqual([1, 2, 3]);
 
         // @ts-expect-error
-        expect(() => ifaceObj.$as(ComplexImplementationObject)).toThrowError(
-          /has a non-local implementation/u,
-        );
+        const object = ifaceObj.$as(ComplexImplementationObject);
+        expect(object.$primaryKey).toEqual("k1");
+        expect(object.localValue).toEqual("hello");
+        expect(object.nestedStruct).toEqual({
+          label: "nested-label",
+          count: 7,
+        });
+        expect(object.multiStruct).toEqual({
+          alpha: "a-val",
+          beta: 42,
+          gamma: "ignored",
+        });
+        expect(object.multiStructArray).toEqual([
+          { alpha: "first", beta: 1, gamma: "ignored" },
+          { alpha: "second", beta: 2, gamma: "ignored" },
+        ]);
+        expect(object.arrayValue).toEqual([1, 2, 3]);
+        expect(
+          ifaceObj.$as<ComplexImplementationObject>(
+            // @ts-expect-error
+            "ComplexImplementationObject",
+          ),
+        ).toBe(object);
       })();
     });
 
