@@ -29,6 +29,7 @@ import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { escapeJsDocText } from "../util/escapeJsDocText.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
+import { getQueryParamType } from "./generatePerQueryDataFiles.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
 
 export async function generatePerActionDataFiles(
@@ -65,6 +66,25 @@ export async function generatePerActionDataFiles(
           action.unsanitizedApiName,
         ),
       );
+
+      const { returnType } = fullActionDef;
+
+      function createReturnTypeDef() {
+        if (returnType == null) {
+          return "";
+        }
+        const type = getQueryParamType(enhancedOntology, returnType, "Result");
+        if (returnType.nullable) {
+          return `export type ReturnType = ${type} | undefined;`;
+        }
+        return returnType.type === "struct"
+          ? `export interface ReturnType ${type}`
+          : `export type ReturnType = ${type};`;
+      }
+
+      const applyActionReturnType = returnType == null
+        ? "ActionReturnTypeForOptions<OP>"
+        : `ActionReturnTypeForOptions<OP, ${action.shortApiName}.ReturnType>`;
 
       function createParamsDef() {
         const entries = Object.entries(fullActionDef.parameters ?? {});
@@ -202,10 +222,12 @@ export async function generatePerActionDataFiles(
         }
             }
 
+            ${createReturnTypeDef()}
+
             // Represents a fqn of the action
             export interface Signatures {
               ${getDescriptionIfPresent(action.description)}
-              applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+              applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<${applyActionReturnType}>;
 
               batchApplyAction<OP extends ApplyBatchActionOptions>(args: ReadonlyArray<${action.paramsIdentifier}>, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
             }
@@ -231,6 +253,7 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "returnType": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
           })
@@ -249,6 +272,7 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "returnType": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
           })
@@ -332,6 +356,7 @@ export async function generatePerActionDataFiles(
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,
+            ${returnType != null ? "QueryResult," : ""}
           } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
