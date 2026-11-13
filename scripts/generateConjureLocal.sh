@@ -25,6 +25,14 @@ function generateConjure() {
 
     rm -rf "$OUT_DIR"
 
+    local ALLOWLIST="${SCRIPT_DIR}/conjure-types/${ARTIFACT_ID/%-api/}.json"
+    if [[ -f "$ALLOWLIST" ]]; then
+        mkdir -p "${SCRIPT_DIR}/../tmp"
+        local FILTERED_IR="${SCRIPT_DIR}/../tmp/${ARTIFACT_ID}.filtered.conjure.json"
+        node "${SCRIPT_DIR}/filterConjureTypes.mjs" "$CONJURE_PATH" "$ALLOWLIST" > "$FILTERED_IR"
+        CONJURE_PATH="$FILTERED_IR"
+    fi
+
     echo "  - Generating typescript"
     $CONJURE_LITE generate --ir "$CONJURE_PATH" --outDir "$OUT_DIR" --header ""
 
