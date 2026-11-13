@@ -321,9 +321,9 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
-  const extractedInterfaceTypeApiName =
-    (await extractObjectOrInterfaceType(client, objectSet))?.apiName ??
-    interfaceType.apiName;
+  const resolvedObjectType =
+    (await extractObjectOrInterfaceType(client, objectSet)) ?? interfaceType;
+  const extractedInterfaceTypeApiName = resolvedObjectType.apiName;
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
     objectSet,
     extractedInterfaceTypeApiName,
@@ -376,7 +376,7 @@ async function fetchInterfacePage<
       snapshot: args.$snapshot ?? false,
     },
     client,
-    interfaceType,
+    resolvedObjectType,
   );
 
   if (client.flushEdits != null) {

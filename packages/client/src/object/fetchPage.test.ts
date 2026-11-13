@@ -17,6 +17,7 @@
 import type {
   FetchPageArgs,
   FetchPageResult,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PageResult,
@@ -25,7 +26,11 @@ import type {
 } from "@osdk/api";
 import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
 import pDefer from "p-defer";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
@@ -41,6 +46,10 @@ import {
   createObjectSet,
   getWireObjectSet,
 } from "../objectSet/createObjectSet.js";
+import {
+  createMockCaptureClient,
+  getLastObjectSetRequest,
+} from "../util/mockCaptureClient.js";
 
 const metadata = {
   ontologyRid: "asdf",
@@ -466,6 +475,56 @@ describe(fetchPage, () => {
       ]);
 
       expect(result).toEqual(["firstName", "lastName"]);
+    });
+
+    it("uses pivot targets for selections and ordering", async () => {
+      const { client, fetchFn } = createMockCaptureClient();
+      const source: InterfaceDefinition = {
+        type: "interface",
+        apiName: "com.acme.Source",
+      };
+      fetchFn.mockResolvedValueOnce(
+        Response.json({
+          ...stubData.FooInterface,
+          apiName: source.apiName,
+          implementedByObjectTypes: [],
+          allLinks: {
+            employees: {
+              ...stubData.FooInterface.allLinks!.toBar,
+              linkedEntityApiName: {
+                type: "objectTypeApiName",
+                apiName: "Employee",
+              },
+            },
+            managers: {
+              ...stubData.FooInterface.allLinks!.toBar,
+              linkedEntityApiName: {
+                type: "interfaceTypeApiName",
+                apiName: "com.other.Manager",
+              },
+            },
+          },
+        }),
+      );
+
+      const objectSet = createObjectSet(source, client);
+      await objectSet.pivotTo("employees").fetchPage({
+        $select: ["fullName"],
+        $orderBy: { fullName: "asc" },
+      });
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        selectV2: [{ type: "property", apiName: "fullName" }],
+        orderBy: { fields: [{ field: "fullName", direction: "asc" }] },
+      });
+
+      await objectSet.pivotTo("managers").fetchPage({
+        $select: ["fooSpt"],
+        $orderBy: { fooSpt: "desc" },
+      });
+      expect(getLastObjectSetRequest(fetchFn)).toMatchObject({
+        selectV2: [{ type: "property", apiName: "com.other.fooSpt" }],
+        orderBy: { fields: [{ field: "com.other.fooSpt", direction: "desc" }] },
+      });
     });
   });
 

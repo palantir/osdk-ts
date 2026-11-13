@@ -18,6 +18,7 @@ import type {
   AggregateOpts,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   GroupByClause,
+  InterfaceDefinition,
   ValidAggregationKeys,
 } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
@@ -25,7 +26,11 @@ import {
   objectTypeWithAllPropertyTypes,
   Todo,
 } from "@osdk/client.test.ontology";
-import type { AggregateObjectsResponseV2 } from "@osdk/foundry.ontologies";
+import type {
+  AggregateObjectsRequestV2,
+  AggregateObjectsResponseV2,
+} from "@osdk/foundry.ontologies";
+import { stubData } from "@osdk/shared.test";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import {
@@ -42,6 +47,7 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { aggregate } from "./aggregate.js";
 
 const metadata = {
@@ -111,6 +117,88 @@ const aggregationResponse: AggregateObjectsResponseV2 = {
 };
 
 describe("aggregate", () => {
+  it("qualifies pivoted interface metric fields and preserves requested result keys", async () => {
+    const source: InterfaceDefinition = {
+      type: "interface",
+      apiName: "com.other.Source",
+    };
+    mockFetch.mockResolvedValueOnce(
+      Response.json({
+        ...stubData.FooInterface,
+        apiName: source.apiName,
+        allLinks: {
+          toBar: {
+            ...stubData.FooInterface.allLinks!.toBar,
+            linkedEntityApiName: {
+              type: "interfaceTypeApiName",
+              apiName: "com.acme.Employee",
+            },
+          },
+        },
+      }),
+    );
+    await clientCtx.ontologyProvider.getInterfaceDefinition(source.apiName);
+    mockFetch.mockResolvedValueOnce(
+      Response.json({
+        data: [
+          {
+            group: {},
+            metrics: [
+              { name: "salary.max", value: 75000 },
+              { name: "other.compensation.salary.max", value: 80000 },
+              { name: "count", value: 2 },
+            ],
+          },
+        ],
+      }),
+    );
+
+    const result = await createObjectSet(source, clientCtx)
+      .pivotTo("toBar")
+      .aggregate({
+        $select: {
+          "salary:max": "unordered",
+          "other.compensation.salary:max": "unordered",
+          "other.compensation.salary:min": "unordered",
+          $count: "unordered",
+        },
+      });
+
+    const body: AggregateObjectsRequestV2 = JSON.parse(
+      mockFetch.mock.lastCall![1].body,
+    );
+    expect(body.aggregation).toEqual([
+      { type: "max", name: "salary.max", field: "com.acme.salary" },
+      {
+        type: "max",
+        name: "other.compensation.salary.max",
+        field: "other.compensation.salary",
+      },
+      {
+        type: "min",
+        name: "other.compensation.salary.min",
+        field: "other.compensation.salary",
+      },
+      { type: "count", name: "count" },
+    ]);
+    expect(result).toEqual({
+      salary: { max: 75000 },
+      "other.compensation.salary": { max: 80000, min: undefined },
+      $count: 2,
+    });
+
+    mockFetch.mockClear();
+    await expect(
+      aggregate(
+        clientCtx,
+        source,
+        { type: "reference", reference: "ri.object-set.main.object-set.1" },
+        { $select: { "salary:max": "unordered" } },
+      ),
+    ).rejects.toThrow("Unable to resolve object set type for aggregation");
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
   it("works", async () => {
     expectTypeOf<ValidAggregationKeys<Todo>>().toEqualTypeOf<
       | "$count"
