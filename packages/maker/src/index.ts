@@ -125,6 +125,11 @@ export type {
 export type { InterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
 export type { InterfaceImplementation } from "./api/object/InterfaceImplementation.js";
+export type { ResourceLocator } from "./api/ResourceLocator.js";
+export type {
+  MediaPropertyReference,
+  MediaReferenceSource,
+} from "./api/object/MediaReference.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
 export type {

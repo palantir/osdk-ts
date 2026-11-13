@@ -172,6 +172,52 @@ const imageProperty = defineSharedPropertyType({
 });
 ```
 
+### Media sources and uploads
+
+Configure content backing on an object independently of the datasource supplying its property values. Declare each media set once in `referenceSources`, then select the readable sets and optional upload destination for each scalar media property:
+
+```typescript
+import { defineObject, type ResourceLocator } from "@osdk/maker";
+
+const archive = {
+  type: "rid",
+  rid: "ri.mio.main.media-set.11111111-1111-1111-1111-111111111111",
+} as const;
+const uploads = {
+  type: "rid",
+  rid: "ri.mio.main.media-set.22222222-2222-2222-2222-222222222222",
+} satisfies ResourceLocator;
+
+defineObject({
+  apiName: "Document",
+  displayName: "Document",
+  pluralDisplayName: "Documents",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "id",
+  referenceSources: [
+    { type: "media", mediaSet: archive },
+    { type: "media", mediaSet: uploads },
+  ],
+  properties: {
+    id: { type: "string" },
+    file: {
+      type: "mediaReference",
+      reference: {
+        type: "media",
+        sources: [archive, uploads],
+        uploadDestination: uploads,
+      },
+    },
+  },
+});
+```
+
+`ResourceLocator` currently supports only media-set RID locators in media bindings. Every selected source must be declared, and `uploadDestination` must be one of the property's sources. Omitting it leaves the property without an upload destination. Multiple properties may share a source and choose different upload destinations.
+
+Marketplace packages selected media sets as required files-datasource inputs. Bind those inputs to the installed data product's media sets; the authored RIDs identify inputs, not fixed resources in every installation. These bindings do not create media sets or discover other products automatically. Keep the locators stable across product versions to preserve input identities.
+
+Without `reference`, existing media-property behavior is unchanged. `includeEmptyBackingMediaSet: true` still creates an empty multimodal media set and designates it for uploads. It cannot be combined with `reference` on the same property. Explicit bindings do not bypass markings or clear media on object deletion. Custom branch selection is not supported.
+
 ### Geographic Data
 
 ```typescript

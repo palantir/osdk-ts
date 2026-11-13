@@ -211,7 +211,20 @@ export async function defineOntologyV2(
       .map(({ apiName }) => `${objectType.apiName}.${apiName}`);
   });
 
-  for (const mediaSetName of backingMediaSetNames) {
+  const explicitMediaSetNames = Object.values(
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+  ).flatMap((entity) => {
+    const object = entity as ObjectType;
+    return (object.properties ?? []).flatMap(
+      (property) =>
+        property.reference?.sources.map((source) => source.rid) ?? [],
+    );
+  });
+
+  for (const mediaSetName of [
+    ...backingMediaSetNames,
+    ...explicitMediaSetNames,
+  ]) {
     shapes.inputShapeMetadata.set(
       ReadableIdGenerator.getForMediaSetView(mediaSetName),
       {
