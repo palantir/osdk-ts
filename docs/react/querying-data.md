@@ -632,6 +632,15 @@ function OptionalReportsList(
 }
 ```
 
+Set `autoFetchMore: true` to load all pages of linked objects, or set a number to load at least that many linked objects per source. When omitted or `false`, use `fetchMore()` to load additional pages.
+
+```ts
+const { links, isLoading } = useLinks(employee, "reports", {
+  pageSize: 20,
+  autoFetchMore: 100,
+});
+```
+
 ### Controlling Re-fetch Behavior
 
 By default, `useLinks` deduplicates network requests within a 2-second window. You can customize this with `dedupeIntervalMs`:
@@ -654,6 +663,7 @@ const { links } = useLinks(employee, "reports", {
 
 - `where` - Filter linked objects
 - `pageSize` - Number of links per page
+- `autoFetchMore` - Load all pages (`true`) or at least the given number of linked objects per source
 - `orderBy` - Sort order for linked objects
 - `mode` - Fetch mode: `"force"` (always fetch), `"offline"` (cache only), or undefined (default)
 - `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)

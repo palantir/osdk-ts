@@ -108,7 +108,96 @@ describe("intellisense", () => {
       offset: 12,
     });
     expect(resp.body?.displayString).toMatchInlineSnapshot(
-      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_createSession: (args: weatherAgent.CreateSessionArguments) => Promise<AgentSession>"`,
+      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_createSession: (args: weatherAgent.CreateSessionArguments) => Promise<weatherAgent.Session>"`,
+    );
+
+    const { resp: lookup } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 24,
+      offset: 12,
+    });
+    expect(lookup.body?.displayString).toMatchInlineSnapshot(
+      `"(property) AgentSignatureFromDef<weatherAgent>.experimental_getSession: (sessionId: string) => Promise<weatherAgent.Session>"`,
+    );
+
+    const createdEventNames = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 27,
+      offset: 40,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(createdEventNames.resp.body?.entries.map((e) => e.name)).toEqual([
+      "LookupWeather",
+      "SetTemperature",
+    ]);
+
+    const createdPayload = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 27,
+      offset: 57,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(createdPayload.resp.body?.entries.map((e) => e.name)).toEqual([
+      "city",
+    ]);
+
+    const retrievedEventNames = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 28,
+      offset: 42,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(retrievedEventNames.resp.body?.entries.map((e) => e.name)).toEqual([
+      "LookupWeather",
+      "SetTemperature",
+    ]);
+
+    const retrievedPayload = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 28,
+      offset: 59,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(retrievedPayload.resp.body?.entries.map((e) => e.name)).toEqual([
+      "city",
+    ]);
+
+    const { resp: state } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 29,
+      offset: 40,
+    });
+    expect(state.body?.displayString).toMatchInlineSnapshot(
+      `"(method) weatherAgent.Session.experimental_getState($options?: AgentGetStateOptions): Promise<weatherAgent.SessionState>"`,
+    );
+
+    const stateArguments = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 31,
+      offset: 29,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(stateArguments.resp.body?.entries.map((e) => e.name)).toEqual([
+      "city",
+    ]);
+
+    const stateData = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 32,
+      offset: 37,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(stateData.resp.body?.entries.map((e) => e.name)).toEqual([
+      "temperature",
+    ]);
+
+    const { resp: contextData } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 35,
+      offset: 14,
+    });
+    expect(contextData.body?.displayString).toMatchInlineSnapshot(
+      `"(property) data: string"`,
     );
   });
 

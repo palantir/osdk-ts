@@ -1,6 +1,6 @@
 {
   "name": "@osdk/integration-testing",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "Integration-testing helpers for the Ontology SDK",
   "access": "public",
   "license": "Apache-2.0",
@@ -45,7 +45,6 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator-converters.preview": "workspace:~",
     "@osdk/unit-testing": "workspace:~",
     "conjure-lite": "^0.7.3",
@@ -65,6 +64,7 @@
     "@microsoft/api-extractor": "^7.52.11",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/seed-helpers": "workspace:~",

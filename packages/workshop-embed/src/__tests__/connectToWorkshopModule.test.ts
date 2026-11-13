@@ -18,6 +18,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { connectToWorkshopModule } from "../connectToWorkshopModule.js";
 import { createMessage } from "../protocol.js";
+import { createModuleSchemaMessage } from "../schema.js";
 import {
   createTestChannel,
   createTestWindow,
@@ -79,11 +80,21 @@ describe("connectToWorkshopModule", () => {
     );
   }
 
-  function acknowledge() {
+  function acknowledge(withSchema = true) {
     dispatchMessage(channel.port1, createMessage("connected", sessionId()));
+    if (withSchema) publishSchema();
   }
 
-  it("transfers one port to the exact origin and resolves only after a port acknowledgement", async () => {
+  function publishSchema() {
+    dispatchMessage(
+      channel.port1,
+      createModuleSchemaMessage(sessionId(), {
+        count: { type: "number", isList: false },
+      }),
+    );
+  }
+
+  it("transfers one port to the exact origin and waits for the port acknowledgement and schema", async () => {
     const result = connect({ targetOrigin: `${origin}/workspace/` });
     const resolved = vi.fn();
     void result.then(resolved);
@@ -106,8 +117,14 @@ describe("connectToWorkshopModule", () => {
     dispatchMessage(channel.port1, createMessage("connected", "stale-session"));
     await Promise.resolve();
     expect(resolved).not.toHaveBeenCalled();
-    acknowledge();
+    acknowledge(false);
+    await Promise.resolve();
+    expect(resolved).not.toHaveBeenCalled();
+    publishSchema();
     const connection = await result;
+    expect(() => connection.setVariables({ count: "one" })).toThrow(
+      "expects number",
+    );
     expect(connection.port).toBe(channel.port1);
     expect(connection.sessionId).toBe(sessionId());
     expect(vi.getTimerCount()).toBe(0);
@@ -125,6 +142,35 @@ describe("connectToWorkshopModule", () => {
     expect(channel.port1.postMessage).toHaveBeenCalledWith(
       createMessage("disconnect", connection.sessionId),
     );
+  });
+
+  it("waits for the acknowledgement when the schema arrives first", async () => {
+    const result = connect();
+    const resolved = vi.fn();
+    void result.then(resolved);
+    available();
+    publishSchema();
+    await Promise.resolve();
+    expect(resolved).not.toHaveBeenCalled();
+    acknowledge(false);
+    (await result).disconnect();
+  });
+
+  it("does not become ready for malformed or stale-session schemas", async () => {
+    const result = connect();
+    const resolved = vi.fn();
+    void result.then(resolved);
+    available();
+    acknowledge(false);
+    dispatchMessage(channel.port1, createModuleSchemaMessage("stale", {}));
+    dispatchMessage(channel.port1, {
+      ...createModuleSchemaMessage(sessionId(), {}),
+      variables: { count: { type: "number", isList: true } },
+    });
+    await Promise.resolve();
+    expect(resolved).not.toHaveBeenCalled();
+    publishSchema();
+    (await result).disconnect();
   });
 
   it("ignores available messages from other windows, origins, versions, and sessions", async () => {
@@ -165,14 +211,18 @@ describe("connectToWorkshopModule", () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 
-  it("closes a transferred channel if acknowledgement never arrives", async () => {
-    const result = connect({ timeoutMs: 1_000 });
-    const rejected = expect(result).rejects.toThrow("timed out");
-    available();
-    await vi.advanceTimersByTimeAsync(1_000);
-    await rejected;
-    expect(channel.port1.close).toHaveBeenCalledTimes(1);
-  });
+  it.each(["acknowledgement", "schema"])(
+    "closes a transferred channel if %s never arrives",
+    async (missing) => {
+      const result = connect({ timeoutMs: 1_000 });
+      const rejected = expect(result).rejects.toThrow("timed out");
+      available();
+      if (missing === "schema") acknowledge(false);
+      await vi.advanceTimersByTimeAsync(1_000);
+      await rejected;
+      expect(channel.port1.close).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it("rejects an already aborted signal without sending a probe", async () => {
     controller.abort();
@@ -188,24 +238,27 @@ describe("connectToWorkshopModule", () => {
     expect((await result).sessionId).toBe(sessionId());
   });
 
-  it.each(["before transfer", "after transfer", "after connection"])(
-    "cleans up on abort %s",
-    async (phase) => {
-      const result = connect();
-      if (phase !== "before transfer") available();
-      if (phase === "after connection") {
-        acknowledge();
-        await result;
-      }
-      controller.abort();
-      if (phase !== "after connection")
-        await expect(result).rejects.toMatchObject({ name: "AbortError" });
-      expect(channel.port1.close).toHaveBeenCalledTimes(1);
-      expect(channel.port2.close).toHaveBeenCalledTimes(
-        phase === "before transfer" ? 1 : 0,
-      );
-    },
-  );
+  it.each([
+    "before transfer",
+    "after transfer",
+    "before schema",
+    "after connection",
+  ])("cleans up on abort %s", async (phase) => {
+    const result = connect();
+    if (phase !== "before transfer") available();
+    if (phase === "before schema") acknowledge(false);
+    if (phase === "after connection") {
+      acknowledge();
+      await result;
+    }
+    controller.abort();
+    if (phase !== "after connection")
+      await expect(result).rejects.toMatchObject({ name: "AbortError" });
+    expect(channel.port1.close).toHaveBeenCalledTimes(1);
+    expect(channel.port2.close).toHaveBeenCalledTimes(
+      phase === "before transfer" ? 1 : 0,
+    );
+  });
 
   it("closes an established channel when the parent navigates away", async () => {
     const result = connect();
@@ -220,7 +273,7 @@ describe("connectToWorkshopModule", () => {
     const result = connect();
     available();
     dispatchMessage(channel.port1, createMessage("disconnect", sessionId()));
-    await expect(result).rejects.toThrow("before acknowledgement");
+    await expect(result).rejects.toThrow("before the module was ready");
   });
 
   it("closes both ports if transferring fails", async () => {

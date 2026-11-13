@@ -241,6 +241,7 @@ export function convertDataType(
       return convertFunctionCustomType(
         customTypeData.functionCustomType,
         customTypes,
+        interfaceRidToApiName,
       );
     }
     case "anonymousCustomType": {
@@ -248,6 +249,7 @@ export function convertDataType(
       return convertCustomTypeShape(
         anonymousData.anonymousCustomType,
         customTypes,
+        interfaceRidToApiName,
       );
     }
     case "union": {
@@ -381,6 +383,7 @@ function isCustomTypeShape(value: unknown): value is ICustomTypeShape {
 function convertCustomTypeShape(
   shape: ICustomTypeShape,
   customTypes: Record<string, unknown>,
+  interfaceRidToApiName: Record<string, string>,
 ): Ontologies.QueryDataType {
   const { fieldMetadata, fields } = shape;
   return {
@@ -390,7 +393,7 @@ function convertCustomTypeShape(
       fieldType: convertDataType(
         fields[name],
         customTypes,
-        {},
+        interfaceRidToApiName,
         fieldMetadata?.[name]?.required ?? true,
       ),
     })),
@@ -400,6 +403,7 @@ function convertCustomTypeShape(
 function convertFunctionCustomType(
   functionId: string,
   customTypes: Record<string, unknown>,
+  interfaceRidToApiName: Record<string, string>,
 ): Ontologies.QueryDataType {
   const customTypeRaw = customTypes[functionId];
   if (customTypeRaw == null) {
@@ -412,5 +416,9 @@ function convertFunctionCustomType(
       `Invalid custom type structure for '${functionId}': expected a 'fields' property`,
     );
   }
-  return convertCustomTypeShape(customTypeRaw, customTypes);
+  return convertCustomTypeShape(
+    customTypeRaw,
+    customTypes,
+    interfaceRidToApiName,
+  );
 }

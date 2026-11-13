@@ -133,7 +133,13 @@ export interface WidgetSetDiscoveredInputSpecV1 {
   sdks: Array<OntologySdkInputSpecV1>;
 
   /**
-   * The widget set authorizations, read from the project's resources.json.
+   * The datasets the widget set depends on, read from the project's public/resources.json.
+   * Empty when resources.json is missing or declares no datasets.
+   */
+  datasets?: Array<DatasetInputSpecV1>;
+
+  /**
+   * The widget set authorizations, read from the project's public/resources.json.
    * Only present when resources.json exists with the expected format.
    * @optional
    */
@@ -146,6 +152,29 @@ export interface OntologySdkInputSpecV1 {
   /** The Ontology SDK package version */
   version: string;
 }
+
+export interface DatasetInputSpecV1 {
+  /** The identifier of the dataset */
+  identifier: DatasetIdentifierV1;
+  /** The intended usages of the dataset by the widget set */
+  usage: Array<ResourceUsageV1>;
+  /** The alias used to reference the dataset in code */
+  alias: string;
+}
+
+export interface DatasetIdentifierV1 {
+  /** The dataset rid */
+  rid: string;
+}
+
+/**
+ * The intended usage of a resource that the widget set depends on.
+ */
+export const ResourceUsageV1 = {
+  READ: "read",
+} as const;
+export type ResourceUsageV1 =
+  (typeof ResourceUsageV1)[keyof typeof ResourceUsageV1];
 
 export interface WidgetSetAuthorizationsInputSpecV1 {
   /**

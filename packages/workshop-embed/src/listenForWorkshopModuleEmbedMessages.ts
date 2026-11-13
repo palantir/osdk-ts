@@ -28,7 +28,7 @@ import type { WorkshopVariableMap } from "./variables.js";
 export interface ListenForWorkshopModuleEmbedMessagesOptions<
   TVariables extends WorkshopVariableMap = WorkshopVariableMap,
 > {
-  /** Called for each accepted connection. Return a function to clean up per-connection resources. */
+  /** Called for each accepted port. Publish the loaded module's interface with setModuleSchema before sending variables. Return a function to clean up per-connection resources. */
   onConnect?: WorkshopModuleConnectHandler<TVariables>;
   /** Workshop's window. Defaults to the current window. */
   hostWindow?: Window;
@@ -110,9 +110,14 @@ export function listenForWorkshopModuleEmbedMessages<
     }
 
     const previous = activeConnection;
-    const next = createConnection<TVariables>(port, sessionId, () => {
-      if (activeConnection === next) activeConnection = undefined;
-    });
+    const next = createConnection<TVariables>(
+      port,
+      sessionId,
+      () => {
+        if (activeConnection === next) activeConnection = undefined;
+      },
+      "workshop",
+    );
     pendingHandshake = undefined;
     activeConnection = next;
     try {

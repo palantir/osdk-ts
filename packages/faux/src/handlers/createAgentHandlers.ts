@@ -49,6 +49,16 @@ export const createAgentHandlers: FauxFoundryHandlersFactory = (
       sessions.set(session.id, session);
       return session;
     }),
+    Agents.AgentSessions.get(baseUrl, ({ params }) => {
+      const session = sessions.get(params.agentSessionId);
+      if (!session) {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid Agent Session"),
+        );
+      }
+      return session;
+    }),
     Agents.AgentSessions.getSessionState(baseUrl, ({ params, request }) => {
       const session = sessions.get(params.agentSessionId);
       if (!session) {

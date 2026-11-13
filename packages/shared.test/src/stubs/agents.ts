@@ -30,6 +30,7 @@ import {
   noArgumentsAgentOtherVersion,
   noArgumentsAgentVersion,
   objectArgumentsAgentApiName,
+  objectArgumentsAgentOtherVersion,
   objectArgumentsAgentVersion,
   optionalArgumentsAgentApiName,
   optionalArgumentsAgentVersion,
@@ -206,6 +207,23 @@ export const structuredArgumentsAgentResponse: AgentSession = {
   agentVersion: structuredArgumentsAgentVersion.version,
 };
 
+export const objectArgumentsAgentOtherVersionRequest: CreateAgentSessionRequest =
+  {
+    agent: {
+      type: "agentApiName",
+      ontology: defaultOntologyMetadata.rid as string,
+      agentApiName: objectArgumentsAgentApiName,
+    },
+    agentVersion: objectArgumentsAgentOtherVersion.version,
+    arguments: {},
+  };
+
+export const objectArgumentsAgentOtherVersionResponse: AgentSession = {
+  ...objectArgumentsAgentResponse,
+  id: "object-arguments-session-other-version",
+  agentVersion: objectArgumentsAgentOtherVersion.version,
+};
+
 export function registerLazyAgents(fauxOntology: FauxOntology): void {
   fauxOntology.registerAgent(
     weatherAgentApiName,
@@ -346,6 +364,57 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
       },
     ),
   );
+
+  fauxOntology.registerAgent(
+    objectArgumentsAgentApiName,
+    objectArgumentsAgentOtherVersion,
+    createLazyAgentImpl(
+      {
+        [JSON.stringify(objectArgumentsAgentOtherVersionRequest)]:
+          objectArgumentsAgentOtherVersionResponse,
+      },
+      {
+        [JSON.stringify({
+          event: {
+            eventType: "SelectEmployees",
+            payload: {
+              ontologyRid: defaultOntologyMetadata.rid,
+              objectTypeApiName: "Employee",
+              primaryKey: { employeeId: 50030 },
+            },
+          },
+        })]: acceptedAgentEvent,
+      },
+      {
+        [objectArgumentsAgentOtherVersionResponse.id]: {
+          ...weatherAgentState,
+          arguments: {},
+          agentState: {
+            data: {
+              ontologyRid: defaultOntologyMetadata.rid,
+              objectTypeApiName: "Employee",
+              primaryKey: { employeeId: 50030 },
+            },
+          },
+          contextItems: {
+            selection: {
+              contextItemType: "selection",
+              data: { retained: true },
+            },
+            newer: {
+              contextItemType: "new-selection",
+              data: {
+                ontologyRid: defaultOntologyMetadata.rid,
+                objectTypeApiName: "Employee",
+                primaryKey: { employeeId: 50030 },
+              },
+            },
+          },
+          contextItemOrder: ["selection", "newer"],
+        },
+      },
+    ),
+  );
 }
 
 export const acceptedAgentEvent: SendEventResponse = {
@@ -353,6 +422,9 @@ export const acceptedAgentEvent: SendEventResponse = {
 };
 
 const weatherEventResponses: Record<string, SendEventResponse> = {
+  [JSON.stringify({
+    event: { eventType: "SetTemperature", payload: null },
+  })]: acceptedAgentEvent,
   [JSON.stringify({
     event: { eventType: "LookupWeather", payload: { city: "Paris" } },
   })]: acceptedAgentEvent,

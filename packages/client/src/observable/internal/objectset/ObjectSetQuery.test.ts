@@ -15,21 +15,30 @@
  */
 
 import type { ObjectSet } from "@osdk/api";
-import { Employee } from "@osdk/client.test.ontology";
+import { Employee, Office } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it, vitest } from "vitest";
 
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import {
+  createObservableClient,
+  type ObservableClient,
+  type ObserveObjectsCallbackArgs,
+  type ObserveObjectSetArgs,
+} from "../../ObservableClient.js";
 import { createChangedObjects } from "../Changes.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { createOptimisticId } from "../OptimisticId.js";
 import { Store } from "../Store.js";
+import { createDefer, mockObserver, waitForPayload } from "../testUtils.js";
 
 describe("ObjectSetQuery cache reconciliation", () => {
   let client: Client;
   let store: Store;
+  let fauxFoundry: FauxFoundry;
+  const defer = createDefer();
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(
@@ -37,6 +46,7 @@ describe("ObjectSetQuery cache reconciliation", () => {
       createClient,
     );
     client = testSetup.client;
+    fauxFoundry = testSetup.fauxFoundry;
 
     const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
     ontologies.addEmployeeOntology(fauxOntology);
@@ -77,6 +87,178 @@ describe("ObjectSetQuery cache reconciliation", () => {
     changes.registerObject(sourceQuery.cacheKey, employee, isNew);
     return changes;
   }
+
+  function setupEmployees() {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    const alice = dataStore.registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+    });
+    const bob = dataStore.registerObject(Employee, {
+      employeeId: 2,
+      fullName: "Bob",
+    });
+    const charlie = dataStore.registerObject(Employee, {
+      employeeId: 3,
+      fullName: "Charlie",
+    });
+    return { dataStore, alice, bob, charlie };
+  }
+
+  async function loadAllEmployees(observableClient: ObservableClient) {
+    const sibling = mockObserver<ObserveObjectsCallbackArgs<typeof Employee>>();
+    defer(
+      observableClient.observeList({ type: Employee, mode: "force" }, sibling),
+    );
+    await waitForPayload(sibling, (p) => p.status === "loaded");
+  }
+
+  it("keeps an intersection limited to linked employees when another query fills the cache", async () => {
+    const { dataStore, alice, bob, charlie } = setupEmployees();
+    const office = dataStore.registerObject(Office, { officeId: "shared" });
+    dataStore.registerLink(alice, "officeLink", office, "occupants");
+    dataStore.registerLink(bob, "officeLink", office, "occupants");
+    const observableClient = createObservableClient(client);
+    const observer = mockObserver<ObserveObjectSetArgs<typeof Employee>>();
+    defer(
+      observableClient.observeObjectSet(
+        client(Employee),
+        {
+          where: { employeeId: { $gt: 0 } },
+          intersect: [
+            client(Employee)
+              .where({ employeeId: 1 })
+              .pivotTo("officeLink")
+              .pivotTo("occupants"),
+          ],
+        },
+        observer,
+      ),
+    );
+    const initial = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(new Set(initial.resolvedList?.map((o) => o.$primaryKey))).toEqual(
+      new Set([1, 2]),
+    );
+
+    observer.next.mockClear();
+    await loadAllEmployees(observableClient);
+    const afterCacheLoad = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(
+      new Set(afterCacheLoad.resolvedList?.map((o) => o.$primaryKey)),
+    ).toEqual(new Set([1, 2]));
+
+    observer.next.mockClear();
+    dataStore.registerLink(charlie, "officeLink", office, "occupants");
+    await loadAllEmployees(observableClient);
+    const afterLinkChange = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(
+      new Set(afterLinkChange.resolvedList?.map((o) => o.$primaryKey)),
+    ).toEqual(new Set([1, 2, 3]));
+    expect(observer.error).not.toHaveBeenCalled();
+  });
+
+  it("keeps subtracted employees excluded when another query fills the cache", async () => {
+    const { dataStore, alice, bob } = setupEmployees();
+    const office = dataStore.registerObject(Office, { officeId: "shared" });
+    dataStore.registerLink(alice, "officeLink", office, "occupants");
+    dataStore.registerLink(bob, "officeLink", office, "occupants");
+    const observableClient = createObservableClient(client);
+    const observer = mockObserver<ObserveObjectSetArgs<typeof Employee>>();
+    defer(
+      observableClient.observeObjectSet(
+        client(Employee),
+        {
+          where: { employeeId: { $gt: 0 } },
+          subtract: [
+            client(Employee)
+              .where({ employeeId: 1 })
+              .pivotTo("officeLink")
+              .pivotTo("occupants"),
+          ],
+        },
+        observer,
+      ),
+    );
+    const initial = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(new Set(initial.resolvedList?.map((o) => o.$primaryKey))).toEqual(
+      new Set([3]),
+    );
+
+    observer.next.mockClear();
+    await loadAllEmployees(observableClient);
+    const afterCacheLoad = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(
+      new Set(afterCacheLoad.resolvedList?.map((o) => o.$primaryKey)),
+    ).toEqual(new Set([3]));
+
+    observer.next.mockClear();
+    dataStore.unregisterLink(bob, "officeLink", office, "occupants");
+    await loadAllEmployees(observableClient);
+    const afterLinkChange = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(
+      new Set(afterLinkChange.resolvedList?.map((o) => o.$primaryKey)),
+    ).toEqual(new Set([2, 3]));
+    expect(observer.error).not.toHaveBeenCalled();
+  });
+
+  it("keeps union-only employees when another query updates their properties", async () => {
+    const { dataStore, bob } = setupEmployees();
+    const observableClient = createObservableClient(client);
+    const observer = mockObserver<ObserveObjectSetArgs<typeof Employee>>();
+    defer(
+      observableClient.observeObjectSet(
+        client(Employee),
+        {
+          where: { employeeId: 1 },
+          union: [client(Employee).where({ employeeId: 2 })],
+        },
+        observer,
+      ),
+    );
+    const initial = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(new Set(initial.resolvedList?.map((o) => o.$primaryKey))).toEqual(
+      new Set([1, 2]),
+    );
+
+    observer.next.mockClear();
+    dataStore.replaceObjectOrThrow({ ...bob, fullName: "Robert" });
+    await loadAllEmployees(observableClient);
+    const updated = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    expect(new Set(updated.resolvedList?.map((o) => o.$primaryKey))).toEqual(
+      new Set([1, 2]),
+    );
+    expect(updated.resolvedList).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ $primaryKey: 2, fullName: "Robert" }),
+      ]),
+    );
+    expect(observer.error).not.toHaveBeenCalled();
+  });
 
   it.each([
     ["adds", true],

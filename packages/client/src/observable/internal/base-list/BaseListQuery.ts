@@ -122,6 +122,18 @@ export abstract class BaseListQuery<
    */
   protected pendingPageFetch?: Promise<void>;
 
+  #fetchedObjects = new WeakSet<ObjectCacheKey>();
+
+  get fetchedObjects(): WeakSet<ObjectCacheKey> {
+    return this.#fetchedObjects;
+  }
+
+  async waitForPendingPages(): Promise<void> {
+    while (this.pendingFetch || this.pendingPageFetch) {
+      await Promise.allSettled([this.pendingFetch, this.pendingPageFetch]);
+    }
+  }
+
   protected currentTotalCount?: string;
 
   #subscriberPageSizes: Map<string, number> = new Map();
@@ -178,7 +190,10 @@ export abstract class BaseListQuery<
     const append = mode.type === "serverOrdered" && mode.append;
     objectCacheKeys = this.#retainReleaseAppend(batch, append, objectCacheKeys);
     if (mode.type === "clientOrdered") {
-      objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+      objectCacheKeys = this.sortingStrategy.sortCacheKeys(
+        objectCacheKeys,
+        batch,
+      );
     }
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
@@ -292,6 +307,7 @@ export abstract class BaseListQuery<
   }
 
   _dispose(): void {
+    this.#fetchedObjects = new WeakSet();
     this.store.batch({}, (batch) => {
       const entry = batch.read(this.cacheKey);
       if (entry) {
@@ -343,6 +359,7 @@ export abstract class BaseListQuery<
    * @override Reset pagination state before a fetch
    */
   protected _preFetch(): void {
+    this.#fetchedObjects = new WeakSet();
     this.nextPageToken = undefined;
     super._preFetch();
   }
@@ -534,13 +551,17 @@ export abstract class BaseListQuery<
           this.includeAllBaseObjectProperties,
         );
 
-        return this._updateList(
+        const updatedList = this._updateList(
           objectKeys,
           finalStatus,
           batch,
           { type: "serverOrdered", append },
           this.currentTotalCount,
         );
+        for (const key of objectKeys) {
+          this.#fetchedObjects.add(key);
+        }
+        return updatedList;
       });
 
       return retVal;
@@ -593,89 +614,6 @@ export abstract class BaseListQuery<
     return this.writeToStore(
       { data: [], totalCount: existingTotalCount },
       "error",
-      batch,
-    );
-  }
-
-  /**
-   * Sort the collection items using the configured sorting strategy
-   * @param objectCacheKeys - The cache keys to sort
-   * @param batch - The batch context
-   * @returns Sorted array of cache keys
-   */
-  protected _sortCacheKeys(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[] {
-    return this.sortingStrategy.sortCacheKeys(objectCacheKeys, batch);
-  }
-
-  /**
-   * Unified method for updating collection data in the store
-   * Handles storing, sorting, deduplication, and reference counting
-   *
-   * @param items - Either object cache keys or object instances to update
-   * @param options - Configuration options for the update
-   * @param batch - The batch context to use
-   * @returns The updated entry
-   */
-  protected updateCollection<T extends ObjectCacheKey | Osdk.Instance<any>>(
-    items: T[],
-    options: {
-      append?: boolean;
-      status: Status;
-    },
-    batch: BatchContext,
-  ): Entry<KEY> {
-    if (process.env.NODE_ENV !== "production") {
-      const logger =
-        process.env.NODE_ENV !== "production"
-          ? this.logger?.child({ methodName: "updateCollection" })
-          : this.logger;
-
-      logger?.debug(
-        `{status: ${options.status}, append: ${options.append}}`,
-        JSON.stringify(items, null, 2),
-      );
-    }
-
-    // Step 1: Convert items to object cache keys if needed
-    let objectCacheKeys: ObjectCacheKey[];
-
-    if (items.length === 0) {
-      objectCacheKeys = [];
-    } else if (isObjectInstance(items[0])) {
-      // Items are object instances, need to store them first
-      objectCacheKeys = this.store.objects.storeOsdkInstances(
-        items as Array<Osdk.Instance<any>>,
-        batch,
-        this.rdpConfig,
-        this.selectFieldSet,
-        this.includeAllBaseObjectProperties,
-      );
-    } else {
-      // Items are already cache keys
-      objectCacheKeys = items as ObjectCacheKey[];
-    }
-
-    // Step 2: Handle retain/release/append logic
-    objectCacheKeys = this.#retainReleaseAppend(
-      batch,
-      options.append ?? false,
-      objectCacheKeys,
-    );
-
-    // Step 3: Sort using the configured sorting strategy
-    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
-
-    // Step 4: Remove duplicates
-    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
-
-    // Step 5: Write to store
-    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
-    return this.writeToStore(
-      { data: objectCacheKeys, totalCount: existingTotalCount },
-      options.status,
       batch,
     );
   }

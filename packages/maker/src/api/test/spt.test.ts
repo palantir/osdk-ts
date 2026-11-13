@@ -16,14 +16,49 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineObject } from "../defineObject.js";
-import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
+import {
+  defineOntology,
+  dumpOntologyFullMetadata,
+  getOntologyDefinition,
+} from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 describe("SPTs", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
+  });
+
+  it("collects metadata issues before registering a shared property type", () => {
+    expect(() =>
+      defineSharedPropertyType({
+        apiName: "invalidMetadata",
+        type: "string",
+        displayName: "x".repeat(1001),
+        description: "x".repeat(10001),
+      }),
+    ).toThrowError(
+      expect.objectContaining({
+        name: "MakerValidationError",
+        issues: [
+          expect.objectContaining({
+            message: expect.stringContaining(
+              "displayName must be at most 1000",
+            ),
+          }),
+          expect.objectContaining({
+            message: expect.stringContaining(
+              "description must be at most 10000",
+            ),
+          }),
+        ],
+      }),
+    );
+    expect(
+      getOntologyDefinition()[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+    ).toEqual({});
   });
 
   it("doesn't let you create the same spt twice", () => {

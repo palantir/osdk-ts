@@ -24,6 +24,7 @@ import {
   checkOntology,
   getPropertyPath,
   remapFields,
+  wrapConversionError,
 } from "./dataValueAgentsUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -87,9 +88,9 @@ export async function toDataValueAgents(
           primaryKey: { [objectTypeDefinition.primaryKeyApiName]: primaryKey },
         };
       } catch (cause) {
-        throw new Error(
+        throw wrapConversionError(
           `Failed to convert agent argument "${path}" to an object reference`,
-          { cause },
+          cause,
         );
       }
     }
@@ -114,9 +115,9 @@ export async function toDataValueAgents(
         //  remove the conversion here.
         return await createTemporaryObjectSet(client, value);
       } catch (cause) {
-        throw new Error(
+        throw wrapConversionError(
           `Failed to convert agent argument "${path}" to an object set RID`,
-          { cause },
+          cause,
         );
       }
     }
