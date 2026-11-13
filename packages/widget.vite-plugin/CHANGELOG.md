@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 3.90.0
+
+### Minor Changes
+
+- 9ca39db: Fail widget builds that set Vite's `base` to anything other than `/`, with an error saying how to fix it. Foundry serves widget files from the root path, so other bases can't load.
+
+### Patch Changes
+
+- @osdk/widget.api@3.90.0
+
 ## 3.89.0
 
 ### Patch Changes

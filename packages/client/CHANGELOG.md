@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.90.0
+
+### Minor Changes
+
+- b8cfd7c: Add static typing for agent session state returned by `experimental_getState`.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters@2.90.0
+  - @osdk/shared.test@2.62.0
+  - @osdk/client.unstable@2.90.0
+
 ## 2.89.0
 
 ### Minor Changes
