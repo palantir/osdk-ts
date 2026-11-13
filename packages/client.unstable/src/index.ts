@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export type * as FunctionDiscovery from "./generated/functions-typescript-discovery/__components.js";
+
 export type {
   DirectedLinkTypeRid,
   FoundryObjectReference,

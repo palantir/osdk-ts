@@ -17,6 +17,7 @@
 import type {
   ActionType,
   ActionTypeBlockDataV2,
+  FunctionDiscovery,
   KnownMarketplaceIdentifiers,
 } from "@osdk/client.unstable";
 import type {
@@ -29,10 +30,7 @@ import type {
   LocalizedTitleAndDescription,
   OutputShape,
 } from "@osdk/client.unstable/api";
-import type {
-  IDataType,
-  IDiscoveredFunction,
-} from "@osdk/generator-converters.ontologyir";
+import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import { isInjectedRuntimeInput } from "@osdk/generator-converters.ontologyir";
 
 import type { FunctionsIr } from "../../../api/defineOntologyV2.js";
@@ -341,7 +339,7 @@ class BaseParameterTypeConverter {
 }
 
 export function convertShapeDataType(
-  dataType: IDataType,
+  dataType: FunctionDiscovery.DataType,
   objectTypeIds: Record<string, string>,
   interfaceTypes: Record<string, string>,
   ridGenerator: OntologyRidGenerator,
@@ -349,7 +347,7 @@ export function convertShapeDataType(
   switch (dataType.type) {
     case "object": {
       const objectTypeId = ridGenerator.generateObjectTypeId(
-        (dataType.object as { objectTypeId: string }).objectTypeId,
+        dataType.object.objectTypeId,
       );
       const blockId = objectTypeIds[objectTypeId];
       return {
@@ -359,7 +357,7 @@ export function convertShapeDataType(
     }
     case "objectSet": {
       const objectTypeId = ridGenerator.generateObjectTypeId(
-        (dataType.objectSet as { objectTypeId: string }).objectTypeId,
+        dataType.objectSet.objectTypeId,
       );
       const blockId = objectTypeIds[objectTypeId];
       return {
@@ -368,10 +366,7 @@ export function convertShapeDataType(
       };
     }
     case "interface": {
-      const blockId =
-        interfaceTypes[
-          (dataType.interface as { interfaceTypeRid: string }).interfaceTypeRid
-        ];
+      const blockId = interfaceTypes[dataType.interface.interfaceTypeRid];
       return {
         type: "interface",
         interface: { interfaceTypeReference: blockId },
@@ -379,144 +374,107 @@ export function convertShapeDataType(
     }
     case "interfaceObjectSet": {
       const blockId =
-        interfaceTypes[
-          (dataType.interfaceObjectSet as { interfaceTypeRid: string })
-            .interfaceTypeRid
-        ];
+        interfaceTypes[dataType.interfaceObjectSet.interfaceTypeRid];
       return {
         type: "interfaceObjectSet",
         interfaceObjectSet: { interfaceTypeReference: blockId },
       };
     }
     case "list": {
-      const list = dataType.list as
-        | { elementsType: { type: string; [key: string]: unknown } }
-        | undefined;
-      if (list) {
-        return {
-          type: "list",
-          list: {
-            elementsType: convertShapeDataType(
-              list.elementsType,
-              objectTypeIds,
-              interfaceTypes,
-              ridGenerator,
-            ),
-          },
-        };
-      }
-      return dataType;
+      return {
+        type: "list",
+        list: {
+          elementsType: convertShapeDataType(
+            dataType.list.elementsType,
+            objectTypeIds,
+            interfaceTypes,
+            ridGenerator,
+          ),
+        },
+      };
     }
     case "set": {
-      const set = dataType.set as
-        | { elementsType: { type: string; [key: string]: unknown } }
-        | undefined;
-      if (set) {
-        return {
-          type: "set",
-          set: {
-            elementsType: convertShapeDataType(
-              set.elementsType,
-              objectTypeIds,
-              interfaceTypes,
-              ridGenerator,
-            ),
-          },
-        };
-      }
-      return dataType;
+      return {
+        type: "set",
+        set: {
+          elementsType: convertShapeDataType(
+            dataType.set.elementsType,
+            objectTypeIds,
+            interfaceTypes,
+            ridGenerator,
+          ),
+        },
+      };
     }
     case "map": {
-      const map = dataType.map as
-        | { keysType: IDataType; valuesType: IDataType }
-        | undefined;
-      if (map) {
-        return {
-          type: "map",
-          map: {
-            keysType: convertShapeDataType(
-              map.keysType,
-              objectTypeIds,
-              interfaceTypes,
-              ridGenerator,
-            ),
-            valuesType: convertShapeDataType(
-              map.valuesType,
-              objectTypeIds,
-              interfaceTypes,
-              ridGenerator,
-            ),
-          },
-        };
-      }
-      return dataType;
+      return {
+        type: "map",
+        map: {
+          keysType: convertShapeDataType(
+            dataType.map.keysType,
+            objectTypeIds,
+            interfaceTypes,
+            ridGenerator,
+          ),
+          valuesType: convertShapeDataType(
+            dataType.map.valuesType,
+            objectTypeIds,
+            interfaceTypes,
+            ridGenerator,
+          ),
+        },
+      };
     }
     case "optionalType": {
-      const opt = dataType.optionalType as
-        | { wrappedType: { type: string; [key: string]: unknown } }
-        | undefined;
-      if (opt) {
-        return {
-          type: "optionalType",
-          optionalType: {
-            wrappedType: convertShapeDataType(
-              opt.wrappedType,
-              objectTypeIds,
-              interfaceTypes,
-              ridGenerator,
-            ),
-          },
-        };
-      }
-      return dataType;
+      return {
+        type: "optionalType",
+        optionalType: {
+          wrappedType: convertShapeDataType(
+            dataType.optionalType.wrappedType,
+            objectTypeIds,
+            interfaceTypes,
+            ridGenerator,
+          ),
+        },
+      };
     }
     case "anonymousCustomType": {
-      const anonymous = dataType.anonymousCustomType as
-        | IFunctionCustomTypeShape
-        | undefined;
-      if (anonymous) {
-        return {
-          type: "anonymousCustomType",
-          anonymousCustomType: {
-            fields: convertShapeCustomTypeFields(
-              anonymous,
+      return {
+        type: "anonymousCustomType",
+        anonymousCustomType: {
+          fields: convertShapeCustomTypeFields(
+            dataType.anonymousCustomType,
+            objectTypeIds,
+            interfaceTypes,
+            ridGenerator,
+          ),
+        },
+      };
+    }
+    case "union": {
+      return {
+        type: "union",
+        union: {
+          allowedTypes: dataType.union.allowedTypes.map((allowedType) =>
+            convertShapeDataType(
+              allowedType,
               objectTypeIds,
               interfaceTypes,
               ridGenerator,
             ),
-          },
-        };
-      }
-      return dataType;
-    }
-    case "union": {
-      const union = dataType.union as { allowedTypes: IDataType[] } | undefined;
-      if (union) {
-        return {
-          type: "union",
-          union: {
-            allowedTypes: union.allowedTypes.map((allowedType) =>
-              convertShapeDataType(
-                allowedType,
-                objectTypeIds,
-                interfaceTypes,
-                ridGenerator,
-              ),
-            ),
-          },
-        };
-      }
-      return dataType;
+          ),
+        },
+      };
     }
     default:
-      return dataType;
+      return { ...dataType };
   }
 }
 
 interface IFunctionCustomTypeShape {
   about?: unknown;
   fieldMetadata?: Record<string, { required?: boolean }> | null;
-  fields: Record<string, IDataType>;
+  fields: Record<string, FunctionDiscovery.DataType>;
   id?: string;
 }
 
@@ -598,13 +556,11 @@ export function buildFunctionShape(
   const inputs = discoveredFunction.inputs
     .filter((input) => !isInjectedRuntimeInput(input.dataType))
     .map((input) => {
-      let dataType = input.dataType as { type: string; [key: string]: unknown };
+      let dataType = input.dataType;
       let required = input.required ?? true;
 
       if (dataType.type === "optionalType") {
-        const opt = dataType.optionalType as
-          | { wrappedType: { type: string; [key: string]: unknown } }
-          | undefined;
+        const opt = dataType.optionalType;
         if (opt) {
           dataType = opt.wrappedType;
           required = false;

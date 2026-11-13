@@ -20,6 +20,7 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type {
+  FunctionDiscovery,
   OntologyIrSecurityGroupGranularCondition,
   SecurityGroupComparisonValue,
 } from "@osdk/client.unstable";
@@ -131,11 +132,11 @@ describe("Experimental Test Suite", () => {
   });
 
   describe("Function-backed action parameter requirements", () => {
-    const stringList = {
+    const stringList: FunctionDiscovery.DataType = {
       type: "list",
-      list: { elementsType: { type: "string" } },
+      list: { elementsType: { type: "string", string: {} } },
     };
-    const objectList = {
+    const objectList: FunctionDiscovery.DataType = {
       type: "list",
       list: {
         elementsType: {
@@ -144,11 +145,11 @@ describe("Experimental Test Suite", () => {
         },
       },
     };
-    const optionalStringList = {
+    const optionalStringList: FunctionDiscovery.DataType = {
       type: "optionalType",
       optionalType: { wrappedType: stringList },
     };
-    const geoPointList = {
+    const geoPointList: FunctionDiscovery.DataType = {
       type: "list",
       list: {
         elementsType: {
@@ -159,8 +160,8 @@ describe("Experimental Test Suite", () => {
     };
 
     it.each([
-      ["string", { type: "string" }, true, "required"],
-      ["string", { type: "string" }, false, "notRequired"],
+      ["string", { type: "string", string: {} }, true, "required"],
+      ["string", { type: "string", string: {} }, false, "notRequired"],
       ["stringList", stringList, true, "listLengthValidation"],
       ["stringList", stringList, false, "listLengthValidation"],
       ["stringList", stringList, undefined, "listLengthValidation"],
@@ -209,7 +210,7 @@ describe("Experimental Test Suite", () => {
   describe("Function-backed action display configuration", () => {
     it("passes form, submission, permission and icon settings through", async () => {
       const result = await withFunctionsIr(
-        [{ name: "tag", dataType: { type: "string" } }],
+        [{ name: "tag", dataType: { type: "string", string: {} } }],
         (functionsIrFile) =>
           defineOntologyV2(
             "com.palantir.",

@@ -16,6 +16,7 @@
 
 import type {
   ActionTypeBlockDataV2,
+  FunctionDiscovery,
   MarketplaceActionTypeMetadata,
   ObjectTypeDatasource,
   ObjectTypeDatasourceDefinition,
@@ -27,18 +28,6 @@ import type {
   Section,
   SectionId,
 } from "@osdk/client.unstable";
-import type {
-  IAnonymousCustomDataType,
-  IDataType,
-  IFunctionCustomDataType,
-  IInterfaceDataType,
-  IInterfaceObjectSetDataType,
-  IListDataType,
-  IObjectDataType,
-  IObjectSetDataType,
-  IOptionalDataType,
-  ISetDataType,
-} from "@osdk/generator-converters.ontologyir";
 import { isInjectedRuntimeInput } from "@osdk/generator-converters.ontologyir";
 import type {
   ActionParameter,
@@ -502,79 +491,67 @@ function convertFunctionBackedAction(
 }
 
 export function dataTypeToActionParameterType(
-  dataType: IDataType,
+  dataType: FunctionDiscovery.DataType,
   customTypes: Record<string, unknown> = {},
 ): ActionParameter["type"] {
   switch (dataType.type) {
     case "object": {
-      const objectData = dataType as IObjectDataType;
       return {
         type: "objectReference",
         objectReference: {
-          objectTypeId: objectData.object.objectTypeId,
+          objectTypeId: dataType.object.objectTypeId,
           maybeCreateObjectOption: null,
         },
       };
     }
     case "objectSet": {
-      const objectSetData = dataType as IObjectSetDataType;
       return {
         type: "objectSetRid",
         objectSetRid: {
-          objectTypeId: objectSetData.objectSet.objectTypeId,
+          objectTypeId: dataType.objectSet.objectTypeId,
         },
       };
     }
     case "interface": {
-      const interfaceData = dataType as IInterfaceDataType;
       return {
         type: "interfaceReference",
         interfaceReference: {
-          interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
+          interfaceTypeRid: dataType.interface.interfaceTypeRid,
         },
       };
     }
     case "interfaceObjectSet": {
-      const interfaceData = dataType as IInterfaceObjectSetDataType;
       return {
         type: "interfaceReferenceList",
         interfaceReferenceList: {
-          interfaceTypeRid: interfaceData.interfaceObjectSet.interfaceTypeRid,
+          interfaceTypeRid: dataType.interfaceObjectSet.interfaceTypeRid,
         },
       };
     }
     case "list": {
-      const listData = dataType as IListDataType;
       return dataTypeToActionParameterListType(
-        listData.list.elementsType,
+        dataType.list.elementsType,
         customTypes,
       );
     }
     case "set": {
-      const setData = dataType as ISetDataType;
       return dataTypeToActionParameterListType(
-        setData.set.elementsType,
+        dataType.set.elementsType,
         customTypes,
       );
     }
     case "optionalType": {
-      const optionalData = dataType as IOptionalDataType;
       return dataTypeToActionParameterType(
-        optionalData.optionalType.wrappedType,
+        dataType.optionalType.wrappedType,
         customTypes,
       );
     }
     case "anonymousCustomType": {
-      const anonymousData = dataType as IAnonymousCustomDataType;
-      return dataTypeToActionStructType(
-        anonymousData.anonymousCustomType,
-        false,
-      );
+      return dataTypeToActionStructType(dataType.anonymousCustomType, false);
     }
     case "functionCustomType": {
-      const customTypeData = dataType as IFunctionCustomDataType;
       return dataTypeToActionStructType(
-        getFunctionCustomType(customTypeData.functionCustomType, customTypes),
+        getFunctionCustomType(dataType.functionCustomType, customTypes),
         false,
       );
     }
@@ -607,42 +584,37 @@ const PRIMITIVE_LIST_TYPES: Record<string, ActionParameter["type"]> = {
 };
 
 function dataTypeToActionParameterListType(
-  elementType: IDataType,
+  elementType: FunctionDiscovery.DataType,
   customTypes: Record<string, unknown>,
 ): ActionParameter["type"] {
   if (elementType.type === "object") {
-    const objectData = elementType as IObjectDataType;
     return {
       type: "objectReferenceList",
       objectReferenceList: {
-        objectTypeId: objectData.object.objectTypeId,
+        objectTypeId: elementType.object.objectTypeId,
       },
     };
   }
   if (elementType.type === "interface") {
-    const interfaceData = elementType as IInterfaceDataType;
     return {
       type: "interfaceReferenceList",
       interfaceReferenceList: {
-        interfaceTypeRid: interfaceData.interface.interfaceTypeRid,
+        interfaceTypeRid: elementType.interface.interfaceTypeRid,
       },
     };
   }
   if (elementType.type === "optionalType") {
-    const optionalData = elementType as IOptionalDataType;
     return dataTypeToActionParameterListType(
-      optionalData.optionalType.wrappedType,
+      elementType.optionalType.wrappedType,
       customTypes,
     );
   }
   if (elementType.type === "anonymousCustomType") {
-    const anonymousData = elementType as IAnonymousCustomDataType;
-    return dataTypeToActionStructType(anonymousData.anonymousCustomType, true);
+    return dataTypeToActionStructType(elementType.anonymousCustomType, true);
   }
   if (elementType.type === "functionCustomType") {
-    const customTypeData = elementType as IFunctionCustomDataType;
     return dataTypeToActionStructType(
-      getFunctionCustomType(customTypeData.functionCustomType, customTypes),
+      getFunctionCustomType(elementType.functionCustomType, customTypes),
       true,
     );
   }
@@ -661,7 +633,7 @@ function dataTypeToActionParameterListType(
 
 interface IFunctionCustomTypeShape {
   fieldMetadata?: Record<string, { required?: boolean }> | null;
-  fields: Record<string, IDataType>;
+  fields: Record<string, FunctionDiscovery.DataType>;
 }
 
 function isFunctionCustomTypeShape(
@@ -711,7 +683,7 @@ function dataTypeToActionStructType(
 }
 
 function dataTypeToActionStructFieldType(
-  dataType: IDataType,
+  dataType: FunctionDiscovery.DataType,
 ): OntologyIrStructFieldBaseParameterType {
   switch (dataType.type) {
     case "boolean":
@@ -729,20 +701,16 @@ function dataTypeToActionStructFieldType(
     case "date":
       return { type: "date", date: {} };
     case "object": {
-      const objectData = dataType as IObjectDataType;
       return {
         type: "objectReference",
         objectReference: {
-          objectTypeId: objectData.object.objectTypeId,
+          objectTypeId: dataType.object.objectTypeId,
           maybeCreateObjectOption: null,
         },
       };
     }
     case "optionalType": {
-      const optionalData = dataType as IOptionalDataType;
-      return dataTypeToActionStructFieldType(
-        optionalData.optionalType.wrappedType,
-      );
+      return dataTypeToActionStructFieldType(dataType.optionalType.wrappedType);
     }
     default:
       throw new Error(
@@ -752,16 +720,15 @@ function dataTypeToActionStructFieldType(
 }
 
 function geoShapeToActionParameterType(
-  dataType: IDataType,
+  dataType: FunctionDiscovery.DataType_geoShape,
 ): "geohash" | "geoshape" {
-  const geoShape = dataType.geoShape as
-    | { subType?: { type?: string } | null }
-    | undefined;
-  return geoShape?.subType?.type === "geoPoint" ? "geohash" : "geoshape";
+  return dataType.geoShape.subType?.type === "geoPoint"
+    ? "geohash"
+    : "geoshape";
 }
 
 export function dataTypeToActionParameterAllowedValues(
-  dataType: IDataType,
+  dataType: FunctionDiscovery.DataType,
   parameterType: ActionParameter["type"],
 ): ActionParameterAllowedValues {
   const unwrappedDataType = unwrapFunctionInputDataType(dataType);
@@ -785,7 +752,7 @@ export function dataTypeToActionParameterAllowedValues(
 }
 
 export function dataTypeToActionStructFieldValidations(
-  dataType: IDataType,
+  dataType: FunctionDiscovery.DataType,
   customTypes: Record<string, unknown>,
 ):
   | NonNullable<ActionParameter["validation"]["structFieldValidations"]>
@@ -793,11 +760,10 @@ export function dataTypeToActionStructFieldValidations(
   const unwrappedDataType = unwrapFunctionInputDataType(dataType);
   let customType: IFunctionCustomTypeShape | undefined;
   if (unwrappedDataType.type === "anonymousCustomType") {
-    customType = (unwrappedDataType as IAnonymousCustomDataType)
-      .anonymousCustomType;
+    customType = unwrappedDataType.anonymousCustomType;
   } else if (unwrappedDataType.type === "functionCustomType") {
     customType = getFunctionCustomType(
-      (unwrappedDataType as IFunctionCustomDataType).functionCustomType,
+      unwrappedDataType.functionCustomType,
       customTypes,
     );
   }
@@ -817,20 +783,16 @@ export function dataTypeToActionStructFieldValidations(
   );
 }
 
-function unwrapFunctionInputDataType(dataType: IDataType): IDataType {
+function unwrapFunctionInputDataType(
+  dataType: FunctionDiscovery.DataType,
+): FunctionDiscovery.DataType {
   switch (dataType.type) {
     case "optionalType":
-      return unwrapFunctionInputDataType(
-        (dataType as IOptionalDataType).optionalType.wrappedType,
-      );
+      return unwrapFunctionInputDataType(dataType.optionalType.wrappedType);
     case "list":
-      return unwrapFunctionInputDataType(
-        (dataType as IListDataType).list.elementsType,
-      );
+      return unwrapFunctionInputDataType(dataType.list.elementsType);
     case "set":
-      return unwrapFunctionInputDataType(
-        (dataType as ISetDataType).set.elementsType,
-      );
+      return unwrapFunctionInputDataType(dataType.set.elementsType);
     default:
       return dataType;
   }

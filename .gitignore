@@ -68,3 +68,5 @@ vitest.workspace.ts
 .*.local.*
 
 .playwright-cli
+
+.grove*
