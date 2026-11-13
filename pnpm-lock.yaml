@@ -60,7 +60,9 @@ overrides:
   '@cspell/dict-html': ^4.0.12
   '@cspell/dict-html-symbol-entities': ^4.0.4
 
-pnpmfileChecksum: sha256-1bJ4E1svaY3XTgYCG6638ksBu0VE1Dl4ETnMYOu7Khg=
+packageExtensionsChecksum: sha256-UTYZrigCC9zqErH9JAhnoDHuklr2NlxXq6ad4oaiKC8=
+
+pnpmfileChecksum: sha256-S6pIHXsjXlGohU82J/QK59W4XjrfRhyxXdViSCcgrS4=
 
 importers:
 
