@@ -63,11 +63,11 @@ function assertInterfaceToOtCastIsPermitted(
   if (implementations == null) return;
 
   for (const [iptApiName, impl] of Object.entries(implementations)) {
-    if (impl.type === "localProperty") continue;
+    if (impl.type !== "reduced") continue;
     throw new Error(
       `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
-        `'${objDef.apiName}': property '${iptApiName}' has a non-local ` +
-        `implementation (${impl.type}), so the underlying object type cannot ` +
+        `'${objDef.apiName}': property '${iptApiName}' has a reduced ` +
+        `implementation, so the underlying object type cannot ` +
         `be faithfully represented. Load the object type directly.`,
     );
   }
