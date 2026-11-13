@@ -49,8 +49,8 @@ export const fakeObservableClient: ObservableClient = new Proxy(
  * devtools and user-agent wiring and lets the caller inject both a `client`
  * and an `ObservableClient` directly.
  *
- * Production code should always use `<OsdkProvider client={...}>`, which
- * derives its `ObservableClient` from `client` so the two cannot diverge.
+ * Production code should use `<OsdkProvider client={...}>` with either a plain
+ * or observable client, which keeps the two clients consistent.
  */
 export function TestOsdkProvider({
   children,

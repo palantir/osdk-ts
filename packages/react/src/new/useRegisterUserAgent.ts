@@ -16,12 +16,11 @@
 
 import React from "react";
 
-import { useOnMount } from "./core/useOnMount.js";
 import { UserAgentContext } from "./UserAgentContext.js";
 
 export function useRegisterUserAgent(agent: string): void {
   const addUserAgent = React.useContext(UserAgentContext);
-  useOnMount(() => {
+  React.useEffect(() => {
     return addUserAgent(agent);
-  });
+  }, [addUserAgent, agent]);
 }
