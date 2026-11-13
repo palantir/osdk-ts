@@ -113,11 +113,20 @@ describe("ObjectSet", () => {
       >();
     });
 
-    test("select one", async () => {
-      const result = await fauxObjectSet.fetchPage({ $select: ["fullName"] });
+    test("select one while ordering by another property", async () => {
+      const result = await fauxObjectSet.fetchPage({
+        $select: ["fullName"],
+        $orderBy: { employeeId: "asc" },
+      });
       expectTypeOf<(typeof result.data)[0]>().toEqualTypeOf<
         Osdk.Instance<EmployeeApiTest, never, "fullName">
       >();
+
+      const resultWithErrors = await fauxObjectSet.fetchPageWithErrors({
+        $select: ["fullName"],
+        $orderBy: { employeeId: "asc" },
+      });
+      expectTypeOf(resultWithErrors.value!.data).toEqualTypeOf(result.data);
     });
   });
 
@@ -512,8 +521,8 @@ describe("ObjectSet", () => {
         await withFamily.fetchOne(1);
       });
 
-      it("works with .async", () => {
-        const asyncIter = withFamily.asyncIter();
+      it("works with .async ordered by a derived property", () => {
+        const asyncIter = withFamily.asyncIter({ $orderBy: { mom: "asc" } });
         expectTypeOf<typeof asyncIter>().toEqualTypeOf<
           AsyncIterableIterator<
             Osdk.Instance<
@@ -530,8 +539,10 @@ describe("ObjectSet", () => {
         >();
       });
 
-      it("Works with no select", async () => {
-        const withFamilyResults = await withFamily.fetchPage();
+      it("works with no select when ordered by a derived property", async () => {
+        const withFamilyResults = await withFamily.fetchPage({
+          $orderBy: { mom: "asc" },
+        });
 
         expectTypeOf<(typeof withFamilyResults)["data"][0]>().toEqualTypeOf<
           Osdk.Instance<
@@ -545,6 +556,13 @@ describe("ObjectSet", () => {
             }
           >
         >();
+
+        const resultWithErrors = await withFamily.fetchPageWithErrors({
+          $orderBy: { mom: "asc" },
+        });
+        expectTypeOf(resultWithErrors.value!.data).toEqualTypeOf(
+          withFamilyResults.data,
+        );
       });
 
       it("Works with selecting all RDPs", async () => {
@@ -1394,6 +1412,37 @@ describe("ObjectSet", () => {
       void knn.fetchPageWithErrors({ $orderBy: "invalid" });
       // @ts-expect-error
       void knn.asyncIter({ $orderBy: "random" });
+
+      // @ts-expect-error
+      void knn.fetchPage({ $orderBy: { fullName: "sideways" } });
+      // @ts-expect-error
+      void knn.asyncIter({ $orderBy: { unknownProperty: "asc" } });
+    });
+
+    it("preserves result types for relevance or property ordering", async () => {
+      const knn = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      );
+      const orderBy = "relevance" as "relevance" | { fullName: "asc" };
+      type Employee = Osdk.Instance<EmployeeApiTest>;
+      type PossiblyScored = Employee | (Employee & { $score: number });
+
+      const page = await knn.fetchPage({ $orderBy: orderBy });
+      expectTypeOf(page.data).toEqualTypeOf<PossiblyScored[]>();
+
+      const pageWithErrors = await knn.fetchPageWithErrors({
+        $orderBy: orderBy,
+      });
+      expectTypeOf(pageWithErrors.value!.data).toEqualTypeOf<
+        PossiblyScored[]
+      >();
+
+      const iterator = knn.asyncIter({ $orderBy: orderBy });
+      expectTypeOf(iterator).toEqualTypeOf<
+        AsyncIterableIterator<PossiblyScored>
+      >();
     });
 
     it("does not include score for property order by", async () => {
