@@ -23,7 +23,11 @@ import {
 import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import { InterfaceDefRef, UnderlyingOsdkObject } from "./InternalSymbols.js";
+import {
+  FullyLoadedProperties,
+  InterfaceDefRef,
+  UnderlyingOsdkObject,
+} from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
@@ -51,7 +55,7 @@ const osdkObjectToInterfaceView = createSimpleCache(
 );
 
 function assertInterfaceToOtCastIsPermitted(
-  holder: { [InterfaceDefRef]?: unknown },
+  holder: { [InterfaceDefRef]?: unknown; [UnderlyingOsdkObject]: ObjectHolder },
   objDef: FetchedObjectTypeDefinition,
 ): void {
   const interfaceDef = holder[InterfaceDefRef] as
@@ -64,12 +68,27 @@ function assertInterfaceToOtCastIsPermitted(
 
   for (const [iptApiName, impl] of Object.entries(implementations)) {
     if (impl.type === "localProperty") continue;
-    throw new Error(
-      `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
-        `'${objDef.apiName}': property '${iptApiName}' has a non-local ` +
-        `implementation (${impl.type}), so the underlying object type cannot ` +
-        `be faithfully represented. Load the object type directly.`,
-    );
+    if (impl.type === "reduced") {
+      throw new Error(
+        `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
+          `'${objDef.apiName}': property '${iptApiName}' has a reduced ` +
+          `implementation, so the underlying object type cannot ` +
+          `be faithfully represented. Load the object type directly.`,
+      );
+    }
+    const backingProperties =
+      impl.type === "structField"
+        ? [impl.propertyApiName]
+        : Object.values(impl.mapping).map((field) => field.propertyApiName);
+    for (const property of backingProperties) {
+      if (!holder[UnderlyingOsdkObject][FullyLoadedProperties]?.has(property)) {
+        throw new Error(
+          `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
+            `'${objDef.apiName}': backing property '${property}' was not fully loaded. ` +
+            `Fetch with $includeAllBaseObjectProperties: true or load the object type directly.`,
+        );
+      }
+    }
   }
 }
 

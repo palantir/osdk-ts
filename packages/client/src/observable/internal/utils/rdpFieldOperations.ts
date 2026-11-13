@@ -17,6 +17,7 @@
 import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import {
   ClientRef,
+  FullyLoadedProperties,
   ObjectDefRef,
   UnderlyingOsdkObject,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
@@ -87,7 +88,14 @@ function stripRdpFields(
     }
   }
 
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    value[ClientRef],
+    objectDef,
+    newProps,
+    {},
+    undefined,
+    value[FullyLoadedProperties],
+  );
 }
 
 function isSuperset(
@@ -129,7 +137,14 @@ function filterToRdpFields(
     }
   }
 
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    value[ClientRef],
+    objectDef,
+    newProps,
+    {},
+    undefined,
+    value[FullyLoadedProperties],
+  );
 }
 
 export function mergeSelectFields(
@@ -163,16 +178,29 @@ export function mergeSelectFields(
     }
   }
 
+  const fullyLoadedProperties = new Set(existingValue[FullyLoadedProperties]);
   for (const key of Object.keys(sourceUnderlying)) {
     // Take the source's derived fields, plus the base props it selected.
     if (sourceRdpFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
     } else if (key in objectDef.properties && selectFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
+      if (sourceValue[FullyLoadedProperties].has(key)) {
+        fullyLoadedProperties.add(key);
+      } else {
+        fullyLoadedProperties.delete(key);
+      }
     }
   }
 
-  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    sourceValue[ClientRef],
+    objectDef,
+    newProps,
+    {},
+    undefined,
+    fullyLoadedProperties,
+  );
 }
 
 export function mergeObjectFields(
@@ -234,5 +262,12 @@ export function mergeObjectFields(
     }
   }
 
-  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    sourceValue[ClientRef],
+    objectDef,
+    newProps,
+    {},
+    undefined,
+    sourceValue[FullyLoadedProperties],
+  );
 }

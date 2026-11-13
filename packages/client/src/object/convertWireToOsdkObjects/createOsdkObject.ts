@@ -43,6 +43,7 @@ import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
 import {
   ClientRef,
+  FullyLoadedProperties,
   ObjectDefRef,
   PropertySecuritiesRef,
   UnderlyingOsdkObject,
@@ -81,7 +82,14 @@ const basePropDefs = {
       const def = this[ObjectDefRef];
 
       if (update == null) {
-        return createOsdkObject(this[ClientRef], def, { ...rawObj });
+        return createOsdkObject(
+          this[ClientRef],
+          def,
+          { ...rawObj },
+          {},
+          undefined,
+          this[FullyLoadedProperties],
+        );
       }
 
       if (
@@ -98,7 +106,14 @@ const basePropDefs = {
       }
 
       const newObject = { ...this[UnderlyingOsdkObject], ...update };
-      return createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject);
+      return createOsdkObject(
+        this[ClientRef],
+        this[ObjectDefRef],
+        newObject,
+        {},
+        undefined,
+        this[FullyLoadedProperties],
+      );
     },
   },
   $objectSpecifier: {
@@ -158,6 +173,9 @@ export function createOsdkObject(
   simpleOsdkProperties: SimpleOsdkProperties,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
   wirePropertySecurities: PropertySecurities[] | undefined = [],
+  fullyLoadedProperties: ReadonlySet<string> = new Set(
+    Object.keys(simpleOsdkProperties),
+  ),
 ): ObjectHolder {
   const { parsedObject, clientPropertySecurities } = parseWhenSecuritiesLoaded(
     wirePropertySecurities,
@@ -169,6 +187,7 @@ export function createOsdkObject(
   // updates the object's "hidden class/map".
   const rawObj = parsedObject as ObjectHolder;
   Object.defineProperties(rawObj, {
+    [FullyLoadedProperties]: { value: fullyLoadedProperties },
     [UnderlyingOsdkObject]: {
       enumerable: false,
       value: simpleOsdkProperties,

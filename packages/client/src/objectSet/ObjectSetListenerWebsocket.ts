@@ -359,7 +359,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
           {},
           undefined,
           false,
-          undefined,
+          [o.property, ...Object.keys(o.primaryKey)],
           false,
           await this.#fetchInterfaceMapping(o.objectType, sub.interfaceApiName),
         );
@@ -400,7 +400,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
           {},
           undefined,
           false,
-          undefined,
+          sub.requestedProperties,
           false,
           await this.#fetchInterfaceMapping(
             o.object.__apiName,
