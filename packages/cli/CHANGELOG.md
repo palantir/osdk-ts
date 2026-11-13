@@ -1,5 +1,13 @@
 # @osdk/cli
 
+## 0.119.0
+
+### Patch Changes
+
+- Updated dependencies [ee09000]
+- Updated dependencies [3371bee]
+  - @osdk/widget.api@3.91.0
+
 ## 0.118.0
 
 ### Patch Changes

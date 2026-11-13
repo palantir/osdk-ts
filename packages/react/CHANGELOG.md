@@ -1,5 +1,26 @@
 # @osdkkit/react
 
+## 2.91.0
+
+### Minor Changes
+
+- f1a74a8: Apply linked-object filters and expose automatic pagination through useLinks.
+
+  Preserve filters on nested operands in shape link set operations.
+
+### Patch Changes
+
+- Updated dependencies [5fade0a]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [5d80e0f]
+- Updated dependencies [0bcfdc9]
+- Updated dependencies [f1a74a8]
+- Updated dependencies [2e21fee]
+- Updated dependencies [a37fdfc]
+  - @osdk/client@2.91.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.91.0
+
 ## 2.90.0
 
 ### Patch Changes
