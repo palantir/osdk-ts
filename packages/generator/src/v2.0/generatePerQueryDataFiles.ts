@@ -300,11 +300,15 @@ export function getQueryParamType(
   let paramType = `unknown /* ${input.type} */`;
   const recurse = (i: QueryDataTypeDefinition, mk = false) =>
     getQueryParamType(enhancedOntology, i, type, mk, typeRefNames);
+  const recurseElement = (i: QueryDataTypeDefinition) =>
+    type === "Result" && i.nullable
+      ? `${recurse(i)} | undefined`
+      : recurse(i);
 
   switch (input.type) {
     case "array":
       paramType = `${type === "Param" ? "Readonly" : ""}Array<${
-        recurse(input.array)
+        recurseElement(input.array)
       }>`;
       break;
     case "date":
@@ -401,9 +405,9 @@ export function getQueryParamType(
       break;
 
     case "set":
-      paramType = `${type === "Param" ? "Readonly" : ""}Set<${
-        recurse(input.set)
-      }>`;
+      paramType = type === "Param"
+        ? `ReadonlySet<${recurse(input.set)}>`
+        : `Array<${recurseElement(input.set)}>`;
       break;
 
     case "union":

@@ -19,16 +19,20 @@ import type {
   ActionParameterType,
   ActionTypeV2,
 } from "@osdk/foundry.ontologies";
+import type { ActionTypeV2WithReturnType } from "@osdk/generator-converters";
 import { wireActionTypeV2ToSdkActionMetadata } from "@osdk/generator-converters";
 import path from "node:path";
 import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
+import { getInterfaceTypesFromQueryDataType } from "../shared/getInterfaceTypesFromQueryDataType.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
+import { getObjectTypesFromQueryDataType } from "../shared/getObjectTypesFromQueryDataType.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { escapeJsDocText } from "../util/escapeJsDocText.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
+import { getQueryParamType } from "./generatePerQueryDataFiles.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
 
 export async function generatePerActionDataFiles(
@@ -65,6 +69,25 @@ export async function generatePerActionDataFiles(
           action.unsanitizedApiName,
         ),
       );
+
+      const { returnType } = fullActionDef;
+
+      function createReturnTypeDef() {
+        if (returnType == null) {
+          return "";
+        }
+        const type = getQueryParamType(enhancedOntology, returnType, "Result");
+        if (returnType.nullable) {
+          return `export type ReturnType = ${type} | undefined;`;
+        }
+        return returnType.type === "struct"
+          ? `export interface ReturnType ${type}`
+          : `export type ReturnType = ${type};`;
+      }
+
+      const applyActionReturnType = returnType == null
+        ? "ActionReturnTypeForOptions<OP>"
+        : `ActionReturnTypeForOptions<OP, ${action.shortApiName}.ReturnType>`;
 
       function createParamsDef() {
         const entries = Object.entries(fullActionDef.parameters ?? {});
@@ -202,10 +225,12 @@ export async function generatePerActionDataFiles(
         }
             }
 
+            ${createReturnTypeDef()}
+
             // Represents a fqn of the action
             export interface Signatures {
               ${getDescriptionIfPresent(action.description)}
-              applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+              applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<${applyActionReturnType}>;
 
               batchApplyAction<OP extends ApplyBatchActionOptions>(args: ReadonlyArray<${action.paramsIdentifier}>, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
             }
@@ -231,6 +256,7 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "returnType": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
           })
@@ -249,6 +275,7 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "returnType": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
           })
@@ -315,6 +342,26 @@ export async function generatePerActionDataFiles(
         }
       }
 
+      const wireReturnType = (action.raw as ActionTypeV2WithReturnType)
+        .returnType;
+      if (returnType != null && wireReturnType != null) {
+        const returnObjectTypes = new Set<string>();
+        getObjectTypesFromQueryDataType(wireReturnType, returnObjectTypes);
+        for (const apiName of returnObjectTypes) {
+          referencedObjectDefs.add(enhancedOntology.requireObjectType(apiName));
+        }
+        const returnInterfaceTypes = new Set<string>();
+        getInterfaceTypesFromQueryDataType(
+          wireReturnType,
+          returnInterfaceTypes,
+        );
+        for (const apiName of returnInterfaceTypes) {
+          referencedObjectDefs.add(
+            enhancedOntology.requireInterfaceType(apiName),
+          );
+        }
+      }
+
       const imports = getObjectImports(
         referencedObjectDefs,
         undefined,
@@ -332,6 +379,7 @@ export async function generatePerActionDataFiles(
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,
+            ${returnType != null ? "QueryResult," : ""}
           } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
