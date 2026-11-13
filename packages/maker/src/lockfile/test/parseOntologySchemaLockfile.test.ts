@@ -86,6 +86,28 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("preserves the JSON syntax error as its cause", () => {
+    expect(() => parseLockfile("{ not json", "lock.json")).toThrowError(
+      expect.objectContaining({ cause: expect.any(SyntaxError) }),
+    );
+  });
+
+  it("preserves the located validation issues as its cause", () => {
+    expect(() => parse({ version: 1, interfaces: null })).toThrowError(
+      expect.objectContaining({
+        cause: expect.objectContaining({
+          name: "ZodError",
+          issues: [
+            expect.objectContaining({
+              path: ["interfaces"],
+              message: "Expected an object keyed by interface api name.",
+            }),
+          ],
+        }),
+      }),
+    );
+  });
+
   it.each([
     ["a non-integer version", { version: 1.5, interfaces: {} }],
     ["no version at all", { interfaces: {} }],
@@ -365,6 +387,9 @@ describe("parseLockfile", () => {
     ["absent", undefined],
     ["null", null],
     ["of an unrecognized kind", { type: "someFutureKind" }],
+    ["not an object", "afterInstall"],
+    ["missing its discriminator", {}],
+    ["with a non-string discriminator", { type: 1 }],
   ])("rejects a transition whose grace period is %s", (_name, gracePeriod) => {
     expect(() => parse(withTransition({ gracePeriod }))).toThrowError(
       /transitions\[0\]\.gracePeriod.*Restore the grace period the last published release declared/u,
@@ -394,6 +419,31 @@ describe("parseLockfile", () => {
       );
     },
   );
+
+  it.each(["1e400", "-1e400"])(
+    "rejects an overflowed JSON number of days (%s) with repair advice",
+    (days) => {
+      const contents = JSON.stringify(
+        withTransition({ gracePeriod: { type: "afterInstall", days: 30 } }),
+      ).replace('"days":30', `"days":${days}`);
+
+      expect(() => parseLockfile(contents, "lock.json")).toThrowError(
+        "lock.json is not a valid ontology schema lockfile:\n" +
+          "  interfaces.Person.transitions[0].gracePeriod.days: Expected a number of days. " +
+          "Restore the number of days the last published release declared.",
+      );
+    },
+  );
+
+  it("preserves child diagnostics instead of replacing them with union advice", () => {
+    expect(() =>
+      parse(withTransition({ gracePeriod: { type: "deadline", deadline: 5 } })),
+    ).toThrowError(
+      "lock.json is not a valid ontology schema lockfile:\n" +
+        "  interfaces.Person.transitions[0].gracePeriod.deadline: Expected an ISO-8601 UTC " +
+        'datetime (e.g. "2026-01-31T00:00:00Z"). Restore the deadline the last published release declared.',
+    );
+  });
 
   it.each([
     ["absent", { type: "deadline" }],
@@ -455,6 +505,22 @@ describe("parseLockfile", () => {
       /instructions\[0\]\.type: .*Restore the instruction the last published release declared/u,
     );
   });
+
+  it.each([
+    ["null", null],
+    ["not an object", "addRequiredProperty"],
+    ["missing its discriminator", {}],
+    ["with a non-string discriminator", { type: 1 }],
+  ])(
+    "preserves repair advice for an instruction that is %s",
+    (_name, instruction) => {
+      expect(() =>
+        parse(withTransition({ instructions: [instruction] })),
+      ).toThrowError(
+        /instructions\[0\].*Restore the instruction the last published release declared/u,
+      );
+    },
+  );
 
   it("rejects an `addRequiredProperty` instruction that names no property", () => {
     expect(() =>
