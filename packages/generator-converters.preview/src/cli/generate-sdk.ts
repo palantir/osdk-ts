@@ -308,7 +308,10 @@ async function main(): Promise<void> {
 
     const functionNames = Object.keys(queryTypes);
     if (functionNames.length > 0) {
-      previewMetadata.queryTypes = queryTypes;
+      previewMetadata.queryTypes = {
+        ...previewMetadata.queryTypes,
+        ...queryTypes,
+      };
       consola.info(
         `Discovered ${functionNames.length} function(s): ${
           functionNames.join(
