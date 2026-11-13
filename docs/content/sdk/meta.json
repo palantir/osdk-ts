@@ -1,0 +1,24 @@
+{
+  "title": "TypeScript SDK",
+  "description": "Query and edit Ontology data from any TypeScript runtime with @osdk/client.",
+  "icon": "Code",
+  "root": true,
+  "pages": [
+    "index",
+    "---Read data---",
+    "objects",
+    "filtering",
+    "links",
+    "interfaces",
+    "aggregations",
+    "derived-properties",
+    "---Write data---",
+    "actions",
+    "---Logic---",
+    "functions",
+    "---More---",
+    "media",
+    "subscriptions",
+    "errors"
+  ]
+}

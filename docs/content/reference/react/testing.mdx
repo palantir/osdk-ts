@@ -1,0 +1,62 @@
+---
+title: "@osdk/react/testing"
+description: TestOsdkProvider and fakeObservableClient for rendering @osdk/react components in unit tests.
+---
+
+```ts
+import { fakeObservableClient, TestOsdkProvider } from "@osdk/react/testing";
+
+function TestOsdkProvider(props: {
+  children: React.ReactNode;
+  client: Client;
+  observableClient: ObservableClient;
+}): React.JSX.Element;
+
+const fakeObservableClient: ObservableClient;
+```
+
+`TestOsdkProvider` puts a `client` and an `observableClient` of your choice into context, skipping the devtools and user-agent setup of `OsdkProvider`. Use it only in tests; in production, `OsdkProvider` derives the observable client from `client` so the two cannot diverge.
+
+## `TestOsdkProvider` props
+
+The props type is inline in the source, so this table is written by hand.
+
+| Prop | Type | Description |
+| --- | --- | --- |
+| `client` | `Client` | Returned by `useOsdkClient` and used by the platform API hooks. |
+| `observableClient` | `ObservableClient` | Used by the data hooks such as `useOsdkObjects` and returned by `useObservableClient`. |
+| `children` | `React.ReactNode` | The tree under test. |
+
+## `fakeObservableClient`
+
+An `ObservableClient` whose every method throws. Pass it when the code under test never uses the observable client, so an unexpected call fails the test instead of returning `undefined`.
+
+## Example
+
+```tsx title="src/ClientStatus.test.tsx"
+import { createMockClient } from "@osdk/unit-testing";
+import { useOsdkClient } from "@osdk/react";
+import { fakeObservableClient, TestOsdkProvider } from "@osdk/react/testing";
+import { render, screen } from "@testing-library/react";
+import { expect, it } from "vitest";
+
+const mockClient = createMockClient();
+
+function ClientStatus() {
+  const client = useOsdkClient();
+  return <p>{client === mockClient ? "mock client" : "other client"}</p>;
+}
+
+it("reads the client from context", () => {
+  render(
+    <TestOsdkProvider client={mockClient} observableClient={fakeObservableClient}>
+      <ClientStatus />
+    </TestOsdkProvider>,
+  );
+  expect(screen.getByText("mock client")).toBeDefined();
+});
+```
+
+## See also
+
+- [Testing](/react/testing)

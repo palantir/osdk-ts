@@ -1,55 +1,6 @@
 # CSS Variables API Reference
 
-Complete reference of all CSS custom properties (variables) used in `@osdk/react-components`.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Token Architecture](#token-architecture)
-- [Blueprint Token Mappings](#blueprint-token-mappings)
-  - [Surface Tokens](#surface-tokens)
-  - [Typography Tokens](#typography-tokens)
-  - [Intent Tokens](#intent-tokens)
-  - [Iconography Tokens](#iconography-tokens)
-  - [Emphasis Tokens](#emphasis-tokens)
-  - [Palette Tokens](#palette-tokens)
-- [Semantic Color Tokens](#semantic-color-tokens)
-  - [Typography Colors](#typography-colors)
-  - [Background Colors](#background-colors)
-  - [Custom Colors](#custom-colors)
-- [OSDK Component Tokens](#osdk-component-tokens)
-  - [Shared Styling](#shared-styling)
-  - [AIP Agent Chat](#aip-agent-chat)
-  - [Drag Handle](#drag-handle)
-  - [Button](#button)
-  - [Checkbox](#checkbox)
-  - [Combobox](#combobox)
-  - [CBAC Picker](#cbac-picker)
-  - [DateTime Picker](#datetime-picker)
-  - [Dialog](#dialog)
-  - [Draggable](#draggable)
-  - [File Picker](#file-picker)
-  - [Filter List](#filter-list)
-  - [Form](#form)
-  - [Form Section](#form-section)
-  - [Input](#input)
-  - [Number Input](#number-input)
-  - [Markdown Viewer](#markdown-viewer)
-  - [Object Set](#object-set)
-  - [PDF Viewer](#pdf-viewer)
-  - [Radio](#radio)
-  - [Select](#select)
-  - [Switch](#switch)
-  - [Table](#table)
-  - [Time Picker](#time-picker)
-  - [Tooltip](#tooltip)
-  - [Document Viewer](#document-viewer)
-  - [Email Viewer](#email-viewer)
-  - [Spreadsheet Viewer](#spreadsheet-viewer)
-  - [Image Viewer](#image-viewer)
-  - [Video Viewer](#video-viewer)
-  - [XML Viewer](#xml-viewer)
-- [Creating a Custom Theme](#creating-a-custom-theme)
+Reference for the CSS custom properties in `@osdk/react-components`, from Blueprint token mappings to per-component tokens.
 
 ## Overview
 
@@ -645,7 +596,6 @@ Styling for date and time picker components.
 | `--osdk-datetime-calendar-selected-bg`              | `var(--osdk-intent-primary-rest)`                                      | Selected day background       |
 | `--osdk-datetime-calendar-selected-color`           | `var(--osdk-intent-primary-foreground)`                                | Selected day text color       |
 | `--osdk-datetime-calendar-selected-hover-bg`        | `var(--osdk-intent-primary-hover)`                                     | Selected day hover background |
-| `--osdk-datetime-calendar-today-font-weight`        | `var(--osdk-typography-weight-bold)`                                   | Today font weight             |
 | `--osdk-datetime-calendar-range-middle-bg`          | `color-mix(in srgb, var(--osdk-intent-primary-rest) 15%, transparent)` | Range middle background       |
 | `--osdk-datetime-calendar-disabled-color`           | `var(--osdk-intent-default-disabled)`                                  | Disabled day color            |
 | `--osdk-datetime-calendar-outside-color`            | `var(--osdk-typography-color-muted)`                                   | Outside month day color       |
@@ -1003,7 +953,7 @@ Styling for filter list components including search, checkboxes, listogram, and 
 | `--osdk-filter-listogram-label-color`         | `var(--osdk-typography-color-default-rest)`                                  | Listogram label color           |
 | `--osdk-filter-listogram-bar-height`          | `calc(var(--osdk-surface-spacing) * 2)`                                      | Bar height                      |
 | `--osdk-filter-listogram-bar-width`           | `calc(var(--osdk-surface-spacing) * 12.5)`                                   | Bar width                       |
-| `--osdk-filter-listogram-bar-bg`              | `var(--osdk-palette-gray-100)`                                               | Bar background                  |
+| `--osdk-filter-listogram-bar-bg`              | `var(--osdk-background-tertiary)`                                            | Bar background                  |
 | `--osdk-filter-listogram-bar-border-radius`   | `var(--osdk-surface-border-radius)`                                          | Bar border radius               |
 | `--osdk-filter-listogram-bar-color`           | `var(--osdk-intent-primary-rest)`                                            | Bar fill color                  |
 | `--osdk-filter-listogram-bar-fill-transition` | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)` | Bar fill transition             |
@@ -1024,7 +974,7 @@ Styling for filter list components including search, checkboxes, listogram, and 
 | `--osdk-filter-range-histogram-height`             | `calc(var(--osdk-surface-spacing) * 15)`                                     | Histogram height             |
 | `--osdk-filter-range-histogram-bar-gap`            | `calc(var(--osdk-surface-spacing) * 0.5)`                                    | Histogram bar gap            |
 | `--osdk-filter-range-histogram-bar-min-width`      | `var(--osdk-surface-spacing)`                                                | Histogram bar minimum width  |
-| `--osdk-filter-range-histogram-bar-color`          | `var(--osdk-palette-gray-200)`                                               | Histogram bar color          |
+| `--osdk-filter-range-histogram-bar-color`          | `var(--osdk-palette-gray-2)`                                                 | Histogram bar color          |
 | `--osdk-filter-range-histogram-bar-active-color`   | `var(--osdk-intent-primary-rest)`                                            | Histogram active bar color   |
 | `--osdk-filter-range-histogram-bar-transition`     | `var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default)` | Histogram bar transition     |
 | `--osdk-filter-range-inputs-gap`                   | `calc(var(--osdk-surface-spacing) * 0.5)`                                    | Range inputs gap             |

@@ -10,7 +10,7 @@ import { WorkshopModule } from "@osdk/react-components/experimental/workshop-mod
 
 ## Usage
 
-Render inside an existing `OsdkProvider` and give the container a height. Import the component stylesheet as described in the [package setup](./GettingStarted.md#2-import-styles).
+Render inside an existing `OsdkProvider` and give the container a height. Import the component stylesheet as described in the [Prerequisites](./Prerequisites.md#css-setup).
 
 ```tsx
 <div style={{ height: "70vh" }}>

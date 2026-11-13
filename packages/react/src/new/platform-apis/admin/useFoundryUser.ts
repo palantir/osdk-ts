@@ -33,12 +33,11 @@ export interface UseFoundryUserOptions {
    * - Conditional queries based on component state
    *
    * @default true
-   * });
    */
   enabled?: boolean;
 
   /**
-   * The default status of the users returned in the list.
+   * The status filter applied when fetching the user.
    *
    * @default "ACTIVE"
    */

@@ -1,6 +1,6 @@
 # XmlViewer
 
-A React component for displaying XML content in a styled `<pre><code>` block with monospace font.
+`XmlViewer` displays XML from an OSDK `Media` object, or a string you provide, in a styled monospace `<pre><code>` block.
 
 ## Import
 

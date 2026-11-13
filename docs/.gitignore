@@ -1,6 +1,7 @@
-.docusaurus/
-build/
+.next/
+.source/
+out/
+next-env.d.ts
+*.tsbuildinfo
 node_modules/
-.cache-loader/
-*.log
-.DS_Store
+!lib/

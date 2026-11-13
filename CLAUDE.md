@@ -36,7 +36,21 @@
 - @osdk/react hooks may have data while loading (reloading invalidated data). Incorporate loading state comprehensively, not as shortcuts
 - Call actions: `const { applyAction } = useOsdkAction(modifyEmployee)` then `applyAction({ employee, primary_office_id })`
 - Direct client: `$(modifyEmployee).applyAction({ employee, primary_office_id })`
-- Read docs/react/getting-started.md when working with @osdk/react
+- Read packages/react/AGENTS.md and the guides in docs/content/react/ when working with @osdk/react
+
+## Documentation
+
+- Update the docs in the same PR whenever you add, change, rename, or remove user-facing behavior: exports, hook or function options, return shapes, defaults, error messages, CLI flags, or template output
+- Find the page to update by package:
+  - `@osdk/react`, `@osdk/react-devtools`: `docs/content/react/`
+  - `@osdk/client`, `@osdk/api`: `docs/content/sdk/`
+  - `@osdk/foundry.*` usage: `docs/content/platform/`
+  - `@osdk/aip-core`, `@osdk/language-models`, `@osdk/agents`: `docs/content/ai/`
+  - `@osdk/oauth`, `@osdk/create-app`, `@osdk/cli`, `@osdk/widget.*`, `@osdk/maker`: `docs/content/(docs)/`
+  - `@osdk/react-components`: `packages/react-components/docs/*.md`, then run `pnpm --filter @osdk/react-components gen-props`
+- The Reference tab (`docs/content/reference/`) renders option and return tables from JSDoc, so keep JSDoc on public types accurate and add a reference page for new public APIs
+- Add new pages to the folder's `meta.json`, and follow docs/AGENTS.md for style
+- Verify with `pnpm --filter @osdk/docs build`, which fails on broken links
 
 ## Project Management
 

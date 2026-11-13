@@ -1,6 +1,8 @@
 # MarkdownViewer
 
-A React component for rendering markdown content using [react-markdown](https://github.com/remarkjs/react-markdown). Supports headings, code blocks, tables, links, images, blockquotes, and lists with themeable styling via CSS custom properties. Also provides an OSDK Media wrapper for fetching markdown contents directly from Foundry.
+`MarkdownViewer` renders Markdown from an OSDK `Media` object, and `BaseMarkdownViewer` renders a Markdown string you provide.
+
+Rendering uses [react-markdown](https://github.com/remarkjs/react-markdown) and supports headings, code blocks, tables, links, images, blockquotes, and lists, all themeable through CSS custom properties.
 
 ## Import
 
@@ -64,7 +66,7 @@ import { BaseMarkdownViewer } from "@osdk/react-components/markdown-viewer";
 
 ## Theming
 
-All colors and sizes are driven by CSS custom properties defined in `./CSSVariables.md`. Override them to match your application theme:
+All colors and sizes are driven by CSS custom properties defined in [CSS Variables](./CSSVariables.md#markdown-viewer). Override them to match your application theme:
 
 ```css
 :root {

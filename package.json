@@ -107,6 +107,19 @@
       "oxlint-tsgolint",
       "unrs-resolver"
     ],
+    "packageExtensions": {
+      "expo-router": {
+        "peerDependencies": {
+          "react": "*",
+          "react-dom": "*"
+        },
+        "peerDependenciesMeta": {
+          "react-dom": {
+            "optional": true
+          }
+        }
+      }
+    },
     "overrides": {
       "trim@0.0.1": "0.0.3",
       "cookie@0.6.0": "0.7.2",

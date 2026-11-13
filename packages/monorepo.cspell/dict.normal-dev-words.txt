@@ -20,6 +20,7 @@ devx
 Discoverability
 duplicative
 esac
+frontmatter
 gantt
 geofence
 Geolocatable
@@ -30,12 +31,16 @@ hideable
 inbetween
 isModifierable
 jsons
+llms
 lockfiles
 Multimap
+nojekyll
 objs
+oklab
 onwarn
 parseable
 peopleapp
+postbuild
 pypi
 retryable
 revals

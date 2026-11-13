@@ -112,7 +112,8 @@ interface ActionFormBaseConfigProps<
   ) => Promise<unknown> | void;
 
   /**
-   * Called when the validation response is returned from a validateOnly submission
+   * Called with the validation response each time the form validates the action:
+   * 500 ms after a field change and before submit. Not called when `onSubmit` is provided.
    *
    * @param results the validation response
    */
