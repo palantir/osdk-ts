@@ -30,7 +30,9 @@ export namespace escapingAgent {
   }
 
   export interface SessionState extends $AgentSessionState {
-    arguments: { 'escaped"argument': { 'escaped"key': 'escaped"value'; 'escaped"field': string } };
+    arguments: {
+      'escaped"argument': { 'escaped"key': 'escaped"value'; 'escaped"field': $AgentResult.PrimitiveType<'string'> };
+    };
     agentState: { data: Record<string, never> };
     contextItems: Record<string, ContextItem>;
   }
@@ -38,17 +40,20 @@ export namespace escapingAgent {
   export type ContextItem = { type: 'escaped"context'; data: ContextItems['escaped"context'] };
 
   export interface ContextItems {
-    'escaped"context': string;
+    'escaped"context': $AgentResult.PrimitiveType<'string'>;
   }
 
   export type SendEventArguments = { readonly 'escaped"event': Events['escaped"event'] };
 
   export interface Events {
-    readonly 'escaped"event': string;
+    readonly 'escaped"event': $AgentParam.PrimitiveType<'string'>;
   }
 
   export interface CreateSessionArguments {
-    readonly 'escaped"argument': { readonly 'escaped"key': 'escaped"value'; readonly 'escaped"field': string };
+    readonly 'escaped"argument': {
+      readonly 'escaped"key': 'escaped"value';
+      readonly 'escaped"field': $AgentParam.PrimitiveType<'string'>;
+    };
   }
 }
 
@@ -318,7 +323,7 @@ export namespace optionalArgumentsAgent {
   }
 
   export interface SessionState extends $AgentSessionState {
-    arguments: { city?: string | null };
+    arguments: { city?: $AgentResult.PrimitiveType<'string'> | null };
     agentState: { data: Record<string, never> };
     contextItems: Record<string, ContextItem>;
   }
@@ -332,7 +337,7 @@ export namespace optionalArgumentsAgent {
   export type Events = Record<never, never>;
 
   export interface CreateSessionArguments {
-    readonly city?: string | null;
+    readonly city?: $AgentParam.PrimitiveType<'string'> | null;
   }
 }
 
@@ -393,20 +398,20 @@ export namespace structuredArgumentsAgent {
     arguments: {
       future: unknown;
       nested: {
-        count: number;
-        date: string;
+        count: $AgentResult.PrimitiveType<'integer'>;
+        date: $AgentResult.PrimitiveType<'date'>;
         empty: Record<string, never>;
-        enabled: boolean;
-        float: number;
-        label: string | null;
-        long: number;
-        scores: Record<string, number>;
-        short: number;
-        tags: Array<string>;
-        timestamp: string;
+        enabled: $AgentResult.PrimitiveType<'boolean'>;
+        float: $AgentResult.PrimitiveType<'float'>;
+        label: $AgentResult.PrimitiveType<'string'> | null;
+        long: $AgentResult.PrimitiveType<'long'>;
+        scores: Record<string, $AgentResult.PrimitiveType<'double'>>;
+        short: $AgentResult.PrimitiveType<'short'>;
+        tags: Array<$AgentResult.PrimitiveType<'string'>>;
+        timestamp: $AgentResult.PrimitiveType<'timestamp'>;
       };
-      optionalText?: string | null;
-      requiredText: string;
+      optionalText?: $AgentResult.PrimitiveType<'string'> | null;
+      requiredText: $AgentResult.PrimitiveType<'string'>;
       selection:
         | { kind: 'employee'; employee: $AgentResult.ObjectType<Employee> }
         | { kind: 'employees'; employees: $AgentResult.ObjectSetType<Employee> };
@@ -426,20 +431,20 @@ export namespace structuredArgumentsAgent {
   export interface CreateSessionArguments {
     readonly future: unknown;
     readonly nested: {
-      readonly count: number;
-      readonly date: string;
+      readonly count: $AgentParam.PrimitiveType<'integer'>;
+      readonly date: $AgentParam.PrimitiveType<'date'>;
       readonly empty: Record<string, never>;
-      readonly enabled: boolean;
-      readonly float: number;
-      readonly label: string | null;
-      readonly long: number;
-      readonly scores: Readonly<Record<string, number>>;
-      readonly short: number;
-      readonly tags: ReadonlyArray<string>;
-      readonly timestamp: string;
+      readonly enabled: $AgentParam.PrimitiveType<'boolean'>;
+      readonly float: $AgentParam.PrimitiveType<'float'>;
+      readonly label: $AgentParam.PrimitiveType<'string'> | null;
+      readonly long: $AgentParam.PrimitiveType<'long'>;
+      readonly scores: Readonly<Record<string, $AgentParam.PrimitiveType<'double'>>>;
+      readonly short: $AgentParam.PrimitiveType<'short'>;
+      readonly tags: ReadonlyArray<$AgentParam.PrimitiveType<'string'>>;
+      readonly timestamp: $AgentParam.PrimitiveType<'timestamp'>;
     };
-    readonly optionalText?: string | null;
-    readonly requiredText: string;
+    readonly optionalText?: $AgentParam.PrimitiveType<'string'> | null;
+    readonly requiredText: $AgentParam.PrimitiveType<'string'>;
     readonly selection:
       | { readonly kind: 'employee'; readonly employee: $AgentParam.ObjectType<Employee> }
       | { readonly kind: 'employees'; readonly employees: $AgentParam.ObjectSetType<Employee> };
@@ -497,8 +502,8 @@ export namespace weatherAgent {
   }
 
   export interface SessionState extends $AgentSessionState {
-    arguments: { city: string };
-    agentState: { data: { temperature: number } };
+    arguments: { city: $AgentResult.PrimitiveType<'string'> };
+    agentState: { data: { temperature: $AgentResult.PrimitiveType<'integer'> } };
     contextItems: Record<string, ContextItem>;
   }
 
@@ -507,8 +512,8 @@ export namespace weatherAgent {
     | { type: 'temperature'; data: ContextItems['temperature'] };
 
   export interface ContextItems {
-    temperature: number | null;
-    'weather-result': string;
+    temperature: $AgentResult.PrimitiveType<'integer'> | null;
+    'weather-result': $AgentResult.PrimitiveType<'string'>;
   }
 
   export type SendEventArguments =
@@ -516,12 +521,12 @@ export namespace weatherAgent {
     | { readonly LookupWeather?: never; readonly SetTemperature: Events['SetTemperature'] };
 
   export interface Events {
-    readonly LookupWeather: { readonly city: string };
-    readonly SetTemperature: number | null;
+    readonly LookupWeather: { readonly city: $AgentParam.PrimitiveType<'string'> };
+    readonly SetTemperature: $AgentParam.PrimitiveType<'double'> | null;
   }
 
   export interface CreateSessionArguments {
-    readonly city: string;
+    readonly city: $AgentParam.PrimitiveType<'string'>;
   }
 }
 
@@ -624,20 +629,20 @@ export namespace noArgumentsAgent {
   export interface Events {
     readonly future: unknown;
     readonly nested: {
-      readonly count: number;
-      readonly date: string;
+      readonly count: $AgentParam.PrimitiveType<'integer'>;
+      readonly date: $AgentParam.PrimitiveType<'date'>;
       readonly empty: Record<string, never>;
-      readonly enabled: boolean;
-      readonly float: number;
-      readonly label: string | null;
-      readonly long: number;
-      readonly scores: Readonly<Record<string, number>>;
-      readonly short: number;
-      readonly tags: ReadonlyArray<string>;
-      readonly timestamp: string;
+      readonly enabled: $AgentParam.PrimitiveType<'boolean'>;
+      readonly float: $AgentParam.PrimitiveType<'float'>;
+      readonly label: $AgentParam.PrimitiveType<'string'> | null;
+      readonly long: $AgentParam.PrimitiveType<'long'>;
+      readonly scores: Readonly<Record<string, $AgentParam.PrimitiveType<'double'>>>;
+      readonly short: $AgentParam.PrimitiveType<'short'>;
+      readonly tags: ReadonlyArray<$AgentParam.PrimitiveType<'string'>>;
+      readonly timestamp: $AgentParam.PrimitiveType<'timestamp'>;
     };
-    readonly optionalText: string | null;
-    readonly requiredText: string;
+    readonly optionalText: $AgentParam.PrimitiveType<'string'> | null;
+    readonly requiredText: $AgentParam.PrimitiveType<'string'>;
     readonly selection:
       | { readonly kind: 'employee'; readonly employee: $AgentParam.ObjectType<Employee> }
       | { readonly kind: 'employees'; readonly employees: $AgentParam.ObjectSetType<Employee> };
@@ -703,20 +708,20 @@ export namespace noArgumentsAgent {
       data: {
         future: unknown;
         nested: {
-          count: number;
-          date: string;
+          count: $AgentResult.PrimitiveType<'integer'>;
+          date: $AgentResult.PrimitiveType<'date'>;
           empty: Record<string, never>;
-          enabled: boolean;
-          float: number;
-          label: string | null;
-          long: number;
-          scores: Record<string, number>;
-          short: number;
-          tags: Array<string>;
-          timestamp: string;
+          enabled: $AgentResult.PrimitiveType<'boolean'>;
+          float: $AgentResult.PrimitiveType<'float'>;
+          label: $AgentResult.PrimitiveType<'string'> | null;
+          long: $AgentResult.PrimitiveType<'long'>;
+          scores: Record<string, $AgentResult.PrimitiveType<'double'>>;
+          short: $AgentResult.PrimitiveType<'short'>;
+          tags: Array<$AgentResult.PrimitiveType<'string'>>;
+          timestamp: $AgentResult.PrimitiveType<'timestamp'>;
         };
-        optionalText: string | null;
-        requiredText: string;
+        optionalText: $AgentResult.PrimitiveType<'string'> | null;
+        requiredText: $AgentResult.PrimitiveType<'string'>;
         selection:
           | { kind: 'employee'; employee: $AgentResult.ObjectType<Employee> }
           | { kind: 'employees'; employees: $AgentResult.ObjectSetType<Employee> };
@@ -799,20 +804,20 @@ export namespace noArgumentsAgent {
     result: {
       future: unknown;
       nested: {
-        count: number;
-        date: string;
+        count: $AgentResult.PrimitiveType<'integer'>;
+        date: $AgentResult.PrimitiveType<'date'>;
         empty: Record<string, never>;
-        enabled: boolean;
-        float: number;
-        label: string | null;
-        long: number;
-        scores: Record<string, number>;
-        short: number;
-        tags: Array<string>;
-        timestamp: string;
+        enabled: $AgentResult.PrimitiveType<'boolean'>;
+        float: $AgentResult.PrimitiveType<'float'>;
+        label: $AgentResult.PrimitiveType<'string'> | null;
+        long: $AgentResult.PrimitiveType<'long'>;
+        scores: Record<string, $AgentResult.PrimitiveType<'double'>>;
+        short: $AgentResult.PrimitiveType<'short'>;
+        tags: Array<$AgentResult.PrimitiveType<'string'>>;
+        timestamp: $AgentResult.PrimitiveType<'timestamp'>;
       };
-      optionalText: string | null;
-      requiredText: string;
+      optionalText: $AgentResult.PrimitiveType<'string'> | null;
+      requiredText: $AgentResult.PrimitiveType<'string'>;
       selection:
         | { kind: 'employee'; employee: $AgentResult.ObjectType<Employee> }
         | { kind: 'employees'; employees: $AgentResult.ObjectSetType<Employee> };
