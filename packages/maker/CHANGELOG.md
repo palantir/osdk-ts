@@ -1,5 +1,20 @@
 # @osdk/maker
 
+## 0.90.0
+
+### Minor Changes
+
+- c331bfd: Fix the CommonJS declaration build by collecting datasource marking constraint validation errors with the other object validation issues.
+- c740c26: Add structured Maker validation errors and an issue collector. Integrate the new validation errors into `defineObject`.
+
+### Patch Changes
+
+- Updated dependencies [1fd4023]
+- Updated dependencies [406d3b6]
+- Updated dependencies [d13bd9f]
+  - @osdk/generator-converters.ontologyir@2.91.0
+  - @osdk/api@2.91.0
+
 ## 0.89.0
 
 ### Minor Changes

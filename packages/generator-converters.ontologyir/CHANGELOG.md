@@ -1,5 +1,17 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.91.0
+
+### Minor Changes
+
+- 1fd4023: Resolve interface API names for interface fields inside function struct types.
+- 406d3b6: Preserve markingType on marking properties when converting to full metadata.
+- d13bd9f: Support geo point and geo shape function inputs and outputs during local SDK generation, and use exhaustive discovery type conversion.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.91.0
+
 ## 2.90.0
 
 ### Patch Changes

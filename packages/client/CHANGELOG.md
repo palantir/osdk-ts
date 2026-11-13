@@ -1,5 +1,27 @@
 # @osdk/client
 
+## 2.91.0
+
+### Minor Changes
+
+- 5fade0a: Keep observable lists loading until their requested derived-property cache entries are available, so a plain query cannot cause useOsdkObjects to return undefined entries or finish loading before the RDP response arrives.
+- a37fdfc: Batch cached object refreshes with the same runtime-derived properties when invalidating an object type, reducing per-object requests.
+- 5d80e0f: Follow all pages and resolve batched objects as each page arrives, including RDP and interface object loads.
+- 0bcfdc9: Fix observed object sets with intersect, subtract, or union options using only their where clause for cache updates. These sets now refresh from the server when related objects change in the cache, preserving the complete set operation.
+- f1a74a8: Apply linked-object filters and expose automatic pagination through useLinks.
+
+  Preserve filters on nested operands in shape link set operations.
+
+- 2e21fee: Remove the unused collection update path and use the sorting strategy directly in list updates.
+- a37fdfc: Reuse matching list refreshes during object type and full-cache invalidation. Wait briefly for list members, including pages being refilled, and batch remaining object loads when rows are absent or the list refresh fails or takes too long.
+
+### Patch Changes
+
+- @osdk/api@2.91.0
+- @osdk/client.unstable@2.91.0
+- @osdk/generator-converters@2.91.0
+- @osdk/shared.test@2.63.0
+
 ## 2.90.0
 
 ### Minor Changes
