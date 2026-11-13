@@ -1511,7 +1511,10 @@ export class OntologyIrToFullMetadataConverter {
       case "attachment":
         return { type: "attachment" };
       case "marking":
-        return { type: "marking" };
+        return {
+          type: "marking",
+          markingType: type.marking.markingType,
+        };
       case "cipherText":
         return { type: "cipherText" };
       case "mediaReference":
