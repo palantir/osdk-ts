@@ -64,7 +64,9 @@ export async function toDataValueQueries(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValueQueries(value, client, desiredType));
+        converted.push(
+          await toDataValueQueries(value, client, desiredType.array),
+        );
       }
       return converted;
     }
