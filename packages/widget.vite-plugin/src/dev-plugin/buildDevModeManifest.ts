@@ -16,6 +16,7 @@
 
 import path from "node:path";
 
+import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import type {
   WidgetManifestConfig,
   WidgetSetInputSpec,
@@ -78,10 +79,18 @@ export async function buildDevModeManifest(
     ),
   );
 
-  const inputSpec = await getWidgetSetInputSpec(
-    path.resolve(server.config.root, "package.json"),
-    getResourcesJsonPath(server.config),
-  );
+  const foundryConfig = await loadFoundryConfig("widgetSet", {
+    cwd: server.config.root,
+  });
+  let inputSpec: WidgetSetInputSpec | undefined;
+  // publishDevModeSettings reports a missing foundry.config.json
+  if (foundryConfig != null) {
+    const projectDir = path.dirname(foundryConfig.configFilePath);
+    inputSpec = await getWidgetSetInputSpec(
+      path.join(projectDir, "package.json"),
+      getResourcesJsonPath(server.config),
+    );
+  }
 
   return {
     manifestVersion: "1.0.0",

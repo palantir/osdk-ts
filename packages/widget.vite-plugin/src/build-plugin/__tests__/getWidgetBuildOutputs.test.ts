@@ -65,6 +65,7 @@ test("getWidgetBuildOutputs successfully matches widget build outputs", async ()
   const result = await getWidgetBuildOutputs(
     { "chunk.js": entryChunk },
     MOCK_INPUT,
+    process.cwd(),
     MOCK_BUILD_DIR,
     MOCK_SERVER,
   );
@@ -97,6 +98,7 @@ test("getWidgetBuildOutputs throws error when entrypoint chunk not found", async
     getWidgetBuildOutputs(
       { "chunk.js": nonEntryChunk },
       MOCK_INPUT,
+      process.cwd(),
       MOCK_BUILD_DIR,
       MOCK_SERVER,
     ),
@@ -126,6 +128,7 @@ test("getWidgetBuildOutputs throws error when no config file found", async () =>
     getWidgetBuildOutputs(
       { "chunk.js": entryChunk },
       MOCK_INPUT,
+      process.cwd(),
       MOCK_BUILD_DIR,
       MOCK_SERVER,
     ),
@@ -157,6 +160,7 @@ test("getWidgetBuildOutputs throws error when multiple config files found", asyn
     getWidgetBuildOutputs(
       { "chunk.js": entryChunk },
       MOCK_INPUT,
+      process.cwd(),
       MOCK_BUILD_DIR,
       MOCK_SERVER,
     ),
@@ -193,6 +197,7 @@ test("getWidgetBuildOutputs throws error when extractWidgetConfig fails", async 
     getWidgetBuildOutputs(
       { "chunk.js": entryChunk },
       MOCK_INPUT,
+      process.cwd(),
       MOCK_BUILD_DIR,
       MOCK_SERVER,
     ),

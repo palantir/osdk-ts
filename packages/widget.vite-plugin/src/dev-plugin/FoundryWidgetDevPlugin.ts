@@ -53,6 +53,7 @@ export function FoundryWidgetDevPlugin(
 ): Plugin {
   // The root HTML entrypoints of the build process
   let htmlEntrypoints: string[];
+  let root: string;
   // Fully resolved paths to the entrypoint files, mapped to relative paths
   const codeEntrypoints: Record<string, string> = {};
   // Store the map of fully resolved config file paths to entrypoint file paths
@@ -84,6 +85,7 @@ export function FoundryWidgetDevPlugin(
      * Check for the required token environment variable in dev mode.
      */
     configResolved(resolvedConfig) {
+      root = resolvedConfig.root;
       warnIfWrongDevCommand(resolvedConfig.mode, resolvedConfig.logger);
       getFoundryToken(resolvedConfig.mode);
     },
@@ -219,8 +221,8 @@ export function FoundryWidgetDevPlugin(
       // Standardize the source file extension and get the full path
       const standardizedSource = standardizePathAndFileExtension(
         getFullSourcePath(
-          // If the source path is absolute, resolve it against the current working directory
-          source.startsWith("/") ? path.join(process.cwd(), source) : source,
+          // If the source path is absolute, resolve it against the Vite root
+          source.startsWith("/") ? path.join(root, source) : source,
           importer,
         ),
       );
