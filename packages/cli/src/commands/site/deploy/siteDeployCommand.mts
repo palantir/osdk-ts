@@ -19,7 +19,10 @@ import path from "node:path";
 import { Readable } from "node:stream";
 
 import { ExitProcessError } from "@osdk/cli.common";
-import type { AutoVersionConfig } from "@osdk/foundry-config-json";
+import type {
+  AutoVersionConfig,
+  SiteHeadersConfig,
+} from "@osdk/foundry-config-json";
 import { autoVersion, AutoVersionError } from "@osdk/foundry-config-json";
 import archiver from "archiver";
 import { consola } from "consola";
@@ -34,11 +37,14 @@ import { maybeUpdateJemmaCustomMetadata } from "../../../util/maybeUpdateJemmaCu
 import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
+const SITE_HEADERS_ARCHIVE_PATH = ".palantir/headers.config.json";
+
 interface SiteDeployInternalArgs extends Omit<
   SiteDeployArgs,
   "version" | "autoVersion" | "gitTagPrefix"
 > {
   selectedVersion: string | AutoVersionConfig;
+  headers?: SiteHeadersConfig;
 }
 
 export default async function siteDeployCommand({
@@ -51,6 +57,7 @@ export default async function siteDeployCommand({
   directory,
   token,
   tokenFile,
+  headers,
 }: SiteDeployInternalArgs): Promise<void> {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
@@ -73,8 +80,30 @@ export default async function siteDeployCommand({
     );
   }
 
+  const reservedPath = path.join(directory, SITE_HEADERS_ARCHIVE_PATH);
+  if (
+    await fs.promises.access(reservedPath).then(
+      () => true,
+      () => false,
+    )
+  ) {
+    throw new ExitProcessError(
+      2,
+      `"${SITE_HEADERS_ARCHIVE_PATH}" is reserved and must not be in the site directory`,
+      `Configure response headers with "site.headers" in foundry.config.json`,
+    );
+  }
+
   consola.start("Zipping site files");
   const archive = archiver("zip").directory(directory, false);
+  if (headers != null) {
+    archive.append(JSON.stringify(headers), {
+      name: SITE_HEADERS_ARCHIVE_PATH,
+    });
+    consola.info(
+      `Applying ${Object.keys(headers["Cache-Control"] ?? {}).length} Cache-Control rule(s) from foundry.config.json`,
+    );
+  }
   logArchiveStats(archive);
 
   if (snapshot) {

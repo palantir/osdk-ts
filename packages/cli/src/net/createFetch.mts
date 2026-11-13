@@ -115,6 +115,11 @@ function handleFetchError(e: unknown): Promise<Response> {
     tip =
       "If you have a `foundry.config.json` file, set the `site.uploadOnly` property to `true` to disable automatic deployment.\n" +
       "Website versions can be manually deployed from the Website Hosting page in Developer Console after their scans have completed";
+  } else if (e.errorName === "InvalidHeadersConfiguration") {
+    const { reason } = e.parameters ?? {};
+    message = `The site headers configuration is invalid${reason != null ? `:\n${reason}` : ""}`;
+    tip =
+      'Fix "site.headers" in foundry.config.json. Only the Cache-Control header is currently supported';
   } else {
     if (e instanceof UnknownError) {
       // Include deep inspect of original error

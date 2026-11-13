@@ -40,11 +40,16 @@ export interface FoundryWidgetSetConfig {
   widgetSet: WidgetSetConfig;
 }
 
+export interface SiteHeadersConfig {
+  "Cache-Control"?: Record<string, string>;
+}
+
 export interface SiteConfig {
   application: string;
   directory: string;
   autoVersion?: AutoVersionConfig;
   uploadOnly?: boolean;
+  headers?: SiteHeadersConfig;
 }
 
 export interface WidgetSetConfig {
@@ -98,6 +103,25 @@ const FOUNDRY_SITE_CONFIG_SCHEMA = {
           required: ["type"],
         },
         uploadOnly: { type: "boolean", nullable: true },
+        headers: {
+          type: "object",
+          nullable: true,
+          minProperties: 1,
+          additionalProperties: false,
+          required: [],
+          properties: {
+            "Cache-Control": {
+              type: "object",
+              nullable: true,
+              required: [],
+              minProperties: 1,
+              maxProperties: 100,
+              // exact path ("/index.html") or prefix ending in "/*" ("/assets/*", "/*")
+              propertyNames: { pattern: "^(?:/[^*]*|/(?:[^*]*/)?\\*)$" },
+              additionalProperties: { type: "string", maxLength: 256 },
+            },
+          },
+        },
       },
       required: ["application", "directory"],
     },

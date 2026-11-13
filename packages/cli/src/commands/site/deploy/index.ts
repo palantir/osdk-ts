@@ -142,6 +142,7 @@ const command: CommandModule<CommonSiteArgs, SiteDeployArgs> = {
   },
   handler: async (args) => {
     const command = await import("./siteDeployCommand.mjs");
+    const config = await configLoader("site");
     const { version, autoVersion, gitTagPrefix, ...restArgs } = args;
     const selectedVersion =
       args.version != null
@@ -150,7 +151,11 @@ const command: CommandModule<CommonSiteArgs, SiteDeployArgs> = {
             type: args.autoVersion!,
             tagPrefix: args.gitTagPrefix,
           };
-    await command.default({ ...restArgs, selectedVersion });
+    await command.default({
+      ...restArgs,
+      selectedVersion,
+      headers: config?.foundryConfig.site.headers,
+    });
   },
 };
 
