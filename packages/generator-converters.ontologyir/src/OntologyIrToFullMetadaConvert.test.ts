@@ -24,9 +24,11 @@ import type {
   VectorPropertyType,
 } from "@osdk/client.unstable";
 import { fileURLToPath } from "node:url";
+import * as ts from "typescript";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
 import {
+  type IDataType,
   type IDiscoveredFunction,
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
@@ -3964,6 +3966,100 @@ describe(OntologyIrToFullMetadataConverter, () => {
           },
         },
       ]);
+    } finally {
+      createProgramSpy.mockRestore();
+    }
+  });
+
+  it("resolves interface API names inside function struct types", async () => {
+    const createProgramSpy = vi.spyOn(
+      OntologyIrToFullMetadataConverter,
+      "createProgram",
+    ).mockReturnValue(ts.createProgram([], { noLib: true }));
+    const interfaceApiName = "com.example.asset";
+    const interfaceRid = "ri.ontology.main.interface-type.asset";
+    const assetInterface: IDataType = {
+      type: "interface",
+      interface: { interfaceTypeRid: interfaceRid },
+    };
+
+    discoveredFunctions.splice(0, discoveredFunctions.length, {
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "describeAsset" },
+      },
+      inputs: [{
+        name: "request",
+        dataType: {
+          type: "functionCustomType",
+          functionCustomType: "request-uuid",
+        },
+        required: true,
+      }],
+      output: {
+        single: {
+          dataType: {
+            type: "anonymousCustomType",
+            anonymousCustomType: { fields: { asset: assetInterface } },
+          },
+        },
+      },
+      customTypes: {
+        "request-uuid": { fields: { asset: assetInterface } },
+      },
+    });
+
+    try {
+      const queryTypes = await OntologyIrToFullMetadataConverter
+        .discoverTypeScriptFunctions(
+          fileURLToPath(new URL(".", import.meta.url)),
+          undefined,
+          undefined,
+          {
+            ontology: {
+              apiName: "example",
+              displayName: "Example",
+              description: "",
+              rid: "ri.ontology.main.ontology.0",
+            },
+            objectTypes: {},
+            interfaceTypes: {
+              [interfaceApiName]: {
+                rid: interfaceRid,
+                apiName: interfaceApiName,
+                displayName: "Asset",
+                properties: {},
+                allProperties: {},
+                propertiesV2: {},
+                allPropertiesV2: {},
+                extendsInterfaces: [],
+                allExtendsInterfaces: [],
+                implementedByObjectTypes: [],
+                links: {},
+                allLinks: {},
+              },
+            },
+          },
+        );
+
+      const assetStruct = {
+        type: "struct",
+        fields: [{
+          name: "asset",
+          fieldType: {
+            type: "interfaceObject",
+            interfaceTypeApiName: interfaceApiName,
+          },
+        }],
+      };
+      expect(queryTypes).toEqual([{
+        apiName: "describeAsset",
+        rid: "ri.function-registry.main.function.describeAsset",
+        version: "0.0.0",
+        parameters: { request: { dataType: assetStruct, required: true } },
+        output: assetStruct,
+        typeReferences: {},
+      }]);
     } finally {
       createProgramSpy.mockRestore();
     }
