@@ -96,6 +96,12 @@ export function SeniorReports({ manager }: { manager: Employee.OsdkInstance }) {
 }
 ```
 
+To load more pages without a button, set `autoFetchMore`: `true` loads every page, and a number loads at least that many linked objects per source.
+
+```tsx
+const { links } = useLinks(manager, "reports", { pageSize: 20, autoFetchMore: 100 });
+```
+
 ## Wait for the source object
 
 The source can be `undefined`, which lets you chain `useLinks` after a hook that is still loading. With no source, the hook makes no request and returns an empty `links` array. Set `enabled` if you want `links` to stay `undefined` until the source arrives:
@@ -246,6 +252,7 @@ Derived properties avoid one `useLinks` call per row: the server computes the va
 | `orderBy` | `{ [property]?: "asc" \| "desc" }` | | Sort the linked objects. |
 | `$select` | `PropertyKeys<L>[]` | Server default set | Properties to load for each linked object. |
 | `pageSize` | `number` | `100` | Linked objects per page. |
+| `autoFetchMore` | `boolean \| number` | | Load pages automatically: `true` for all, a number for at least that many per source. |
 | `enabled` | `boolean` | `true` | When `false`, no request is made and `links` is `undefined`. |
 | `mode` | `"force" \| "offline"` | | Cache policy override. See [Control refetching](#control-refetching). |
 | `dedupeIntervalMs` | `number` | `2000` | Identical calls within this window share one request. |
