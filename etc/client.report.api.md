@@ -11,6 +11,7 @@ import { ActionParam } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/api';
 import { ActionValidationResponse } from '@osdk/api';
 import type { AgentDefinition } from '@osdk/api/unstable';
+import type { AgentMetadata } from '@osdk/api/unstable';
 import type { AgentSession } from '@osdk/api/unstable';
 import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
@@ -128,6 +129,8 @@ export interface Client extends SharedClient, OldSharedClient {
     	// (undocumented)
     <Q extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.59.0"> | Experiment<"2.2.0"> | Experiment<"2.8.0"> | Experiment<"2.19.0">>(experiment: Q): ExperimentFns<Q>;
     	fetchMetadata<Q extends ObjectTypeDefinition | InterfaceDefinition | ActionDefinition<any> | QueryDefinition<any>>(o: Q): Promise<Q extends ObjectTypeDefinition ? ObjectMetadata : Q extends InterfaceDefinition ? InterfaceMetadata : Q extends ActionDefinition<any> ? ActionMetadata : Q extends QueryDefinition<any> ? QueryMetadata : never>;
+    	// @beta (undocumented)
+    fetchMetadata<Q extends AgentDefinition<unknown>>(o: Q): Promise<AgentMetadata>;
 }
 
 export { CompileTimeMetadata }
