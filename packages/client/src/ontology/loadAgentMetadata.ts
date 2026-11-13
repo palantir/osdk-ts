@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
+import type { AgentMetadata } from "@osdk/api/unstable";
 import * as AgentDefinitionVersions from "@osdk/foundry.agents/AgentDefinitionVersion";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -22,10 +22,13 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 export async function loadAgentMetadata(
   client: MinimalClient,
   agentApiNameAndVersion: string,
-): Promise<AgentDefinitionVersion> {
+): Promise<AgentMetadata> {
   const [apiName, version] = agentApiNameAndVersion.split(":");
-  return await AgentDefinitionVersions.get(client, apiName, version, {
+  const response = await AgentDefinitionVersions.get(client, apiName, version, {
     ontology: await client.ontologyRid,
     preview: true,
   });
+  const { wireAgentDefinitionVersionToSdkAgentMetadata } =
+    await import("@osdk/generator-converters");
+  return wireAgentDefinitionVersionToSdkAgentMetadata(response, apiName);
 }

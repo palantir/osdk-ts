@@ -15,8 +15,8 @@
  */
 
 import type { ObjectSet } from "@osdk/api";
+import type { AgentDataTypeDefinition } from "@osdk/api/unstable";
 import { Employee, Office } from "@osdk/client.test.ontology";
-import type { DataType } from "@osdk/foundry.agents";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
@@ -28,12 +28,16 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { deepFreeze } from "./deepFreeze.js";
 import { fromDataValueAgents } from "./fromDataValueAgents.js";
 
-const employeeType: DataType = {
+const employeeType: AgentDataTypeDefinition = {
   type: "object",
   ontologyApiName: "default-ontology",
-  objectTypeApiName: Employee.apiName,
+  object: Employee.apiName,
 };
-const employeeSetType: DataType = { ...employeeType, type: "objectSet" };
+const employeeSetType: AgentDataTypeDefinition = {
+  type: "objectSet",
+  ontologyApiName: employeeType.ontologyApiName,
+  objectSet: employeeType.object,
+};
 
 describe(fromDataValueAgents, () => {
   let fauxFoundry: LegacyFauxFoundry;
@@ -63,6 +67,56 @@ describe(fromDataValueAgents, () => {
     };
   }
 
+  it.each(["constructor", "toString", "__proto__"])(
+    "converts declared special fields and union members (%s)",
+    async (name) => {
+      const dataType: AgentDataTypeDefinition = {
+        type: "discriminatedUnion",
+        discriminatorKey: "kind",
+        members: { [name]: { [name]: employeeType } },
+      };
+      const input = { kind: name, [name]: employeeReference(50030) };
+
+      const converted = await fromDataValueAgents(input, clientCtx, dataType);
+
+      expect(converted).toEqual({
+        kind: name,
+        [name]: expect.objectContaining({
+          $apiName: Employee.apiName,
+          $primaryKey: 50030,
+        }),
+      });
+    },
+  );
+
+  it.each(["constructor", "toString", "__proto__"])(
+    "passes through undeclared special fields (%s)",
+    async (name) => {
+      const dataType: AgentDataTypeDefinition = { type: "struct", struct: {} };
+      const input = { [name]: { untouched: true } };
+
+      const converted = await fromDataValueAgents(input, clientCtx, dataType);
+
+      expect(converted).toStrictEqual(input);
+    },
+  );
+
+  it.each(["constructor", "toString", "__proto__"])(
+    "passes through undeclared special union members (%s)",
+    async (name) => {
+      const dataType: AgentDataTypeDefinition = {
+        type: "discriminatedUnion",
+        discriminatorKey: "kind",
+        members: {},
+      };
+      const input = { kind: name, value: { untouched: true } };
+
+      const converted = await fromDataValueAgents(input, clientCtx, dataType);
+
+      expect(converted).toStrictEqual(input);
+    },
+  );
+
   it.each([
     {
       name: "a zero primary key",
@@ -88,7 +142,7 @@ describe(fromDataValueAgents, () => {
       const converted = await fromDataValueAgents(
         { ontologyRid, objectTypeApiName, primaryKey },
         clientCtx,
-        { ...employeeType, objectTypeApiName },
+        { ...employeeType, object: objectTypeApiName },
       );
 
       expect(converted).toEqual({
@@ -144,36 +198,25 @@ describe(fromDataValueAgents, () => {
   );
 
   it("recursively converts lists, records, structs, nullable values, and union members", async () => {
-    const type: DataType = {
+    const type: AgentDataTypeDefinition = {
       type: "struct",
-      fields: [
-        {
-          name: "groups",
-          dataType: {
-            type: "record",
-            valueType: {
-              type: "list",
-              elementType: {
-                type: "nullable",
-                wrappedType: {
-                  type: "discriminatedUnion",
-                  discriminatorKey: "kind",
-                  members: [
-                    {
-                      discriminatorValue: "employee",
-                      fields: [{ name: "value", dataType: employeeType }],
-                    },
-                    {
-                      discriminatorValue: "text",
-                      fields: [{ name: "value", dataType: { type: "string" } }],
-                    },
-                  ],
-                },
+      struct: {
+        groups: {
+          type: "record",
+          valueType: {
+            type: "array",
+            array: {
+              type: "discriminatedUnion",
+              discriminatorKey: "kind",
+              members: {
+                employee: { value: employeeType },
+                text: { value: { type: "string" } },
               },
+              nullable: true,
             },
           },
         },
-      ],
+      },
     };
     const input = deepFreeze({
       groups: {
@@ -213,8 +256,8 @@ describe(fromDataValueAgents, () => {
 
   it("preserves null", async () => {
     const converted = await fromDataValueAgents(null, clientCtx, {
-      type: "nullable",
-      wrappedType: employeeType,
+      ...employeeType,
+      nullable: true,
     });
 
     expect(converted).toBeNull();
@@ -255,10 +298,7 @@ describe(fromDataValueAgents, () => {
       clientCtx,
       {
         type: "struct",
-        fields: [
-          { name: "employee", dataType: employeeType },
-          { name: "omitted", dataType: employeeType },
-        ],
+        struct: { employee: employeeType, omitted: employeeType },
       },
     );
 
@@ -269,10 +309,7 @@ describe(fromDataValueAgents, () => {
     const converted = await fromDataValueAgents(
       { name: "Alice", extra: 42 },
       clientCtx,
-      {
-        type: "struct",
-        fields: [{ name: "name", dataType: { type: "string" } }],
-      },
+      { type: "struct", struct: { name: { type: "string" } } },
     );
 
     expect(converted).toStrictEqual({ name: "Alice", extra: 42 });
@@ -287,12 +324,7 @@ describe(fromDataValueAgents, () => {
     const converted = await fromDataValueAgents(input, clientCtx, {
       type: "discriminatedUnion",
       discriminatorKey: "kind",
-      members: [
-        {
-          discriminatorValue: "text",
-          fields: [{ name: "value", dataType: { type: "string" } }],
-        },
-      ],
+      members: { text: { value: { type: "string" } } },
     });
 
     expect(converted).toStrictEqual(input);
@@ -313,7 +345,7 @@ describe(fromDataValueAgents, () => {
     },
     {
       name: "list",
-      dataType: { type: "list", elementType: employeeType },
+      dataType: { type: "array", array: employeeType },
       value: {},
       expected: "an array",
     },
@@ -325,7 +357,7 @@ describe(fromDataValueAgents, () => {
     },
     {
       name: "struct",
-      dataType: { type: "struct", fields: [] },
+      dataType: { type: "struct", struct: {} },
       value: false,
       expected: "an object",
     },
@@ -334,14 +366,14 @@ describe(fromDataValueAgents, () => {
       dataType: {
         type: "discriminatedUnion",
         discriminatorKey: "kind",
-        members: [],
+        members: {},
       },
       value: "invalid",
       expected: "an object",
     },
   ] satisfies Array<{
     name: string;
-    dataType: DataType;
+    dataType: AgentDataTypeDefinition;
     value: unknown;
     expected: string;
   }>)(
@@ -350,7 +382,7 @@ describe(fromDataValueAgents, () => {
       await expect(
         fromDataValueAgents({ input: value }, clientCtx, {
           type: "struct",
-          fields: [{ name: "input", dataType }],
+          struct: { input: dataType },
         }),
       ).rejects.toThrow(`Invalid agent value "input": expected ${expected}.`);
     },
@@ -358,7 +390,7 @@ describe(fromDataValueAgents, () => {
 
   it("reports invalid root values without a path", async () => {
     await expect(
-      fromDataValueAgents([], clientCtx, { type: "struct", fields: [] }),
+      fromDataValueAgents([], clientCtx, { type: "struct", struct: {} }),
     ).rejects.toThrow("Invalid agent value: expected an object.");
   });
 
@@ -368,22 +400,15 @@ describe(fromDataValueAgents, () => {
   ])(
     "reports the nested field path for record key $key",
     async ({ key, path }) => {
-      const dataType: DataType = {
+      const dataType: AgentDataTypeDefinition = {
         type: "record",
         valueType: {
-          type: "list",
-          elementType: {
-            type: "nullable",
-            wrappedType: {
-              type: "discriminatedUnion",
-              discriminatorKey: "kind",
-              members: [
-                {
-                  discriminatorValue: "employee",
-                  fields: [{ name: "value", dataType: employeeType }],
-                },
-              ],
-            },
+          type: "array",
+          array: {
+            type: "discriminatedUnion",
+            discriminatorKey: "kind",
+            members: { employee: { value: employeeType } },
+            nullable: true,
           },
         },
       };
@@ -391,7 +416,7 @@ describe(fromDataValueAgents, () => {
         fromDataValueAgents(
           { groups: { [key]: [null, { kind: "employee", value: false }] } },
           clientCtx,
-          { type: "struct", fields: [{ name: "groups", dataType }] },
+          { type: "struct", struct: { groups: dataType } },
         ),
       ).rejects.toThrow(`Invalid agent value "${path}": expected an object.`);
     },
@@ -415,12 +440,9 @@ describe(fromDataValueAgents, () => {
       await expect(
         fromDataValueAgents({ input: value() }, clientCtx, {
           type: "struct",
-          fields: [
-            {
-              name: "input",
-              dataType: { ...dataType, ontologyApiName: "another-ontology" },
-            },
-          ],
+          struct: {
+            input: { ...dataType, ontologyApiName: "another-ontology" },
+          },
         }),
       ).rejects.toMatchObject({
         message: expect.stringContaining(
@@ -450,13 +472,14 @@ describe(fromDataValueAgents, () => {
       {
         name: "object",
         dataType: employeeType,
-        value: () => employeeReference(50030),
+        value: (): ReturnType<typeof employeeReference> =>
+          employeeReference(50030),
         target: "an object identifier",
       },
       {
         name: "object set",
         dataType: employeeSetType,
-        value: () => "set-rid",
+        value: (): string => "set-rid",
         target: "an object set",
       },
     ])(
@@ -473,12 +496,7 @@ describe(fromDataValueAgents, () => {
         };
         const result = fromDataValueAgents({ employees: [value()] }, ctx, {
           type: "struct",
-          fields: [
-            {
-              name: "employees",
-              dataType: { type: "list", elementType: dataType },
-            },
-          ],
+          struct: { employees: { type: "array", array: dataType } },
         });
 
         await expect(result).rejects.toBeInstanceOf(cause.constructor);
@@ -516,12 +534,7 @@ describe(fromDataValueAgents, () => {
         clientCtx,
         {
           type: "struct",
-          fields: [
-            {
-              name: "employees",
-              dataType: { type: "list", elementType: employeeType },
-            },
-          ],
+          struct: { employees: { type: "array", array: employeeType } },
         },
       );
 

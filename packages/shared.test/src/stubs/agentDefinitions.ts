@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AgentDefinitionVersion,
-  DataType,
-  StructField,
-} from "@osdk/foundry.agents";
+import type { AgentDefinitionVersion, StructField } from "@osdk/foundry.agents";
 
 import { defaultOntologyMetadata } from "./ontologies/defaultOntologyMetadata.js";
 
@@ -187,7 +183,6 @@ export const structuredArgumentsAgentVersion: AgentDefinitionVersion = {
         ],
       },
     },
-    { name: "future", dataType: { type: "futureType" } as unknown as DataType },
   ],
 };
 

@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, Osdk, OsdkBase } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  ObjectSet,
+  ObjectSpecifier,
+  Osdk,
+  OsdkBase,
+} from "@osdk/api";
 import type {
   AgentDefinition,
   AgentGetStateOptions,
+  AgentMetadata,
   AgentParam,
   AgentResult,
   AgentSession,
@@ -33,7 +40,11 @@ import {
   structuredArgumentsAgent,
   weatherAgent,
 } from "@osdk/client.test.ontology";
-import type { GetStateResponse, SendEventResponse } from "@osdk/foundry.agents";
+import type {
+  DataType,
+  GetStateResponse,
+  SendEventResponse,
+} from "@osdk/foundry.agents";
 import {
   type FauxAgentImpl,
   LegacyFauxFoundry,
@@ -83,6 +94,34 @@ describe("agents", () => {
     vi.useRealTimers();
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
+  });
+
+  it("exposes normalized generated schema metadata without runtime schema properties", () => {
+    type Metadata = CompileTimeMetadata<objectArgumentsAgent>;
+    type Structured = CompileTimeMetadata<structuredArgumentsAgent>;
+
+    const definition = objectArgumentsAgent;
+
+    expectTypeOf<Metadata>().toMatchTypeOf<AgentMetadata>();
+    expectTypeOf<
+      Metadata["createdTime"]
+    >().toEqualTypeOf<"2026-01-01T00:00:00Z">();
+    expectTypeOf<Metadata["createdBy"]>().toEqualTypeOf<"user">();
+    expectTypeOf<
+      Metadata["arguments"]["employee"]["__OsdkTargetType"]
+    >().toEqualTypeOf<Employee | undefined>();
+    expectTypeOf<
+      Metadata["arguments"]["employees"]["__OsdkTargetType"]
+    >().toEqualTypeOf<Employee | undefined>();
+    expectTypeOf<
+      Structured["arguments"]["nested"]["struct"]["label"]["nullable"]
+    >().toEqualTypeOf<true>();
+    expectTypeOf<
+      Structured["arguments"]["nested"]["nullable"]
+    >().toEqualTypeOf<false>();
+    expect(definition).not.toHaveProperty("__DefinitionMetadata");
+    expect(definition).not.toHaveProperty("createdTime");
+    expect(definition).not.toHaveProperty("createdBy");
   });
 
   describe("createSession", () => {
@@ -277,6 +316,58 @@ describe("agents", () => {
       });
     });
 
+    it("Works when using $apiName, $primaryKey", async () => {
+      const employees = client(Employee).where({ employeeId: 50030 });
+
+      const result = await client(
+        objectArgumentsAgent,
+      ).experimental_createSession({
+        employee: { $apiName: "Employee", $primaryKey: 50030 },
+        employees,
+      });
+
+      expect(result).toMatchObject({
+        id: stubData.objectArgumentsAgentResponse.id,
+      });
+    });
+
+    it("Works when using a primary key", async () => {
+      const employees = client(Employee).where({ employeeId: 50030 });
+
+      const result = await client(
+        objectArgumentsAgent,
+      ).experimental_createSession({
+        employee: 50030,
+        employees,
+      });
+
+      expect(result).toMatchObject({
+        id: stubData.objectArgumentsAgentResponse.id,
+      });
+    });
+
+    it("Works when explicitly typing object with OsdkBase", async () => {
+      const objectAgentParameter = {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50030,
+        $title: "Test",
+        $objectSpecifier: "Employee:50030" as ObjectSpecifier<Employee>,
+      } satisfies OsdkBase<Employee>;
+      const employees = client(Employee).where({ employeeId: 50030 });
+
+      const result = await client(
+        objectArgumentsAgent,
+      ).experimental_createSession({
+        employee: objectAgentParameter,
+        employees,
+      });
+
+      expect(result).toMatchObject({
+        id: stubData.objectArgumentsAgentResponse.id,
+      });
+    });
+
     it("works with structured arguments", async () => {
       const clientBoundCreateSession = client(
         structuredArgumentsAgent,
@@ -308,7 +399,6 @@ describe("agents", () => {
           empty: {},
         },
         selection: { kind: "employee", employee },
-        future: { newShape: true },
         optionalText: "text",
       } as const satisfies InferredParamType;
 
@@ -689,6 +779,67 @@ describe("agents", () => {
       });
     });
 
+    describe.each([
+      { name: "declared", declared: true },
+      { name: "undeclared", declared: false },
+    ])("special $name event names", ({ declared }) => {
+      it.each(["constructor", "toString", "__proto__"])(
+        "handles %s",
+        async (eventType) => {
+          vi.spyOn(
+            fauxFoundry.getOntology(fauxFoundry.defaultOntologyRid),
+            "getAgentDef",
+          ).mockReturnValue({
+            ...stubData.weatherAgentVersion,
+            eventDefinitions: declared
+              ? [
+                  {
+                    eventType,
+                    payloadType: {
+                      type: "object",
+                      ontologyApiName: "default-ontology",
+                      objectTypeApiName: Employee.apiName,
+                    },
+                  },
+                ]
+              : [],
+          });
+          const genericClient = createClient(
+            baseUrl,
+            fauxFoundry.defaultOntologyRid,
+            auth,
+          );
+          const generic: AgentDefinition<unknown> = weatherAgent;
+          const genericSession = await genericClient(
+            generic,
+          ).experimental_createSession({ city: "London" });
+          const send = vi
+            .spyOn(agentImpl, "sendEvent")
+            .mockReturnValue(stubData.acceptedAgentEvent);
+          const event = { [eventType]: 50030 };
+
+          await genericSession.experimental_sendEvent(event);
+
+          expect(send).toHaveBeenCalledWith(
+            expect.objectContaining({
+              event: {
+                id: expect.any(String),
+                eventType,
+                payload: declared
+                  ? {
+                      ontologyRid: fauxFoundry.defaultOntologyRid,
+                      objectTypeApiName: Employee.apiName,
+                      primaryKey: { employeeId: 50030 },
+                    }
+                  : 50030,
+              },
+            }),
+            expect.anything(),
+          );
+        },
+      );
+    });
+
     it("converts event payloads", async () => {
       const employees = client(Employee).where({ employeeId: 50030 });
       const objectSession = await client(
@@ -878,7 +1029,6 @@ describe("agents", () => {
       expectTypeOf<State["arguments"]["nested"]["scores"]>().toEqualTypeOf<
         Record<string, number>
       >();
-      expectTypeOf<State["arguments"]["future"]>().toBeUnknown();
       expectTypeOf<
         Extract<
           State["arguments"]["selection"],
@@ -960,6 +1110,237 @@ describe("agents", () => {
       expect(page.data.map((employee) => employee.$primaryKey)).toEqual([
         50030,
       ]);
+    });
+
+    it("returns array of objects", async () => {
+      const dataType: DataType = {
+        type: "list",
+        elementType: {
+          type: "object",
+          ontologyApiName: "default-ontology",
+          objectTypeApiName: "Employee",
+        },
+      };
+      const data = [
+        {
+          ontologyRid: fauxFoundry.defaultOntologyRid,
+          objectTypeApiName: "Employee",
+          primaryKey: { employeeId: 50030 },
+        },
+      ];
+      const expected = [
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50030,
+          $objectSpecifier: "Employee:50030",
+          $title: undefined,
+        },
+      ];
+
+      vi.spyOn(
+        fauxFoundry.getOntology(fauxFoundry.defaultOntologyRid),
+        "getAgentDef",
+      ).mockReturnValue({
+        ...stubData.weatherAgentVersion,
+        agentStateType: dataType,
+      });
+      const genericClient = createClient(
+        baseUrl,
+        fauxFoundry.defaultOntologyRid,
+        auth,
+      );
+      const generic: AgentDefinition<unknown> = weatherAgent;
+      const genericSession = await genericClient(
+        generic,
+      ).experimental_createSession({ city: "London" });
+      vi.spyOn(agentImpl, "getState").mockReturnValue({
+        ...stubData.weatherAgentState,
+        agentState: { data },
+      });
+
+      const result = await genericSession.experimental_getState();
+
+      expect(result.agentState.data).toEqual(expected);
+    });
+
+    it("agents work with arrays", async () => {
+      const dataType: DataType = {
+        type: "list",
+        elementType: { type: "string" },
+      };
+      const data = ["Pitt", "Clooney", "Reynolds"];
+      const expected = ["Pitt", "Clooney", "Reynolds"];
+
+      vi.spyOn(
+        fauxFoundry.getOntology(fauxFoundry.defaultOntologyRid),
+        "getAgentDef",
+      ).mockReturnValue({
+        ...stubData.weatherAgentVersion,
+        agentStateType: dataType,
+      });
+      const genericClient = createClient(
+        baseUrl,
+        fauxFoundry.defaultOntologyRid,
+        auth,
+      );
+      const generic: AgentDefinition<unknown> = weatherAgent;
+      const genericSession = await genericClient(
+        generic,
+      ).experimental_createSession({ city: "London" });
+      vi.spyOn(agentImpl, "getState").mockReturnValue({
+        ...stubData.weatherAgentState,
+        agentState: { data },
+      });
+
+      const result = await genericSession.experimental_getState();
+
+      expect(result.agentState.data).toEqual(expected);
+    });
+
+    it("returns complex structs with nullable nested arrays", async () => {
+      const dataType: DataType = {
+        type: "struct",
+        fields: [
+          {
+            name: "people",
+            dataType: {
+              type: "list",
+              elementType: {
+                type: "list",
+                elementType: {
+                  type: "nullable",
+                  wrappedType: {
+                    type: "object",
+                    ontologyApiName: "default-ontology",
+                    objectTypeApiName: "Employee",
+                  },
+                },
+              },
+            },
+          },
+          {
+            name: "label",
+            dataType: { type: "nullable", wrappedType: { type: "string" } },
+          },
+        ],
+      };
+      const data = {
+        people: [
+          [
+            {
+              ontologyRid: fauxFoundry.defaultOntologyRid,
+              objectTypeApiName: "Employee",
+              primaryKey: { employeeId: 50030 },
+            },
+            null,
+          ],
+        ],
+        label: null,
+      };
+      const expected = {
+        people: [
+          [
+            {
+              $apiName: "Employee",
+              $objectType: "Employee",
+              $primaryKey: 50030,
+              $objectSpecifier: "Employee:50030",
+              $title: undefined,
+            },
+            null,
+          ],
+        ],
+        label: null,
+      };
+
+      vi.spyOn(
+        fauxFoundry.getOntology(fauxFoundry.defaultOntologyRid),
+        "getAgentDef",
+      ).mockReturnValue({
+        ...stubData.weatherAgentVersion,
+        agentStateType: dataType,
+      });
+      const genericClient = createClient(
+        baseUrl,
+        fauxFoundry.defaultOntologyRid,
+        auth,
+      );
+      const generic: AgentDefinition<unknown> = weatherAgent;
+      const genericSession = await genericClient(
+        generic,
+      ).experimental_createSession({ city: "London" });
+      vi.spyOn(agentImpl, "getState").mockReturnValue({
+        ...stubData.weatherAgentState,
+        agentState: { data },
+      });
+
+      const result = await genericSession.experimental_getState();
+
+      expect(result.agentState.data).toEqual(expected);
+    });
+
+    describe.each([
+      { name: "declared", declared: true },
+      { name: "undeclared", declared: false },
+    ])("special $name context item types", ({ declared }) => {
+      it.each(["constructor", "toString", "__proto__"])(
+        "handles %s",
+        async (contextItemType) => {
+          vi.spyOn(
+            fauxFoundry.getOntology(fauxFoundry.defaultOntologyRid),
+            "getAgentDef",
+          ).mockReturnValue({
+            ...stubData.weatherAgentVersion,
+            contextItemDefinitions: declared
+              ? [
+                  {
+                    contextItemType,
+                    dataType: {
+                      type: "object",
+                      ontologyApiName: "default-ontology",
+                      objectTypeApiName: Employee.apiName,
+                    },
+                  },
+                ]
+              : [],
+          });
+          const genericClient = createClient(
+            baseUrl,
+            fauxFoundry.defaultOntologyRid,
+            auth,
+          );
+          const generic: AgentDefinition<unknown> = weatherAgent;
+          const genericSession = await genericClient(
+            generic,
+          ).experimental_createSession({ city: "London" });
+          const data = {
+            ontologyRid: fauxFoundry.defaultOntologyRid,
+            objectTypeApiName: Employee.apiName,
+            primaryKey: { employeeId: 50030 },
+          };
+          vi.spyOn(agentImpl, "getState").mockReturnValue({
+            ...stubData.weatherAgentState,
+            contextItems: { item: { contextItemType, data } },
+            contextItemOrder: ["item"],
+          });
+
+          const result = await genericSession.experimental_getState();
+
+          expect(result.contextItems.item).toEqual({
+            type: contextItemType,
+            data: declared
+              ? {
+                  $apiName: "Employee",
+                  $objectType: "Employee",
+                  $primaryKey: 50030,
+                  $objectSpecifier: "Employee:50030",
+                  $title: undefined,
+                }
+              : data,
+          });
+        },
+      );
     });
 
     it("converts context items using the older session schema", async () => {
