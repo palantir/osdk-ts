@@ -1,5 +1,0 @@
-type: improvement
-improvement:
-  description: Update api-gateway definitions
-  links:
-  - https://github.com/palantir/osdk-ts/pull/38
