@@ -39,10 +39,6 @@ export const renameOfficeImpl: FauxActionImpl<typeof RenameOffice> = (
   return {
     validation: { result: "VALID", submissionCriteria: [], parameters: {} },
     edits: returnEdits ? { type: "edits", ...batch.objectEdits } : undefined,
-    returnValue: {
-      office: officeId,
-      newName,
-      previousName: previousName ?? null,
-    },
+    returnValue: { newName, previousName: previousName ?? null },
   };
 };

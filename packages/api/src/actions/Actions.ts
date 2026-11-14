@@ -130,4 +130,5 @@ export interface ActionReturnValueResponse<TReturnValue> {
    */
   returnValue: TReturnValue | undefined;
 }
+
 export type ActionValidationResponse = ValidateActionResponseV2;

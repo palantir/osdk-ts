@@ -218,6 +218,7 @@ export async function applyAction<
       ...editsResult,
       returnValue: await remapActionReturnValue(
         client,
+        actionMetadata.apiName,
         actionMetadata.returnType,
         response.returnValue,
       ),
@@ -227,6 +228,7 @@ export async function applyAction<
 
 async function remapActionReturnValue(
   client: MinimalClient,
+  actionApiName: string,
   returnType: QueryDataTypeDefinition,
   returnValue: DataValue | undefined,
 ): Promise<unknown> {
@@ -242,8 +244,8 @@ async function remapActionReturnValue(
     );
   } catch (e) {
     client.logger?.warn(
-      { error: e },
-      "Omitting action return value that could not be converted",
+      { error: e, actionApiName },
+      "Could not read the value the action returned, so returnValue is undefined. The action was still applied.",
     );
     return undefined;
   }

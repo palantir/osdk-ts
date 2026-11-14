@@ -96,7 +96,7 @@ describe(wireActionTypeV2ToSdkActionMetadata, () => {
     expect(result.apiName).toBe("returnsValue");
     expect(warn).toHaveBeenCalledOnce();
     expect(warn).toHaveBeenCalledWith(
-      `Action "returnsValue" has a return type the OSDK cannot represent, so returnType was left out of its metadata.`,
+      `Action "returnsValue" returns a type the OSDK does not support, so applyAction will not return its value.`,
       expect.any(Error),
     );
     warn.mockRestore();

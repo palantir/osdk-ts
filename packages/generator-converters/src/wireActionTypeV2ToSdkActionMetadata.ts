@@ -22,7 +22,6 @@ import type {
 } from "@osdk/foundry.ontologies";
 
 import type { ActionTypeV2WithReturnType } from "./ActionTypeV2WithReturnType.js";
-
 import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
 import {
@@ -79,7 +78,7 @@ function tryConvertActionReturnTypeToSdkReturnType(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn(
-      `Action "${actionApiName}" has a return type the OSDK cannot represent, so returnType was left out of its metadata.`,
+      `Action "${actionApiName}" returns a type the OSDK does not support, so applyAction will not return its value.`,
       e,
     );
     return undefined;

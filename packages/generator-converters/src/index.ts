@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export type { ActionTypeV2WithReturnType } from "./ActionTypeV2WithReturnType.js";
 export { GeneratorError } from "./GeneratorError.js";
 export { wireActionTypeV2ToSdkActionMetadata } from "./wireActionTypeV2ToSdkActionMetadata.js";
 export {
