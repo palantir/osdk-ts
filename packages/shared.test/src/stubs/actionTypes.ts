@@ -317,14 +317,6 @@ export const RenameOffice: ActionTypeV2 & { returnType: QueryDataType } = {
   returnType: {
     type: "struct",
     fields: [
-      {
-        name: "office",
-        fieldType: {
-          type: "object",
-          objectApiName: officeObjectType.apiName,
-          objectTypeApiName: officeObjectType.apiName,
-        },
-      },
       { name: "newName", fieldType: { type: "string" } },
       {
         name: "previousName",

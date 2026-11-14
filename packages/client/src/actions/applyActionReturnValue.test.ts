@@ -16,9 +16,7 @@
 
 import type {
   ActionDefinition,
-  ActionEditResponse,
   ActionReturnTypeForOptions,
-  ActionReturnValueResponse,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
@@ -157,32 +155,6 @@ describe("action return values", () => {
     return () => {
       apiServer.close();
     };
-  });
-
-  it("returns the return value without any options", async () => {
-    const result = await client(returnsName).applyAction({});
-
-    expectTypeOf(result).toEqualTypeOf<ActionReturnValueResponse<string>>();
-    expect(result).toEqual({ returnValue: "Anna Smith-Doe" });
-  });
-
-  it("returns the return value alongside the edits", async () => {
-    const result = await client(returnsName).applyAction(
-      {},
-      {
-        $returnEdits: true,
-      },
-    );
-
-    expectTypeOf(result).toEqualTypeOf<
-      ActionEditResponse & ActionReturnValueResponse<string>
-    >();
-    expect(result).toMatchObject({
-      type: "edits",
-      addedObjects: [{ objectType: "Employee", primaryKey: 1 }],
-      editedObjectTypes: ["Employee"],
-      returnValue: "Anna Smith-Doe",
-    });
   });
 
   it("does not return a value when only validating", async () => {

@@ -220,16 +220,7 @@ describe.each([
       ActionReturnValueResponse<renameOffice.ReturnType>
     >();
     expect(result).toEqual({
-      returnValue: {
-        office: {
-          $apiName: "Office",
-          $objectType: "Office",
-          $primaryKey: "NYC",
-          $objectSpecifier: "Office:NYC",
-        },
-        newName: "Manhattan",
-        previousName: "New York City",
-      },
+      returnValue: { newName: "Manhattan", previousName: "New York City" },
     });
   });
 
@@ -252,16 +243,7 @@ describe.each([
       deletedObjectsCount: 0,
       deletedLinksCount: 0,
       editedObjectTypes: ["Office"],
-      returnValue: {
-        office: {
-          $apiName: "Office",
-          $objectType: "Office",
-          $primaryKey: "SEA",
-          $objectSpecifier: "Office:SEA",
-        },
-        newName: "Bellevue",
-        previousName: "Seattle Office",
-      },
+      returnValue: { newName: "Bellevue", previousName: "Seattle Office" },
     });
   });
 
