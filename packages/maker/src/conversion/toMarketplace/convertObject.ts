@@ -170,6 +170,15 @@ export function convertObject(
         objectType.apiName,
         objectType.editsHistoryConfig,
       ),
+      ...(objectType.interfaceActionsEnabled === undefined
+        ? {}
+        : {
+          interfaceSettings: {
+            enableInterfaceActions: objectType.interfaceActionsEnabled
+              ? { type: "enabled", enabled: {} }
+              : { type: "disabled", disabled: {} },
+          },
+        }),
     },
     propertySecurityGroupPackagingVersion: {
       type: "v2",

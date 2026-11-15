@@ -66,6 +66,7 @@ export interface ObjectTypeInner extends Omit<
   visibility: Visibility;
   editsEnabled: boolean;
   editsHistoryConfig?: EditsHistoryConfig;
+  interfaceActionsEnabled?: boolean;
   status?: ObjectTypeStatus;
   aliases?: Array<string>;
 }
