@@ -1694,7 +1694,7 @@ export namespace ObjectSetArgs {
     		L extends string = never
     	> {
         		// (undocumented)
-        $orderBy?: ORDER_BY_OPTIONS;
+        $orderBy?: ORDER_BY_OPTIONS & (ORDER_BY_OPTIONS | OrderByOptions<L>);
         	}
     	// (undocumented)
     export type OrderByOptions<L extends string> = { [K in L]? : "asc" | "desc" } | "relevance";

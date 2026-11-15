@@ -34,7 +34,7 @@ export async function sendEventToAgentSession(
   eventDefinitions: AgentDefinitionVersion["eventDefinitions"],
   event: Record<string, unknown>,
   options?: AgentSendEventOptions,
-): Promise<void> {
+): Promise<string> {
   const keys = Object.keys(event);
   if (keys.length !== 1) {
     throw new Error("experimental_sendEvent requires exactly one event");
@@ -73,7 +73,7 @@ export async function sendEventToAgentSession(
     );
 
     if (response.result.type === "accepted") {
-      return;
+      return response.result.consistencyKey;
     }
 
     const remainingMs = deadline - Date.now();

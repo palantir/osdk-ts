@@ -97,6 +97,12 @@ export interface FoundryWidgetClientContext<
     values: Partial<ExtendedParameterValueMap<C>>;
     state: AsyncValue<ParameterValueMap<C>>["type"];
   };
+
+  /**
+   * Theme the widget should use to match the host Foundry UI.
+   * @experimental
+   */
+  theme: unknown;
 }
 
 export type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> =
@@ -138,6 +144,7 @@ export const FoundryWidgetContext: React.Context<
     state: "not-started",
     values: {},
   },
+  theme: undefined,
 });
 
 /**

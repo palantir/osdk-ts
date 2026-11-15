@@ -57,7 +57,7 @@ function isRetryable(e: any): boolean {
       return false;
     }
   }
-  return true; // I think this logic is flawed?
+  return true;
 }
 
 const SERVICE_UNAVAILABLE = 503;

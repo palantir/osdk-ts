@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
+import type {
+  AgentDefinitionVersion,
+  DataType,
+  StructField,
+} from "@osdk/foundry.agents";
 
 import { defaultOntologyMetadata } from "./ontologies/defaultOntologyMetadata.js";
 
@@ -33,6 +37,10 @@ export const weatherAgentVersion: AgentDefinitionVersion = {
         fields: [{ name: "city", dataType: { type: "string" } }],
       },
     },
+    {
+      eventType: "SetTemperature",
+      payloadType: { type: "nullable", wrappedType: { type: "double" } },
+    },
   ],
   agentStateType: {
     type: "struct",
@@ -40,6 +48,10 @@ export const weatherAgentVersion: AgentDefinitionVersion = {
   },
   contextItemDefinitions: [
     { contextItemType: "weather-result", dataType: { type: "string" } },
+    {
+      contextItemType: "temperature",
+      dataType: { type: "nullable", wrappedType: { type: "integer" } },
+    },
   ],
 };
 
@@ -48,10 +60,38 @@ export const weatherAgentOtherVersion: AgentDefinitionVersion = {
   version: "2.0.0",
 };
 
-export const noArgsAgentApiName = "noArgsAgent";
-export const noArgsAgentVersion: AgentDefinitionVersion = {
-  ...weatherAgentVersion,
+export const noArgumentsAgentApiName = "noArgumentsAgent";
+export const noArgumentsAgentVersion: AgentDefinitionVersion = {
+  version: "1.2.3",
+  createdTime: "2026-01-01T00:00:00Z",
+  createdBy: "user",
   argumentDefinitions: [],
+  eventDefinitions: [],
+  agentStateType: { type: "struct", fields: [] },
+  contextItemDefinitions: [],
+};
+
+export const noArgumentsAgentOtherVersion: AgentDefinitionVersion = {
+  ...noArgumentsAgentVersion,
+  version: "2.0.0",
+};
+
+const employeeField: StructField = {
+  name: "employee",
+  dataType: {
+    type: "object",
+    ontologyApiName: defaultOntologyMetadata.apiName,
+    objectTypeApiName: "Employee",
+  },
+};
+
+const employeesField: StructField = {
+  name: "employees",
+  dataType: {
+    type: "objectSet",
+    ontologyApiName: defaultOntologyMetadata.apiName,
+    objectTypeApiName: "Employee",
+  },
 };
 
 export const objectArgumentsAgentApiName = "objectArgumentsAgent";
@@ -59,34 +99,114 @@ export const objectArgumentsAgentVersion: AgentDefinitionVersion = {
   version: "1.2.3",
   createdTime: "2026-01-01T00:00:00Z",
   createdBy: "user",
+  argumentDefinitions: [employeeField, employeesField],
+  eventDefinitions: [
+    { eventType: "SelectEmployees", payloadType: employeesField.dataType },
+  ],
+  agentStateType: { type: "struct", fields: [employeeField, employeesField] },
+  contextItemDefinitions: [
+    {
+      contextItemType: "selection",
+      dataType: { type: "struct", fields: [employeeField, employeesField] },
+    },
+  ],
+};
+
+export const optionalArgumentsAgentApiName = "optionalArgumentsAgent";
+export const optionalArgumentsAgentVersion: AgentDefinitionVersion = {
+  version: "1.2.3",
+  createdTime: "2026-01-01T00:00:00Z",
+  createdBy: "user",
+  eventDefinitions: [],
+  agentStateType: { type: "struct", fields: [] },
+  contextItemDefinitions: [],
   argumentDefinitions: [
     {
-      name: "employee",
+      name: "city",
+      dataType: { type: "nullable", wrappedType: { type: "string" } },
+    },
+  ],
+};
+
+export const structuredArgumentsAgentApiName = "structuredArgumentsAgent";
+export const structuredArgumentsAgentVersion: AgentDefinitionVersion = {
+  version: "1.2.3",
+  createdTime: "2026-01-01T00:00:00Z",
+  createdBy: "user",
+  eventDefinitions: [],
+  agentStateType: { type: "struct", fields: [] },
+  contextItemDefinitions: [],
+  argumentDefinitions: [
+    { name: "requiredText", dataType: { type: "string" } },
+    {
+      name: "optionalText",
+      dataType: { type: "nullable", wrappedType: { type: "string" } },
+    },
+    {
+      name: "nested",
       dataType: {
-        type: "object",
-        ontologyApiName: defaultOntologyMetadata.apiName,
-        objectTypeApiName: "Employee",
+        type: "struct",
+        fields: [
+          {
+            name: "label",
+            dataType: { type: "nullable", wrappedType: { type: "string" } },
+          },
+          { name: "enabled", dataType: { type: "boolean" } },
+          { name: "count", dataType: { type: "integer" } },
+          { name: "date", dataType: { type: "date" } },
+          { name: "timestamp", dataType: { type: "timestamp" } },
+          { name: "float", dataType: { type: "float" } },
+          { name: "long", dataType: { type: "long" } },
+          { name: "short", dataType: { type: "short" } },
+          { name: "empty", dataType: { type: "struct", fields: [] } },
+          {
+            name: "tags",
+            dataType: { type: "list", elementType: { type: "string" } },
+          },
+          {
+            name: "scores",
+            dataType: { type: "record", valueType: { type: "double" } },
+          },
+        ],
       },
     },
     {
-      name: "employees",
+      name: "selection",
       dataType: {
-        type: "objectSet",
-        ontologyApiName: defaultOntologyMetadata.apiName,
-        objectTypeApiName: "Employee",
+        type: "discriminatedUnion",
+        discriminatorKey: "kind",
+        members: [
+          {
+            discriminatorValue: "employee",
+            fields: [employeeField],
+          },
+          {
+            discriminatorValue: "employees",
+            fields: [employeesField],
+          },
+        ],
       },
     },
+    { name: "future", dataType: { type: "futureType" } as unknown as DataType },
+  ],
+};
+
+export const objectArgumentsAgentOtherVersion: AgentDefinitionVersion = {
+  ...objectArgumentsAgentVersion,
+  version: "2.0.0",
+  argumentDefinitions: [],
+  agentStateType: employeeField.dataType,
+  contextItemDefinitions: [
+    { contextItemType: "new-selection", dataType: employeeField.dataType },
   ],
   eventDefinitions: [
     {
       eventType: "SelectEmployees",
       payloadType: {
-        type: "objectSet",
+        type: "object",
         ontologyApiName: defaultOntologyMetadata.apiName,
         objectTypeApiName: "Employee",
       },
     },
   ],
-  agentStateType: { type: "struct", fields: [] },
-  contextItemDefinitions: [],
 };
