@@ -61,7 +61,8 @@ executors:
                 unpublish: $all
             YAML
             exec verdaccio --config /tmp/verdaccio.yaml --listen 0.0.0.0:4873
-    resource_class: large
+    # Verdaccio shares this memory with the ramdisk checkout; on large it was OOM-killed mid-publish.
+    resource_class: xlarge
     working_directory: /mnt/ramdisk/project
     environment: *ci-environment
 
