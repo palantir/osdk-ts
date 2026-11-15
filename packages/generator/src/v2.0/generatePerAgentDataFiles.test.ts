@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
+import { LegacyFauxFoundry, stubData } from "@osdk/shared.test";
 import { describe, expect, it } from "vitest";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
-import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
 import type {
   WireAgentDefinitionVersion,
   WireOntologyDefinition,
 } from "../WireOntologyDefinition.js";
 import { generatePerAgentDataFiles } from "./generatePerAgentDataFiles.js";
 
+// TODO(mhogberg): Update APIs to include apiName in AgentDefinitionVersion,
+//  remove apiName override from here and use noArgumentsAgentVersion directly.
 const agent: WireAgentDefinitionVersion = {
-  apiName: "com.example.weatherAgent",
-  version: "1.2.3",
-  createdTime: "2026-01-01T00:00:00Z",
-  createdBy: "user",
-  argumentDefinitions: [{ name: "city", dataType: { type: "string" } }],
-  eventDefinitions: [],
-  agentStateType: { type: "struct", fields: [] },
-  contextItemDefinitions: [],
+  ...stubData.noArgumentsAgentVersion,
+  apiName: stubData.noArgumentsAgentApiName,
 };
+
+const ontologyMetadata = new LegacyFauxFoundry().getDefaultOntology()
+  .getOntologyFullMetadata();
 
 describe(generatePerAgentDataFiles, () => {
   it.each([false, true])(
@@ -45,7 +44,7 @@ describe(generatePerAgentDataFiles, () => {
         outDir: "/foo",
         ontology: enhanceOntology({
           sanitized: {
-            ...TodoWireOntology,
+            ...ontologyMetadata,
             agents: { [agent.apiName]: agent },
           },
           importExt: ".js",
@@ -58,11 +57,185 @@ describe(generatePerAgentDataFiles, () => {
     },
   );
 
+  it("preserves requested version references", async () => {
+    const helper = createMockMinimalFiles();
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology: enhanceOntology({
+        sanitized: { ...ontologyMetadata, agents: { [agent.apiName]: agent } },
+        importExt: ".js",
+      }),
+      agentVersionReferences: new Map([[agent.apiName, "^1.0.0"]]),
+    });
+    expect(helper.getFiles()).toMatchSnapshot();
+  });
+
+  it.each(
+    [
+      [
+        stubData.weatherAgentApiName,
+        stubData.weatherAgentVersion,
+      ],
+      [
+        stubData.optionalArgumentsAgentApiName,
+        stubData.optionalArgumentsAgentVersion,
+      ],
+      [
+        stubData.objectArgumentsAgentApiName,
+        stubData.objectArgumentsAgentVersion,
+      ],
+      [
+        stubData.structuredArgumentsAgentApiName,
+        stubData.structuredArgumentsAgentVersion,
+      ],
+    ] as const,
+  )("generates definitions for %s", async (apiName, definition) => {
+    const helper = createMockMinimalFiles();
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology: enhanceOntology({
+        sanitized: {
+          ...ontologyMetadata,
+          agents: { [apiName]: { ...definition, apiName } },
+        },
+        importExt: ".js",
+      }),
+      importExt: ".js",
+      forInternalUse: true,
+      agentVersionReferences: new Map(),
+    });
+    expect(helper.getFiles()).toMatchSnapshot();
+  });
+
+  it("generates payload types and imports objects used by events", async () => {
+    const definition: WireAgentDefinitionVersion = {
+      ...agent,
+      eventDefinitions: stubData.structuredArgumentsAgentVersion
+        .argumentDefinitions.map(
+          field => ({
+            eventType: String(field.name),
+            payloadType: field.dataType,
+          }),
+        ),
+    };
+    const helper = createMockMinimalFiles();
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology: enhanceOntology({
+        sanitized: {
+          ...ontologyMetadata,
+          agents: { [definition.apiName]: definition },
+        },
+        importExt: ".js",
+      }),
+      importExt: ".js",
+      agentVersionReferences: new Map(),
+    });
+    expect(helper.getFiles()).toMatchSnapshot();
+  });
+
+  it("generates result types and imports objects used by agent state", async () => {
+    const definition: WireAgentDefinitionVersion = {
+      ...agent,
+      agentStateType: {
+        type: "struct",
+        fields: stubData.structuredArgumentsAgentVersion.argumentDefinitions,
+      },
+    };
+    const helper = createMockMinimalFiles();
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology: enhanceOntology({
+        sanitized: {
+          ...ontologyMetadata,
+          agents: { [definition.apiName]: definition },
+        },
+        importExt: ".js",
+      }),
+      importExt: ".js",
+      agentVersionReferences: new Map(),
+    });
+    expect(helper.getFiles()).toMatchSnapshot();
+  });
+
+  it("generates result types and imports objects used by context items", async () => {
+    const definition: WireAgentDefinitionVersion = {
+      ...agent,
+      contextItemDefinitions: [{
+        contextItemType: "result",
+        dataType: {
+          type: "struct",
+          fields: stubData.structuredArgumentsAgentVersion.argumentDefinitions,
+        },
+      }],
+    };
+    const helper = createMockMinimalFiles();
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology: enhanceOntology({
+        sanitized: {
+          ...ontologyMetadata,
+          agents: { [definition.apiName]: definition },
+        },
+        importExt: ".js",
+      }),
+      importExt: ".js",
+      agentVersionReferences: new Map(),
+    });
+    expect(helper.getFiles()).toMatchSnapshot();
+  });
+
+  it("escapes field names and discriminator strings", async () => {
+    const escapingAgent: WireAgentDefinitionVersion = {
+      ...stubData.noArgumentsAgentVersion,
+      apiName: "escapingAgent",
+      contextItemDefinitions: [{
+        contextItemType: "escaped\"context",
+        dataType: { type: "string" },
+      }],
+      eventDefinitions: [{
+        eventType: "escaped\"event",
+        payloadType: { type: "string" },
+      }],
+      argumentDefinitions: [{
+        name: "escaped\"argument",
+        dataType: {
+          type: "discriminatedUnion",
+          discriminatorKey: "escaped\"key",
+          members: [{
+            discriminatorValue: "escaped\"value",
+            fields: [{ name: "escaped\"field", dataType: { type: "string" } }],
+          }],
+        },
+      }],
+    };
+    const helper = createMockMinimalFiles();
+    await generatePerAgentDataFiles({
+      fs: helper.minimalFiles,
+      outDir: "/foo",
+      ontology: enhanceOntology({
+        sanitized: {
+          ...ontologyMetadata,
+          agents: { [escapingAgent.apiName]: escapingAgent },
+        },
+        importExt: ".js",
+      }),
+      importExt: ".js",
+      agentVersionReferences: new Map(),
+    });
+    expect(helper.getFiles()).toMatchSnapshot();
+  });
+
   it.each(["empty", "omitted"])(
     "generates an empty export if agents are %s",
     async mode => {
       const ontology: WireOntologyDefinition = {
-        ...TodoWireOntology,
+        ...ontologyMetadata,
         agents: {},
       };
       if (mode === "omitted") {

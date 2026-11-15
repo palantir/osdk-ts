@@ -16,6 +16,7 @@
 
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import type {
+  ActionFormContentItem,
   ActionFormProps,
   FormFieldDefinition,
   FormState,
@@ -26,6 +27,7 @@ import React, { useCallback, useState } from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import {
+  submissionCriteriaStoryAction,
   unsupportedFieldsStoryAction,
   updateEmployeeStoryAction,
 } from "../../../mocks/fauxFoundry.js";
@@ -280,6 +282,15 @@ function UpdateEmployeeActionFormStory({
       onSubmit,
     });
 
+  const commonProps = {
+    actionDefinition,
+    formTitle,
+    isSubmitDisabled,
+    onError: handleStoryError,
+    onSubmit: handleStorySubmit,
+    showFormTitle,
+  } as const;
+
   return (
     <FormStoryLayout
       output={
@@ -289,15 +300,14 @@ function UpdateEmployeeActionFormStory({
         />
       }
     >
-      <ActionForm
-        actionDefinition={actionDefinition}
-        formFieldDefinitions={formFieldDefinitions}
-        formTitle={formTitle}
-        isSubmitDisabled={isSubmitDisabled}
-        onError={handleStoryError}
-        onSubmit={handleStorySubmit}
-        showFormTitle={showFormTitle}
-      />
+      {formFieldDefinitions != null ? (
+        <ActionForm
+          {...commonProps}
+          formFieldDefinitions={formFieldDefinitions}
+        />
+      ) : (
+        <ActionForm {...commonProps} />
+      )}
     </FormStoryLayout>
   );
 }
@@ -827,6 +837,135 @@ export const ControlledFormState: Story = {
   },
 };
 
+export const WithSections: Story = {
+  render: () => <SectionsActionFormStory />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Groups related fields into collapsible sections using `formContentDefinitions`. Standalone fields and sections can be interleaved freely.",
+      },
+      source: {
+        code: `import type { ActionFormContentItem } from "@osdk/react-components/action-form";
+
+const content: Array<ActionFormContentItem<typeof myAction>> = [
+  {
+    type: "field",
+    definition: {
+      fieldKey: "fullName",
+      label: "Full name",
+      fieldComponent: "TEXT_INPUT",
+      fieldComponentProps: {},
+    },
+  },
+  {
+    type: "section",
+    key: "employment",
+    definition: {
+      title: "Employment details",
+      description: "Information about the employee's role and schedule.",
+      fields: [
+        {
+          fieldKey: "yearsExperience",
+          label: "Years of experience",
+          fieldComponent: "NUMBER_INPUT",
+          fieldComponentProps: { min: 0 },
+        },
+        {
+          fieldKey: "isRemote",
+          label: "Remote employee",
+          fieldComponent: "SWITCH",
+          fieldComponentProps: {},
+        },
+      ],
+    },
+  },
+];
+
+<ActionForm
+  actionDefinition={myAction}
+  formContentDefinitions={content}
+  showFormTitle={true}
+/>`,
+      },
+    },
+  },
+};
+
+const sectionContentDefinitions: ReadonlyArray<
+  ActionFormContentItem<typeof actionDefinition>
+> = [
+  {
+    type: "field",
+    definition: {
+      fieldKey: "fullName",
+      label: "Full name",
+      fieldComponent: "TEXT_INPUT",
+      fieldComponentProps: {},
+    },
+  },
+  {
+    type: "section",
+    key: "employment",
+    definition: {
+      title: "Employment details",
+      description: "Information about the employee's role and schedule.",
+      fields: [
+        {
+          fieldKey: "yearsExperience",
+          label: "Years of experience",
+          fieldComponent: "NUMBER_INPUT",
+          fieldComponentProps: { min: 0 },
+        },
+        {
+          fieldKey: "isRemote",
+          label: "Remote employee",
+          fieldComponent: "SWITCH",
+          fieldComponentProps: {},
+        },
+        {
+          fieldKey: "isFullTime",
+          label: "Employment type",
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: {
+            items: [true, false],
+            itemToStringLabel: (value: boolean) =>
+              value === true ? "Full-time" : "Contractor",
+            placeholder: "Select employment type",
+          },
+        },
+      ],
+      columnCount: 1,
+    },
+  },
+];
+
+function SectionsActionFormStory(): React.ReactElement {
+  const { handleStoryError, handleStorySubmit, submission } =
+    useActionFormSubmission({
+      applyStoryAction: applyUpdateEmployeeStoryAction,
+    });
+
+  return (
+    <FormStoryLayout
+      output={
+        <SubmissionOutputPanel
+          idleMessage="Submit the form to see the action response."
+          snapshot={submission}
+        />
+      }
+    >
+      <ActionForm
+        actionDefinition={actionDefinition}
+        formContentDefinitions={sectionContentDefinitions}
+        onError={handleStoryError}
+        onSubmit={handleStorySubmit}
+        showFormTitle={true}
+      />
+    </FormStoryLayout>
+  );
+}
+
 function ControlledActionFormStory(): React.ReactElement {
   const [formState, setFormState] = useState<
     FormState<typeof actionDefinition>
@@ -868,3 +1007,85 @@ function ControlledActionFormStory(): React.ReactElement {
     </FormStoryLayout>
   );
 }
+
+const submissionCriteriaActionDefinition =
+  submissionCriteriaStoryAction.actionDefinition;
+
+function SubmissionCriteriaActionFormStory(): React.ReactElement {
+  const [submission, setSubmission] = useState<StorySubmissionSnapshot>({
+    status: "idle",
+  });
+
+  const handleSuccess = useCallback(
+    (result: ActionEditResponse | undefined) => {
+      setSubmission({
+        status: "success",
+        submittedValues: {},
+        response: result,
+      });
+      successSpy(result);
+    },
+    [],
+  );
+
+  const handleError = useCallback((error: { type: string; error: unknown }) => {
+    setSubmission((prev) => ({ ...prev, status: "error", error }));
+    errorSpy(error);
+  }, []);
+
+  return (
+    <FormStoryLayout
+      output={
+        <SubmissionOutputPanel
+          idleMessage="Submit the form to see the validation response."
+          snapshot={submission}
+        />
+      }
+    >
+      <ActionForm
+        actionDefinition={submissionCriteriaActionDefinition}
+        onError={handleError}
+        onSuccess={handleSuccess}
+        showFormTitle={true}
+      />
+    </FormStoryLayout>
+  );
+}
+
+export const SubmissionCriteriaFailure: Story = {
+  render: () => <SubmissionCriteriaActionFormStory />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const fullNameInput = await canvas.findByRole("textbox", {
+      name: /^fullName/u,
+    });
+    const submitButton = await canvas.findByRole("button", {
+      name: /submit/iu,
+    });
+
+    await userEvent.type(fullNameInput, "Ada Lovelace");
+    await userEvent.click(submitButton);
+
+    await waitFor(() =>
+      expect(canvas.getByText("2 issues")).toBeInTheDocument(),
+    );
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates server-side submission criteria validation. The action's validate endpoint returns INVALID submission criteria, which appear in the footer error indicator without applying the action.",
+      },
+      source: {
+        code: `// When the action has submission criteria configured in Foundry,
+// ActionForm validates before applying. Failed criteria appear in the
+// footer error indicator alongside any field-level errors.
+<ActionForm
+  actionDefinition={submissionCriteriaStoryAction}
+  onError={(error) => console.log("Error", error)}
+  onSuccess={(result) => console.log("Applied", result)}
+/>`,
+      },
+    },
+  },
+};

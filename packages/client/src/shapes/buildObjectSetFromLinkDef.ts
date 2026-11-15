@@ -102,14 +102,22 @@ export async function buildObjectSetFromLinkDefByType(
 
   if (linkDef.setOperations && linkDef.setOperations.length > 0) {
     const otherObjectSets = await Promise.all(
-      linkDef.setOperations.map((setOp) =>
-        buildObjectSetFromLinkDefByType(
+      linkDef.setOperations.map(async (setOp) => {
+        const otherObjectSet = await buildObjectSetFromLinkDefByType(
           client,
           sourceType,
           sourcePrimaryKey,
           setOp.other,
-        ),
-      ),
+        );
+        return setOp.other.where
+          ? otherObjectSet.where(
+              resolveSymbolBindings(
+                setOp.other.where,
+                sourcePrimaryKey,
+              ) as WhereClause<ObjectOrInterfaceDefinition>,
+            )
+          : otherObjectSet;
+      }),
     );
     for (let i = 0; i < linkDef.setOperations.length; i++) {
       const setOp = linkDef.setOperations[i];

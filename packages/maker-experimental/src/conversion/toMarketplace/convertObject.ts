@@ -146,6 +146,10 @@ export function convertObject(
       ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
       : undefined;
 
+  // Derived datasources are emitted separately; omission uses the default dataset.
+  const baseDatasource = objectType.datasources?.find(
+    (ds) => ds.type !== "derived",
+  );
   const objectDatasource = buildDatasource(
     objectType.apiName,
     convertDatasourceDefinition(
@@ -154,10 +158,12 @@ export function convertObject(
         (prop) => !derivedPropertyNames.includes(prop.apiName),
       ),
       ridGenerator,
+      baseDatasource,
     ),
     ridGenerator,
     classificationInputGroup,
     mandatoryInputGroup,
+    baseDatasource?.markingConstraints,
   );
 
   const implementations = objectType.implementsInterfaces ?? [];

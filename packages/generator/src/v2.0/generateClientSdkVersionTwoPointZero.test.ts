@@ -1033,13 +1033,52 @@ describe("generator", () => {
         ",
           "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
         ",
-          "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/client';
-        import type { AgentDefinition } from '@osdk/client/experimental';
+          "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
+        import type {
+          AgentDefinition as $AgentDefinition,
+          AgentParam as $AgentParam,
+          AgentResult as $AgentResult,
+          AgentSession as $AgentSession,
+          AgentSessionState as $AgentSessionState,
+          AgentGetStateOptions as $AgentGetStateOptions,
+          AgentSendEventOptions as $AgentSendEventOptions,
+        } from '@osdk/client/experimental';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         /** @beta */
-        export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+        export namespace weatherAgent {
+          export interface Signatures {
+            experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<weatherAgent.Session>;
+            experimental_getSession(sessionId: string): Promise<weatherAgent.Session>;
+          }
+
+          export interface Session extends $AgentSession {
+            experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+            experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+          }
+
+          export interface SessionState extends $AgentSessionState {
+            arguments: { city: string };
+            agentState: { data: Record<string, never> };
+            contextItems: Record<string, ContextItem>;
+          }
+
+          export type ContextItem = never;
+
+          export type ContextItems = Record<never, never>;
+
+          export type SendEventArguments = never;
+
+          export type Events = Record<never, never>;
+
+          export interface CreateSessionArguments {
+            readonly city: string;
+          }
+        }
+
+        /** @beta */
+        export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
           type: 'agent';
           apiName: 'weatherAgent';
           version: '1.2.3';
@@ -1493,7 +1532,7 @@ describe("generator", () => {
         };
         ",
         }
-        `);
+      `);
     },
   );
 
@@ -1762,13 +1801,52 @@ describe("generator", () => {
         ",
           "/foo/ontology/agents.ts": "export { weatherAgent } from './agents/weatherAgent.js';
         ",
-          "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound } from '@osdk/api';
-        import type { AgentDefinition } from '@osdk/api/unstable';
+          "/foo/ontology/agents/weatherAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/api';
+        import type {
+          AgentDefinition as $AgentDefinition,
+          AgentParam as $AgentParam,
+          AgentResult as $AgentResult,
+          AgentSession as $AgentSession,
+          AgentSessionState as $AgentSessionState,
+          AgentGetStateOptions as $AgentGetStateOptions,
+          AgentSendEventOptions as $AgentSendEventOptions,
+        } from '@osdk/api/unstable';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         /** @beta */
-        export interface weatherAgent extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+        export namespace weatherAgent {
+          export interface Signatures {
+            experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<weatherAgent.Session>;
+            experimental_getSession(sessionId: string): Promise<weatherAgent.Session>;
+          }
+
+          export interface Session extends $AgentSession {
+            experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+            experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+          }
+
+          export interface SessionState extends $AgentSessionState {
+            arguments: { city: string };
+            agentState: { data: Record<string, never> };
+            contextItems: Record<string, ContextItem>;
+          }
+
+          export type ContextItem = never;
+
+          export type ContextItems = Record<never, never>;
+
+          export type SendEventArguments = never;
+
+          export type Events = Record<never, never>;
+
+          export interface CreateSessionArguments {
+            readonly city: string;
+          }
+        }
+
+        /** @beta */
+        export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
           type: 'agent';
           apiName: 'foo.bar.weatherAgent';
           version: '1.2.3';
@@ -2354,19 +2432,23 @@ describe("generator", () => {
       expect(json).toContain("\n    \"ontology\": {");
     });
 
-    it("declares the shim as a default export for esm and export = for cjs", async () => {
+    it("declares unknown metadata without imports for esm and cjs", async () => {
       const files = await generate(true);
 
       expect(
         files[`${BASE_PATH}/experimental/ontology-metadata.d.mts`],
-      ).toContain("export default ontologyFullMetadata;");
+      ).toBe(
+        "declare const ontologyFullMetadata: unknown;\n\nexport default ontologyFullMetadata;\n",
+      );
 
       // .d.ts is the fallback for resolvers that ignore the mts/cts split, so
       // it has to keep the `export =` form.
       for (const ext of ["d.cts", "d.ts"]) {
         expect(
           files[`${BASE_PATH}/experimental/ontology-metadata.${ext}`],
-        ).toContain("export = ontologyFullMetadata;");
+        ).toBe(
+          "declare const ontologyFullMetadata: unknown;\n\nexport = ontologyFullMetadata;\n",
+        );
       }
     });
   });

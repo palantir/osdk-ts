@@ -18,6 +18,10 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
+import type {
+  ObjectTypeDatasourceDefinition,
+  ObjectTypeDatasourceMarkingConstraints,
+} from "../object/ObjectTypeDatasourceDefinition.js";
 
 describe("Marking Constraints", () => {
   beforeEach(async () => {
@@ -235,5 +239,132 @@ describe("Marking Constraints", () => {
     expect(classificationConstraint.markingGroupName).toEqual(
       "classificationGroup/referenceGroup",
     );
+  });
+
+  describe("datasource markingConstraints allowEmptyMarkings", () => {
+    function defineDocument(
+      markingConstraints: ObjectTypeDatasourceMarkingConstraints | undefined,
+      datasourceType: Exclude<
+        ObjectTypeDatasourceDefinition,
+        { type: "derived" }
+      >["type"] = "dataset",
+    ) {
+      defineObject({
+        titlePropertyApiName: "title",
+        displayName: "Document",
+        pluralDisplayName: "Documents",
+        apiName: "document",
+        primaryKeyPropertyApiName: "title",
+        properties: {
+          title: { type: "string", displayName: "Title" },
+          classification: {
+            type: {
+              type: "marking",
+              markingType: "CBAC",
+              markingInputGroupName: "classificationGroup",
+            },
+            displayName: "Classification",
+          },
+          mandatory: {
+            type: {
+              type: "marking",
+              markingType: "MANDATORY",
+              markingInputGroupName: "mandatoryMarkingGroup",
+            },
+            displayName: "Mandatory",
+          },
+        },
+        datasources: [{ type: datasourceType, markingConstraints }],
+      });
+    }
+
+    function getDataSecurity() {
+      return dumpOntologyFullMetadata().ontology.objectTypes[
+        "com.palantir.document"
+      ].datasources[0].dataSecurity;
+    }
+
+    it.each(["dataset", "restrictedView", "stream", "direct"] as const)(
+      "emits marking constraint settings on a %s datasource",
+      (type) => {
+        defineDocument({ cbac: { allowEmptyMarkings: true } }, type);
+        expect(getDataSecurity()?.classificationConstraint).toEqual({
+          markingGroupName: "classificationGroup",
+          allowEmptyMarkings: true,
+        });
+      },
+    );
+
+    it("emits allowEmptyMarkings on the mandatory constraint", () => {
+      defineDocument({ mandatory: { allowEmptyMarkings: true } });
+      expect(getDataSecurity()).toEqual({
+        classificationConstraint: { markingGroupName: "classificationGroup" },
+        markingConstraint: {
+          markingGroupName: "mandatoryMarkingGroup",
+          allowEmptyMarkings: true,
+        },
+      });
+    });
+
+    it("emits allowEmptyMarkings on the classification constraint", () => {
+      defineDocument({ cbac: { allowEmptyMarkings: true } });
+      expect(getDataSecurity()).toEqual({
+        classificationConstraint: {
+          markingGroupName: "classificationGroup",
+          allowEmptyMarkings: true,
+        },
+        markingConstraint: { markingGroupName: "mandatoryMarkingGroup" },
+      });
+    });
+
+    it("emits allowEmptyMarkings on both constraints independently", () => {
+      defineDocument({
+        mandatory: { allowEmptyMarkings: true },
+        cbac: { allowEmptyMarkings: false },
+      });
+      expect(getDataSecurity()).toEqual({
+        classificationConstraint: {
+          markingGroupName: "classificationGroup",
+          allowEmptyMarkings: false,
+        },
+        markingConstraint: {
+          markingGroupName: "mandatoryMarkingGroup",
+          allowEmptyMarkings: true,
+        },
+      });
+    });
+
+    it("emits an explicit false", () => {
+      defineDocument({
+        mandatory: { allowEmptyMarkings: false },
+        cbac: { allowEmptyMarkings: false },
+      });
+      const dataSecurity = getDataSecurity();
+      expect(dataSecurity?.markingConstraint).toHaveProperty(
+        "allowEmptyMarkings",
+        false,
+      );
+      expect(dataSecurity?.classificationConstraint).toHaveProperty(
+        "allowEmptyMarkings",
+        false,
+      );
+    });
+
+    it.each([
+      ["no markingConstraints", undefined],
+      ["empty markingConstraints", {}],
+      ["empty constraint settings", { mandatory: {}, cbac: {} }],
+    ])("leaves allowEmptyMarkings unset with %s", (_, markingConstraints) => {
+      defineDocument(markingConstraints);
+      const result = getDataSecurity();
+      expect(result).toEqual({
+        classificationConstraint: { markingGroupName: "classificationGroup" },
+        markingConstraint: { markingGroupName: "mandatoryMarkingGroup" },
+      });
+      expect(result?.markingConstraint?.allowEmptyMarkings).toBeUndefined();
+      expect(
+        result?.classificationConstraint?.allowEmptyMarkings,
+      ).toBeUndefined();
+    });
   });
 });

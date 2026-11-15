@@ -1,5 +1,61 @@
 # @osdk/maker
 
+## 0.90.0
+
+### Minor Changes
+
+- c331bfd: Fix the CommonJS declaration build by collecting datasource marking constraint validation errors with the other object validation issues.
+- c740c26: Add structured Maker validation errors and an issue collector. Integrate the new validation errors into `defineObject`.
+
+### Patch Changes
+
+- Updated dependencies [1fd4023]
+- Updated dependencies [406d3b6]
+- Updated dependencies [d13bd9f]
+  - @osdk/generator-converters.ontologyir@2.91.0
+  - @osdk/api@2.91.0
+
+## 0.89.0
+
+### Minor Changes
+
+- 7fed367: Add datasource-scoped `markingConstraints` with `mandatory.allowEmptyMarkings` and `cbac.allowEmptyMarkings` so installers can supply empty allowed marking sets independently for mandatory and classification constraints.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters.ontologyir@2.90.0
+
+## 0.88.0
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+- @osdk/generator-converters.ontologyir@2.89.0
+
+## 0.87.0
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/generator-converters.ontologyir@2.88.0
+
+## 0.86.0
+
+### Minor Changes
+
+- e837c76: Default decimal properties to precision 5 and scale 2 when unspecified, matching OMS defaults.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/generator-converters.ontologyir@2.87.0
+
 ## 0.85.0
 
 ### Minor Changes

@@ -25,6 +25,7 @@ import invariant from "tiny-invariant";
 
 import { convertConditionDefinition } from "../conversion/toMarketplace/convertConditionDefinition.js";
 import { getObject } from "../conversion/toMarketplace/convertLink.js";
+import { createValidationIssueCollector } from "../validation.js";
 import type { ActionLevelValidationDefinition } from "./action/ActionLevelValidationDefinition.js";
 import { type ActionParameter } from "./action/ActionParameter.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
@@ -294,10 +295,12 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
   validateActionConfiguration(fullAction);
+  const collector = createValidationIssueCollector();
   const context = `Action type "${apiName}"`;
   validateDisplayMetadataLengths(
     fullAction,
     context,
+    collector,
     ACTION_DISPLAY_NAME_LIMIT,
     ACTION_DESCRIPTION_LIMIT,
   );
@@ -305,6 +308,7 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     validateDisplayMetadataLengths(
       parameter,
       `${context}, parameter "${parameter.id}"`,
+      collector,
       ACTION_DISPLAY_NAME_LIMIT,
       ACTION_DESCRIPTION_LIMIT,
     );
@@ -313,10 +317,12 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     validateDisplayMetadataLengths(
       section,
       `${context}, section "${id}"`,
+      collector,
       ACTION_DISPLAY_NAME_LIMIT,
       ACTION_DESCRIPTION_LIMIT,
     );
   }
+  collector.throwIfAnyIssues();
   updateOntology(fullAction);
   return fullAction;
 }
