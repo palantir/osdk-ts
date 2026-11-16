@@ -3,4 +3,4 @@
 "@osdk/maker-experimental": minor
 ---
 
-Support multiple media-set sources and explicit upload destinations on scalar media properties.
+Support multiple named media-set inputs and explicit upload destinations on scalar media properties.

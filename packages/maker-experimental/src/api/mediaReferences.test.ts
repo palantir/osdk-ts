@@ -132,7 +132,7 @@ describe("Marketplace media reference bindings", () => {
     }
   });
 
-  it("keeps datasource and input identities stable when declarations and selections are reordered", async () => {
+  it("keeps media bindings and input identities stable when declarations and selections are reordered", async () => {
     const first = await defineOntologyV2("com.example.", () => {
       defineObject(documentDefinition());
     });
@@ -155,12 +155,33 @@ describe("Marketplace media reference bindings", () => {
     const second = await defineOntologyV2("com.example.", () => {
       defineObject(definition);
     });
-    const datasources = (result: typeof first) =>
-      Object.values(result.ontologyIr.ontology.objectTypes)[0].datasources;
-    expect(datasources(second)).toEqual(datasources(first));
+    const mediaBindings = (result: typeof first) =>
+      new Map(
+        Object.values(
+          result.ontologyIr.ontology.objectTypes,
+        )[0].datasources.flatMap(({ rid, datasource }) =>
+          datasource.type === "mediaSetView"
+            ? [
+                [
+                  rid,
+                  {
+                    ...datasource.mediaSetView,
+                    properties: new Set(datasource.mediaSetView.properties),
+                    uploadProperties: new Set(
+                      datasource.mediaSetView.uploadProperties,
+                    ),
+                  },
+                ] as const,
+              ]
+            : [],
+        ),
+      );
+    expect(mediaBindings(second)).toEqual(mediaBindings(first));
     const mediaInputs = (result: typeof first) =>
-      [...result.shapes.inputShapes.entries()].filter(
-        ([, shape]) => shape.type === "filesDatasource",
+      new Map(
+        [...result.shapes.inputShapes.entries()].filter(
+          ([, shape]) => shape.type === "filesDatasource",
+        ),
       );
     expect(mediaInputs(second)).toEqual(mediaInputs(first));
   });

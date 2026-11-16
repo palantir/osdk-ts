@@ -40,14 +40,12 @@ import type {
 import { resolveDerivedPropertyLinks } from "../../api/object/resolveDerivedPropertyLinks.js";
 import { isExotic } from "../../api/properties/PropertyTypeType.js";
 import type { CoversEveryVariant } from "../../util/CoversEveryVariant.js";
-import { createValidationIssueCollector } from "../../validation.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 
 export function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
-  const collector = createValidationIssueCollector();
   invariant(
     (objectType.referenceSources?.length ?? 0) === 0 &&
       !objectType.properties?.some(
@@ -225,7 +223,6 @@ export function extractPropertyDatasource(
       };
       return [buildDatasource(property.apiName, geotimeDefinition)];
     case "mediaReference":
-      if (property.reference !== undefined) return [];
       const mediaSetDefinition: OntologyIrObjectTypeDatasourceDefinition = {
         type: "mediaSetView",
         mediaSetView: {

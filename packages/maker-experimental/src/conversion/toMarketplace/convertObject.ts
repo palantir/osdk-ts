@@ -126,16 +126,13 @@ export function convertObject(
       extractPropertyDatasource(prop, objectType.apiName, ridGenerator),
     );
 
-  const mediaDatasources = [...(objectType.referenceSources ?? [])]
-    .sort((a, b) => a.mediaSet.apiName.localeCompare(b.mediaSet.apiName))
-    .flatMap(({ mediaSet }) => {
-      const properties = (objectType.properties ?? [])
-        .filter((property) =>
-          property.reference?.sources.some(
-            (source) => source.apiName === mediaSet.apiName,
-          ),
-        )
-        .sort((a, b) => a.apiName.localeCompare(b.apiName));
+  const mediaDatasources = (objectType.referenceSources ?? []).flatMap(
+    ({ mediaSet }) => {
+      const properties = (objectType.properties ?? []).filter((property) =>
+        property.reference?.sources.some(
+          (source) => source.apiName === mediaSet.apiName,
+        ),
+      );
       if (properties.length === 0) return [];
       return [
         buildDatasource(
@@ -171,7 +168,8 @@ export function convertObject(
           ridGenerator,
         ),
       ];
-    });
+    },
+  );
   propertyDatasources.push(...mediaDatasources);
 
   const classificationGroupMarkingNames = extractMarkingGroups(
