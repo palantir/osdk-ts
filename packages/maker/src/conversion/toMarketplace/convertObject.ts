@@ -173,12 +173,12 @@ export function convertObject(
       ...(objectType.interfaceActionsEnabled === undefined
         ? {}
         : {
-          interfaceSettings: {
-            enableInterfaceActions: objectType.interfaceActionsEnabled
-              ? { type: "enabled", enabled: {} }
-              : { type: "disabled", disabled: {} },
-          },
-        }),
+            interfaceSettings: {
+              enableInterfaceActions: objectType.interfaceActionsEnabled
+                ? { type: "enabled", enabled: {} }
+                : { type: "disabled", disabled: {} },
+            },
+          }),
     },
     propertySecurityGroupPackagingVersion: {
       type: "v2",
