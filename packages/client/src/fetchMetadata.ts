@@ -24,6 +24,7 @@ import type {
   QueryDefinition,
   QueryMetadata,
 } from "@osdk/api";
+import type { AgentDefinition, AgentMetadata } from "@osdk/api/unstable";
 
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { InterfaceDefinitions } from "./ontology/OntologyProvider.js";
@@ -34,7 +35,8 @@ export const fetchMetadataInternal = async <
     | ObjectTypeDefinition
     | InterfaceDefinition
     | ActionDefinition<any>
-    | QueryDefinition<any>,
+    | QueryDefinition<any>
+    | AgentDefinition<unknown>,
 >(
   client: MinimalClient,
   definition: Q,
@@ -47,7 +49,9 @@ export const fetchMetadataInternal = async <
         ? ActionMetadata
         : Q extends QueryDefinition<any>
           ? QueryMetadata
-          : never
+          : Q extends AgentDefinition<unknown>
+            ? AgentMetadata
+            : never
 > => {
   if (definition.type === "object") {
     const { [InterfaceDefinitions]: interfaceDefs, ...objectTypeDef } =
@@ -65,6 +69,11 @@ export const fetchMetadataInternal = async <
     return client.ontologyProvider.getQueryDefinition(
       definition.apiName,
       definition.isFixedVersion ? definition.version : undefined,
+    ) as any;
+  } else if (definition.type === "agent") {
+    return client.ontologyProvider.getAgentDefinition(
+      definition.apiName,
+      definition.version,
     ) as any;
   } else {
     throw new Error("Not implemented for given definition");

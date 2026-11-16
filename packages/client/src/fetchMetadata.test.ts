@@ -20,27 +20,47 @@ import type {
   ObjectMetadata,
   QueryMetadata,
 } from "@osdk/api";
+import type { AgentMetadata } from "@osdk/api/unstable";
 import {
   $Actions,
+  $Agents,
   $Interfaces,
   $Objects,
   $Queries,
 } from "@osdk/client.test.ontology";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
-import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+import {
+  LegacyFauxFoundry,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import {
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  vi,
+} from "vitest";
 
 import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
 
 describe("FetchMetadata", () => {
   let client: Client;
+  let fauxFoundry: LegacyFauxFoundry;
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    fauxFoundry = new LegacyFauxFoundry();
+    const testSetup = startNodeApiServer(fauxFoundry, createClient);
     ({ client } = testSetup);
     return () => {
       testSetup.apiServer.close();
     };
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("fetches object metadata correctly", async () => {
@@ -413,5 +433,70 @@ describe("FetchMetadata", () => {
         "version": "0.11.0",
       }
     `);
+  });
+
+  it("fetches agent metadata correctly", async () => {
+    const agentMetadata = await client.fetchMetadata($Agents.weatherAgent);
+
+    expectTypeOf(agentMetadata).toEqualTypeOf<AgentMetadata>();
+    expect(agentMetadata).toMatchInlineSnapshot(`
+      {
+        "agentState": {
+          "nullable": false,
+          "struct": {
+            "temperature": {
+              "nullable": false,
+              "type": "integer",
+            },
+          },
+          "type": "struct",
+        },
+        "apiName": "weatherAgent",
+        "arguments": {
+          "city": {
+            "nullable": false,
+            "type": "string",
+          },
+        },
+        "contextItems": {
+          "temperature": {
+            "nullable": true,
+            "type": "integer",
+          },
+          "weather-result": {
+            "nullable": false,
+            "type": "string",
+          },
+        },
+        "createdBy": "user",
+        "createdTime": "2026-01-01T00:00:00Z",
+        "events": {
+          "LookupWeather": {
+            "nullable": false,
+            "struct": {
+              "city": {
+                "nullable": false,
+                "type": "string",
+              },
+            },
+            "type": "struct",
+          },
+          "SetTemperature": {
+            "nullable": true,
+            "type": "double",
+          },
+        },
+        "type": "agent",
+        "version": "1.2.3",
+      }
+    `);
+  });
+
+  it("fetches agent metadata for the requested version", async () => {
+    const agent = { ...$Agents.noArgumentsAgent, version: "2.0.0" };
+
+    const agentMetadata = await client.fetchMetadata(agent);
+
+    expect(agentMetadata.version).toBe("2.0.0");
   });
 });

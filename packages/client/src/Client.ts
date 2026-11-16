@@ -29,6 +29,7 @@ import type {
 } from "@osdk/api";
 import type {
   AgentDefinition,
+  AgentMetadata,
   Experiment,
   ExperimentFns,
   MinimalObjectSet,
@@ -169,6 +170,11 @@ export interface Client extends SharedClient, OldSharedClient {
             ? QueryMetadata
             : never
   >;
+
+  /** @beta */
+  fetchMetadata<Q extends AgentDefinition<unknown>>(
+    o: Q,
+  ): Promise<AgentMetadata>;
 
   /** @internal */
   [additionalContext]: MinimalClient;
