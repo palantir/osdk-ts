@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.91.0
+
+### Minor Changes
+
+- f4d94ba: Support multiple named media-set inputs and explicit upload destinations on scalar media properties.
+- 8aa522d: Use SDK identifiers in generated snippets for namespaced objects, interfaces, and actions, and for hyphenated action names.
+
+### Patch Changes
+
+- Updated dependencies [749af7f]
+- Updated dependencies [3282ead]
+  - @osdk/api@2.92.0
+  - @osdk/generator-converters.ontologyir@2.92.0
+
 ## 0.90.0
 
 ### Minor Changes
