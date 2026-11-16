@@ -27,10 +27,6 @@ export type {
   SubscriptionConnection,
 } from "../SubscriptionConnection.js";
 
-export { createScenario } from "../scenarios/createScenario.js";
-export type { EXPERIMENTAL_ScenarioClient } from "../scenarios/ScenarioClient.js";
-export { withScenario } from "../scenarios/withScenario.js";
-
 export {
   applyShapeTransformations,
   applyShapeTransformationsToArray,

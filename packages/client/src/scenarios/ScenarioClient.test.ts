@@ -28,7 +28,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { mockFetchResponse } from "../createClient.test.js";
-import { withScenario } from "./withScenario.js";
+import { withScenario } from "../index.js";
 
 describe("ScenarioClient methods", () => {
   const ontologyRid = "ri.not.important";
@@ -94,7 +94,7 @@ describe("ScenarioClient methods", () => {
     });
   });
 
-  describe("getEditedEntities (page form)", () => {
+  describe("getEditedObjects (page form)", () => {
     it("calls the listScenarioEditedObjects endpoint with pageSize/pageToken", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       const mock: ListScenarioEditedObjectsResponse = {
@@ -106,7 +106,7 @@ describe("ScenarioClient methods", () => {
       };
       mockFetchResponse(fetchFunction, mock);
 
-      const result = await scenario.getEditedEntities(Employee, {
+      const result = await scenario.getEditedObjects(Employee, {
         pageSize: 100,
         pageToken: "tok-1",
       });
@@ -233,7 +233,7 @@ describe("ScenarioClient methods", () => {
     });
   });
 
-  describe("editedEntitiesAsyncIter", () => {
+  describe("editedObjectsAsyncIter", () => {
     it("paginates and dedupes by $primaryKey across pages", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
 
@@ -255,7 +255,7 @@ describe("ScenarioClient methods", () => {
       mockFetchResponse(fetchFunction, page2);
 
       const keys: unknown[] = [];
-      for await (const obj of scenario.editedEntitiesAsyncIter(Employee)) {
+      for await (const obj of scenario.editedObjectsAsyncIter(Employee)) {
         keys.push(obj.$primaryKey);
       }
 
@@ -276,7 +276,7 @@ describe("ScenarioClient methods", () => {
       mockFetchResponse(fetchFunction, mock);
 
       const keys: unknown[] = [];
-      for await (const obj of scenario.editedEntitiesAsyncIter(Employee)) {
+      for await (const obj of scenario.editedObjectsAsyncIter(Employee)) {
         keys.push(obj.$primaryKey);
       }
 

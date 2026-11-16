@@ -78,6 +78,16 @@ export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
+export { createScenario } from "./scenarios/createScenario.js";
+export type {
+  ConflictingObjectsPage,
+  EditedLinksForObjectType,
+  EditedLinksPage,
+  EditedObjectsPage,
+  ScenarioClient,
+  ScenarioEditedEntityTypes,
+} from "./scenarios/ScenarioClient.js";
+export { withScenario } from "./scenarios/withScenario.js";
 
 export type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 export { getWireObjectSet, isObjectSet } from "./objectSet/createObjectSet.js";

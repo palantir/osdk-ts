@@ -28,8 +28,7 @@ import {
   mockFetchResponse,
   mockInterfaceFetchPageResponse,
 } from "../createClient.test.js";
-import { createScenario } from "./createScenario.js";
-import { withScenario } from "./withScenario.js";
+import { createScenario, withScenario } from "../index.js";
 
 describe("createScenario", () => {
   const ontologyRid = "ri.not.important";
