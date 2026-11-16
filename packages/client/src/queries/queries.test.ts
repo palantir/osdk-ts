@@ -22,6 +22,7 @@ import type {
   ObjectSpecifier,
   Osdk,
   OsdkBase,
+  QueryDefinition,
 } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "@osdk/api/unstable";
 import {
@@ -46,6 +47,10 @@ import {
   threeDimensionalAggregationFunction,
   twoDimensionalAggregationFunction,
 } from "@osdk/client.test.ontology";
+import type {
+  ExecuteQueryResponse,
+  QueryDataType,
+} from "@osdk/foundry.ontologies";
 import {
   LegacyFauxFoundry,
   msw,
@@ -67,9 +72,11 @@ import { createClient } from "../createClient.js";
 describe("queries", () => {
   let client: Client;
   let apiServer: SetupServer;
+  let fauxFoundry: LegacyFauxFoundry;
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    fauxFoundry = new LegacyFauxFoundry();
+    const testSetup = startNodeApiServer(fauxFoundry, createClient);
     ({ client, apiServer } = testSetup);
     return () => {
       testSetup.apiServer.close();
@@ -219,6 +226,218 @@ describe("queries", () => {
         $title: undefined,
       },
     ]);
+  });
+
+  describe("nested query results", () => {
+    const interfaceType: QueryDataType = {
+      type: "interfaceObject",
+      interfaceTypeApiName: FooInterface.apiName,
+    };
+    const interfaceValue = {
+      objectTypeApiName: "Employee",
+      primaryKeyValue: 50030,
+    };
+    const interfaceIdentity = {
+      $apiName: "FooInterface",
+      $objectType: "Employee",
+      $primaryKey: 50030,
+      $objectSpecifier: "Employee:50030",
+      $title: undefined,
+    };
+
+    function executeQueryResult(
+      apiName: string,
+      output: QueryDataType,
+      value: ExecuteQueryResponse["value"],
+    ) {
+      const query: QueryDefinition<() => Promise<unknown>> = {
+        type: "query",
+        apiName,
+        version: "1.0.0",
+        isFixedVersion: true,
+      };
+      fauxFoundry.getDefaultOntology().registerQueryType(
+        {
+          apiName,
+          version: "1.0.0",
+          rid: `ri.function-registry.main.function.${apiName}`,
+          parameters: {},
+          output,
+          typeReferences: {},
+        },
+        () => ({ value }),
+      );
+      return client(query).executeFunction();
+    }
+
+    it("converts an interface identity inside a struct", async () => {
+      const result = await executeQueryResult(
+        "returnsStructWithInterface",
+        {
+          type: "struct",
+          fields: [
+            { name: "employee", fieldType: interfaceType },
+            { name: "label", fieldType: { type: "string" } },
+            { name: "count", fieldType: { type: "integer" } },
+            { name: "active", fieldType: { type: "boolean" } },
+          ],
+        },
+        {
+          employee: interfaceValue,
+          label: "Team",
+          count: 1,
+          active: false,
+        },
+      );
+
+      expect(result).toStrictEqual({
+        employee: interfaceIdentity,
+        label: "Team",
+        count: 1,
+        active: false,
+      });
+    });
+
+    it("converts identity arrays inside row structs", async () => {
+      const result = await executeQueryResult(
+        "returnsRowsWithIdentityArrays",
+        {
+          type: "array",
+          subType: {
+            type: "struct",
+            fields: [
+              {
+                name: "employees",
+                fieldType: { type: "array", subType: interfaceType },
+              },
+              {
+                name: "groups",
+                fieldType: {
+                  type: "array",
+                  subType: { type: "array", subType: interfaceType },
+                },
+              },
+              {
+                name: "objects",
+                fieldType: {
+                  type: "array",
+                  subType: {
+                    type: "object",
+                    objectApiName: Employee.apiName,
+                    objectTypeApiName: Employee.apiName,
+                  },
+                },
+              },
+              {
+                name: "labels",
+                fieldType: { type: "array", subType: { type: "string" } },
+              },
+            ],
+          },
+        },
+        [
+          {
+            employees: [interfaceValue],
+            groups: [[interfaceValue], []],
+            objects: [50030],
+            labels: ["Team"],
+          },
+        ],
+      );
+
+      expect(result).toStrictEqual([
+        {
+          employees: [interfaceIdentity],
+          groups: [[interfaceIdentity], []],
+          objects: [
+            {
+              $apiName: "Employee",
+              $objectType: "Employee",
+              $primaryKey: 50030,
+              $objectSpecifier: "Employee:50030",
+              $title: undefined,
+            },
+          ],
+          labels: ["Team"],
+        },
+      ]);
+    });
+
+    it("converts optional interface identities in nested structs", async () => {
+      const result = await executeQueryResult(
+        "returnsRowsWithOptionalInterfaces",
+        {
+          type: "array",
+          subType: {
+            type: "struct",
+            fields: [
+              {
+                name: "details",
+                fieldType: {
+                  type: "struct",
+                  fields: [
+                    {
+                      name: "employee",
+                      fieldType: {
+                        type: "union",
+                        unionTypes: [interfaceType, { type: "null" }],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+        [
+          { details: { employee: interfaceValue } },
+          { details: { employee: null } },
+          { details: {} },
+        ],
+      );
+
+      expect(result).toStrictEqual([
+        { details: { employee: interfaceIdentity } },
+        { details: { employee: undefined } },
+        { details: { employee: undefined } },
+      ]);
+    });
+
+    it("converts maps inside structs", async () => {
+      const result = await executeQueryResult(
+        "returnsStructWithMaps",
+        {
+          type: "struct",
+          fields: [
+            {
+              name: "employees",
+              fieldType: {
+                type: "entrySet",
+                keyType: { type: "string" },
+                valueType: interfaceType,
+              },
+            },
+            {
+              name: "counts",
+              fieldType: {
+                type: "entrySet",
+                keyType: { type: "string" },
+                valueType: { type: "integer" },
+              },
+            },
+          ],
+        },
+        {
+          employees: [{ key: "lead", value: interfaceValue }],
+          counts: [{ key: "team", value: 2 }],
+        },
+      );
+
+      expect(result).toStrictEqual({
+        employees: { lead: interfaceIdentity },
+        counts: { team: 2 },
+      });
+    });
   });
 
   it("no params work", async () => {
