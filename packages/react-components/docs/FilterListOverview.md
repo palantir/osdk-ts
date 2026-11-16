@@ -3,16 +3,18 @@ title: FilterList
 description: An OSDK-aware filter panel for ontology objects. Renders a list of filter controls — listogram, select, range, keyword search, and more — driven by aggregations against an object type or ObjectSet, and emits a composed where clause or filtered ObjectSet.
 ---
 
-> **Beta** — exported from `@osdk/react-components/filter-list`.
+> [!NOTE]
+> This component is in beta. Import it from `@osdk/react-components/filter-list`.
 
 ## Usage
 
 FilterList fetches its own facet data. Wrap your app in `OsdkProvider` and import the package styles once (see [Prerequisites](./Prerequisites.md) for the `@layer` order), then pass an object type and a set of filter definitions — aggregation counts, dropdowns, add/remove, and reset are wired up out of the box.
 
-> **Note** — `@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
+> [!NOTE]
+> `@my-app/sdk` is a placeholder for your generated SDK package. Replace it with your package name.
 
 ```tsx
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { FilterList } from "@osdk/react-components/filter-list";
 
 function EmployeeFilters() {
@@ -71,6 +73,7 @@ Type parameters: `Q extends ObjectTypeDefinition`
 
 FilterList exposes every visual property through `--osdk-filter-*` CSS variables (plus `--osdk-error-boundary-*` for its error state). Override them to restyle the panel without forking the component; scope overrides with the `className` prop, or set `--osdk-*` / `--bp-*` tokens at `:root` for global theming.
 
+> [!NOTE]
 > **Class names are internal.** FilterList uses CSS Modules, so its class names are hashed at build time and are **not** part of the public API. Style it by overriding the CSS variables below — the only consumer-facing class name is the one you pass via the `className` prop. Token defaults live in `src/tokens/component-tokens/filter-list.css`; the `--osdk-*` values they reference are defined in `src/tokens/base-tokens/base.css`.
 
 | Area                                           | CSS variables                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
