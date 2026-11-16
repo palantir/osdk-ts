@@ -16,6 +16,8 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { MakerValidationError } from "../../validation.js";
+import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import type { MediaPropertyReference } from "../object/MediaReference.js";
@@ -25,7 +27,7 @@ import type { ResourceLocator } from "../ResourceLocator.js";
 
 const archive = {
   type: "rid",
-  rid: "ri.mio.main.media-set.11111111-1111-1111-1111-111111111111",
+  rid: "ri.mio.main.media-set.11111111-1111-1111-1111-abcdefabcdef",
 } as const;
 const uploads = {
   type: "rid",
@@ -174,6 +176,135 @@ describe("media reference bindings", () => {
       expect(() => defineObject(definition)).toThrow(message);
     },
   );
+
+  it.each([false, true])(
+    "validates derived media properties with explicit reference: %s",
+    (hasReference) => {
+      const original = defineObject({
+        ...documentDefinition(),
+        apiName: "OriginalDocument",
+      });
+      const link = defineLink({
+        apiName: "originalToDocument",
+        one: { object: original, metadata: { apiName: "documents" } },
+        toMany: {
+          object: "com.example.Document",
+          metadata: { apiName: "original" },
+        },
+        manyForeignKeyProperty: "id",
+      });
+      const definition = documentDefinition();
+      definition.properties = {
+        id: { type: "string" },
+        file: {
+          type: "mediaReference",
+          ...(hasReference ? { reference } : {}),
+        },
+      };
+      definition.datasources = [
+        {
+          type: "derived",
+          linkDefinition: [{ linkType: link }],
+          propertyMapping: { file: "file" },
+        },
+      ];
+      if (hasReference) {
+        expect(() => defineObject(definition)).toThrow(
+          "cannot combine reference with a derived datasource",
+        );
+      } else {
+        defineObject(definition);
+        expect(mediaDatasources()).toEqual([]);
+      }
+    },
+  );
+
+  it.each(["declaration", "source", "uploadDestination"] as const)(
+    "rejects uppercase or mixed-case RID hex in %s",
+    (location) => {
+      for (const hex of [
+        "ABCDEFAB-CDEF-ABCD-EFAB-CDEFABCDEFAB",
+        "Abcdefab-cdef-abcd-efab-cdefabcdefab",
+      ]) {
+        const invalidLocator = {
+          type: "rid",
+          rid: `ri.mio.main.media-set.${hex}`,
+        } as const;
+        const definition = documentDefinition();
+        definition.referenceSources = [
+          {
+            type: "media",
+            mediaSet: location === "declaration" ? invalidLocator : archive,
+          },
+        ];
+        definition.properties = {
+          id: { type: "string" },
+          file: {
+            type: "mediaReference",
+            reference: {
+              type: "media",
+              sources: [location === "source" ? invalidLocator : archive],
+              uploadDestination:
+                location === "uploadDestination" ? invalidLocator : archive,
+            },
+          },
+        };
+        expect(() => defineObject(definition)).toThrow("lowercase hex");
+      }
+    },
+  );
+
+  it("collects media and other object issues without registering the invalid object", () => {
+    const definition = documentDefinition();
+    definition.titlePropertyApiName = "missingTitle";
+    definition.referenceSources = [
+      { type: "media", mediaSet: archive },
+      { type: "media", mediaSet: archive },
+    ];
+    definition.properties = {
+      id: { type: "string" },
+      file: {
+        type: "mediaReference",
+        reference: {
+          type: "media",
+          sources: [undeclared, undeclared],
+          uploadDestination: uploads,
+        },
+      },
+    };
+    expect(() => defineObject(definition)).toThrowError(MakerValidationError);
+    expect(() => defineObject(definition)).toThrowError(
+      expect.objectContaining({
+        issues: [
+          expect.objectContaining({
+            code: "duplicate_media_source",
+            path: ["referenceSources", 1, "mediaSet"],
+          }),
+          expect.objectContaining({
+            code: "invalid_media_reference",
+            path: ["properties", "file", "reference", "sources", 0],
+          }),
+          expect.objectContaining({
+            code: "invalid_media_reference",
+            path: ["properties", "file", "reference", "sources", 1],
+          }),
+          expect.objectContaining({
+            code: "duplicate_media_source",
+            path: ["properties", "file", "reference", "sources", 1],
+          }),
+          expect.objectContaining({
+            code: "invalid_media_reference",
+            path: ["properties", "file", "reference", "uploadDestination"],
+          }),
+          expect.objectContaining({
+            message:
+              "Title property missingTitle is not defined on object Document",
+          }),
+        ],
+      }),
+    );
+    expect(() => defineObject(documentDefinition())).not.toThrow();
+  });
 
   it("rejects duplicate declarations by RID rather than object identity", () => {
     const definition = documentDefinition();

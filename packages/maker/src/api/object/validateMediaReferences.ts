@@ -14,72 +14,121 @@
  * limitations under the License.
  */
 
-import invariant from "tiny-invariant";
-
+import type {
+  MakerValidationIssue,
+  MakerValidationIssueCollector,
+} from "../../validation.js";
 import type { ResourceLocator } from "../ResourceLocator.js";
 import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
 const MEDIA_SET_RID =
-  /^ri\.mio\.[^.]+\.media-set\.[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/u;
+  /^ri\.mio\.[^.]+\.media-set\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
 
-function validateMediaSet(locator: ResourceLocator): void {
-  invariant(
+function validateMediaSet(
+  locator: ResourceLocator,
+  collector: MakerValidationIssueCollector,
+  path: MakerValidationIssue["path"],
+): void {
+  collector.addIssue(
     locator.type === "rid" && MEDIA_SET_RID.test(locator.rid),
-    "Media references require a media set RID locator",
+    {
+      code: "invalid_format",
+      message:
+        "Media references require a media set RID locator with lowercase hex",
+      path,
+    },
   );
 }
 
-export function validateMediaReferences(object: ObjectTypeDefinition): void {
+export function validateMediaReferences(
+  object: ObjectTypeDefinition,
+  collector: MakerValidationIssueCollector,
+): void {
+  const { addIssue } = collector;
   const declared = new Set<string>();
-  for (const source of object.referenceSources ?? []) {
-    invariant(source.type === "media", "Unsupported reference source type");
-    validateMediaSet(source.mediaSet);
-    invariant(
-      !declared.has(source.mediaSet.rid),
-      `Duplicate media reference source on object ${object.apiName}: ${source.mediaSet.rid}`,
-    );
+  for (const [index, source] of (object.referenceSources ?? []).entries()) {
+    const path = ["referenceSources", index] as const;
+    addIssue(source.type === "media", {
+      code: "invalid_media_reference",
+      message: "Unsupported reference source type",
+      path: [...path, "type"],
+    });
+    validateMediaSet(source.mediaSet, collector, [...path, "mediaSet"]);
+    addIssue(!declared.has(source.mediaSet.rid), {
+      code: "duplicate_media_source",
+      message: `Duplicate media reference source on object ${object.apiName}: ${source.mediaSet.rid}`,
+      path: [...path, "mediaSet"],
+    });
     declared.add(source.mediaSet.rid);
   }
 
   for (const [name, property] of Object.entries(object.properties ?? {})) {
     const reference = property.reference;
     if (reference === undefined) continue;
+
     const context = `Property ${name} on object ${object.apiName}`;
-    invariant(
-      property.type === "mediaReference" && !property.array,
-      `${context} can only use reference on a scalar mediaReference`,
+    const path = ["properties", name, "reference"] as const;
+    addIssue(
+      !object.datasources?.some(
+        (datasource) =>
+          datasource.type === "derived" &&
+          Object.hasOwn(datasource.propertyMapping, name),
+      ),
+      {
+        code: "invalid_media_reference",
+        message: `${context} cannot combine reference with a derived datasource`,
+        path,
+      },
     );
-    invariant(
-      !property.includeEmptyBackingMediaSet,
-      `${context} cannot combine reference with includeEmptyBackingMediaSet`,
-    );
-    invariant(
-      reference.type === "media",
-      `${context} requires a media reference`,
-    );
-    invariant(
-      reference.sources.length > 0,
-      `${context} requires at least one media source`,
-    );
+
+    addIssue(property.type === "mediaReference" && !property.array, {
+      code: "invalid_media_reference",
+      message: `${context} can only use reference on a scalar mediaReference`,
+      path,
+    });
+
+    addIssue(!property.includeEmptyBackingMediaSet, {
+      code: "invalid_media_reference",
+      message: `${context} cannot combine reference with includeEmptyBackingMediaSet`,
+      path,
+    });
+
+    addIssue(reference.type === "media", {
+      code: "invalid_media_reference",
+      message: `${context} requires a media reference`,
+      path: [...path, "type"],
+    });
+
+    addIssue(reference.sources.length > 0, {
+      code: "invalid_media_reference",
+      message: `${context} requires at least one media source`,
+      path: [...path, "sources"],
+    });
+
     const selected = new Set<string>();
-    for (const source of reference.sources) {
-      validateMediaSet(source);
-      invariant(
-        declared.has(source.rid),
-        `${context} selects an undeclared media source: ${source.rid}`,
-      );
-      invariant(
-        !selected.has(source.rid),
-        `${context} selects a duplicate media source: ${source.rid}`,
-      );
+    for (const [index, source] of reference.sources.entries()) {
+      const sourcePath = [...path, "sources", index];
+      validateMediaSet(source, collector, sourcePath);
+      addIssue(declared.has(source.rid), {
+        code: "invalid_media_reference",
+        message: `${context} selects an undeclared media source: ${source.rid}`,
+        path: sourcePath,
+      });
+      addIssue(!selected.has(source.rid), {
+        code: "duplicate_media_source",
+        message: `${context} selects a duplicate media source: ${source.rid}`,
+        path: sourcePath,
+      });
       selected.add(source.rid);
     }
     if (reference.uploadDestination !== undefined) {
-      validateMediaSet(reference.uploadDestination);
-      invariant(
-        selected.has(reference.uploadDestination.rid),
-        `${context} uploadDestination must be one of its sources`,
-      );
+      const uploadPath = [...path, "uploadDestination"];
+      validateMediaSet(reference.uploadDestination, collector, uploadPath);
+      addIssue(selected.has(reference.uploadDestination.rid), {
+        code: "invalid_media_reference",
+        message: `${context} uploadDestination must be one of its sources`,
+        path: uploadPath,
+      });
     }
   }
 }
