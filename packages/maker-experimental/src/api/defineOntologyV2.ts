@@ -216,7 +216,7 @@ export async function defineOntologyV2(
   ).flatMap((object) =>
     (object.properties ?? []).flatMap(
       (property) =>
-        property.reference?.sources.map((source) => source.rid) ?? [],
+        property.reference?.sources.map((source) => source.apiName) ?? [],
     ),
   );
 

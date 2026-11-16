@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-/** Identifies an existing resource. The consumer determines the resource type. */
+/** Identifies a named resource input. The consumer determines the resource type. */
 export type ResourceLocator = {
-  readonly type: "rid";
-  readonly rid: string;
+  readonly type: "apiName";
+  readonly apiName: string;
 };

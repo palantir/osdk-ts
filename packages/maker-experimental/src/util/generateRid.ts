@@ -184,10 +184,7 @@ export interface OntologyRidGenerator {
     restrictedViewName: string,
     columnNames: Set<string>,
   ): RestrictedViewLocator;
-  generateMediaSetViewLocator(
-    mediaSetViewName: string,
-    sourceMediaSetRid?: string,
-  ): MediaSetViewLocator;
+  generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator;
   toBlockInternalId(readableId: ReadableId): string;
   generateObjectTypeId(objectTypeApiName: string): string;
   getObjectTypeIds(): BiMap<ReadableId, string>;
@@ -1104,25 +1101,10 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     return { rid: restrictedViewRid };
   }
 
-  /**
-   * Builds a media locator and registers its files-datasource input.
-   *
-   * mediaSetViewName keys the input and determines the temporary view/branch RIDs.
-   * Legacy empty backing uses <Object>.<property>, explicit sources use the source RID
-   * so properties and objects selecting the same media set share one input.
-   *
-   * sourceMediaSetRid supplies the authored media set locator instead of generating
-   * a deterministic temporary RID for empty backing.
-   */
-  generateMediaSetViewLocator(
-    mediaSetViewName: string,
-    sourceMediaSetRid?: string,
-  ): MediaSetViewLocator {
-    const mediaSetRid =
-      sourceMediaSetRid ??
-      `ri.ontology-metadata.temp.media-set.${this.hashString(
-        mediaSetViewName,
-      )}`;
+  generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator {
+    const mediaSetRid = `ri.ontology-metadata.temp.media-set.${this.hashString(
+      mediaSetViewName,
+    )}`;
     const mediaSetBranchRid = `ri.ontology-metadata.temp.media-set-branch.${this.hashString(
       mediaSetViewName,
     )}`;

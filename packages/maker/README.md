@@ -180,14 +180,14 @@ Configure content backing on an object independently of the datasource supplying
 import { defineObject, type ResourceLocator } from "@osdk/maker";
 
 const archive = {
-  type: "rid",
-  rid: "ri.mio.main.media-set.11111111-1111-1111-1111-111111111111",
+  type: "apiName",
+  apiName: "archive",
 } as const;
 
 // OR use satisfies ResourceLocator
 const uploads = {
-  type: "rid",
-  rid: "ri.mio.main.media-set.22222222-2222-2222-2222-222222222222",
+  type: "apiName",
+  apiName: "uploads",
 } satisfies ResourceLocator;
 
 defineObject({

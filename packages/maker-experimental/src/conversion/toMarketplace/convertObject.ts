@@ -127,27 +127,26 @@ export function convertObject(
     );
 
   const mediaDatasources = [...(objectType.referenceSources ?? [])]
-    .sort((a, b) => a.mediaSet.rid.localeCompare(b.mediaSet.rid))
+    .sort((a, b) => a.mediaSet.apiName.localeCompare(b.mediaSet.apiName))
     .flatMap(({ mediaSet }) => {
       const properties = (objectType.properties ?? [])
         .filter((property) =>
           property.reference?.sources.some(
-            (source) => source.rid === mediaSet.rid,
+            (source) => source.apiName === mediaSet.apiName,
           ),
         )
         .sort((a, b) => a.apiName.localeCompare(b.apiName));
       if (properties.length === 0) return [];
       return [
         buildDatasource(
-          `${objectType.apiName}.media.${mediaSet.rid}`,
+          `${objectType.apiName}.media.${mediaSet.apiName}`,
           {
             type: "mediaSetView",
             mediaSetView: {
               assumedMarkings: [],
               clearOnDeleteProperties: [],
               mediaSetViewLocator: ridGenerator.generateMediaSetViewLocator(
-                mediaSet.rid,
-                mediaSet.rid,
+                mediaSet.apiName,
               ),
               properties: properties.map((property) =>
                 ridGenerator.generatePropertyRid(
@@ -158,7 +157,8 @@ export function convertObject(
               uploadProperties: properties
                 .filter(
                   (property) =>
-                    property.reference?.uploadDestination?.rid === mediaSet.rid,
+                    property.reference?.uploadDestination?.apiName ===
+                    mediaSet.apiName,
                 )
                 .map((property) =>
                   ridGenerator.generatePropertyRid(

@@ -26,16 +26,16 @@ import type { ObjectTypeDefinition } from "../object/ObjectTypeDefinition.js";
 import type { ResourceLocator } from "../ResourceLocator.js";
 
 const archive = {
-  type: "rid",
-  rid: "ri.mio.main.media-set.11111111-1111-1111-1111-abcdefabcdef",
+  type: "apiName",
+  apiName: "archive",
 } as const;
 const uploads = {
-  type: "rid",
-  rid: "ri.mio.main.media-set.22222222-2222-2222-2222-222222222222",
+  type: "apiName",
+  apiName: "uploads",
 } satisfies ResourceLocator;
 const undeclared = {
-  type: "rid",
-  rid: "ri.mio.main.media-set.33333333-3333-3333-3333-333333333333",
+  type: "apiName",
+  apiName: "undeclared",
 } as const;
 
 const reference = {
@@ -132,13 +132,13 @@ describe("media reference bindings", () => {
           type: "media",
           sources: [
             {
-              type: "rid",
-              rid: "ri.mio.main.view.11111111-1111-1111-1111-111111111111",
+              type: "apiName",
+              apiName: "invalid-name",
             },
           ],
         },
       },
-      "media set RID locator",
+      "Invalid input API name",
     ],
   ] satisfies [ObjectPropertyTypeUserDefinition, string][])(
     "rejects invalid property bindings: %j",
@@ -191,16 +191,20 @@ describe("media reference bindings", () => {
   );
 
   it.each(["declaration", "source", "uploadDestination"] as const)(
-    "rejects uppercase or mixed-case RID hex in %s",
+    "rejects invalid API names and RID locators in %s",
     (location) => {
-      for (const hex of [
-        "ABCDEFAB-CDEF-ABCD-EFAB-CDEFABCDEFAB",
-        "Abcdefab-cdef-abcd-efab-cdefabcdefab",
-      ]) {
-        const invalidLocator = {
+      for (const invalidLocator of [
+        { type: "apiName", apiName: "" },
+        { type: "apiName", apiName: "invalid-name" },
+        { type: "apiName", apiName: "1invalid" },
+        { type: "apiName", apiName: "a".repeat(101) },
+        { type: "apiName", apiName: "On" },
+        { type: "apiName", apiName: "ﬁ" },
+        {
           type: "rid",
-          rid: `ri.mio.main.media-set.${hex}`,
-        } as const;
+          rid: "ri.mio.main.media-set.11111111-1111-1111-1111-111111111111",
+        } as unknown as ResourceLocator,
+      ] satisfies ResourceLocator[]) {
         const definition = documentDefinition();
         definition.referenceSources = [
           {
@@ -220,8 +224,29 @@ describe("media reference bindings", () => {
             },
           },
         };
-        expect(() => defineObject(definition)).toThrow("lowercase hex");
+        expect(() => defineObject(definition)).toThrow("API name");
       }
+    },
+  );
+
+  it.each(["_archive", "object", "𠀋".repeat(100)])(
+    "accepts Marketplace input API name %j throughout a media binding",
+    (apiName) => {
+      const source = { type: "apiName", apiName } as const;
+      const definition = documentDefinition();
+      definition.referenceSources = [{ type: "media", mediaSet: source }];
+      definition.properties = {
+        id: { type: "string" },
+        file: {
+          type: "mediaReference",
+          reference: {
+            type: "media",
+            sources: [source],
+            uploadDestination: source,
+          },
+        },
+      };
+      expect(() => defineObject(definition)).not.toThrow();
     },
   );
 
@@ -269,7 +294,7 @@ describe("media reference bindings", () => {
             code: "invalid_media_reference",
             path: ["properties", "file", "reference", "uploadDestination"],
             suggestion:
-              "Select a RID from sources, or omit uploadDestination to disable uploads.",
+              "Select an API name from sources, or omit uploadDestination to disable uploads.",
           }),
           expect.objectContaining({
             message:
@@ -281,7 +306,7 @@ describe("media reference bindings", () => {
     expect(() => defineObject(documentDefinition())).not.toThrow();
   });
 
-  it("rejects duplicate declarations by RID rather than object identity", () => {
+  it("rejects duplicate declarations by API name rather than object identity", () => {
     const definition = documentDefinition();
     definition.referenceSources = [
       { type: "media", mediaSet: archive },
@@ -290,19 +315,5 @@ describe("media reference bindings", () => {
     expect(() => defineObject(definition)).toThrow(
       "Duplicate media reference source",
     );
-  });
-
-  it("rejects non-media-set resource declarations", () => {
-    const definition = documentDefinition();
-    definition.referenceSources = [
-      {
-        type: "media",
-        mediaSet: {
-          type: "rid",
-          rid: "ri.foundry.main.dataset.11111111-1111-1111-1111-111111111111",
-        },
-      },
-    ];
-    expect(() => defineObject(definition)).toThrow("media set RID locator");
   });
 });

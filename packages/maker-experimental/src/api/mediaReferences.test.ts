@@ -25,12 +25,12 @@ import { ReadableIdGenerator } from "../util/generateRid.js";
 import { defineOntologyV2 } from "./defineOntologyV2.js";
 
 const archive = {
-  type: "rid",
-  rid: "ri.mio.main.media-set.11111111-1111-1111-1111-111111111111",
+  type: "apiName",
+  apiName: "archive",
 } as const;
 const uploads = {
-  type: "rid",
-  rid: "ri.mio.main.media-set.22222222-2222-2222-2222-222222222222",
+  type: "apiName",
+  apiName: "uploads",
 } satisfies ResourceLocator;
 
 function documentDefinition(apiName = "Document"): ObjectTypeDefinition {
@@ -73,20 +73,29 @@ describe("Marketplace media reference bindings", () => {
       ([, shape]) => shape.type === "filesDatasource",
     );
     expect(inputs.map(([id]) => id)).toEqual([
-      ReadableIdGenerator.getForMediaSetView(archive.rid),
-      ReadableIdGenerator.getForMediaSetView(uploads.rid),
+      "media-set-view-archive",
+      "media-set-view-uploads",
     ]);
+    const mediaSetRids = new Map<string, string>();
     for (const source of [archive, uploads]) {
-      const id = ReadableIdGenerator.getForMediaSetView(source.rid);
+      const id = ReadableIdGenerator.getForMediaSetView(source.apiName);
       const blockShapeId = result.blockDataAddOn.idToBlockShapeId[id];
-      expect(
+      const locator =
         result.ontologyIr.ontology.knownIdentifiers.filesDatasources[
           blockShapeId
-        ],
-      ).toMatchObject({
+        ];
+      expect(locator).toMatchObject({
         type: "mediaSet",
-        mediaSet: { rid: source.rid },
+        mediaSet: {
+          rid: expect.stringMatching(
+            /^ri\.ontology-metadata\.temp\.media-set\./u,
+          ),
+          branch: "master",
+        },
       });
+      if (locator.type === "mediaSet") {
+        mediaSetRids.set(source.apiName, locator.mediaSet.rid);
+      }
       expect(result.shapes.inputShapeMetadata.get(id)).toEqual({
         isOptional: false,
         isAccessedInReconcile: true,
@@ -109,14 +118,14 @@ describe("Marketplace media reference bindings", () => {
       );
       expect(media).toHaveLength(2);
       expect(media[0]).toMatchObject({
-        mediaSetViewLocator: { mediaSetRid: archive.rid },
+        mediaSetViewLocator: { mediaSetRid: mediaSetRids.get(archive.apiName) },
         properties: [file.rid],
         uploadProperties: [],
         assumedMarkings: [],
         clearOnDeleteProperties: [],
       });
       expect(media[1]).toMatchObject({
-        mediaSetViewLocator: { mediaSetRid: uploads.rid },
+        mediaSetViewLocator: { mediaSetRid: mediaSetRids.get(uploads.apiName) },
         properties: [file.rid, preview.rid],
         uploadProperties: [file.rid],
       });

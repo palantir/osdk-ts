@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { validateInputApiName } from "../../util/InputApiNameValidator.js";
 import type {
   MakerValidationIssue,
   MakerValidationIssueCollector,
@@ -21,24 +22,20 @@ import type {
 import type { ResourceLocator } from "../ResourceLocator.js";
 import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
-const MEDIA_SET_RID =
-  /^ri\.mio\.[^.]+\.media-set\.[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/u;
-
 function validateMediaSet(
   locator: ResourceLocator,
   collector: MakerValidationIssueCollector,
   path: MakerValidationIssue["path"],
 ): void {
-  collector.addIssue(
-    locator.type === "rid" && MEDIA_SET_RID.test(locator.rid),
-    {
-      code: "invalid_format",
-      message: "Expected a media set RID locator",
-      path,
-      suggestion:
-        'Use { type: "rid", rid: "ri.mio.<realm>.media-set.<uuid>" } with lowercase hex.',
-    },
-  );
+  collector.addIssue(locator.type === "apiName", {
+    code: "invalid_format",
+    message: "Expected a media set API name locator",
+    path,
+    suggestion: 'Use { type: "apiName", apiName: "mediaSource" }.',
+  });
+  if (locator.type !== "apiName") return;
+
+  validateInputApiName(locator.apiName, collector, [...path, "apiName"]);
 }
 
 export function validateMediaReferences(
@@ -56,13 +53,13 @@ export function validateMediaReferences(
       suggestion: 'Set type to "media".',
     });
     validateMediaSet(source.mediaSet, collector, [...path, "mediaSet"]);
-    addIssue(!declared.has(source.mediaSet.rid), {
+    addIssue(!declared.has(source.mediaSet.apiName), {
       code: "duplicate_media_source",
-      message: `Duplicate media reference source on object ${object.apiName}: ${source.mediaSet.rid}`,
+      message: `Duplicate media reference source on object ${object.apiName}: ${source.mediaSet.apiName}`,
       path: [...path, "mediaSet"],
-      suggestion: "Declare each media set RID once in referenceSources.",
+      suggestion: "Declare each media set API name once in referenceSources.",
     });
-    declared.add(source.mediaSet.rid);
+    declared.add(source.mediaSet.apiName);
   }
 
   for (const [name, property] of Object.entries(object.properties ?? {})) {
@@ -118,30 +115,30 @@ export function validateMediaReferences(
     for (const [index, source] of reference.sources.entries()) {
       const sourcePath = [...path, "sources", index];
       validateMediaSet(source, collector, sourcePath);
-      addIssue(declared.has(source.rid), {
+      addIssue(declared.has(source.apiName), {
         code: "invalid_media_reference",
-        message: `${context} selects an undeclared media source: ${source.rid}`,
+        message: `${context} selects an undeclared media source: ${source.apiName}`,
         path: sourcePath,
         suggestion:
           "Add this media set to the object's referenceSources, or select a declared set.",
       });
-      addIssue(!selected.has(source.rid), {
+      addIssue(!selected.has(source.apiName), {
         code: "duplicate_media_source",
-        message: `${context} selects a duplicate media source: ${source.rid}`,
+        message: `${context} selects a duplicate media source: ${source.apiName}`,
         path: sourcePath,
-        suggestion: "List each media set RID once in sources.",
+        suggestion: "List each media set API name once in sources.",
       });
-      selected.add(source.rid);
+      selected.add(source.apiName);
     }
     if (reference.uploadDestination !== undefined) {
       const uploadPath = [...path, "uploadDestination"];
       validateMediaSet(reference.uploadDestination, collector, uploadPath);
-      addIssue(selected.has(reference.uploadDestination.rid), {
+      addIssue(selected.has(reference.uploadDestination.apiName), {
         code: "invalid_media_reference",
         message: `${context} uploadDestination must be one of its sources`,
         path: uploadPath,
         suggestion:
-          "Select a RID from sources, or omit uploadDestination to disable uploads.",
+          "Select an API name from sources, or omit uploadDestination to disable uploads.",
       });
     }
   }
