@@ -192,7 +192,6 @@ export const structuredArgumentsAgentRequest: CreateAgentSessionRequest = {
         primaryKey: { employeeId: 50030 },
       },
     },
-    future: { newShape: true },
     optionalText: "text",
   },
 };

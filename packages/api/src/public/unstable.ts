@@ -16,7 +16,13 @@
 
 export type { AgentParam } from "../agents/AgentParam.js";
 export type { AgentResult } from "../agents/AgentResult.js";
-export type { AgentDefinition } from "../agents/AgentDefinition.js";
+export type {
+  AgentDataTypeDefinition,
+  AgentDefinition,
+  AgentMetadata,
+  ObjectAgentDataType,
+  ObjectSetAgentDataType,
+} from "../agents/AgentDefinition.js";
 export { AgentGetStateTimeoutError } from "../agents/AgentGetStateTimeoutError.js";
 export { AgentSendEventTimeoutError } from "../agents/AgentSendEventTimeoutError.js";
 export type {

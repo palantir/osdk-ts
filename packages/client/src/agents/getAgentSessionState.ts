@@ -17,9 +17,9 @@
 import {
   type AgentGetStateOptions,
   AgentGetStateTimeoutError,
+  type AgentMetadata,
   type AgentSessionState,
 } from "@osdk/api/unstable";
-import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
 import * as Sessions from "@osdk/foundry.agents/AgentSession";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -28,7 +28,7 @@ import { fromDataValueAgents } from "../util/fromDataValueAgents.js";
 export async function getAgentSessionState(
   client: MinimalClient,
   sessionId: string,
-  sessionAgentDefinition: AgentDefinitionVersion,
+  sessionAgentDefinition: AgentMetadata,
   consistencyKey: string | undefined,
   options?: AgentGetStateOptions,
 ): Promise<{ state: AgentSessionState; consistencyKey: string }> {
@@ -43,13 +43,6 @@ export async function getAgentSessionState(
     throw new Error("$pollIntervalMs must be a finite positive number");
   }
 
-  const contextItemDefinitionsByType = new Map(
-    sessionAgentDefinition.contextItemDefinitions.map((item) => [
-      item.contextItemType,
-      item.dataType,
-    ]),
-  );
-
   for (;;) {
     const response = await Sessions.getSessionState(client, sessionId, {
       consistencyKey,
@@ -60,9 +53,12 @@ export async function getAgentSessionState(
       const contextItems = Object.fromEntries(
         await Promise.all(
           Object.entries(response.contextItems).map(async ([id, item]) => {
-            const dataType = contextItemDefinitionsByType.get(
+            const dataType = Object.hasOwn(
+              sessionAgentDefinition.contextItems,
               item.contextItemType,
-            );
+            )
+              ? sessionAgentDefinition.contextItems[item.contextItemType]
+              : undefined;
             const data = await fromDataValueAgents(
               item.data,
               client,
@@ -80,7 +76,7 @@ export async function getAgentSessionState(
         client,
         {
           type: "struct",
-          fields: sessionAgentDefinition.argumentDefinitions,
+          struct: sessionAgentDefinition.arguments,
         },
         "arguments",
       );
@@ -88,7 +84,7 @@ export async function getAgentSessionState(
       const convertedAgentStateData = await fromDataValueAgents(
         response.agentState.data,
         client,
-        sessionAgentDefinition.agentStateType,
+        sessionAgentDefinition.agentState,
         "agentState.data",
       );
 

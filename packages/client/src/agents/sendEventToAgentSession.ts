@@ -15,10 +15,10 @@
  */
 
 import {
+  type AgentMetadata,
   type AgentSendEventOptions,
   AgentSendEventTimeoutError,
 } from "@osdk/api/unstable";
-import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
 import * as Sessions from "@osdk/foundry.agents/AgentSession";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -31,7 +31,7 @@ declare const process: {
 export async function sendEventToAgentSession(
   client: MinimalClient,
   sessionId: string,
-  eventDefinitions: AgentDefinitionVersion["eventDefinitions"],
+  eventDefinitions: AgentMetadata["events"],
   event: Record<string, unknown>,
   options?: AgentSendEventOptions,
 ): Promise<string> {
@@ -57,9 +57,9 @@ export async function sendEventToAgentSession(
       ? globalThis.crypto.randomUUID()
       : (await import("node:crypto")).randomUUID();
 
-  const payloadType = eventDefinitions.find(
-    (definition) => definition.eventType === eventType,
-  )?.payloadType;
+  const payloadType = Object.hasOwn(eventDefinitions, eventType)
+    ? eventDefinitions[eventType]
+    : undefined;
   const payload = payloadType
     ? await toDataValueAgents(event[eventType], client, payloadType)
     : event[eventType];
