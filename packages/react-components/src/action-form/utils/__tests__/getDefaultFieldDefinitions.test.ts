@@ -39,6 +39,7 @@ describe("getDefaultFieldDefinitions", () => {
     "geohash",
     "geoshape",
     "objectType",
+    "scenarioReference",
   ] satisfies ReadonlyArray<ActionMetadata.DataType.BaseActionParameterTypes>)(
     "renders unsupported primitive parameter type %s as unsupported",
     (parameterType) => {

@@ -1,5 +1,84 @@
 # @osdk/tool.generate-with-mock-ontology
 
+## 0.62.0
+
+### Patch Changes
+
+- Updated dependencies [5fade0a]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [5d80e0f]
+- Updated dependencies [0bcfdc9]
+- Updated dependencies [f1a74a8]
+- Updated dependencies [2e21fee]
+- Updated dependencies [a37fdfc]
+  - @osdk/client@2.91.0
+  - @osdk/api@2.91.0
+
+## 0.61.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/client@2.90.0
+
+## 0.60.0
+
+### Patch Changes
+
+- Updated dependencies [62ebddd]
+  - @osdk/client@2.89.0
+  - @osdk/api@2.89.0
+
+## 0.59.0
+
+### Patch Changes
+
+- Updated dependencies [358fbfa]
+- Updated dependencies [1d0b110]
+- Updated dependencies [eb1fc8f]
+- Updated dependencies [e1ca298]
+  - @osdk/client@2.88.0
+  - @osdk/api@2.88.0
+
+## 0.58.0
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [3c3014d]
+- Updated dependencies [e674a83]
+- Updated dependencies [8300415]
+- Updated dependencies [9c93e57]
+  - @osdk/api@2.87.0
+  - @osdk/client@2.87.0
+
+## 0.57.0
+
+### Patch Changes
+
+- Updated dependencies [af66ef0]
+- Updated dependencies [f7333d4]
+  - @osdk/client@2.86.0
+  - @osdk/api@2.86.0
+
+## 0.56.0
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [a0c6e14]
+  - @osdk/client@2.85.0
+  - @osdk/api@2.85.0
+
+## 0.55.0
+
+### Patch Changes
+
+- @osdk/client@2.83.0
+- @osdk/api@2.83.0
+
 ## 0.54.0
 
 ### Patch Changes

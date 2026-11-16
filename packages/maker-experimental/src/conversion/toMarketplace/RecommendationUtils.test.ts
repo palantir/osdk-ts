@@ -227,6 +227,105 @@ describe("RecommendationUtils", () => {
     });
   });
 
+  it("generates external recs for imported interface action and parameter constraints", async () => {
+    const packageNames = ["com.external.pkg", "other.pkg"];
+    const result = await defineOntologyV2("com.palantir.", () => {
+      for (const packageName of packageNames) {
+        const importedInterface: InterfaceType = {
+          apiName: `${packageName}.ImportedIface`,
+          displayMetadata: { displayName: "Imported Interface" },
+          extendsInterfaces: [],
+          links: [],
+          actionTypeConstraints: [
+            {
+              metadata: {
+                apiName: "update",
+                displayName: "Update",
+                description: "Update the object",
+              },
+              parameters: {
+                enabled: {
+                  displayMetadata: {
+                    apiName: "enabled",
+                    displayName: "Enabled",
+                  },
+                  type: { type: "boolean", boolean: {} },
+                  requireImplementation: true,
+                },
+                name: {
+                  displayMetadata: { apiName: "name", displayName: "Name" },
+                  type: { type: "string", string: {} },
+                  requireImplementation: false,
+                },
+              },
+              requireImplementation: true,
+            },
+            {
+              metadata: {
+                apiName: "delete",
+                displayName: "Delete",
+                description: "Delete the object",
+              },
+              parameters: {},
+              requireImplementation: false,
+            },
+          ],
+          status: { type: "active", active: {} },
+          propertiesV2: {},
+          propertiesV3: {},
+          __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
+        };
+        importOntologyEntity(importedInterface);
+      }
+    });
+
+    const recs = callGetExternalRecommendations(result);
+
+    for (const packageName of packageNames) {
+      const interfaceApiName = `${packageName}.ImportedIface`;
+      const readableIds = [
+        ReadableIdGenerator.getForInterface(interfaceApiName),
+        ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+          interfaceApiName,
+          "update",
+        ),
+        ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+          interfaceApiName,
+          "delete",
+        ),
+        ReadableIdGenerator.getForInterfaceParameterConstraint(
+          interfaceApiName,
+          "update",
+          "enabled",
+        ),
+        ReadableIdGenerator.getForInterfaceParameterConstraint(
+          interfaceApiName,
+          "update",
+          "name",
+        ),
+      ];
+      const packageRecs = recs.filter(
+        (rec) => rec.upstreamPackageName === packageName,
+      );
+      const mappings = packageRecs.flatMap((rec) => rec.mappings);
+
+      expect(mappings).toHaveLength(readableIds.length);
+      for (const readableId of readableIds) {
+        expect(result.shapes.inputShapes.has(readableId)).toBe(true);
+        expect(mappings).toContainEqual({
+          targetInputReadableId: readableId,
+          upstreamOutputReadableId: readableId,
+        });
+      }
+      for (const rec of packageRecs) {
+        expect(rec.upstreamVersionCompatibility).toEqual({
+          from: "0.0.0",
+          until: "x.x.x",
+        });
+      }
+    }
+  });
+
   it("generates external recs for imported action types", async () => {
     const result = await defineOntologyV2("com.palantir.", () => {
       const importedAction: ActionType = {

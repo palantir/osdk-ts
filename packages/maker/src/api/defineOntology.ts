@@ -49,6 +49,7 @@ import { createCodeSnippets } from "./code-snippets/createCodeSnippets.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
+import type { FolderDefinition } from "./defineFolder.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import type {
   IntermediaryObjectLinkReference,
@@ -56,11 +57,15 @@ import type {
 } from "./links/LinkType.js";
 import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
 import type { ObjectType } from "./object/ObjectType.js";
+import type { ObjectTypeDatasourceMarkingConstraints } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 
 // type -> apiName -> entity
 /** @internal */
 export let ontologyDefinition: OntologyDefinition;
+
+/** @internal */
+export let folderDefinitions: Map<string, FolderDefinition>;
 
 // type -> apiName -> entity
 /** @internal */
@@ -235,6 +240,7 @@ export function buildDatasource(
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
+  markingConstraints?: ObjectTypeDatasourceMarkingConstraints,
 ): OntologyIrMarketplaceObjectTypeDatasource {
   const needsSecurity =
     classificationMarkingGroupName !== undefined ||
@@ -245,11 +251,14 @@ export function buildDatasource(
         classificationConstraint: classificationMarkingGroupName
           ? {
               markingGroupName: classificationMarkingGroupName,
+              allowEmptyMarkings: markingConstraints?.cbac?.allowEmptyMarkings,
             }
           : undefined,
         markingConstraint: mandatoryMarkingGroupName
           ? {
               markingGroupName: mandatoryMarkingGroupName,
+              allowEmptyMarkings:
+                markingConstraints?.mandatory?.allowEmptyMarkings,
             }
           : undefined,
       }
@@ -805,6 +814,7 @@ export function addNamespaceIfNone(apiName: string): string {
 export function initializeOntologyState(ns: string): void {
   namespace = ns;
   dependencies = {};
+  folderDefinitions = new Map();
   ontologyDefinition = {
     OBJECT_TYPE: {},
     ACTION_TYPE: {},
@@ -825,6 +835,10 @@ export function initializeOntologyState(ns: string): void {
 
 export function getOntologyDefinition(): OntologyDefinition {
   return ontologyDefinition;
+}
+
+export function getFolderDefinitions(): readonly FolderDefinition[] {
+  return Array.from(folderDefinitions.values());
 }
 
 export function getImportedTypes(): OntologyDefinition {

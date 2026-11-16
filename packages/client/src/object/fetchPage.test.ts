@@ -590,6 +590,42 @@ describe(fetchPage, () => {
       });
     });
   });
+  it("loads ontology-defined derived properties with all base object properties unless explicitly disabled", async () => {
+    const testSetup = startNodeApiServer(new LegacyFauxFoundry());
+    const requestBodies: Array<Record<string, unknown>> = [];
+    const fetchFn = vi.fn<typeof globalThis.fetch>((input, init) => {
+      if (String(input).includes("objectSets/loadObjects")) {
+        requestBodies.push(JSON.parse(String(init?.body)));
+      }
+      return globalThis.fetch(input, init);
+    });
+    const client = createMinimalClient(
+      { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
+      testSetup.fauxFoundry.baseUrl,
+      testSetup.auth,
+      {},
+      fetchFn,
+    );
+
+    try {
+      await fetchPage(client, FooInterface, {
+        $includeAllBaseObjectProperties: true,
+      });
+      await fetchPage(client, FooInterface, {
+        $includeAllBaseObjectProperties: true,
+        $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+      });
+
+      expect(
+        requestBodies.map(
+          ({ loadOntologyDefinedDerivedProperties }) =>
+            loadOntologyDefinedDerivedProperties,
+        ),
+      ).toEqual([true, false]);
+    } finally {
+      testSetup.apiServer.close();
+    }
+  });
   describe("metadata fetch", () => {
     it("prefetches object metadata before conversion", async () => {
       const testSetup = startNodeApiServer(new LegacyFauxFoundry());

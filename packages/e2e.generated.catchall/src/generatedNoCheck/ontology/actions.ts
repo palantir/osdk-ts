@@ -1,3 +1,4 @@
+export { actionTakesTimeSeriesReference } from './actions/actionTakesTimeSeriesReference.js';
 export { actionTakesAllParameterTypes } from './actions/actionTakesAllParameterTypes.js';
 export { assignEmployee1 } from './actions/assignEmployee1.js';
 export { createFooInterface } from './actions/createFooInterface.js';

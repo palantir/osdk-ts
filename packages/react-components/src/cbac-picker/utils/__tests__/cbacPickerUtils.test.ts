@@ -105,6 +105,106 @@ describe("groupMarkingsByCategory (applied markings)", () => {
       { categoryName: "missing", markingNames: ["Orphan"] },
     ]);
   });
+
+  describe("ordering", () => {
+    it("sorts selected markings by category priority, prominence, and marking priority", () => {
+      const unsortedCategories = Object.freeze([
+        { id: "missing", name: "Missing priority" },
+        { id: "low", name: "Low priority", priority: "2" },
+        { id: "high", name: "High priority", priority: "10" },
+      ]);
+      const unsortedMarkings = Object.freeze([
+        { id: "missing", categoryId: "missing", name: "Missing" },
+        { id: "low", categoryId: "low", name: "Low" },
+        {
+          id: "unspecified",
+          categoryId: "high",
+          name: "Unspecified",
+          priority: "100",
+        },
+        {
+          id: "uncommon",
+          categoryId: "high",
+          name: "Uncommon",
+          priority: "50",
+          prominence: "UNCOMMON" as const,
+        },
+        {
+          id: "common-low",
+          categoryId: "high",
+          name: "Common low",
+          priority: "2",
+          prominence: "COMMON" as const,
+        },
+        {
+          id: "common-high",
+          categoryId: "high",
+          name: "Common high",
+          priority: "10",
+          prominence: "COMMON" as const,
+        },
+        { id: "unselected", categoryId: "high", name: "Unselected" },
+      ]);
+
+      expect(
+        groupMarkingsByCategory(
+          [
+            "missing",
+            "low",
+            "unspecified",
+            "uncommon",
+            "common-low",
+            "common-high",
+          ],
+          unsortedCategories,
+          unsortedMarkings,
+        ),
+      ).toEqual([
+        {
+          categoryName: "High priority",
+          markingNames: [
+            "Common high",
+            "Common low",
+            "Uncommon",
+            "Unspecified",
+          ],
+        },
+        { categoryName: "Low priority", markingNames: ["Low"] },
+        { categoryName: "Missing priority", markingNames: ["Missing"] },
+      ]);
+    });
+
+    it("preserves category input order for ties rather than marking encounter order", () => {
+      expect(
+        groupMarkingsByCategory(["a1", "b1"], categories, [
+          markings[2],
+          markings[0],
+        ]),
+      ).toEqual([
+        { categoryName: "Category A", markingNames: ["Alpha"] },
+        { categoryName: "Category B", markingNames: ["Gamma"] },
+      ]);
+    });
+
+    it("uses the highest category priority when category names repeat", () => {
+      const duplicateNameCategories = [
+        { id: "cat-a", name: "Shared", priority: "10" },
+        { id: "cat-b", name: "Other", priority: "5" },
+        { id: "cat-c", name: "Shared", priority: "2" },
+      ];
+
+      expect(
+        groupMarkingsByCategory(["a1", "b1", "c1"], duplicateNameCategories, [
+          markings[2],
+          markings[0],
+          { id: "c1", name: "Delta", categoryId: "cat-c" },
+        ]),
+      ).toEqual([
+        { categoryName: "Shared", markingNames: ["Alpha", "Delta"] },
+        { categoryName: "Other", markingNames: ["Gamma"] },
+      ]);
+    });
+  });
 });
 
 describe("resolveRequiredGroups", () => {

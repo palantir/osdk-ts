@@ -1,5 +1,142 @@
 # @osdk/client
 
+## 2.91.0
+
+### Minor Changes
+
+- 5fade0a: Keep observable lists loading until their requested derived-property cache entries are available, so a plain query cannot cause useOsdkObjects to return undefined entries or finish loading before the RDP response arrives.
+- a37fdfc: Batch cached object refreshes with the same runtime-derived properties when invalidating an object type, reducing per-object requests.
+- 5d80e0f: Follow all pages and resolve batched objects as each page arrives, including RDP and interface object loads.
+- 0bcfdc9: Fix observed object sets with intersect, subtract, or union options using only their where clause for cache updates. These sets now refresh from the server when related objects change in the cache, preserving the complete set operation.
+- f1a74a8: Apply linked-object filters and expose automatic pagination through useLinks.
+
+  Preserve filters on nested operands in shape link set operations.
+
+- 2e21fee: Remove the unused collection update path and use the sorting strategy directly in list updates.
+- a37fdfc: Reuse matching list refreshes during object type and full-cache invalidation. Wait briefly for list members, including pages being refilled, and batch remaining object loads when rows are absent or the list refresh fails or takes too long.
+
+### Patch Changes
+
+- @osdk/api@2.91.0
+- @osdk/client.unstable@2.91.0
+- @osdk/generator-converters@2.91.0
+- @osdk/shared.test@2.63.0
+
+## 2.90.0
+
+### Minor Changes
+
+- b8cfd7c: Add static typing for agent session state returned by `experimental_getState`.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters@2.90.0
+  - @osdk/shared.test@2.62.0
+  - @osdk/client.unstable@2.90.0
+
+## 2.89.0
+
+### Minor Changes
+
+- 62ebddd: Add typed event names and payloads to agent sessions.
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+- @osdk/client.unstable@2.89.0
+- @osdk/generator-converters@2.89.0
+- @osdk/shared.test@2.61.0
+
+## 2.88.0
+
+### Minor Changes
+
+- 358fbfa: Add experimental support for looking up agent sessions by ID.
+- 1d0b110: Convert objects and object sets in agent session state to OSDK object identifiers and object sets.
+- eb1fc8f: Add experimental support for reading agent session state.
+- e1ca298: Preserve PalantirApiError type and metadata when re-throwing agent conversion errors.
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/generator-converters@2.88.0
+  - @osdk/shared.test@2.60.0
+  - @osdk/client.unstable@2.88.0
+
+## 2.87.0
+
+### Minor Changes
+
+- 093d27c: Add experimental support for sending events to agent sessions.
+- ff00439: Adding support for phonetic search
+- 3c3014d: Read sizeBytes from sizeBytesLong so basic and full media metadata report sizes above 2 GiB.
+- e674a83: Share local list membership and row updates between list and object-set queries. Revalidate uncertain additions so queries do not remain loading.
+- 8300415: Add generated argument types for agent session creation.
+- 9c93e57: Export getClientBranch from @osdk/client/internal. Inherit the OSDK client's global branch in WorkshopModule and support an explicit branchRid in BaseWorkshopModule, including navigation back to main.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/generator-converters@2.87.0
+  - @osdk/shared.test@2.59.0
+  - @osdk/client.unstable@2.87.0
+
+## 2.86.0
+
+### Minor Changes
+
+- af66ef0: Load ontology-defined derived properties by default when fetching all base object properties from an interface, while preserving an explicit opt-out.
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+  - @osdk/shared.test@2.58.0
+
+## 2.85.0
+
+### Minor Changes
+
+- 396ffce: Refetch observable lists and object sets when their websocket subscription reports it is out of date
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+  - @osdk/shared.test@2.57.0
+
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/client.unstable@2.84.0
+- @osdk/generator-converters@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/api@2.83.0
+  - @osdk/generator-converters@2.83.0
+  - @osdk/shared.test@2.56.0
+
 ## 2.82.0
 
 ### Minor Changes

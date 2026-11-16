@@ -1,5 +1,76 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.91.0
+
+### Minor Changes
+
+- 1fd4023: Resolve interface API names for interface fields inside function struct types.
+- 406d3b6: Preserve markingType on marking properties when converting to full metadata.
+- d13bd9f: Support geo point and geo shape function inputs and outputs during local SDK generation, and use exhaustive discovery type conversion.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.91.0
+
+## 2.90.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.90.0
+
+## 2.89.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.89.0
+
+## 2.88.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.88.0
+
+## 2.87.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.87.0
+
+## 2.86.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+  - @osdk/client.unstable@2.86.0
+
+## 2.85.0
+
+### Minor Changes
+
+- 8f34b57: Extract action parameter validation logic and ensure it matches Foundry backend logic
+
+### Patch Changes
+
+- Updated dependencies [646d01d]
+  - @osdk/client.unstable@2.85.0
+
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+
 ## 2.82.0
 
 ### Patch Changes

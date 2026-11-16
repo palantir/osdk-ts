@@ -35,6 +35,10 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
+import {
+  convertActionParameterValidation,
+  isActionParameterRequired,
+} from "./convertActionParameterValidation.js";
 import { convertValueType } from "./convertValueType.js";
 import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
 
@@ -153,6 +157,7 @@ export class OntologyBlockDataToFullMetadataConverter {
       blockData,
       objectTypeLookup,
       interfaceTypeLookup,
+      valueTypes,
     );
 
     return {
@@ -475,6 +480,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     blockData: OntologyBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<ApiName, Ontologies.ActionTypeV2> {
     const result: Record<ApiName, Ontologies.ActionTypeV2> = {};
 
@@ -489,6 +495,7 @@ export class OntologyBlockDataToFullMetadataConverter {
           action,
           objectTypeLookup,
           interfaceTypeLookup,
+          valueTypes,
         ),
         operations: this.getOsdkActionOperationsFromBlockData(
           action,
@@ -646,6 +653,7 @@ export class OntologyBlockDataToFullMetadataConverter {
     action: ActionTypeBlockDataV2,
     objectTypeLookup: BlockDataApiNameLookup | undefined,
     interfaceTypeLookup: BlockDataApiNameLookup | undefined,
+    valueTypes: Record<string, ValueTypeBlockData> = {},
   ): Record<string, Ontologies.ActionParameterV2> {
     const result: Record<string, Ontologies.ActionParameterV2> = {};
 
@@ -869,12 +877,19 @@ export class OntologyBlockDataToFullMetadataConverter {
           throw new Error("Unknown parameter type");
       }
 
+      const { validation } = action.actionType.actionTypeLogic.validation
+        .parameterValidations[paramKey].defaultValidation;
+      const convertedValidation = convertActionParameterValidation(
+        validation,
+        valueTypes,
+      );
       result[paramKey] = {
         displayName: irParameter.displayMetadata.displayName,
         description: irParameter.displayMetadata.description,
-        required: isBlockDataParameterRequired(action, paramKey),
+        required: isActionParameterRequired(validation.required),
         dataType,
         typeClasses: [],
+        ...(convertedValidation && { validation: convertedValidation }),
       };
     }
 
@@ -1273,15 +1288,6 @@ function getAllAncestorInterfaceTypes(
   return ancestors;
 }
 
-function isBlockDataParameterRequired(
-  action: ActionTypeBlockDataV2,
-  paramKey: string,
-): boolean {
-  return action.actionType.actionTypeLogic.validation
-    .parameterValidations[paramKey].defaultValidation.validation.required.type
-    === "required";
-}
-
 function getOsdkActionStructFieldsFromBlockData(
   action: ActionTypeBlockDataV2,
   paramKey: string,
@@ -1346,10 +1352,10 @@ function isBlockDataStructFieldRequired(
   paramKey: string,
   fieldApiName: string,
 ): boolean {
-  return action.actionType.actionTypeLogic.validation.parameterValidations[
-    paramKey
-  ]?.structFieldValidations[fieldApiName]?.defaultValidation.validation.required
-    .type === "required";
+  const required = action.actionType.actionTypeLogic.validation
+    .parameterValidations[paramKey]?.structFieldValidations[fieldApiName]
+    ?.defaultValidation.validation.required;
+  return required != null && isActionParameterRequired(required);
 }
 
 export interface BlockDataApiNameLookup {

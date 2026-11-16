@@ -1,5 +1,19 @@
 # @osdk/seed-compiler
 
+## 0.17.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [af66ef0]
+- Updated dependencies [f7333d4]
+  - @osdk/client@2.86.0
+  - @osdk/api@2.86.0
+  - @osdk/seed-helpers@0.32.0
+
 ## 0.16.0
 
 ### Minor Changes

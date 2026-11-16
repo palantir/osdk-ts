@@ -1,4 +1,5 @@
 export {
+  actionTakesTimeSeriesReference,
   actionTakesAllParameterTypes,
   assignEmployee1,
   createFooInterface,

@@ -1,5 +1,95 @@
 # @osdk/generator
 
+## 2.91.0
+
+### Minor Changes
+
+- 7fd2775: Declare generated experimental ontology metadata as `unknown` without importing `@osdk/foundry.ontologies` or adding a generated dependency. Integration-testing also accepts metadata as `unknown`, avoiding type mismatches between platform SDK versions.
+
+### Patch Changes
+
+- @osdk/api@2.91.0
+- @osdk/generator-converters@2.91.0
+
+## 2.90.0
+
+### Minor Changes
+
+- b8cfd7c: Add static typing for agent session state returned by `experimental_getState`.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters@2.90.0
+
+## 2.89.0
+
+### Minor Changes
+
+- 62ebddd: Add typed event names and payloads to agent sessions.
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+- @osdk/generator-converters@2.89.0
+
+## 2.88.0
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/generator-converters@2.88.0
+
+## 2.87.0
+
+### Minor Changes
+
+- 8300415: Add generated argument types for agent session creation.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/generator-converters@2.87.0
+
+## 2.86.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+
+## 2.85.0
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/generator-converters@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+- @osdk/generator-converters@2.83.0
+
 ## 2.82.0
 
 ### Minor Changes

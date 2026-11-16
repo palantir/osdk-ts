@@ -164,14 +164,29 @@ const { data } = useOsdkObjects(Document, {
 
 #### Search Filter Comparison
 
-| Filter                     | Match Requirement             | Fuzzy | Use Case                     |
-| -------------------------- | ----------------------------- | ----- | ---------------------------- |
-| `$startsWith`              | Begins with prefix            | no    | Autocomplete, prefix search  |
-| `$containsAnyTerm`         | Any term present              | yes   | Broad keyword search         |
-| `$containsAllTerms`        | All terms present (any order) | yes   | Precise multi-keyword search |
-| `$containsAllTermsInOrder` | All terms in exact order      | no    | Phrase / exact match search  |
+| Filter                     | Match Requirement             | Fuzzy | Phonetic | Use Case                     |
+| -------------------------- | ----------------------------- | ----- | -------- | ---------------------------- |
+| `$startsWith`              | Begins with prefix            | no    | yes      | Autocomplete, prefix search  |
+| `$containsAnyTerm`         | Any term present              | yes   | yes      | Broad keyword search         |
+| `$containsAllTerms`        | All terms present (any order) | yes   | yes      | Precise multi-keyword search |
+| `$containsAllTermsInOrder` | All terms in exact order      | no    | yes      | Phrase / exact match search  |
 
 Fuzzy search is unavailable for `$containsAllTermsInOrder` because phrase matching requires exact token order.
+
+All four text search filters support phonetic matching when the property is configured for phonetic search:
+
+```ts
+const { data } = useOsdkObjects(Employee, {
+  where: {
+    fullName: {
+      $containsAnyTerm: { term: "Jon", phoneticSearch: true },
+    },
+  },
+});
+// Can match similarly pronounced values such as "Jon" and "John"
+```
+
+`phoneticSearch: true` cannot be combined with `fuzzySearch: true` in the same filter. Use an `$or` clause with separate fuzzy and phonetic filters when both matching strategies are needed.
 
 #### Search Example: Building a Search Box
 
@@ -617,6 +632,15 @@ function OptionalReportsList(
 }
 ```
 
+Set `autoFetchMore: true` to load all pages of linked objects, or set a number to load at least that many linked objects per source. When omitted or `false`, use `fetchMore()` to load additional pages.
+
+```ts
+const { links, isLoading } = useLinks(employee, "reports", {
+  pageSize: 20,
+  autoFetchMore: 100,
+});
+```
+
 ### Controlling Re-fetch Behavior
 
 By default, `useLinks` deduplicates network requests within a 2-second window. You can customize this with `dedupeIntervalMs`:
@@ -639,6 +663,7 @@ const { links } = useLinks(employee, "reports", {
 
 - `where` - Filter linked objects
 - `pageSize` - Number of links per page
+- `autoFetchMore` - Load all pages (`true`) or at least the given number of linked objects per source
 - `orderBy` - Sort order for linked objects
 - `mode` - Fetch mode: `"force"` (always fetch), `"offline"` (cache only), or undefined (default)
 - `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)

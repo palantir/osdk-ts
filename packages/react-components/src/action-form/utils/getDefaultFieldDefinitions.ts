@@ -98,6 +98,7 @@ function buildFieldDefinition(
     case "geoshape":
     case "objectType":
     case "scenarioReference":
+    case "timeSeriesReference":
       return {
         ...base,
         fieldComponent: "UNSUPPORTED",

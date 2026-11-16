@@ -15,6 +15,7 @@
  */
 
 import type {
+  FunctionDiscovery,
   InterfacePropertyTypeType,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
@@ -41,21 +42,22 @@ import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
+import {
+  convertActionParameterValidation,
+  isActionParameterRequired,
+} from "./convertActionParameterValidation.js";
 import { convertDataType, isInjectedRuntimeInput } from "./convertDataType.js";
 import { toStructFieldRid } from "./ridUtils.js";
 
 // Type definitions for optional function discovery dependencies
 // These are declared inline to avoid compile-time dependency on optional packages
-export interface IDataType {
-  type: string;
-  [key: string]: unknown;
-}
-
 export interface IDiscoveredFunction {
   locator: { type: string; typescript?: { functionName: string } };
-  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
+  inputs: Array<
+    { name: string; dataType: FunctionDiscovery.DataType; required?: boolean }
+  >;
   output:
-    | { type?: "single"; single: { dataType: IDataType } }
+    | { type?: "single"; single: { dataType: FunctionDiscovery.DataType } }
     | { type: "void"; void?: Record<string, never> };
   customTypes: Record<string, unknown>;
   ontologyProvenance?: {
@@ -78,14 +80,21 @@ interface IFunctionDiscovererConstructor {
   ): IFunctionDiscoverer;
 }
 
-// Python discovery output uses the same format as IDataType with type field at top level
+// Python discovery has a separate wire schema that is not generated here.
+interface IPythonDataType {
+  type: string;
+  [key: string]: unknown;
+}
+
 interface IPythonDiscoveredFunction {
   locator: {
     type: "python3";
     python3: { moduleName: string; functionName: string };
   };
-  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
-  output: { type: "single"; single: { dataType: IDataType } };
+  inputs: Array<
+    { name: string; dataType: IPythonDataType; required?: boolean }
+  >;
+  output: { type: "single"; single: { dataType: IPythonDataType } };
   customTypes?: Record<string, IPythonCustomType>;
   objectTypes?: Record<string, { objectApiName: string }>;
   objectSetTypes?: Record<string, { objectApiName: string }>;
@@ -93,7 +102,7 @@ interface IPythonDiscoveredFunction {
 
 interface IPythonCustomType {
   fieldMetadata: Record<string, { required?: boolean }>;
-  fields: Record<string, IDataType>;
+  fields: Record<string, IPythonDataType>;
 }
 
 interface IPythonDiscoveryResult {
@@ -541,7 +550,7 @@ export class OntologyIrToFullMetadataConverter {
       // which carry the actual objectApiName. The resolution must be recursive
       // to handle nested types (e.g. list[seller] produces
       // {type: "list", list: {elementsType: {type: "object", object: "<uuid>"}}}).
-      function resolveDataType(dt: IDataType): IDataType {
+      function resolveDataType(dt: IPythonDataType): IPythonDataType {
         if (dt.type === "object" && typeof dt.object === "string") {
           if (!objectTypes?.[dt.object]) {
             throw new Error(
@@ -569,7 +578,9 @@ export class OntologyIrToFullMetadataConverter {
           };
         }
         if (dt.type === "list") {
-          const listData = dt.list as { elementsType: IDataType } | undefined;
+          const listData = dt.list as
+            | { elementsType: IPythonDataType }
+            | undefined;
           if (listData?.elementsType) {
             const resolved = resolveDataType(listData.elementsType);
             if (resolved !== listData.elementsType) {
@@ -578,7 +589,9 @@ export class OntologyIrToFullMetadataConverter {
           }
         }
         if (dt.type === "set") {
-          const setData = dt.set as { elementsType: IDataType } | undefined;
+          const setData = dt.set as
+            | { elementsType: IPythonDataType }
+            | undefined;
           if (setData?.elementsType) {
             const resolved = resolveDataType(setData.elementsType);
             if (resolved !== setData.elementsType) {
@@ -588,7 +601,7 @@ export class OntologyIrToFullMetadataConverter {
         }
         if (dt.type === "optionalType") {
           const optData = dt.optionalType as
-            | { wrappedType: IDataType }
+            | { wrappedType: IPythonDataType }
             | undefined;
           if (optData?.wrappedType) {
             const resolved = resolveDataType(optData.wrappedType);
@@ -599,12 +612,10 @@ export class OntologyIrToFullMetadataConverter {
         }
         if (dt.type === "functionCustomType") {
           const typeId = dt.functionCustomType as string;
-          const customType = customTypes[typeId] as
-            | IPythonCustomType
-            | undefined;
+          const customType = customTypes[typeId];
           if (customType?.fields) {
             let changed = false;
-            const resolvedFields: Record<string, IDataType> = {};
+            const resolvedFields: Record<string, IPythonDataType> = {};
             for (const [key, fieldDt] of Object.entries(customType.fields)) {
               const resolved = resolveDataType(fieldDt);
               if (resolved !== fieldDt) changed = true;
@@ -638,7 +649,7 @@ export class OntologyIrToFullMetadataConverter {
           acc[input.name] = {
             // TODO (ethana): interface support for python queries
             dataType: convertDataType(
-              input.dataType,
+              input.dataType as unknown as FunctionDiscovery.DataType,
               customTypes,
               {},
               input.required,
@@ -648,7 +659,7 @@ export class OntologyIrToFullMetadataConverter {
           return acc;
         }, {}),
         output: convertDataType(
-          resolvedOutput,
+          resolvedOutput as unknown as FunctionDiscovery.DataType,
           customTypes,
           {},
         ),
@@ -1288,12 +1299,16 @@ export class OntologyIrToFullMetadataConverter {
           throw new Error("Unknown parameter type");
       }
 
+      const { validation } = action.actionType.actionTypeLogic.validation
+        .parameterValidations[paramKey].defaultValidation;
+      const convertedValidation = convertActionParameterValidation(validation);
       result[paramKey] = {
         displayName: irParameter.displayMetadata.displayName,
         description: irParameter.displayMetadata.description,
-        required: isParameterRequired(action, paramKey),
+        required: isActionParameterRequired(validation.required),
         dataType,
         typeClasses: [],
+        ...(convertedValidation && { validation: convertedValidation }),
       };
     }
 
@@ -1496,7 +1511,10 @@ export class OntologyIrToFullMetadataConverter {
       case "attachment":
         return { type: "attachment" };
       case "marking":
-        return { type: "marking" };
+        return {
+          type: "marking",
+          markingType: type.marking.markingType,
+        };
       case "cipherText":
         return { type: "cipherText" };
       case "mediaReference":
@@ -1612,13 +1630,4 @@ function discoverComponentRoot(
     tsConfigPath: tsConfigPath.replace(/\\/g, "/"),
     projectDir: projectDir.replace(/\\/g, "/"),
   };
-}
-
-function isParameterRequired(
-  action: OntologyIrActionTypeBlockDataV2,
-  paramKey: string,
-): boolean {
-  return action.actionType.actionTypeLogic.validation
-    .parameterValidations[paramKey].defaultValidation.validation.required.type
-    === "required";
 }

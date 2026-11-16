@@ -106,6 +106,8 @@ function actionPropertyToSdkPropertyDefinition(
       };
     case "scenarioReference":
       return "scenarioReference";
+    case "timeSeriesReference":
+      return "timeSeriesReference";
     case "struct":
       return {
         type: "struct",

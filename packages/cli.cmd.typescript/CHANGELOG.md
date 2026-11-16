@@ -1,5 +1,77 @@
 # @osdk/cli.cmd.typescript
 
+## 0.119.0
+
+### Patch Changes
+
+- Updated dependencies [7fd2775]
+  - @osdk/generator@2.91.0
+  - @osdk/cli.common@0.119.0
+
+## 0.118.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/generator@2.90.0
+  - @osdk/cli.common@0.118.0
+
+## 0.117.0
+
+### Patch Changes
+
+- Updated dependencies [62ebddd]
+  - @osdk/generator@2.89.0
+  - @osdk/cli.common@0.117.0
+
+## 0.116.0
+
+### Patch Changes
+
+- @osdk/generator@2.88.0
+- @osdk/cli.common@0.116.0
+
+## 0.115.0
+
+### Patch Changes
+
+- Updated dependencies [8300415]
+  - @osdk/generator@2.87.0
+  - @osdk/cli.common@0.115.0
+
+## 0.114.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/generator@2.86.0
+  - @osdk/cli.common@0.114.0
+
+## 0.113.0
+
+### Patch Changes
+
+- @osdk/generator@2.85.0
+- @osdk/cli.common@0.113.0
+
+## 0.112.0
+
+### Patch Changes
+
+- @osdk/generator@2.84.0
+- @osdk/cli.common@0.112.0
+
+## 0.111.0
+
+### Patch Changes
+
+- @osdk/generator@2.83.0
+- @osdk/cli.common@0.111.0
+
 ## 0.110.0
 
 ### Patch Changes

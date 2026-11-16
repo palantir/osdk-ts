@@ -15,10 +15,17 @@
  */
 
 import type {
+  FunctionDiscovery,
+  OntologyIrActionTypeBlockDataV2,
+  OntologyIrConditionalValidationBlock,
   OntologyIrLinkTypeBlockDataV2,
+  OntologyIrParameter,
+  ParameterFreeText,
+  ParameterRequiredConfiguration,
   VectorPropertyType,
 } from "@osdk/client.unstable";
 import { fileURLToPath } from "node:url";
+import * as ts from "typescript";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
 import {
@@ -47,6 +54,31 @@ vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
     }
   },
 }));
+
+async function discoverFunctions(
+  functions: IDiscoveredFunction[],
+  previewMetadata?: Parameters<
+    typeof OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions
+  >[3],
+) {
+  const createProgramSpy = vi.spyOn(
+    OntologyIrToFullMetadataConverter,
+    "createProgram",
+  ).mockReturnValue(ts.createProgram([], { noLib: true }));
+  discoveredFunctions.splice(0, discoveredFunctions.length, ...functions);
+  entityMetadataMappings.splice(0);
+
+  try {
+    return await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
+      fileURLToPath(new URL(".", import.meta.url)),
+      undefined,
+      undefined,
+      previewMetadata,
+    );
+  } finally {
+    createProgramSpy.mockRestore();
+  }
+}
 
 describe(OntologyIrToFullMetadataConverter, () => {
   it.each(
@@ -3686,6 +3718,106 @@ describe(OntologyIrToFullMetadataConverter, () => {
     `);
   });
 
+  it("converts action parameter text and list length validation", () => {
+    const parameter = (
+      id: string,
+      type: OntologyIrParameter["type"],
+    ): OntologyIrParameter => ({
+      id,
+      displayMetadata: { displayName: id, description: "", typeClasses: [] },
+      type,
+    });
+    const validation = (
+      required: ParameterRequiredConfiguration,
+      text: ParameterFreeText,
+    ): OntologyIrConditionalValidationBlock => ({
+      conditionalOverrides: [],
+      defaultValidation: {
+        display: {
+          renderHint: { type: "textInput", textInput: {} },
+          visibility: { type: "editable", editable: {} },
+        },
+        validation: {
+          required,
+          allowedValues: { type: "text", text: { type: "text", text } },
+        },
+      },
+    });
+    const action: OntologyIrActionTypeBlockDataV2 = {
+      actionType: {
+        metadata: {
+          apiName: "createItem",
+          displayMetadata: {
+            displayName: "Create item",
+            description: "",
+            applyingMessage: [],
+            successMessage: [],
+            typeClasses: [],
+          },
+          status: { type: "active", active: {} },
+          parameters: {
+            title: parameter("title", { type: "string", string: {} }),
+            tags: parameter("tags", { type: "stringList", stringList: {} }),
+          },
+          parameterOrdering: ["title", "tags"],
+          formContentOrdering: [],
+          sections: {},
+        },
+        actionTypeLogic: {
+          logic: { rules: [] },
+          validation: {
+            actionTypeLevelValidation: { rules: {} },
+            parameterValidations: {
+              title: validation({ type: "required", required: {} }, {
+                minLength: 3,
+                maxLength: 20,
+                regex: { regex: "^[A-Za-z].*", failureMessage: "Invalid" },
+              }),
+              tags: validation({
+                type: "listLengthValidation",
+                listLengthValidation: { minLength: 1, maxLength: 2 },
+              }, {}),
+            },
+            sectionValidations: {},
+          },
+        },
+      },
+    };
+
+    const result = OntologyIrToFullMetadataConverter.getOsdkActionParameters(
+      action,
+    );
+
+    expect(result).toEqual({
+      title: {
+        displayName: "title",
+        description: "",
+        required: true,
+        dataType: { type: "string" },
+        typeClasses: [],
+        validation: {
+          defaultValidation: {
+            allowedValues: {
+              type: "text",
+              gte: 3,
+              lte: 20,
+              regex: "^[A-Za-z].*",
+              configuredFailureMessage: "Invalid",
+            },
+          },
+        },
+      },
+      tags: {
+        displayName: "tags",
+        description: "",
+        required: true,
+        dataType: { type: "array", subType: { type: "string" } },
+        typeClasses: [],
+        validation: { defaultValidation: { arraySize: { gte: 1, lte: 2 } } },
+      },
+    });
+  });
+
   describe(isInjectedRuntimeInput, () => {
     it("identifies injected runtime function inputs", () => {
       expect(isInjectedRuntimeInput({
@@ -3726,6 +3858,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
           fields: {
             value: {
               type: "string",
+              string: {},
             },
           },
         },
@@ -3739,12 +3872,36 @@ describe(OntologyIrToFullMetadataConverter, () => {
     });
   });
 
+  it("generates function query metadata for geo inputs and outputs", async () => {
+    const queryTypes = await discoverFunctions([{
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "geoFunction" },
+      },
+      inputs: [{
+        name: "point",
+        dataType: {
+          type: "geoShape",
+          geoShape: { subType: { type: "geoPoint", geoPoint: {} } },
+        },
+        required: true,
+      }],
+      output: { single: { dataType: { type: "geoShape", geoShape: {} } } },
+      customTypes: {},
+    }]);
+
+    expect(queryTypes).toHaveLength(1);
+    expect(queryTypes[0]).toMatchObject({
+      apiName: "geoFunction",
+      parameters: {
+        point: { dataType: { type: "geoshape" }, required: true },
+      },
+      output: { type: "geoshape" },
+    });
+  });
+
   it("only omits injected runtime inputs in the first position", async () => {
-    const createProgramSpy = vi.spyOn(
-      OntologyIrToFullMetadataConverter,
-      "createProgram",
-    ).mockReturnValue({} as never);
-    const clientInput = {
+    const clientInput: IDiscoveredFunction["inputs"][number] = {
       name: "client",
       dataType: {
         type: "client",
@@ -3755,19 +3912,19 @@ describe(OntologyIrToFullMetadataConverter, () => {
       },
       required: true,
     };
-    const valueInput = {
+    const valueInput: IDiscoveredFunction["inputs"][number] = {
       name: "value",
-      dataType: { type: "string" },
+      dataType: { type: "string", string: {} },
       required: true,
     };
 
-    discoveredFunctions.splice(0, discoveredFunctions.length, {
+    const queryTypes = await discoverFunctions([{
       locator: {
         type: "typescript",
         typescript: { functionName: "contextFirst" },
       },
       inputs: [clientInput, valueInput],
-      output: { single: { dataType: { type: "string" } } },
+      output: { single: { dataType: { type: "string", string: {} } } },
       customTypes: {},
     }, {
       locator: {
@@ -3775,92 +3932,145 @@ describe(OntologyIrToFullMetadataConverter, () => {
         typescript: { functionName: "contextSecond" },
       },
       inputs: [valueInput, clientInput],
-      output: { single: { dataType: { type: "string" } } },
+      output: { single: { dataType: { type: "string", string: {} } } },
       customTypes: {},
-    });
+    }]);
 
-    try {
-      const queryTypes = await OntologyIrToFullMetadataConverter
-        .discoverTypeScriptFunctions(
-          fileURLToPath(new URL(".", import.meta.url)),
-        );
-
-      expect(queryTypes.map(queryType => queryType.parameters)).toEqual([
-        {
-          value: {
-            dataType: { type: "string" },
-            required: true,
-          },
+    expect(queryTypes.map(queryType => queryType.parameters)).toEqual([
+      {
+        value: {
+          dataType: { type: "string" },
+          required: true,
         },
-        {
-          value: {
-            dataType: { type: "string" },
-            required: true,
-          },
-          client: {
-            dataType: { type: "string" },
-            required: true,
-          },
+      },
+      {
+        value: {
+          dataType: { type: "string" },
+          required: true,
         },
-      ]);
-    } finally {
-      createProgramSpy.mockRestore();
-    }
+        client: {
+          dataType: { type: "string" },
+          required: true,
+        },
+      },
+    ]);
   });
 
   it("uses canonical API names in function discovery entity metadata", async () => {
-    const createProgramSpy = vi.spyOn(
-      OntologyIrToFullMetadataConverter,
-      "createProgram",
-    ).mockReturnValue({} as never);
     const ontologyRid = "ri.ontology.main.ontology.0";
     const objectApiName = "com.palantir.ontology.pdfPage";
     const interfaceApiName = "com.palantir.ontology.pdfDocument";
     const interfaceRid = "ri.ontology.main.interface-type.pdf-document";
-    discoveredFunctions.splice(0);
-    entityMetadataMappings.splice(0);
+    await discoverFunctions([], {
+      ontology: { rid: ontologyRid },
+      objectTypes: {
+        PdfPage: {
+          objectType: { apiName: objectApiName },
+          linkTypes: [],
+        },
+      },
+      interfaceTypes: {
+        PdfDocument: {
+          apiName: interfaceApiName,
+          rid: interfaceRid,
+        },
+      },
+    } as never);
 
-    try {
-      await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
-        fileURLToPath(new URL(".", import.meta.url)),
-        undefined,
-        undefined,
-        {
-          ontology: { rid: ontologyRid },
-          objectTypes: {
-            PdfPage: {
-              objectType: { apiName: objectApiName },
-              linkTypes: [],
-            },
-          },
-          interfaceTypes: {
-            PdfDocument: {
-              apiName: interfaceApiName,
-              rid: interfaceRid,
-            },
-          },
-        } as never,
-      );
-
-      expect(entityMetadataMappings).toEqual([
-        {
-          ontologies: {
-            [ontologyRid]: {
-              objectTypes: {
-                [objectApiName]: {
-                  objectTypeId: objectApiName,
-                  linkTypes: {},
-                },
+    expect(entityMetadataMappings).toEqual([
+      {
+        ontologies: {
+          [ontologyRid]: {
+            objectTypes: {
+              [objectApiName]: {
+                objectTypeId: objectApiName,
+                linkTypes: {},
               },
-              interfaceTypes: {
-                [interfaceApiName]: { interfaceTypeRid: interfaceRid },
-              },
+            },
+            interfaceTypes: {
+              [interfaceApiName]: { interfaceTypeRid: interfaceRid },
             },
           },
         },
-      ]);
-    } finally {
-      createProgramSpy.mockRestore();
-    }
+      },
+    ]);
+  });
+
+  it("resolves interface API names inside function struct types", async () => {
+    const interfaceApiName = "com.example.asset";
+    const interfaceRid = "ri.ontology.main.interface-type.asset";
+    const assetInterface: FunctionDiscovery.DataType = {
+      type: "interface",
+      interface: { interfaceTypeRid: interfaceRid },
+    };
+
+    const queryTypes = await discoverFunctions([{
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "describeAsset" },
+      },
+      inputs: [{
+        name: "request",
+        dataType: {
+          type: "functionCustomType",
+          functionCustomType: "request-uuid",
+        },
+        required: true,
+      }],
+      output: {
+        single: {
+          dataType: {
+            type: "anonymousCustomType",
+            anonymousCustomType: { fields: { asset: assetInterface } },
+          },
+        },
+      },
+      customTypes: {
+        "request-uuid": { fields: { asset: assetInterface } },
+      },
+    }], {
+      ontology: {
+        apiName: "example",
+        displayName: "Example",
+        description: "",
+        rid: "ri.ontology.main.ontology.0",
+      },
+      objectTypes: {},
+      interfaceTypes: {
+        [interfaceApiName]: {
+          rid: interfaceRid,
+          apiName: interfaceApiName,
+          displayName: "Asset",
+          properties: {},
+          allProperties: {},
+          propertiesV2: {},
+          allPropertiesV2: {},
+          extendsInterfaces: [],
+          allExtendsInterfaces: [],
+          implementedByObjectTypes: [],
+          links: {},
+          allLinks: {},
+        },
+      },
+    });
+
+    const assetStruct = {
+      type: "struct",
+      fields: [{
+        name: "asset",
+        fieldType: {
+          type: "interfaceObject",
+          interfaceTypeApiName: interfaceApiName,
+        },
+      }],
+    };
+    expect(queryTypes).toEqual([{
+      apiName: "describeAsset",
+      rid: "ri.function-registry.main.function.describeAsset",
+      version: "0.0.0",
+      parameters: { request: { dataType: assetStruct, required: true } },
+      output: assetStruct,
+      typeReferences: {},
+    }]);
   });
 });

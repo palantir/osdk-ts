@@ -1074,6 +1074,8 @@ export type {
   IgnoreConfig,
   ImageryDecodeFormat,
   ImagerySchema,
+  ImplementingObjectReferenceListType,
+  ImplementingObjectReferenceType,
   ImportBlockSetResponse,
   ImportTimestamp,
   IncludeFunctionsConfig,

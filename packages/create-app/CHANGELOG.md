@@ -1,5 +1,63 @@
 # @osdk/create-app
 
+## 2.91.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.91.0
+
+## 2.90.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.90.0
+
+## 2.89.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.89.0
+
+## 2.88.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.88.0
+
+## 2.87.0
+
+### Minor Changes
+
+- bb0b5ba: Read public React template configuration from HTML meta tags so Marketplace installations use their destination Foundry URL and ontology.
+
+### Patch Changes
+
+- @osdk/generator-utils@2.87.0
+
+## 2.86.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.86.0
+
+## 2.85.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.85.0
+
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.83.0
+
 ## 2.82.0
 
 ### Patch Changes

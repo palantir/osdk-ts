@@ -1,5 +1,144 @@
 # @osdk/foundry-sdk-generator
 
+## 2.91.0
+
+### Minor Changes
+
+- 7fd2775: Declare generated experimental ontology metadata as `unknown` without importing `@osdk/foundry.ontologies` or adding a generated dependency. Integration-testing also accepts metadata as `unknown`, avoiding type mismatches between platform SDK versions.
+
+### Patch Changes
+
+- Updated dependencies [5fade0a]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [5d80e0f]
+- Updated dependencies [0bcfdc9]
+- Updated dependencies [f1a74a8]
+- Updated dependencies [2e21fee]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [7fd2775]
+  - @osdk/client@2.91.0
+  - @osdk/generator@2.91.0
+  - @osdk/api@2.91.0
+  - @osdk/client.unstable@2.91.0
+  - @osdk/generator-converters@2.91.0
+  - @osdk/generator-utils@2.91.0
+
+## 2.90.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/client@2.90.0
+  - @osdk/generator@2.90.0
+  - @osdk/generator-converters@2.90.0
+  - @osdk/client.unstable@2.90.0
+  - @osdk/generator-utils@2.90.0
+
+## 2.89.0
+
+### Patch Changes
+
+- Updated dependencies [62ebddd]
+  - @osdk/client@2.89.0
+  - @osdk/generator@2.89.0
+  - @osdk/api@2.89.0
+  - @osdk/client.unstable@2.89.0
+  - @osdk/generator-converters@2.89.0
+  - @osdk/generator-utils@2.89.0
+
+## 2.88.0
+
+### Patch Changes
+
+- Updated dependencies [358fbfa]
+- Updated dependencies [1d0b110]
+- Updated dependencies [eb1fc8f]
+- Updated dependencies [e1ca298]
+  - @osdk/client@2.88.0
+  - @osdk/api@2.88.0
+  - @osdk/generator@2.88.0
+  - @osdk/generator-converters@2.88.0
+  - @osdk/client.unstable@2.88.0
+  - @osdk/generator-utils@2.88.0
+
+## 2.87.0
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [3c3014d]
+- Updated dependencies [e674a83]
+- Updated dependencies [8300415]
+- Updated dependencies [9c93e57]
+  - @osdk/api@2.87.0
+  - @osdk/client@2.87.0
+  - @osdk/generator@2.87.0
+  - @osdk/generator-converters@2.87.0
+  - @osdk/client.unstable@2.87.0
+  - @osdk/generator-utils@2.87.0
+
+## 2.86.0
+
+### Minor Changes
+
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [af66ef0]
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client@2.86.0
+  - @osdk/client.unstable@2.86.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters@2.86.0
+  - @osdk/generator@2.86.0
+  - @osdk/generator-utils@2.86.0
+
+## 2.85.0
+
+### Minor Changes
+
+- 94e35b4: Propagate the generator TRACE_ID environment variable as valid B3 trace context on ontology metadata requests for log correlation.
+- a0c6e14: New TimeSeriesReference action parameter
+
+### Patch Changes
+
+- Updated dependencies [396ffce]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+  - @osdk/client@2.85.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/generator-converters@2.85.0
+  - @osdk/api@2.85.0
+  - @osdk/generator@2.85.0
+  - @osdk/generator-utils@2.85.0
+
+## 2.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+- @osdk/client.unstable@2.84.0
+- @osdk/client@2.84.0
+- @osdk/generator-converters@2.84.0
+- @osdk/generator-utils@2.84.0
+- @osdk/generator@2.84.0
+
+## 2.83.0
+
+### Patch Changes
+
+- Updated dependencies [4c59807]
+  - @osdk/client.unstable@2.83.0
+  - @osdk/client@2.83.0
+  - @osdk/api@2.83.0
+  - @osdk/generator-converters@2.83.0
+  - @osdk/generator-utils@2.83.0
+  - @osdk/generator@2.83.0
+
 ## 2.82.0
 
 ### Minor Changes

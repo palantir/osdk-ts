@@ -1,5 +1,11 @@
 # @osdk/docs
 
+## 0.3.0
+
+### Minor Changes
+
+- ff00439: Adding support for phonetic search
+
 ## 0.2.0
 
 ### Minor Changes

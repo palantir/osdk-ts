@@ -89,6 +89,28 @@
         }
       ]
     },
+    "action-takes-time-series-reference": {
+      "apiName": "action-takes-time-series-reference",
+      "displayName": "Action Takes Time Series Reference",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "timeSeriesReference": {
+          "displayName": "Time Series Reference",
+          "dataType": {
+            "type": "timeSeriesReference"
+          },
+          "required": true,
+          "typeClasses": []
+        }
+      },
+      "rid": "ri.actions.main.action-type.a1b2c3d4-0000-4000-8000-000000000001",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "OsdkTestObject"
+        }
+      ]
+    },
     "create-osdk-test-object": {
       "apiName": "create-osdk-test-object",
       "displayName": "Create Osdk Test Object",

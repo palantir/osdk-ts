@@ -5,6 +5,7 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Folder Placement](#folder-placement)
 - [Key Concepts](#key-concepts)
 - [Defining an Ontology](#defining-an-ontology)
 - [Defining Shared Property Types](#defining-shared-property-types)
@@ -23,6 +24,12 @@ To get started with the maker package, install it as a dependency in your projec
 ```bash
 npm install @osdk/maker
 ```
+
+## Folder Placement
+
+Use `defineFolder({ id: "objects", folder: "/objects", resources: ["FutureObject", MyObject] })` with API-name strings or object, interface, action, link, and shared-property definitions. Resources must have `permission: "publicProject"` and can belong to only one folder.
+
+Paths are relative to the installation root; maker-experimental creates nested folders automatically. Keep `id` stable across renames and moves. Use `resources: []` for empty folders or explicit parents. Unassigned resources use the root.
 
 ## Defining Shared Property Types
 
@@ -521,6 +528,43 @@ const eventObject = defineObject({
   ],
 });
 ```
+
+### Datasource Marking Constraints
+
+Configure empty allowed marking sets on the datasource that backs the marking properties:
+
+```typescript
+const document = defineObject({
+  apiName: "document",
+  displayName: "Document",
+  pluralDisplayName: "Documents",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "id",
+  properties: {
+    id: { type: "string" },
+    classification: {
+      type: {
+        type: "marking",
+        markingType: "CBAC",
+        markingInputGroupName: "documentClassification",
+      },
+    },
+  },
+  datasources: [
+    {
+      type: "dataset",
+      markingConstraints: {
+        // Permit an empty maximum-classification
+        cbac: { allowEmptyMarkings: true },
+      },
+    },
+  ],
+});
+```
+
+`mandatory.allowEmptyMarkings` configures the shared allowed set of ordinary mandatory and organization markings; `cbac.allowEmptyMarkings` configures the maximum-classification set. Each requires a marking property of the corresponding category. Both default to false.
+
+Allowed markings, organizations, and maximum classification are supplied through Marketplace marking inputs. If an allowed set is empty, corresponding marking properties may contain only empty arrays. These options do not bypass access controls or configure read policies.
 
 ### Object with Property Security Groups
 

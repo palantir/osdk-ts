@@ -394,16 +394,14 @@ function convertSingleRule(
 
     case "addOrModifyObjectRuleV2": {
       const r = irRule.addOrModifyObjectRuleV2;
-      const objRef = getObjectReferenceType(action, r.objectToModify);
-      // propertyArguments left empty: the downstream generator resolves
-      // property mappings from the action parameter configuration rather
-      // than from the logic rule itself for createOrModify rules.
-      const result: Ontologies.CreateOrModifyObjectLogicRule & {
-        type: "createOrModifyObject";
+      // Validate that the parameter is an objectReference (throws if not)
+      getObjectReferenceType(action, r.objectToModify);
+      const result: Ontologies.CreateOrModifyObjectLogicRuleV2 & {
+        type: "createOrModifyObjectV2";
       } = {
-        type: "createOrModifyObject",
-        objectTypeApiName: resolveApiName(objRef.objectTypeId, objectLookup),
-        propertyArguments: {},
+        type: "createOrModifyObjectV2",
+        objectToModify: r.objectToModify,
+        propertyArguments: convertLogicRuleArguments(r.propertyValues),
         structPropertyArguments: {},
       };
       return result;
@@ -558,22 +556,14 @@ function convertBlockDataSingleRule(
 
     case "addOrModifyObjectRuleV2": {
       const r = rule.addOrModifyObjectRuleV2;
-      const objRef = getObjectReferenceTypeFromBlockData(
-        action,
-        r.objectToModify,
-      );
-      // propertyArguments left empty: the downstream generator resolves
-      // property mappings from the action parameter configuration rather
-      // than from the logic rule itself for createOrModify rules.
-      const result: Ontologies.CreateOrModifyObjectLogicRule & {
-        type: "createOrModifyObject";
+      // Validate that the parameter is an objectReference (throws if not)
+      getObjectReferenceTypeFromBlockData(action, r.objectToModify);
+      const result: Ontologies.CreateOrModifyObjectLogicRuleV2 & {
+        type: "createOrModifyObjectV2";
       } = {
-        type: "createOrModifyObject",
-        objectTypeApiName: resolveBlockDataApiName(
-          objRef.objectTypeId,
-          objectLookup,
-        ),
-        propertyArguments: {},
+        type: "createOrModifyObjectV2",
+        objectToModify: r.objectToModify,
+        propertyArguments: convertLogicRuleArguments(r.propertyValues),
         structPropertyArguments: {},
       };
       return result;

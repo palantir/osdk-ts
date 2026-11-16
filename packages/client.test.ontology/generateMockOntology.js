@@ -69,10 +69,21 @@ const ontologyWithoutUnsupportedAction = {
   agents: Object.fromEntries(
     [
       [stubData.weatherAgentApiName, stubData.weatherAgentVersion.version],
-      [stubData.noArgsAgentApiName, stubData.noArgsAgentVersion.version],
+      [
+        stubData.noArgumentsAgentApiName,
+        stubData.noArgumentsAgentVersion.version,
+      ],
       [
         stubData.objectArgumentsAgentApiName,
         stubData.objectArgumentsAgentVersion.version,
+      ],
+      [
+        stubData.optionalArgumentsAgentApiName,
+        stubData.optionalArgumentsAgentVersion.version,
+      ],
+      [
+        stubData.structuredArgumentsAgentApiName,
+        stubData.structuredArgumentsAgentVersion.version,
       ],
     ].map(([apiName, version]) => [
       apiName,

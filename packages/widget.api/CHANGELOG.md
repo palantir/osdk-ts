@@ -1,5 +1,79 @@
 # @osdk/widget.api
 
+## 3.91.0
+
+### Minor Changes
+
+- ee09000: Read the widget set resources.json from the Vite public directory (public/resources.json by default) instead of the project root.
+- 3371bee: Add datasets to the widget set input spec
+
+### Patch Changes
+
+- @osdk/api@2.91.0
+
+## 3.90.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+
+## 3.89.0
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+
+## 3.88.0
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+
+## 3.87.0
+
+### Minor Changes
+
+- 1fd9dc4: Forward host theme updates to widgets and expose the theme through the React provider.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+
+## 3.86.0
+
+### Patch Changes
+
+- Updated dependencies [f7333d4]
+  - @osdk/api@2.86.0
+
+## 3.85.0
+
+### Minor Changes
+
+- a3e7101: Forward hotkeys from custom widget to host
+
+### Patch Changes
+
+- Updated dependencies [a0c6e14]
+  - @osdk/api@2.85.0
+
+## 3.84.0
+
+### Patch Changes
+
+- @osdk/api@2.84.0
+
+## 3.83.0
+
+### Patch Changes
+
+- @osdk/api@2.83.0
+
 ## 3.82.0
 
 ### Patch Changes

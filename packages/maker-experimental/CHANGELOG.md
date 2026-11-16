@@ -1,5 +1,162 @@
 # @osdk/maker-experimental
 
+## 0.86.0
+
+### Minor Changes
+
+- d13bd9f: Support geo point and geo shape function inputs and outputs during local SDK generation, and use exhaustive discovery type conversion.
+
+### Patch Changes
+
+- Updated dependencies [1fd4023]
+- Updated dependencies [c331bfd]
+- Updated dependencies [c740c26]
+- Updated dependencies [406d3b6]
+- Updated dependencies [d13bd9f]
+  - @osdk/generator-converters.ontologyir@2.91.0
+  - @osdk/maker@0.90.0
+  - @osdk/generator-converters.preview@0.65.0
+  - @osdk/api@2.91.0
+  - @osdk/client.unstable@2.91.0
+  - @osdk/maker-import@0.55.0
+
+## 0.85.0
+
+### Minor Changes
+
+- 7fed367: Add datasource-scoped `markingConstraints` with `mandatory.allowEmptyMarkings` and `cbac.allowEmptyMarkings` so installers can supply empty allowed marking sets independently for mandatory and classification constraints.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+- Updated dependencies [7fed367]
+  - @osdk/api@2.90.0
+  - @osdk/maker@0.89.0
+  - @osdk/generator-converters.preview@0.64.0
+  - @osdk/maker-import@0.54.0
+  - @osdk/client.unstable@2.90.0
+  - @osdk/generator-converters.ontologyir@2.90.0
+
+## 0.84.0
+
+### Patch Changes
+
+- @osdk/generator-converters.preview@0.63.0
+- @osdk/api@2.89.0
+- @osdk/client.unstable@2.89.0
+- @osdk/generator-converters.ontologyir@2.89.0
+- @osdk/maker@0.88.0
+- @osdk/maker-import@0.53.0
+
+## 0.83.0
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/maker@0.87.0
+  - @osdk/client.unstable@2.88.0
+  - @osdk/generator-converters.ontologyir@2.88.0
+  - @osdk/generator-converters.preview@0.62.0
+  - @osdk/maker-import@0.52.0
+
+## 0.82.0
+
+### Minor Changes
+
+- e837c76: Default decimal properties to precision 5 and scale 2 when unspecified, matching OMS defaults.
+- 0f211db: defineFunctionBackedAction now accepts additional simple configurations.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [e837c76]
+- Updated dependencies [ff00439]
+- Updated dependencies [ef3e772]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/maker@0.86.0
+  - @osdk/generator-converters.preview@0.61.0
+  - @osdk/client.unstable@2.87.0
+  - @osdk/generator-converters.ontologyir@2.87.0
+  - @osdk/maker-import@0.51.0
+
+## 0.81.0
+
+### Minor Changes
+
+- 6b9b2c0: Preserve `isRequiredParameterOnConcreteAction` in Maker and Marketplace shapes. When the flag is true, check that mapped Action parameters are required.
+- f7333d4: Add support for rebase to scenario clients, support `geoshape` query types, and update `@osdk/foundry.ontologies` to 2.86.0.
+
+### Patch Changes
+
+- Updated dependencies [6b9b2c0]
+- Updated dependencies [f7333d4]
+  - @osdk/client.unstable@2.86.0
+  - @osdk/maker@0.85.0
+  - @osdk/api@2.86.0
+  - @osdk/generator-converters.ontologyir@2.86.0
+  - @osdk/generator-converters.preview@0.60.0
+  - @osdk/maker-import@0.50.0
+
+## 0.80.0
+
+### Minor Changes
+
+- d583566: Emit derived `avg`, `sum`, `min`, `max`, `approximateCardinality` and `exactCardinality` aggregations with the property type identifier directly under the aggregation key, so packaging no longer fails with "missing field `type`".
+- c34a294: Validate interface action constraint references are valid
+- d53bef9: Add external recommendations for interface action type constraints
+
+### Patch Changes
+
+- Updated dependencies [d583566]
+- Updated dependencies [646d01d]
+- Updated dependencies [a0c6e14]
+- Updated dependencies [8f34b57]
+- Updated dependencies [050417c]
+- Updated dependencies [34c76cd]
+  - @osdk/maker@0.84.0
+  - @osdk/client.unstable@2.85.0
+  - @osdk/maker-import@0.49.0
+  - @osdk/api@2.85.0
+  - @osdk/generator-converters.ontologyir@2.85.0
+  - @osdk/generator-converters.preview@0.59.0
+
+## 0.79.0
+
+### Minor Changes
+
+- 6df3c1e: Support folder structure in OAC
+- e2414a2: Deduplicate marking input group names when building an object's datasource marking constraint, so properties that share a group no longer create a separate repeated-name Marketplace input such as `group/group`.
+- aa664cc: Introduce defineFolder to clean up maker folder api
+
+### Patch Changes
+
+- Updated dependencies [6df3c1e]
+- Updated dependencies [e2414a2]
+- Updated dependencies [aa664cc]
+  - @osdk/maker@0.83.0
+  - @osdk/api@2.84.0
+  - @osdk/client.unstable@2.84.0
+  - @osdk/generator-converters.ontologyir@2.84.0
+
+## 0.78.0
+
+### Minor Changes
+
+- 4c59807: Support authored value type references in struct constraints, including inline constraints on struct and array-of-struct object properties, and package their Marketplace dependencies with consistent value type input titles and descriptions across blocks. Move `OntologyIrV2` from `@osdk/client.unstable` to `@osdk/maker-experimental` and include value type dependencies in its `valueTypes` entries.
+
+### Patch Changes
+
+- Updated dependencies [8818fcf]
+- Updated dependencies [4c59807]
+  - @osdk/maker-import@0.48.0
+  - @osdk/client.unstable@2.83.0
+  - @osdk/maker@0.82.0
+  - @osdk/generator-converters.ontologyir@2.83.0
+  - @osdk/generator-converters.preview@0.58.0
+  - @osdk/api@2.83.0
+
 ## 0.77.0
 
 ### Patch Changes

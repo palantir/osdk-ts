@@ -305,7 +305,13 @@ const archetypeRules = archetypes(standardPackageRules, {
   // off to keep the migration a reformat, not a rewrite.
   .addArchetype(
     "oxc migrated libraries with check-api",
-    ["@osdk/api", "@osdk/functions", "@osdk/agents", "@osdk/unit-testing"],
+    [
+      "@osdk/api",
+      "@osdk/functions",
+      "@osdk/agents",
+      "@osdk/unit-testing",
+      "@osdk/workshop-embed",
+    ],
     {
       ...LIBRARY_RULES,
       oxc: true,
@@ -585,6 +591,7 @@ const archetypeRules = archetypes(standardPackageRules, {
         "./experimental/theme",
         "./experimental/tiff-renderer",
         "./experimental/video-viewer",
+        "./experimental/workshop-module",
         "./experimental/xml-viewer",
       ],
       setupFiles: ["./src/test/setupPolyfills.ts"],

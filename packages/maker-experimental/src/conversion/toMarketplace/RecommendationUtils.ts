@@ -154,6 +154,62 @@ function externalRecsForInterfaceLinks(
   return results;
 }
 
+function externalRecsForInterfaceActionTypeConstraints(
+  importedOntology: OntologyBlockDataV2,
+): GeneratedBlockExternalRecommendations[] {
+  const results: GeneratedBlockExternalRecommendations[] = [];
+
+  for (const interfaceBlock of Object.values(importedOntology.interfaceTypes)) {
+    const interfaceApiName = interfaceBlock.interfaceType.apiName;
+    const constraints =
+      interfaceBlock.interfaceType.actionTypeConstraints ?? [];
+
+    results.push(
+      ...getExternalRecommendationsForType(
+        constraints,
+        (constraint) => constraint.metadata.apiName,
+        (constraintApiName) =>
+          ReadableIdGenerator.getForInterfaceActionTypeConstraint(
+            interfaceApiName,
+            constraintApiName,
+          ),
+        getPackage(interfaceApiName),
+      ),
+    );
+  }
+
+  return results;
+}
+
+function externalRecsForInterfaceParameterConstraints(
+  importedOntology: OntologyBlockDataV2,
+): GeneratedBlockExternalRecommendations[] {
+  const results: GeneratedBlockExternalRecommendations[] = [];
+
+  for (const interfaceBlock of Object.values(importedOntology.interfaceTypes)) {
+    const interfaceApiName = interfaceBlock.interfaceType.apiName;
+
+    for (const constraint of interfaceBlock.interfaceType
+      .actionTypeConstraints ?? []) {
+      results.push(
+        ...getExternalRecommendationsForType(
+          Object.values(constraint.parameters ?? {}),
+          (parameter) => parameter.displayMetadata.apiName!,
+          (parameterApiName) =>
+            ReadableIdGenerator.getForInterfaceParameterConstraint(
+              interfaceApiName,
+              constraint.metadata.apiName,
+              parameterApiName,
+            ),
+          getPackage(interfaceApiName),
+        ),
+      );
+    }
+  }
+
+  return results;
+}
+
 function externalRecsForSpts(
   importedOntology: OntologyBlockDataV2,
 ): GeneratedBlockExternalRecommendations[] {
@@ -408,6 +464,8 @@ export function getExternalRecommendations(
     ...externalRecsForInterfaces(importedOntology),
     ...externalRecsForInterfaceProperties(importedOntology),
     ...externalRecsForInterfaceLinks(importedOntology),
+    ...externalRecsForInterfaceActionTypeConstraints(importedOntology),
+    ...externalRecsForInterfaceParameterConstraints(importedOntology),
     ...externalRecsForSpts(importedOntology),
     ...externalRecsForObjects(importedOntology),
     ...externalRecsForProperties(importedOntology),

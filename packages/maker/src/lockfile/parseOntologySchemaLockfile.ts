@@ -21,6 +21,7 @@ import type {
   InterfaceSchemaMigrationInstruction,
 } from "../api/interface/InterfaceSchemaMigrations.js";
 import { isCanonicalIsoUtcDatetime } from "../api/interface/validateInterfaceSchemaMigrations.js";
+import type { CoversEveryVariant } from "../util/CoversEveryVariant.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type { OntologySchemaLockfile } from "./OntologySchemaLockfile.js";
 import {
@@ -270,16 +271,6 @@ const lockfileSchema = z
     }),
   })
   .passthrough();
-
-/**
- * `true` when `Parsed` accepts every variant of the union `Declared`, otherwise `never`.
- *
- * Used to ensure our zod discriminated unions are exhaustive over the real types.
- */
-type CoversEveryVariant<
-  Declared extends { type: string },
-  Parsed extends { type: string },
-> = [Declared["type"]] extends [Parsed["type"]] ? true : never;
 
 // Exhaustiveness checks
 const _COVERS_EVERY_GRACE_PERIOD: CoversEveryVariant<

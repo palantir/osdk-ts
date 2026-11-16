@@ -369,6 +369,7 @@ export async function getRequiredDefinitions(
     case "date":
     case "double":
     case "float":
+    case "geoshape":
     case "integer":
     case "long":
     case "mediaReference":
@@ -393,6 +394,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
     case "date":
     case "double":
     case "float":
+    case "geoshape":
     case "integer":
     case "long":
     case "string":

@@ -224,6 +224,7 @@ interface PickerMarkingCategory {
   description: string;
   categoryType: "CONJUNCTIVE" | "DISJUNCTIVE";
   markingType: "MANDATORY" | "CBAC";
+  priority?: string;
 }
 ```
 
@@ -240,6 +241,8 @@ interface PickerMarking {
   categoryId: string;
   name: string;
   description?: string;
+  priority?: string;
+  prominence?: "COMMON" | "UNCOMMON";
 }
 ```
 

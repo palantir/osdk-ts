@@ -193,3 +193,22 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
    */
   readonly lastFetchedValue: TimeSeriesPoint<T> | undefined;
 }
+
+/**
+ * A reference to a time series, used as the value of a `timeSeriesReference`
+ * Action parameter. The series is identified either by a series id (optionally
+ * qualified by a sync rid) or by a time series catalog template.
+ */
+export type TimeSeriesReference =
+  | {
+      $seriesId: string;
+      $syncRid?: string;
+      $templateRid?: never;
+      $templateVersion?: never;
+    }
+  | {
+      $templateRid: string;
+      $templateVersion?: string;
+      $seriesId?: never;
+      $syncRid?: never;
+    };

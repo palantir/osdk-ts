@@ -87,6 +87,7 @@ export interface GithubContext {
 export const MAX_CHARACTERS_PER_MESSAGE = 60000;
 
 export type VersionOptions = {
+  allowedMajorReleases?: readonly string[];
   cwd?: string;
   prTitle?: string;
   commitMessage?: string;
@@ -98,6 +99,7 @@ export type VersionOptions = {
 };
 
 export async function runVersion({
+  allowedMajorReleases = [],
   cwd = process.cwd(),
   prTitle = "Version Packages",
   commitMessage = "Version Packages",
@@ -174,7 +176,12 @@ export async function runVersion({
       : undefined,
   );
 
-  mutateReleasePlan(cwd, releasePlan, isMainBranch ? "main" : "release branch");
+  mutateReleasePlan(
+    cwd,
+    releasePlan,
+    isMainBranch ? "main" : "release branch",
+    allowedMajorReleases,
+  );
 
   for (const release of releasePlan.releases) {
     const versions = await packageVersionsOrEmptySet(release.name);
