@@ -1,5 +1,20 @@
 # @osdk/seed-helpers
 
+## 0.33.0
+
+### Minor Changes
+
+- 7a6dfaa: Allow undefined for any non-primary-key seed property, including properties marked required in ontology metadata. On create, undefined leaves the property empty. On update, undefined clears the property while omitted properties keep their values.
+
+### Patch Changes
+
+- Updated dependencies [358fbfa]
+- Updated dependencies [1d0b110]
+- Updated dependencies [eb1fc8f]
+- Updated dependencies [e1ca298]
+  - @osdk/client@2.88.0
+  - @osdk/api@2.88.0
+
 ## 0.32.0
 
 ### Minor Changes

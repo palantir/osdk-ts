@@ -54,6 +54,7 @@ import type {
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import { resolveDerivedPropertyLinks } from "./object/resolveDerivedPropertyLinks.js";
+import { validateMediaReferences } from "./object/validateMediaReferences.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
 import {
@@ -83,6 +84,7 @@ function defineObjectImpl(
   const collector = createValidationIssueCollector();
   const { addIssue } = collector;
   const objectDef = cloneDefinition(objectDefInput);
+  validateMediaReferences(objectDef, collector);
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = objectDef.properties
     ? Object.keys(objectDef.properties)
@@ -140,6 +142,27 @@ function defineObjectImpl(
     !objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly,
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
+
+  const hasMarkingProperty = (markingType: "CBAC" | "MANDATORY") =>
+    Object.values(objectDef.properties ?? {}).some(
+      (property) =>
+        typeof property.type === "object" &&
+        property.type.type === "marking" &&
+        property.type.markingType === markingType,
+    );
+  for (const datasource of objectDef.datasources ?? []) {
+    if (datasource.type === "derived") continue;
+    const { markingConstraints } = datasource;
+    addIssue(
+      markingConstraints?.mandatory === undefined ||
+        hasMarkingProperty("MANDATORY"),
+      `Object "${objectDef.apiName}" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.`,
+    );
+    addIssue(
+      markingConstraints?.cbac === undefined || hasMarkingProperty("CBAC"),
+      `Object "${objectDef.apiName}" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.`,
+    );
+  }
 
   if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
     const nonDatasetDatasources = objectDef.datasources.filter(

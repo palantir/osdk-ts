@@ -1,5 +1,31 @@
 # @osdk/widget.client
 
+## 3.91.0
+
+### Patch Changes
+
+- Updated dependencies [ee09000]
+- Updated dependencies [3371bee]
+  - @osdk/widget.api@3.91.0
+
+## 3.90.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.90.0
+
+## 3.89.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.89.0
+
+## 3.88.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.88.0
+
 ## 3.87.0
 
 ### Minor Changes

@@ -31,3 +31,6 @@ export const getSessionState: CallFactory<
   "agentSessionId",
   typeof AgentSessions.getSessionState
 > = handleOpenApiCall(AgentSessions.getSessionState, ["agentSessionId"]);
+
+export const get: CallFactory<"agentSessionId", typeof AgentSessions.get> =
+  handleOpenApiCall(AgentSessions.get, ["agentSessionId"]);

@@ -29,6 +29,7 @@ import {
 
 it("collects failed checks with default or structured issues", () => {
   const collector = createValidationIssueCollector();
+  const { addIssue, throwIfAnyIssues } = collector;
   const issue = {
     code: "invalid_format",
     message: "Invalid property.",
@@ -36,13 +37,13 @@ it("collects failed checks with default or structured issues", () => {
     suggestion: "Use a supported property type.",
   };
 
-  collector.addIssue(true, "Ignored check");
-  collector.addIssue("truthy", issue);
-  expect(collector.throwIfAnyIssues).not.toThrow();
+  addIssue(true, "Ignored check");
+  addIssue("truthy", issue);
+  expect(throwIfAnyIssues).not.toThrow();
 
-  collector.addIssue(false, "Invalid definition.");
-  collector.addIssue(undefined, issue);
-  expect(collector.throwIfAnyIssues).toThrowError(
+  addIssue(false, "Invalid definition.");
+  addIssue(undefined, issue);
+  expect(throwIfAnyIssues).toThrowError(
     expect.objectContaining({
       name: "MakerValidationError",
       issues: [
@@ -51,8 +52,8 @@ it("collects failed checks with default or structured issues", () => {
       ],
     }),
   );
-  expect(collector.throwIfAnyIssues).toThrowError(MakerValidationError);
-  expect(collector.throwIfAnyIssues).toThrowError(
+  expect(throwIfAnyIssues).toThrowError(MakerValidationError);
+  expect(throwIfAnyIssues).toThrowError(
     '[validation_error] Invalid definition.\n$["properties"]["file"] [invalid_format] Invalid property.\n  Use a supported property type.',
   );
 
@@ -195,4 +196,34 @@ it("returns the original value and leaves unrelated exceptions unobserved", () =
   } finally {
     stop();
   }
+});
+
+it("combines readonly issue groups in order without losing diagnostic details", () => {
+  const modelIssues = Object.freeze([
+    {
+      code: "invalid_format",
+      message: "Invalid input format.",
+      path: ["formats", 1],
+      suggestion: "Choose a supported format.",
+    },
+  ]);
+  const registrationIssues = Object.freeze([
+    {
+      code: "duplicate_resource",
+      message: "Resource already defined.",
+      path: ["apiName"],
+    },
+  ]);
+
+  expect(() =>
+    throwIfAnyValidationIssues(modelIssues, [], registrationIssues),
+  ).toThrowError(
+    expect.objectContaining({
+      name: "MakerValidationError",
+      issues: [...modelIssues, ...registrationIssues],
+    }),
+  );
+  expect(() => throwIfAnyValidationIssues(modelIssues)).toThrow(
+    MakerValidationError,
+  );
 });

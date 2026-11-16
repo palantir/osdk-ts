@@ -1,5 +1,40 @@
 # @osdk/shared.test
 
+## 0.68.0
+
+### Patch Changes
+
+- @osdk/api@2.91.0
+- @osdk/generator-converters@2.91.0
+
+## 0.67.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters@2.90.0
+
+## 0.66.0
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+- @osdk/generator-converters@2.89.0
+
+## 0.65.0
+
+### Minor Changes
+
+- 358fbfa: Add experimental support for looking up agent sessions by ID.
+- eb1fc8f: Add experimental support for reading agent session state.
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/generator-converters@2.88.0
+
 ## 0.64.0
 
 ### Minor Changes

@@ -23,6 +23,7 @@ import type { OntologyEntityBase } from "../common/OntologyEntityBase.js";
 import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
 import type { InterfaceImplementation } from "./InterfaceImplementation.js";
+import type { MediaReferenceSource } from "./MediaReference.js";
 import type { ObjectPropertyType } from "./ObjectPropertyType.js";
 import type { ObjectTypeDatasourceDefinition } from "./ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
@@ -37,6 +38,7 @@ export type ObjectType = OntologyEntityBase &
     | "titlePropertyApiName"
   > & {
     datasources?: Array<ObjectTypeDatasourceDefinition>;
+    referenceSources?: readonly MediaReferenceSource[];
     includeEmptyBackingDatasource?: boolean;
     permission?: EntityPermission;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;

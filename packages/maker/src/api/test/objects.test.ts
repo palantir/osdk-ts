@@ -79,9 +79,11 @@ describe("Object Types", () => {
         ],
       }),
     );
-    expect(getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE]).toEqual(
-      {},
-    );
+    expect(
+      getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][
+        "com.palantir.Document"
+      ],
+    ).toBeUndefined();
 
     expect(() =>
       defineObject({
@@ -91,6 +93,68 @@ describe("Object Types", () => {
         properties: { id: { type: "string" } },
       }),
     ).not.toThrow();
+  });
+
+  it("skips invalid datasource prerequisites while collecting other object issues", () => {
+    const link = defineLink({
+      apiName: "self",
+      many: {
+        object: "com.palantir.Document",
+        metadata: { apiName: "sources" },
+      },
+      toMany: {
+        object: "com.palantir.Document",
+        metadata: { apiName: "targets" },
+      },
+    });
+    expect(() =>
+      defineObject({
+        apiName: "Document",
+        displayName: "Document",
+        pluralDisplayName: "Documents",
+        description: "x".repeat(10001),
+        titlePropertyApiName: "missingTitle",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+        datasources: [
+          {
+            type: "derived",
+            linkDefinition: [{ linkType: link }],
+            propertyMapping: { missingTotal: { type: "sum", property: "id" } },
+          },
+          {
+            type: "derived",
+            linkDefinition: [{ linkType: link }],
+            propertyMapping: { id: { type: "sum", property: "id" } },
+          },
+        ],
+      }),
+    ).toThrowError(
+      expect.objectContaining({
+        name: "MakerValidationError",
+        issues: [
+          expect.objectContaining({
+            message:
+              "Title property missingTitle is not defined on object Document",
+          }),
+          expect.objectContaining({
+            message:
+              "Property 'missingTotal' used in derived datasource for object 'Document' is not defined.",
+          }),
+          expect.objectContaining({
+            message: "Property 'id' on object 'Document' is not numeric",
+          }),
+          expect.objectContaining({
+            message: expect.stringContaining(
+              "description must be at most 10000",
+            ),
+          }),
+        ],
+      }),
+    );
+    expect(getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE]).toEqual(
+      {},
+    );
   });
 
   it("allows an empty backing Media Set for a media reference property", () => {
@@ -523,6 +587,66 @@ describe("Object Types", () => {
       },
     });
     expect(dumpOntologyFullMetadata()).toMatchSnapshot();
+  });
+
+  it("Fails if markingConstraints.mandatory is set without a MANDATORY marking property", () => {
+    expect(() => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          classification: {
+            type: {
+              type: "marking",
+              markingType: "CBAC",
+              markingInputGroupName: "classificationGroup",
+            },
+          },
+        },
+        datasources: [
+          {
+            type: "dataset",
+            markingConstraints: { mandatory: { allowEmptyMarkings: true } },
+          },
+        ],
+      });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[MakerValidationError: [validation_error] Object "foo" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.]`,
+    );
+  });
+
+  it("Fails if markingConstraints.cbac is set without a CBAC marking property", () => {
+    expect(() => {
+      defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: { type: "string" },
+          mandatory: {
+            type: {
+              type: "marking",
+              markingType: "MANDATORY",
+              markingInputGroupName: "mandatoryGroup",
+            },
+          },
+        },
+        datasources: [
+          {
+            type: "dataset",
+            markingConstraints: { cbac: { allowEmptyMarkings: true } },
+          },
+        ],
+      });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[MakerValidationError: [validation_error] Object "foo" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.]`,
+    );
   });
 
   it("Fails if edit only property is primary key", () => {

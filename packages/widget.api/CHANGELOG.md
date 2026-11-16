@@ -1,5 +1,36 @@
 # @osdk/widget.api
 
+## 3.91.0
+
+### Minor Changes
+
+- ee09000: Read the widget set resources.json from the Vite public directory (public/resources.json by default) instead of the project root.
+- 3371bee: Add datasets to the widget set input spec
+
+### Patch Changes
+
+- @osdk/api@2.91.0
+
+## 3.90.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+
+## 3.89.0
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+
+## 3.88.0
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+
 ## 3.87.0
 
 ### Minor Changes

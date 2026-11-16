@@ -19,10 +19,17 @@ export type { ConnectToWorkshopModuleOptions } from "./connectToWorkshopModule.j
 export type {
   WorkshopModuleConnection,
   WorkshopModuleConnectHandler,
+  WorkshopModuleHostConnection,
 } from "./connection.js";
 export { listenForWorkshopModuleEmbedMessages } from "./listenForWorkshopModuleEmbedMessages.js";
 export type { ListenForWorkshopModuleEmbedMessagesOptions } from "./listenForWorkshopModuleEmbedMessages.js";
+export type { WorkshopModuleSchema, WorkshopVariableSchema } from "./schema.js";
 export {
   WORKSHOP_EMBED_QUERY_PARAM,
   WORKSHOP_EMBED_QUERY_VALUE,
 } from "./protocol.js";
+export type {
+  WorkshopVariableMap,
+  WorkshopVariableValue,
+  WorkshopVariableValues,
+} from "./variables.js";
