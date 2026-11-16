@@ -67,52 +67,24 @@ function documentDefinition(): ObjectTypeDefinition {
   };
 }
 
-function mediaDatasources() {
-  return dumpOntologyFullMetadata().ontology.objectTypes[
-    "com.example.Document"
-  ].datasources.filter((source) => source.datasource.type === "mediaSetView");
-}
-
 describe("media reference bindings", () => {
   beforeEach(async () => {
     await defineOntology("com.example.", () => {}, undefined);
   });
 
-  it("groups shared sources, selects uploads per property, and preserves legacy backing", () => {
-    defineObject(documentDefinition());
-    expect(mediaDatasources().map((source) => source.datasource)).toEqual([
-      {
-        type: "mediaSetView",
-        mediaSetView: {
-          assumedMarkings: [],
-          clearOnDeleteProperties: [],
-          mediaSetViewLocator: "com.example.Document.legacy",
-          properties: ["legacy"],
-          uploadProperties: ["legacy"],
-        },
-      },
-      {
-        type: "mediaSetView",
-        mediaSetView: {
-          assumedMarkings: [],
-          clearOnDeleteProperties: [],
-          mediaSetViewLocator: archive.rid,
-          properties: ["file"],
-          uploadProperties: [],
-        },
-      },
-      {
-        type: "mediaSetView",
-        mediaSetView: {
-          assumedMarkings: [],
-          clearOnDeleteProperties: [],
-          mediaSetViewLocator: uploads.rid,
-          properties: ["file", "preview"],
-          uploadProperties: ["file"],
-        },
-      },
-    ]);
-  });
+  it.each([false, true])(
+    "rejects legacy conversion of explicit sources with property bindings: %s",
+    (hasBindings) => {
+      const definition = documentDefinition();
+      if (!hasBindings) {
+        definition.properties = { id: { type: "string" } };
+      }
+      defineObject(definition);
+      expect(dumpOntologyFullMetadata).toThrowError(
+        "Object com.example.Document: explicit media bindings are unsupported in legacy maker conversion",
+      );
+    },
+  );
 
   it.each([
     [{ type: "string", reference }, "scalar mediaReference"],
@@ -214,7 +186,6 @@ describe("media reference bindings", () => {
         );
       } else {
         defineObject(definition);
-        expect(mediaDatasources()).toEqual([]);
       }
     },
   );
@@ -283,6 +254,8 @@ describe("media reference bindings", () => {
           expect.objectContaining({
             code: "invalid_media_reference",
             path: ["properties", "file", "reference", "sources", 0],
+            suggestion:
+              "Add this media set to the object's referenceSources, or select a declared set.",
           }),
           expect.objectContaining({
             code: "invalid_media_reference",
@@ -295,6 +268,8 @@ describe("media reference bindings", () => {
           expect.objectContaining({
             code: "invalid_media_reference",
             path: ["properties", "file", "reference", "uploadDestination"],
+            suggestion:
+              "Select a RID from sources, or omit uploadDestination to disable uploads.",
           }),
           expect.objectContaining({
             message:

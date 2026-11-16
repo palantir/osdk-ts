@@ -213,13 +213,12 @@ export async function defineOntologyV2(
 
   const explicitMediaSetNames = Object.values(
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
-  ).flatMap((entity) => {
-    const object = entity as ObjectType;
-    return (object.properties ?? []).flatMap(
+  ).flatMap((object) =>
+    (object.properties ?? []).flatMap(
       (property) =>
         property.reference?.sources.map((source) => source.rid) ?? [],
-    );
-  });
+    ),
+  );
 
   for (const mediaSetName of [
     ...backingMediaSetNames,

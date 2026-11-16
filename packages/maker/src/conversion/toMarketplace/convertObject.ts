@@ -40,12 +40,22 @@ import type {
 import { resolveDerivedPropertyLinks } from "../../api/object/resolveDerivedPropertyLinks.js";
 import { isExotic } from "../../api/properties/PropertyTypeType.js";
 import type { CoversEveryVariant } from "../../util/CoversEveryVariant.js";
+import { createValidationIssueCollector } from "../../validation.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 
 export function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
+  const collector = createValidationIssueCollector();
+  invariant(
+    (objectType.referenceSources?.length ?? 0) === 0 &&
+      !objectType.properties?.some(
+        (property) => property.reference !== undefined,
+      ),
+    `Object ${objectType.apiName}: explicit media bindings are unsupported in legacy maker conversion`,
+  );
+
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType);
 
@@ -54,37 +64,6 @@ export function convertObject(
   )
     .filter((prop) => !derivedPropertyNames.includes(prop.apiName))
     .flatMap((prop) => extractPropertyDatasource(prop, objectType.apiName));
-
-  const mediaDatasources = [...(objectType.referenceSources ?? [])]
-    .sort((a, b) => a.mediaSet.rid.localeCompare(b.mediaSet.rid))
-    .flatMap(({ mediaSet }) => {
-      const properties = (objectType.properties ?? [])
-        .filter((property) =>
-          property.reference?.sources.some(
-            (source) => source.rid === mediaSet.rid,
-          ),
-        )
-        .sort((a, b) => a.apiName.localeCompare(b.apiName));
-      if (properties.length === 0) return [];
-      return [
-        buildDatasource(`${objectType.apiName}.media.${mediaSet.rid}`, {
-          type: "mediaSetView",
-          mediaSetView: {
-            assumedMarkings: [],
-            clearOnDeleteProperties: [],
-            mediaSetViewLocator: mediaSet.rid,
-            properties: properties.map((property) => property.apiName),
-            uploadProperties: properties
-              .filter(
-                (property) =>
-                  property.reference?.uploadDestination?.rid === mediaSet.rid,
-              )
-              .map((property) => property.apiName),
-          },
-        }),
-      ];
-    });
-  propertyDatasources.push(...mediaDatasources);
 
   const classificationGroupMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],

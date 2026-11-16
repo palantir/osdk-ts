@@ -1104,6 +1104,16 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     return { rid: restrictedViewRid };
   }
 
+  /**
+   * Builds a media locator and registers its files-datasource input.
+   *
+   * mediaSetViewName keys the input and determines the temporary view/branch RIDs.
+   * Legacy empty backing uses <Object>.<property>, explicit sources use the source RID
+   * so properties and objects selecting the same media set share one input.
+   *
+   * sourceMediaSetRid supplies the authored media set locator instead of generating
+   * a deterministic temporary RID for empty backing.
+   */
   generateMediaSetViewLocator(
     mediaSetViewName: string,
     sourceMediaSetRid?: string,

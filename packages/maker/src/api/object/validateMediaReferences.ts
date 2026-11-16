@@ -33,9 +33,10 @@ function validateMediaSet(
     locator.type === "rid" && MEDIA_SET_RID.test(locator.rid),
     {
       code: "invalid_format",
-      message:
-        "Media references require a media set RID locator with lowercase hex",
+      message: "Expected a media set RID locator",
       path,
+      suggestion:
+        'Use { type: "rid", rid: "ri.mio.<realm>.media-set.<uuid>" } with lowercase hex.',
     },
   );
 }
@@ -52,12 +53,14 @@ export function validateMediaReferences(
       code: "invalid_media_reference",
       message: "Unsupported reference source type",
       path: [...path, "type"],
+      suggestion: 'Set type to "media".',
     });
     validateMediaSet(source.mediaSet, collector, [...path, "mediaSet"]);
     addIssue(!declared.has(source.mediaSet.rid), {
       code: "duplicate_media_source",
       message: `Duplicate media reference source on object ${object.apiName}: ${source.mediaSet.rid}`,
       path: [...path, "mediaSet"],
+      suggestion: "Declare each media set RID once in referenceSources.",
     });
     declared.add(source.mediaSet.rid);
   }
@@ -66,7 +69,7 @@ export function validateMediaReferences(
     const reference = property.reference;
     if (reference === undefined) continue;
 
-    const context = `Property ${name} on object ${object.apiName}`;
+    const context = `${object.apiName}.${name}`;
     const path = ["properties", name, "reference"] as const;
     addIssue(
       !object.datasources?.some(
@@ -78,6 +81,7 @@ export function validateMediaReferences(
         code: "invalid_media_reference",
         message: `${context} cannot combine reference with a derived datasource`,
         path,
+        suggestion: "Remove reference from the derived property.",
       },
     );
 
@@ -85,24 +89,29 @@ export function validateMediaReferences(
       code: "invalid_media_reference",
       message: `${context} can only use reference on a scalar mediaReference`,
       path,
+      suggestion:
+        'Use type: "mediaReference" without array, or remove reference.',
     });
 
     addIssue(!property.includeEmptyBackingMediaSet, {
       code: "invalid_media_reference",
       message: `${context} cannot combine reference with includeEmptyBackingMediaSet`,
       path,
+      suggestion: "Choose reference or includeEmptyBackingMediaSet, not both.",
     });
 
     addIssue(reference.type === "media", {
       code: "invalid_media_reference",
       message: `${context} requires a media reference`,
       path: [...path, "type"],
+      suggestion: 'Set reference.type to "media".',
     });
 
     addIssue(reference.sources.length > 0, {
       code: "invalid_media_reference",
       message: `${context} requires at least one media source`,
       path: [...path, "sources"],
+      suggestion: "Add a media set from the object's referenceSources.",
     });
 
     const selected = new Set<string>();
@@ -113,11 +122,14 @@ export function validateMediaReferences(
         code: "invalid_media_reference",
         message: `${context} selects an undeclared media source: ${source.rid}`,
         path: sourcePath,
+        suggestion:
+          "Add this media set to the object's referenceSources, or select a declared set.",
       });
       addIssue(!selected.has(source.rid), {
         code: "duplicate_media_source",
         message: `${context} selects a duplicate media source: ${source.rid}`,
         path: sourcePath,
+        suggestion: "List each media set RID once in sources.",
       });
       selected.add(source.rid);
     }
@@ -128,6 +140,8 @@ export function validateMediaReferences(
         code: "invalid_media_reference",
         message: `${context} uploadDestination must be one of its sources`,
         path: uploadPath,
+        suggestion:
+          "Select a RID from sources, or omit uploadDestination to disable uploads.",
       });
     }
   }
