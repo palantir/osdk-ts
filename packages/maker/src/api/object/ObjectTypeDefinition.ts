@@ -38,6 +38,11 @@ export type ObjectTypeDefinition = {
   visibility?: Visibility;
   editsEnabled?: boolean;
   editsHistoryConfig?: EditsHistoryConfig;
+  /**
+   * Whether actions with interface logic rules may edit objects of this type.
+   * When omitted, the package leaves the setting unset and the ontology's default applies.
+   */
+  interfaceActionsEnabled?: boolean;
   status?: ObjectTypeStatus;
   datasources?: Array<ObjectTypeDatasourceDefinition>;
   referenceSources?: readonly MediaReferenceSource[];

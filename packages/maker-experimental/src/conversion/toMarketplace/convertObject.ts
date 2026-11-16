@@ -724,6 +724,15 @@ function buildEntityMetadata(
       objectType.apiName,
       objectType.editsHistoryConfig,
     ),
+    ...(objectType.interfaceActionsEnabled === undefined
+      ? {}
+      : {
+          interfaceSettings: {
+            enableInterfaceActions: objectType.interfaceActionsEnabled
+              ? { type: "enabled", enabled: {} }
+              : { type: "disabled", disabled: {} },
+          },
+        }),
   };
   return metadata as MarketplaceObjectTypeEntityMetadata;
 }
