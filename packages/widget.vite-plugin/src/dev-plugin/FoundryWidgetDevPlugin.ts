@@ -139,12 +139,7 @@ export function FoundryWidgetDevPlugin(
             htmlEntrypoints.map((entrypoint) =>
               serverPath(
                 server,
-                normalizePath(
-                  path.relative(
-                    server.config.root,
-                    path.resolve(server.config.root, entrypoint),
-                  ),
-                ),
+                normalizePath(path.relative(server.config.root, entrypoint)),
               ),
             ),
           ),

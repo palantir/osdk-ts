@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -27,7 +27,12 @@ test("lists relative and absolute HTML inputs at URLs the dev server serves", as
   // The dev plugin disables itself under Vitest
   vi.stubEnv("VITEST", undefined);
   vi.stubEnv("FOUNDRY_TOKEN", "token");
-  const root = await mkdtemp(path.join(tmpdir(), "widget-dev-"));
+  const root = await realpath(
+    await mkdtemp(path.join(tmpdir(), "widget-dev-")),
+  );
+  const cwd = process.cwd();
+  // Vite resolves relative inputs from the working directory
+  process.chdir(root);
   await writeFile(path.join(root, "index.html"), "index");
   await writeFile(path.join(root, "second.html"), "second");
   const server = await createServer({
@@ -59,6 +64,7 @@ test("lists relative and absolute HTML inputs at URLs the dev server serves", as
     ]);
   } finally {
     await server.close();
+    process.chdir(cwd);
     vi.unstubAllEnvs();
     await rm(root, { recursive: true, force: true });
   }
