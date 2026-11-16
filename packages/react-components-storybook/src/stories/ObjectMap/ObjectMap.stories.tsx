@@ -75,8 +75,28 @@ export const ApplicationPrototype: Story = {
       },
     },
   },
+};
+
+// Keep the shareable application interactive. Automated user gestures belong
+// in a test-only story so opening the demo never changes its filters/selection.
+export const ApplicationPrototypeInteractions: Story = {
+  ...ApplicationPrototype,
+  // cspell:ignore autodocs
+  tags: ["test", "!dev", "!autodocs"],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const search = canvas.getByRole("searchbox", {
+      name: "Find an office or city",
+    });
+    const capacityFilter = canvas.getByRole("checkbox", {
+      name: "At least 90% occupied",
+    });
+    // The manual demo must begin with the full office network and no filters.
+    await expect(
+      await canvas.findByText("6 of 6 offices shown"),
+    ).toBeInTheDocument();
+    await expect(search).toHaveValue("");
+    await expect(capacityFilter).not.toBeChecked();
     await waitFor(() => {
       expect(canvas.getByRole("button", { name: "Fit objects" })).toBeEnabled();
       // MapLibre's stylesheet must not collapse the container or clip markers.
@@ -90,7 +110,7 @@ export const ApplicationPrototype: Story = {
       canvas.getByRole("complementary", { name: "Selected office details" }),
     );
     await expect(
-      details.getByRole("heading", { name: "Harbor office" }),
+      await details.findByRole("heading", { name: "Harbor office" }),
     ).toBeInTheDocument();
     await expect(
       canvas.getByRole("button", { name: "Harbor office" }),
@@ -104,7 +124,7 @@ export const ApplicationPrototype: Story = {
       canvas.getByRole("checkbox", { name: "Midtown office · New York" }),
     );
     await expect(
-      details.getByRole("heading", { name: "Midtown office" }),
+      await details.findByRole("heading", { name: "Midtown office" }),
     ).toBeInTheDocument();
     await expect(
       canvas.getByRole("button", { name: "Midtown office" }),
@@ -113,23 +133,33 @@ export const ApplicationPrototype: Story = {
       details.getByRole("heading", { name: "Harbor office" }),
     ).toBeInTheDocument();
     await userEvent.click(harborCheckbox);
-    await expect(
-      details.queryByRole("heading", { name: "Harbor office" }),
-    ).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        details.queryByRole("heading", { name: "Harbor office" }),
+      ).not.toBeInTheDocument(),
+    );
     await expect(
       canvas.getByRole("button", { name: "Harbor office" }),
     ).toHaveAttribute("aria-pressed", "false");
-    await userEvent.click(
-      canvas.getByRole("checkbox", { name: "At least 90% occupied" }),
-    );
-    await expect(canvas.getByText("3 of 6 offices shown")).toBeInTheDocument();
+    await userEvent.click(capacityFilter);
+    await expect(
+      await canvas.findByText("3 of 6 offices shown"),
+    ).toBeInTheDocument();
     await expect(
       canvas.queryByRole("button", { name: "Market Street office" }),
     ).not.toBeInTheDocument();
-    await userEvent.type(
-      canvas.getByRole("searchbox", { name: "Find an office or city" }),
-      "Boston",
-    );
-    await expect(canvas.getByText("1 of 6 offices shown")).toBeInTheDocument();
+    await userEvent.type(search, "Boston");
+    await waitFor(() => expect(search).toHaveValue("Boston"));
+    await expect(
+      await canvas.findByText("1 of 6 offices shown"),
+    ).toBeInTheDocument();
+    await userEvent.clear(search);
+    await userEvent.click(capacityFilter);
+    await expect(
+      await canvas.findByText("6 of 6 offices shown"),
+    ).toBeInTheDocument();
+    await expect(
+      await details.findByRole("heading", { name: "Review a location" }),
+    ).toBeInTheDocument();
   },
 };

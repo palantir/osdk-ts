@@ -29,9 +29,7 @@ import {
 
 import "./styles.css";
 
-// Initialize MSW with proper options
-// This is synchronous, it only configures MSW
-// The actual service worker registration happens in the mswLoader, which runs before each story
+// Start MSW here; mswLoader awaits worker activation before each story renders.
 const basePath = import.meta.env?.BASE_URL ?? "/";
 const serviceWorkerUrl = `${basePath}${
   basePath.endsWith("/") ? "" : "/"
@@ -47,8 +45,6 @@ initialize({
   serviceWorker: {
     url: serviceWorkerUrl,
   },
-  // Wait for the service worker to be ready before rendering
-  waitUntilReady: true,
 });
 const fauxFoundryReady = setupFauxFoundry();
 // Create client — only needs baseUrl/ontologyRid, not registered data

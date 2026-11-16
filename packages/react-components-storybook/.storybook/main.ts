@@ -103,9 +103,18 @@ const config: StorybookConfig = {
     // Turbo watch rebuilds upstream packages on change, which briefly
     // produces incomplete builds that Vite picks up as errors. The overlay
     // flashes on every rebuild cycle, so we disable it.
+    // Preserve Storybook's HMR server and port so its WebSocket shares the
+    // forwarded Storybook port instead of opening Vite's separate HMR port.
+    const hmr = config.server?.hmr;
     config.server = {
       ...config.server,
-      hmr: { overlay: false },
+      hmr:
+        hmr === false
+          ? false
+          : {
+              ...(typeof hmr === "object" ? hmr : {}),
+              overlay: false,
+            },
     };
 
     // Configure build options

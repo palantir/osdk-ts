@@ -119,6 +119,12 @@ Try this review script:
 
 Other stories exercise geometry types, loading with existing data, errors, empty results, and pagination indicators.
 
+The application prototype opens with all six offices and leaves its controls to the viewer. Its automated interaction checks run in a separate test-only story.
+
+For a remote workspace, forward port **6006**. Storybook serves both the page and its live-reload WebSocket on that port. After changing the Storybook server configuration, restart the dev server and reload the page.
+
+Map tiles are off initially. Enable **Street basemap** to request streets and place names from OpenStreetMap. These requests come from the viewer's browser, so that browser must be able to reach the tile provider. The object markers and list remain usable without external tiles.
+
 ### With a live ontology
 
 Use the existing [peopleapp sandbox](../../e2e.sandbox.peopleapp/README.md). Configure `.env.local` from its sample and generate the SDK for an ontology containing the sandbox's `Office` type if needed. Then run:

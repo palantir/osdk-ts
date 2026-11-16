@@ -121,7 +121,7 @@ export function OfficeMapPrototype(): React.JSX.Element {
           <p className={styles.mapCaption}>
             Select a point or an office below. Ctrl/Cmd-click selects several.
             {!showStreetMap &&
-              " The blank basemap makes no external tile requests."}
+              " Map tiles are off. Turn on Street basemap to show streets and place names."}
           </p>
         </section>
 

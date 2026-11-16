@@ -257,7 +257,7 @@ export async function setupFauxFoundry(): Promise<void> {
   ];
   const compartmentPool = ["m-alpha", "m-bravo", "m-charlie"];
   const releasabilityPool = ["m-rel-usa", "m-rel-allied", "m-no-foreign"];
-  employeeData.forEach((employee, index) => {
+  const employees = employeeData.map((employee, index) => {
     const classificationMarking =
       classificationCycle[index % classificationCycle.length];
     const compartmentCount = (index % compartmentPool.length) + 1;
@@ -266,12 +266,20 @@ export async function setupFauxFoundry(): Promise<void> {
       ...compartmentPool.slice(0, compartmentCount),
       ...releasabilityPool.slice(0, releasabilityCount),
     ];
-    dataStore.registerObject({
+    return Object.freeze({
       ...employee,
       classificationMarking,
       clearanceMarking,
     });
   });
+  // Leads can appear after their reports in the fixture. Register every target
+  // before setting foreign keys so both sides of each link resolve immediately.
+  for (const employee of employees) {
+    dataStore.registerObject({ ...employee, leadEmployeeNumber: undefined });
+  }
+  for (const employee of employees) {
+    dataStore.replaceObjectOrThrow(employee);
+  }
 
   // Register sample PDF media for an employee's employeeDocuments property
   const response = await fetch(SAMPLE_PDF_PATH);
@@ -563,13 +571,6 @@ export async function setupFauxFoundry(): Promise<void> {
       }
       return { value: result };
     },
-  );
-
-  // Log registered objects for debugging
-  // eslint-disable-next-line no-console
-  console.log(
-    `FauxFoundry: Registered ${employeeData.length} employees`,
-    [...dataStore.getObjectsOfType("Employee")].length,
   );
 
   isInitialized = true;
