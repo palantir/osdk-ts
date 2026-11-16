@@ -731,7 +731,9 @@ function buildEntityMetadata(
             enableInterfaceActions: objectType.interfaceActionsEnabled
               ? { type: "enabled", enabled: {} }
               : { type: "disabled", disabled: {} },
-          },
+          } satisfies NonNullable<
+            MarketplaceObjectTypeEntityMetadata["interfaceSettings"]
+          >,
         }),
   };
   return metadata as MarketplaceObjectTypeEntityMetadata;
