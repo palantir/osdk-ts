@@ -2,7 +2,8 @@
 
 import { Meta, Markdown } from "@storybook/addon-docs/blocks";
 import content from "@docs/TokenColors.md?raw";
+import { formatGithubAlerts } from "../../util/formatGithubAlerts.js";
 
 <Meta title="Docs/Tokens/Colors" />
 
-<Markdown>{content}</Markdown>
+<Markdown>{formatGithubAlerts(content)}</Markdown>
