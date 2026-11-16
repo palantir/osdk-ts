@@ -16,7 +16,6 @@
 
 import type {
   ActionEditResponse,
-  ActionReturnValueResponse,
   ActionValidationResponse,
   AttachmentUpload,
   MediaReference,
@@ -216,9 +215,9 @@ describe.each([
       newName: "Manhattan",
     });
 
-    expectTypeOf<typeof result>().toEqualTypeOf<
-      ActionReturnValueResponse<renameOffice.ReturnType>
-    >();
+    expectTypeOf<typeof result>().toEqualTypeOf<{
+      returnValue: renameOffice.ReturnType | undefined;
+    }>();
     expect(result).toEqual({
       returnValue: { newName: "Manhattan", previousName: "New York City" },
     });
@@ -231,7 +230,7 @@ describe.each([
     );
 
     expectTypeOf<typeof result>().toEqualTypeOf<
-      ActionEditResponse & ActionReturnValueResponse<renameOffice.ReturnType>
+      ActionEditResponse<renameOffice.ReturnType>
     >();
     expect(result).toEqual({
       type: "edits",

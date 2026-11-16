@@ -29,8 +29,10 @@ export interface ActionDefinition<T_signatures = never> {
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
-export type ActionEditResponse = ActionResults;
+// @public
+export type ActionEditResponse<ReturnValue = never> = [ReturnValue] extends [never] ? ActionResults : ActionResults & {
+    	returnValue: ReturnValue | undefined
+};
 
 // @public (undocumented)
 export interface ActionMetadata {
@@ -165,17 +167,14 @@ export namespace ActionParam {
 // @public (undocumented)
 export type ActionReturnTypeForOptions<
 	Op extends ApplyActionOptions | ApplyBatchActionOptions,
-	TReturnValue = never
+	ReturnValue = never
 > = Op extends {
     	$validateOnly: true
 } ? ActionValidationResponse : Op extends {
     	$returnEdits: true
-} ? [TReturnValue] extends [never] ? ActionEditResponse : ActionEditResponse & ActionReturnValueResponse<TReturnValue> : [TReturnValue] extends [never] ? undefined : ActionReturnValueResponse<TReturnValue>;
-
-// @public
-export interface ActionReturnValueResponse<TReturnValue> {
-    	returnValue: TReturnValue | undefined;
-}
+} ? ActionEditResponse<ReturnValue> : [ReturnValue] extends [never] ? undefined : {
+    	returnValue: ReturnValue | undefined
+};
 
 // Warning: (ae-forgotten-export) The symbol "ValidateActionResponseV2" needs to be exported by the entry point index.d.ts
 //
