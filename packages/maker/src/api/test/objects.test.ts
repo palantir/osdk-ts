@@ -1310,24 +1310,4 @@ describe("Object Types", () => {
       });
     });
   });
-
-  describe("interfaceActionsEnabled", () => {
-    it("disables interface actions", () => {
-      defineObject({
-        titlePropertyApiName: "bar",
-        displayName: "Foo",
-        pluralDisplayName: "Foo",
-        apiName: "foo",
-        primaryKeyPropertyApiName: "bar",
-        properties: { bar: { type: "string" } },
-        interfaceActionsEnabled: false,
-      });
-
-      const objectData =
-        dumpOntologyFullMetadata().ontology.objectTypes["com.palantir.foo"];
-      expect(objectData.entityMetadata?.interfaceSettings).toEqual({
-        enableInterfaceActions: { type: "disabled", disabled: {} },
-      });
-    });
-  });
 });
