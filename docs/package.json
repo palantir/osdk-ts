@@ -8,44 +8,36 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "scripts": {
-    "build": "docusaurus build",
-    "clear": "docusaurus clear",
-    "deploy": "docusaurus deploy",
-    "docusaurus": "docusaurus",
-    "serve": "docusaurus serve",
-    "start": "docusaurus start",
-    "swizzle": "docusaurus swizzle",
-    "write-heading-ids": "docusaurus write-heading-ids",
-    "write-translations": "docusaurus write-translations"
+    "build": "next build --webpack && node scripts/postbuild.mjs",
+    "dev": "next dev",
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@docusaurus/core": "3.4.0",
-    "@docusaurus/plugin-content-docs": "3.4.0",
-    "@docusaurus/preset-classic": "3.4.0",
-    "@mdx-js/react": "^3.0.0",
-    "clsx": "^2.0.0",
-    "prism-react-renderer": "^2.3.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "fumadocs-core": "^16.17.0",
+    "fumadocs-mdx": "^15.4.0",
+    "fumadocs-typescript": "^5.5.2",
+    "fumadocs-ui": "^16.17.0",
+    "geist": "^1.8.0",
+    "lucide-react": "^1.50.0",
+    "mdast-util-to-string": "^4.0.0",
+    "next": "^16.3.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "unist-util-visit": "^5.0.0",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.4.0",
-    "@docusaurus/types": "3.4.0",
-    "@types/react": "^18.3.24"
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/mdast": "^4.0.4",
+    "@types/mdx": "^2.0.14",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "mdast-util-mdx-jsx": "^3.2.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.0",
+    "vfile": "^6.0.3"
   },
-  "browserslist": {
-    "production": [
-      ">0.5%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 3 chrome version",
-      "last 3 firefox version",
-      "last 5 safari version"
-    ]
-  },
-  "engines": {
-    "node": ">=18.0"
-  }
+  "type": "module"
 }
