@@ -1219,6 +1219,7 @@ function standardPackageRules(shared, options) {
       ? [
         requireDependency({
           ...shared,
+          excludePackages: ["@osdk/create-app.template.expo.v2"],
           options: {
             devDependencies: { typescript: options.tsVersion },
           },
@@ -1461,6 +1462,12 @@ function standardPackageRules(shared, options) {
  */
 export default {
   rules: [
+    requireDependency({
+      includePackages: ["@osdk/create-app.template.expo.v2"],
+      options: {
+        devDependencies: { typescript: "~5.9.0" },
+      },
+    }),
     fileContents({
       includePackages: ["@osdk/create-app.template.*"],
       options: {

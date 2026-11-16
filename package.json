@@ -27,6 +27,7 @@
     "@arethetypeswrong/cli": "^0.17.4",
     "@babel/cli": "^7.28.3",
     "@babel/core": "^7.28.4",
+    "@babel/preset-react": "^7.25.9",
     "@babel/preset-typescript": "^7.27.1",
     "@changesets/changelog-git": "^0.2.1",
     "@changesets/cli": "^2.29.6",
@@ -107,19 +108,6 @@
       "oxlint-tsgolint",
       "unrs-resolver"
     ],
-    "packageExtensions": {
-      "expo-router": {
-        "peerDependencies": {
-          "react": "*",
-          "react-dom": "*"
-        },
-        "peerDependenciesMeta": {
-          "react-dom": {
-            "optional": true
-          }
-        }
-      }
-    },
     "overrides": {
       "trim@0.0.1": "0.0.3",
       "cookie@0.6.0": "0.7.2",
