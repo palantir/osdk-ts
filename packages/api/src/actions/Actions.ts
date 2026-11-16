@@ -118,17 +118,20 @@ export namespace ActionParam {
   export type NullValueType = typeof NULL_VALUE;
 }
 
-export type ActionEditResponse = ActionResults;
-
 /**
- * Carries the value returned by an action whose function declares a return type.
+ * Edits returned by an action, with a return value when its function declares one.
+ * ReturnValue uses the same QueryResult helpers as generated query return types.
  */
-export interface ActionReturnValueResponse<TReturnValue> {
-  /**
-   * The value returned by the function backing the action, or undefined if the
-   * OSDK could not convert it. The action has still been applied.
-   */
-  returnValue: TReturnValue | undefined;
-}
+export type ActionEditResponse<ReturnValue = never> = [ReturnValue] extends [
+  never,
+]
+  ? ActionResults
+  : ActionResults & {
+      /**
+       * The value returned by the function backing the action, or undefined if the
+       * OSDK could not convert it. The action has still been applied.
+       */
+      returnValue: ReturnValue | undefined;
+    };
 
 export type ActionValidationResponse = ValidateActionResponseV2;

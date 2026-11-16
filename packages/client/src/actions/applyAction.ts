@@ -20,7 +20,6 @@ import type {
   ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
-  ActionReturnValueResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
   CompileTimeMetadata as CompileTimeActionMetadata,
@@ -120,7 +119,8 @@ export async function applyAction<
   parameters?: P,
   options: Op = {} as Op,
 ): Promise<
-  ActionReturnTypeForOptions<Op> | ActionReturnValueResponse<unknown>
+  | ActionReturnTypeForOptions<Op>
+  | Pick<ActionEditResponse<unknown>, "returnValue">
 > {
   const clientWithHeaders = addUserAgentHeader(client, action);
   if (Array.isArray(parameters)) {

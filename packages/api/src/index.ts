@@ -18,7 +18,6 @@ export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOp
 export type {
   ActionEditResponse,
   ActionParam,
-  ActionReturnValueResponse,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
