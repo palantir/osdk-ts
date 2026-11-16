@@ -19,7 +19,7 @@ import { fileURLToPath } from "node:url";
 
 import color from "picocolors";
 import sirv from "sirv";
-import type { Plugin, ViteDevServer } from "vite";
+import { normalizePath, type Plugin, type ViteDevServer } from "vite";
 
 import {
   CONFIG_FILE_SUFFIX,
@@ -138,13 +138,12 @@ export function FoundryWidgetDevPlugin(
               serverPath(
                 server,
                 // Absolute inputs are file paths, so serve them relative to the Vite root
-                path
-                  .relative(
+                normalizePath(
+                  path.relative(
                     server.config.root,
                     path.resolve(server.config.root, entrypoint),
-                  )
-                  .split(path.sep)
-                  .join("/"),
+                  ),
+                ),
               ),
             ),
           ),

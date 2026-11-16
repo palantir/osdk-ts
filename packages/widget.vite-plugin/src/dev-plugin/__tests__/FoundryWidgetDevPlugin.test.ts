@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mkdir, mkdtemp, realpath, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -44,7 +44,7 @@ test("sets up dev mode for absolute HTML inputs", async () => {
   // The dev plugin disables itself under Vitest
   vi.stubEnv("VITEST", undefined);
   vi.stubEnv("FOUNDRY_TOKEN", "token");
-  root = await realpath(await mkdtemp(path.join(tmpdir(), "widget-dev-")));
+  root = await mkdtemp(path.join(tmpdir(), "widget-dev-"));
   process.chdir(root);
   await mkdir(path.join(root, "src"));
   await writeFile(
@@ -78,7 +78,6 @@ test("sets up dev mode for absolute HTML inputs", async () => {
     root,
     configFile: false,
     logLevel: "silent",
-    server: { port: 0 },
     plugins: [FoundryWidgetPlugin()],
     build: {
       rollupOptions: { input: ids.map((id) => path.join(root, `${id}.html`)) },
