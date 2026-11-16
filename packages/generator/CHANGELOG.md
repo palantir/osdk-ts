@@ -1,5 +1,28 @@
 # @osdk/generator
 
+## 2.91.0
+
+### Minor Changes
+
+- 7fd2775: Declare generated experimental ontology metadata as `unknown` without importing `@osdk/foundry.ontologies` or adding a generated dependency. Integration-testing also accepts metadata as `unknown`, avoiding type mismatches between platform SDK versions.
+
+### Patch Changes
+
+- @osdk/api@2.91.0
+- @osdk/generator-converters@2.91.0
+
+## 2.90.0
+
+### Minor Changes
+
+- b8cfd7c: Add static typing for agent session state returned by `experimental_getState`.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters@2.90.0
+
 ## 2.89.0
 
 ### Minor Changes

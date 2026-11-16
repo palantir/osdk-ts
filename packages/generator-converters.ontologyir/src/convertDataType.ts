@@ -14,130 +14,37 @@
  * limitations under the License.
  */
 
+import type { FunctionDiscovery } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import type { IDataType } from "./OntologyIrToFullMetadataConverter.js";
 
-export interface IOptionalDataType extends IDataType {
-  type: "optionalType";
-  optionalType: { wrappedType: IDataType };
-}
-
-export interface ISetDataType extends IDataType {
-  type: "set";
-  set: { elementsType: IDataType };
-}
-
-export interface IObjectSetDataType extends IDataType {
-  type: "objectSet";
-  objectSet: { objectTypeId: string };
-}
-
-export interface IListDataType extends IDataType {
-  type: "list";
-  list: { elementsType: IDataType };
-}
-
-export interface IMapDataType extends IDataType {
-  type: "map";
-  map: { keysType: IDataType; valuesType: IDataType };
-}
-
-export interface IFunctionCustomDataType extends IDataType {
-  type: "functionCustomType";
-  functionCustomType: string;
-}
-
-export interface IObjectDataType extends IDataType {
-  type: "object";
-  object: { objectTypeId: string };
-}
-
-export interface IInterfaceObjectSetDataType extends IDataType {
-  type: "interfaceObjectSet";
-  interfaceObjectSet: { interfaceTypeRid: string };
-}
-
-export interface IInterfaceDataType extends IDataType {
-  type: "interface";
-  interface: { interfaceTypeRid: string };
-}
-
-export interface IAnonymousCustomDataType extends IDataType {
-  type: "anonymousCustomType";
-  anonymousCustomType: {
-    fields: Record<string, IDataType>;
-  };
-}
-
-interface IUnionDataType extends IDataType {
-  type: "union";
-  union: { allowedTypes: IDataType[] };
-}
-
-interface IRangeDataType {
-  type: "integer" | "double" | "timestamp" | "date";
-}
-
-interface IBucketKeyDataType {
-  type:
-    | "double"
-    | "integer"
-    | "date"
-    | "timestamp"
-    | "range"
-    | "string"
-    | "boolean";
-  range?: IRangeDataType;
-}
-
-interface IBucketValueDataType {
-  type: "double" | "timestamp" | "date";
-}
-
-interface ISingleBucketDataType {
-  keyType: IBucketKeyDataType;
-  valueType: IBucketValueDataType;
-}
-
-interface ITwoDimensionalAggregationDataType extends IDataType {
-  type: "twoDimensionalAggregation";
-  twoDimensionalAggregation: { bucketType: ISingleBucketDataType };
-}
-
-interface IThreeDimensionalAggregationDataType extends IDataType {
-  type: "threeDimensionalAggregation";
-  threeDimensionalAggregation: {
-    nestedBucketType: {
-      keyType: IBucketKeyDataType;
-      subBucketType: ISingleBucketDataType;
-    };
-  };
-}
-
-function isInjectedRuntimeDataType(dataType: IDataType): boolean {
+function isInjectedRuntimeDataType(
+  dataType: FunctionDiscovery.DataType,
+): boolean {
   return dataType.type === "client" || dataType.type === "durableContext";
 }
 
-function isInjectedRuntimeContext(dataType: IDataType): boolean {
+function isInjectedRuntimeContext(
+  dataType: FunctionDiscovery.DataType,
+): boolean {
   if (dataType.type !== "anonymousCustomType") {
     return false;
   }
 
-  const fields = (dataType as IAnonymousCustomDataType).anonymousCustomType
-    ?.fields;
-  const fieldTypes = fields != null ? Object.values(fields) : [];
+  const fieldTypes = Object.values(dataType.anonymousCustomType.fields);
 
   return fieldTypes.length > 0
     && fieldTypes.every(isInjectedRuntimeDataType);
 }
 
-export function isInjectedRuntimeInput(dataType: IDataType): boolean {
+export function isInjectedRuntimeInput(
+  dataType: FunctionDiscovery.DataType,
+): boolean {
   return isInjectedRuntimeDataType(dataType)
     || isInjectedRuntimeContext(dataType);
 }
 
 export function convertDataType(
-  dataType: IDataType,
+  dataType: FunctionDiscovery.DataType,
   customTypes: Record<string, unknown>,
   interfaceRidToApiName: Record<string, string>,
   required?: boolean,
@@ -153,6 +60,7 @@ export function convertDataType(
       ],
     };
   }
+  const dataTypeName = dataType.type;
   switch (dataType.type) {
     case "string":
       return { type: "string" };
@@ -174,13 +82,14 @@ export function convertDataType(
       return { type: "attachment" };
     case "mediaReference":
       return { type: "mediaReference" };
+    case "geoShape":
+      return { type: "geoshape" };
     case "optionalType": {
-      const optionalData = dataType as IOptionalDataType;
       return {
         type: "union",
         unionTypes: [
           convertDataType(
-            optionalData.optionalType.wrappedType,
+            dataType.optionalType.wrappedType,
             customTypes,
             interfaceRidToApiName,
           ),
@@ -189,74 +98,67 @@ export function convertDataType(
       };
     }
     case "set": {
-      const setData = dataType as ISetDataType;
       return {
         type: "set",
         subType: convertDataType(
-          setData.set.elementsType,
+          dataType.set.elementsType,
           customTypes,
           interfaceRidToApiName,
         ),
       };
     }
     case "objectSet": {
-      const objectSetData = dataType as IObjectSetDataType;
       return {
         type: "objectSet",
-        objectApiName: objectSetData.objectSet.objectTypeId,
-        objectTypeApiName: objectSetData.objectSet.objectTypeId,
+        objectApiName: dataType.objectSet.objectTypeId,
+        objectTypeApiName: dataType.objectSet.objectTypeId,
       };
     }
     case "list": {
-      const listData = dataType as IListDataType;
       return {
         type: "array",
         subType: convertDataType(
-          listData.list.elementsType,
+          dataType.list.elementsType,
           customTypes,
           interfaceRidToApiName,
         ),
       };
     }
     case "map": {
-      const mapData = dataType as IMapDataType;
       // `entrySet` is the only key/value container in QueryDataType, and it names its
       // members in the singular.
       return {
         type: "entrySet",
         keyType: convertDataType(
-          mapData.map.keysType,
+          dataType.map.keysType,
           customTypes,
           interfaceRidToApiName,
         ),
         valueType: convertDataType(
-          mapData.map.valuesType,
+          dataType.map.valuesType,
           customTypes,
           interfaceRidToApiName,
         ),
       };
     }
     case "functionCustomType": {
-      const customTypeData = dataType as IFunctionCustomDataType;
       return convertFunctionCustomType(
-        customTypeData.functionCustomType,
+        dataType.functionCustomType,
         customTypes,
         interfaceRidToApiName,
       );
     }
     case "anonymousCustomType": {
-      const anonymousData = dataType as IAnonymousCustomDataType;
       return convertCustomTypeShape(
-        anonymousData.anonymousCustomType,
+        dataType.anonymousCustomType,
         customTypes,
         interfaceRidToApiName,
       );
     }
     case "union": {
-      const unionData = dataType as IUnionDataType;
       return {
         type: "union",
-        unionTypes: unionData.union.allowedTypes.map(allowedType =>
+        unionTypes: dataType.union.allowedTypes.map(allowedType =>
           convertDataType(
             allowedType,
             customTypes,
@@ -266,18 +168,16 @@ export function convertDataType(
       };
     }
     case "twoDimensionalAggregation": {
-      const aggregationData = dataType as ITwoDimensionalAggregationDataType;
       return {
         type: "twoDimensionalAggregation",
         ...convertSingleBucketType(
-          aggregationData.twoDimensionalAggregation.bucketType,
+          dataType.twoDimensionalAggregation.bucketType,
         ),
       };
     }
     case "threeDimensionalAggregation": {
-      const aggregationData = dataType as IThreeDimensionalAggregationDataType;
       const { keyType, subBucketType } =
-        aggregationData.threeDimensionalAggregation.nestedBucketType;
+        dataType.threeDimensionalAggregation.nestedBucketType;
       return {
         type: "threeDimensionalAggregation",
         keyType: convertBucketKeyType(keyType),
@@ -285,27 +185,24 @@ export function convertDataType(
       };
     }
     case "object": {
-      const objectData = dataType as IObjectDataType;
       return {
         type: "object",
-        objectApiName: objectData.object.objectTypeId,
-        objectTypeApiName: objectData.object.objectTypeId,
+        objectApiName: dataType.object.objectTypeId,
+        objectTypeApiName: dataType.object.objectTypeId,
       };
     }
     case "interface": {
-      const interfaceData = dataType as IInterfaceDataType;
       return {
         type: "interfaceObject",
         interfaceTypeApiName:
-          interfaceRidToApiName[interfaceData.interface.interfaceTypeRid],
+          interfaceRidToApiName[dataType.interface.interfaceTypeRid],
       };
     }
     case "interfaceObjectSet": {
-      const interfaceData = dataType as IInterfaceObjectSetDataType;
       return {
         type: "interfaceObjectSet",
         interfaceTypeApiName: interfaceRidToApiName[
-          interfaceData.interfaceObjectSet.interfaceTypeRid
+          dataType.interfaceObjectSet.interfaceTypeRid
         ],
       };
     }
@@ -316,13 +213,27 @@ export function convertDataType(
       // placeholder — the value is not used at query execution time.
       return { type: "string" };
     }
-    default:
+    case "range":
+    case "user":
+    case "group":
+    case "principal":
+    case "notification":
+    case "marking":
+    case "durableContext":
+    case "byte":
+    case "short":
+    case "binary":
+    case "annotatedType":
       throw new Error(`Unsupported data type: ${dataType.type}`);
+    default: {
+      const _never: never = dataType;
+      throw new Error(`Unsupported data type: ${dataTypeName}`);
+    }
   }
 }
 
 function convertRangeType(
-  rangeType: IRangeDataType,
+  rangeType: FunctionDiscovery.RangeType,
 ): Ontologies.QueryAggregationRangeSubType {
   switch (rangeType.type) {
     case "integer":
@@ -334,12 +245,9 @@ function convertRangeType(
 }
 
 function convertBucketKeyType(
-  keyType: IBucketKeyDataType,
+  keyType: FunctionDiscovery.BucketKeyType,
 ): Ontologies.QueryAggregationKeyType {
   if (keyType.type === "range") {
-    if (keyType.range == null) {
-      throw new Error("Range bucket key is missing its range type");
-    }
     return {
       type: "range",
       subType: convertRangeType(keyType.range),
@@ -350,13 +258,13 @@ function convertBucketKeyType(
 }
 
 function convertBucketValueType(
-  valueType: IBucketValueDataType,
+  valueType: FunctionDiscovery.BucketValueType,
 ): Ontologies.QueryAggregationValueType {
   return { type: valueType.type };
 }
 
 function convertSingleBucketType(
-  bucketType: ISingleBucketDataType,
+  bucketType: FunctionDiscovery.SingleBucketType,
 ): Ontologies.TwoDimensionalAggregation {
   return {
     keyType: convertBucketKeyType(bucketType.keyType),
@@ -368,7 +276,7 @@ interface ICustomTypeShape {
   // Discovery leaves this out when no field carries metadata, so a named custom type and
   // an inline one both have to survive it being absent.
   fieldMetadata?: Record<string, { required?: boolean }> | null;
-  fields: Record<string, IDataType>;
+  fields: Record<string, FunctionDiscovery.DataType>;
 }
 
 function isCustomTypeShape(value: unknown): value is ICustomTypeShape {
@@ -376,7 +284,9 @@ function isCustomTypeShape(value: unknown): value is ICustomTypeShape {
     typeof value === "object"
     && value != null
     && "fields" in value
-    && typeof (value as Record<string, unknown>).fields === "object"
+    && typeof value.fields === "object"
+    && value.fields != null
+    && !Array.isArray(value.fields)
   );
 }
 

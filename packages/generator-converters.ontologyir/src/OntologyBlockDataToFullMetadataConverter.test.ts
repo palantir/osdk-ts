@@ -819,6 +819,55 @@ describe(OntologyBlockDataToFullMetadataConverter, () => {
       .not.toBe(importedInterface.implementedByObjectTypes);
   });
 
+  it("preserves markingType on marking and array-of-marking properties", () => {
+    const blockData = createBlockData();
+    const sptRid = "ri.ontology.main.shared-property-type.classification";
+    blockData.sharedPropertyTypes = {
+      [sptRid]: {
+        sharedPropertyType: {
+          rid: sptRid,
+          apiName: "classification",
+          displayMetadata: {
+            displayName: "Classification",
+            visibility: "NORMAL",
+          },
+          type: { type: "marking", marking: { markingType: "CBAC" } },
+          aliases: [],
+          indexedForSearch: true,
+          typeClasses: [],
+        },
+      },
+    };
+    const markings: PropertyType = {
+      ...createProperty("taskMarkings"),
+      type: {
+        type: "array",
+        array: {
+          subtype: { type: "marking", marking: { markingType: "CBAC" } },
+          reducers: [],
+        },
+      },
+    };
+    blockData.objectTypes[objectRid].objectType.propertyTypes[markings.rid] =
+      markings;
+
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(blockData);
+
+    expect(result.sharedPropertyTypes.classification.dataType).toEqual({
+      type: "marking",
+      markingType: "CBAC",
+    });
+    expect(
+      result.objectTypes[objectApiName].objectType.properties.taskMarkings
+        .dataType,
+    ).toEqual({
+      type: "array",
+      subType: { type: "marking", markingType: "CBAC" },
+      reducers: [],
+    });
+  });
+
   it("converts action parameter text and list length validation", () => {
     const parameter = (
       id: string,

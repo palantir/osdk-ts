@@ -624,7 +624,9 @@ function convertFunctionWithParameterRequirement({
           type: "typescript",
           typescript: { functionName: "createTask" },
         },
-        inputs: [{ name: "id", dataType: { type: "string" }, required }],
+        inputs: [
+          { name: "id", dataType: { type: "string", string: {} }, required },
+        ],
         output: { type: "void" },
         customTypes: {},
         ontologyProvenance: {

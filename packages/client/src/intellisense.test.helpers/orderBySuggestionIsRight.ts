@@ -39,3 +39,34 @@ void client(Employee).fetchPage({
   // @ts-expect-error
   $orderBy: "",
 });
+
+void client(Employee).fetchPage({
+  $select: ["employeeId"],
+  $orderBy: {},
+});
+
+void client(Employee).fetchPageWithErrors({
+  $orderBy: {},
+});
+
+void client(Employee).asyncIter({
+  $orderBy: {},
+});
+
+const nearestNeighbors = client(Employee).nearestNeighbors(
+  "coffee",
+  5,
+  "skillSetEmbedding",
+);
+
+void nearestNeighbors.fetchPageWithErrors({
+  $orderBy: {},
+});
+
+const withDerived = client(Employee).withProperties({
+  leadCount: (base) => base.pivotTo("lead").aggregate("$count"),
+});
+
+void withDerived.asyncIter({
+  $orderBy: {},
+});
