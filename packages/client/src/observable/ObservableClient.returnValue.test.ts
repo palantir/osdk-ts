@@ -18,7 +18,6 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionReturnTypeForOptions,
-  ActionReturnValueResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "@osdk/api";
@@ -99,9 +98,7 @@ describe("ObservableClient action return values", () => {
       name: "Anna",
     });
 
-    expectTypeOf(result).toEqualTypeOf<
-      ActionEditResponse & ActionReturnValueResponse<string>
-    >();
+    expectTypeOf(result).toEqualTypeOf<ActionEditResponse<string>>();
     expect(result).toMatchObject({ type: "edits", returnValue: "Hello Anna" });
   });
 

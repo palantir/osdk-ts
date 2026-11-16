@@ -23,7 +23,6 @@ export type {
   ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
-  ActionReturnValueResponse,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,

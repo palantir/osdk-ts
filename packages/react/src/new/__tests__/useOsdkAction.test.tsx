@@ -18,7 +18,6 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionReturnTypeForOptions,
-  ActionReturnValueResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "@osdk/client";
@@ -277,9 +276,7 @@ describe("useOsdkAction return values", () => {
       { wrapper: createWrapper(mockObservableClient) },
     );
 
-    let applied:
-      | (ActionEditResponse & ActionReturnValueResponse<string>)
-      | undefined;
+    let applied: ActionEditResponse<string> | undefined;
     await act(async () => {
       applied = await result.current.applyAction({ name: "Anna" });
     });
