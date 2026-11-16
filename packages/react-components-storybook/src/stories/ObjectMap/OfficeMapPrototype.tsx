@@ -18,11 +18,8 @@ import { BaseObjectMap } from "@osdk/react-components/experimental/object-map";
 import { ActionButton } from "@osdk/react-components/primitives";
 import { useCallback, useMemo, useState } from "react";
 
-import {
-  DEMO_OFFICES,
-  officeFeature,
-  STREET_MAP_STYLE,
-} from "./officeMapFixtures.js";
+import { OVERVIEW_MAP_STYLE, STREET_MAP_STYLE } from "./demoBasemap.js";
+import { DEMO_OFFICES, officeFeature } from "./officeMapFixtures.js";
 
 import styles from "./OfficeMapPrototype.module.css";
 
@@ -104,7 +101,7 @@ export function OfficeMapPrototype(): React.JSX.Element {
             checked={showStreetMap}
             onChange={(event) => setShowStreetMap(event.target.checked)}
           />
-          Street basemap (loads OpenStreetMap tiles)
+          Street detail (OpenStreetMap)
         </label>
       </div>
 
@@ -112,7 +109,7 @@ export function OfficeMapPrototype(): React.JSX.Element {
         <section className={styles.mapPanel} aria-label="Office locations">
           <BaseObjectMap
             features={features}
-            mapStyle={showStreetMap ? STREET_MAP_STYLE : undefined}
+            mapStyle={showStreetMap ? STREET_MAP_STYLE : OVERVIEW_MAP_STYLE}
             ariaLabel="Office planning map"
             selectedIds={visibleSelection}
             onSelectionChanged={setSelectedIds}
@@ -120,8 +117,9 @@ export function OfficeMapPrototype(): React.JSX.Element {
           />
           <p className={styles.mapCaption}>
             Select a point or an office below. Ctrl/Cmd-click selects several.
-            {!showStreetMap &&
-              " Map tiles are off. Turn on Street basemap to show streets and place names."}
+            {
+              " An overview map is included. Optional street detail requires an internet connection."
+            }
           </p>
         </section>
 

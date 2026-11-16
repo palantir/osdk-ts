@@ -15,23 +15,6 @@
  */
 
 import type { MapFeature } from "@osdk/react-components/experimental/object-map";
-import type { StyleSpecification } from "maplibre-gl";
-
-/** Optional demo basemap. Only used after the viewer opts into external tiles. */
-export const STREET_MAP_STYLE: StyleSpecification = {
-  version: 8,
-  sources: {
-    streets: {
-      type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxzoom: 19,
-    },
-  },
-  layers: [{ id: "streets", type: "raster", source: "streets" }],
-};
 
 export interface DemoOffice {
   id: string;

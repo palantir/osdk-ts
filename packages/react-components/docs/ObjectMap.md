@@ -34,7 +34,7 @@ import { Office } from "@my/osdk";
 
 The component selects the geometry property automatically when the type has exactly one geopoint or geoshape property. If there are several, specify `geometryProperty="location"`. Missing or invalid geometry is omitted and counted in the map's status.
 
-No external basemap is requested by default. Points and shapes appear on a blank background. To provide geographic context, pass a MapLibre style object or URL through `mapStyle`; the application chooses the tile provider, attribution, credentials, and allowed origins. A custom-widget deployment must allow its style, tile, sprite, glyph, and worker resources through its Content Security Policy.
+No external basemap is requested by default. Points and shapes appear on a blank background. To provide geographic context, pass a MapLibre style object or URL through `mapStyle`; the application chooses the tile provider, attribution, credentials, and allowed origins. The application prototype below supplies bundled overview geography through this prop; that demo data is separate from the published component. A custom-widget deployment must allow its style, tile, sprite, glyph, and worker resources through its Content Security Policy.
 
 ## Compose a map with application state
 
@@ -107,7 +107,9 @@ pnpm --filter @osdk/react-components-storybook dev
 
 Open [Office planning prototype](http://localhost:6006/?path=/story/components-objectmap--application-prototype), or open the [standalone canvas](http://localhost:6006/iframe.html?id=components-objectmap--application-prototype&viewMode=story) to demo the application without Storybook's sidebar.
 
-The prototype uses synthetic offices and capacity figures. It requires no Foundry login and makes no external tile requests by default. The optional **Street basemap** control loads OpenStreetMap tiles for geographic context. It demonstrates a real map renderer and shared React state; its fixture data is not a test of live ontology fetching.
+The prototype uses synthetic offices and capacity figures over a bundled geographic overview from [Natural Earth](https://www.naturalearthdata.com/). Natural Earth's public-domain geography provides context as soon as the application loads, without external map requests or a Foundry login. This overview is intended for regional context, not street-level navigation. The optional **Street detail (OpenStreetMap)** control adds online streets and place names while retaining the overview underneath. The demo uses a real map renderer and shared React state; its fixture data is not a test of live ontology fetching.
+
+See the [bundled basemap sources and licenses](../../react-components-storybook/public/object-map-basemap/README.md) for pinned dataset versions, simplification details, and the separate Open Sans font license.
 
 Try this review script:
 
@@ -121,9 +123,11 @@ Other stories exercise geometry types, loading with existing data, errors, empty
 
 The application prototype opens with all six offices and leaves its controls to the viewer. Its automated interaction checks run in a separate test-only story.
 
-For a remote workspace, forward port **6006**. Storybook serves both the page and its live-reload WebSocket on that port. After changing the Storybook server configuration, restart the dev server and reload the page.
+For a remote workspace, forward port **6006**. Storybook serves its manager, application iframe, and live-reload WebSocket on that port. The bundled geography is served with the application, so the browser still needs a working connection to that forwarded server.
 
-Map tiles are off initially. Enable **Street basemap** to request streets and place names from OpenStreetMap. These requests come from the viewer's browser, so that browser must be able to reach the tile provider. The object markers and list remain usable without external tiles.
+If Storybook reports that the iframe cannot connect, confirm that the dev server is running and the port forward is available, then reload the page. After changing the server configuration, restart the dev server before reloading. An iframe connection failure is separate from a tile-provider failure.
+
+**Street detail (OpenStreetMap)** is off initially. Enabling it requests raster tiles from `https://tile.openstreetmap.org/{z}/{x}/{y}.png`. These requests come from the viewer's browser, which must be able to reach that host. The bundled overview, object markers, and list remain available without those external requests. The default demo does not require access to a tile provider.
 
 ### With a live ontology
 

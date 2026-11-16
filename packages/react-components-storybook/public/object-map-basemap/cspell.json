@@ -1,0 +1,4 @@
+{
+  "import": ["../../../../cspell.config.cjs"],
+  "ignorePaths": ["*.geojson", "*-LICENSE.txt", "fonts/**"]
+}

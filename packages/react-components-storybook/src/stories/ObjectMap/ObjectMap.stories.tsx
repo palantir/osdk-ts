@@ -16,6 +16,7 @@
 
 import { BaseObjectMap } from "@osdk/react-components/experimental/object-map";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { http, passthrough } from "msw";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { GEOMETRY_FEATURES, OFFICE_FEATURES } from "./officeMapFixtures.js";
@@ -68,10 +69,19 @@ export const MoreObjects: Story = {
 export const ApplicationPrototype: Story = {
   render: () => <OfficeMapPrototype />,
   parameters: {
+    msw: {
+      // This fixture-only application needs real static assets, not Foundry
+      // handlers. Pass through to the server so missing files still fail.
+      handlers: [
+        http.get(`${import.meta.env.BASE_URL}object-map-basemap/*`, () =>
+          passthrough(),
+        ),
+      ],
+    },
     docs: {
       description: {
         story:
-          "A standalone office-planning workflow with synthetic data. Filter sites, select on the map or list, and review capacity in a linked detail panel. No Foundry credentials or external basemap requests are needed.",
+          "A standalone office-planning workflow with synthetic offices and bundled overview geography. Filter sites, select on the map or list, and review capacity in a linked detail panel. No Foundry credentials or external map requests are needed by default; optional street detail loads from OpenStreetMap.",
       },
     },
   },
@@ -91,12 +101,16 @@ export const ApplicationPrototypeInteractions: Story = {
     const capacityFilter = canvas.getByRole("checkbox", {
       name: "At least 90% occupied",
     });
+    const streetDetail = canvas.getByRole("checkbox", {
+      name: "Street detail (OpenStreetMap)",
+    });
     // The manual demo must begin with the full office network and no filters.
     await expect(
       await canvas.findByText("6 of 6 offices shown"),
     ).toBeInTheDocument();
     await expect(search).toHaveValue("");
     await expect(capacityFilter).not.toBeChecked();
+    await expect(streetDetail).not.toBeChecked();
     await waitFor(() => {
       expect(canvas.getByRole("button", { name: "Fit objects" })).toBeEnabled();
       // MapLibre's stylesheet must not collapse the container or clip markers.
