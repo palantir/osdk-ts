@@ -172,6 +172,48 @@ const imageProperty = defineSharedPropertyType({
 });
 ```
 
+### Media sources and uploads
+
+Configure content backing on an object independently of the datasource supplying its property values. Declare each media set once in `referenceSources`, then select the readable sets and optional upload destination for each media property:
+
+```typescript
+import { defineObject, type ResourceLocator } from "@osdk/maker";
+
+const archive = {
+  type: "apiName",
+  apiName: "archive",
+} as const;
+
+// OR use satisfies ResourceLocator
+const uploads = {
+  type: "apiName",
+  apiName: "uploads",
+} satisfies ResourceLocator;
+
+defineObject({
+  apiName: "Document",
+  displayName: "Document",
+  pluralDisplayName: "Documents",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "id",
+  referenceSources: [
+    { type: "media", mediaSet: archive },
+    { type: "media", mediaSet: uploads },
+  ],
+  properties: {
+    id: { type: "string" },
+    file: {
+      type: "mediaReference",
+      reference: {
+        type: "media",
+        sources: [archive, uploads],
+        uploadDestination: uploads,
+      },
+    },
+  },
+});
+```
+
 ### Geographic Data
 
 ```typescript
