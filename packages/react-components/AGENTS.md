@@ -55,12 +55,14 @@ Components not yet promoted remain under `experimental/`:
 
 - `@osdk/react-components/experimental/aip-agent-chat` — AipAgentChat, BaseAipAgentChat
 - `@osdk/react-components/experimental/cbac-picker` — CbacPicker
+- `@osdk/react-components/experimental/object-map` — ObjectMap, BaseObjectMap
 - `@osdk/react-components/experimental/theme` — OsdkThemeProvider
 - `@osdk/react-components/experimental/workshop-module` — WorkshopModule, BaseWorkshopModule
 
 | Component                  | Description                                                                                                                                       |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **ObjectTable**            | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll.       |
+| **ObjectMap**              | Experimental map for paginated geopoint/geoshape objects with controlled selection; examples link map, table, and details.                        |
 | **BaseTable**              | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                         |
 | **FilterList**             | Aggregation-based filter UI for object sets with draggable reordering.                                                                            |
 | **BaseFilterList**         | OSDK-agnostic base filter list — use for custom filter implementations.                                                                           |
@@ -98,6 +100,7 @@ Before using any component, read the relevant doc from this package:
 - **Setup & installation**: Read [README.md](./README.md) for provider, CSS layers, and peer dependencies
 - **WorkshopModule**: Read [docs/WorkshopModule.md](./docs/WorkshopModule.md) for embedding a Workshop module by RID and version.
 - **ObjectTable**: Read [docs/ObjectTable.md](./docs/ObjectTable.md) for props, column definitions, examples, theming, troubleshooting, and hooks to build custom tables
+- **ObjectMap**: Read [docs/ObjectMap.md](./docs/ObjectMap.md) for experimental props, pagination limits, basemap setup, and the office-planning prototypes
 - **ActionForm**: Read [docs/ActionForm.md](./docs/ActionForm.md) for generated fields, title behavior, custom field definitions, switch fields, and date/time behavior
 - **PdfViewer**: Read [docs/PdfViewer.md](./docs/PdfViewer.md) for props, annotations, building blocks, hooks, examples, and theming
 - **TiffViewer**: Read [docs/TiffViewer.md](./docs/TiffViewer.md) for props and usage

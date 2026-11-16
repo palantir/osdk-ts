@@ -1,0 +1,97 @@
+.app {
+  padding: calc(var(--osdk-surface-spacing) * 3);
+  color: var(--osdk-typography-color-default-rest);
+  background: var(--osdk-background-primary);
+  font-family: var(--osdk-typography-family-default);
+}
+
+.header,
+.filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  margin-bottom: calc(var(--osdk-surface-spacing) * 3);
+}
+
+.header h1 {
+  margin-block: var(--osdk-surface-spacing);
+}
+.eyebrow,
+.footer,
+.mapCaption,
+.officeList caption {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+}
+.search {
+  display: grid;
+  gap: var(--osdk-surface-spacing);
+  flex: 1;
+}
+.search input {
+  padding: var(--osdk-surface-spacing);
+  background: var(--osdk-background-primary);
+  color: var(--osdk-typography-color-default-rest);
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+}
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+.workspace {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+}
+.mapPanel {
+  flex: 3;
+  min-width: 60%;
+}
+.map {
+  height: 55vh;
+}
+.details {
+  flex: 1;
+  padding: calc(var(--osdk-surface-spacing) * 2);
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-background-secondary);
+}
+.details dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--osdk-surface-spacing);
+}
+.details dd {
+  text-align: right;
+  margin: 0;
+  font-weight: var(--osdk-typography-weight-bold);
+}
+.details article + article {
+  border-top: var(--osdk-surface-border);
+}
+.officeList {
+  margin-block: calc(var(--osdk-surface-spacing) * 3);
+  overflow-x: auto;
+}
+.officeList table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.officeList caption {
+  text-align: left;
+  margin-bottom: var(--osdk-surface-spacing);
+}
+.officeList th,
+.officeList td {
+  padding: var(--osdk-surface-spacing);
+  border-bottom: var(--osdk-surface-border);
+}
+.officeList tr[data-selected="true"] {
+  background: var(--osdk-background-secondary);
+}

@@ -214,6 +214,15 @@
       "require": "./build/cjs/public/experimental/markdown-renderer.cjs",
       "default": "./build/browser/public/experimental/markdown-renderer.js"
     },
+    "./experimental/object-map": {
+      "browser": "./build/browser/public/experimental/object-map.js",
+      "import": {
+        "types": "./build/types/public/experimental/object-map.d.ts",
+        "default": "./build/esm/public/experimental/object-map.js"
+      },
+      "require": "./build/cjs/public/experimental/object-map.cjs",
+      "default": "./build/browser/public/experimental/object-map.js"
+    },
     "./experimental/object-table": {
       "browser": "./build/browser/public/experimental/object-table.js",
       "import": {
@@ -298,7 +307,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/cbac-picker ./experimental/document-viewer ./experimental/email-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-table ./experimental/pdf-viewer ./experimental/spreadsheet-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/workshop-module ./experimental/xml-viewer",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css ./experimental/action-form ./experimental/aip-agent-chat ./experimental/cbac-picker ./experimental/document-viewer ./experimental/email-viewer ./experimental/filter-list ./experimental/image-viewer ./experimental/markdown-renderer ./experimental/object-map ./experimental/object-table ./experimental/pdf-viewer ./experimental/spreadsheet-viewer ./experimental/theme ./experimental/tiff-renderer ./experimental/video-viewer ./experimental/workshop-module ./experimental/xml-viewer",
     "check-gen-props": "node scripts/gen-props.mjs --check",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
@@ -323,6 +332,7 @@
     "@osdk/shared.client": "^1.0.1",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.13",
+    "@types/geojson": "^7946.0.16",
     "date-fns": "^2.28.0",
     "date-fns-tz": "^2.0.0",
     "fast-deep-equal": "^3.1.3",
@@ -343,8 +353,14 @@
     "@osdk/react": "workspace:^",
     "@types/react": "^17 || ^18 || ^19",
     "classnames": "^2.0.0",
+    "maplibre-gl": "^5.7.1",
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
+  },
+  "peerDependenciesMeta": {
+    "maplibre-gl": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@osdk/api": "workspace:*",
@@ -356,6 +372,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
+    "maplibre-gl": "^5.7.1",
     "p-defer": "^4.0.1",
     "postcss-import": "^16.0.0",
     "postcss-modules": "^6.0.1",

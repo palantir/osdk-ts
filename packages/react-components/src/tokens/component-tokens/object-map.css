@@ -1,0 +1,20 @@
+:root {
+  --osdk-map-min-height: 24rem;
+  --osdk-map-canvas-min-height: 16rem;
+  --osdk-map-list-width: 18rem;
+  --osdk-map-gap: var(--osdk-surface-spacing);
+  --osdk-map-padding: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-map-background: var(--osdk-background-secondary);
+  --osdk-map-panel-background: var(--osdk-background-primary);
+  --osdk-map-feature-color: var(--osdk-intent-primary-rest);
+  --osdk-map-selected-color: var(--osdk-intent-warning-rest);
+  --osdk-map-outline-color: var(--osdk-background-primary);
+  /* Renderer dimensions are unitless pixels, as required by the map style API. */
+  --osdk-map-point-radius: 6;
+  --osdk-map-selected-point-radius: 9;
+  --osdk-map-point-stroke-width: 2;
+  --osdk-map-line-width: 2;
+  --osdk-map-selected-line-width: 4;
+  --osdk-map-fill-opacity: 0.35;
+  --osdk-map-fit-padding: 48;
+}

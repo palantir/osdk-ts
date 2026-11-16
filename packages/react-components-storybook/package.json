@@ -43,6 +43,7 @@
     "@vitest/browser": "^3.2.5",
     "classnames": "^2.5.1",
     "eslint-plugin-storybook": "^10.2.10",
+    "maplibre-gl": "^5.7.1",
     "pdf-lib": "^1.17.1",
     "playwright": "^1.64.1",
     "postal-mime": "^2.7.4",

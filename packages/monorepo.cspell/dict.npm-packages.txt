@@ -11,6 +11,7 @@ luxon
 manypkg
 mapbox
 maplibre
+maplibregl
 maxzoom
 mdast
 minzoom

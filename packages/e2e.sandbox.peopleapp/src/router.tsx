@@ -7,6 +7,7 @@ import { AuthCallbackPage } from "./app/auth/callback/page.js";
 import { EmployeesFilterListPage } from "./app/employees/filterListPage.js";
 import { EmployeesPage } from "./app/employees/page.js";
 import { FormPage } from "./app/form/page.js";
+import { OfficeMapPage } from "./app/office-map/page.js";
 import { OfficesPage } from "./app/offices/page.js";
 import { WorkshopModulePage } from "./app/workshop-module/page.js";
 
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "/offices",
         element: <OfficesPage />,
+      },
+      {
+        path: "/office-map",
+        element: <OfficeMapPage />,
       },
       {
         path: "/form",

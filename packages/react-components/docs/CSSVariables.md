@@ -36,6 +36,7 @@ Complete reference of all CSS custom properties (variables) used in `@osdk/react
   - [Number Input](#number-input)
   - [Markdown Viewer](#markdown-viewer)
   - [Object Set](#object-set)
+  - [Object Map](#object-map)
   - [PDF Viewer](#pdf-viewer)
   - [Radio](#radio)
   - [Select](#select)
@@ -1768,6 +1769,30 @@ Styling for the XML viewer.
 | `--osdk-xml-viewer-font-family` | `monospace`                              | Code font family  |
 | `--osdk-xml-viewer-font-size`   | `var(--osdk-typography-size-body-small)` | Code font size    |
 | `--osdk-xml-viewer-line-height` | `1.5`                                    | Code line height  |
+
+### Object Map
+
+These tokens style the experimental `ObjectMap` and `BaseObjectMap`. Renderer dimensions are unitless pixel values because they are passed to the map style API.
+
+| Variable                           | Default                                 | Purpose                                         |
+| ---------------------------------- | --------------------------------------- | ----------------------------------------------- |
+| `--osdk-map-min-height`            | `24rem`                                 | Minimum overall map height                      |
+| `--osdk-map-canvas-min-height`     | `16rem`                                 | Minimum canvas height                           |
+| `--osdk-map-list-width`            | `18rem`                                 | Width of the keyboard-accessible object list    |
+| `--osdk-map-gap`                   | `var(--osdk-surface-spacing)`           | Space between controls                          |
+| `--osdk-map-padding`               | `calc(var(--osdk-surface-spacing) * 2)` | Panel padding                                   |
+| `--osdk-map-background`            | `var(--osdk-background-secondary)`      | Default map background                          |
+| `--osdk-map-panel-background`      | `var(--osdk-background-primary)`        | Toolbar and list background                     |
+| `--osdk-map-feature-color`         | `var(--osdk-intent-primary-rest)`       | Unselected geometry color                       |
+| `--osdk-map-selected-color`        | `var(--osdk-intent-warning-rest)`       | Selected geometry color                         |
+| `--osdk-map-outline-color`         | `var(--osdk-background-primary)`        | Point outline color                             |
+| `--osdk-map-point-radius`          | `6`                                     | Point radius                                    |
+| `--osdk-map-selected-point-radius` | `9`                                     | Selected point radius                           |
+| `--osdk-map-point-stroke-width`    | `2`                                     | Point outline width                             |
+| `--osdk-map-line-width`            | `2`                                     | Line width                                      |
+| `--osdk-map-selected-line-width`   | `4`                                     | Selected line width                             |
+| `--osdk-map-fill-opacity`          | `0.35`                                  | Polygon fill opacity                            |
+| `--osdk-map-fit-padding`           | `48`                                    | Padding around features when fitting the camera |
 
 ## Creating a Custom Theme
 

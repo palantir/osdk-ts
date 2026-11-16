@@ -22,7 +22,9 @@ function PeopleApp() {
               ? "aip-agent-chat"
               : path === "/workshop-module"
                 ? "workshop-module"
-                : "offices";
+                : path === "/office-map"
+                  ? "office-map"
+                  : "offices";
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
@@ -56,6 +58,13 @@ function PeopleApp() {
           onClick={() => navigate("/offices")}
         >
           Offices
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "office-map"}
+          onClick={() => navigate("/office-map")}
+        >
+          Office Map
         </Button>
         <Button
           variant="tab"

@@ -1,0 +1,48 @@
+.page {
+  width: 100%;
+  text-align: left;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  margin-block: calc(var(--osdk-surface-spacing) * 2);
+}
+.filters label {
+  display: grid;
+  gap: var(--osdk-surface-spacing);
+}
+.filters input {
+  padding: var(--osdk-surface-spacing);
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-background-primary);
+  color: var(--osdk-typography-color-default-rest);
+}
+.workspace {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+}
+.mapPanel {
+  flex: 3;
+  min-width: 60%;
+}
+.map {
+  height: 50vh;
+}
+.details {
+  flex: 1;
+  padding: calc(var(--osdk-surface-spacing) * 2);
+  background: var(--osdk-background-secondary);
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+}
+.details article + article {
+  border-top: var(--osdk-surface-border);
+}
+.table {
+  height: 40vh;
+  margin-top: calc(var(--osdk-surface-spacing) * 2);
+}

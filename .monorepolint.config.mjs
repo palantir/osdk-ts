@@ -585,6 +585,7 @@ const archetypeRules = archetypes(standardPackageRules, {
         "./experimental/filter-list",
         "./experimental/image-viewer",
         "./experimental/markdown-renderer",
+        "./experimental/object-map",
         "./experimental/object-table",
         "./experimental/pdf-viewer",
         "./experimental/spreadsheet-viewer",

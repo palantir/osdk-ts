@@ -5,6 +5,7 @@ arrayedness
 AUTOGEN
 BACKCOMPAT
 backlink
+basemap
 blockquote
 blockquotes
 browsable
