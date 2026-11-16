@@ -80,10 +80,10 @@ export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
 export { createScenario } from "./scenarios/createScenario.js";
 export type {
-  ConflictingObjectsPage,
   EditedLinksForObjectType,
   EditedLinksPage,
   EditedObjectsPage,
+  EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage,
   ScenarioClient,
   ScenarioEditedEntityTypes,
 } from "./scenarios/ScenarioClient.js";

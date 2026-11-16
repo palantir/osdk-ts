@@ -129,7 +129,7 @@ describe("ScenarioClient methods", () => {
     });
   });
 
-  describe("getConflictingObjects (page form)", () => {
+  describe("EXPERIMENTAL_DO_NOT_USE_getConflictingObjects (page form)", () => {
     it("calls the conflicting objects endpoint and converts object locators", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       const mock: ListScenarioConflictingObjectsResponse = {
@@ -141,10 +141,11 @@ describe("ScenarioClient methods", () => {
       };
       mockFetchResponse(fetchFunction, mock);
 
-      const result = await scenario.getConflictingObjects(Employee, {
-        pageSize: 1_000,
-        pageToken: "tok-1",
-      });
+      const result =
+        await scenario.EXPERIMENTAL_DO_NOT_USE_getConflictingObjects(Employee, {
+          pageSize: 1_000,
+          pageToken: "tok-1",
+        });
 
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
@@ -167,7 +168,7 @@ describe("ScenarioClient methods", () => {
     });
   });
 
-  describe("conflictingObjectsAsyncIter", () => {
+  describe("EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter", () => {
     it("paginates lazily through empty pages without deduplicating", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       const page1: ListScenarioConflictingObjectsResponse = {
@@ -188,9 +189,10 @@ describe("ScenarioClient methods", () => {
       mockFetchResponse(fetchFunction, emptyPage);
       mockFetchResponse(fetchFunction, page3);
 
-      const iterator = scenario.conflictingObjectsAsyncIter(Employee, {
-        pageSize: 1_000,
-      });
+      const iterator =
+        scenario.EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter(Employee, {
+          pageSize: 1_000,
+        });
       expect(fetchFunction).not.toHaveBeenCalled();
 
       await expect(iterator.next()).resolves.toEqual({

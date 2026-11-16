@@ -135,14 +135,6 @@ export interface Client extends SharedClient, OldSharedClient {
 
 export { CompileTimeMetadata }
 
-// @public
-export interface ConflictingObjectsPage<Q extends ObjectTypeDefinition> {
-    	// (undocumented)
-    data: ObjectIdentifiers<Q>[];
-    	// (undocumented)
-    nextPageToken?: string;
-}
-
 // @public (undocumented)
 export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
 
@@ -189,6 +181,14 @@ export interface EditedLinksPage<
 
 // @public
 export interface EditedObjectsPage<Q extends ObjectTypeDefinition> {
+    	// (undocumented)
+    data: ObjectIdentifiers<Q>[];
+    	// (undocumented)
+    nextPageToken?: string;
+}
+
+// @beta
+export interface EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q extends ObjectTypeDefinition> {
     	// (undocumented)
     data: ObjectIdentifiers<Q>[];
     	// (undocumented)
@@ -290,9 +290,6 @@ export type ResultOrError<T extends object> = ({
 
 // @public
 export interface ScenarioClient extends Client {
-    	conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
-        		pageSize?: number
-        	}): AsyncIterableIterator<ObjectIdentifiers<Q>>;
     	editedLinksAsyncIter<
     		Q extends ObjectOrInterfaceDefinition,
     		LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>
@@ -302,10 +299,15 @@ export interface ScenarioClient extends Client {
     	editedObjectsAsyncIter<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
         		pageSize?: number
         	}): AsyncIterableIterator<ObjectIdentifiers<Q>>;
-    	getConflictingObjects<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
+    	// @beta
+    EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
+        		pageSize?: number
+        	}): AsyncIterableIterator<ObjectIdentifiers<Q>>;
+    	// @beta
+    EXPERIMENTAL_DO_NOT_USE_getConflictingObjects<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
         		pageSize?: number
         		pageToken?: string
-        	}): Promise<ConflictingObjectsPage<Q>>;
+        	}): Promise<EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q>>;
     	getEditedEntityTypes(): Promise<ScenarioEditedEntityTypes>;
     	getEditedLinks<
     		Q extends ObjectOrInterfaceDefinition,

@@ -72,9 +72,13 @@ export interface EditedLinksPage<
 
 /**
  * A page of object identifiers whose edits within a scenario conflict with edits to the scenario's base. Returned by
- * {@link ScenarioClient.getConflictingObjects}. Results contain only `$primaryKey` + `$apiName`.
+ * {@link ScenarioClient.EXPERIMENTAL_DO_NOT_USE_getConflictingObjects}. Results contain only `$primaryKey` + `$apiName`.
+ *
+ * @beta This is an experimental feature subject to change.
  */
-export interface ConflictingObjectsPage<Q extends ObjectTypeDefinition> {
+export interface EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<
+  Q extends ObjectTypeDefinition,
+> {
   data: ObjectIdentifiers<Q>[];
   nextPageToken?: string;
 }
@@ -192,24 +196,30 @@ export interface ScenarioClient extends Client {
    *
    * `pageSize` bounds the number of objects examined, not the number of conflicts returned, so a page may contain fewer
    * results than requested while still returning `nextPageToken`.
+   *
+   * @beta This is an experimental feature subject to change.
    */
-  getConflictingObjects<Q extends ObjectTypeDefinition>(
+  EXPERIMENTAL_DO_NOT_USE_getConflictingObjects<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number; pageToken?: string },
-  ): Promise<ConflictingObjectsPage<Q>>;
+  ): Promise<EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q>>;
 
   /**
    * Stream object identifiers for the objects whose scenario edits conflict with edits to the scenario's base for the
    * given object type. Pages are fetched lazily.
    *
+   * @beta This is an experimental feature subject to change.
+   *
    * @example
    * ```ts
-   * for await (const obj of scenario.conflictingObjectsAsyncIter(Doctor, { pageSize: 500 })) {
+   * for await (const obj of scenario.EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter(Doctor, { pageSize: 500 })) {
    *   // obj.$primaryKey identifies an object with a conflicting scenario edit
    * }
    * ```
    */
-  conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(
+  EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter<
+    Q extends ObjectTypeDefinition,
+  >(
     objectType: Q,
     options?: { pageSize?: number },
   ): AsyncIterableIterator<ObjectIdentifiers<Q>>;
@@ -430,7 +440,7 @@ export function buildScenarioClient(
   async function getConflictingObjects<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number; pageToken?: string },
-  ): Promise<ConflictingObjectsPage<Q>> {
+  ): Promise<EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q>> {
     const ontologyRid = await innerCtx.ontologyRid;
     const response = await OntologyScenarios.listScenarioConflictingObjects(
       innerCtx,
@@ -495,10 +505,10 @@ export function buildScenarioClient(
     editedLinksAsyncIter: {
       value: editedLinksAsyncIter,
     },
-    getConflictingObjects: {
+    EXPERIMENTAL_DO_NOT_USE_getConflictingObjects: {
       value: getConflictingObjects,
     },
-    conflictingObjectsAsyncIter: {
+    EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter: {
       value: conflictingObjectsAsyncIter,
     },
   }) as ScenarioClient;
