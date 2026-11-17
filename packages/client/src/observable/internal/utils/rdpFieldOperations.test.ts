@@ -102,7 +102,6 @@ describe("rdpFieldOperations", () => {
         },
       },
     };
-    let requestReads = 0;
     const full = createOsdkObject(
       mockClient,
       objectDef,
@@ -117,16 +116,6 @@ describe("rdpFieldOperations", () => {
       },
       {},
       undefined,
-      {
-        request: {
-          objectSet: { type: "base", objectType: "Employee" },
-          select: [],
-          get selectV2() {
-            requestReads++;
-            return [];
-          },
-        },
-      },
     );
     const partial = createOsdkObject(
       mockClient,
@@ -141,7 +130,7 @@ describe("rdpFieldOperations", () => {
       },
       {},
       undefined,
-      { suppliedProperties: [] },
+      ["fullName"],
     );
     const cast = (object: ObjectHolder) =>
       createOsdkInterface(object, {
@@ -161,7 +150,9 @@ describe("rdpFieldOperations", () => {
       new Set(),
       undefined,
     );
-    expect(() => cast(stripped)).toThrowError(/not fully loaded/u);
+    expect(() => cast(stripped)).toThrowError(
+      /properties 'fullName' were not fully loaded/u,
+    );
 
     const filtered = mergeObjectFields(
       full,
@@ -169,9 +160,17 @@ describe("rdpFieldOperations", () => {
       new Set(["rdp1"]),
       undefined,
     );
-    expect(requestReads).toBe(0);
     expect(cast(filtered).fullName).toEqual("Full");
-    expect(requestReads).toBeGreaterThan(0);
+
+    const filteredPartial = mergeObjectFields(
+      partial,
+      new Set(["rdp1", "rdp2"]),
+      new Set(["rdp1"]),
+      undefined,
+    );
+    expect(() => cast(filteredPartial)).toThrowError(
+      /properties 'fullName' were not fully loaded/u,
+    );
 
     const merged = mergeObjectFields(
       partial,
@@ -179,9 +178,10 @@ describe("rdpFieldOperations", () => {
       new Set(["rdp1", "rdp2"]),
       full,
     );
-    expect(() => cast(merged)).toThrowError(/not fully loaded/u);
+    expect(() => cast(merged)).toThrowError(
+      /properties 'fullName' were not fully loaded/u,
+    );
 
-    const readsBeforeSelectionMerge = requestReads;
     const partialSelection = mergeSelectFields(
       partial,
       new Set(["fullName"]),
@@ -194,9 +194,20 @@ describe("rdpFieldOperations", () => {
       partial,
       new Set(),
     );
-    expect(requestReads).toBe(readsBeforeSelectionMerge);
-    expect(() => cast(partialSelection)).toThrowError(/not fully loaded/u);
+    expect(() => cast(partialSelection)).toThrowError(
+      /properties 'fullName' were not fully loaded/u,
+    );
     expect(cast(fullSelection).fullName).toEqual("Full");
+
+    const unrelatedSelection = mergeSelectFields(
+      full,
+      new Set(["office"]),
+      partial,
+      new Set(),
+    );
+    expect(() => cast(unrelatedSelection)).toThrowError(
+      /properties 'fullName' were not fully loaded/u,
+    );
   });
 
   it("extractRdpFieldNames returns empty set for undefined", () => {

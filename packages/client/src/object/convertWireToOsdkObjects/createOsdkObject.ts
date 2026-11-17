@@ -41,12 +41,11 @@ import {
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
-import type { ObjectLoadContext } from "./getFullyLoadedProperties.js";
 import {
   ClientRef,
-  ObjectLoadContextRef,
   ObjectDefRef,
   PropertySecuritiesRef,
+  UncastableProperties,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
@@ -89,7 +88,7 @@ const basePropDefs = {
           { ...rawObj },
           {},
           undefined,
-          this[ObjectLoadContextRef],
+          this[UncastableProperties],
         );
       }
 
@@ -113,7 +112,7 @@ const basePropDefs = {
         newObject,
         {},
         undefined,
-        this[ObjectLoadContextRef],
+        this[UncastableProperties],
       );
     },
   },
@@ -162,6 +161,9 @@ const basePropDefs = {
   },
 };
 
+/** @internal */
+export const NO_UNCASTABLE_PROPERTIES: readonly string[] = Object.freeze([]);
+
 /**
  * @internal
  * @param client
@@ -174,9 +176,7 @@ export function createOsdkObject(
   simpleOsdkProperties: SimpleOsdkProperties,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
   wirePropertySecurities: PropertySecurities[] | undefined = [],
-  loadContext: ObjectLoadContext = {
-    suppliedProperties: Object.keys(simpleOsdkProperties),
-  },
+  uncastableProperties: readonly string[] = NO_UNCASTABLE_PROPERTIES,
 ): ObjectHolder {
   const { parsedObject, clientPropertySecurities } = parseWhenSecuritiesLoaded(
     wirePropertySecurities,
@@ -188,7 +188,6 @@ export function createOsdkObject(
   // updates the object's "hidden class/map".
   const rawObj = parsedObject as ObjectHolder;
   Object.defineProperties(rawObj, {
-    [ObjectLoadContextRef]: { value: loadContext },
     [UnderlyingOsdkObject]: {
       enumerable: false,
       value: simpleOsdkProperties,
@@ -199,6 +198,7 @@ export function createOsdkObject(
     },
     [ObjectDefRef]: { value: objectDef, enumerable: false }, // TODO: Potentially update when GA metadata field
     [ClientRef]: { value: client, enumerable: false },
+    [UncastableProperties]: { value: uncastableProperties, enumerable: false },
     ...basePropDefs,
   } satisfies Record<keyof ObjectHolder, PropertyDescriptor>);
 

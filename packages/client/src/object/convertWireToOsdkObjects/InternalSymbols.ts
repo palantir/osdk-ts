@@ -23,8 +23,8 @@ export const UnderlyingOsdkObject = Symbol(
 );
 
 /** @internal */
-export const ObjectLoadContextRef = Symbol(
-  process.env.MODE !== "production" ? "Object Load Context" : undefined,
+export const UncastableProperties = Symbol(
+  process.env.MODE !== "production" ? "Uncastable Properties" : undefined,
 );
 
 /** @internal */
