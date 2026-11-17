@@ -38,8 +38,6 @@ export function convertOntologyDefinition(
   const importedTypes = getImportedTypes();
 
   const allOntologies = [ontology, importedTypes];
-  // convertInterfaceEditsValidation skips unresolved validations for imports.
-  // Check local validations first so they cannot be silently dropped.
   validateInterfaceEditsValidations(ontology, allOntologies);
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,

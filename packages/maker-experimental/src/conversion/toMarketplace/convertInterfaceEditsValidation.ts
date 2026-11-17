@@ -77,8 +77,6 @@ export function convertInterfaceEditsValidation(
   ridGenerator: OntologyRidGenerator,
   ontologies: OntologyDefinition[],
 ): InterfaceActionTypeEditsValidation | undefined {
-  // convertOntologyDefinition rejects invalid local validations before conversion.
-  // Imports may lack these references; skip their validation without allocating RIDs.
   const references = resolveReferences(
     validation,
     interfaceType,
