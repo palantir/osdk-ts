@@ -66,7 +66,7 @@ export type WorkshopVariableMap = {
 
 // @public
 export type WorkshopVariableSchema = {
-    	readonly type: "string" | "number" | "boolean"
+    	readonly type: "string" | "number" | "boolean" | "timestamp"
     	readonly isList: boolean
 } | {
     	readonly type: "objectSet"
