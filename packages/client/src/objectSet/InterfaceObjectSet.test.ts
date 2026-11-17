@@ -257,6 +257,42 @@ describe("ObjectSet", () => {
           selectedObject.$as(ComplexImplementationInterface).$as(objectType),
         ).toThrowError(/backing property 'multiStruct' was not fully loaded/u);
 
+        const selectedBackingProperties = (
+          await client(objectType).fetchPage({
+            $select: ["nestedStruct", "multiStruct", "multiStructArray"],
+          })
+        ).data[0];
+        expect(
+          selectedBackingProperties
+            .$as(ComplexImplementationInterface)
+            // @ts-expect-error
+            .$as(objectType),
+        ).toMatchObject({ nestedStruct: { label: "nested-label", count: 7 } });
+
+        const modifiedObject = (
+          await client(objectType).fetchPage({
+            $EXPERIMENTAL_defaultLoadLevel: "applyMainValue",
+          })
+        ).data[0];
+        expect(() =>
+          // @ts-expect-error
+          modifiedObject.$as(ComplexImplementationInterface).$as(objectType),
+        ).toThrowError(/not fully loaded/u);
+
+        const selection: ComplexImplementationInterface.PropertyKeys[] = [
+          "iStructField",
+        ];
+        const selectedInterface = (
+          await client(ComplexImplementationInterface).fetchPage({
+            $select: selection,
+            $includeAllBaseObjectProperties: true,
+          })
+        ).data[0];
+        expect(() =>
+          // @ts-expect-error
+          selectedInterface.$as(objectType),
+        ).toThrowError(/not fully loaded/u);
+
         responseData = [
           { ...wireObject, nestedStruct: { label: "nested-label" } },
         ];
