@@ -210,10 +210,9 @@ export async function convertWireToOsdkObjects(
       propertySecurities,
       {
         request: loadRequest,
-        interfaceApiName: isInterfaceScoped
+        interfaceApiNameObjectLoadedAs: isInterfaceScoped
           ? (interfaceApiName ?? "")
           : undefined,
-        interfaceToObjectMapping: interfaceToObjMapping,
         suppliedProperties:
           loadRequest == null
             ? selectedProps == null
