@@ -35,6 +35,7 @@ const schema = {
   searchText: { type: "string", isList: false },
   enabled: { type: "boolean", isList: false },
   counts: { type: "number", isList: true },
+  employees: { type: "objectSet", isList: false },
 } as const satisfies WorkshopModuleSchema;
 
 describe("module schemas", () => {
@@ -153,6 +154,37 @@ describe("module schemas", () => {
         [{ counts: [] }],
         [{ counts: null }],
         [{ counts: [] }],
+      ]);
+      unsubscribe();
+    }
+  });
+
+  it("checks object-set references against the declared schema in both directions", async () => {
+    await publish();
+    const employees = { objectSetRid: "ri.object-set.main.object-set.example" };
+    for (const connection of [parent, workshop]) {
+      expect(() => connection.setVariables({ employees })).not.toThrow();
+      expect(() => connection.setVariables({ employees: null })).not.toThrow();
+      expect(() =>
+        connection.setVariables({ employees: employees.objectSetRid }),
+      ).toThrow("expects objectSet");
+      expect(() => connection.setVariables({ searchText: employees })).toThrow(
+        "expects string",
+      );
+      const peer = connection === parent ? workshop : parent;
+      const listener = vi.fn();
+      const unsubscribe = peer.onVariablesSet(listener);
+      const port = connection.port;
+      port.postMessage(variableMessage({ employees: employees.objectSetRid }));
+      port.postMessage(variableMessage({ searchText: employees }));
+      const received = nextMessage(peer.port, (data) => data === "drained");
+      connection.setVariables({ employees });
+      port.postMessage("drained");
+      await received;
+      expect(listener.mock.calls).toEqual([
+        [{ employees }],
+        [{ employees: null }],
+        [{ employees }],
       ]);
       unsubscribe();
     }
@@ -335,6 +367,7 @@ function nextMessage(
 }
 
 const invalidSchemas: unknown[] = [
+  { employees: { type: "objectSet", isList: true } },
   null,
   [],
   { count: { type: "number", isList: "true" } },

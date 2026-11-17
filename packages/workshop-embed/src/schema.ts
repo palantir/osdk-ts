@@ -20,16 +20,27 @@ import {
   WORKSHOP_EMBED_VERSION,
 } from "./protocol.js";
 import type { WorkshopEmbedMessage } from "./protocol.js";
-import { isVariableRecord, isVariableValues } from "./variables.js";
+import {
+  isObjectSetValue,
+  isVariableRecord,
+  isVariableValues,
+} from "./variables.js";
 import type { WorkshopVariableValues } from "./variables.js";
 
 /** The declared type of a supported module-interface variable. @public */
-export interface WorkshopVariableSchema {
-  /** Value type declared by Workshop. */
-  readonly type: "string" | "number" | "boolean";
-  /** Whether the variable contains an array of the declared type. */
-  readonly isList: boolean;
-}
+export type WorkshopVariableSchema =
+  | {
+      /** Element type declared by Workshop. */
+      readonly type: "string" | "number" | "boolean";
+      /** Whether the variable contains an array of the declared type. */
+      readonly isList: boolean;
+    }
+  | {
+      /** An object-set reference. */
+      readonly type: "objectSet";
+      /** Object-set arrays are not supported. */
+      readonly isList: false;
+    };
 
 /** Supported module-interface variable definitions, keyed by external ID. @public */
 export type WorkshopModuleSchema = Readonly<
@@ -79,7 +90,8 @@ function isModuleSchema(value: unknown): value is WorkshopModuleSchema {
       typeof schema.isList === "boolean" &&
       (schema.type === "string" ||
         schema.type === "number" ||
-        schema.type === "boolean"),
+        schema.type === "boolean" ||
+        (schema.type === "objectSet" && schema.isList === false)),
   );
 }
 
@@ -108,7 +120,7 @@ export function validateVariableValues(
     const elements = isList ? value : [value];
     if (
       isList !== definition.isList ||
-      !elements.every((element) => typeof element === definition.type)
+      !elements.every((element) => isValueOfType(element, definition.type))
     ) {
       const expected = `${definition.type}${definition.isList ? "[]" : ""}`;
       const received = isList ? "array" : typeof value;
@@ -117,4 +129,11 @@ export function validateVariableValues(
       );
     }
   }
+}
+
+function isValueOfType(
+  value: unknown,
+  type: WorkshopVariableSchema["type"],
+): boolean {
+  return type === "objectSet" ? isObjectSetValue(value) : typeof value === type;
 }
