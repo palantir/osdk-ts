@@ -53,6 +53,14 @@
     "yargs": "^17.7.2",
     "zod": "^3.25.76"
   },
+  "peerDependencies": {
+    "typescript": "^5.5.4"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
@@ -62,14 +70,6 @@
     "@types/yargs": "^17.0.33",
     "typescript": "~5.5.4",
     "vitest": "^3.2.4"
-  },
-  "peerDependencies": {
-    "typescript": "^5.5.4"
-  },
-  "peerDependenciesMeta": {
-    "typescript": {
-      "optional": true
-    }
   },
   "publishConfig": {
     "access": "public"
