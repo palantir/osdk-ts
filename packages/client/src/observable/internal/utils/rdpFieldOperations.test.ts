@@ -102,15 +102,32 @@ describe("rdpFieldOperations", () => {
         },
       },
     };
-    const full = createOsdkObject(mockClient, objectDef, {
-      $apiName: "Employee",
-      $objectType: "Employee",
-      $primaryKey: 1,
-      $title: "Full",
-      fullName: "Full",
-      rdp1: 1,
-      rdp2: 2,
-    });
+    let requestReads = 0;
+    const full = createOsdkObject(
+      mockClient,
+      objectDef,
+      {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 1,
+        $title: "Full",
+        fullName: "Full",
+        rdp1: 1,
+        rdp2: 2,
+      },
+      {},
+      undefined,
+      {
+        request: {
+          objectSet: { type: "base", objectType: "Employee" },
+          select: [],
+          get selectV2() {
+            requestReads++;
+            return [];
+          },
+        },
+      },
+    );
     const partial = createOsdkObject(
       mockClient,
       objectDef,
@@ -124,7 +141,7 @@ describe("rdpFieldOperations", () => {
       },
       {},
       undefined,
-      new Set(),
+      { suppliedProperties: [] },
     );
     const cast = (object: ObjectHolder) =>
       createOsdkInterface(object, {
@@ -152,7 +169,9 @@ describe("rdpFieldOperations", () => {
       new Set(["rdp1"]),
       undefined,
     );
+    expect(requestReads).toBe(0);
     expect(cast(filtered).fullName).toEqual("Full");
+    expect(requestReads).toBeGreaterThan(0);
 
     const merged = mergeObjectFields(
       partial,
@@ -162,20 +181,21 @@ describe("rdpFieldOperations", () => {
     );
     expect(() => cast(merged)).toThrowError(/not fully loaded/u);
 
+    const readsBeforeSelectionMerge = requestReads;
     const partialSelection = mergeSelectFields(
       partial,
       new Set(["fullName"]),
       full,
       new Set(),
     );
-    expect(() => cast(partialSelection)).toThrowError(/not fully loaded/u);
-
     const fullSelection = mergeSelectFields(
       full,
       new Set(["fullName"]),
       partial,
       new Set(),
     );
+    expect(requestReads).toBe(readsBeforeSelectionMerge);
+    expect(() => cast(partialSelection)).toThrowError(/not fully loaded/u);
     expect(cast(fullSelection).fullName).toEqual("Full");
   });
 
