@@ -27,8 +27,9 @@ import type {
   OntologyIrInterfaceLinkRequirement,
 } from "@osdk/client.unstable";
 import { toUuid } from "@osdk/generator-converters.ontologyir";
-import invariant from "tiny-invariant";
 
+import type { MakerValidationIssue } from "../../validation.js";
+import { createValidationIssueCollector } from "../../validation.js";
 import type {
   ExistingObjectEditRequirementDefinition,
   ImplementingObjectEditsDefinition,
@@ -47,28 +48,37 @@ export function convertEditsValidationToIr(
   interfaceApiName: string,
   constraintApiName: string,
 ): OntologyIrInterfaceActionTypeEditsValidation {
+  const collector = createValidationIssueCollector();
+  const { addIssue } = collector;
   const seenIds = new Set<string>();
   const location = `action type constraint "${constraintApiName}" on interface "${interfaceApiName}"`;
 
   function convertCondition(
     condition: InterfaceActionTypeEditsValidationConditionDefinition,
+    path: MakerValidationIssue["path"],
   ): OntologyIrInterfaceActionTypeEditsValidationCondition {
     switch (condition.type) {
       case "and":
         return {
           type: "and",
-          and: { conditions: condition.and.conditions.map(convertCondition) },
+          and: {
+            conditions: condition.and.conditions.map((child, index) =>
+              convertCondition(child, [...path, "and", "conditions", index]),
+            ),
+          },
         };
       case "entry": {
         const { id, subject } = condition.entry;
-        invariant(
-          typeof id === "string" && id.trim().length > 0,
-          `Edit validation entry ID on ${location} must not be blank`,
-        );
-        invariant(
-          !seenIds.has(id),
-          `Duplicate edit validation entry ID "${id}" on ${location}`,
-        );
+        addIssue(typeof id === "string" && id.trim().length > 0, {
+          code: "invalid_entry_id",
+          message: `Edit validation entry ID on ${location} must not be blank`,
+          path: [...path, "entry", "id"],
+        });
+        addIssue(!seenIds.has(id), {
+          code: "duplicate_entry_id",
+          message: `Duplicate edit validation entry ID "${id}" on ${location}`,
+          path: [...path, "entry", "id"],
+        });
         seenIds.add(id);
         const locator = toUuid(
           JSON.stringify([
@@ -91,7 +101,12 @@ export function convertEditsValidationToIr(
     }
   }
 
-  return { condition: convertCondition(validation.condition) };
+  const condition = convertCondition(validation.condition, [
+    "editsValidation",
+    "condition",
+  ]);
+  collector.throwIfAnyIssues();
+  return { condition };
 }
 
 function convertSubject(
