@@ -28,6 +28,12 @@ import type { BaseOauthClient, Events } from "./BaseOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
+// Refresh this long before the token expires, but never earlier than half the token's life
+const REFRESH_LEAD_TIME_MS = 60 * 1000;
+
+// The largest delay `setTimeout` accepts; larger values overflow
+const MAX_TIMEOUT_MS = 2_147_483_647;
+
 // Node 18 is supposed to have a `CustomEvent` but it is not exposed on `globalThis`
 // which creates a problem for making a single codebase for node and browser. This polyfill works around it
 const CustomEvent =
@@ -211,7 +217,13 @@ export function common<
       rmTimeout();
       refreshTimeout = setTimeout(
         refresh,
-        evt.detail.expires_in * 1000 - 60 * 1000,
+        Math.min(
+          Math.max(
+            evt.detail.expires_in * 1000 - REFRESH_LEAD_TIME_MS,
+            evt.detail.expires_in * 500,
+          ),
+          MAX_TIMEOUT_MS,
+        ),
       );
     }
   }
