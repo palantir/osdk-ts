@@ -57,11 +57,13 @@ export function parseLinkType(
   ];
 }
 
-type PackageInfo = Map<string, {
+type PackageInfoValue = {
   sdkPackage: SdkPackage;
   sdk: Sdk;
   packageVersion: string;
-}>;
+};
+
+type PackageInfo = Map<string, PackageInfoValue>;
 
 export interface OntologyInfo {
   requestedMetadata: WireOntologyDefinition;
@@ -188,25 +190,25 @@ export class OntologyMetadataResolver {
       tokenProvider: () => Promise.resolve(this.#authToken),
     };
 
-    const ret: PackageInfo = new Map();
+    const packageInfo: Array<[string, PackageInfoValue]> = await Promise.all(
+      [...pkgs].map(async ([packageRid, packageVersion]) => {
+        const sdkPackage = await getSdkPackage(
+          conjureCtx,
+          packageRid,
+        );
 
-    for (const [packageRid, packageVersion] of pkgs) {
-      const sdkPackage = await getSdkPackage(
-        conjureCtx,
-        packageRid,
-      );
+        const sdk = await getSdk(
+          conjureCtx,
+          sdkPackage.repositoryRid,
+          sdkPackage.packageName,
+          packageVersion,
+        );
 
-      const sdk = await getSdk(
-        conjureCtx,
-        sdkPackage.repositoryRid,
-        sdkPackage.packageName,
-        packageVersion,
-      );
+        return [packageRid, { sdkPackage, sdk, packageVersion }];
+      }),
+    );
 
-      ret.set(packageRid, { sdkPackage, sdk, packageVersion });
-    }
-
-    return ret;
+    return new Map(packageInfo);
   }
 
   public async getWireOntologyDefinition(
@@ -272,27 +274,49 @@ export class OntologyMetadataResolver {
       );
     }
 
-    for (const [apiName, version] of agentVersionReferences) {
-      try {
-        // TODO(mhogberg): This will be slow for large SDKs. Bulk load instead of loading
-        //  one-by-one.
-        const agentDefinitionVersion = await AgentDefinitionVersions.get(
-          this.getClientContext(),
-          apiName,
-          version,
-          { ontology: ontologyRid as OntologyIdentifier, preview: true },
-        );
+    type LoadedAgent = {
+      apiName: string;
+      agentDefinitionVersion: Awaited<
+        ReturnType<typeof AgentDefinitionVersions.get>
+      >;
+    };
 
-        agents[apiName] = { ...agentDefinitionVersion, apiName };
-      } catch (error) {
-        return Result.err([
-          new GeneratorError("Unable to load agent metadata", {
-            apiName,
-            version,
-            error: String(error),
-          }),
-        ]);
-      }
+    const loadedAgents: Array<Result<LoadedAgent, GeneratorError[]>> =
+      await Promise.all(
+        [...agentVersionReferences].map(async ([apiName, version]) => {
+          try {
+            const agentDefinitionVersion = await AgentDefinitionVersions.get(
+              this.getClientContext(),
+              apiName,
+              version,
+              { ontology: ontologyRid as OntologyIdentifier, preview: true },
+            );
+
+            return Result.ok<LoadedAgent, GeneratorError[]>({
+              apiName,
+              agentDefinitionVersion,
+            });
+          } catch (error) {
+            return Result.err<LoadedAgent, GeneratorError[]>([
+              new GeneratorError("Unable to load agent metadata", {
+                apiName,
+                version,
+                error: String(error),
+              }),
+            ]);
+          }
+        }),
+      );
+
+    const loadedAgentsResult = Result.coalesce(loadedAgents);
+    if (loadedAgentsResult.isErr()) {
+      return Result.err(loadedAgentsResult.error);
+    }
+
+    for (
+      const { apiName, agentDefinitionVersion } of loadedAgentsResult.value
+    ) {
+      agents[apiName] = { ...agentDefinitionVersion, apiName };
     }
 
     // If we're passing in an external SDK package, we need to load the full metadata. As a result, we cannot use query
