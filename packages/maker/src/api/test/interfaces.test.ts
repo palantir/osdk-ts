@@ -25,6 +25,7 @@ import {
   ontologyDefinition,
 } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import type { InterfaceActionTypeEditsValidationDefinition } from "../interface/InterfaceActionTypeEditsValidationDefinition.js";
 import { expectValidationIssues } from "./testUtils.js";
 
 describe("Interfaces", () => {
@@ -357,6 +358,49 @@ describe("Interfaces", () => {
   });
 
   describe("Action Type Constraints", () => {
+    it.each([
+      undefined,
+      {
+        condition: {
+          type: "entry",
+          entry: {
+            id: "create-object",
+            subject: {
+              type: "implementingObject",
+              implementingObject: {
+                type: "create",
+                create: { requiredInterfaceLinkCreations: [] },
+              },
+            },
+          },
+        },
+      } satisfies InterfaceActionTypeEditsValidationDefinition,
+    ])("preserves authored edit validation %j in IR", (editsValidation) => {
+      const iface = defineInterface({ apiName: "Task" });
+      defineInterfaceActionTypeConstraint({
+        interfaceType: iface,
+        apiName: "editTask",
+        displayName: "Edit Task",
+        description: "Edit a task",
+        requireImplementation: false,
+        parameters: [],
+        ...(editsValidation !== undefined ? { editsValidation } : {}),
+      });
+      const constraint =
+        dumpOntologyFullMetadata().ontology.interfaceTypes["com.palantir.Task"]
+          .interfaceType.actionTypeConstraints[0];
+      if (editsValidation === undefined) {
+        expect(constraint).not.toHaveProperty("editsValidation");
+      } else {
+        expect(constraint.editsValidation).toMatchObject({
+          condition: {
+            type: "entry",
+            entry: { subject: editsValidation.condition.entry.subject },
+          },
+        });
+      }
+    });
+
     it("preserves implementing-object parameter markers in ontology IR", () => {
       const iface = defineInterface({ apiName: "MyInterface" });
 
