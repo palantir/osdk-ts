@@ -26,35 +26,28 @@ import {
   getOntologyDefinition,
 } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import { expectValidationIssues } from "./testUtils.js";
+
 describe("SPTs", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
   });
 
-  it("collects metadata issues before registering a shared property type", () => {
-    expect(() =>
-      defineSharedPropertyType({
-        apiName: "invalidMetadata",
-        type: "string",
-        displayName: "x".repeat(1001),
-        description: "x".repeat(10001),
-      }),
-    ).toThrowError(
-      expect.objectContaining({
-        name: "MakerValidationError",
-        issues: [
-          expect.objectContaining({
-            message: expect.stringContaining(
-              "displayName must be at most 1000",
-            ),
-          }),
-          expect.objectContaining({
-            message: expect.stringContaining(
-              "description must be at most 10000",
-            ),
-          }),
-        ],
-      }),
+  it("collects render hint and metadata issues before registering a shared property type", () => {
+    expectValidationIssues(
+      () =>
+        defineSharedPropertyType({
+          apiName: "invalidMetadata",
+          type: "mediaReference",
+          typeClasses: [{ kind: "render_hint", name: "SELECTABLE" }],
+          displayName: "x".repeat(1001),
+          description: "x".repeat(10001),
+        }),
+      [
+        "should not have render hints",
+        "displayName must be at most 1000",
+        "description must be at most 10000",
+      ],
     );
     expect(
       getOntologyDefinition()[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
@@ -67,13 +60,9 @@ describe("SPTs", () => {
       type: "string",
     });
 
-    expect(() => {
-      defineSharedPropertyType({
-        apiName: "foo",
-        type: "string",
-      });
-    }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`,
+    expectValidationIssues(
+      () => defineSharedPropertyType({ apiName: "foo", type: "string" }),
+      [{ code: "duplicate_definition", path: ["apiName"] }],
     );
   });
 
