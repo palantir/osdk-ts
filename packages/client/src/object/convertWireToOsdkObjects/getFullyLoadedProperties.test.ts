@@ -26,7 +26,7 @@ const objectDef: ObjectMetadata = {
   type: "object",
   apiName: "Person",
   rid: "",
-  interfaceMap: {},
+  interfaceMap: { "ns.Named": { "ns.label": "name" } },
   inverseInterfaceMap: {},
   primaryKeyApiName: "id",
   primaryKeyType: "string",
@@ -83,9 +83,8 @@ const allBaseRequest: ObjectLoadRequest = {
     ],
   },
 };
-const mapping = { "ns.label": "name" };
 const analyzeInterface = (request: ObjectLoadRequest) =>
-  getFullyLoadedProperties(request, objectDef, "ns.Named", mapping);
+  getFullyLoadedProperties(request, objectDef, "ns.Named");
 
 describe("getFullyLoadedProperties", () => {
   it("tracks whole object properties through selections and load levels", () => {
@@ -195,6 +194,9 @@ describe("getFullyLoadedProperties", () => {
   it("does not treat a transformed interface alias as a complete backing property", () => {
     const aliasedDef: ObjectMetadata = {
       ...objectDef,
+      interfaceMap: {
+        "ns.Named": { "ns.label": "name", "ns.address": "address" },
+      },
       interfaceImplementations: {
         "ns.Named": {
           ...objectDef.interfaceImplementations!["ns.Named"],
@@ -202,14 +204,8 @@ describe("getFullyLoadedProperties", () => {
         },
       },
     };
-    const aliasedMapping = { ...mapping, "ns.address": "address" };
     expect(
-      getFullyLoadedProperties(
-        interfaceRequest,
-        aliasedDef,
-        "ns.Named",
-        aliasedMapping,
-      ),
+      getFullyLoadedProperties(interfaceRequest, aliasedDef, "ns.Named"),
     ).toEqual(new Set(["name", "address"]));
     expect(
       getFullyLoadedProperties(
@@ -226,7 +222,6 @@ describe("getFullyLoadedProperties", () => {
         },
         aliasedDef,
         "ns.Named",
-        aliasedMapping,
       ),
     ).toEqual(new Set());
   });
@@ -236,12 +231,10 @@ describe("getFullyLoadedProperties", () => {
       new Set(),
     );
     expect(
-      getFullyLoadedProperties(undefined, objectDef, undefined, {}, [
-        "address",
-      ]),
+      getFullyLoadedProperties(undefined, objectDef, undefined, ["address"]),
     ).toEqual(new Set(["address"]));
     expect(
-      getFullyLoadedProperties(undefined, objectDef, "ns.Named", mapping, [
+      getFullyLoadedProperties(undefined, objectDef, "ns.Named", [
         "name",
         "address",
       ]),
