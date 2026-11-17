@@ -321,6 +321,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@osdk/aip-core": "workspace:*",
     "@osdk/shared.client": "^1.0.1",
+    "@osdk/workshop-embed": "workspace:*",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.13",
     "date-fns": "^2.28.0",

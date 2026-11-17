@@ -17,6 +17,11 @@
 import { withOsdkMetrics } from "../../util/withOsdkMetrics.js";
 import { WorkshopModule as _WorkshopModule } from "../../workshop-module/WorkshopModule.js";
 
+export type {
+  WorkshopVariableValue,
+  WorkshopVariableValues,
+} from "@osdk/workshop-embed";
+
 export { BaseWorkshopModule } from "../../workshop-module/BaseWorkshopModule.js";
 export type {
   BaseWorkshopModuleProps,

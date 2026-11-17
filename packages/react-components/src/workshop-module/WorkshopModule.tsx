@@ -17,18 +17,21 @@
 import { getClientBranch } from "@osdk/client/internal";
 import { useOsdkClient } from "@osdk/react";
 import { symbolClientContext } from "@osdk/shared.client";
+import type { WorkshopVariableMap } from "@osdk/workshop-embed";
 import React from "react";
 
 import { OsdkThemeContext } from "../theme/OsdkThemeContext.js";
 import { BaseWorkshopModule } from "./BaseWorkshopModule.js";
 import type { WorkshopModuleProps } from "./WorkshopModuleApi.js";
 
-export function WorkshopModule(props: WorkshopModuleProps): React.ReactElement {
+export function WorkshopModule<
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
+>(props: WorkshopModuleProps<TVariables>): React.ReactElement {
   const client = useOsdkClient();
   const theme = React.useContext(OsdkThemeContext);
 
   return (
-    <BaseWorkshopModule
+    <BaseWorkshopModule<TVariables>
       {...props}
       foundryUrl={client[symbolClientContext].baseUrl}
       branchRid={getClientBranch(client)}
