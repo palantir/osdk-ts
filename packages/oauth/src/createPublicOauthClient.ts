@@ -306,7 +306,14 @@ export function createPublicOauthClient(
 
   async function maybeHandleAuthReturn() {
     const { state, oldUrl, codeVerifier } = readSession(client);
-    if (!codeVerifier) return;
+    const { searchParams } = new URL(window.location.href);
+    // sessionStorage keeps the codeVerifier after a login is abandoned or completed
+    if (
+      !codeVerifier ||
+      !(searchParams.has("code") || searchParams.has("error"))
+    ) {
+      return;
+    }
 
     try {
       const ret = makeTokenAndSaveRefresh(
@@ -318,12 +325,7 @@ export function createPublicOauthClient(
               authServer,
               client,
               throwIfError(
-                validateAuthResponse(
-                  authServer,
-                  client,
-                  new URL(window.location.href),
-                  state,
-                ),
+                validateAuthResponse(authServer, client, searchParams, state),
               ),
               redirect_uri,
               codeVerifier,
