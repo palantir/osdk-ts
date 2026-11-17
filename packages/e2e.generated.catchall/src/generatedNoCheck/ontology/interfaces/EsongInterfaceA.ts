@@ -1,5 +1,6 @@
 import type { PropertyDef as $PropertyDef } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { EsongIssues } from '../objects/EsongIssues.js';
 import type { EsongPds } from '../objects/EsongPds.js';
 import type {
   InterfaceDefinition as $InterfaceDefinition,
@@ -11,7 +12,8 @@ import type {
 } from '@osdk/client';
 
 export interface OsdkObjectLinks$EsongInterfaceA {
-  esongPds: $SingleLinkAccessor<EsongPds>;
+  esongIssues: $SingleLinkAccessor<EsongIssues>;
+  esongPds: EsongPds.ObjectSet;
 }
 
 export namespace EsongInterfaceA {
@@ -54,7 +56,8 @@ export interface EsongInterfaceA extends $InterfaceDefinition {
     implementedBy: ['EsongIssues'];
     implements: [];
     links: {
-      esongPds: $InterfaceMetadata.Link<EsongPds, false>;
+      esongIssues: $InterfaceMetadata.Link<EsongIssues, false>;
+      esongPds: $InterfaceMetadata.Link<EsongPds, true>;
     };
     properties: {
       /**
