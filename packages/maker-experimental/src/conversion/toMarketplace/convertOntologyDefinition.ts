@@ -42,7 +42,9 @@ export function convertOntologyDefinition(
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,
-    { allOntologies, functionsIr, packageForEdge },
+    allOntologies,
+    functionsIr,
+    packageForEdge,
   );
 
   const importedOntology = convertOntologyDefinitionToWireBlockData(

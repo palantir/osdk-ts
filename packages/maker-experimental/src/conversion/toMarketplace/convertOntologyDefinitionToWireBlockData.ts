@@ -107,17 +107,11 @@ function toSharedPropertyTypeRestrictionStatus(
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
-  {
-    allOntologies = [ontology],
-    functionsIr,
-    packageForEdge = false,
-  }: {
-    allOntologies?: OntologyDefinition[];
-    functionsIr?: FunctionsIr;
-    packageForEdge?: boolean;
-  } = {},
+  allOntologies?: OntologyDefinition[],
+  functionsIr?: FunctionsIr,
+  packageForEdge = false,
 ): OntologyBlockDataV2 {
-  const ontologiesToScan = allOntologies;
+  const ontologiesToScan = allOntologies ?? [ontology];
 
   // Convert all entity types first to populate ridGenerator's BiMaps
   const objectTypes = Object.fromEntries(
