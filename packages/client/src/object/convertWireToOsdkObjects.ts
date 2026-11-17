@@ -33,10 +33,7 @@ import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derive
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { type FetchedObjectTypeDefinition } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
-import {
-  getFullyLoadedProperties,
-  type ObjectLoadRequest,
-} from "./convertWireToOsdkObjects/getFullyLoadedProperties.js";
+import type { ObjectLoadRequest } from "./convertWireToOsdkObjects/getFullyLoadedProperties.js";
 import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
 import type { SimpleOsdkProperties } from "./SimpleOsdkProperties.js";
@@ -152,7 +149,6 @@ export async function convertWireToOsdkObjects(
 
   const isInterfaceScoped = Object.keys(effectiveMappings).length > 0;
   const ret = [];
-  const loadedPropertiesByType = new Map<string, ReadonlySet<string>>();
   for (const rawObj of objects) {
     // If caller supplied object definitions, use them exclusively instead of
     // hitting the ontology provider - a missing entry is an error rather than a
@@ -206,25 +202,25 @@ export async function convertWireToOsdkObjects(
       continue;
     }
 
-    let fullyLoadedProperties = loadedPropertiesByType.get(objectDef.apiName);
-    if (fullyLoadedProperties == null) {
-      fullyLoadedProperties = getFullyLoadedProperties(
-        loadRequest,
-        objectDef,
-        isInterfaceScoped ? (interfaceApiName ?? "") : undefined,
-        interfaceToObjMapping,
-        selectedProps ?? Object.keys(rawObj),
-      );
-      if (loadRequest != null)
-        loadedPropertiesByType.set(objectDef.apiName, fullyLoadedProperties);
-    }
     let osdkObject: ObjectHolder | InterfaceHolder = createOsdkObject(
       client,
       objectDef,
       rawObj,
       derivedPropertyTypeByName,
       propertySecurities,
-      fullyLoadedProperties,
+      {
+        request: loadRequest,
+        interfaceApiName: isInterfaceScoped
+          ? (interfaceApiName ?? "")
+          : undefined,
+        interfaceToObjectMapping: interfaceToObjMapping,
+        suppliedProperties:
+          loadRequest == null
+            ? selectedProps == null
+              ? Object.keys(rawObj)
+              : [...selectedProps]
+            : undefined,
+      },
     );
     if (interfaceApiName && isInterfaceScoped)
       osdkObject = osdkObject.$as(interfaceApiName);

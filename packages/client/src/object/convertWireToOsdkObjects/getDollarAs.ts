@@ -22,12 +22,9 @@ import {
 } from "../../ontology/OntologyProvider.js";
 import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
+import { getFullyLoadedPropertiesForObject } from "./getFullyLoadedProperties.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import {
-  FullyLoadedProperties,
-  InterfaceDefRef,
-  UnderlyingOsdkObject,
-} from "./InternalSymbols.js";
+import { InterfaceDefRef, UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
@@ -66,6 +63,7 @@ function assertInterfaceToOtCastIsPermitted(
     objDef.interfaceImplementations?.[interfaceDef.apiName];
   if (implementations == null) return;
 
+  let fullyLoadedProperties: ReadonlySet<string> | undefined;
   for (const [iptApiName, impl] of Object.entries(implementations)) {
     if (impl.type === "localProperty") continue;
     if (impl.type === "reduced") {
@@ -80,8 +78,11 @@ function assertInterfaceToOtCastIsPermitted(
       impl.type === "structField"
         ? [impl.propertyApiName]
         : Object.values(impl.mapping).map((field) => field.propertyApiName);
+    fullyLoadedProperties ??= getFullyLoadedPropertiesForObject(
+      holder[UnderlyingOsdkObject],
+    );
     for (const property of backingProperties) {
-      if (!holder[UnderlyingOsdkObject][FullyLoadedProperties]?.has(property)) {
+      if (!fullyLoadedProperties.has(property)) {
         throw new Error(
           `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
             `'${objDef.apiName}': backing property '${property}' was not fully loaded. ` +

@@ -17,7 +17,7 @@
 import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import {
   ClientRef,
-  FullyLoadedProperties,
+  ObjectLoadContextRef,
   ObjectDefRef,
   UnderlyingOsdkObject,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
@@ -94,7 +94,7 @@ function stripRdpFields(
     newProps,
     {},
     undefined,
-    value[FullyLoadedProperties],
+    value[ObjectLoadContextRef],
   );
 }
 
@@ -143,7 +143,7 @@ function filterToRdpFields(
     newProps,
     {},
     undefined,
-    value[FullyLoadedProperties],
+    value[ObjectLoadContextRef],
   );
 }
 
@@ -178,18 +178,17 @@ export function mergeSelectFields(
     }
   }
 
-  const fullyLoadedProperties = new Set(existingValue[FullyLoadedProperties]);
+  const { propertySources: sourceProperties, ...sourceContext } =
+    sourceValue[ObjectLoadContextRef];
+  const existingContext = existingValue[ObjectLoadContextRef];
+  const propertySources = new Map(existingContext.propertySources);
   for (const key of Object.keys(sourceUnderlying)) {
     // Take the source's derived fields, plus the base props it selected.
     if (sourceRdpFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
     } else if (key in objectDef.properties && selectFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
-      if (sourceValue[FullyLoadedProperties].has(key)) {
-        fullyLoadedProperties.add(key);
-      } else {
-        fullyLoadedProperties.delete(key);
-      }
+      propertySources.set(key, sourceProperties?.get(key) ?? sourceContext);
     }
   }
 
@@ -199,7 +198,7 @@ export function mergeSelectFields(
     newProps,
     {},
     undefined,
-    fullyLoadedProperties,
+    { ...existingContext, propertySources },
   );
 }
 
@@ -268,6 +267,6 @@ export function mergeObjectFields(
     newProps,
     {},
     undefined,
-    sourceValue[FullyLoadedProperties],
+    sourceValue[ObjectLoadContextRef],
   );
 }

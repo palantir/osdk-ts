@@ -22,10 +22,51 @@ import type {
   PropertyLoadLevel,
 } from "@osdk/foundry.ontologies";
 
+import { ObjectDefRef, ObjectLoadContextRef } from "./InternalSymbols.js";
+import type { ObjectHolder } from "./ObjectHolder.js";
+
 export type ObjectLoadRequest = Pick<
   LoadObjectSetRequestV2,
   "objectSet" | "select" | "selectV2" | "defaultLoadLevel"
 >;
+
+export interface ObjectLoadSource {
+  request?: ObjectLoadRequest;
+  interfaceApiName?: string;
+  interfaceToObjectMapping?: Readonly<Record<string, string>>;
+  suppliedProperties?: readonly string[];
+}
+
+export interface ObjectLoadContext extends ObjectLoadSource {
+  propertySources?: ReadonlyMap<string, ObjectLoadSource>;
+}
+
+export function getFullyLoadedPropertiesForObject(
+  object: ObjectHolder,
+): ReadonlySet<string> {
+  const context = object[ObjectLoadContextRef];
+  const analyzedSources = new Map<ObjectLoadSource, ReadonlySet<string>>();
+  function analyze(source: ObjectLoadSource): ReadonlySet<string> {
+    let result = analyzedSources.get(source);
+    if (result == null) {
+      result = getFullyLoadedProperties(
+        source.request,
+        object[ObjectDefRef],
+        source.interfaceApiName,
+        source.interfaceToObjectMapping,
+        source.suppliedProperties,
+      );
+      analyzedSources.set(source, result);
+    }
+    return result;
+  }
+  const fullyLoaded = new Set(analyze(context));
+  for (const [property, source] of context.propertySources ?? []) {
+    if (analyze(source).has(property)) fullyLoaded.add(property);
+    else fullyLoaded.delete(property);
+  }
+  return fullyLoaded;
+}
 
 export function getFullyLoadedProperties(
   request: ObjectLoadRequest | undefined,
