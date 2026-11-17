@@ -69,6 +69,7 @@ timecode
 timeseries
 tkelce
 deferreds
+uncastable
 undefineds
 unsub
 valuetype

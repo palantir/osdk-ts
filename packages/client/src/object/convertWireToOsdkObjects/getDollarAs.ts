@@ -22,9 +22,12 @@ import {
 } from "../../ontology/OntologyProvider.js";
 import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
-import { getFullyLoadedPropertiesForObject } from "./getFullyLoadedProperties.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import { InterfaceDefRef, UnderlyingOsdkObject } from "./InternalSymbols.js";
+import {
+  InterfaceDefRef,
+  UncastableProperties,
+  UnderlyingOsdkObject,
+} from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
@@ -59,40 +62,15 @@ function assertInterfaceToOtCastIsPermitted(
     | { apiName: string }
     | undefined;
   if (interfaceDef == null) return;
-  const implementations =
-    objDef.interfaceImplementations?.[interfaceDef.apiName];
-  if (implementations == null) return;
-
-  for (const [iptApiName, impl] of Object.entries(implementations)) {
-    if (impl.type === "reduced") {
-      throw new Error(
-        `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
-          `'${objDef.apiName}': property '${iptApiName}' has a reduced ` +
-          `implementation, so the underlying object type cannot ` +
-          `be faithfully represented. Load the object type directly.`,
-      );
-    }
-  }
-
-  let fullyLoadedProperties: ReadonlySet<string> | undefined;
-  for (const impl of Object.values(implementations)) {
-    if (impl.type === "localProperty" || impl.type === "reduced") continue;
-    const backingProperties =
-      impl.type === "structField"
-        ? [impl.propertyApiName]
-        : Object.values(impl.mapping).map((field) => field.propertyApiName);
-    fullyLoadedProperties ??= getFullyLoadedPropertiesForObject(
-      holder[UnderlyingOsdkObject],
+  const uncastableProperties =
+    holder[UnderlyingOsdkObject][UncastableProperties];
+  if (uncastableProperties.length > 0) {
+    throw new Error(
+      `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
+        `'${objDef.apiName}': properties '${uncastableProperties.join("', '")}' ` +
+        `were not fully loaded through the interface, so the underlying ` +
+        `object type cannot be faithfully represented. Load the object type directly.`,
     );
-    for (const property of backingProperties) {
-      if (!fullyLoadedProperties.has(property)) {
-        throw new Error(
-          `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
-            `'${objDef.apiName}': backing property '${property}' was not fully loaded. ` +
-            `Fetch with $includeAllBaseObjectProperties: true or load the object type directly.`,
-        );
-      }
-    }
   }
 }
 

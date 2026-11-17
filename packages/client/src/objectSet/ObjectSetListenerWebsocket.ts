@@ -400,7 +400,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
           {},
           undefined,
           false,
-          sub.requestedProperties,
+          [...sub.requestedProperties, ...sub.requestedReferenceProperties],
           false,
           await this.#fetchInterfaceMapping(
             o.object.__apiName,

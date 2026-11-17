@@ -17,8 +17,8 @@
 import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import {
   ClientRef,
-  ObjectLoadContextRef,
   ObjectDefRef,
+  UncastableProperties,
   UnderlyingOsdkObject,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -94,7 +94,7 @@ function stripRdpFields(
     newProps,
     {},
     undefined,
-    value[ObjectLoadContextRef],
+    value[UncastableProperties],
   );
 }
 
@@ -143,7 +143,7 @@ function filterToRdpFields(
     newProps,
     {},
     undefined,
-    value[ObjectLoadContextRef],
+    value[UncastableProperties],
   );
 }
 
@@ -178,17 +178,18 @@ export function mergeSelectFields(
     }
   }
 
-  const { propertySources: sourceProperties, ...sourceContext } =
-    sourceValue[ObjectLoadContextRef];
-  const existingContext = existingValue[ObjectLoadContextRef];
-  const propertySources = new Map(existingContext.propertySources);
+  const uncastableProperties = new Set(existingValue[UncastableProperties]);
   for (const key of Object.keys(sourceUnderlying)) {
     // Take the source's derived fields, plus the base props it selected.
     if (sourceRdpFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
     } else if (key in objectDef.properties && selectFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
-      propertySources.set(key, sourceProperties?.get(key) ?? sourceContext);
+      if (sourceValue[UncastableProperties].includes(key)) {
+        uncastableProperties.add(key);
+      } else {
+        uncastableProperties.delete(key);
+      }
     }
   }
 
@@ -198,7 +199,7 @@ export function mergeSelectFields(
     newProps,
     {},
     undefined,
-    { ...existingContext, propertySources },
+    [...uncastableProperties],
   );
 }
 
@@ -267,6 +268,6 @@ export function mergeObjectFields(
     newProps,
     {},
     undefined,
-    sourceValue[ObjectLoadContextRef],
+    sourceValue[UncastableProperties],
   );
 }

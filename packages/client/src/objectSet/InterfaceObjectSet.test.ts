@@ -137,7 +137,13 @@ describe("ObjectSet", () => {
       },
     };
 
-    it("casts struct implementations only when their backing properties were fully loaded", async () => {
+    const uncastableError = (...properties: string[]) =>
+      "Cannot cast interface view of 'ComplexImplementationInterface' to " +
+      `'ComplexImplementationObject': properties '${properties.join("', '")}' ` +
+      "were not fully loaded through the interface, so the underlying object " +
+      "type cannot be faithfully represented. Load the object type directly.";
+
+    it("rejects casts when selected struct implementations were loaded without all base properties", async () => {
       const structImplPropertiesV2 = {
         ...complexImplPropertiesV2,
         iReduced: {
@@ -252,48 +258,21 @@ describe("ObjectSet", () => {
         const selectedObject = (
           await client(objectType).fetchPage({ $select: ["nestedStruct"] })
         ).data[0];
-        expect(() =>
+        expect(
           // @ts-expect-error
           selectedObject.$as(ComplexImplementationInterface).$as(objectType),
-        ).toThrowError(/backing property 'multiStruct' was not fully loaded/u);
-
-        const selectedBackingProperties = (
-          await client(objectType).fetchPage({
-            $select: ["nestedStruct", "multiStruct", "multiStructArray"],
-          })
-        ).data[0];
-        expect(
-          selectedBackingProperties
-            .$as(ComplexImplementationInterface)
-            // @ts-expect-error
-            .$as(objectType),
-        ).toMatchObject({ nestedStruct: { label: "nested-label", count: 7 } });
-
-        const incompleteStructError =
-          "Cannot cast interface view of 'ComplexImplementationInterface' to 'ComplexImplementationObject': backing property 'nestedStruct' was not fully loaded. Fetch with $includeAllBaseObjectProperties: true or load the object type directly.";
-        const modifiedObject = (
-          await client(objectType).fetchPage({
-            $EXPERIMENTAL_defaultLoadLevel: "applyMainValue",
-          })
-        ).data[0];
-        expect(() =>
-          // @ts-expect-error
-          modifiedObject.$as(ComplexImplementationInterface).$as(objectType),
-        ).toThrowError(incompleteStructError);
-
-        const reducedProperties = (
-          await client(ComplexImplementationInterface).fetchPage({
-            $includeAllBaseObjectProperties: true,
-            $EXPERIMENTAL_defaultLoadLevel: "applyReducers",
-          })
-        ).data[0];
-        expect(() =>
-          // @ts-expect-error
-          reducedProperties.$as(objectType),
-        ).toThrowError(incompleteStructError);
+        ).toBe(selectedObject);
 
         const selection: ComplexImplementationInterface.PropertyKeys[] = [
           "iStructField",
+        ];
+        responseData = [
+          {
+            __apiName: objectType.apiName,
+            __primaryKey: "k1",
+            id: "k1",
+            nestedStruct: { label: "nested-label", count: 7 },
+          },
         ];
         const selectedInterface = (
           await client(ComplexImplementationInterface).fetchPage({
@@ -301,11 +280,32 @@ describe("ObjectSet", () => {
             $includeAllBaseObjectProperties: true,
           })
         ).data[0];
+        expect(
+          // @ts-expect-error
+          selectedInterface.$as(objectType).nestedStruct,
+        ).toEqual({ label: "nested-label", count: 7 });
+
+        responseData = [
+          { ...responseData[0], nestedStruct: { label: "nested-label" } },
+        ];
+        const selectedWithoutAllBaseProperties = (
+          await client(ComplexImplementationInterface).fetchPage({
+            $select: ["iStructField"],
+          })
+        ).data[0];
+        expect(selectedWithoutAllBaseProperties.iStructField).toBe(
+          "nested-label",
+        );
         expect(() =>
           // @ts-expect-error
-          selectedInterface.$as(objectType),
-        ).toThrowError(incompleteStructError);
+          selectedWithoutAllBaseProperties.$as(objectType),
+        ).toThrowError(uncastableError("nestedStruct"));
 
+        const incompleteStructError = uncastableError(
+          "nestedStruct",
+          "multiStruct",
+          "multiStructArray",
+        );
         responseData = [
           { ...wireObject, nestedStruct: { label: "nested-label" } },
         ];
@@ -352,20 +352,20 @@ describe("ObjectSet", () => {
       })();
     });
 
-    it("loads reduced interface values but rejects object casts regardless of selection or all base properties", async () => {
+    it("rejects selected reduced implementations even with all base properties", async () => {
+      const reducedWireObject: OntologyObjectV2 = {
+        __primaryKey: "k1",
+        __apiName: "ComplexImplementationObject",
+        id: "k1",
+        arrayValue: 6,
+      };
+      let responseData = [reducedWireObject];
       await apiServer.boundary(async () => {
         apiServer.use(
           MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
             baseUrl,
             () => ({
-              data: [
-                {
-                  __primaryKey: "k1",
-                  __apiName: "ComplexImplementationObject",
-                  id: "k1",
-                  arrayValue: 6,
-                },
-              ],
+              data: structuredClone(responseData),
               ...wireMappings,
               totalCount: "1",
               propertySecurities: [],
@@ -373,8 +373,7 @@ describe("ObjectSet", () => {
           ),
         );
 
-        const reducedError =
-          "Cannot cast interface view of 'ComplexImplementationInterface' to 'ComplexImplementationObject': property 'iReduced' has a reduced implementation, so the underlying object type cannot be faithfully represented. Load the object type directly.";
+        const reducedError = uncastableError("arrayValue");
         const objectType = ComplexImplementationObject;
         const withoutAllBaseProperties = (
           await client(ComplexImplementationInterface).fetchPage()
@@ -383,13 +382,14 @@ describe("ObjectSet", () => {
         expect(() =>
           // @ts-expect-error
           withoutAllBaseProperties.$as(objectType),
-        ).toThrowError(reducedError);
-        expect(() =>
-          withoutAllBaseProperties.$as<ComplexImplementationObject>(
-            // @ts-expect-error
-            objectType.apiName,
+        ).toThrowError(
+          uncastableError(
+            "nestedStruct",
+            "multiStruct",
+            "multiStructArray",
+            "arrayValue",
           ),
-        ).toThrowError(reducedError);
+        );
 
         const selected = (
           await client(ComplexImplementationInterface).fetchPage({
@@ -399,7 +399,31 @@ describe("ObjectSet", () => {
         expect(selected.iReduced).toEqual(6);
         // @ts-expect-error
         expect(() => selected.$as(objectType)).toThrowError(reducedError);
+        expect(() =>
+          // @ts-expect-error
+          selected.$as<ComplexImplementationObject>(objectType.apiName),
+        ).toThrowError(reducedError);
 
+        responseData = [
+          {
+            __primaryKey: "k1",
+            __apiName: "ComplexImplementationObject",
+            id: "k1",
+            localValue: "hello",
+          },
+        ];
+        const localOnly = (
+          await client(ComplexImplementationInterface).fetchPage({
+            $select: ["iLocal"],
+          })
+        ).data[0];
+        // @ts-expect-error
+        expect(localOnly.$as(objectType)).toMatchObject({
+          $primaryKey: "k1",
+          localValue: "hello",
+        });
+
+        responseData = [reducedWireObject];
         const {
           data: [ifaceObj],
         } = await client(ComplexImplementationInterface).fetchPage({
@@ -412,6 +436,102 @@ describe("ObjectSet", () => {
           // @ts-expect-error
           ifaceObj.$as<ComplexImplementationObject>(objectType.apiName),
         ).toThrowError(reducedError);
+      })();
+    });
+
+    it("matches short $select names against namespaced interface properties", async () => {
+      const interfaceApiName = "com.acme.ComplexImplementationInterface";
+      const withNamespace = <T>(record: Record<string, T>) =>
+        Object.fromEntries(
+          Object.entries(record).map(([key, value]) => [
+            `com.acme.${key}`,
+            value,
+          ]),
+        );
+      const namespacedPropertiesV2 = withNamespace(complexImplPropertiesV2);
+      const NamespacedInterface = {
+        ...ComplexImplementationInterface,
+        apiName: interfaceApiName,
+      } as unknown as ComplexImplementationInterface;
+      await apiServer.boundary(async () => {
+        apiServer.use(
+          MockOntologiesV2.ObjectTypesV2.getFullMetadata(baseUrl, () => ({
+            ...stubData.complexImplementationObjectTypeWithLinkTypes,
+            implementsInterfaces: [interfaceApiName],
+            implementsInterfaces2: {
+              [interfaceApiName]: {
+                properties: {},
+                propertiesV2: namespacedPropertiesV2,
+              },
+            },
+          })),
+          MockOntologiesV2.OntologyInterfaces.get(baseUrl, () => ({
+            ...stubData.ComplexImplementationInterface,
+            apiName: interfaceApiName,
+            propertiesV2: withNamespace(
+              stubData.ComplexImplementationInterface.propertiesV2,
+            ),
+            allPropertiesV2: withNamespace(
+              stubData.ComplexImplementationInterface.allPropertiesV2,
+            ),
+          })),
+          MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+            baseUrl,
+            () => ({
+              data: [
+                {
+                  __primaryKey: "k1",
+                  __apiName: "ComplexImplementationObject",
+                  id: "k1",
+                  localValue: "hello",
+                  nestedStruct: { label: "nested-label" },
+                },
+              ],
+              interfaceToObjectTypeMappings: {
+                [interfaceApiName]: {
+                  ComplexImplementationObject: withNamespace(
+                    wireMappings.interfaceToObjectTypeMappings
+                      .ComplexImplementationInterface
+                      .ComplexImplementationObject,
+                  ),
+                },
+              },
+              interfaceToObjectTypeMappingsV2: {
+                [interfaceApiName]: {
+                  ComplexImplementationObject: namespacedPropertiesV2,
+                },
+              },
+              totalCount: "1",
+              propertySecurities: [],
+            }),
+          ),
+        );
+
+        const objectType = ComplexImplementationObject;
+        const structSelected = (
+          await client(NamespacedInterface).fetchPage({
+            $select: ["iStructField"],
+          })
+        ).data[0];
+        expect(structSelected.iStructField).toEqual("nested-label");
+        expect(() =>
+          // @ts-expect-error
+          structSelected.$as(objectType),
+        ).toThrowError(
+          "Cannot cast interface view of 'com.acme.ComplexImplementationInterface' to " +
+            "'ComplexImplementationObject': properties 'nestedStruct' were not fully " +
+            "loaded through the interface, so the underlying object type cannot be " +
+            "faithfully represented. Load the object type directly.",
+        );
+
+        const localSelected = (
+          await client(NamespacedInterface).fetchPage({ $select: ["iLocal"] })
+        ).data[0];
+        // @ts-expect-error
+        expect(localSelected.$as(objectType)).toMatchObject({
+          $primaryKey: "k1",
+          localValue: "hello",
+        });
       })();
     });
 
