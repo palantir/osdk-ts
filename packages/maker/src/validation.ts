@@ -48,13 +48,15 @@ export function throwIfAnyValidationIssues(
 export interface MakerValidationIssueCollector {
   /** Records an issue when the condition is falsy. Does not narrow its type. */
   addIssue(condition: unknown, issue: string | MakerValidationIssue): void;
+  /** Records an issue and throws it with all previously collected issues. */
+  addTerminalIssue(issue: string | MakerValidationIssue): never;
   throwIfAnyIssues(): void;
 }
 
 /** Records failed checks for a single validation pass. */
 export function createValidationIssueCollector(): MakerValidationIssueCollector {
   const issues: MakerValidationIssue[] = [];
-  return {
+  const collector: MakerValidationIssueCollector = {
     addIssue(condition, issue) {
       if (!condition) {
         issues.push(
@@ -64,10 +66,15 @@ export function createValidationIssueCollector(): MakerValidationIssueCollector 
         );
       }
     },
+    addTerminalIssue(issue) {
+      collector.addIssue(false, issue);
+      throw new MakerValidationError(issues);
+    },
     throwIfAnyIssues() {
       throwIfAnyValidationIssues(issues);
     },
   };
+  return collector;
 }
 
 export function formatValidationPath(

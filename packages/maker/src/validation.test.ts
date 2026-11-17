@@ -60,6 +60,42 @@ it("collects failed checks with default or structured issues", () => {
   ).not.toThrow();
 });
 
+it("throws a terminal issue even when no earlier issues were collected", () => {
+  expect(() =>
+    createValidationIssueCollector().addTerminalIssue("Missing prerequisite."),
+  ).toThrowError(
+    expect.objectContaining({
+      name: "MakerValidationError",
+      issues: [
+        {
+          code: "validation_error",
+          message: "Missing prerequisite.",
+          path: [],
+        },
+      ],
+    }),
+  );
+});
+
+it("includes earlier issues before a terminal issue when methods are destructured", () => {
+  const { addIssue, addTerminalIssue } = createValidationIssueCollector();
+  const terminalIssue = {
+    code: "missing_source",
+    message: "Missing source.",
+    path: [],
+  };
+  addIssue(false, "Invalid parameter.");
+  expect(() => addTerminalIssue(terminalIssue)).toThrowError(
+    expect.objectContaining({
+      name: "MakerValidationError",
+      issues: [
+        { code: "validation_error", message: "Invalid parameter.", path: [] },
+        terminalIssue,
+      ],
+    }),
+  );
+});
+
 it("formats model-relative paths with escaped keys and numeric indices", () => {
   expect(formatValidationPath([])).toBe("$");
   expect(formatValidationPath(["items", 2, 'a."b'])).toBe(

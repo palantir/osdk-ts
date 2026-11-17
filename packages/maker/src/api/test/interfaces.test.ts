@@ -19,8 +19,13 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
 import { defineObject } from "../defineObject.js";
-import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
+import {
+  defineOntology,
+  dumpOntologyFullMetadata,
+  ontologyDefinition,
+} from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import { expectValidationIssues } from "./testUtils.js";
 
 describe("Interfaces", () => {
   beforeEach(async () => {
@@ -32,8 +37,26 @@ describe("Interfaces", () => {
     expect(() => {
       defineInterface({ apiName: "Foo" });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Interface com.palantir.Foo already exists]`,
+      `[MakerValidationError: [validation_error] Interface com.palantir.Foo already exists]`,
     );
+  });
+
+  it("collects local and metadata issues without replacing an existing interface", () => {
+    const existing = defineInterface({ apiName: "Foo" });
+    expectValidationIssues(
+      () =>
+        defineInterface({
+          apiName: "Foo",
+          description: "a".repeat(10_001),
+          status: { type: "deprecated", message: "", deadline: "" },
+        }),
+      [
+        "already exists",
+        "Deprecated status must include",
+        "description must be at most",
+      ],
+    );
+    expect(ontologyDefinition.INTERFACE_TYPE[existing.apiName]).toBe(existing);
   });
 
   it("defaults displayName to apiName", () => {
@@ -462,7 +485,7 @@ describe("Interfaces", () => {
           parameters: [],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`,
+        `[MakerValidationError: [validation_error] Action type constraint with apiName com.palantir.myConstraint already exists on interface com.palantir.MyInterface]`,
       );
     });
 
@@ -519,7 +542,7 @@ describe("Interfaces", () => {
           ],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`,
+        `[MakerValidationError: [validation_error] Duplicate parameter constraint apiName "paramA" in action type constraint com.palantir.myConstraint]`,
       );
     });
 

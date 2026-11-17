@@ -16,6 +16,10 @@
 
 import invariant from "tiny-invariant";
 
+import {
+  createValidationIssueCollector,
+  type MakerValidationIssueCollector,
+} from "../validation.js";
 import type { Folder } from "./common/Folder.js";
 import type { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
@@ -34,10 +38,12 @@ export type FolderDefinition = Omit<Folder, "resources"> & {
 /** Declares an installation folder. Resources may be defined before or after it. */
 export function defineFolder(definition: FolderDefinition): FolderDefinition {
   const { id } = definition;
-  const folder = normalizeFolderPath(id, definition.folder);
-  invariant(!folderDefinitions.has(id), `Folder id "${id}" is already defined`);
+  const collector = createValidationIssueCollector();
+  const { addIssue } = collector;
+  const folder = normalizeFolderPath(id, definition.folder, collector);
+  addIssue(!folderDefinitions.has(id), `Folder id "${id}" is already defined`);
   for (const existing of folderDefinitions.values()) {
-    invariant(
+    addIssue(
       existing.folder !== folder,
       `Folder location "${folder}" has conflicting ids "${existing.id}" and "${id}"`,
     );
@@ -45,12 +51,18 @@ export function defineFolder(definition: FolderDefinition): FolderDefinition {
 
   const resources = definition.resources.map((resource) => {
     const apiName = typeof resource === "string" ? resource : resource.apiName;
-    invariant(
+    addIssue(
       typeof apiName === "string" && apiName.trim().length > 0,
       `Folder "${id}": resource API names must be non-empty strings`,
     );
     return resource;
   });
+  collector.throwIfAnyIssues();
+
+  // Just to satisfy typescript
+  // throwIfAnyIssues will throw before we get to this point
+  invariant(folder);
+
   const result: FolderDefinition = { id, folder, resources };
   folderDefinitions.set(id, result);
   return result;
@@ -60,41 +72,47 @@ export function defineFolder(definition: FolderDefinition): FolderDefinition {
 const FOLDER_NAME_LIMIT = 700;
 const encoder = new TextEncoder();
 
-function normalizeFolderPath(id: string, folder: string): string {
-  invariant(
+function normalizeFolderPath(
+  id: string,
+  folder: string,
+  collector: MakerValidationIssueCollector,
+): string | undefined {
+  const { addIssue } = collector;
+  addIssue(
     typeof id === "string" && id.trim().length > 0,
     "Folder id must be a non-empty string",
   );
   const context = `Folder "${id}"`;
-  invariant(
+  addIssue(
     !/[\uD800-\uDFFF]/u.test(id),
     `${context}: folder id must contain valid Unicode`,
   );
-  invariant(
+  addIssue(
     id !== "/",
     `${context}: the installation root cannot be assigned a folder id`,
   );
-  invariant(
+  addIssue(
     typeof folder === "string",
     `${context}: folder path must be a string`,
   );
+  if (typeof folder !== "string") return undefined;
   const segments = folder.split("/").filter((segment) => segment.length > 0);
-  invariant(
+  addIssue(
     segments.length > 0,
     `${context}: the installation root cannot be assigned a folder id`,
   );
   for (const segment of segments) {
-    invariant(
+    addIssue(
       segment !== "." && segment !== "..",
       `${context}: folder must not contain "." or ".." path segments`,
     );
     // In Unicode mode, this range matches unpaired surrogates, not valid pairs.
-    invariant(
+    addIssue(
       !/[\uD800-\uDFFF]/u.test(segment),
       `${context}: folder names must contain valid Unicode`,
     );
     const length = encoder.encode(segment).length;
-    invariant(
+    addIssue(
       length <= FOLDER_NAME_LIMIT,
       `${context}: folder name must be at most ${FOLDER_NAME_LIMIT} UTF-8 bytes (got ${length})`,
     );
