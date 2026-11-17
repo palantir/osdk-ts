@@ -63,9 +63,7 @@ function assertInterfaceToOtCastIsPermitted(
     objDef.interfaceImplementations?.[interfaceDef.apiName];
   if (implementations == null) return;
 
-  let fullyLoadedProperties: ReadonlySet<string> | undefined;
   for (const [iptApiName, impl] of Object.entries(implementations)) {
-    if (impl.type === "localProperty") continue;
     if (impl.type === "reduced") {
       throw new Error(
         `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
@@ -74,6 +72,11 @@ function assertInterfaceToOtCastIsPermitted(
           `be faithfully represented. Load the object type directly.`,
       );
     }
+  }
+
+  let fullyLoadedProperties: ReadonlySet<string> | undefined;
+  for (const impl of Object.values(implementations)) {
+    if (impl.type === "localProperty" || impl.type === "reduced") continue;
     const backingProperties =
       impl.type === "structField"
         ? [impl.propertyApiName]
