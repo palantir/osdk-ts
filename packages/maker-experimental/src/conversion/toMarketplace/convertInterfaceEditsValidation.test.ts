@@ -32,10 +32,11 @@ import {
   initializeOntologyState,
 } from "@osdk/maker";
 import invariant from "tiny-invariant";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { defineOntologyV2 } from "../../api/defineOntologyV2.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
+import * as wireConversion from "./convertOntologyDefinitionToWireBlockData.js";
 
 type InterfaceActionTypeEditsValidationDefinition = NonNullable<
   Parameters<typeof defineInterfaceActionTypeConstraint>[0]["editsValidation"]
@@ -485,29 +486,53 @@ describe("interface action type constraint edit validations", () => {
     },
   );
 
-  it.each(["concreteObject", "interfaceObject"] as const)(
-    "rejects a missing %s reference",
-    async (type) => {
-      const operation = { type: "create" as const, create: {} };
-      const subject: EditsValidationSubject =
-        type === "concreteObject"
-          ? {
-              type,
-              concreteObject: { objectType: "com.missing.Type", operation },
-            }
-          : {
-              type,
-              interfaceObject: { interfaceType: "com.missing.Type", operation },
-            };
+  it("reports missing references across constraints before converting any block data", async () => {
+    const convert = vi.spyOn(
+      wireConversion,
+      "convertOntologyDefinitionToWireBlockData",
+    );
+    try {
       await expect(
-        defineOntologyV2(NS, () =>
-          defineConstraint(defineInterface({ apiName: "Task" }), {
-            condition: entry(subject),
-          }),
-        ),
-      ).rejects.toThrow('"com.missing.Type" referenced by edit validation');
-    },
-  );
+        defineOntologyV2(NS, () => {
+          const operation = { type: "create" as const, create: {} };
+          defineConstraint(defineInterface({ apiName: "First" }), {
+            condition: entry({
+              type: "concreteObject",
+              concreteObject: { objectType: "com.missing.Object", operation },
+            }),
+          });
+          defineConstraint(defineInterface({ apiName: "Second" }), {
+            condition: entry({
+              type: "interfaceObject",
+              interfaceObject: {
+                interfaceType: "com.missing.Interface",
+                operation,
+              },
+            }),
+          });
+        }),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          name: "MakerValidationError",
+          issues: [
+            expect.objectContaining({
+              message: expect.stringContaining(
+                'object type "com.missing.Object"',
+              ),
+            }),
+            expect.objectContaining({
+              message: expect.stringContaining(
+                'interface "com.missing.Interface"',
+              ),
+            }),
+          ],
+        }),
+      );
+      expect(convert).not.toHaveBeenCalled();
+    } finally {
+      convert.mockRestore();
+    }
+  });
 
   it("leaves imported policies target-owned without importing their referenced entities or mutating the input", async () => {
     initializeOntologyState(NS);
@@ -537,15 +562,78 @@ describe("interface action type constraint edit validations", () => {
     ).toBe(false);
   });
 
-  it("rejects unknown variants instead of copying their references", async () => {
+  it("does not add valid imported policies to input shapes", async () => {
+    initializeOntologyState(NS);
+    const imported = defineInterface({ apiName: "Imported" });
+    defineConstraint(imported, {
+      condition: entry({
+        type: "interfaceObject",
+        interfaceObject: {
+          interfaceType: imported,
+          operation: { type: "create", create: {} },
+        },
+      }),
+    });
+    const result = await defineOntologyV2(NS, () =>
+      importOntologyEntity(imported),
+    );
+    const converted = Object.values(
+      result.ontologyIr.importedOntology.interfaceTypes,
+    )[0].interfaceType;
+    expect(converted.actionTypeConstraints[0].editsValidation).toEqual({
+      condition: {
+        type: "entry",
+        entry: {
+          rid: expect.any(String),
+          subject: {
+            type: "interfaceObject",
+            interfaceObject: {
+              rid: converted.rid,
+              operation: { type: "create", create: {} },
+            },
+          },
+        },
+      },
+    });
+    const shapes = [...result.shapes.inputShapes.values()].filter(
+      (shape) => shape.type === "interfaceActionTypeConstraint",
+    );
+    expect(shapes).toHaveLength(1);
+    expect(shapes[0].interfaceActionTypeConstraint).not.toHaveProperty(
+      "editsValidation",
+    );
+  });
+
+  it("rejects unknown IR variants for outputs and skips them for imports", async () => {
     const editsValidation = {
       condition: { type: "futureCondition" },
-    } as unknown as InterfaceActionTypeEditsValidationDefinition;
+    } as unknown as OntologyIrInterfaceActionTypeEditsValidation;
     await expect(
-      defineOntologyV2(NS, () =>
-        defineConstraint(defineInterface({ apiName: "Task" }), editsValidation),
-      ),
-    ).rejects.toThrow("Unsupported edit validation variant");
+      defineOntologyV2(NS, () => {
+        const iface = defineInterface({ apiName: "Task" });
+        defineConstraint(iface);
+        iface.actionTypeConstraints[0].editsValidation = editsValidation;
+      }),
+    ).rejects.toThrowError(
+      expect.objectContaining({
+        name: "MakerValidationError",
+        issues: [
+          expect.objectContaining({
+            code: "unsupported_edit_validation_variant",
+          }),
+        ],
+      }),
+    );
+    const imported = getOntologyDefinition().INTERFACE_TYPE[`${NS}Task`];
+    const result = await defineOntologyV2(NS, () =>
+      importOntologyEntity(imported),
+    );
+    const converted = Object.values(
+      result.ontologyIr.importedOntology.interfaceTypes,
+    )[0].interfaceType;
+    expect(converted.actionTypeConstraints[0]).not.toHaveProperty(
+      "editsValidation",
+    );
   });
 });
 

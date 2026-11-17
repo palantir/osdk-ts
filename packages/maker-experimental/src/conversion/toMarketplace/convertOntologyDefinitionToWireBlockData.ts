@@ -111,12 +111,10 @@ export function convertOntologyDefinitionToWireBlockData(
     allOntologies = [ontology],
     functionsIr,
     packageForEdge = false,
-    includeEditsValidation = true,
   }: {
     allOntologies?: OntologyDefinition[];
     functionsIr?: FunctionsIr;
     packageForEdge?: boolean;
-    includeEditsValidation?: boolean;
   } = {},
 ): OntologyBlockDataV2 {
   const ontologiesToScan = allOntologies;
@@ -159,7 +157,6 @@ export function convertOntologyDefinitionToWireBlockData(
             interfaceType,
             ridGenerator,
             ontologiesToScan,
-            includeEditsValidation,
           ),
           ...(schemaMigrations !== undefined ? { schemaMigrations } : {}),
         },

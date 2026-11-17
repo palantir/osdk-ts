@@ -23,6 +23,7 @@ import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyIrV2 } from "../../api/OntologyIrV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import { collectInterfaceDefinitions } from "./collectInterfaceDefinitions.js";
+import { validateInterfaceEditsValidations } from "./convertInterfaceEditsValidation.js";
 import { flattenInterface } from "./convertObject.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
 import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
@@ -37,6 +38,9 @@ export function convertOntologyDefinition(
   const importedTypes = getImportedTypes();
 
   const allOntologies = [ontology, importedTypes];
+  // convertInterfaceEditsValidation skips unresolved validations for imports.
+  // Check local validations first so they cannot be silently dropped.
+  validateInterfaceEditsValidations(ontology, allOntologies);
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,
@@ -46,7 +50,6 @@ export function convertOntologyDefinition(
   const importedOntology = convertOntologyDefinitionToWireBlockData(
     importedTypes,
     ridGenerator,
-    { includeEditsValidation: false },
   );
 
   validateInterfaceActionImplementations(ontology, importedTypes, [
@@ -84,7 +87,6 @@ export function convertOntologyDefinition(
   const transitiveImportedOntology = convertOntologyDefinitionToWireBlockData(
     transitiveOntology,
     throwawayRidGenerator,
-    { includeEditsValidation: false },
   );
 
   const valueTypes = convertValueTypeToWireBlockData(ontology, ridGenerator);

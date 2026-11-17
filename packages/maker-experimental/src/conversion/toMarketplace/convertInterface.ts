@@ -32,7 +32,6 @@ export function convertInterface(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
   ontologies: OntologyDefinition[],
-  includeEditsValidation: boolean,
 ): MarketplaceInterfaceType {
   const {
     __type,
@@ -113,49 +112,50 @@ export function convertInterface(
       ({
         editsValidation,
         ...constraint
-      }: OntologyIrInterfaceActionTypeConstraint) => ({
-        ...constraint,
-        ...(includeEditsValidation && editsValidation !== undefined
-          ? {
-              editsValidation:
-                editsValidation == null
-                  ? null
-                  : convertInterfaceEditsValidation(
-                      editsValidation,
-                      interfaceType,
-                      constraint,
-                      ridGenerator,
-                      ontologies,
-                    ),
-            }
-          : {}),
-        rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
-          constraint.metadata.apiName,
-          interfaceType.apiName,
-        ),
-        parameters: Object.fromEntries(
-          Object.entries(constraint.parameters ?? {}).map(
-            ([paramApiName, paramConstraint]) => {
-              const paramDisplayApiName =
-                paramConstraint.displayMetadata.apiName!;
-              return [
-                ridGenerator.generateRidForInterfaceParameterConstraint(
-                  constraint.metadata.apiName,
-                  interfaceType.apiName,
-                  paramDisplayApiName,
-                ),
-                {
-                  ...paramConstraint,
-                  type: convertParameterConstraintTypeReferencesToBlockData(
-                    paramConstraint.type,
-                    ridGenerator,
-                  ),
-                },
-              ];
-            },
+      }: OntologyIrInterfaceActionTypeConstraint) => {
+        const convertedEditsValidation =
+          editsValidation == null
+            ? editsValidation
+            : convertInterfaceEditsValidation(
+                editsValidation,
+                interfaceType,
+                constraint,
+                ridGenerator,
+                ontologies,
+              );
+        return {
+          ...constraint,
+          ...(convertedEditsValidation !== undefined
+            ? { editsValidation: convertedEditsValidation }
+            : {}),
+          rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
+            constraint.metadata.apiName,
+            interfaceType.apiName,
           ),
-        ),
-      }),
+          parameters: Object.fromEntries(
+            Object.entries(constraint.parameters ?? {}).map(
+              ([paramApiName, paramConstraint]) => {
+                const paramDisplayApiName =
+                  paramConstraint.displayMetadata.apiName!;
+                return [
+                  ridGenerator.generateRidForInterfaceParameterConstraint(
+                    constraint.metadata.apiName,
+                    interfaceType.apiName,
+                    paramDisplayApiName,
+                  ),
+                  {
+                    ...paramConstraint,
+                    type: convertParameterConstraintTypeReferencesToBlockData(
+                      paramConstraint.type,
+                      ridGenerator,
+                    ),
+                  },
+                ];
+              },
+            ),
+          ),
+        };
+      },
     ),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],

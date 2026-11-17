@@ -37,11 +37,38 @@ import type {
   OntologyIrInterfaceLinkedObjectRequirement,
   OntologyIrInterfaceLinkRequirement,
 } from "@osdk/client.unstable";
-import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
-import invariant from "tiny-invariant";
+import type {
+  InterfaceType,
+  MakerValidationIssueCollector,
+  OntologyDefinition,
+} from "@osdk/maker";
+import {
+  createValidationIssueCollector,
+  MakerValidationError,
+} from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { collectInterfaceDefinitions } from "./collectInterfaceDefinitions.js";
+
+export function validateInterfaceEditsValidations(
+  ontology: OntologyDefinition,
+  ontologies: OntologyDefinition[],
+): void {
+  const collector = createValidationIssueCollector();
+  for (const interfaceType of Object.values(ontology.INTERFACE_TYPE)) {
+    for (const constraint of interfaceType.actionTypeConstraints ?? []) {
+      if (constraint.editsValidation == null) continue;
+      resolveReferences(
+        constraint.editsValidation,
+        interfaceType,
+        constraint,
+        ontologies,
+        collector,
+      );
+    }
+  }
+  collector.throwIfAnyIssues();
+}
 
 export function convertInterfaceEditsValidation(
   validation: OntologyIrInterfaceActionTypeEditsValidation,
@@ -49,7 +76,42 @@ export function convertInterfaceEditsValidation(
   constraint: OntologyIrInterfaceActionTypeConstraint,
   ridGenerator: OntologyRidGenerator,
   ontologies: OntologyDefinition[],
-): InterfaceActionTypeEditsValidation {
+): InterfaceActionTypeEditsValidation | undefined {
+  // convertOntologyDefinition rejects invalid local validations before conversion.
+  // Imports may lack these references; skip their validation without allocating RIDs.
+  const references = resolveReferences(
+    validation,
+    interfaceType,
+    constraint,
+    ontologies,
+    createValidationIssueCollector(),
+  );
+  if (references === undefined) return undefined;
+  return mapReferences(validation, {
+    convertObject: (apiName) => ridGenerator.generateRidForObjectType(apiName),
+    convertInterface: (apiName) =>
+      ridGenerator.generateRidForInterface(apiName),
+    convertParameter: (apiName) =>
+      ridGenerator.generateRidForInterfaceParameterConstraint(
+        constraint.metadata.apiName,
+        interfaceType.apiName,
+        references.parameters.get(apiName)!,
+      ),
+    convertLink: (apiName) =>
+      ridGenerator.generateRidForInterfaceLinkType(
+        apiName,
+        references.links.get(apiName)!,
+      ),
+  });
+}
+
+function resolveReferences(
+  validation: OntologyIrInterfaceActionTypeEditsValidation,
+  interfaceType: InterfaceType,
+  constraint: OntologyIrInterfaceActionTypeConstraint,
+  ontologies: OntologyDefinition[],
+  collector: MakerValidationIssueCollector,
+): { parameters: Map<string, string>; links: Map<string, string> } | undefined {
   const interfaces = new Map(
     ontologies.flatMap((ontology) => Object.entries(ontology.INTERFACE_TYPE)),
   );
@@ -60,27 +122,37 @@ export function convertInterfaceEditsValidation(
   const objectApiNames = new Set(
     ontologies.flatMap((ontology) => Object.keys(ontology.OBJECT_TYPE)),
   );
-  const parameters = new Map(Object.entries(constraint.parameters));
+  const parameters = new Map<string, string>();
+  const links = new Map<string, string>();
   const location = `edit validation on action type constraint "${constraint.metadata.apiName}" of interface "${interfaceType.apiName}"`;
+  let valid = true;
 
-  function convertParameter(apiName: string): string {
-    const parameter = parameters.get(apiName);
-    invariant(
+  function check(condition: boolean, message: string): boolean {
+    collector.addIssue(condition, message);
+    valid = valid && condition;
+    return condition;
+  }
+
+  function resolveParameter(apiName: string): string {
+    const parameter = Object.hasOwn(constraint.parameters, apiName)
+      ? constraint.parameters[apiName]
+      : undefined;
+    check(
       parameter !== undefined,
       `Parameter constraint "${apiName}" referenced by ${location} must belong to the same action type constraint`,
     );
-    invariant(
+    if (parameter === undefined) return apiName;
+    check(
       parameter.displayMetadata.apiName != null,
       `Parameter constraint "${apiName}" referenced by ${location} has no API name`,
     );
-    return ridGenerator.generateRidForInterfaceParameterConstraint(
-      constraint.metadata.apiName,
-      interfaceType.apiName,
-      parameter.displayMetadata.apiName,
-    );
+    if (parameter.displayMetadata.apiName != null) {
+      parameters.set(apiName, parameter.displayMetadata.apiName);
+    }
+    return apiName;
   }
 
-  function convertLink(apiName: string): string {
+  function resolveLink(apiName: string): string {
     const declarations = new Set<string>();
     const seen = new Set<string>();
     const queue = [interfaceType];
@@ -94,36 +166,83 @@ export function convertInterfaceEditsValidation(
       }
       queue.push(...current.extendsInterfaces);
     }
-    invariant(
-      declarations.size > 0,
-      `Interface link "${apiName}" referenced by ${location} must belong to that interface or a parent interface`,
-    );
-    invariant(
-      declarations.size === 1,
-      `Interface link "${apiName}" referenced by ${location} is declared on multiple interfaces`,
-    );
+    if (
+      !check(
+        declarations.size > 0,
+        `Interface link "${apiName}" referenced by ${location} must belong to that interface or a parent interface`,
+      )
+    )
+      return apiName;
+    if (
+      !check(
+        declarations.size === 1,
+        `Interface link "${apiName}" referenced by ${location} is declared on multiple interfaces`,
+      )
+    )
+      return apiName;
     const [declaringInterface] = declarations;
-    invariant(
-      interfaces.has(declaringInterface),
+    const link = interfaces
+      .get(declaringInterface)
+      ?.links.find((candidate) => candidate.metadata.apiName === apiName);
+    check(
+      link !== undefined,
       `Define or import interface "${declaringInterface}" to package link "${apiName}" referenced by ${location}`,
     );
-    const link = interfaces
-      .get(declaringInterface)!
-      .links.find((candidate) => candidate.metadata.apiName === apiName)!;
-    invariant(
+    if (link === undefined) return apiName;
+    check(
       link.linkedEntityTypeId.type === "interfaceType",
       `Object link references are not supported when packaging ${location}`,
     );
-    invariant(
+    if (link.linkedEntityTypeId.type !== "interfaceType") return apiName;
+    check(
       interfaces.has(link.linkedEntityTypeId.interfaceType),
       `Define or import interface "${link.linkedEntityTypeId.interfaceType}" targeted by link "${apiName}" referenced by ${location}`,
     );
-    return ridGenerator.generateRidForInterfaceLinkType(
-      apiName,
-      declaringInterface,
-    );
+    links.set(apiName, declaringInterface);
+    return apiName;
   }
 
+  try {
+    mapReferences(validation, {
+      convertObject(apiName) {
+        check(
+          objectApiNames.has(apiName),
+          `Define or import object type "${apiName}" referenced by ${location}`,
+        );
+        return apiName;
+      },
+      convertInterface(apiName) {
+        check(
+          interfaces.has(apiName),
+          `Define or import interface "${apiName}" referenced by ${location}`,
+        );
+        return apiName;
+      },
+      convertParameter: resolveParameter,
+      convertLink: resolveLink,
+    });
+  } catch (error) {
+    if (!(error instanceof MakerValidationError)) throw error;
+    for (const issue of error.issues) collector.addIssue(false, issue);
+    valid = false;
+  }
+  return valid ? { parameters, links } : undefined;
+}
+
+function mapReferences(
+  validation: OntologyIrInterfaceActionTypeEditsValidation,
+  {
+    convertObject,
+    convertInterface,
+    convertParameter,
+    convertLink,
+  }: {
+    convertObject: (apiName: string) => string;
+    convertInterface: (apiName: string) => string;
+    convertParameter: (apiName: string) => string;
+    convertLink: (apiName: string) => string;
+  },
+): InterfaceActionTypeEditsValidation {
   function convertCondition(
     condition: OntologyIrInterfaceActionTypeEditsValidationCondition,
   ): InterfaceActionTypeEditsValidationCondition {
@@ -154,32 +273,20 @@ export function convertInterfaceEditsValidation(
   ): InterfaceActionTypeEditsValidationConditionSubject {
     switch (subject.type) {
       case "concreteObject":
-        invariant(
-          objectApiNames.has(subject.concreteObject.rid),
-          `Define or import object type "${subject.concreteObject.rid}" referenced by ${location}`,
-        );
         return {
           ...subject,
           concreteObject: {
             ...subject.concreteObject,
-            rid: ridGenerator.generateRidForObjectType(
-              subject.concreteObject.rid,
-            ),
+            rid: convertObject(subject.concreteObject.rid),
             operation: convertObjectOperation(subject.concreteObject.operation),
           },
         };
       case "interfaceObject":
-        invariant(
-          interfaces.has(subject.interfaceObject.rid),
-          `Define or import interface "${subject.interfaceObject.rid}" referenced by ${location}`,
-        );
         return {
           ...subject,
           interfaceObject: {
             ...subject.interfaceObject,
-            rid: ridGenerator.generateRidForInterface(
-              subject.interfaceObject.rid,
-            ),
+            rid: convertInterface(subject.interfaceObject.rid),
             operation: convertObjectOperation(
               subject.interfaceObject.operation,
             ),
@@ -380,7 +487,11 @@ export function convertInterfaceEditsValidation(
 }
 
 function unexpectedVariant(value: never): never {
-  throw new Error(
-    `Unsupported edit validation variant: ${JSON.stringify(value)}`,
-  );
+  throw new MakerValidationError([
+    {
+      code: "unsupported_edit_validation_variant",
+      message: `Unsupported edit validation variant: ${JSON.stringify(value)}`,
+      path: [],
+    },
+  ]);
 }
