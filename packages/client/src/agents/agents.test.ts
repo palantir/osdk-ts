@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, Osdk } from "@osdk/api";
+import type { ObjectSet, Osdk, OsdkBase } from "@osdk/api";
 import type {
   AgentDefinition,
+  AgentGetStateOptions,
   AgentParam,
+  AgentResult,
   AgentSession,
   AgentSessionState,
 } from "@osdk/api/unstable";
@@ -159,6 +161,9 @@ describe("agents", () => {
 
       const session = await clientBoundCreateSession();
 
+      expectTypeOf<
+        Awaited<ReturnType<typeof session.experimental_getState>>
+      >().toEqualTypeOf<AgentSessionState>();
       expect(session).toMatchObject({
         id: stubData.noArgumentsAgentResponse.id,
       });
@@ -453,6 +458,9 @@ describe("agents", () => {
       });
       const session = await client(generic).experimental_getSession(created.id);
       expectTypeOf<typeof session>().toEqualTypeOf<AgentSession>();
+      expectTypeOf<
+        Awaited<ReturnType<typeof session.experimental_getState>>
+      >().toEqualTypeOf<AgentSessionState>();
       expect(session).toMatchObject({ id: created.id });
       await session.experimental_sendEvent({
         LookupWeather: { city: "Paris" },
@@ -469,6 +477,7 @@ describe("agents", () => {
       expectTypeOf<
         Parameters<typeof session.experimental_sendEvent>[0]
       >().toBeNever();
+      expectTypeOf<noArgumentsAgent.ContextItem>().toBeNever();
       expect(session.id).toBe(created.id);
     });
 
@@ -795,7 +804,7 @@ describe("agents", () => {
   });
 
   describe("state reading", () => {
-    let session: AgentSession;
+    let session: weatherAgent.Session;
     let agentImpl: FauxAgentImpl;
 
     beforeEach(async () => {
@@ -815,7 +824,11 @@ describe("agents", () => {
           status: { type },
         });
         const state = await session.experimental_getState();
-        expectTypeOf(state).toEqualTypeOf<AgentSessionState>();
+        expectTypeOf(state).toEqualTypeOf<weatherAgent.SessionState>();
+        expectTypeOf(state.arguments).toEqualTypeOf<{ city: string }>();
+        expectTypeOf(state.agentState.data).toEqualTypeOf<{
+          temperature: number;
+        }>();
         expect(state).toEqual({
           arguments: { city: "London" },
           status: type,
@@ -835,22 +848,88 @@ describe("agents", () => {
 
     it("supports a detached experimental_getState method", async () => {
       const { experimental_getState } = session;
+      expectTypeOf<Parameters<typeof experimental_getState>>().toEqualTypeOf<
+        [$options?: AgentGetStateOptions]
+      >();
       const state = await experimental_getState();
+      expectTypeOf(state).toEqualTypeOf<weatherAgent.SessionState>();
       expect(state.agentState.data).toEqual({ temperature: 20 });
+    });
+
+    it("checks structured state types", () => {
+      const getSession = client(
+        structuredArgumentsAgent,
+      ).experimental_getSession;
+      type Session = Awaited<ReturnType<typeof getSession>>;
+      type State = Awaited<ReturnType<Session["experimental_getState"]>>;
+      expectTypeOf<State>().toEqualTypeOf<structuredArgumentsAgent.SessionState>();
+      expectTypeOf<State["arguments"]["optionalText"]>().toEqualTypeOf<
+        string | null | undefined
+      >();
+      expectTypeOf<State["arguments"]["nested"]["label"]>().toEqualTypeOf<
+        string | null
+      >();
+      expectTypeOf<
+        Omit<State["arguments"]["nested"], "label">
+      >().not.toMatchTypeOf<State["arguments"]["nested"]>();
+      expectTypeOf<State["arguments"]["nested"]["tags"]>().toEqualTypeOf<
+        string[]
+      >();
+      expectTypeOf<State["arguments"]["nested"]["scores"]>().toEqualTypeOf<
+        Record<string, number>
+      >();
+      expectTypeOf<State["arguments"]["future"]>().toBeUnknown();
+      expectTypeOf<
+        Extract<
+          State["arguments"]["selection"],
+          { kind: "employee" }
+        >["employee"]
+      >().toEqualTypeOf<OsdkBase<Employee>>();
+      expectTypeOf<
+        Extract<
+          State["arguments"]["selection"],
+          { kind: "employees" }
+        >["employees"]
+      >().toEqualTypeOf<ObjectSet<Employee>>();
+    });
+
+    it("narrows context item payloads by type", async () => {
+      vi.spyOn(agentImpl, "getState").mockReturnValue({
+        ...stubData.weatherAgentState,
+        contextItems: {
+          message: { contextItemType: "weather-result", data: "Sunny" },
+          reading: { contextItemType: "temperature", data: 20 },
+          missing: { contextItemType: "temperature", data: null },
+        },
+        contextItemOrder: ["message", "reading", "missing"],
+      });
+      const state = await session.experimental_getState();
+      const values = state.contextItemOrder.map((id) => {
+        const item = state.contextItems[id];
+        expectTypeOf(item).toEqualTypeOf<weatherAgent.ContextItem>();
+        if (item.type === "weather-result") {
+          expectTypeOf(item.data).toEqualTypeOf<string>();
+          return item.data.toUpperCase();
+        }
+        expectTypeOf(item.data).toEqualTypeOf<number | null>();
+        return item.data == null ? null : item.data.toFixed(1);
+      });
+      expect(values).toEqual(["SUNNY", "20.0", null]);
     });
 
     it.each([
       {
         name: "arguments",
-        getData: (state: AgentSessionState) => state.arguments,
+        getData: (state: objectArgumentsAgent.SessionState) => state.arguments,
       },
       {
         name: "state",
-        getData: (state: AgentSessionState) => state.agentState.data,
+        getData: (state: objectArgumentsAgent.SessionState) =>
+          state.agentState.data,
       },
       {
         name: "context items",
-        getData: (state: AgentSessionState) =>
+        getData: (state: objectArgumentsAgent.SessionState) =>
           state.contextItems.selection.data,
       },
     ])("converts objects and sets in $name", async ({ getData }) => {
@@ -863,10 +942,13 @@ describe("agents", () => {
       const state = await objectSession.experimental_getState({
         $timeoutMs: 0,
       });
-      const converted = getData(state) as {
-        employee: unknown;
-        employees: ObjectSet<typeof Employee>;
-      };
+      const converted = getData(state);
+      expectTypeOf(converted.employee).toEqualTypeOf<
+        AgentResult.ObjectType<Employee>
+      >();
+      expectTypeOf(converted.employees).toEqualTypeOf<
+        AgentResult.ObjectSetType<Employee>
+      >();
       expect(converted.employee).toMatchObject({
         $apiName: "Employee",
         $primaryKey: 50030,

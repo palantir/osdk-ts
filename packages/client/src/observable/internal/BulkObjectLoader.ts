@@ -15,9 +15,11 @@
  */
 
 import type {
+  DerivedProperty,
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
+  PageResult,
 } from "@osdk/api";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { DeferredPromise } from "p-defer";
@@ -26,8 +28,10 @@ import pDefer from "p-defer";
 import { additionalContext, type Client } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { DefType } from "../../util/interfaceUtils.js";
+import type { Canonical } from "./Canonical.js";
 import { DefaultMap } from "./collections/DefaultMap.js";
 import { DefaultWeakMap } from "./collections/DefaultWeakMap.js";
+import type { Rdp } from "./RdpCanonicalizer.js";
 
 interface InternalValue {
   primaryKey: string;
@@ -40,6 +44,7 @@ interface LoadParams {
   select?: readonly string[];
   loadPropertySecurityMetadata?: boolean;
   includeAllBaseObjectProperties: true | undefined;
+  rdpConfig?: Canonical<Rdp>;
 }
 
 interface Accumulator extends Partial<LoadParams> {
@@ -65,6 +70,8 @@ export class BulkObjectLoader {
   #logger: Logger | undefined;
   #maxWait: number;
   #maxEntries: number;
+  #nextRdpId = 0;
+  #rdpIds = new DefaultWeakMap<Canonical<Rdp>, number>(() => this.#nextRdpId++);
 
   constructor(client: Client, maxWait = 25, maxEntries = 100) {
     this.#client = client;
@@ -80,12 +87,14 @@ export class BulkObjectLoader {
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
     includeAllBaseObjectProperties?: boolean,
+    rdpConfig?: Canonical<Rdp>,
   ): Promise<ObjectHolder> {
     const params: LoadParams = {
       apiName,
       defType,
       select,
       loadPropertySecurityMetadata,
+      rdpConfig,
       // The flag is interface-only on the server. Drop it for object fetches
       // so they don't fragment batches or the cache.
       includeAllBaseObjectProperties:
@@ -110,6 +119,7 @@ export class BulkObjectLoader {
       entry.loadPropertySecurityMetadata = params.loadPropertySecurityMetadata;
       entry.includeAllBaseObjectProperties =
         params.includeAllBaseObjectProperties;
+      entry.rdpConfig = params.rdpConfig;
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
@@ -136,24 +146,28 @@ export class BulkObjectLoader {
   #buildSelectKey(params: LoadParams): string {
     const securitySuffix = params.loadPropertySecurityMetadata ? "\0sec" : "";
     const baseSuffix = params.includeAllBaseObjectProperties ? "\0base" : "";
+    const rdpSuffix = params.rdpConfig
+      ? `\0rdp${this.#rdpIds.get(params.rdpConfig)}`
+      : "";
     return params.select && params.select.length > 0
       ? `${params.apiName}\0${[...params.select]
           .sort()
-          .join(",")}${securitySuffix}${baseSuffix}`
-      : `${params.apiName}${securitySuffix}${baseSuffix}`;
+          .join(",")}${securitySuffix}${baseSuffix}${rdpSuffix}`
+      : `${params.apiName}${securitySuffix}${baseSuffix}${rdpSuffix}`;
   }
 
   #loadObjects(arr: InternalValue[], params: LoadParams) {
     this.#m.delete(this.#buildSelectKey(params));
 
+    const pending = new Set(arr);
     const loadFn =
       params.defType === "interface"
-        ? this.#loadInterfaceObjects(arr, params)
-        : this.#loadObjectTypeObjects(arr, params);
+        ? this.#loadInterfaceObjects(pending, params)
+        : this.#loadObjectTypeObjects(pending, params);
 
     loadFn.catch((e: unknown) => {
       this.#logger?.error("Unhandled exception", e);
-      for (const { primaryKey, deferred } of arr) {
+      for (const { primaryKey, deferred } of pending) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         deferred.reject(
           new PalantirApiError(
@@ -164,14 +178,17 @@ export class BulkObjectLoader {
     });
   }
 
-  async #loadObjectTypeObjects(arr: InternalValue[], params: LoadParams) {
+  async #loadObjectTypeObjects(
+    pending: Set<InternalValue>,
+    params: LoadParams,
+  ) {
     const objectDef = {
       type: "object",
       apiName: params.apiName,
     } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(objectDef);
 
-    const pks = arr.map((x) => x.primaryKey);
+    const pks = Array.from(pending, (x) => x.primaryKey);
 
     // Use $eq for single object fetches (this is for public app compatibility)
     // Use $in for batch fetches
@@ -180,9 +197,17 @@ export class BulkObjectLoader {
         ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
         : { [objMetadata.primaryKeyApiName]: { $in: pks } };
 
-    const { data } = await this.#client(objectDef)
-      .where(whereClause)
-      .fetchPage({
+    let objectSet = this.#client(objectDef);
+    if (params.rdpConfig) {
+      objectSet = objectSet.withProperties(
+        params.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+      );
+    }
+
+    objectSet = objectSet.where(whereClause);
+    const pages = loadPages(($nextPageToken) =>
+      objectSet.fetchPage({
+        $nextPageToken,
         $pageSize: pks.length,
         $includeRid: true,
         ...(params.select && params.select.length > 0
@@ -193,25 +218,21 @@ export class BulkObjectLoader {
         ...(params.includeAllBaseObjectProperties
           ? { $includeAllBaseObjectProperties: true }
           : {}),
-      });
-
-    for (const { primaryKey, deferred } of arr) {
-      const object = data.find((x) => x.$primaryKey === primaryKey) as
-        | ObjectHolder
-        | undefined;
-      if (object) {
-        deferred.resolve(object);
-      } else {
-        deferred.reject(
-          new PalantirApiError(`Object not found: ${primaryKey}`),
-        );
+      }),
+    );
+    for await (const data of pages) {
+      resolveObjectsFromPage(pending, data as ObjectHolder[]);
+      if (pending.size === 0) {
+        return;
       }
+    }
+
+    for (const { primaryKey, deferred } of pending) {
+      deferred.reject(new PalantirApiError(`Object not found: ${primaryKey}`));
     }
   }
 
-  async #loadInterfaceObjects(arr: InternalValue[], params: LoadParams) {
-    const pks = arr.map((x) => x.primaryKey);
-
+  async #loadInterfaceObjects(pending: Set<InternalValue>, params: LoadParams) {
     const interfaceDef = {
       type: "interface",
       apiName: params.apiName,
@@ -220,8 +241,6 @@ export class BulkObjectLoader {
     const interfaceMetadata = await this.#client.fetchMetadata(interfaceDef);
     const implementingTypes = interfaceMetadata.implementedBy ?? [];
 
-    const foundObjects = new Map<string | number, ObjectHolder>();
-
     for (const objectTypeName of implementingTypes) {
       const objectDef = {
         type: "object",
@@ -229,7 +248,7 @@ export class BulkObjectLoader {
       } as ObjectTypeDefinition;
       const objMetadata = await this.#client.fetchMetadata(objectDef);
 
-      const remainingPks = pks.filter((pk) => !foundObjects.has(pk));
+      const remainingPks = Array.from(pending, (entry) => entry.primaryKey);
       if (remainingPks.length === 0) {
         break;
       }
@@ -239,9 +258,10 @@ export class BulkObjectLoader {
           ? { [objMetadata.primaryKeyApiName]: { $eq: remainingPks[0] } }
           : { [objMetadata.primaryKeyApiName]: { $in: remainingPks } };
 
-      const { data } = await this.#client(objectDef)
-        .where(whereClause)
-        .fetchPage({
+      const objectSet = this.#client(objectDef).where(whereClause);
+      const pages = loadPages(($nextPageToken) =>
+        objectSet.fetchPage({
+          $nextPageToken,
           $pageSize: remainingPks.length,
           ...(params.select && params.select.length > 0
             ? { $select: params.select }
@@ -251,24 +271,46 @@ export class BulkObjectLoader {
           ...(params.includeAllBaseObjectProperties
             ? { $includeAllBaseObjectProperties: true }
             : {}),
-        });
-
-      for (const obj of data) {
-        foundObjects.set(obj.$primaryKey, obj as ObjectHolder);
+        }),
+      );
+      for await (const data of pages) {
+        resolveObjectsFromPage(pending, data as ObjectHolder[]);
+        if (pending.size === 0) {
+          return;
+        }
       }
     }
 
-    for (const { primaryKey, deferred } of arr) {
-      const object = foundObjects.get(primaryKey);
-      if (object) {
-        deferred.resolve(object);
-      } else {
-        deferred.reject(
-          new PalantirApiError(
-            `Interface ${params.apiName} object not found: ${primaryKey}`,
-          ),
-        );
-      }
+    for (const { primaryKey, deferred } of pending) {
+      deferred.reject(
+        new PalantirApiError(
+          `Interface ${params.apiName} object not found: ${primaryKey}`,
+        ),
+      );
+    }
+  }
+}
+
+async function* loadPages<T>(
+  fetchPage: (nextPageToken: string | undefined) => Promise<PageResult<T>>,
+): AsyncGenerator<readonly T[]> {
+  let nextPageToken: string | undefined;
+  do {
+    const page = await fetchPage(nextPageToken);
+    yield page.data;
+    nextPageToken = page.nextPageToken;
+  } while (nextPageToken != null);
+}
+
+function resolveObjectsFromPage(
+  pending: Set<InternalValue>,
+  data: readonly ObjectHolder[],
+) {
+  for (const entry of pending) {
+    const object = data.find((obj) => obj.$primaryKey === entry.primaryKey);
+    if (object) {
+      entry.deferred.resolve(object);
+      pending.delete(entry);
     }
   }
 }

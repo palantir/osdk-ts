@@ -99,6 +99,12 @@ async function generateAgentFile(
   // TODO(mhogberg): Use isOptional instead of checking nullable here once it is available in the public API.
   const optional = createSessionArgs.every(p => p.dataType.type === "nullable");
   const eventNames = agent.raw.eventDefinitions.map(event => event.eventType);
+  const contextItem =
+    agent.raw.contextItemDefinitions.map(item =>
+      `{ type: ${JSON.stringify(item.contextItemType)}; data: ContextItems[${
+        JSON.stringify(item.contextItemType)
+      }]; }`
+    ).join(" | ") || "never";
   const sendEventArguments =
     eventNames.map(name =>
       `{ ${
@@ -118,7 +124,7 @@ async function generateAgentFile(
       import type { VersionBound as $VersionBound } from "${
       forInternalUse ? "@osdk/api" : "@osdk/client"
     }";
-      import type { AgentDefinition as $AgentDefinition, AgentParam as $AgentParam, AgentSession as $AgentSession, AgentSendEventOptions as $AgentSendEventOptions } from "${
+      import type { AgentDefinition as $AgentDefinition, AgentParam as $AgentParam, AgentResult as $AgentResult, AgentSession as $AgentSession, AgentSessionState as $AgentSessionState, AgentGetStateOptions as $AgentGetStateOptions, AgentSendEventOptions as $AgentSendEventOptions } from "${
       forInternalUse ? "@osdk/api/unstable" : "@osdk/client/experimental"
     }";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
@@ -135,11 +141,43 @@ async function generateAgentFile(
         }
 
         export interface Session extends $AgentSession {
+          experimental_getState(
+            $options?: $AgentGetStateOptions,
+          ): Promise<SessionState>;
           experimental_sendEvent(
             event: SendEventArguments,
             $options?: $AgentSendEventOptions,
           ): Promise<void>;
         }
+
+        export interface SessionState extends $AgentSessionState {
+          arguments: ${
+      createSessionArgs.length === 0
+        ? "Record<string, never>"
+        : `{ ${agentFields(ontology, createSessionArgs, "Result", true)} }`
+    };
+          agentState: { data: ${
+      getAgentDataType(ontology, agent.raw.agentStateType, "Result")
+    }; };
+          contextItems: Record<string, ContextItem>;
+        }
+
+        export type ContextItem = ${contextItem};
+
+        ${
+      agent.raw.contextItemDefinitions.length === 0
+        ? "export type ContextItems = Record<never, never>;"
+        : `export interface ContextItems { ${
+          agentFields(
+            ontology,
+            agent.raw.contextItemDefinitions.map(item => ({
+              name: item.contextItemType,
+              dataType: item.dataType,
+            })),
+            "Result",
+          )
+        } }`
+    }
 
         export type SendEventArguments = ${sendEventArguments};
 
@@ -153,6 +191,7 @@ async function generateAgentFile(
               name: event.eventType,
               dataType: event.payloadType,
             })),
+            "Param",
           )
         } }`
     }
@@ -161,7 +200,7 @@ async function generateAgentFile(
       createSessionArgs.length === 0
         ? "export type CreateSessionArguments = Record<string, never>;"
         : `export interface CreateSessionArguments { ${
-          agentFields(ontology, createSessionArgs, true)
+          agentFields(ontology, createSessionArgs, "Param", true)
         } }`
     }
       }
@@ -188,6 +227,7 @@ async function generateAgentFile(
 function agentFields(
   ontology: EnhancedOntologyDefinition,
   fields: ReadonlyArray<StructField>,
+  type: "Param" | "Result",
   topLevel = false,
 ): string {
   return stringify(
@@ -197,19 +237,23 @@ function agentFields(
         // TODO(mhogberg): Use isOptional instead of checking nullable here once it is available in the public API.
         const optional = topLevel && dataType.type === "nullable";
         return [
-          `readonly ${JSON.stringify(name)}${optional ? "?" : ""}`,
-          getAgentArgType(ontology, dataType),
+          `${type === "Param" ? "readonly " : ""}${JSON.stringify(name)}${
+            optional ? "?" : ""
+          }`,
+          getAgentDataType(ontology, dataType, type),
         ];
       },
     },
   );
 }
 
-export function getAgentArgType(
+export function getAgentDataType(
   ontology: EnhancedOntologyDefinition,
   input: DataType,
+  type: "Param" | "Result",
 ): string {
-  const recurse = (dataType: DataType) => getAgentArgType(ontology, dataType);
+  const recurse = (dataType: DataType) =>
+    getAgentDataType(ontology, dataType, type);
   switch (input.type) {
     case "boolean":
       return "boolean";
@@ -226,23 +270,27 @@ export function getAgentArgType(
     case "nullable":
       return `(${recurse(input.wrappedType)}) | null`;
     case "list":
-      return `ReadonlyArray<${recurse(input.elementType)}>`;
+      return `${type === "Param" ? "Readonly" : ""}Array<${
+        recurse(input.elementType)
+      }>`;
     case "record":
-      return `Readonly<Record<string, ${recurse(input.valueType)}>>`;
+      return type === "Param"
+        ? `Readonly<Record<string, ${recurse(input.valueType)}>>`
+        : `Record<string, ${recurse(input.valueType)}>`;
     case "struct":
       return input.fields.length === 0
         ? "Record<string, never>"
-        : `{ ${agentFields(ontology, input.fields)} }`;
+        : `{ ${agentFields(ontology, input.fields, type)} }`;
     case "discriminatedUnion":
       return input.members.map(member =>
-        `{ readonly ${JSON.stringify(input.discriminatorKey)}: ${
-          JSON.stringify(member.discriminatorValue)
-        };
-          ${agentFields(ontology, member.fields)} }`
+        `{ ${type === "Param" ? "readonly " : ""}${
+          JSON.stringify(input.discriminatorKey)
+        }: ${JSON.stringify(member.discriminatorValue)};
+          ${agentFields(ontology, member.fields, type)} }`
       ).join(" | ") || "never";
     case "object":
     case "objectSet":
-      return `$AgentParam.${
+      return `$Agent${type}.${
         input.type === "object" ? "ObjectType" : "ObjectSetType"
       }<${
         ontology.requireObjectType(input.objectTypeApiName)

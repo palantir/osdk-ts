@@ -125,7 +125,7 @@ describe("edit validation entry IDs", () => {
     ).toBe(3);
   });
 
-  it("rejects duplicate IDs across nested conditions before adding the constraint", () => {
+  it("reports duplicate and blank IDs together before adding the constraint", () => {
     const iface = defineInterface({ apiName: "Task" });
     expect(() =>
       defineConstraint(iface, {
@@ -135,11 +135,47 @@ describe("edit validation entry IDs", () => {
             conditions: [
               entry("duplicate"),
               { type: "and", and: { conditions: [entry("duplicate")] } },
+              entry(" "),
             ],
           },
         },
       }),
-    ).toThrow('Duplicate edit validation entry ID "duplicate"');
+    ).toThrowError(
+      expect.objectContaining({
+        name: "MakerValidationError",
+        issues: [
+          {
+            code: "duplicate_entry_id",
+            message: `Duplicate edit validation entry ID "duplicate" on action type constraint "${NS}editTask" on interface "${NS}Task"`,
+            path: [
+              "editsValidation",
+              "condition",
+              "and",
+              "conditions",
+              1,
+              "and",
+              "conditions",
+              0,
+              "entry",
+              "id",
+            ],
+          },
+          {
+            code: "invalid_entry_id",
+            message: `Edit validation entry ID on action type constraint "${NS}editTask" on interface "${NS}Task" must not be blank`,
+            path: [
+              "editsValidation",
+              "condition",
+              "and",
+              "conditions",
+              2,
+              "entry",
+              "id",
+            ],
+          },
+        ],
+      }),
+    );
     expect(iface.actionTypeConstraints).toEqual([]);
   });
 

@@ -126,6 +126,52 @@ export function convertObject(
       extractPropertyDatasource(prop, objectType.apiName, ridGenerator),
     );
 
+  const mediaDatasources = (objectType.referenceSources ?? []).flatMap(
+    ({ mediaSet }) => {
+      const properties = (objectType.properties ?? []).filter((property) =>
+        property.reference?.sources.some(
+          (source) => source.apiName === mediaSet.apiName,
+        ),
+      );
+      if (properties.length === 0) return [];
+      return [
+        buildDatasource(
+          `${objectType.apiName}.media.${mediaSet.apiName}`,
+          {
+            type: "mediaSetView",
+            mediaSetView: {
+              assumedMarkings: [],
+              clearOnDeleteProperties: [],
+              mediaSetViewLocator: ridGenerator.generateMediaSetViewLocator(
+                mediaSet.apiName,
+              ),
+              properties: properties.map((property) =>
+                ridGenerator.generatePropertyRid(
+                  property.apiName,
+                  objectType.apiName,
+                ),
+              ),
+              uploadProperties: properties
+                .filter(
+                  (property) =>
+                    property.reference?.uploadDestination?.apiName ===
+                    mediaSet.apiName,
+                )
+                .map((property) =>
+                  ridGenerator.generatePropertyRid(
+                    property.apiName,
+                    objectType.apiName,
+                  ),
+                ),
+            },
+          },
+          ridGenerator,
+        ),
+      ];
+    },
+  );
+  propertyDatasources.push(...mediaDatasources);
+
   const classificationGroupMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],
     "CBAC",
@@ -146,6 +192,10 @@ export function convertObject(
       ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
       : undefined;
 
+  // Derived datasources are emitted separately; omission uses the default dataset.
+  const baseDatasource = objectType.datasources?.find(
+    (ds) => ds.type !== "derived",
+  );
   const objectDatasource = buildDatasource(
     objectType.apiName,
     convertDatasourceDefinition(
@@ -154,10 +204,12 @@ export function convertObject(
         (prop) => !derivedPropertyNames.includes(prop.apiName),
       ),
       ridGenerator,
+      baseDatasource,
     ),
     ridGenerator,
     classificationInputGroup,
     mandatoryInputGroup,
+    baseDatasource?.markingConstraints,
   );
 
   const implementations = objectType.implementsInterfaces ?? [];
@@ -464,6 +516,7 @@ export function extractPropertyDatasource(
         buildDatasource(property.apiName, geotimeDefinition, ridGenerator),
       ];
     case "mediaReference":
+      if (property.reference !== undefined) return [];
       const propertyRid = ridGenerator.generatePropertyRid(
         property.apiName,
         objectTypeApiName,
@@ -671,6 +724,15 @@ function buildEntityMetadata(
       objectType.apiName,
       objectType.editsHistoryConfig,
     ),
+    ...(objectType.interfaceActionsEnabled === undefined
+      ? {}
+      : {
+          interfaceSettings: {
+            enableInterfaceActions: objectType.interfaceActionsEnabled
+              ? { type: "enabled", enabled: {} }
+              : { type: "disabled", disabled: {} },
+          },
+        }),
   };
   return metadata as MarketplaceObjectTypeEntityMetadata;
 }

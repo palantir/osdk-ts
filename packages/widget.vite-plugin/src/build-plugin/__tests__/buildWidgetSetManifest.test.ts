@@ -184,6 +184,13 @@ describe("buildWidgetSetManifest", () => {
     const widgetSetInputSpec: WidgetSetInputSpec = {
       discovered: {
         sdks: [{ rid: "ri.foundry.main.sdk.test-sdk", version: "2.0.0" }],
+        datasets: [
+          {
+            identifier: { rid: "ri.foundry.main.dataset.test-dataset" },
+            usage: ["read"],
+            alias: "testDataset",
+          },
+        ],
         authorizations: {},
       },
     };

@@ -15,6 +15,7 @@
  */
 
 import type {
+  FunctionDiscovery,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrConditionalValidationBlock,
   OntologyIrLinkTypeBlockDataV2,
@@ -23,7 +24,11 @@ import type {
   ParameterRequiredConfiguration,
   VectorPropertyType,
 } from "@osdk/client.unstable";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 import { fileURLToPath } from "node:url";
+import ts from "typescript";
 import { describe, expect, it, vi } from "vitest";
 import { isInjectedRuntimeInput } from "./convertDataType.js";
 import {
@@ -31,27 +36,77 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
 
-const { discoveredFunctions, entityMetadataMappings } = vi.hoisted(() => ({
+const {
+  discoveredFunctions,
+  configScopeRanges,
+  discoveryPrograms,
+  entityMetadataMappings,
+} = vi.hoisted(() => ({
   discoveredFunctions: [] as IDiscoveredFunction[],
+  configScopeRanges: {} as Record<string, unknown>,
+  discoveryPrograms: [] as ts.Program[],
   entityMetadataMappings: [] as unknown[],
 }));
 
 vi.mock("@foundry/functions-typescript-osdk-discovery", () => ({
   FunctionDiscoverer: class {
     constructor(
-      _program: unknown,
-      _entryPointPath: string,
+      private readonly program: ts.Program,
+      private readonly entryPointPath: string,
       _fullFilePath: string,
       entityMetadataMapping?: unknown,
     ) {
+      discoveryPrograms.push(program);
       entityMetadataMappings.push(entityMetadataMapping);
     }
 
     discover() {
-      return { discoveredFunctions };
+      const resolveSourcePath = (filePath: string) =>
+        path.resolve(this.entryPointPath, filePath.replace(/\\/g, "/"));
+      const roots = new Set(
+        this.program.getRootFileNames().map(filePath =>
+          path.resolve(filePath.replace(/\\/g, "/"))
+        ),
+      );
+      return {
+        discoveredFunctions: discoveredFunctions.filter(func => {
+          const filePath = func.locator.typescript?.filePath;
+          return !filePath || roots.has(resolveSourcePath(filePath));
+        }),
+        configScopeRanges: Object.fromEntries(
+          Object.entries(configScopeRanges).filter(([filePath]) =>
+            roots.has(resolveSourcePath(filePath))
+          ),
+        ),
+      };
     }
   },
 }));
+
+async function discoverFunctions(
+  functions: IDiscoveredFunction[],
+  previewMetadata?: Parameters<
+    typeof OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions
+  >[3],
+) {
+  const createProgramSpy = vi.spyOn(
+    OntologyIrToFullMetadataConverter,
+    "createProgram",
+  ).mockReturnValue(ts.createProgram([], { noLib: true }));
+  discoveredFunctions.splice(0, discoveredFunctions.length, ...functions);
+  entityMetadataMappings.splice(0);
+
+  try {
+    return await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
+      fileURLToPath(new URL(".", import.meta.url)),
+      undefined,
+      undefined,
+      previewMetadata,
+    );
+  } finally {
+    createProgramSpy.mockRestore();
+  }
+}
 
 describe(OntologyIrToFullMetadataConverter, () => {
   it.each(
@@ -170,7 +225,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
     );
   });
 
-  it("should convert ontology IR to full metadata", async () => {
+  it("should convert ontology IR to full metadata", () => {
     const result = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(
         {
@@ -3831,6 +3886,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
           fields: {
             value: {
               type: "string",
+              string: {},
             },
           },
         },
@@ -3844,12 +3900,36 @@ describe(OntologyIrToFullMetadataConverter, () => {
     });
   });
 
+  it("generates function query metadata for geo inputs and outputs", async () => {
+    const queryTypes = await discoverFunctions([{
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "geoFunction" },
+      },
+      inputs: [{
+        name: "point",
+        dataType: {
+          type: "geoShape",
+          geoShape: { subType: { type: "geoPoint", geoPoint: {} } },
+        },
+        required: true,
+      }],
+      output: { single: { dataType: { type: "geoShape", geoShape: {} } } },
+      customTypes: {},
+    }]);
+
+    expect(queryTypes).toHaveLength(1);
+    expect(queryTypes[0]).toMatchObject({
+      apiName: "geoFunction",
+      parameters: {
+        point: { dataType: { type: "geoshape" }, required: true },
+      },
+      output: { type: "geoshape" },
+    });
+  });
+
   it("only omits injected runtime inputs in the first position", async () => {
-    const createProgramSpy = vi.spyOn(
-      OntologyIrToFullMetadataConverter,
-      "createProgram",
-    ).mockReturnValue({} as never);
-    const clientInput = {
+    const clientInput: IDiscoveredFunction["inputs"][number] = {
       name: "client",
       dataType: {
         type: "client",
@@ -3860,19 +3940,19 @@ describe(OntologyIrToFullMetadataConverter, () => {
       },
       required: true,
     };
-    const valueInput = {
+    const valueInput: IDiscoveredFunction["inputs"][number] = {
       name: "value",
-      dataType: { type: "string" },
+      dataType: { type: "string", string: {} },
       required: true,
     };
 
-    discoveredFunctions.splice(0, discoveredFunctions.length, {
+    const queryTypes = await discoverFunctions([{
       locator: {
         type: "typescript",
         typescript: { functionName: "contextFirst" },
       },
       inputs: [clientInput, valueInput],
-      output: { single: { dataType: { type: "string" } } },
+      output: { single: { dataType: { type: "string", string: {} } } },
       customTypes: {},
     }, {
       locator: {
@@ -3880,92 +3960,444 @@ describe(OntologyIrToFullMetadataConverter, () => {
         typescript: { functionName: "contextSecond" },
       },
       inputs: [valueInput, clientInput],
-      output: { single: { dataType: { type: "string" } } },
+      output: { single: { dataType: { type: "string", string: {} } } },
       customTypes: {},
-    });
+    }]);
 
-    try {
-      const queryTypes = await OntologyIrToFullMetadataConverter
-        .discoverTypeScriptFunctions(
-          fileURLToPath(new URL(".", import.meta.url)),
-        );
-
-      expect(queryTypes.map(queryType => queryType.parameters)).toEqual([
-        {
-          value: {
-            dataType: { type: "string" },
-            required: true,
-          },
+    expect(queryTypes.map(queryType => queryType.parameters)).toEqual([
+      {
+        value: {
+          dataType: { type: "string" },
+          required: true,
         },
-        {
-          value: {
-            dataType: { type: "string" },
-            required: true,
-          },
-          client: {
-            dataType: { type: "string" },
-            required: true,
-          },
+      },
+      {
+        value: {
+          dataType: { type: "string" },
+          required: true,
         },
-      ]);
-    } finally {
-      createProgramSpy.mockRestore();
-    }
+        client: {
+          dataType: { type: "string" },
+          required: true,
+        },
+      },
+    ]);
   });
 
   it("uses canonical API names in function discovery entity metadata", async () => {
-    const createProgramSpy = vi.spyOn(
-      OntologyIrToFullMetadataConverter,
-      "createProgram",
-    ).mockReturnValue({} as never);
     const ontologyRid = "ri.ontology.main.ontology.0";
     const objectApiName = "com.palantir.ontology.pdfPage";
     const interfaceApiName = "com.palantir.ontology.pdfDocument";
     const interfaceRid = "ri.ontology.main.interface-type.pdf-document";
-    discoveredFunctions.splice(0);
-    entityMetadataMappings.splice(0);
+    await discoverFunctions([], {
+      ontology: { rid: ontologyRid },
+      objectTypes: {
+        PdfPage: {
+          objectType: { apiName: objectApiName },
+          linkTypes: [],
+        },
+      },
+      interfaceTypes: {
+        PdfDocument: {
+          apiName: interfaceApiName,
+          rid: interfaceRid,
+        },
+      },
+    } as never);
 
-    try {
-      await OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
-        fileURLToPath(new URL(".", import.meta.url)),
-        undefined,
-        undefined,
-        {
-          ontology: { rid: ontologyRid },
-          objectTypes: {
-            PdfPage: {
-              objectType: { apiName: objectApiName },
-              linkTypes: [],
-            },
-          },
-          interfaceTypes: {
-            PdfDocument: {
-              apiName: interfaceApiName,
-              rid: interfaceRid,
-            },
-          },
-        } as never,
-      );
-
-      expect(entityMetadataMappings).toEqual([
-        {
-          ontologies: {
-            [ontologyRid]: {
-              objectTypes: {
-                [objectApiName]: {
-                  objectTypeId: objectApiName,
-                  linkTypes: {},
-                },
+    expect(entityMetadataMappings).toEqual([
+      {
+        ontologies: {
+          [ontologyRid]: {
+            objectTypes: {
+              [objectApiName]: {
+                objectTypeId: objectApiName,
+                linkTypes: {},
               },
-              interfaceTypes: {
-                [interfaceApiName]: { interfaceTypeRid: interfaceRid },
-              },
+            },
+            interfaceTypes: {
+              [interfaceApiName]: { interfaceTypeRid: interfaceRid },
             },
           },
         },
-      ]);
-    } finally {
-      createProgramSpy.mockRestore();
-    }
+      },
+    ]);
+  });
+
+  it.each([
+    ["relative", "present"],
+    ["absolute", "present"],
+    ["backslashes", "present"],
+    ["relative", "empty"],
+    ["relative", "missing"],
+  ])(
+    "only includes external TypeScript imports from their metadata containers in discovery roots (%s paths, %s metadata)",
+    async (pathStyle, metadataState) => {
+      const projectDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "function-import-filter-"),
+      );
+      const functionsDir = path.join(projectDir, "functions");
+      const importsDir = path.join(functionsDir, "external-imports");
+      const metadata = {
+        functionRid: "ri.function-registry.main.function.imported",
+        functionVersion: "1.2.3",
+        repositoryRid: "ri.stemma.main.repository.imported",
+        containerHash: "container",
+      };
+      const nestedMetadata = {
+        ...metadata,
+        containerHash: "nested-container",
+      };
+      fs.mkdirSync(importsDir, { recursive: true });
+      if (metadataState !== "missing") {
+        fs.writeFileSync(
+          path.join(importsDir, "functions-metadata.json"),
+          JSON.stringify({
+            functions: metadataState === "present"
+              ? { importedFunction: metadata, nestedFunction: nestedMetadata }
+              : {},
+          }),
+        );
+      }
+      const sources = [
+        ["localFunction", "functions/localFunction.ts"],
+        [
+          "importedFunction",
+          "functions/external-imports/container/importedFunction.ts",
+        ],
+        [
+          "nestedFunction",
+          "functions/external-imports/nested-container/nested/nestedFunction.ts",
+        ],
+        [
+          "importedFunction",
+          "functions/external-imports/nested-container/importedFunction.ts",
+        ],
+        [
+          "nestedFunction",
+          "functions/external-imports/container/nestedFunction.ts",
+        ],
+        [
+          "importedFunction",
+          "functions/external-imports/container-other/importedFunction.ts",
+        ],
+        [
+          "importedFunction",
+          "functions/external-imports/importedFunction.ts",
+        ],
+        [
+          "localFunction",
+          "functions/external-imports/dependency/localFunction.ts",
+        ],
+        [
+          "unlistedFunction",
+          "functions/external-imports/container/unlistedFunction.ts",
+        ],
+        [
+          "neighborFunction",
+          "functions/external-imports-other/neighborFunction.ts",
+        ],
+      ];
+      const formatPath = (filePath: string) =>
+        pathStyle === "absolute"
+          ? path.join(projectDir, filePath)
+          : pathStyle === "backslashes"
+          ? filePath.replace(/\//g, "\\")
+          : filePath;
+      const formatRootPath = (filePath: string) => {
+        const absolutePath = path.join(projectDir, filePath);
+        return pathStyle === "absolute"
+          ? absolutePath
+          : pathStyle === "backslashes"
+          ? absolutePath.replace(/\//g, "\\")
+          : path.relative(process.cwd(), absolutePath);
+      };
+      const createProgramSpy = vi.spyOn(
+        OntologyIrToFullMetadataConverter,
+        "createProgram",
+      ).mockReturnValue({
+        getRootFileNames: () =>
+          sources.map(([, filePath]) => formatRootPath(filePath)),
+      } as never);
+      discoveryPrograms.splice(0);
+      sources.forEach(([, filePath], index) => {
+        configScopeRanges[filePath] = {
+          startLineNumber: index + 1,
+          endLineNumber: index + 1,
+          startColumn: 13,
+          endColumn: 19,
+        };
+      });
+      discoveredFunctions.splice(
+        0,
+        discoveredFunctions.length,
+        ...sources.map(([functionName, filePath]): IDiscoveredFunction => ({
+          locator: {
+            type: "typescript",
+            typescript: {
+              functionName,
+              filePath: formatPath(filePath),
+            },
+          },
+          inputs: [],
+          output: { single: { dataType: { type: "string", string: {} } } },
+          customTypes: {},
+        })),
+      );
+
+      try {
+        const irOutputFile = path.join(projectDir, "functions-ir.json");
+        const queries = await OntologyIrToFullMetadataConverter
+          .discoverTypeScriptFunctions(
+            functionsDir,
+            undefined,
+            irOutputFile,
+          );
+        const expectedNames = metadataState === "present"
+          ? [
+            "localFunction",
+            "importedFunction",
+            "nestedFunction",
+            "neighborFunction",
+          ]
+          : ["localFunction", "neighborFunction"];
+        expect(queries.map(query => query.apiName)).toEqual(expectedNames);
+        const writtenIr = JSON.parse(
+          fs.readFileSync(irOutputFile, "utf-8"),
+        );
+        const writtenFunctions: IDiscoveredFunction[] =
+          writtenIr.discoveredFunctions;
+        expect(
+          writtenFunctions.map(func => func.locator.typescript?.functionName),
+        )
+          .toEqual(expectedNames);
+        const expectedScopePaths = metadataState === "present"
+          ? [
+            "functions/localFunction.ts",
+            "functions/external-imports/container/importedFunction.ts",
+            "functions/external-imports/nested-container/nested/nestedFunction.ts",
+            "functions/external-imports-other/neighborFunction.ts",
+          ]
+          : [
+            "functions/localFunction.ts",
+            "functions/external-imports-other/neighborFunction.ts",
+          ];
+        expect(discoveryPrograms[0].getRootFileNames()).toEqual(
+          expectedScopePaths.map(formatRootPath),
+        );
+        expect(writtenIr.configScopeRanges).toEqual(
+          Object.fromEntries(
+            expectedScopePaths.map(filePath => [
+              filePath,
+              configScopeRanges[filePath],
+            ]),
+          ),
+        );
+        expect(writtenFunctions[0].locator.typescript?.filePath).toEqual(
+          pathStyle === "absolute"
+            ? path.join(functionsDir, "localFunction.ts")
+            : pathStyle === "backslashes"
+            ? "functions\\localFunction.ts"
+            : "functions/localFunction.ts",
+        );
+        if (metadataState === "present") {
+          expect(queries[1]).toMatchObject({
+            rid: metadata.functionRid,
+            version: metadata.functionVersion,
+          });
+          expect(writtenFunctions[1].externalMetadata).toEqual(metadata);
+        }
+      } finally {
+        createProgramSpy.mockRestore();
+        discoveredFunctions.splice(0);
+        discoveryPrograms.splice(0);
+        for (const filePath of Object.keys(configScopeRanges)) {
+          delete configScopeRanges[filePath];
+        }
+        fs.rmSync(projectDir, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it.each([false, true])(
+    "keeps dependencies and declarations available without discovering them (metadata: %s)",
+    async (hasMetadata) => {
+      const componentDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), "function-imports-"),
+      );
+      const projectDir = path.join(componentDir, "src");
+      const functionsDir = path.join(projectDir, "functions");
+      const importsDir = path.join(functionsDir, "external-imports");
+      const importedFunctionPath = path.join(importsDir, "importedFunction.js");
+      const dependencyPath = path.join(importsDir, "dependency.ts");
+      const metadata = {
+        functionRid: "ri.function-registry.main.function.local",
+        functionVersion: "1.2.3",
+      };
+      fs.mkdirSync(importsDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(projectDir, "tsconfig.json"),
+        JSON.stringify({
+          compilerOptions: { noLib: true, types: [] },
+          include: ["**/*.ts", "**/*.js"],
+        }),
+      );
+      fs.writeFileSync(
+        path.join(functionsDir, "localFunction.ts"),
+        `import importedFunction from "./external-imports/importedFunction.js";
+import dependency from "./external-imports/dependency.js";
+export default function localFunction(): string { return importedFunction(dependency()); }`,
+      );
+      fs.writeFileSync(
+        importedFunctionPath,
+        "export default function importedFunction(value) { return value; }",
+      );
+      fs.writeFileSync(
+        path.join(importsDir, "importedFunction.d.ts"),
+        "export default function importedFunction(value: string): string;",
+      );
+      fs.writeFileSync(
+        dependencyPath,
+        "export default function dependency(): string { return 'local'; }",
+      );
+      if (hasMetadata) {
+        fs.writeFileSync(
+          path.join(importsDir, "functions-metadata.json"),
+          JSON.stringify({
+            functions: { localFunction: metadata, importedFunction: metadata },
+          }),
+        );
+      }
+      discoveredFunctions.splice(0, discoveredFunctions.length, {
+        locator: {
+          type: "typescript",
+          typescript: { functionName: "localFunction" },
+        },
+        inputs: [],
+        output: { single: { dataType: { type: "string", string: {} } } },
+        customTypes: {},
+      });
+      discoveryPrograms.splice(0);
+
+      try {
+        const irOutputFile = path.join(
+          projectDir,
+          "build",
+          "functions-ir.json",
+        );
+        const queries = await OntologyIrToFullMetadataConverter
+          .discoverTypeScriptFunctions(
+            functionsDir,
+            undefined,
+            irOutputFile,
+          );
+        const program = discoveryPrograms[0];
+        expect(program.getRootFileNames()).toEqual([
+          path.join(functionsDir, "localFunction.ts"),
+        ]);
+        expect(program.getSourceFile(importedFunctionPath)).toBeUndefined();
+        expect(program.getSourceFile(dependencyPath)).toBeDefined();
+        expect(program.getSourceFile(
+          path.join(importsDir, "importedFunction.d.ts"),
+        )).toBeDefined();
+        expect(program.getCompilerOptions().allowJs).toBeUndefined();
+        expect(fs.existsSync(path.join(componentDir, ".dev-server"))).toBe(
+          false,
+        );
+        expect(queries).toMatchObject([{
+          apiName: "localFunction",
+          rid: hasMetadata
+            ? metadata.functionRid
+            : "ri.function-registry.main.function.localFunction",
+          version: hasMetadata ? metadata.functionVersion : "0.0.0",
+        }]);
+        expect(
+          JSON.parse(fs.readFileSync(irOutputFile, "utf-8"))
+            .discoveredFunctions[0].externalMetadata,
+        ).toEqual(hasMetadata ? metadata : undefined);
+      } finally {
+        fs.rmSync(componentDir, { recursive: true, force: true });
+        discoveredFunctions.splice(0);
+        discoveryPrograms.splice(0);
+      }
+    },
+  );
+
+  it("resolves interface API names inside function struct types", async () => {
+    const interfaceApiName = "com.example.asset";
+    const interfaceRid = "ri.ontology.main.interface-type.asset";
+    const assetInterface: FunctionDiscovery.DataType = {
+      type: "interface",
+      interface: { interfaceTypeRid: interfaceRid },
+    };
+
+    const queryTypes = await discoverFunctions([{
+      locator: {
+        type: "typescript",
+        typescript: { functionName: "describeAsset" },
+      },
+      inputs: [{
+        name: "request",
+        dataType: {
+          type: "functionCustomType",
+          functionCustomType: "request-uuid",
+        },
+        required: true,
+      }],
+      output: {
+        single: {
+          dataType: {
+            type: "anonymousCustomType",
+            anonymousCustomType: { fields: { asset: assetInterface } },
+          },
+        },
+      },
+      customTypes: {
+        "request-uuid": { fields: { asset: assetInterface } },
+      },
+    }], {
+      ontology: {
+        apiName: "example",
+        displayName: "Example",
+        description: "",
+        rid: "ri.ontology.main.ontology.0",
+      },
+      objectTypes: {},
+      interfaceTypes: {
+        [interfaceApiName]: {
+          rid: interfaceRid,
+          apiName: interfaceApiName,
+          displayName: "Asset",
+          properties: {},
+          allProperties: {},
+          propertiesV2: {},
+          allPropertiesV2: {},
+          extendsInterfaces: [],
+          allExtendsInterfaces: [],
+          implementedByObjectTypes: [],
+          links: {},
+          allLinks: {},
+        },
+      },
+    });
+
+    const assetStruct = {
+      type: "struct",
+      fields: [{
+        name: "asset",
+        fieldType: {
+          type: "interfaceObject",
+          interfaceTypeApiName: interfaceApiName,
+        },
+      }],
+    };
+    expect(queryTypes).toEqual([{
+      apiName: "describeAsset",
+      rid: "ri.function-registry.main.function.describeAsset",
+      version: "0.0.0",
+      parameters: { request: { dataType: assetStruct, required: true } },
+      output: assetStruct,
+      typeReferences: {},
+    }]);
   });
 });
