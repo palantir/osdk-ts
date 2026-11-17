@@ -61,7 +61,7 @@ executors:
                 unpublish: $all
             YAML
             exec verdaccio --config /tmp/verdaccio.yaml --listen 0.0.0.0:4873
-    resource_class: xlarge
+    resource_class: large
     working_directory: /mnt/ramdisk/project
     environment: *ci-environment
 
@@ -410,7 +410,7 @@ jobs:
   build-storybook:
     executor:
       name: node
-      resource-class: xlarge
+      resource-class: large
     environment:
       # Relative, because CircleCI serves artifacts under a path prefix
       STORYBOOK_BASE_PATH: ./
