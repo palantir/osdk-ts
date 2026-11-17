@@ -101,6 +101,7 @@ export async function getShapes(
   ridGenerator: OntologyRidGenerator,
   functionsIr?: FunctionsIr,
   randomnessKey?: string,
+  packageSchemaMigrationInputs = true,
 ): Promise<BlockShapes> {
   const allBlockShapes: BlockShapes = {
     inputShapes: new Map(),
@@ -205,10 +206,12 @@ export async function getShapes(
   // Migration shapes
   const migrationShapes = getMigrationShape();
   consumeBlockShapes(allBlockShapes, migrationShapes);
-  consumeBlockShapes(
-    allBlockShapes,
-    getSchemaMigrationInputsShapes(ontologyBlockDataV2, ridGenerator),
-  );
+  if (packageSchemaMigrationInputs) {
+    consumeBlockShapes(
+      allBlockShapes,
+      getSchemaMigrationInputsShapes(ontologyBlockDataV2, ridGenerator),
+    );
+  }
 
   // Direct datasource blocks publish the same shapes under produced-* IDs.
   // Recommend those outputs for the ontology block's direct datasource inputs.

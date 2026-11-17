@@ -227,12 +227,27 @@ describe("schema migration candidates", () => {
     );
   });
 
-  it("emits a candidate for a stream object whose edge remapping supports backfilling", async () => {
+  it("emits no shape when packaging for edge", async () => {
+    const { inputShape, knownIdentifiers } = await build(
+      { name: { type: "string", nullability: NON_NULL } },
+      { packagingOptions: { targetEnvironment: "EDGE" } },
+    );
+
+    expect(inputShape).toBeUndefined();
+    expect(knownIdentifiers.shapeIdForOntologySchemaMigrationInputs).toBe(
+      toBlockShapeId(SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID, RANDOMNESS_KEY),
+    );
+  });
+
+  it("emits a candidate for a stream object whose edge remapping supports backfilling when opted in for edge", async () => {
     const { inputShape, propertyBlockInternalId } = await build(
       { name: { type: "string", displayName: "name", nullability: NON_NULL } },
       {
         datasources: [{ type: "stream" }],
-        packagingOptions: { targetEnvironment: "EDGE" },
+        packagingOptions: {
+          targetEnvironment: "EDGE",
+          packageSchemaMigrationInputsForEdge: true,
+        },
       },
     );
 
