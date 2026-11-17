@@ -17,6 +17,7 @@
 import type {
   CompileTimeMetadata,
   InterfaceDefinition,
+  InterfaceMetadata,
   ObjectMetadata,
   ObjectTypeDefinition,
   Osdk,
@@ -53,6 +54,13 @@ export namespace Edits {
     L extends keyof CompileTimeMetadata<S>["links"],
   > = AddLink<S, L> | RemoveLink<S, L>;
 
+  export type InterfaceLink<
+    S extends InterfaceDefinition,
+    L extends keyof CompileTimeMetadata<S>["links"],
+  > = {
+    [K in L]: AddInterfaceLink<S, K> | RemoveInterfaceLink<S, K>;
+  }[L];
+
   export type Interface<S extends InterfaceDefinition> =
     | CreateObjectForInterface<S>
     | UpdateObjectForInterface<S>
@@ -87,6 +95,41 @@ export interface RemoveLink<
   >
     ? ObjectLocator<T>
     : never;
+}
+
+type InterfaceLinkTarget<
+  S extends InterfaceDefinition,
+  L extends keyof CompileTimeMetadata<S>["links"],
+> =
+  CompileTimeMetadata<S>["links"][L] extends InterfaceMetadata.Link<
+    infer T,
+    boolean
+  >
+    ? T extends InterfaceDefinition
+      ? InterfaceLocator<T>
+      : T extends ObjectTypeDefinition
+        ? ObjectLocator<T>
+        : never
+    : never;
+
+export interface AddInterfaceLink<
+  S extends InterfaceDefinition,
+  L extends keyof CompileTimeMetadata<S>["links"],
+> {
+  type: "addInterfaceLink";
+  apiName: L;
+  source: InterfaceLocator<S>;
+  target: InterfaceLinkTarget<S, L>;
+}
+
+export interface RemoveInterfaceLink<
+  S extends InterfaceDefinition,
+  L extends keyof CompileTimeMetadata<S>["links"],
+> {
+  type: "removeInterfaceLink";
+  apiName: L;
+  source: InterfaceLocator<S>;
+  target: InterfaceLinkTarget<S, L>;
 }
 
 type PartialForOptionalProperties<T> = {
@@ -224,6 +267,8 @@ export interface UpdateObjectForInterface<S extends InterfaceDefinition> {
 }
 
 export type AnyEdit =
+  | AddInterfaceLink<InterfaceDefinition, string>
+  | RemoveInterfaceLink<InterfaceDefinition, string>
   | AddLink<any, any>
   | RemoveLink<any, any>
   | CreateObject<any>
