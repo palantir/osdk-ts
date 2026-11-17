@@ -342,6 +342,17 @@ export class OntologyBlockDataToFullMetadataConverter {
         };
       }
 
+      for (const property of Object.values(object.propertyTypes)) {
+        if (
+          property.sharedPropertyTypeApiName != null
+          && property.apiName != null
+          && properties[property.apiName] != null
+        ) {
+          sharedPropertyTypeMappings[property.sharedPropertyTypeApiName] =
+            property.apiName;
+        }
+      }
+
       const objectApiName = object.apiName!;
       result[objectApiName] = {
         objectType: objectTypeV2,
