@@ -28,7 +28,6 @@ export type AuthoringDataConstraint =
   | Exclude<DataConstraint, { type: "array" | "map" | "struct" | "structV2" }>
   | { type: "array"; array: AuthoringArrayTypeDataConstraints }
   | { type: "map"; map: AuthoringMapTypeDataConstraints }
-  | { type: "struct"; struct: AuthoringStructTypeDataConstraints }
   | { type: "structV2"; structV2: AuthoringStructTypeV2DataConstraints };
 
 // Matches generated code, recreated to reference AuthoringDataConstraint
@@ -43,11 +42,6 @@ interface AuthoringMapTypeDataConstraints {
   keyTypeDataConstraints: AuthoringDataConstraint[];
   valueTypeDataConstraints: AuthoringDataConstraint[];
   uniqueValues: MapUniqueValuesConstraint | undefined;
-}
-
-// Matches generated code, recreated to reference AuthoringDataConstraint
-interface AuthoringStructTypeDataConstraints {
-  elementConstraints: Record<string, AuthoringDataConstraint>;
 }
 
 // Matches generated code, replacing wire references with authored value types.

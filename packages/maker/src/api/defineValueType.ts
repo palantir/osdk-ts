@@ -33,6 +33,7 @@ import {
   VALUE_TYPE_DESCRIPTION_LIMIT,
   VALUE_TYPE_DISPLAY_NAME_LIMIT,
 } from "./validateMetadataLengths.js";
+import { validateNoLegacyStructConstraint } from "./values/validateNoLegacyStructs.js";
 import { type ValueTypeDefinitionVersion } from "./values/ValueTypeDefinitionVersion.js";
 import type {
   AuthoringDataConstraint,
@@ -209,6 +210,14 @@ export function defineValueType(
     VALUE_TYPE_DESCRIPTION_LIMIT,
     collector,
     "UTF-16 code units",
+  );
+  vt.constraints.forEach(({ constraint: { constraint } }, index) =>
+    validateNoLegacyStructConstraint(
+      vt,
+      constraint,
+      ["type", "constraints", index, "constraint"],
+      collector,
+    ),
   );
   collector.throwIfAnyIssues();
   updateOntology(vt);

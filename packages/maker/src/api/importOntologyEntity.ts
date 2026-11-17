@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import { createValidationIssueCollector } from "../validation.js";
 import type { OntologyEntityBase } from "./common/OntologyEntityBase.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { importedTypes } from "./defineOntology.js";
+import { validateNoLegacyStructs } from "./values/validateNoLegacyStructs.js";
+import type { ValueTypeDefinitionVersion } from "./values/ValueTypeDefinitionVersion.js";
 
 export function importOntologyEntity<T extends OntologyEntityBase>(e: T): void {
   if (e.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
@@ -39,6 +42,12 @@ export function importOntologyEntity<T extends OntologyEntityBase>(e: T): void {
     }
     return;
   }
+  const collector = createValidationIssueCollector();
+  validateNoLegacyStructs(
+    e as unknown as ValueTypeDefinitionVersion,
+    collector,
+  );
+  collector.throwIfAnyIssues();
   // value types are a special case
   if (
     importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName] === undefined

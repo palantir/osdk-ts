@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineObject } from "../defineObject.js";
@@ -22,9 +22,12 @@ import {
   defineOntology,
   dumpOntologyFullMetadata,
   dumpValueTypeWireType,
+  getImportedTypes,
   getOntologyDefinition,
 } from "../defineOntology.js";
 import { defineValueType } from "../defineValueType.js";
+import { importOntologyEntity } from "../importOntologyEntity.js";
+import type { AuthoringDataConstraint } from "../values/ValueTypeType.js";
 import { expectValidationIssues } from "./testUtils.js";
 
 describe("Value Types", () => {
@@ -294,4 +297,213 @@ describe("Value Types", () => {
       "2.0.0",
     ]);
   });
+
+  it("does not accept legacy struct constraints when authoring", () => {
+    expectTypeOf<
+      Extract<AuthoringDataConstraint, { type: "struct" }>
+    >().toBeNever();
+  });
+
+  it("rejects legacy struct constraints nested in array constraints", () => {
+    expectValidationIssues(
+      () =>
+        defineValueType({
+          apiName: "records",
+          displayName: "Records",
+          type: {
+            type: {
+              type: "array",
+              elementType: {
+                type: "struct",
+                fields: [{ identifier: "classification", baseType: "string" }],
+              },
+            },
+            constraints: [
+              {
+                constraint: {
+                  size: undefined,
+                  elementsUnique: undefined,
+                  elementsConstraint: legacyStructConstraint,
+                },
+              },
+            ],
+          },
+          version: "1.0.0",
+        }),
+      [
+        {
+          code: "legacy_struct_constraint",
+          path: [
+            "type",
+            "constraints",
+            0,
+            "constraint",
+            "elementsConstraint",
+            "struct",
+          ],
+        },
+      ],
+    );
+    expect(getOntologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE]).toEqual(
+      {},
+    );
+  });
+
+  it("rejects legacy struct constraints nested in map value constraints", () => {
+    expectValidationIssues(
+      () =>
+        defineValueType({
+          apiName: "recordsByKey",
+          displayName: "Records By Key",
+          type: {
+            type: {
+              type: "map",
+              keyType: "string",
+              valueType: {
+                type: "array",
+                elementType: {
+                  type: "struct",
+                  fields: [
+                    { identifier: "classification", baseType: "string" },
+                  ],
+                },
+              },
+            },
+            constraints: [
+              {
+                constraint: {
+                  keyTypeDataConstraints: [],
+                  valueTypeDataConstraints: [
+                    {
+                      type: "array",
+                      array: {
+                        size: undefined,
+                        elementsUnique: undefined,
+                        elementsConstraint: legacyStructConstraint,
+                      },
+                    },
+                  ],
+                  uniqueValues: undefined,
+                },
+              },
+            ],
+          },
+          version: "1.0.0",
+        }),
+      [
+        {
+          code: "legacy_struct_constraint",
+          path: [
+            "type",
+            "constraints",
+            0,
+            "constraint",
+            "valueTypeDataConstraints",
+            0,
+            "array",
+            "elementsConstraint",
+            "struct",
+          ],
+        },
+      ],
+    );
+  });
+
+  it("imports value types that use structV2", () => {
+    importOntologyEntity({
+      ...importableValueType,
+      baseType: {
+        type: "structV2",
+        structV2: {
+          fields: [
+            {
+              identifier: "classification",
+              baseType: { type: "string", string: {} },
+            },
+          ],
+        },
+      },
+    });
+    expect(
+      getImportedTypes()[OntologyEntityTypeEnum.VALUE_TYPE].imported,
+    ).toHaveLength(1);
+  });
+
+  it("rejects imported value types with legacy struct base types or constraints", () => {
+    expectValidationIssues(
+      () =>
+        importOntologyEntity({
+          ...importableValueType,
+          baseType: {
+            type: "array",
+            array: {
+              elementType: {
+                type: "struct",
+                struct: {
+                  fields: [
+                    {
+                      name: "classification",
+                      type: { type: "string", string: {} },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+          constraints: [
+            {
+              constraint: {
+                failureMessage: undefined,
+                constraint: {
+                  type: "array",
+                  array: {
+                    size: undefined,
+                    elementsUnique: undefined,
+                    elementsConstraint: {
+                      type: "struct",
+                      struct: { elementConstraints: {} },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        }),
+      [
+        {
+          code: "legacy_struct_base_type",
+          path: ["baseType", "array", "elementType", "struct"],
+        },
+        {
+          code: "legacy_struct_constraint",
+          path: [
+            "constraints",
+            0,
+            "constraint",
+            "constraint",
+            "array",
+            "elementsConstraint",
+            "struct",
+          ],
+        },
+      ],
+    );
+    expect(getImportedTypes()[OntologyEntityTypeEnum.VALUE_TYPE]).toEqual({});
+  });
 });
+
+const importableValueType = {
+  apiName: "imported",
+  packageNamespace: "com.other",
+  displayMetadata: { displayName: "Imported", description: "" },
+  status: { type: "active", active: {} },
+  version: "1.0.0",
+  constraints: [],
+  exampleValues: [],
+  __type: OntologyEntityTypeEnum.VALUE_TYPE,
+} as const;
+
+const legacyStructConstraint = {
+  type: "struct",
+  struct: { elementConstraints: {} },
+} as unknown as AuthoringDataConstraint;

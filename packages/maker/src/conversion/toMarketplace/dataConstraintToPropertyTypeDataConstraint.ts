@@ -26,12 +26,10 @@ import type {
   PropertyTypeDataConstraints_long,
   PropertyTypeDataConstraints_short,
   PropertyTypeDataConstraints_string,
-  PropertyTypeDataConstraints_struct,
   PropertyTypeDataConstraints_timestamp,
 } from "@osdk/client.unstable";
 
 import type { AuthoringDataConstraint } from "../../api/values/ValueTypeType.js";
-import { convertDataConstraintToDataConstraints } from "./convertDataConstraintToDataConstraints.js";
 
 export function dataConstraintToPropertyTypeDataConstraint(
   dc: AuthoringDataConstraint,
@@ -75,21 +73,6 @@ export function dataConstraintToPropertyTypeDataConstraint(
 
     case "string":
       return { ...dc } as PropertyTypeDataConstraints_string;
-
-    case "struct":
-      return {
-        type: "struct",
-        struct: {
-          elementConstraints: Object.fromEntries(
-            Object.entries(dc.struct.elementConstraints).map(
-              ([field, constraint]) => [
-                field,
-                convertDataConstraintToDataConstraints(constraint),
-              ],
-            ),
-          ),
-        },
-      } as PropertyTypeDataConstraints_struct;
 
     case "structV2":
       throw new Error("StructV2 constraints are not supported");

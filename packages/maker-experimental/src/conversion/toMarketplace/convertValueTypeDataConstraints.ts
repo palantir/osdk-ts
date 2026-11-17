@@ -178,46 +178,6 @@ function convertConstraintWithDependencies(
         ),
       };
     }
-    case "struct": {
-      if (baseType.type !== "struct") {
-        throwConstraintTypeMismatch("struct", baseType.type);
-      }
-      const fieldTypes = new Map(
-        baseType.struct.fields.map((field) => [field.name, field.type]),
-      );
-      const elements = Object.entries(constraint.struct.elementConstraints).map(
-        ([field, nestedConstraint]) => {
-          const fieldType = fieldTypes.get(field);
-          if (fieldType === undefined) {
-            throw new Error(`Missing base type for struct field ${field}`);
-          }
-          return {
-            field,
-            converted: convertConstraintWithDependencies(
-              nestedConstraint,
-              fieldType,
-              ridGenerator,
-            ),
-          };
-        },
-      );
-      return {
-        constraint: {
-          type: "struct",
-          struct: {
-            elementConstraints: Object.fromEntries(
-              elements.map(({ field, converted }) => [
-                field,
-                converted.constraint,
-              ]),
-            ),
-          },
-        },
-        dependencies: elements.flatMap(
-          ({ converted }) => converted.dependencies,
-        ),
-      };
-    }
     case "structV2": {
       if (baseType.type !== "structV2") {
         throwConstraintTypeMismatch("structV2", baseType.type);

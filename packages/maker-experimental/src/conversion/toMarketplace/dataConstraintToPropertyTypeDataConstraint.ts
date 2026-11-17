@@ -71,28 +71,6 @@ export function dataConstraintToPropertyTypeDataConstraint(
     case "string":
       return { ...dc };
 
-    case "struct":
-      return {
-        type: "struct",
-        struct: {
-          elementConstraints: Object.fromEntries(
-            Object.entries(dc.struct.elementConstraints).map(
-              ([field, constraint]) => [
-                field,
-                {
-                  propertyTypeConstraints: [
-                    {
-                      constraints:
-                        dataConstraintToPropertyTypeDataConstraint(constraint),
-                    },
-                  ],
-                },
-              ],
-            ),
-          ),
-        },
-      };
-
     case "structV2":
       return {
         type: "struct",
