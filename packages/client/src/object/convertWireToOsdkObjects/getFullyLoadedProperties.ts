@@ -32,8 +32,7 @@ export type ObjectLoadRequest = Pick<
 
 export interface ObjectLoadSource {
   request?: ObjectLoadRequest;
-  interfaceApiName?: string;
-  interfaceToObjectMapping?: Readonly<Record<string, string>>;
+  interfaceApiNameObjectLoadedAs?: string;
   suppliedProperties?: readonly string[];
 }
 
@@ -52,8 +51,7 @@ export function getFullyLoadedPropertiesForObject(
       result = getFullyLoadedProperties(
         source.request,
         object[ObjectDefRef],
-        source.interfaceApiName,
-        source.interfaceToObjectMapping,
+        source.interfaceApiNameObjectLoadedAs,
         source.suppliedProperties,
       );
       analyzedSources.set(source, result);
@@ -71,17 +69,20 @@ export function getFullyLoadedPropertiesForObject(
 export function getFullyLoadedProperties(
   request: ObjectLoadRequest | undefined,
   objectDef: ObjectMetadata,
-  interfaceApiName: string | undefined,
-  interfaceToObjectMapping: Readonly<Record<string, string>> = {},
+  interfaceApiNameObjectLoadedAs: string | undefined,
   suppliedProperties: readonly string[] = [],
 ): ReadonlySet<string> {
+  const interfaceToObjectMapping =
+    interfaceApiNameObjectLoadedAs == null
+      ? {}
+      : (objectDef.interfaceMap[interfaceApiNameObjectLoadedAs] ?? {});
   const implementations =
-    interfaceApiName == null
+    interfaceApiNameObjectLoadedAs == null
       ? undefined
-      : objectDef.interfaceImplementations?.[interfaceApiName];
+      : objectDef.interfaceImplementations?.[interfaceApiNameObjectLoadedAs];
   const selections: readonly PropertyIdentifier[] =
     request == null
-      ? (interfaceApiName == null
+      ? (interfaceApiNameObjectLoadedAs == null
           ? suppliedProperties
           : Object.keys(interfaceToObjectMapping).filter(
               (apiName) =>
@@ -97,13 +98,16 @@ export function getFullyLoadedProperties(
   const fullyLoaded = new Set<string>(
     allProperties &&
       defaultIsFull &&
-      (interfaceApiName == null ||
-        loadsAllBaseProperties(request.objectSet, interfaceApiName))
+      (interfaceApiNameObjectLoadedAs == null ||
+        loadsAllBaseProperties(
+          request.objectSet,
+          interfaceApiNameObjectLoadedAs,
+        ))
       ? Object.keys(objectDef.properties)
       : [],
   );
   const properties = allProperties
-    ? (interfaceApiName == null
+    ? (interfaceApiNameObjectLoadedAs == null
         ? Object.keys(objectDef.properties)
         : Object.keys(interfaceToObjectMapping)
       ).map((apiName): PropertyIdentifier => ({ type: "property", apiName }))
@@ -126,18 +130,18 @@ export function getFullyLoadedProperties(
         full = false;
         break;
       case "primaryKeyProperty":
-        if (interfaceApiName != null) continue;
+        if (interfaceApiNameObjectLoadedAs != null) continue;
         apiName = objectDef.primaryKeyApiName;
         break;
       case "titleProperty":
-        if (interfaceApiName != null) continue;
+        if (interfaceApiNameObjectLoadedAs != null) continue;
         apiName = objectDef.titleProperty;
         break;
       default:
         continue;
     }
     const implementation = implementations?.[apiName];
-    if (interfaceApiName == null) {
+    if (interfaceApiNameObjectLoadedAs == null) {
       if (apiName in objectDef.properties) {
         (full ? fullyLoaded : incomplete).add(apiName);
       }
@@ -182,12 +186,12 @@ function backingProperties(
 
 function loadsAllBaseProperties(
   objectSet: ObjectSet,
-  interfaceApiName: string,
+  interfaceApiNameObjectLoadedAs: string,
 ): boolean {
   switch (objectSet.type) {
     case "interfaceBase":
       return (
-        objectSet.interfaceType === interfaceApiName &&
+        objectSet.interfaceType === interfaceApiNameObjectLoadedAs &&
         objectSet.includeAllBaseObjectProperties === true
       );
     case "asBaseObjectTypes":
@@ -195,16 +199,19 @@ function loadsAllBaseProperties(
     case "filter":
     case "withProperties":
     case "nearestNeighbors":
-      return loadsAllBaseProperties(objectSet.objectSet, interfaceApiName);
+      return loadsAllBaseProperties(
+        objectSet.objectSet,
+        interfaceApiNameObjectLoadedAs,
+      );
     case "intersect":
       return objectSet.objectSets.some((set) =>
-        loadsAllBaseProperties(set, interfaceApiName),
+        loadsAllBaseProperties(set, interfaceApiNameObjectLoadedAs),
       );
     case "union":
       return (
         objectSet.objectSets.length > 0 &&
         objectSet.objectSets.every((set) =>
-          loadsAllBaseProperties(set, interfaceApiName),
+          loadsAllBaseProperties(set, interfaceApiNameObjectLoadedAs),
         )
       );
     default:
