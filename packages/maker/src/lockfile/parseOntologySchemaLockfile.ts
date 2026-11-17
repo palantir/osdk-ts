@@ -54,11 +54,17 @@ const INSTRUCTIONS_MESSAGE =
  * Appends repair advice to whatever zod would have said. Used where zod's own wording is worth
  * keeping (e.g. a discriminated union names the variants it knows).
  */
-function appendRestoreAdviceFor(what: string): { errorMap: z.ZodErrorMap } {
+function appendRestoreAdviceFor(what: string): { error: z.core.$ZodErrorMap } {
+  const defaultError = z.locales.en().localeError;
   return {
-    errorMap: (_issue, ctx) => ({
-      message: `${ctx.defaultError}. Restore the ${what} the last published release declared.`,
-    }),
+    error: (issue) => {
+      const diagnostic = defaultError(issue);
+      const message =
+        typeof diagnostic === "string"
+          ? diagnostic
+          : (diagnostic?.message ?? "Invalid input");
+      return `${message}. Restore the ${what} the last published release declared.`;
+    },
   };
 }
 
@@ -375,13 +381,13 @@ export function upgradeLockfile(
 }
 
 /** `["interfaces", "Person", "transitions", 0, "id"]` -> `interfaces.Person.transitions[0].id`. */
-function formatPath(path: ReadonlyArray<string | number>): string {
+function formatPath(path: ReadonlyArray<PropertyKey>): string {
   return path
     .map((key, index) => {
       if (typeof key === "number") {
         return `[${key}]`;
       }
-      return index === 0 ? key : `.${key}`;
+      return index === 0 ? String(key) : `.${String(key)}`;
     })
     .join("");
 }
