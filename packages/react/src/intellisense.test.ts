@@ -166,6 +166,30 @@ describe("intellisense", () => {
     expect(noRidsResp.body?.displayString).not.toContain("$rid");
   });
 
+  it("useOsdkObjectsWithPropertySecurities", { timeout: 90_000 }, async () => {
+    expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+    invariant(tsServer);
+
+    const { resp: securedResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 30,
+      offset: 9,
+    });
+
+    expect(securedResp.body?.displayString).toContain(
+      "OsdkInstanceWithPropertySecurities<Employee",
+    );
+
+    const { resp: plainResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 34,
+      offset: 9,
+    });
+
+    expect(plainResp.body?.displayString).toContain("Osdk.Instance<Employee");
+    expect(plainResp.body?.displayString).not.toContain("PropertySecurities");
+  });
+
   it("useOsdkObjectsWithProperties", { timeout: 90_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
     invariant(tsServer);

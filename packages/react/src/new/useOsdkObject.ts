@@ -23,11 +23,22 @@ import type {
 import type { ObserveObjectCallbackArgs } from "@osdk/client/observable";
 import React from "react";
 
+import type {
+  ExtractHookPropertySecurityOption,
+  OsdkInstanceWithPropertySecurities,
+} from "./HookPropertySecurities.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
 
-export interface UseOsdkObjectResult<Q extends ObjectOrInterfaceDefinition> {
-  object: Osdk.Instance<Q, "$allBaseProperties"> | undefined;
+export interface UseOsdkObjectResult<
+  Q extends ObjectOrInterfaceDefinition,
+  EXTRA_OPTIONS extends never | "$propertySecurities" = never,
+> {
+  object:
+    | ("$propertySecurities" extends EXTRA_OPTIONS
+        ? OsdkInstanceWithPropertySecurities<Q, "$allBaseProperties">
+        : Osdk.Instance<Q, "$allBaseProperties">)
+    | undefined;
   isLoading: boolean;
 
   error: Error | undefined;
@@ -39,10 +50,23 @@ export interface UseOsdkObjectResult<Q extends ObjectOrInterfaceDefinition> {
   forceUpdate: () => void;
 }
 
-export interface UseOsdkObjectOptions<Q extends ObjectOrInterfaceDefinition> {
+export interface UseOsdkObjectOptions<
+  Q extends ObjectOrInterfaceDefinition,
+  PROPERTY_SECURITIES extends boolean = boolean,
+> {
   $select?: readonly PropertyKeys<Q>[];
   enabled?: boolean;
-  $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside the object. The returned object will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   *
+   * `$propertySecurities` is typed as possibly `undefined`: metadata is only
+   * valid for the value it was loaded with, and another query that loads the
+   * same object without metadata can replace the cached value.
+   */
+  $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
 
   /**
    * When true, includes all properties of the underlying concrete object type
@@ -79,11 +103,14 @@ export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
  * @param options Options including $select, enabled, $loadPropertySecurityMetadata,
  *                and $includeAllBaseObjectProperties
  */
-export function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
+export function useOsdkObject<
+  Q extends ObjectOrInterfaceDefinition,
+  S extends boolean = false,
+>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
-  options?: UseOsdkObjectOptions<Q>,
-): UseOsdkObjectResult<Q>;
+  options?: UseOsdkObjectOptions<Q, S>,
+): UseOsdkObjectResult<Q, ExtractHookPropertySecurityOption<S>>;
 /*
     Implementation of useOsdkObject
  */
