@@ -31,6 +31,7 @@ import * as commonJs from "./common.js";
 import { LocalStorageState, SessionStorageState } from "./common.js";
 import { createPublicOauthClient } from "./createPublicOauthClient.js";
 import { PublicOauthClient } from "./PublicOauthClient.js";
+import { SignInRequiredError } from "./SignInRequiredError.js";
 
 const hoistedMocks = vi.hoisted(() => {
   return {
@@ -361,12 +362,21 @@ describe(createPublicOauthClient, () => {
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(refreshTokenKey);
     });
 
+    it("throws SignInRequiredError from refresh when no refresh token is stored", async () => {
+      setupLocalState({});
+      setupClient({ ...BASE_CLIENT_ARGS, scopes: ["api:read-data"] });
+
+      await expect(client.refresh()).rejects.toBeInstanceOf(
+        SignInRequiredError,
+      );
+    });
+
     it("removes the refresh token and throws when refresh is refused", async () => {
       setupClient({ ...BASE_CLIENT_ARGS, scopes: ["api:read-data"] });
       vi.mocked(oauth4webapi.isOAuth2Error).mockReturnValueOnce(true);
 
-      await expect(client.refresh()).rejects.toThrowError(
-        "Could not refresh token",
+      await expect(client.refresh()).rejects.toBeInstanceOf(
+        SignInRequiredError,
       );
 
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(refreshTokenKey);

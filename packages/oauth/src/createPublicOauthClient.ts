@@ -42,6 +42,7 @@ import type { TokenStorageType } from "./common.js";
 import { delay } from "./delay.js";
 import type { OauthLogger } from "./Logger.js";
 import type { PublicOauthClient } from "./PublicOauthClient.js";
+import { SignInRequiredError } from "./SignInRequiredError.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 import { processOptionsAndAssignDefaults } from "./utils.js";
@@ -241,7 +242,9 @@ export function createPublicOauthClient(
     expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
     if (tokenStorage === "none") {
-      if (expectRefreshToken) throw new Error("No refresh token found");
+      if (expectRefreshToken) {
+        throw new SignInRequiredError("No refresh token found");
+      }
       return;
     }
 
@@ -259,7 +262,9 @@ export function createPublicOauthClient(
       lastRefreshTokenMarker !== refreshTokenMarker ||
       !areScopesEqual
     ) {
-      if (expectRefreshToken) throw new Error("No refresh token found");
+      if (expectRefreshToken) {
+        throw new SignInRequiredError("No refresh token found");
+      }
       return;
     }
 
@@ -286,7 +291,7 @@ export function createPublicOauthClient(
       }
       removeLocal(client, storage);
       if (expectRefreshToken) {
-        throw new Error("Could not refresh token");
+        throw new SignInRequiredError("Could not refresh token");
       }
       return;
     }
