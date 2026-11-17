@@ -20,5 +20,6 @@ import type { Token } from "./Token.js";
 export interface PublicOauthClient extends BaseOauthClient<
   "signIn" | "signOut" | "refresh"
 > {
+  /** Rejects with `SignInRequiredError` when only a new sign-in can get a token; other failures reject with the original error. */
   refresh: () => Promise<Token | undefined>;
 }
