@@ -41,9 +41,10 @@ import {
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
+import type { ObjectLoadContext } from "./getFullyLoadedProperties.js";
 import {
   ClientRef,
-  FullyLoadedProperties,
+  ObjectLoadContextRef,
   ObjectDefRef,
   PropertySecuritiesRef,
   UnderlyingOsdkObject,
@@ -88,7 +89,7 @@ const basePropDefs = {
           { ...rawObj },
           {},
           undefined,
-          this[FullyLoadedProperties],
+          this[ObjectLoadContextRef],
         );
       }
 
@@ -112,7 +113,7 @@ const basePropDefs = {
         newObject,
         {},
         undefined,
-        this[FullyLoadedProperties],
+        this[ObjectLoadContextRef],
       );
     },
   },
@@ -173,9 +174,9 @@ export function createOsdkObject(
   simpleOsdkProperties: SimpleOsdkProperties,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
   wirePropertySecurities: PropertySecurities[] | undefined = [],
-  fullyLoadedProperties: ReadonlySet<string> = new Set(
-    Object.keys(simpleOsdkProperties),
-  ),
+  loadContext: ObjectLoadContext = {
+    suppliedProperties: Object.keys(simpleOsdkProperties),
+  },
 ): ObjectHolder {
   const { parsedObject, clientPropertySecurities } = parseWhenSecuritiesLoaded(
     wirePropertySecurities,
@@ -187,7 +188,7 @@ export function createOsdkObject(
   // updates the object's "hidden class/map".
   const rawObj = parsedObject as ObjectHolder;
   Object.defineProperties(rawObj, {
-    [FullyLoadedProperties]: { value: fullyLoadedProperties },
+    [ObjectLoadContextRef]: { value: loadContext },
     [UnderlyingOsdkObject]: {
       enumerable: false,
       value: simpleOsdkProperties,
