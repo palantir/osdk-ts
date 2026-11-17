@@ -107,6 +107,13 @@ export function defineObject(
         objectDef.properties[apiName].type === "mediaReference",
       `Property ${apiName} on object ${objectDef.apiName} can only use includeEmptyBackingMediaSet when its type is mediaReference`,
     );
+    addIssue(
+      objectDef.properties?.[apiName]?.requireBackingMediaItemReadToken !==
+        true ||
+        (objectDef.properties[apiName].type === "mediaReference" &&
+          objectDef.properties[apiName].includeEmptyBackingMediaSet === true),
+      `Property ${apiName} on object ${objectDef.apiName} can only requireBackingMediaItemReadToken when includeEmptyBackingMediaSet is true on a mediaReference`,
+    );
     const sharedPropertyType =
       objectDef.properties?.[apiName]?.sharedPropertyType;
     if (sharedPropertyType !== undefined) {

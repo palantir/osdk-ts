@@ -186,6 +186,27 @@ describe("Object Types", () => {
     });
   });
 
+  it("rejects requiring item tokens without a generated backing media set", () => {
+    expect(() =>
+      defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Document",
+        pluralDisplayName: "Documents",
+        apiName: "Document",
+        primaryKeyPropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          file: {
+            type: "mediaReference",
+            requireBackingMediaItemReadToken: true,
+          },
+        },
+      }),
+    ).toThrow(
+      "can only requireBackingMediaItemReadToken when includeEmptyBackingMediaSet is true on a mediaReference",
+    );
+  });
+
   it("rejects an empty backing Media Set for other property types", () => {
     expect(() =>
       defineObject({

@@ -204,4 +204,35 @@ describe("Marketplace media reference bindings", () => {
       ),
     ).toHaveLength(3);
   });
+  it("carries the generated backing media set read restriction into packaging", async () => {
+    const result = await defineOntologyV2("com.example.", () => {
+      defineObject({
+        apiName: "Document",
+        displayName: "Document",
+        pluralDisplayName: "Documents",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: {
+          id: { type: "string" },
+          privateFile: {
+            type: "mediaReference",
+            includeEmptyBackingMediaSet: true,
+            requireBackingMediaItemReadToken: true,
+          },
+          ordinaryFile: {
+            type: "mediaReference",
+            includeEmptyBackingMediaSet: true,
+          },
+        },
+      });
+    });
+    expect(result.backingMediaSetNames).toEqual([
+      "com.example.Document.privateFile",
+      "com.example.Document.ordinaryFile",
+    ]);
+    expect(result.backingMediaSetOptions).toEqual({
+      "com.example.Document.privateFile": { requireItemReadToken: true },
+      "com.example.Document.ordinaryFile": { requireItemReadToken: undefined },
+    });
+  });
 });

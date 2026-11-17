@@ -121,4 +121,43 @@ describe("generateBackingMediaSetBlockResult", () => {
       ),
     ).toBe('"1"');
   });
+  it("writes the item-token requirement without changing the block identity", async () => {
+    const mediaSetName = "com.palantir.Document.file";
+    const unprotectedResult = await generateBackingMediaSetBlockResult(
+      mediaSetName,
+      buildDir,
+    );
+    const unprotectedMetadata = JSON.parse(
+      await fs.promises.readFile(
+        path.join(unprotectedResult.block_data_directory, "metadata.json"),
+        "utf-8",
+      ),
+    ) as { v1: { mediaSet: { mediaSetFeatureFlags?: unknown } } };
+    expect(
+      unprotectedMetadata.v1.mediaSet.mediaSetFeatureFlags,
+    ).toBeUndefined();
+
+    const protectedResult = await generateBackingMediaSetBlockResult(
+      mediaSetName,
+      buildDir,
+      undefined,
+      { requireItemReadToken: true },
+    );
+    const protectedMetadata = JSON.parse(
+      await fs.promises.readFile(
+        path.join(protectedResult.block_data_directory, "metadata.json"),
+        "utf-8",
+      ),
+    ) as { type: string; v2: { mediaSet: { mediaSetFeatureFlags?: unknown } } };
+    expect(protectedMetadata.type).toBe("v2");
+    expect(protectedMetadata.v2.mediaSet.mediaSetFeatureFlags).toEqual({
+      requireItemReadToken: true,
+    });
+    expect(protectedResult.block_identifier).toBe(
+      unprotectedResult.block_identifier,
+    );
+    expect(protectedResult.add_on_override).toEqual(
+      unprotectedResult.add_on_override,
+    );
+  });
 });

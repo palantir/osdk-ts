@@ -68,6 +68,7 @@ export interface OntologyV2Result {
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
+  backingMediaSetOptions: Record<string, { requireItemReadToken?: boolean }>;
   folders: OntologyFolder[];
 }
 
@@ -199,17 +200,26 @@ export async function defineOntologyV2(
     })
     .map(([apiName]) => apiName);
 
-  const backingMediaSetNames = Object.values(
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
-  ).flatMap((ontologyEntity) => {
-    const objectType = ontologyEntity as ObjectType;
-    return (objectType.properties ?? [])
-      .filter(
-        ({ includeEmptyBackingMediaSet }) =>
-          includeEmptyBackingMediaSet === true,
-      )
-      .map(({ apiName }) => `${objectType.apiName}.${apiName}`);
-  });
+  const backingMediaSetOptions = Object.fromEntries(
+    Object.values(
+      ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+    ).flatMap((ontologyEntity) => {
+      const objectType = ontologyEntity as ObjectType;
+      return (objectType.properties ?? [])
+        .filter(
+          ({ includeEmptyBackingMediaSet }) =>
+            includeEmptyBackingMediaSet === true,
+        )
+        .map(
+          ({ apiName, requireBackingMediaItemReadToken }) =>
+            [
+              `${objectType.apiName}.${apiName}`,
+              { requireItemReadToken: requireBackingMediaItemReadToken },
+            ] as const,
+        );
+    }),
+  );
+  const backingMediaSetNames = Object.keys(backingMediaSetOptions);
 
   const explicitMediaSetNames = Object.values(
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
@@ -276,6 +286,7 @@ export async function defineOntologyV2(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    backingMediaSetOptions,
     folders,
   };
 }

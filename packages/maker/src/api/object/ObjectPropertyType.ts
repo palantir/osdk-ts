@@ -58,5 +58,10 @@ export interface ObjectPropertyTypeInner {
   editOnly?: boolean;
   /** Creates an empty multimodal Media Set to back this media reference when the ontology is installed. */
   includeEmptyBackingMediaSet?: boolean;
+  /**
+   * Requires item read tokens on the generated backing media set, preventing project viewers from reading its contents
+   * directly. Only valid with includeEmptyBackingMediaSet. Requires a compatible Mio deployment.
+   */
+  requireBackingMediaItemReadToken?: boolean;
   reference?: MediaPropertyReference;
 }

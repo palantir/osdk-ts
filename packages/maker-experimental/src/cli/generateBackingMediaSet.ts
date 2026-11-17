@@ -37,6 +37,7 @@ export async function generateBackingMediaSetBlockResult(
   mediaSetName: string,
   buildDir: string,
   randomnessKey?: string,
+  options: { requireItemReadToken?: boolean } = {},
 ): Promise<BlockGeneratorResult> {
   const blockIdentifier = `${mediaSetName}-backing-media-set`;
   const outputReadableId =
@@ -61,7 +62,14 @@ export async function generateBackingMediaSetBlockResult(
   await Promise.all([
     fs.promises.writeFile(
       path.join(blockDataDirectory, "metadata.json"),
-      JSON.stringify(createMediaSetBlockData(mediaSetTemplateId), null, 2),
+      JSON.stringify(
+        createMediaSetBlockData(
+          mediaSetTemplateId,
+          options.requireItemReadToken === true,
+        ),
+        null,
+        2,
+      ),
     ),
     fs.promises.writeFile(path.join(blockDataDirectory, "VERSION"), '"1"'),
   ]);
@@ -153,10 +161,15 @@ function createLocalizedAbout(
   };
 }
 
-function createMediaSetBlockData(mediaSetTemplateId: string): unknown {
+function createMediaSetBlockData(
+  mediaSetTemplateId: string,
+  requireItemReadToken: boolean,
+): unknown {
+  // Older Mio installers reject the v2 discriminator instead of silently ignoring the read restriction.
+  const version = requireItemReadToken ? "v2" : "v1";
   return {
-    type: "v1",
-    v1: {
+    type: version,
+    [version]: {
       mediaSet: {
         mediaSetRid: mediaSetTemplateId,
         mediaSchema: {
@@ -178,6 +191,9 @@ function createMediaSetBlockData(mediaSetTemplateId: string): unknown {
         accessPatterns: {},
         builtInAccessPatternOverrides: {},
         defaultBranchName: {},
+        ...(requireItemReadToken
+          ? { mediaSetFeatureFlags: { requireItemReadToken: true } }
+          : {}),
       },
       mediaItems: [],
     },
