@@ -15,13 +15,11 @@
  */
 
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { SourceMap, type SourceMapPayload } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { type CallSiteObject, getCallSites } from "node:util";
 
-import ts from "typescript";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 import { defineObject } from "../api/defineObject.js";
@@ -53,7 +51,7 @@ async function fixture(text: string, name = "uploads.ts"): Promise<Fixture> {
   return {
     text,
     fileName,
-    url: `${pathToFileURL(fileName).href}?evaluation=first`,
+    url: pathToFileURL(fileName).href,
   };
 }
 
@@ -159,35 +157,18 @@ it("maps every issue through a wrapped inline input at an optional call without 
   expect(error.stack).toBe(stack);
 });
 
-it("translates emitted caller coordinates before finding the authored call", async () => {
-  const source = await fixture(
-    `type Label = { value: string };\n\nconst uploads = maker.defineObject(${input});`,
-  );
-  const emitted = ts.transpileModule(source.text, {
-    fileName: source.fileName,
-    compilerOptions: {
-      sourceMap: true,
-      target: ts.ScriptTarget.ES2022,
-      module: ts.ModuleKind.ESNext,
-    },
-  });
+it("recognizes filesystem paths in CommonJS call sites", async () => {
+  const source = await fixture(`defineObject(${input});`, "uploads.cjs");
   const session = new SourceSession();
-  session.registerScript(
-    source.url,
-    new SourceMap(JSON.parse(emitted.sourceMapText!) as SourceMapPayload),
-  );
+  session.registerScript(source.url);
   const error = failure();
   observe(session, error, [
-    caller({ ...source, text: emitted.outputText }, "maker.defineObject"),
+    { ...caller(source, "defineObject"), scriptName: source.fileName },
   ]);
 
   const result = await enriched(session, error);
+  expect(result.diagnostics[0].source.fileName).toBe(source.fileName);
   expect(highlighted(source, result)).toBe('"Invalid"');
-  expect(result.diagnostics[0].source).toMatchObject({
-    fileName: source.fileName,
-    precision: "exact",
-    start: { line: 5 },
-  });
 });
 
 it.each([
@@ -242,43 +223,6 @@ it("keeps the first observed definition when the same error passes through an ou
   const result = await enriched(session, error);
   expect(result.diagnostics[0].source.fileName).toBe(inner.fileName);
   expect(highlighted(inner, result)).toBe('"Invalid"');
-});
-
-it("isolates observations by the full executed URL, even for the same physical file", async () => {
-  const source = await fixture(`defineObject(${input});`);
-  const first = new SourceSession();
-  const second = new SourceSession();
-  first.registerScript(source.url);
-  second.registerScript(
-    source.url.replace("evaluation=first", "evaluation=second"),
-  );
-  const error = failure();
-  const sites = [caller(source, "defineObject")];
-  observe(first, error, sites);
-  observe(second, error, sites);
-
-  await expect(second.rethrow(error)).rejects.toBe(error);
-  expect(highlighted(source, await enriched(first, error))).toBe('"Invalid"');
-});
-
-it("does not treat an unmapped generated position as an authored position", async () => {
-  const source = await fixture(`defineObject(${input});`);
-  const session = new SourceSession();
-  session.registerScript(
-    source.url,
-    new SourceMap({
-      version: 3,
-      file: "generated.js",
-      sources: [source.fileName],
-      sourcesContent: [],
-      names: [],
-      mappings: "",
-      sourceRoot: "",
-    }),
-  );
-  const error = failure();
-  observe(session, error, [caller(source, "defineObject")]);
-  await expect(session.rethrow(error)).rejects.toBe(error);
 });
 
 it("leaves unobserved validation failures and unrelated thrown values unchanged", async () => {

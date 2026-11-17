@@ -15,7 +15,7 @@
  */
 
 import { readFile } from "node:fs/promises";
-import type { SourceMap } from "node:module";
+import { findSourceMap } from "node:module";
 import { fileURLToPath } from "node:url";
 import { getCallSites } from "node:util";
 
@@ -37,8 +37,8 @@ interface FailureSite {
 /**
  * Connects definition failures to authored calls within one evaluation.
  *
- * The loader registers executed script URLs and their private source maps. Definition
- * boundaries then notify `observe` while the caller is still on the stack, without
+ * The loader records files loaded by Node without changing their identities. Definition
+ * boundaries notify `observe` while the caller is still on the stack, without
  * changing the error seen by user catches. Only an error escaping evaluation reaches
  * `rethrow`, which reads the authored file and adds diagnostics.
  *
@@ -46,19 +46,14 @@ interface FailureSite {
  * coordinates, not source snapshots. Separate sessions own separate URL/error maps.
  */
 export class SourceSession {
-  private readonly scripts = new Map<
-    string,
-    { readonly fileName: string; readonly map?: SourceMap }
-  >();
+  private readonly scripts = new Map<string, string>();
   private readonly failures = new WeakMap<MakerValidationError, FailureSite>();
 
-  /**
-   * Registers the executed URL, including its evaluation query parameter. Matching
-   * full URLs keeps concurrent evaluations of the same file distinct. The source map
-   * translates emitted TypeScript positions; untransformed JavaScript needs none.
-   */
-  public registerScript(url: string, map?: SourceMap): void {
-    this.scripts.set(url, { fileName: fileURLToPath(url), map });
+  /** ESM call sites use URLs; CommonJS call sites use filesystem paths. */
+  public registerScript(url: string): void {
+    const fileName = fileURLToPath(url);
+    this.scripts.set(url, fileName);
+    this.scripts.set(fileName, fileName);
   }
 
   /**
@@ -76,24 +71,24 @@ export class SourceSession {
     argumentCount: number,
   ): void => {
     if (this.failures.has(error)) return;
-    // Raw structured sites avoid Error.prepareStackTrace and process-wide source-map
-    // settings. Skip to the public definition, whose name also survives bundling.
+    // Structured sites avoid Error.prepareStackTrace. Match loaded scripts before
+    // applying source maps already enabled by the host; do not change global settings.
     const sites = getCallSites(200, { sourceMap: false });
     const boundaryIndex = sites.findIndex(
       (site) => site.functionName === boundary.name,
     );
     if (boundaryIndex === -1) return;
     for (const [index, site] of sites.slice(boundaryIndex + 1).entries()) {
-      const script = this.scripts.get(site.scriptName);
-      if (script === undefined) continue;
+      const fileName = this.scripts.get(site.scriptName);
+      if (fileName === undefined) continue;
       const line = site.lineNumber - 1;
       const column = site.columnNumber - 1;
-      const original = script.map?.findEntry(line, column);
-      // Generated helpers can have no authored position. Raw emitted coordinates
-      // must not be interpreted as coordinates in the original TypeScript file.
-      if (original !== undefined && !("originalLine" in original)) return;
+      const original = findSourceMap(fileName)?.findEntry(line, column);
+      // A generated position without a mapping is not an authored position.
+      if (original !== undefined && !("originalSource" in original)) return;
+      const source = original?.originalSource ?? fileName;
       this.failures.set(error, {
-        fileName: script.fileName,
+        fileName: source.startsWith("file:") ? fileURLToPath(source) : source,
         line: original?.originalLine ?? line,
         column: original?.originalColumn ?? column,
         argumentCount,
