@@ -165,11 +165,9 @@ function createMediaSetBlockData(
   mediaSetTemplateId: string,
   requireItemReadToken: boolean,
 ): unknown {
-  // Older Mio installers reject the v2 discriminator instead of silently ignoring the read restriction.
-  const version = requireItemReadToken ? "v2" : "v1";
   return {
-    type: version,
-    [version]: {
+    type: "v1",
+    v1: {
       mediaSet: {
         mediaSetRid: mediaSetTemplateId,
         mediaSchema: {

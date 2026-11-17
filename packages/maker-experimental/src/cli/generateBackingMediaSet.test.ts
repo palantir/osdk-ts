@@ -148,9 +148,9 @@ describe("generateBackingMediaSetBlockResult", () => {
         path.join(protectedResult.block_data_directory, "metadata.json"),
         "utf-8",
       ),
-    ) as { type: string; v2: { mediaSet: { mediaSetFeatureFlags?: unknown } } };
-    expect(protectedMetadata.type).toBe("v2");
-    expect(protectedMetadata.v2.mediaSet.mediaSetFeatureFlags).toEqual({
+    ) as { type: string; v1: { mediaSet: { mediaSetFeatureFlags?: unknown } } };
+    expect(protectedMetadata.type).toBe("v1");
+    expect(protectedMetadata.v1.mediaSet.mediaSetFeatureFlags).toEqual({
       requireItemReadToken: true,
     });
     expect(protectedResult.block_identifier).toBe(
