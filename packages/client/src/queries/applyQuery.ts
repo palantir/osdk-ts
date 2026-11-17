@@ -407,6 +407,9 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
     case "struct":
       return Object.values(dataType.struct).some(requiresConversion);
 
+    case "array":
+      return requiresConversion(dataType.array);
+
     case "set":
       return requiresConversion(dataType.set);
 
@@ -416,6 +419,8 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":
     case "object":
+    case "interface":
+    case "map":
       return true;
 
     default:
