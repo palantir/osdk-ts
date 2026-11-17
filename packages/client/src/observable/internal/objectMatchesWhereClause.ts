@@ -91,7 +91,10 @@ export function objectSortaMatchesWhereClause(
     );
   }
   if (is$not(whereClause)) {
-    return !objectSortaMatchesWhereClause(o, whereClause.$not, strict);
+    // Negation swaps the two modes: an object strictly matches `$not` when the
+    // inner clause cannot possibly match it (the loose answer), and loosely
+    // matches `$not` when the inner clause does not strictly match it.
+    return !objectSortaMatchesWhereClause(o, whereClause.$not, !strict);
   }
 
   return Object.entries(whereClause).every(([key, filter]) => {
