@@ -63,7 +63,8 @@ export function createObjectSpecifierFromInterfaceSpecifier<
 export function extractPrimaryKeyFromObjectSpecifier(
   ObjectSpecifier: ObjectSpecifier<any>,
 ): string {
-  return ObjectSpecifier.split(":")[1];
+  // The primary key can itself contain colons, so only split on the first one.
+  return ObjectSpecifier.slice(ObjectSpecifier.indexOf(":") + 1);
 }
 
 /**
