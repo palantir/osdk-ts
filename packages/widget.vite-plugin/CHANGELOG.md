@@ -1,5 +1,40 @@
 # @osdk/widget.vite-plugin
 
+## 3.92.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.92.0
+
+## 3.91.0
+
+### Minor Changes
+
+- ee09000: Read the widget set resources.json from the Vite public directory (public/resources.json by default) instead of the project root.
+- 3371bee: Add datasets to the widget set input spec
+
+### Patch Changes
+
+- Updated dependencies [ee09000]
+- Updated dependencies [3371bee]
+  - @osdk/widget.api@3.91.0
+
+## 3.90.0
+
+### Minor Changes
+
+- 9ca39db: Fail widget builds that set Vite's `base` to anything other than `/`, with an error saying how to fix it. Foundry serves widget files from the root path, so other bases can't load.
+
+### Patch Changes
+
+- @osdk/widget.api@3.90.0
+
+## 3.89.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.89.0
+
 ## 3.88.0
 
 ### Patch Changes

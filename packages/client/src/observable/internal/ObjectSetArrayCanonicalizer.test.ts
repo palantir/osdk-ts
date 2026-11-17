@@ -22,8 +22,9 @@ describe(ObjectSetArrayCanonicalizer, () => {
   describe("canonicalizeUnion", () => {
     it("returns same reference for same items regardless of order", () => {
       const c = new ObjectSetArrayCanonicalizer();
-      const a = c.canonicalizeUnion(["a", "b", "c"]);
+      const a = c.canonicalizeUnion(["b", "a", "c"]);
       const b = c.canonicalizeUnion(["c", "a", "b"]);
+      expect(a).toEqual(["a", "b", "c"]);
       expect(a).toBe(b);
     });
 
@@ -45,6 +46,7 @@ describe(ObjectSetArrayCanonicalizer, () => {
       const c = new ObjectSetArrayCanonicalizer();
       const a = c.canonicalizeUnion([]);
       const b = c.canonicalizeUnion([]);
+      expect(a).toEqual([]);
       expect(a).toBe(b);
     });
   });
@@ -52,8 +54,9 @@ describe(ObjectSetArrayCanonicalizer, () => {
   describe("canonicalizeIntersect", () => {
     it("returns same reference for same items regardless of order", () => {
       const c = new ObjectSetArrayCanonicalizer();
-      const a = c.canonicalizeIntersect(["a", "b"]);
-      const b = c.canonicalizeIntersect(["b", "a"]);
+      const a = c.canonicalizeIntersect(["b", "a"]);
+      const b = c.canonicalizeIntersect(["a", "b"]);
+      expect(a).toEqual(["a", "b"]);
       expect(a).toBe(b);
     });
 
@@ -70,6 +73,8 @@ describe(ObjectSetArrayCanonicalizer, () => {
       const c = new ObjectSetArrayCanonicalizer();
       const a = c.canonicalizeSubtract(["a", "b"]);
       const b = c.canonicalizeSubtract(["b", "a"]);
+      expect(a).toEqual(["a", "b"]);
+      expect(b).toEqual(["b", "a"]);
       expect(a).not.toBe(b);
     });
 

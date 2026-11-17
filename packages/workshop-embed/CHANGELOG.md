@@ -1,5 +1,11 @@
 # @osdk/workshop-embed
 
+## 0.3.0
+
+### Minor Changes
+
+- f0ed727: Wait for the module interface during connection and automatically validate scalar variable updates against Workshop's schema in both directions.
+
 ## 0.2.0
 
 ### Minor Changes

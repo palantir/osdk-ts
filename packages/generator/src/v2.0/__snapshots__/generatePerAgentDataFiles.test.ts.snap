@@ -8,7 +8,10 @@ exports[`generatePerAgentDataFiles > escapes field names and discriminator strin
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -22,7 +25,20 @@ export namespace escapingAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: { 'escaped"argument': { 'escaped"key': 'escaped"value'; 'escaped"field': string } };
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = { type: 'escaped"context'; data: ContextItems['escaped"context'] };
+
+  export interface ContextItems {
+    'escaped"context': string;
   }
 
   export type SendEventArguments = { readonly 'escaped"event': Events['escaped"event'] };
@@ -65,7 +81,10 @@ exports[`generatePerAgentDataFiles > generates an agent with forInternalUse=fals
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -79,8 +98,19 @@ export namespace noArgumentsAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
   }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: Record<string, never>;
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
 
   export type SendEventArguments = never;
 
@@ -118,7 +148,10 @@ exports[`generatePerAgentDataFiles > generates an agent with forInternalUse=true
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -132,8 +165,19 @@ export namespace noArgumentsAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
   }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: Record<string, never>;
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
 
   export type SendEventArguments = never;
 
@@ -171,7 +215,10 @@ exports[`generatePerAgentDataFiles > generates definitions for objectArgumentsAg
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -188,7 +235,22 @@ export namespace objectArgumentsAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: { employee: $AgentResult.ObjectType<Employee>; employees: $AgentResult.ObjectSetType<Employee> };
+    agentState: {
+      data: { employee: $AgentResult.ObjectType<Employee>; employees: $AgentResult.ObjectSetType<Employee> };
+    };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = { type: 'selection'; data: ContextItems['selection'] };
+
+  export interface ContextItems {
+    selection: { employee: $AgentResult.ObjectType<Employee>; employees: $AgentResult.ObjectSetType<Employee> };
   }
 
   export type SendEventArguments = { readonly SelectEmployees: Events['SelectEmployees'] };
@@ -232,7 +294,10 @@ exports[`generatePerAgentDataFiles > generates definitions for optionalArguments
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -248,8 +313,19 @@ export namespace optionalArgumentsAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
   }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: { city?: string | null };
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
 
   export type SendEventArguments = never;
 
@@ -289,7 +365,10 @@ exports[`generatePerAgentDataFiles > generates definitions for structuredArgumen
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -306,8 +385,39 @@ export namespace structuredArgumentsAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
   }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: {
+      future: unknown;
+      nested: {
+        count: number;
+        date: string;
+        empty: Record<string, never>;
+        enabled: boolean;
+        float: number;
+        label: string | null;
+        long: number;
+        scores: Record<string, number>;
+        short: number;
+        tags: Array<string>;
+        timestamp: string;
+      };
+      optionalText?: string | null;
+      requiredText: string;
+      selection:
+        | { kind: 'employee'; employee: $AgentResult.ObjectType<Employee> }
+        | { kind: 'employees'; employees: $AgentResult.ObjectSetType<Employee> };
+    };
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
 
   export type SendEventArguments = never;
 
@@ -365,7 +475,10 @@ exports[`generatePerAgentDataFiles > generates definitions for weatherAgent 1`] 
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/api/unstable';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -379,7 +492,23 @@ export namespace weatherAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: { city: string };
+    agentState: { data: { temperature: number } };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem =
+    | { type: 'weather-result'; data: ContextItems['weather-result'] }
+    | { type: 'temperature'; data: ContextItems['temperature'] };
+
+  export interface ContextItems {
+    temperature: number | null;
+    'weather-result': string;
   }
 
   export type SendEventArguments =
@@ -415,7 +544,7 @@ export const weatherAgent: weatherAgent = {
 }
 `;
 
-exports[`generatePerAgentDataFiles > generates payload types and imports objects used only by events 1`] = `
+exports[`generatePerAgentDataFiles > generates payload types and imports objects used by events 1`] = `
 {
   "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
 ",
@@ -423,7 +552,10 @@ exports[`generatePerAgentDataFiles > generates payload types and imports objects
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -438,8 +570,19 @@ export namespace noArgumentsAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
   }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: Record<string, never>;
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
 
   export type SendEventArguments =
     | {
@@ -524,6 +667,186 @@ export const noArgumentsAgent: noArgumentsAgent = {
 }
 `;
 
+exports[`generatePerAgentDataFiles > generates result types and imports objects used by agent state 1`] = `
+{
+  "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
+",
+  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
+  AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
+  AgentSendEventOptions as $AgentSendEventOptions,
+} from '@osdk/client/experimental';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { Employee } from '../objects/Employee.js';
+
+/** @beta */
+export namespace noArgumentsAgent {
+  export interface Signatures {
+    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<noArgumentsAgent.Session>;
+    experimental_getSession(sessionId: string): Promise<noArgumentsAgent.Session>;
+  }
+
+  export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+    experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: Record<string, never>;
+    agentState: {
+      data: {
+        future: unknown;
+        nested: {
+          count: number;
+          date: string;
+          empty: Record<string, never>;
+          enabled: boolean;
+          float: number;
+          label: string | null;
+          long: number;
+          scores: Record<string, number>;
+          short: number;
+          tags: Array<string>;
+          timestamp: string;
+        };
+        optionalText: string | null;
+        requiredText: string;
+        selection:
+          | { kind: 'employee'; employee: $AgentResult.ObjectType<Employee> }
+          | { kind: 'employees'; employees: $AgentResult.ObjectSetType<Employee> };
+      };
+    };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
+
+  export type SendEventArguments = never;
+
+  export type Events = Record<never, never>;
+
+  export type CreateSessionArguments = Record<string, never>;
+}
+
+/** @beta */
+export interface noArgumentsAgent
+  extends $AgentDefinition<noArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
+  type: 'agent';
+  apiName: 'noArgumentsAgent';
+  version: '1.2.3';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+/** @beta */
+export const noArgumentsAgent: noArgumentsAgent = {
+  type: 'agent',
+  apiName: 'noArgumentsAgent',
+  version: '1.2.3',
+  osdkMetadata: $osdkMetadata,
+};
+",
+}
+`;
+
+exports[`generatePerAgentDataFiles > generates result types and imports objects used by context items 1`] = `
+{
+  "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
+",
+  "/foo/ontology/agents/noArgumentsAgent.ts": "import type { VersionBound as $VersionBound } from '@osdk/client';
+import type {
+  AgentDefinition as $AgentDefinition,
+  AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
+  AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
+  AgentSendEventOptions as $AgentSendEventOptions,
+} from '@osdk/client/experimental';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { Employee } from '../objects/Employee.js';
+
+/** @beta */
+export namespace noArgumentsAgent {
+  export interface Signatures {
+    experimental_createSession(args?: noArgumentsAgent.CreateSessionArguments): Promise<noArgumentsAgent.Session>;
+    experimental_getSession(sessionId: string): Promise<noArgumentsAgent.Session>;
+  }
+
+  export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+    experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: Record<string, never>;
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = { type: 'result'; data: ContextItems['result'] };
+
+  export interface ContextItems {
+    result: {
+      future: unknown;
+      nested: {
+        count: number;
+        date: string;
+        empty: Record<string, never>;
+        enabled: boolean;
+        float: number;
+        label: string | null;
+        long: number;
+        scores: Record<string, number>;
+        short: number;
+        tags: Array<string>;
+        timestamp: string;
+      };
+      optionalText: string | null;
+      requiredText: string;
+      selection:
+        | { kind: 'employee'; employee: $AgentResult.ObjectType<Employee> }
+        | { kind: 'employees'; employees: $AgentResult.ObjectSetType<Employee> };
+    };
+  }
+
+  export type SendEventArguments = never;
+
+  export type Events = Record<never, never>;
+
+  export type CreateSessionArguments = Record<string, never>;
+}
+
+/** @beta */
+export interface noArgumentsAgent
+  extends $AgentDefinition<noArgumentsAgent.Signatures>,
+    $VersionBound<$ExpectedClientVersion> {
+  type: 'agent';
+  apiName: 'noArgumentsAgent';
+  version: '1.2.3';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+/** @beta */
+export const noArgumentsAgent: noArgumentsAgent = {
+  type: 'agent',
+  apiName: 'noArgumentsAgent',
+  version: '1.2.3',
+  osdkMetadata: $osdkMetadata,
+};
+",
+}
+`;
+
 exports[`generatePerAgentDataFiles > preserves requested version references 1`] = `
 {
   "/foo/ontology/agents.ts": "export { noArgumentsAgent } from './agents/noArgumentsAgent.js';
@@ -532,7 +855,10 @@ exports[`generatePerAgentDataFiles > preserves requested version references 1`] 
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
@@ -546,8 +872,19 @@ export namespace noArgumentsAgent {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
   }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: Record<string, never>;
+    agentState: { data: Record<string, never> };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem = never;
+
+  export type ContextItems = Record<never, never>;
 
   export type SendEventArguments = never;
 

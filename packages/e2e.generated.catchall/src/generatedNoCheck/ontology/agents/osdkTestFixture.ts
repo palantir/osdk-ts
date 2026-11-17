@@ -2,7 +2,10 @@ import type { VersionBound as $VersionBound } from '@osdk/client';
 import type {
   AgentDefinition as $AgentDefinition,
   AgentParam as $AgentParam,
+  AgentResult as $AgentResult,
   AgentSession as $AgentSession,
+  AgentSessionState as $AgentSessionState,
+  AgentGetStateOptions as $AgentGetStateOptions,
   AgentSendEventOptions as $AgentSendEventOptions,
 } from '@osdk/client/experimental';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -16,7 +19,62 @@ export namespace osdkTestFixture {
   }
 
   export interface Session extends $AgentSession {
+    experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
     experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+  }
+
+  export interface SessionState extends $AgentSessionState {
+    arguments: { defaultCity: string };
+    agentState: { data: { defaultCity: string } };
+    contextItems: Record<string, ContextItem>;
+  }
+
+  export type ContextItem =
+    | { type: '@platform/assistant-message'; data: ContextItems['@platform/assistant-message'] }
+    | { type: '@platform/tool-execution-error'; data: ContextItems['@platform/tool-execution-error'] }
+    | { type: '@platform/user-message'; data: ContextItems['@platform/user-message'] }
+    | { type: 'weather-result'; data: ContextItems['weather-result'] };
+
+  export interface ContextItems {
+    '@platform/assistant-message': {
+      parts: Array<
+        | { type: 'text'; text: string }
+        | {
+            type: 'thinking';
+            thinking:
+              | { type: 'anthropic'; signature: string; thinking: string }
+              | { type: 'anthropicRedacted'; data: string }
+              | {
+                  type: 'openAi';
+                  content: Array<string> | null;
+                  encryptedContent: string;
+                  id: string;
+                  summary: Array<string>;
+                }
+              | {
+                  type: 'spaceXAi';
+                  content: Array<string> | null;
+                  encryptedContent: string;
+                  id: string;
+                  summary: Array<string>;
+                }
+              | { type: 'google'; content: string }
+              | { type: 'googleSignature'; signature: string };
+          }
+        | { type: 'toolRequest'; arguments: string; id: string; name: string }
+      >;
+      status:
+        | { type: 'generating' }
+        | { type: 'completed' }
+        | { type: 'terminated'; reason: { type: 'genericError'; message: string } };
+      toolResults: Record<
+        string,
+        { type: 'notStarted' } | { type: 'executing' } | { type: 'complete'; contextItemIds: Array<string> }
+      >;
+    };
+    '@platform/tool-execution-error': { message: string };
+    '@platform/user-message': { parts: Array<{ type: 'text'; text: string }> };
+    'weather-result': { text: string };
   }
 
   export type SendEventArguments =
