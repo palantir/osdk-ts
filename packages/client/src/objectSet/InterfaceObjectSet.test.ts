@@ -269,6 +269,8 @@ describe("ObjectSet", () => {
             .$as(objectType),
         ).toMatchObject({ nestedStruct: { label: "nested-label", count: 7 } });
 
+        const incompleteStructError =
+          "Cannot cast interface view of 'ComplexImplementationInterface' to 'ComplexImplementationObject': backing property 'nestedStruct' was not fully loaded. Fetch with $includeAllBaseObjectProperties: true or load the object type directly.";
         const modifiedObject = (
           await client(objectType).fetchPage({
             $EXPERIMENTAL_defaultLoadLevel: "applyMainValue",
@@ -277,7 +279,18 @@ describe("ObjectSet", () => {
         expect(() =>
           // @ts-expect-error
           modifiedObject.$as(ComplexImplementationInterface).$as(objectType),
-        ).toThrowError(/not fully loaded/u);
+        ).toThrowError(incompleteStructError);
+
+        const reducedProperties = (
+          await client(ComplexImplementationInterface).fetchPage({
+            $includeAllBaseObjectProperties: true,
+            $EXPERIMENTAL_defaultLoadLevel: "applyReducers",
+          })
+        ).data[0];
+        expect(() =>
+          // @ts-expect-error
+          reducedProperties.$as(objectType),
+        ).toThrowError(incompleteStructError);
 
         const selection: ComplexImplementationInterface.PropertyKeys[] = [
           "iStructField",
@@ -291,7 +304,7 @@ describe("ObjectSet", () => {
         expect(() =>
           // @ts-expect-error
           selectedInterface.$as(objectType),
-        ).toThrowError(/not fully loaded/u);
+        ).toThrowError(incompleteStructError);
 
         responseData = [
           { ...wireObject, nestedStruct: { label: "nested-label" } },
@@ -301,23 +314,34 @@ describe("ObjectSet", () => {
         ).data[0];
         expect(partial.iStructField).toEqual("nested-label");
         // @ts-expect-error
-        expect(() => partial.$as(objectType)).toThrowError(/not fully loaded/u);
+        expect(() => partial.$as(objectType)).toThrowError(
+          incompleteStructError,
+        );
         expect(() =>
           // @ts-expect-error
           partial.$as<ComplexImplementationObject>(objectType.apiName),
-        ).toThrowError(/not fully loaded/u);
+        ).toThrowError(incompleteStructError);
         // @ts-expect-error
         expect(() => partial.$clone().$as(objectType)).toThrowError(
-          /not fully loaded/u,
+          incompleteStructError,
         );
         expect(() =>
           // @ts-expect-error
           partial.$clone({ iLocal: "updated" }).$as(objectType),
-        ).toThrowError(/not fully loaded/u);
+        ).toThrowError(incompleteStructError);
 
         responseData = [
           { __apiName: objectType.apiName, __primaryKey: "k1", id: "k1" },
         ];
+        const missingWithoutAllBaseProperties = (
+          await client(ComplexImplementationInterface).fetchPage()
+        ).data[0];
+        expect(missingWithoutAllBaseProperties.iStructField).toBeUndefined();
+        expect(() =>
+          // @ts-expect-error
+          missingWithoutAllBaseProperties.$as(objectType),
+        ).toThrowError(incompleteStructError);
+
         const nullable = (
           await client(ComplexImplementationInterface).fetchPage({
             $includeAllBaseObjectProperties: true,
@@ -328,7 +352,7 @@ describe("ObjectSet", () => {
       })();
     });
 
-    it("rejects casts with reduced implementations even with all base properties", async () => {
+    it("loads reduced interface values but rejects object casts regardless of selection or all base properties", async () => {
       await apiServer.boundary(async () => {
         apiServer.use(
           MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
@@ -349,21 +373,45 @@ describe("ObjectSet", () => {
           ),
         );
 
+        const reducedError =
+          "Cannot cast interface view of 'ComplexImplementationInterface' to 'ComplexImplementationObject': property 'iReduced' has a reduced implementation, so the underlying object type cannot be faithfully represented. Load the object type directly.";
+        const objectType = ComplexImplementationObject;
+        const withoutAllBaseProperties = (
+          await client(ComplexImplementationInterface).fetchPage()
+        ).data[0];
+        expect(withoutAllBaseProperties.iReduced).toEqual(6);
+        expect(() =>
+          // @ts-expect-error
+          withoutAllBaseProperties.$as(objectType),
+        ).toThrowError(reducedError);
+        expect(() =>
+          withoutAllBaseProperties.$as<ComplexImplementationObject>(
+            // @ts-expect-error
+            objectType.apiName,
+          ),
+        ).toThrowError(reducedError);
+
+        const selected = (
+          await client(ComplexImplementationInterface).fetchPage({
+            $select: ["iReduced"],
+          })
+        ).data[0];
+        expect(selected.iReduced).toEqual(6);
+        // @ts-expect-error
+        expect(() => selected.$as(objectType)).toThrowError(reducedError);
+
         const {
           data: [ifaceObj],
         } = await client(ComplexImplementationInterface).fetchPage({
           $includeAllBaseObjectProperties: true,
         });
         expect(ifaceObj.iReduced).toEqual(6);
-        const objectType = ComplexImplementationObject;
         // @ts-expect-error
-        expect(() => ifaceObj.$as(objectType)).toThrowError(
-          /property 'iReduced' has a reduced implementation/u,
-        );
+        expect(() => ifaceObj.$as(objectType)).toThrowError(reducedError);
         expect(() =>
           // @ts-expect-error
           ifaceObj.$as<ComplexImplementationObject>(objectType.apiName),
-        ).toThrowError(/property 'iReduced' has a reduced implementation/u);
+        ).toThrowError(reducedError);
       })();
     });
 
