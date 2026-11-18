@@ -240,15 +240,20 @@ function getUncastableProperties(
   if (implementations == null) return NO_UNCASTABLE_PROPERTIES;
 
   const [interfaceNamespace] = extractNamespace(interfaceApiName);
+  const hasSelection = selectedProps != null && selectedProps.length > 0;
   const uncastableProperties = new Set<string>();
   for (const [interfacePropertyApiName, implementation] of Object.entries(
     implementations,
   )) {
     if (implementation.type === "localProperty") continue;
-    if (implementation.type !== "reduced" && includeAllBaseObjectProperties) {
+    if (
+      implementation.type !== "reduced" &&
+      includeAllBaseObjectProperties &&
+      !hasSelection
+    ) {
       continue;
     }
-    if (selectedProps != null && selectedProps.length > 0) {
+    if (hasSelection) {
       const [namespace, shortName] = extractNamespace(interfacePropertyApiName);
       const selected =
         selectedProps.includes(interfacePropertyApiName) ||
