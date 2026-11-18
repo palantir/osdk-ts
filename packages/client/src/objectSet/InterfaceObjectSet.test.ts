@@ -197,7 +197,7 @@ describe("ObjectSet", () => {
       })();
     });
 
-    it("allows $as back to the OT unless a selected property is reduced or a struct loaded without all base properties", async () => {
+    it("allows $as back to the OT after $select only when no selected property has a non-local implementation", async () => {
       await apiServer.boundary(async () => {
         apiServer.use(
           MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
@@ -229,11 +229,10 @@ describe("ObjectSet", () => {
             $includeAllBaseObjectProperties: true,
           })
         ).data[0];
-        expect(
+        expect(() =>
           // @ts-expect-error
-          structWithAllBaseProperties.$as(ComplexImplementationObject)
-            .nestedStruct,
-        ).toEqual({ label: "nested-label", count: 7 });
+          structWithAllBaseProperties.$as(ComplexImplementationObject),
+        ).toThrowError("properties 'nestedStruct' were not fully loaded");
 
         const structWithoutAllBaseProperties = (
           await client(ComplexImplementationInterface).fetchPage({
