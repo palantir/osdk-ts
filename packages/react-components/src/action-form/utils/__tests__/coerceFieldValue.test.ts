@@ -155,8 +155,12 @@ describe("coerceFieldValue", () => {
       expect(coerceFieldValue("datetime", [iso1, iso2])).toEqual([iso1, iso2]);
     });
 
-    it("returns undefined elements for invalid array items", () => {
-      expect(coerceFieldValue("integer", ["abc", "2"])).toEqual([undefined, 2]);
+    it("returns undefined when any element fails coercion", () => {
+      expect(coerceFieldValue("integer", ["abc", "2"])).toBe(undefined);
+      expect(coerceFieldValue("boolean", [true, "yes"])).toBe(undefined);
+      expect(coerceFieldValue("datetime", ["2024-01-15", "not-a-date"])).toBe(
+        undefined,
+      );
     });
 
     it("preserves empty arrays", () => {
