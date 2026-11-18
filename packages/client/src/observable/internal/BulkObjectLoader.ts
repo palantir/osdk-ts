@@ -45,6 +45,7 @@ interface LoadParams {
   loadPropertySecurityMetadata?: boolean;
   includeAllBaseObjectProperties: true | undefined;
   rdpConfig?: Canonical<Rdp>;
+  loadOntologyDefinedDerivedProperties?: boolean;
 }
 
 interface Accumulator extends Partial<LoadParams> {
@@ -88,6 +89,7 @@ export class BulkObjectLoader {
     loadPropertySecurityMetadata?: boolean,
     includeAllBaseObjectProperties?: boolean,
     rdpConfig?: Canonical<Rdp>,
+    loadOntologyDefinedDerivedProperties?: boolean,
   ): Promise<ObjectHolder> {
     const params: LoadParams = {
       apiName,
@@ -95,6 +97,7 @@ export class BulkObjectLoader {
       select,
       loadPropertySecurityMetadata,
       rdpConfig,
+      loadOntologyDefinedDerivedProperties,
       // The flag is interface-only on the server. Drop it for object fetches
       // so they don't fragment batches or the cache.
       includeAllBaseObjectProperties:
@@ -120,6 +123,8 @@ export class BulkObjectLoader {
       entry.includeAllBaseObjectProperties =
         params.includeAllBaseObjectProperties;
       entry.rdpConfig = params.rdpConfig;
+      entry.loadOntologyDefinedDerivedProperties =
+        params.loadOntologyDefinedDerivedProperties;
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
@@ -149,11 +154,17 @@ export class BulkObjectLoader {
     const rdpSuffix = params.rdpConfig
       ? `\0rdp${this.#rdpIds.get(params.rdpConfig)}`
       : "";
+    const ontologyDefinedDerivedPropertiesSuffix =
+      params.loadOntologyDefinedDerivedProperties == null
+        ? ""
+        : `\0ontologyDefinedDerivedProperties:${params.loadOntologyDefinedDerivedProperties}`;
     return params.select && params.select.length > 0
       ? `${params.apiName}\0${[...params.select]
           .sort()
-          .join(",")}${securitySuffix}${baseSuffix}${rdpSuffix}`
-      : `${params.apiName}${securitySuffix}${baseSuffix}${rdpSuffix}`;
+          .join(
+            ",",
+          )}${securitySuffix}${baseSuffix}${rdpSuffix}${ontologyDefinedDerivedPropertiesSuffix}`
+      : `${params.apiName}${securitySuffix}${baseSuffix}${rdpSuffix}${ontologyDefinedDerivedPropertiesSuffix}`;
   }
 
   #loadObjects(arr: InternalValue[], params: LoadParams) {
@@ -218,6 +229,12 @@ export class BulkObjectLoader {
         ...(params.includeAllBaseObjectProperties
           ? { $includeAllBaseObjectProperties: true }
           : {}),
+        ...(params.loadOntologyDefinedDerivedProperties != null
+          ? {
+              $UNSTABLE_loadOntologyDefinedDerivedProperties:
+                params.loadOntologyDefinedDerivedProperties,
+            }
+          : {}),
       }),
     );
     for await (const data of pages) {
@@ -270,6 +287,12 @@ export class BulkObjectLoader {
             false) as boolean,
           ...(params.includeAllBaseObjectProperties
             ? { $includeAllBaseObjectProperties: true }
+            : {}),
+          ...(params.loadOntologyDefinedDerivedProperties != null
+            ? {
+                $UNSTABLE_loadOntologyDefinedDerivedProperties:
+                  params.loadOntologyDefinedDerivedProperties,
+              }
             : {}),
         }),
       );

@@ -123,6 +123,12 @@ export class ObjectSetQuery extends BaseListQuery<
     return this.#operations.withProperties;
   }
 
+  public override get loadOntologyDefinedDerivedProperties():
+    | boolean
+    | undefined {
+    return this.#operations.loadOntologyDefinedDerivedProperties;
+  }
+
   public get selectFields(): Canonical<readonly string[]> | undefined {
     return this.#operations.select;
   }
@@ -260,6 +266,12 @@ export class ObjectSetQuery extends BaseListQuery<
         : {}),
       ...(this.options.$loadPropertySecurityMetadata
         ? { $loadPropertySecurityMetadata: true }
+        : {}),
+      ...(this.loadOntologyDefinedDerivedProperties != null
+        ? {
+            $UNSTABLE_loadOntologyDefinedDerivedProperties:
+              this.loadOntologyDefinedDerivedProperties,
+          }
         : {}),
     });
 
@@ -406,10 +418,17 @@ export class ObjectSetQuery extends BaseListQuery<
             [...membership.added, ...membership.modified],
             this.rdpConfig,
             batch,
+            this.loadOntologyDefinedDerivedProperties,
           );
         const keysToRemove = new Set<CacheKey>(changes.deleted);
         for (const obj of membership.removed) {
-          keysToRemove.add(this.store.objects.getCacheKey(obj, this.rdpConfig));
+          keysToRemove.add(
+            this.store.objects.getCacheKey(
+              obj,
+              this.rdpConfig,
+              this.loadOntologyDefinedDerivedProperties,
+            ),
+          );
         }
         const newList = reconcileListChanges(existingKeys, {
           keysToInsert: Array.from(keys).filter(

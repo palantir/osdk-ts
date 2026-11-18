@@ -59,6 +59,7 @@ import { EMPTY_RDP_SET } from "../utils/rdpFieldOperations.js";
 import {
   INCLUDE_ALL_BASE_PROPERTIES_IDX,
   INTERSECT_IDX,
+  LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX,
   type ListCacheKey,
   ORDER_BY_IDX,
   PIVOT_IDX,
@@ -194,6 +195,14 @@ export abstract class ListQuery extends BaseListQuery<
 
   public override get includeAllBaseObjectProperties(): boolean {
     return this.cacheKey.otherKeys[INCLUDE_ALL_BASE_PROPERTIES_IDX] === true;
+  }
+
+  public override get loadOntologyDefinedDerivedProperties():
+    | boolean
+    | undefined {
+    return this.cacheKey.otherKeys[
+      LOAD_ONTOLOGY_DEFINED_DERIVED_PROPERTIES_IDX
+    ];
   }
 
   get objectTypes(): ReadonlySet<string> {
@@ -336,6 +345,12 @@ export abstract class ListQuery extends BaseListQuery<
         : {}),
       ...(this.includeAllBaseObjectProperties
         ? { $includeAllBaseObjectProperties: true }
+        : {}),
+      ...(this.loadOntologyDefinedDerivedProperties != null
+        ? {
+            $UNSTABLE_loadOntologyDefinedDerivedProperties:
+              this.loadOntologyDefinedDerivedProperties,
+          }
         : {}),
     });
 
@@ -485,13 +500,18 @@ export abstract class ListQuery extends BaseListQuery<
               toAdd,
               this.rdpConfig,
               batch,
+              this.loadOntologyDefinedDerivedProperties,
             );
 
           // anything thats been deleted can be removed, so start there
           const keysToRemove = new Set<CacheKey>(changes.deleted);
           for (const obj of membership.removed) {
             keysToRemove.add(
-              this.store.objects.getCacheKey(obj, this.rdpConfig),
+              this.store.objects.getCacheKey(
+                obj,
+                this.rdpConfig,
+                this.loadOntologyDefinedDerivedProperties,
+              ),
             );
           }
           const newList = reconcileListChanges(existingList, {
@@ -583,6 +603,7 @@ export abstract class ListQuery extends BaseListQuery<
           undefined,
           this.includeAllBaseObjectProperties,
           EMPTY_RDP_SET,
+          this.loadOntologyDefinedDerivedProperties,
         );
       });
     } else if (state === "REMOVED") {
@@ -608,6 +629,7 @@ export abstract class ListQuery extends BaseListQuery<
         const objectCacheKey = this.store.objects.getCacheKey(
           objOrIface,
           this.rdpConfig,
+          this.loadOntologyDefinedDerivedProperties,
         );
         // remove the object from the list
         const newObjects = existing.value?.data.filter(
