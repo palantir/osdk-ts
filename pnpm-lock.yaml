@@ -603,7 +603,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -793,7 +793,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -902,7 +902,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1005,7 +1005,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1078,7 +1078,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@26.1.1)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1187,7 +1187,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1293,7 +1293,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1366,7 +1366,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@26.1.1)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1448,7 +1448,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@26.1.1)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1521,7 +1521,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@26.1.1)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1603,7 +1603,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@26.1.1)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1649,7 +1649,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@26.1.1)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1692,7 +1692,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1732,7 +1732,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@24.12.0)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1823,7 +1823,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@26.1.1)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
@@ -1902,7 +1902,7 @@ importers:
         specifier: ^8.43.0
         version: 8.43.0(eslint@9.35.0(jiti@2.5.1))(typescript@5.5.4)
       vite:
-        specifier: ^7.3.1
+        specifier: ^7.3.8
         version: 7.3.8(@types/node@26.1.1)(jiti@2.5.1)(less@4.5.1)(lightningcss@1.32.0)(sass-embedded@1.97.3)(sass@1.97.3)(stylus@0.62.0)(terser@5.44.0)(tsx@4.20.5)(yaml@2.9.0)
       vitest:
         specifier: ^3.2.4
