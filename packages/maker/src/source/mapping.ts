@@ -47,7 +47,9 @@ export function locateSource(
   let node = expression;
   let remaining = path;
   while (true) {
-    // These wrappers do not add fields or indices to the configuration path.
+    // TypeScript represents `(value)`, `value as T`, `value satisfies T`, and
+    // `<T>value` as wrapper nodes. Their .expression is the same runtime value,
+    // so unwrap them without consuming a field or index from the issue path.
     if (
       ts.isParenthesizedExpression(node) ||
       ts.isAsExpression(node) ||
@@ -60,7 +62,8 @@ export function locateSource(
 
     let child: ts.Node | undefined;
     if (remaining.length > 0 && ts.isObjectLiteralExpression(node)) {
-      // Scan all writes in source order: a later explicit field replaces an earlier one.
+      // An object literal is the source syntax `{ ... }`. Its properties include
+      // fields, shorthand names, and spreads. Scan in source order so later writes win.
       for (const member of node.properties) {
         if (
           ts.isSpreadAssignment(member) ||
@@ -69,6 +72,7 @@ export function locateSource(
           // Spreads/computed keys might overwrite an earlier match. A later explicit
           // field can restore it: { value: 5, ...other } is uncertain, whereas
           // { ...other, value: 5 } still locates 5 for the path ["value"].
+          // Likewise, { value: 5, [key]: 6 } is uncertain: key could be "value".
           child = undefined;
         } else if (
           member.name !== undefined &&
@@ -77,7 +81,8 @@ export function locateSource(
             ts.isNumericLiteral(member.name)) &&
           member.name.text === String(remaining[0])
         ) {
-          // Shorthand points at the identifier's use here, not its declaration.
+          // For `{ value: 5 }`, initializer is the expression `5`. For `{ value }`,
+          // only the identifier is present. Do not follow it to a declaration.
           child = ts.isPropertyAssignment(member)
             ? member.initializer
             : ts.isShorthandPropertyAssignment(member)
@@ -95,7 +100,8 @@ export function locateSource(
       // [5, ...items] has a known index 0. [...items, 5] has no known index for 5.
       if (!node.elements.slice(0, index + 1).some(ts.isSpreadElement)) {
         const element = node.elements[index];
-        // A hole or absent element has no expression to highlight. Retain the array.
+        // For path [0] in `[, 5]`, index 0 is a hole, not an expression.
+        // Retain the array when the requested element is a hole or is absent.
         if (element !== undefined && !ts.isOmittedExpression(element)) {
           child = element;
         }
@@ -104,15 +110,21 @@ export function locateSource(
 
     if (child === undefined) break;
     node = child;
+    // Each descent follows one path segment, e.g. "properties" then "id" then "type".
     remaining = remaining.slice(1);
   }
 
+  // TypeScript counts UTF-16 offsets and reports zero-based line/column pairs.
+  // Convert to the one-based positions used in diagnostics.
   const position = (offset: number): SourcePosition => {
     const { line, character } = file.getLineAndCharacterOfPosition(offset);
     return { offset, line: line + 1, column: character + 1 };
   };
 
-  // A fully matched path can still end at an identifier or call
+  // Matching the path does not prove an identifier's or function call's value.
+  // `{ value: "bad" }` spells out the value and can receive an exact range.
+  // `{ value: getValue() }` only tells us where the value came from.
+  // TypeScript represents `-5` as a unary `-` node around the numeric literal `5`.
   const literal =
     ts.isStringLiteral(node) ||
     ts.isNoSubstitutionTemplateLiteral(node) ||

@@ -49,7 +49,7 @@ export class SourceSession {
   private readonly scripts = new Map<string, string>();
   private readonly failures = new WeakMap<MakerValidationError, FailureSite>();
 
-  /** ESM call sites use URLs. CommonJS call sites use filesystem paths. */
+  /** Match both ESM URLs (`file:///src/ontology.ts`) and CommonJS paths (`/src/ontology.ts`). */
   public registerScript(url: string): void {
     const fileName = fileURLToPath(url);
     this.scripts.set(url, fileName);
@@ -57,23 +57,28 @@ export class SourceSession {
   }
 
   /**
-   * Records the nearest owned caller of an actual definition boundary. For example:
-   * `observe → withDefinitionDiagnostics → defineObject → objects.ts`.
+   * Finds the nearest call in a file registered with this session.
    *
-   * The immediate caller owns the definition input. If it is an unregistered helper,
-   * an outer owned call is useful context, but its arguments may be unrelated. Such
-   * calls get enclosing ranges only. Keeping the first observation also prevents an
-   * outer definition from replacing an inner definition's location on rethrow.
+   * For a helper that calls `defineObject(config)`, prefer that call's location.
+   * If only the file calling `myDefineObjectHelper(options)` is registered, highlight
+   * that helper call instead. Do not map validation paths onto `options`, since the
+   * helper may have transformed it into a different `config`.
    */
   public readonly observe = (
     error: MakerValidationError,
     boundary: (...args: never[]) => unknown,
     argumentCount: number,
   ): void => {
+    // Keep the original failure location if the same error is observed again.
     if (this.failures.has(error)) return;
-    // Structured sites avoid Error.prepareStackTrace. Match loaded scripts before
-    // applying source maps already enabled by the host. Do not change global settings.
+    // getCallSites returns the current stack as structured frames, newest first,
+    // without using Error.prepareStackTrace. Disable automatic source mapping so
+    // scriptName still identifies the runtime files registered by the loader.
     const sites = getCallSites(200, { sourceMap: false });
+    // Skip Maker's frames through the definition function (e.g. defineObject).
+    // If ontology.ts calls helper.ts, which calls defineObject, choose helper.ts
+    // if the load hook registered it. Otherwise, continue to ontology.ts.
+    // This is stack order, not the order files were loaded.
     const boundaryIndex = sites.findIndex(
       (site) => site.functionName === boundary.name,
     );
@@ -81,8 +86,13 @@ export class SourceSession {
     for (const [index, site] of sites.slice(boundaryIndex + 1).entries()) {
       const fileName = this.scripts.get(site.scriptName);
       if (fileName === undefined) continue;
+      // Stack positions are one-based. Source-map lookups use zero-based positions,
+      // so stack line 3, column 5 becomes line 2, column 4 for the lookup.
       const line = site.lineNumber - 1;
       const column = site.columnNumber - 1;
+      // Use Node's cached source map, if enabled by the host, to translate the
+      // generated JS position back to authored source, e.g. document.js:40:8 to
+      // document.ts:12:3.
       const original = findSourceMap(fileName)?.findEntry(line, column);
       // A generated position without a mapping is not an authored position.
       if (original !== undefined && !("originalSource" in original)) return;
@@ -123,6 +133,7 @@ export class SourceSession {
       throw error;
     }
 
+    // Parse a syntax tree without executing or type-checking the source.
     const file = ts.createSourceFile(
       site.fileName,
       text,
@@ -130,6 +141,9 @@ export class SourceSession {
       true,
     );
 
+    // Syntax nodes use UTF-16 offsets into the full text, not line/column pairs.
+    // For "a\ncall()", getLineStarts() is [0, 2]. Zero-based line 1, column 0
+    // therefore points to offset 2, the start of `call`.
     const lineStart = file.getLineStarts()[site.line];
     if (lineStart === undefined) throw error;
     const offset = lineStart + site.column;
@@ -137,6 +151,9 @@ export class SourceSession {
 
     const visit = (node: ts.Node): void => {
       // V8 may point at `?.(` rather than the callee. Accept the call head, never an argument.
+      // getStart skips leading whitespace/comments. arguments.pos is just after `(`.
+      // In `defineObject(makeConfig())`, a position inside `makeConfig` must not
+      // select the surrounding `defineObject` call.
       if (
         ts.isCallExpression(node) &&
         node.expression.getStart(file) <= offset &&
@@ -145,6 +162,8 @@ export class SourceSession {
         call = node;
       }
 
+      // E.g. in `export const doc = defineObject(...)`, the call is nested
+      // inside a variable declaration. Visit children to find it.
       ts.forEachChild(node, visit);
     };
     visit(file);
@@ -153,7 +172,8 @@ export class SourceSession {
       throw error;
     }
 
-    // Type assertions and parentheses do not change which object is passed.
+    // Parentheses and type assertions add syntax nodes, not different runtime values.
+    // E.g. `({ apiName: "Document" } as Config)` unwraps to `{ apiName: "Document" }`.
     const input = call.arguments[0];
     let unwrapped = input;
     while (
@@ -167,9 +187,10 @@ export class SourceSession {
     }
 
     // An inline object is only useful if it is the definition's actual input.
-    // A bound definition can receive its configuration from bind(), not this call.
-    // The argument-count check below detects extra visible arguments in that case.
-    // With .call/.apply/Reflect.construct, the first argument is not the input.
+    // E.g. `const bound = defineObject.bind(undefined, config)` gets its input
+    // from bind(), not from `bound({ apiName: "Decoy" })`. Argument counts differ.
+    // For `defineObject.call(undefined, config)`, argument 0 is `this`, not config.
+    // .apply and Reflect.construct also require interpreting arguments, so skip them.
     const indirect =
       ts.isPropertyAccessExpression(call.expression) &&
       ["call", "apply", "construct"].includes(call.expression.name.text);
@@ -182,6 +203,8 @@ export class SourceSession {
       unwrapped !== undefined &&
       ts.isObjectLiteralExpression(unwrapped);
 
+    // An empty path makes locateSource highlight the whole call rather than guess
+    // which argument or field corresponds to the validated configuration.
     const expression = inline && input !== undefined ? input : call;
     throw new SourceValidationError(
       error.issues.map((issue) => ({

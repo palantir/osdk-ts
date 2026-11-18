@@ -25,6 +25,7 @@ export interface SourceDiagnostic extends MakerValidationIssue {
   readonly source: SourceLocation;
 }
 
+/** Adds code frames to .message for the CLI to print, keeping the original error as .cause. */
 export class SourceValidationError extends MakerValidationError {
   public override readonly cause: MakerValidationError;
 
@@ -49,9 +50,12 @@ export function formatSourceDiagnostic(
 ): string {
   const { source, code, message, suggestion, path } = diagnostic;
   const { start, end } = source;
+  // Match TypeScript's line breaks, including Unicode separators, so its line
+  // numbers select the same source text here.
   const lines = text.split(/\r\n|[\r\n\u2028\u2029]/u);
   const first = Math.max(1, start.line - 1);
   const last = Math.min(lines.length, start.line + 1);
+  // A frame spanning lines 9 and 10 needs padding: ` 9 |` aligns with `10 |`.
   const gutter = String(last).length;
   const frame: string[] = [];
 
@@ -59,7 +63,10 @@ export function formatSourceDiagnostic(
     const content = lines[line - 1];
     frame.push(`${String(line).padStart(gutter)} | ${content}`);
     if (line === start.line) {
+      // Preserve tabs so the caret uses the same tab stops as the source line.
       const indent = content.slice(0, start.column - 1).replace(/[^\t]/gu, " ");
+      // For a value spanning several lines, underline only its first line.
+      // Even a zero-width range gets one caret so the location remains visible.
       const width = Math.max(
         1,
         (end.line === start.line ? end.column - 1 : content.length) -

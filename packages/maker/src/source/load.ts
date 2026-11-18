@@ -24,7 +24,8 @@ import { SourceSession } from "./runtime.js";
 /**
  * Adds diagnostics to a single trusted ontology evaluation. Node retains ownership
  * of resolution, supported formats, transformations, module identity, and caching.
- * The caller must use a fresh process or worker for each evaluation.
+ * The caller must use a fresh process or worker for each evaluation. For example,
+ * loading ontology.ts twice here does not rerun it: Node reuses its cached module.
  */
 export async function loadOntologySource(
   entryPoint: string,
@@ -32,11 +33,16 @@ export async function loadOntologySource(
   const session = new SourceSession();
   const hooks = registerHooks({
     load(url, context, nextLoad) {
+      // nextLoad delegates to the remaining host hooks and Node's default loader.
+      // Record the file only after loading succeeds, leaving its source unchanged.
+      // E.g. importing ontology.ts -> objects.ts registers both files for stack lookup.
       const result = nextLoad(url, context);
       if (url.startsWith("file:")) session.registerScript(url);
       return result;
     },
   });
+  // Observe the failure before the author's stack unwinds. For example, a
+  // defineObject error caught inside ontology.ts is recorded but never enriched.
   const stop = observeDefinitionFailures(session.observe);
   try {
     return await import(pathToFileURL(resolve(entryPoint)).href);

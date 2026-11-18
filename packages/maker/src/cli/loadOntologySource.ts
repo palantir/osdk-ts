@@ -18,6 +18,8 @@
 export async function loadOntologySource(
   entryPoint: string,
 ): Promise<Readonly<Record<string, unknown>>> {
+  // Node < 24 can still load ontology.mjs normally. Keep the TypeScript parser and
+  // newer Node APIs out of that path by importing the diagnostic loader lazily.
   if (Number(process.versions.node.split(".")[0]) < 24) {
     const { pathToFileURL } = await import("node:url");
     return import(pathToFileURL(entryPoint).href);

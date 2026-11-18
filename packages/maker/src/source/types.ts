@@ -24,9 +24,13 @@ export interface SourcePosition {
 export interface SourceLocation {
   readonly fileName: string;
   readonly start: SourcePosition;
-  /** Exclusive end. */
+  /** Exclusive end. E.g. `name` at offset 0 ends at offset 4, column 5. */
   readonly end: SourcePosition;
 
-  /** Exact literal input, or the closest reliable enclosing expression. */
+  /**
+   * `exact` points to an authored value, e.g. `"bad"` in `{ apiName: "bad" }`.
+   * `enclosing` gives context, e.g. the whole `defineObject(config)` call when
+   * the configuration's fields cannot be located reliably.
+   */
   readonly precision: "exact" | "enclosing";
 }

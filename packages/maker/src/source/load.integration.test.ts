@@ -80,7 +80,11 @@ interface Evaluation {
   };
 }
 
-/** Each invocation exercises a built distribution in a fresh native Node process. */
+/**
+ * Each invocation exercises a built distribution in a fresh native Node process.
+ * E.g. comparing import(entry.ts) with loadOntologySource(entry.ts) in one process
+ * would let the first run populate Node's cache and hide differences in the second.
+ */
 async function evaluate(
   directory: string,
   {
