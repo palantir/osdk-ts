@@ -97,6 +97,10 @@ export abstract class BaseListQuery<
     return false;
   }
 
+  public get loadOntologyDefinedDerivedProperties(): boolean | undefined {
+    return undefined;
+  }
+
   private _selectFieldSetMemo: ReadonlySet<string> | undefined;
 
   protected abstract get rawSelect(): Canonical<readonly string[]> | undefined;
@@ -181,6 +185,8 @@ export abstract class BaseListQuery<
         this.rdpConfig,
         this.selectFieldSet,
         this.includeAllBaseObjectProperties,
+        undefined,
+        this.loadOntologyDefinedDerivedProperties,
       );
     } else {
       // Items are already cache keys
@@ -549,6 +555,8 @@ export abstract class BaseListQuery<
           this.rdpConfig,
           this.selectFieldSet,
           this.includeAllBaseObjectProperties,
+          undefined,
+          this.loadOntologyDefinedDerivedProperties,
         );
 
         const updatedList = this._updateList(
@@ -738,6 +746,7 @@ export abstract class BaseListQuery<
           undefined,
           this.includeAllBaseObjectProperties,
           EMPTY_RDP_SET,
+          this.loadOntologyDefinedDerivedProperties,
         );
       });
     } else if (state === "REMOVED") {

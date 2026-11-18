@@ -52,6 +52,7 @@ export class ObjectQuery extends Query<
   #select: readonly string[] | undefined;
   #loadPropertySecurityMetadata: boolean;
   #includeAllBaseObjectProperties: boolean;
+  #loadOntologyDefinedDerivedProperties: boolean | undefined;
   #implementingTypes: Set<string> | undefined;
 
   constructor(
@@ -65,6 +66,7 @@ export class ObjectQuery extends Query<
     select?: readonly string[],
     loadPropertySecurityMetadata?: boolean,
     includeAllBaseObjectProperties?: boolean,
+    loadOntologyDefinedDerivedProperties?: boolean,
   ) {
     super(
       store,
@@ -89,6 +91,8 @@ export class ObjectQuery extends Query<
     this.#loadPropertySecurityMetadata = loadPropertySecurityMetadata ?? false;
     this.#includeAllBaseObjectProperties =
       includeAllBaseObjectProperties ?? false;
+    this.#loadOntologyDefinedDerivedProperties =
+      loadOntologyDefinedDerivedProperties;
   }
 
   protected _createConnectable(
@@ -138,6 +142,7 @@ export class ObjectQuery extends Query<
       this.#loadPropertySecurityMetadata,
       this.#includeAllBaseObjectProperties,
       rdpConfig,
+      this.#loadOntologyDefinedDerivedProperties,
     );
 
     this.store.batch({}, (batch) => {

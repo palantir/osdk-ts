@@ -120,6 +120,26 @@ describe(useObjectSet, () => {
     });
   });
 
+  it("should pass explicit false for ontology-defined derived properties", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useObjectSet(mockObjectSet, {
+          $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveObjectSet).toHaveBeenCalledWith(
+      mockObjectSet,
+      expect.objectContaining({
+        $UNSTABLE_loadOntologyDefinedDerivedProperties: false,
+      }),
+      expect.any(Object),
+    );
+  });
+
   describe("data preservation", () => {
     it("should preserve data when object set changes but object type stays the same", () => {
       const wrapper = createWrapper();
