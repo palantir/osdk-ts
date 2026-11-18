@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionTypeIsolationSettings,
   OntologyIrAddObjectRule,
   OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrParameterPrefill,
@@ -106,6 +107,7 @@ export type ActionTypeUserDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  isolationSettings?: ActionTypeIsolationSettings;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
   actionLevelValidation?: ActionLevelValidationDefinition;
@@ -129,6 +131,7 @@ export type InterfaceActionTypeUserDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  isolationSettings?: ActionTypeIsolationSettings;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
   actionLevelValidation?: ActionLevelValidationDefinition;

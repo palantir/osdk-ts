@@ -125,6 +125,16 @@ exports[`Action Types > Concrete actions are properly defined 1`] = `
               "typeGroups": [],
             },
             "formContentOrdering": [],
+            "isolationSettings": {
+              "isolationMode": {
+                "snapshotIsolation": {},
+                "type": "snapshotIsolation",
+              },
+              "retrySettings": {
+                "default": {},
+                "type": "default",
+              },
+            },
             "parameterOrdering": [
               "param1",
             ],

@@ -207,8 +207,8 @@ describe("Experimental Test Suite", () => {
     );
   });
 
-  describe("Function-backed action display configuration", () => {
-    it("passes form, submission, permission and icon settings through", async () => {
+  describe("Function-backed action configuration", () => {
+    it("passes display, permission and isolation settings through", async () => {
       const result = await withFunctionsIr(
         [{ name: "tag", dataType: { type: "string", string: {} } }],
         (functionsIrFile) =>
@@ -225,6 +225,13 @@ describe("Experimental Test Suite", () => {
               });
               defineFunctionBackedAction({
                 functionApiName: "updateTags",
+                isolationSettings: {
+                  isolationMode: {
+                    type: "snapshotIsolation",
+                    snapshotIsolation: {},
+                  },
+                  retrySettings: { type: "default", default: {} },
+                },
                 defaultFormat: "TABLE",
                 enableLayoutSwitch: true,
                 submissionMetadata: {
@@ -244,6 +251,10 @@ describe("Experimental Test Suite", () => {
         result.ontologyIr.ontology.actionTypes,
       );
       const { displayMetadata } = actionType.metadata;
+      expect(actionType.metadata.isolationSettings).toEqual({
+        isolationMode: { type: "snapshotIsolation", snapshotIsolation: {} },
+        retrySettings: { type: "default", default: {} },
+      });
       expect(displayMetadata.configuration).toMatchObject({
         defaultLayout: "TABLE",
         enableLayoutUserSwitch: true,

@@ -86,6 +86,10 @@ describe("Action Types", () => {
       apiName: "foo",
       displayName: "exampleAction",
       status: "active",
+      isolationSettings: {
+        isolationMode: { type: "snapshotIsolation", snapshotIsolation: {} },
+        retrySettings: { type: "default", default: {} },
+      },
       rules: [
         {
           type: "addOrModifyObjectRuleV2",
