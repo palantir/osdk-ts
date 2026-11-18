@@ -801,7 +801,7 @@ describe("Action Types", () => {
       expect(dumpOntologyFullMetadata()).toMatchSnapshot();
     });
 
-    it("Interface actions validate SPT existence", () => {
+    it("Interface actions validate SPT existence for local and imported interfaces", () => {
       const spt = defineSharedPropertyType({
         apiName: "spt",
         type: "string",
@@ -873,6 +873,39 @@ describe("Action Types", () => {
         __type: "INTERFACE_TYPE",
       } as unknown as InterfaceType;
       importOntologyEntity(importedInterface);
+      const importedAction = defineModifyInterfaceObjectAction({
+        interfaceType: importedInterface,
+      });
+      expect(ontologyDefinition.ACTION_TYPE[importedAction.apiName]).toBe(
+        importedAction,
+      );
+      expectValidationIssues(
+        () =>
+          defineAction({
+            ...importedAction,
+            apiName: "invalid-imported-action",
+            rules: [
+              {
+                type: "modifyInterfaceRule",
+                modifyInterfaceRule: {
+                  interfaceApiName: importedInterface.apiName,
+                  interfaceObjectToModifyParameter:
+                    MODIFY_INTERFACE_OBJECT_PARAMETER,
+                  sharedPropertyValues: {
+                    "com.palantir.other.invalid.spt": {
+                      type: "staticValue",
+                      staticValue: { type: "string", string: "value" },
+                    },
+                  },
+                  interfacePropertyValues: {},
+                },
+              },
+            ],
+          }),
+        [
+          "Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.other.ontology.event.Event",
+        ],
+      );
       const interfaceType = defineInterface({
         apiName: "interfaceType",
         properties: {
