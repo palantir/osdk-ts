@@ -18,7 +18,7 @@ import * as fs from "node:fs/promises";
 
 import { consola } from "consola";
 
-import type { OntologyValidationContext } from "../api/validateOntology.js";
+import type { OntologyContext } from "../api/validateOntology.js";
 import {
   describeBreakingChange,
   describeWarning,
@@ -42,7 +42,7 @@ import type {
 import { validateOntologySchemaLockfile } from "./validateOntologySchemaLockfile.js";
 
 export interface ReconcileOntologySchemaLockfileOptions {
-  context: OntologyValidationContext;
+  context: OntologyContext;
   /** Absolute path to the lockfile, whether or not it exists yet. */
   lockfilePath: string;
   /** Whether the author asked us to bring the lockfile up to date, rather than just check it. */

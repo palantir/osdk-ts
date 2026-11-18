@@ -18,7 +18,7 @@ import { describe, expect, it } from "vitest";
 
 import type { PropertyEdit } from "../applyInterfaceSchemaTransition.js";
 import {
-  applyEdit,
+  applyPropertyEdit,
   applyTransition,
   reproduces,
 } from "../applyInterfaceSchemaTransition.js";
@@ -250,14 +250,16 @@ describe("reproduces", () => {
   });
 });
 
-describe("applyEdit", () => {
+describe("applyPropertyEdit", () => {
   const lastName: LockedProperty = { type: "string", required: false };
 
   function edit(
     properties: Record<string, LockedProperty>,
     op: PropertyEdit,
   ): Record<string, LockedProperty> | "inapplicable" {
-    return applyEdit(properties, "lastName", op) ? properties : "inapplicable";
+    return applyPropertyEdit(properties, "lastName", op)
+      ? properties
+      : "inapplicable";
   }
 
   describe("patch", () => {
@@ -308,17 +310,17 @@ describe("applyEdit", () => {
         const properties: Record<string, LockedProperty> = {};
 
         expect(
-          applyEdit(properties, propertyApiName, {
+          applyPropertyEdit(properties, propertyApiName, {
             op: "patch",
             required: true,
           }),
         ).toBe(false);
-        expect(applyEdit(properties, propertyApiName, { op: "remove" })).toBe(
-          false,
-        );
+        expect(
+          applyPropertyEdit(properties, propertyApiName, { op: "remove" }),
+        ).toBe(false);
 
         expect(
-          applyEdit(properties, propertyApiName, {
+          applyPropertyEdit(properties, propertyApiName, {
             op: "add",
             property: lastName,
           }),
@@ -330,12 +332,20 @@ describe("applyEdit", () => {
 
     it("still records one it has already added", () => {
       const properties: Record<string, LockedProperty> = {};
-      applyEdit(properties, "toString", { op: "add", property: lastName });
+      applyPropertyEdit(properties, "toString", {
+        op: "add",
+        property: lastName,
+      });
 
       expect(
-        applyEdit(properties, "toString", { op: "add", property: lastName }),
+        applyPropertyEdit(properties, "toString", {
+          op: "add",
+          property: lastName,
+        }),
       ).toBe(false);
-      expect(applyEdit(properties, "toString", { op: "remove" })).toBe(true);
+      expect(applyPropertyEdit(properties, "toString", { op: "remove" })).toBe(
+        true,
+      );
       expect(Object.hasOwn(properties, "toString")).toBe(false);
     });
   });

@@ -136,7 +136,10 @@ export type {
   ResolvedInterfaceMemberMapping,
   ResolvedInterfaceTypeReplacement,
 } from "./api/interface/resolveInterfaceTypeReplacement.js";
-export { resolveInterfaceTypeReplacement } from "./api/interface/resolveInterfaceTypeReplacement.js";
+export {
+  resolveInterfaceProperty,
+  resolveInterfaceTypeReplacement,
+} from "./api/interface/resolveInterfaceTypeReplacement.js";
 export type {
   LinkType,
   OneToManyLinkTypeDefinition,
@@ -179,7 +182,7 @@ export {
   validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
 export {
-  type OntologyValidationContext,
+  type OntologyContext,
   validateOntology,
 } from "./api/validateOntology.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";

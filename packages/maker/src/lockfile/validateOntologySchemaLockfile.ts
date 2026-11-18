@@ -22,8 +22,6 @@ import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
   reproduces,
-  targetActionTypeConstraintsOf,
-  targetPropertiesOf,
   targetsOf,
 } from "./applyInterfaceSchemaTransition.js";
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
@@ -107,42 +105,46 @@ export type LockfileBreakingChange =
   | {
       code: "actionTypeConstraintBecameRequired";
       interfaceApiName: string;
-      actionTypeConstraint: string;
+      actionTypeConstraintApiName: string;
     }
   | {
       code: "requiredActionTypeConstraintAdded";
       interfaceApiName: string;
-      actionTypeConstraint: string;
+      actionTypeConstraintApiName: string;
     }
   | {
       code: "parameterBecameRequired";
       interfaceApiName: string;
-      actionTypeConstraint: string;
-      parameter: string;
+      actionTypeConstraintApiName: string;
+      parameterApiName: string;
     }
   | {
       code: "requiredParameterAdded";
       interfaceApiName: string;
-      actionTypeConstraint: string;
-      parameter: string;
+      actionTypeConstraintApiName: string;
+      parameterApiName: string;
     }
   | {
       code: "parameterBecameRequiredOnConcreteAction";
       interfaceApiName: string;
-      actionTypeConstraint: string;
-      parameter: string;
+      actionTypeConstraintApiName: string;
+      parameterApiName: string;
     }
   | {
       code: "interfaceExtensionAdded";
       interfaceApiName: string;
       extendedInterfaceApiName: string;
     }
-  | { code: "propertyRemoved"; interfaceApiName: string; property: string }
+  | {
+      code: "propertyRemoved";
+      interfaceApiName: string;
+      propertyApiName: string;
+    }
   | {
       code: "propertyDeclarationChanged";
       interfaceApiName: string;
       /** The api name the lockfile recorded, i.e. the one the property published under before. */
-      property: string;
+      propertyApiName: string;
       previousDeclaration: PropertyDeclaration;
       nextDeclaration: PropertyDeclaration;
     }
@@ -153,53 +155,53 @@ export type LockfileBreakingChange =
   | {
       code: "propertyNamespaceChanged";
       interfaceApiName: string;
-      previousApiName: string;
-      nextApiName: string;
+      previousPropertyApiName: string;
+      nextPropertyApiName: string;
     }
   | {
       code: "propertyTypeChanged";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
       previousType: LockedPropertyType;
       nextType: LockedPropertyType;
     }
   | {
       code: "propertyTypeClassesChanged";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
       previousTypeClasses: readonly TypeClass[];
       nextTypeClasses: readonly TypeClass[];
     }
   | {
       code: "primaryKeyConstraintChanged";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
       previousConstraint: PrimaryKeyConstraint;
       nextConstraint: PrimaryKeyConstraint;
     }
   | {
       code: "nullabilityTightened";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
       previousNullability: Nullability;
       nextNullability: Nullability;
     }
   | {
       code: "valueTypeChanged";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
       previousValueType: LockedValueType | undefined;
       nextValueType: LockedValueType;
     }
   | {
       code: "propertyBecameRequired";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
     }
   | {
       code: "requiredPropertyAdded";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
     };
 
 /** Worth telling the author about, but not by itself a reason to reject the ontology. */
@@ -210,25 +212,25 @@ export type LockfileWarning =
   | {
       code: "requirementRelaxed";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
     }
   | {
       code: "primaryKeyConstraintRelaxed";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
       previousConstraint: PrimaryKeyConstraint;
     }
   | {
       code: "nullabilityRelaxed";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
       previousNullability: Nullability;
       nextNullability: Nullability;
     }
   | {
       code: "valueTypeRemoved";
       interfaceApiName: string;
-      property: string;
+      propertyApiName: string;
       previousValueType: LockedValueType;
     }
   | {
@@ -240,26 +242,26 @@ export type LockfileWarning =
   | {
       code: "actionTypeConstraintRequirementRelaxed";
       interfaceApiName: string;
-      actionTypeConstraint: string;
+      actionTypeConstraintApiName: string;
     }
   | {
       code: "actionTypeConstraintRemoved";
       interfaceApiName: string;
-      actionTypeConstraint: string;
+      actionTypeConstraintApiName: string;
     }
   /** A parameter that implementing actions had to map no longer has to be. */
   | {
       code: "parameterRequirementRelaxed";
       interfaceApiName: string;
-      actionTypeConstraint: string;
-      parameter: string;
+      actionTypeConstraintApiName: string;
+      parameterApiName: string;
     }
   /** A parameter that implementing actions had to declare required no longer has to be. */
   | {
       code: "parameterNoLongerRequiredOnConcreteAction";
       interfaceApiName: string;
-      actionTypeConstraint: string;
-      parameter: string;
+      actionTypeConstraintApiName: string;
+      parameterApiName: string;
     };
 
 export interface LockfileValidationResult {
@@ -453,22 +455,22 @@ function validateActionTypeConstraintsDiff(
   const previousConstraints = actionTypeConstraintsOf(previousSchema);
   const nextConstraints = actionTypeConstraintsOf(nextSchema);
 
-  for (const [actionTypeConstraint, previous] of Object.entries(
+  for (const [actionTypeConstraintApiName, previous] of Object.entries(
     previousConstraints,
   )) {
-    const next = own(nextConstraints, actionTypeConstraint);
+    const next = own(nextConstraints, actionTypeConstraintApiName);
     // A transition only ever accounts for the constraint's own requirement, never its parameters'
     if (next !== undefined) {
       validateParameterConstraintsDiff(
         interfaceApiName,
-        actionTypeConstraint,
+        actionTypeConstraintApiName,
         previous,
         next,
         result,
       );
     }
 
-    if (accountedFor.has(actionTypeConstraint)) {
+    if (accountedFor.has(actionTypeConstraintApiName)) {
       continue;
     }
 
@@ -476,7 +478,7 @@ function validateActionTypeConstraintsDiff(
       warnings.push({
         code: "actionTypeConstraintRemoved",
         interfaceApiName,
-        actionTypeConstraint,
+        actionTypeConstraintApiName,
       });
       continue;
     }
@@ -485,21 +487,23 @@ function validateActionTypeConstraintsDiff(
       breakingChanges.push({
         code: "actionTypeConstraintBecameRequired",
         interfaceApiName,
-        actionTypeConstraint,
+        actionTypeConstraintApiName,
       });
     } else if (previous.requireImplementation && !next.requireImplementation) {
       warnings.push({
         code: "actionTypeConstraintRequirementRelaxed",
         interfaceApiName,
-        actionTypeConstraint,
+        actionTypeConstraintApiName,
       });
     }
   }
 
-  for (const [actionTypeConstraint, next] of Object.entries(nextConstraints)) {
+  for (const [actionTypeConstraintApiName, next] of Object.entries(
+    nextConstraints,
+  )) {
     if (
-      accountedFor.has(actionTypeConstraint) ||
-      own(previousConstraints, actionTypeConstraint) !== undefined
+      accountedFor.has(actionTypeConstraintApiName) ||
+      own(previousConstraints, actionTypeConstraintApiName) !== undefined
     ) {
       continue;
     }
@@ -508,7 +512,7 @@ function validateActionTypeConstraintsDiff(
       breakingChanges.push({
         code: "requiredActionTypeConstraintAdded",
         interfaceApiName,
-        actionTypeConstraint,
+        actionTypeConstraintApiName,
       });
     }
   }
@@ -522,17 +526,21 @@ function validateActionTypeConstraintsDiff(
  */
 function validateParameterConstraintsDiff(
   interfaceApiName: string,
-  actionTypeConstraint: string,
+  actionTypeConstraintApiName: string,
   previousConstraint: LockedActionTypeConstraint,
   nextConstraint: LockedActionTypeConstraint,
   { breakingChanges, warnings }: LockfileValidationResult,
 ): void {
   const previousParameters = parametersOf(previousConstraint);
-  for (const [parameter, next] of Object.entries(
+  for (const [parameterApiName, next] of Object.entries(
     parametersOf(nextConstraint),
   )) {
-    const where = { interfaceApiName, actionTypeConstraint, parameter };
-    const previous = own(previousParameters, parameter);
+    const where = {
+      interfaceApiName,
+      actionTypeConstraintApiName,
+      parameterApiName,
+    };
+    const previous = own(previousParameters, parameterApiName);
     if (previous === undefined) {
       // No implementing action maps a new parameter yet, so only requiring it to be mapped breaks
       if (next.requireImplementation) {
@@ -622,24 +630,31 @@ function classifyDisappearance(
 
   return {
     kind: "ambiguous",
-    targets: [
-      ...targetPropertiesOf(transition).map(
-        (apiName): TargetPropertyState => ({
-          kind: "property",
-          apiName,
-          previous: own(previousSchema.properties, apiName),
-          next: own(nextSchema.properties, apiName),
-        }),
-      ),
-      ...targetActionTypeConstraintsOf(transition).map(
-        (apiName): TargetActionTypeConstraintState => ({
-          kind: "actionTypeConstraint",
-          apiName,
-          previous: own(actionTypeConstraintsOf(previousSchema), apiName),
-          next: own(actionTypeConstraintsOf(nextSchema), apiName),
-        }),
-      ),
-    ],
+    targets: targetsOf(transition).map((element): TargetState => {
+      switch (element.kind) {
+        case "property":
+          return {
+            ...element,
+            previous: own(previousSchema.properties, element.apiName),
+            next: own(nextSchema.properties, element.apiName),
+          };
+        case "actionTypeConstraint":
+          return {
+            ...element,
+            previous: own(
+              actionTypeConstraintsOf(previousSchema),
+              element.apiName,
+            ),
+            next: own(actionTypeConstraintsOf(nextSchema), element.apiName),
+          };
+        default: {
+          const unhandled: never = element;
+          throw new Error(
+            `Unknown schema element: ${JSON.stringify(unhandled)}`,
+          );
+        }
+      }
+    }),
   };
 }
 
@@ -706,7 +721,7 @@ function validateSchemaDiff(
       breakingChanges.push({
         code: "propertyRemoved",
         interfaceApiName,
-        property: previous.apiName,
+        propertyApiName: previous.apiName,
       });
       continue;
     }
@@ -715,7 +730,7 @@ function validateSchemaDiff(
       warnings.push({
         code: "requirementRelaxed",
         interfaceApiName,
-        property: previous.apiName,
+        propertyApiName: previous.apiName,
       });
     }
 
@@ -728,7 +743,7 @@ function validateSchemaDiff(
       warnings.push({
         code: "primaryKeyConstraintRelaxed",
         interfaceApiName,
-        property: previous.apiName,
+        propertyApiName: previous.apiName,
         previousConstraint,
       });
     }
@@ -742,7 +757,7 @@ function validateSchemaDiff(
       warnings.push({
         code: "nullabilityRelaxed",
         interfaceApiName,
-        property: previous.apiName,
+        propertyApiName: previous.apiName,
         previousNullability,
         nextNullability,
       });
@@ -755,7 +770,7 @@ function validateSchemaDiff(
       warnings.push({
         code: "valueTypeRemoved",
         interfaceApiName,
-        property: previous.apiName,
+        propertyApiName: previous.apiName,
         previousValueType: previous.property.valueType,
       });
     }
@@ -772,7 +787,7 @@ function validateSchemaDiff(
       breakingChanges.push({
         code: "requiredPropertyAdded",
         interfaceApiName,
-        property: next.apiName,
+        propertyApiName: next.apiName,
       });
     }
   }
@@ -785,7 +800,7 @@ function validatePropertyDiff(
   next: PublishedProperty,
   breakingChanges: LockfileBreakingChange[],
 ): void {
-  const property = previous.apiName;
+  const propertyApiName = previous.apiName;
 
   // Ahead of the type check: when the binding itself was swapped, the types are incidental, and
   // reporting them would point the author at the wrong thing to restore.
@@ -795,7 +810,7 @@ function validatePropertyDiff(
     breakingChanges.push({
       code: "propertyDeclarationChanged",
       interfaceApiName,
-      property,
+      propertyApiName,
       previousDeclaration,
       nextDeclaration,
     });
@@ -808,8 +823,8 @@ function validatePropertyDiff(
     breakingChanges.push({
       code: "propertyNamespaceChanged",
       interfaceApiName,
-      previousApiName: previous.apiName,
-      nextApiName: next.apiName,
+      previousPropertyApiName: previous.apiName,
+      nextPropertyApiName: next.apiName,
     });
     return;
   }
@@ -820,7 +835,7 @@ function validatePropertyDiff(
     breakingChanges.push({
       code: "propertyTypeChanged",
       interfaceApiName,
-      property,
+      propertyApiName,
       previousType: previous.property.type,
       nextType: next.property.type,
     });
@@ -833,7 +848,7 @@ function validatePropertyDiff(
     breakingChanges.push({
       code: "propertyTypeClassesChanged",
       interfaceApiName,
-      property,
+      propertyApiName,
       previousTypeClasses: previous.property.typeClasses ?? [],
       nextTypeClasses: next.property.typeClasses ?? [],
     });
@@ -849,7 +864,7 @@ function validatePropertyDiff(
     breakingChanges.push({
       code: "primaryKeyConstraintChanged",
       interfaceApiName,
-      property,
+      propertyApiName,
       previousConstraint,
       nextConstraint,
     });
@@ -862,7 +877,7 @@ function validatePropertyDiff(
     breakingChanges.push({
       code: "nullabilityTightened",
       interfaceApiName,
-      property,
+      propertyApiName,
       previousNullability,
       nextNullability,
     });
@@ -877,7 +892,7 @@ function validatePropertyDiff(
     breakingChanges.push({
       code: "valueTypeChanged",
       interfaceApiName,
-      property,
+      propertyApiName,
       previousValueType: previous.property.valueType,
       nextValueType,
     });
@@ -888,7 +903,7 @@ function validatePropertyDiff(
     breakingChanges.push({
       code: "propertyBecameRequired",
       interfaceApiName,
-      property,
+      propertyApiName,
     });
   }
 }

@@ -25,7 +25,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { defineOntology } from "../api/defineOntology.js";
-import type { OntologyValidationContext } from "../api/validateOntology.js";
+import type { OntologyContext } from "../api/validateOntology.js";
 import { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "../lockfile/OntologySchemaLockfile.js";
 import { reconcileOntologySchemaLockfile } from "../lockfile/reconcileOntologySchemaLockfile.js";
 
@@ -262,7 +262,7 @@ async function loadOntology(
   snippetPackageName: string,
   codeSnippetDir: string,
   randomnessKey: string | undefined,
-  beforeWrite: (context: OntologyValidationContext) => Promise<void>,
+  beforeWrite: (context: OntologyContext) => Promise<void>,
 ) {
   const q = await defineOntology(
     apiNamespace,

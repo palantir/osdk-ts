@@ -27,7 +27,7 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
-import type { OntologyValidationContext } from "@osdk/maker";
+import type { OntologyContext } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
   DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
@@ -647,7 +647,7 @@ async function loadOntology(
   importedLinkTypeIdsByApiName: LinkTypeIdsByApiName | undefined,
   externalImportedMetadata: ExternalImportedOntologyMetadata | undefined,
   packagingOptions: OntologyPackagingOptions,
-  beforeWrite: (context: OntologyValidationContext) => Promise<void>,
+  beforeWrite: (context: OntologyContext) => Promise<void>,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,

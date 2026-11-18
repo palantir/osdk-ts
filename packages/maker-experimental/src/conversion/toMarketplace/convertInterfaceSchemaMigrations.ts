@@ -24,7 +24,7 @@ import type {
   InterfaceSchemaMigrationInstruction,
   InterfaceType,
   InterfaceTypeReplacement,
-  OntologyValidationContext,
+  OntologyContext,
   ResolvedInterfaceMember,
   ResolvedInterfaceProperty,
   ResolvedInterfaceTypeReplacement,
@@ -34,11 +34,12 @@ import {
   convertInterfaceSchemaGracePeriod,
   getImportedTypes,
   getOntologyDefinition,
-  interfacePropertyWireApiName,
   isInterfaceSharedPropertyType,
   OntologyEntityTypeEnum,
+  resolveInterfaceProperty,
   resolveInterfaceTypeReplacement,
 } from "@osdk/maker";
+import invariant from "tiny-invariant";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { interfacePropertyWireRid } from "./convertInterfacePropertyType.js";
@@ -48,7 +49,7 @@ export function convertInterfaceSchemaMigrations(
   ridGenerator: OntologyRidGenerator,
 ): InterfaceTypeSchemaMigrationBlockData | undefined {
   const { schemaMigrations } = interfaceType;
-  const context: OntologyValidationContext = {
+  const context: OntologyContext = {
     ontology: getOntologyDefinition(),
     importedTypes: getImportedTypes(),
   };
@@ -177,24 +178,23 @@ class WireReferences {
 function convertInstruction(
   instruction: InterfaceSchemaMigrationInstruction,
   interfaceType: InterfaceType,
-  context: OntologyValidationContext,
+  context: OntologyContext,
   references: WireReferences,
 ): InterfaceTypeSchemaMigrationInstruction {
   switch (instruction.type) {
     case "addRequiredProperty": {
-      const property = interfaceType.propertiesV3[instruction.property];
+      const property = resolveInterfaceProperty(
+        interfaceType,
+        instruction.property,
+      );
+      invariant(
+        property !== undefined,
+        `Interface ${interfaceType.apiName} declares addRequiredProperty("${instruction.property}"), but does not declare that property.`,
+      );
       return {
         type: "addRequiredProperty",
         addRequiredProperty: {
-          propertyTypeRid: references.property({
-            apiName: interfacePropertyWireApiName(
-              property,
-              instruction.property,
-            ),
-            interfaceTypeApiName: interfaceType.apiName,
-            authoredKey: instruction.property,
-            property,
-          }),
+          propertyTypeRid: references.property(property),
         },
       };
     }
@@ -232,7 +232,7 @@ function convertInstruction(
 }
 
 function convertReplacement(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
   replacement: InterfaceTypeReplacement,
   references: WireReferences,
@@ -244,7 +244,7 @@ function convertReplacement(
   );
   assertReplacementHasBlockShapes(context, interfaceType, resolved);
   return {
-    interfaceTypeRid: references.interfaceType(resolved.interfaceTypeApiName),
+    interfaceTypeRid: references.interfaceType(resolved.interfaceType.apiName),
     propertyMappings: Object.fromEntries(
       resolved.propertyMappings.map(({ from, to }) => [
         references.property(from),
@@ -279,7 +279,7 @@ function convertReplacement(
 }
 
 function assertReplacementHasBlockShapes(
-  context: OntologyValidationContext,
+  context: OntologyContext,
   interfaceType: InterfaceType,
   resolved: ResolvedInterfaceTypeReplacement,
 ): void {
@@ -291,13 +291,13 @@ function assertReplacementHasBlockShapes(
   );
   if (importedSptBacked !== undefined) {
     throw new Error(
-      `Interface ${interfaceType.apiName} is being replaced by ${resolved.interfaceTypeApiName}, mapping property "${importedSptBacked.from.apiName}" to the SPT-backed property "${importedSptBacked.to.apiName}" of imported interface ${importedSptBacked.to.interfaceTypeApiName}. Mapping to imported SPT-backed properties is not supported yet, because they have no interface property type input shape to reference.`,
+      `Interface ${interfaceType.apiName} is being replaced by ${resolved.interfaceType.apiName}, mapping property "${importedSptBacked.from.apiName}" to the SPT-backed property "${importedSptBacked.to.apiName}" of imported interface ${importedSptBacked.to.interfaceTypeApiName}. Mapping to imported SPT-backed properties is not supported yet, because they have no interface property type input shape to reference.`,
     );
   }
 }
 
 function isLocal(
-  { ontology }: OntologyValidationContext,
+  { ontology }: OntologyContext,
   interfaceTypeApiName: string,
 ): boolean {
   return Object.hasOwn(

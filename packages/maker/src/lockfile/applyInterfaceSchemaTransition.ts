@@ -121,7 +121,7 @@ export interface AppliedTransition {
  *
  * @internal
  */
-export function applyEdit(
+export function applyPropertyEdit(
   properties: Record<string, LockedProperty>,
   propertyApiName: string,
   edit: PropertyEdit,
@@ -160,12 +160,8 @@ export function applyEdit(
   }
 }
 
-/**
- * Applies one edit to `actionTypeConstraints` in place, reporting whether it could apply at all.
- *
- * @internal
- */
-export function applyActionTypeConstraintEdit(
+/** Applies one edit to `actionTypeConstraints` in place, reporting whether it could apply at all. */
+function applyActionTypeConstraintEdit(
   actionTypeConstraints: Record<string, LockedActionTypeConstraint>,
   apiName: string,
   edit: ActionTypeConstraintEdit,
@@ -199,7 +195,13 @@ export function applyTransition(
     for (const elementEdit of editsOf(instruction)) {
       switch (elementEdit.kind) {
         case "property":
-          if (!applyEdit(properties, elementEdit.apiName, elementEdit[mode])) {
+          if (
+            !applyPropertyEdit(
+              properties,
+              elementEdit.apiName,
+              elementEdit[mode],
+            )
+          ) {
             return undefined;
           }
           break;
@@ -244,22 +246,6 @@ export function applyTransition(
 export function targetsOf(transition: LockedTransition): SchemaElement[] {
   return transition.instructions.flatMap((instruction) =>
     editsOf(instruction).map(elementOf),
-  );
-}
-
-/** Every property a transition could touch, in either mode. */
-export function targetPropertiesOf(transition: LockedTransition): string[] {
-  return targetsOf(transition).flatMap((element) =>
-    element.kind === "property" ? [element.apiName] : [],
-  );
-}
-
-/** Every action type constraint a transition could touch, in either mode. */
-export function targetActionTypeConstraintsOf(
-  transition: LockedTransition,
-): string[] {
-  return targetsOf(transition).flatMap((element) =>
-    element.kind === "actionTypeConstraint" ? [element.apiName] : [],
   );
 }
 
