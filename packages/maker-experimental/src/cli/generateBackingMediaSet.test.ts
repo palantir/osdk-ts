@@ -136,21 +136,27 @@ describe("generateBackingMediaSetBlockResult", () => {
       ReadableIdGenerator.getForMediaSetViewOutput(name),
       "salt",
     );
-    for (const [group, type] of [
-      ["maxClassification", "CBAC"],
-      ["mandatoryMarkings", "MANDATORY"],
-    ]) {
-      const id = `media-set-marking-${group}-${type}` as ReadableId;
-      expect(result.inputs[id]).toMatchObject({
-        type: "markings",
-        markings: {
-          operation: "USE",
-          supportedMarkingsType: type,
-          affectedShapes: [output],
-          shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
-        },
-      });
-      expect(result.input_shape_metadata[id].isOptional).toBe(false);
-    }
+    const id = `media-set-${ReadableIdGenerator.getForMarkingSet({
+      mandatoryMarkings: "MANDATORY",
+      maxClassification: "CBAC",
+    })}` as ReadableId;
+    expect(
+      Object.values(result.inputs).filter((shape) => shape.type === "markings"),
+    ).toHaveLength(1);
+    expect(result.inputs[id]).toMatchObject({
+      type: "markings",
+      markings: {
+        operation: "USE",
+        supportedMarkingsType: "MANDATORY",
+        supportedMarkingsTypesV2: [
+          "CBAC",
+          "MANDATORY_NOT_ORGANIZATION",
+          "ORGANIZATION",
+        ],
+        affectedShapes: [output],
+        shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
+      },
+    });
+    expect(result.input_shape_metadata[id].isOptional).toBe(false);
   });
 });

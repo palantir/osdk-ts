@@ -49,6 +49,7 @@ import {
 import invariant from "tiny-invariant";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { getMediaSetMarkings } from "../../util/mediaSetMarkings.js";
 import { buildDatasource } from "./convertActionHelpers.js";
 import {
   convertDatasourceDefinition,
@@ -524,7 +525,9 @@ export function extractPropertyDatasource(
       const mediaSetDefinition: ObjectTypeDatasourceDefinition = {
         type: "mediaSetView",
         mediaSetView: {
-          assumedMarkings: Object.keys(property.backingMediaSetMarkings ?? {}),
+          assumedMarkings: getMediaSetMarkings(
+            property.backingMediaSetMarkings ?? {},
+          ).placeholderMarkings,
           clearOnDeleteProperties: [],
           mediaSetViewLocator:
             ridGenerator.generateMediaSetViewLocator(identifier),

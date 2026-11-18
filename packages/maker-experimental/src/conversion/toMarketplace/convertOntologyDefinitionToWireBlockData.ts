@@ -43,6 +43,7 @@ import {
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
+import { getMediaSetMarkings } from "../../util/mediaSetMarkings.js";
 import { convertAction } from "./convertActionHelpers.js";
 import { convertInterface } from "./convertInterface.js";
 import { convertInterfaceSchemaMigrations } from "./convertInterfaceSchemaMigrations.js";
@@ -607,13 +608,6 @@ function buildKnownIdentifiers(
   // Collect additionalMandatoryMarkings from property security groups.
   Object.values(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
     (objectType) => {
-      for (const property of objectType.properties ?? []) {
-        for (const [markingId, markingType] of Object.entries(
-          property.backingMediaSetMarkings ?? {},
-        )) {
-          markingEntries.push({ markingId, markingType });
-        }
-      }
       // additionalMandatoryMarkings from property security groups
       (objectType.datasources ?? []).forEach((ds) => {
         if ("propertySecurityGroups" in ds && ds.propertySecurityGroups) {
@@ -648,6 +642,21 @@ function buildKnownIdentifiers(
     const blockInternalId = ridGenerator.toBlockInternalId(readableId);
     markingsMappings[blockInternalId] = [markingId];
   });
+
+  // The installer resolves each assumed-marking set through one input, including mixed marking types.
+  for (const object of Object.values(
+    ontology[OntologyEntityTypeEnum.OBJECT_TYPE],
+  )) {
+    for (const property of object.properties ?? []) {
+      const markings = property.backingMediaSetMarkings ?? {};
+      if (Object.keys(markings).length > 0) {
+        const { readableId, placeholderMarkings } =
+          getMediaSetMarkings(markings);
+        markingsMappings[ridGenerator.toBlockInternalId(readableId)] =
+          placeholderMarkings;
+      }
+    }
+  }
 
   return {
     actionParameterIds: actionParameterIdMappings,

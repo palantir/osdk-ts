@@ -108,7 +108,12 @@ describe("Marketplace media reference bindings", () => {
     expect(
       media.find((source) => source.properties.includes(file.rid))
         ?.assumedMarkings,
-    ).toEqual(["maxClassification", "mandatoryMarkings"]);
+    ).toEqual([
+      ReadableIdGenerator.getForMarkingSet({
+        maxClassification: "CBAC",
+        mandatoryMarkings: "MANDATORY",
+      }),
+    ]);
     expect(
       media.find((source) => source.properties.includes(preview.rid))
         ?.assumedMarkings,
@@ -116,30 +121,73 @@ describe("Marketplace media reference bindings", () => {
     expect(result.backingMediaSetMarkings["com.example.Document.file"]).toEqual(
       { maxClassification: "CBAC", mandatoryMarkings: "MANDATORY" },
     );
-    for (const [group, type] of [
-      ["maxClassification", "CBAC"],
-      ["mandatoryMarkings", "MANDATORY"],
-    ] as const) {
-      const id = ReadableIdGenerator.getForMarking(group, type);
-      const input = result.shapes.inputShapes.get(id);
-      expect(input).toMatchObject({
-        type: "markings",
-        markings: { operation: "DECLASSIFY", supportedMarkingsType: type },
-      });
-      expect(
-        result.ontologyIr.ontology.knownIdentifiers.markings[
-          result.blockDataAddOn.idToBlockShapeId[id]
+    const id = ReadableIdGenerator.getForMarkingSet({
+      mandatoryMarkings: "MANDATORY",
+      maxClassification: "CBAC",
+    });
+    const input = result.shapes.inputShapes.get(id);
+    expect(input).toMatchObject({
+      type: "markings",
+      markings: {
+        operation: "DECLASSIFY",
+        supportedMarkingsType: "MANDATORY",
+        supportedMarkingsTypesV2: [
+          "CBAC",
+          "MANDATORY_NOT_ORGANIZATION",
+          "ORGANIZATION",
         ],
-      ).toEqual([group]);
-    }
+      },
+    });
+    // OMS looks up the entire assumed set, rather than resolving its entries separately.
+    const assumed = media.find((source) =>
+      source.properties.includes(file.rid),
+    )!.assumedMarkings;
+    const matchingInputs = Object.entries(
+      result.ontologyIr.ontology.knownIdentifiers.markings,
+    ).filter(
+      ([, groups]) =>
+        JSON.stringify([...groups].sort()) ===
+        JSON.stringify([...assumed].sort()),
+    );
+    expect(matchingInputs).toEqual([
+      [result.blockDataAddOn.idToBlockShapeId[id], [id]],
+    ]);
     const classification = result.shapes.inputShapes.get(
       ReadableIdGenerator.getForMarking("maxClassification", "CBAC"),
     );
     expect(
       classification?.type === "markings" &&
         classification.markings.affectedShapes,
-    ).toHaveLength(2);
+    ).toHaveLength(1);
+    expect(classification).toMatchObject({ markings: { operation: "USE" } });
   });
+
+  it.each(["CBAC", "MANDATORY"] as const)(
+    "reuses a single %s marking input for media assumptions",
+    async (type) => {
+      const result = await defineOntologyV2("com.example.", () => {
+        const definition = documentDefinition();
+        definition.referenceSources = undefined;
+        const properties = definition.properties!;
+        properties.file = {
+          type: "mediaReference",
+          includeEmptyBackingMediaSet: true,
+          backingMediaSetMarkings: { media: type },
+        };
+        delete properties.preview;
+        defineObject(definition);
+      });
+      const id = ReadableIdGenerator.getForMarking("media", type);
+      expect(result.shapes.inputShapes.get(id)).toMatchObject({
+        markings: { operation: "DECLASSIFY", supportedMarkingsType: type },
+      });
+      expect(
+        result.ontologyIr.ontology.knownIdentifiers.markings[
+          result.blockDataAddOn.idToBlockShapeId[id]
+        ],
+      ).toEqual(["media"]);
+    },
+  );
 
   it("packages shared sources as required inputs and selects exactly one upload destination", async () => {
     const result = await defineOntologyV2("com.example.", () => {

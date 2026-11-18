@@ -30,6 +30,7 @@ import type {
 
 import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
+import { getMediaSetMarkings } from "../util/mediaSetMarkings.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
 
@@ -94,18 +95,19 @@ export async function generateBackingMediaSetBlockResult(
       isAccessedInReconcile: true,
     },
   };
-  for (const [group, markingType] of Object.entries(markings)) {
-    const readableId =
-      `media-set-marking-${group}-${markingType}` as ReadableId;
+  const groups = Object.keys(markings).sort();
+  if (groups.length > 0) {
+    const config = getMediaSetMarkings(markings);
+    const readableId = `media-set-${config.readableId}` as ReadableId;
     // client.unstable does not yet include Marketplace's resource-marking constraint.
     const markingShape: MarkingsShape & {
       shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] };
     } = {
-      about: createLocalizedAbout(`Media set marking ${group}`),
+      about: createLocalizedAbout(`Media set markings ${groups.join(", ")}`),
       operation: "USE",
       affectedShapes: [outputBlockShapeId],
-      supportedMarkingsType: markingType,
-      stableId: `media-set.${group}`,
+      ...config.shapeTypes,
+      stableId: `media-set.${groups.join(",")}`,
       shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
     };
     inputs[readableId] = { type: "markings", markings: markingShape };

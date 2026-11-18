@@ -187,7 +187,7 @@ file: {
 }
 ```
 
-Supply the same marking IDs to the media-set resource inputs and the corresponding ontology marking inputs at installation. For example, Apollo can supply `maximumClassificationMarkingIds` and `mandatoryMarkingAllowlist` to these inputs. Installation requires permission to apply and declassify those markings.
+Supply the same combined marking IDs to the generated media-set resource input and ontology assumed-markings input at installation. For example, combine Apollo's `maximumClassificationMarkingIds` and `mandatoryMarkingAllowlist` for these inputs. Installation requires permission to apply and declassify those markings.
 
 Direct media-set reads require clearance for the applied markings. Object-based reads can use item tokens without inheriting the backing set's markings. Users who satisfy the file markings and have resource read permission can still read the media directly.
 

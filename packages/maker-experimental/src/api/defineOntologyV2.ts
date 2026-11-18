@@ -53,6 +53,7 @@ import {
   OntologyRidGeneratorImpl,
   ReadableIdGenerator,
 } from "../util/generateRid.js";
+import { getMediaSetMarkings } from "../util/mediaSetMarkings.js";
 import type { OntologyIrV2 } from "./OntologyIrV2.js";
 
 export interface OntologyPackagingOptions {
@@ -226,13 +227,10 @@ export async function defineOntologyV2(
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
   )) {
     for (const property of (object as ObjectType).properties ?? []) {
-      for (const [markingId, markingType] of Object.entries(
-        property.backingMediaSetMarkings ?? {},
-      )) {
-        const readableId = ReadableIdGenerator.getForMarking(
-          markingId,
-          markingType,
-        );
+      const markings = property.backingMediaSetMarkings ?? {};
+      const groups = Object.keys(markings).sort();
+      if (groups.length > 0) {
+        const { readableId, shapeTypes } = getMediaSetMarkings(markings);
         const existing = shapes.inputShapes.get(readableId);
         const affectedShape = ridGenerator.toBlockInternalId(
           ReadableIdGenerator.getForObjectProperty(
@@ -247,13 +245,13 @@ export async function defineOntologyV2(
               ? existing.markings
               : {
                   about: {
-                    fallbackTitle: `Assumed media marking ${markingId}`,
+                    fallbackTitle: `Assumed media markings ${groups.join(", ")}`,
                     fallbackDescription: "",
                     localizedTitle: {},
                     localizedDescription: {},
                   },
-                  supportedMarkingsType: markingType,
-                  stableId: markingId,
+                  ...shapeTypes,
+                  stableId: groups.join(","),
                 }),
             operation: "DECLASSIFY",
             affectedShapes: [
