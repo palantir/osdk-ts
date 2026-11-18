@@ -184,6 +184,32 @@ describe("applyTransition", () => {
       ).toBe(true);
     });
   });
+
+  describe("replace", () => {
+    const replace: LockedTransition = {
+      id: "replace",
+      gracePeriod: { type: "afterInstall", days: 30 },
+      instructions: [
+        {
+          type: "replace",
+          replacement: {
+            interfaceType: "com.example.PersonV2",
+            propertyMappings: { lastName: "surname" },
+          },
+        },
+      ],
+    };
+
+    it.each(["lenient", "strict"] as const)(
+      "leaves the interface's schema untouched when applied %sly",
+      (mode) => {
+        expect(applyTransition(replace, previousSchema, mode)).toStrictEqual({
+          schema: previousSchema,
+          touched: [],
+        });
+      },
+    );
+  });
 });
 
 describe("reproduces", () => {

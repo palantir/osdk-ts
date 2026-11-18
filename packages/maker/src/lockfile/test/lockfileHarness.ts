@@ -23,10 +23,7 @@ import { afterEach, beforeEach, vi } from "vitest";
 
 import type { InterfaceTypeDefinition } from "../../api/defineInterface.js";
 import { defineInterface } from "../../api/defineInterface.js";
-import {
-  defineOntology,
-  getOntologyDefinition,
-} from "../../api/defineOntology.js";
+import { defineOntology } from "../../api/defineOntology.js";
 import type {
   InterfaceSchemaMigrations,
   InterfaceSchemaTransition,
@@ -171,13 +168,23 @@ export function useLockfileHarness(): LockfileHarness {
     body: () => void,
     options: MakerOptions = {},
   ): Promise<void> {
-    await defineOntology(options.namespace ?? "", body, undefined);
-    await reconcileOntologySchemaLockfile({
-      ontology: getOntologyDefinition(),
-      lockfilePath,
-      writeLocks: options.writeLocks ?? false,
-      assumeYes: options.assumeYes ?? true,
-    });
+    await defineOntology(
+      options.namespace ?? "",
+      body,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      async (context) =>
+        await reconcileOntologySchemaLockfile({
+          context,
+          lockfilePath,
+          writeLocks: options.writeLocks ?? false,
+          assumeYes: options.assumeYes ?? true,
+        }),
+    );
   }
 
   return {
