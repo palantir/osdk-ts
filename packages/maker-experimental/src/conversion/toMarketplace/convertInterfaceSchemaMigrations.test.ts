@@ -106,7 +106,11 @@ describe("interface type schema migrations", () => {
 
     expect(block.interfaceType.schemaMigrationsEnabled).toBe(true);
     expect(block.schemaMigrations).toEqual({
+      interfaceActionTypeConstraintRidsToApiNames: {},
+      interfaceLinkTypeRidsToApiNames: {},
+      interfaceParameterConstraintRidsToApiNames: {},
       interfacePropertyTypeRidsToApiNames: {},
+      interfaceTypeRidsToApiNames: {},
       schemaTransitions: {},
     });
   });

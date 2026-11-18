@@ -24,6 +24,17 @@ import type { DatasourceRid as _api_DatasourceRid } from "../__components.js";
 import type { InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid } from "../__components.js";
 import type { InterfacePropertyTypeRidOrIdInRequest as _api_InterfacePropertyTypeRidOrIdInRequest } from "../__components.js";
 import type { InterfaceTypeRid as _api_InterfaceTypeRid } from "../__components.js";
+import type { InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest } from "../__components.js";
+import type { InterfaceTypeApiName as _api_InterfaceTypeApiName } from "../__components.js";
+import type { InterfaceActionTypeConstraintRid as _api_InterfaceActionTypeConstraintRid } from "../__components.js";
+import type { InterfaceActionTypeConstraintRidOrIdInRequest as _api_InterfaceActionTypeConstraintRidOrIdInRequest } from "../__components.js";
+import type { InterfaceActionTypeConstraintApiName as _api_InterfaceActionTypeConstraintApiName } from "../__components.js";
+import type { InterfaceParameterConstraintRid as _api_InterfaceParameterConstraintRid } from "../__components.js";
+import type { InterfaceParameterConstraintRidOrIdInRequest as _api_InterfaceParameterConstraintRidOrIdInRequest } from "../__components.js";
+import type { InterfaceParameterConstraintApiName as _api_InterfaceParameterConstraintApiName } from "../__components.js";
+import type { InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid } from "../__components.js";
+import type { InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest } from "../__components.js";
+import type { InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName } from "../__components.js";
 import type { Attribution as _api_Attribution } from "../__components.js";
 import type { ObjectTypeRid as _api_ObjectTypeRid } from "../__components.js";
 import type { OntologyVersion as _api_OntologyVersion } from "../__components.js";
@@ -246,6 +257,142 @@ export interface InitializePatchesMigrationModification {
   propertyRenames: Array<RenamePropertyMigrationModification>;
 }
 /**
+ * Migration making an action type constraint of this interface required-to-implement.
+ */
+export interface InterfaceTypeAddRequiredActionTypeConstraintMigration {
+  actionTypeConstraintRid: _api_InterfaceActionTypeConstraintRid;
+}
+/**
+ * See InterfaceTypeAddRequiredActionTypeConstraintMigration.
+ */
+export interface InterfaceTypeAddRequiredActionTypeConstraintMigrationModification {
+  actionTypeConstraint: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+}
+/**
+ * Migration moving implementers of this interface to the replacement interface, according to the given mappings.
+ *
+ * Before using this migration, consumers need to support both interfaces (e.g. query for object types
+ * implementing either interface type) since object types will move over one-at-a-time, at any time, during the
+ * grace period. When the grace period elapses, OMS will move any straggling object types automatically.
+ *
+ * This migration is a terminal migration:
+ * - It cannot be used if there's any active/on-going migrations; finalize or delete those first.
+ * - It is never finalized: it remains in awaiting-finalization forever as a tombstone, preventing any other
+ * migrations from being declared on this interface.
+ *
+ * The replaced interface cannot be extended by other interfaces, unless each extending interface has its own
+ * replace migration that is already awaiting finalization. To replace a hierarchy, replace the extending
+ * interfaces first, wait for their replace migrations to reach awaiting finalization, then replace the
+ * extended interface.
+ */
+export interface InterfaceTypeReplaceMigration {
+  replacement: InterfaceTypeReplacement;
+}
+/**
+ * See InterfaceTypeReplaceMigration.
+ */
+export interface InterfaceTypeReplaceMigrationModification {
+  replacement: InterfaceTypeReplacementModification;
+}
+/**
+ * The replacement interface's action type constraint that the replaced interface's action type constraint maps
+ * to, and how the action type's parameter implementations carry over.
+ */
+export interface InterfaceActionTypeConstraintReplacement {
+  actionTypeConstraintRid: _api_InterfaceActionTypeConstraintRid;
+  parameterMappings: Record<
+    _api_InterfaceParameterConstraintRid,
+    _api_InterfaceParameterConstraintRid
+  >;
+}
+/**
+ * See InterfaceActionTypeConstraintReplacement.
+ */
+export interface InterfaceActionTypeConstraintMappingModification {
+  parameterMappings: Array<InterfaceParameterConstraintMappingModification>;
+  source: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  target: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+}
+/**
+ * Maps a link type constraint of the replaced interface to one of the replacement interface.
+ */
+export interface InterfaceLinkTypeConstraintMappingModification {
+  source: _api_InterfaceLinkTypeRidOrIdInRequest;
+  target: _api_InterfaceLinkTypeRidOrIdInRequest;
+}
+/**
+ * Maps a parameter constraint of the replaced constraint to one of the replacement constraint.
+ */
+export interface InterfaceParameterConstraintMappingModification {
+  source: _api_InterfaceParameterConstraintRidOrIdInRequest;
+  target: _api_InterfaceParameterConstraintRidOrIdInRequest;
+}
+/**
+ * Maps a property of the replaced interface to a property of the replacement interface.
+ */
+export interface InterfacePropertyTypeMappingModification {
+  source: _api_InterfacePropertyTypeRidOrIdInRequest;
+  target: _api_InterfacePropertyTypeRidOrIdInRequest;
+}
+/**
+ * An interface replacing another one, and how to carry implementations over to it.
+ *
+ * Items present on both interface types (shared ancestors) are implicitly mapped to themselves and may not be
+ * remapped. This includes all parameter constraints of a shared action type constraint.
+ */
+export interface InterfaceTypeReplacement {
+  actionTypeConstraintMappings: Record<
+    _api_InterfaceActionTypeConstraintRid,
+    InterfaceActionTypeConstraintReplacement
+  >;
+  interfaceTypeRid: _api_InterfaceTypeRid;
+  linkTypeConstraintMappings: Record<
+    _api_InterfaceLinkTypeRid,
+    _api_InterfaceLinkTypeRid
+  >;
+  propertyMappings: Record<
+    _api_InterfacePropertyTypeRid,
+    _api_InterfacePropertyTypeRid
+  >;
+}
+export interface InterfaceTypeReplacementMappingReference_property {
+  type: "property";
+  property: _api_InterfacePropertyTypeRidOrIdInRequest;
+}
+
+export interface InterfaceTypeReplacementMappingReference_linkTypeConstraint {
+  type: "linkTypeConstraint";
+  linkTypeConstraint: _api_InterfaceLinkTypeRidOrIdInRequest;
+}
+
+export interface InterfaceTypeReplacementMappingReference_actionTypeConstraint {
+  type: "actionTypeConstraint";
+  actionTypeConstraint: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+}
+
+export interface InterfaceTypeReplacementMappingReference_parameterConstraint {
+  type: "parameterConstraint";
+  parameterConstraint: _api_InterfaceParameterConstraintRidOrIdInRequest;
+}
+/**
+ * The source or target of a mapping in an InterfaceTypeReplacementModification.
+ */
+export type InterfaceTypeReplacementMappingReference =
+  | InterfaceTypeReplacementMappingReference_property
+  | InterfaceTypeReplacementMappingReference_linkTypeConstraint
+  | InterfaceTypeReplacementMappingReference_actionTypeConstraint
+  | InterfaceTypeReplacementMappingReference_parameterConstraint;
+
+/**
+ * See InterfaceTypeReplacement.
+ */
+export interface InterfaceTypeReplacementModification {
+  actionTypeConstraintMappings: Array<InterfaceActionTypeConstraintMappingModification>;
+  interfaceType: _api_InterfaceTypeRidOrIdInRequest;
+  linkTypeConstraintMappings: Array<InterfaceLinkTypeConstraintMappingModification>;
+  propertyMappings: Array<InterfacePropertyTypeMappingModification>;
+}
+/**
  * Migration to add a required property to an interface
  */
 export interface InterfaceTypeAddRequiredPropertyMigration {
@@ -296,21 +443,45 @@ export interface InterfaceTypeSchemaMigrationInstruction_addRequiredProperty {
   type: "addRequiredProperty";
   addRequiredProperty: InterfaceTypeAddRequiredPropertyMigration;
 }
+
+export interface InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint {
+  type: "addRequiredActionTypeConstraint";
+  addRequiredActionTypeConstraint: InterfaceTypeAddRequiredActionTypeConstraintMigration;
+}
+
+export interface InterfaceTypeSchemaMigrationInstruction_replace {
+  type: "replace";
+  replace: InterfaceTypeReplaceMigration;
+}
 /**
  * An instruction in an InterfaceType schema transition.
  */
 export type InterfaceTypeSchemaMigrationInstruction =
-  InterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+  | InterfaceTypeSchemaMigrationInstruction_addRequiredProperty
+  | InterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
+  | InterfaceTypeSchemaMigrationInstruction_replace;
 
 export interface InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty {
   type: "addRequiredProperty";
   addRequiredProperty: InterfaceTypeAddRequiredPropertyMigrationModification;
 }
+
+export interface InterfaceTypeSchemaMigrationInstructionModification_addRequiredActionTypeConstraint {
+  type: "addRequiredActionTypeConstraint";
+  addRequiredActionTypeConstraint: InterfaceTypeAddRequiredActionTypeConstraintMigrationModification;
+}
+
+export interface InterfaceTypeSchemaMigrationInstructionModification_replace {
+  type: "replace";
+  replace: InterfaceTypeReplaceMigrationModification;
+}
 /**
  * A modification instruction in an InterfaceType schema transition.
  */
 export type InterfaceTypeSchemaMigrationInstructionModification =
-  InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty;
+  | InterfaceTypeSchemaMigrationInstructionModification_addRequiredProperty
+  | InterfaceTypeSchemaMigrationInstructionModification_addRequiredActionTypeConstraint
+  | InterfaceTypeSchemaMigrationInstructionModification_replace;
 
 export interface InterfaceTypeSchemaMigrationModification {
   transitions: Array<InterfaceTypeSchemaTransitionModification>;
@@ -775,6 +946,64 @@ export interface OntologyIrInitializePatchesMigration {
   propertyRenames: Array<OntologyIrRenamePropertyMigration>;
 }
 /**
+ * Migration making an action type constraint of this interface required-to-implement.
+ */
+export interface OntologyIrInterfaceTypeAddRequiredActionTypeConstraintMigration {
+  actionTypeConstraintRid: _api_InterfaceActionTypeConstraintApiName;
+}
+/**
+ * Migration moving implementers of this interface to the replacement interface, according to the given mappings.
+ *
+ * Before using this migration, consumers need to support both interfaces (e.g. query for object types
+ * implementing either interface type) since object types will move over one-at-a-time, at any time, during the
+ * grace period. When the grace period elapses, OMS will move any straggling object types automatically.
+ *
+ * This migration is a terminal migration:
+ * - It cannot be used if there's any active/on-going migrations; finalize or delete those first.
+ * - It is never finalized: it remains in awaiting-finalization forever as a tombstone, preventing any other
+ * migrations from being declared on this interface.
+ *
+ * The replaced interface cannot be extended by other interfaces, unless each extending interface has its own
+ * replace migration that is already awaiting finalization. To replace a hierarchy, replace the extending
+ * interfaces first, wait for their replace migrations to reach awaiting finalization, then replace the
+ * extended interface.
+ */
+export interface OntologyIrInterfaceTypeReplaceMigration {
+  replacement: OntologyIrInterfaceTypeReplacement;
+}
+/**
+ * The replacement interface's action type constraint that the replaced interface's action type constraint maps
+ * to, and how the action type's parameter implementations carry over.
+ */
+export interface OntologyIrInterfaceActionTypeConstraintReplacement {
+  actionTypeConstraintRid: _api_InterfaceActionTypeConstraintApiName;
+  parameterMappings: Record<
+    _api_InterfaceParameterConstraintApiName,
+    _api_InterfaceParameterConstraintApiName
+  >;
+}
+/**
+ * An interface replacing another one, and how to carry implementations over to it.
+ *
+ * Items present on both interface types (shared ancestors) are implicitly mapped to themselves and may not be
+ * remapped. This includes all parameter constraints of a shared action type constraint.
+ */
+export interface OntologyIrInterfaceTypeReplacement {
+  actionTypeConstraintMappings: Record<
+    _api_InterfaceActionTypeConstraintApiName,
+    OntologyIrInterfaceActionTypeConstraintReplacement
+  >;
+  interfaceTypeRid: _api_InterfaceTypeApiName;
+  linkTypeConstraintMappings: Record<
+    _api_InterfaceLinkTypeApiName,
+    _api_InterfaceLinkTypeApiName
+  >;
+  propertyMappings: Record<
+    _api_InterfacePropertyTypeApiName,
+    _api_InterfacePropertyTypeApiName
+  >;
+}
+/**
  * Migration to add a required property to an interface
  */
 export interface OntologyIrInterfaceTypeAddRequiredPropertyMigration {
@@ -784,11 +1013,23 @@ export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredPr
   type: "addRequiredProperty";
   addRequiredProperty: OntologyIrInterfaceTypeAddRequiredPropertyMigration;
 }
+
+export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint {
+  type: "addRequiredActionTypeConstraint";
+  addRequiredActionTypeConstraint: OntologyIrInterfaceTypeAddRequiredActionTypeConstraintMigration;
+}
+
+export interface OntologyIrInterfaceTypeSchemaMigrationInstruction_replace {
+  type: "replace";
+  replace: OntologyIrInterfaceTypeReplaceMigration;
+}
 /**
  * An instruction in an InterfaceType schema transition.
  */
 export type OntologyIrInterfaceTypeSchemaMigrationInstruction =
-  OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredProperty;
+  | OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredProperty
+  | OntologyIrInterfaceTypeSchemaMigrationInstruction_addRequiredActionTypeConstraint
+  | OntologyIrInterfaceTypeSchemaMigrationInstruction_replace;
 
 /**
  * A collection of instructions for migrating an InterfaceType schema.
