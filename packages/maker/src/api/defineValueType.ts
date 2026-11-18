@@ -19,7 +19,6 @@ import type {
   ValueTypeRid,
   ValueTypeStatus,
 } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 
 import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
@@ -129,6 +128,7 @@ export type UserValueTypeStatus =
 export function defineValueType(
   valueTypeDefInput: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
+  const collector = createValidationIssueCollector();
   const valueTypeDef = cloneDefinition(valueTypeDefInput);
   const {
     apiName: inputApiName,
@@ -141,17 +141,22 @@ export function defineValueType(
   const apiName = namespacePrefix ? namespace + inputApiName : inputApiName;
   const semverValidation =
     /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/u;
-  invariant(semverValidation.test(version), "Version is not a valid semver");
+  collector.check(semverValidation.test(version), {
+    code: "invalid_version",
+    message: "Version is not a valid semver",
+    path: ["version"],
+  });
 
   const existingVersions =
     ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][apiName] ?? [];
   const duplicateVersion = existingVersions.find(
     (vt) => vt.version === version,
   );
-  invariant(
-    duplicateVersion === undefined,
-    `Value type with apiName ${apiName} and version ${version} is already defined`,
-  );
+  collector.check(duplicateVersion === undefined, {
+    code: "duplicate_definition",
+    message: `Value type with apiName ${apiName} and version ${version} is already defined`,
+    path: ["version"],
+  });
 
   const typeName: TypeNames =
     typeof type.type === "string"
@@ -187,7 +192,6 @@ export function defineValueType(
     exampleValues: [],
     __type: OntologyEntityTypeEnum.VALUE_TYPE,
   };
-  const collector = createValidationIssueCollector();
   const context = `Value type "${apiName}" version "${version}"`;
   validateMetadataLength(
     vt.displayMetadata.displayName,

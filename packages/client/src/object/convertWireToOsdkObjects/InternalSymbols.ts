@@ -23,6 +23,11 @@ export const UnderlyingOsdkObject = Symbol(
 );
 
 /** @internal */
+export const UncastableProperties = Symbol(
+  process.env.MODE !== "production" ? "Uncastable Properties" : undefined,
+);
+
+/** @internal */
 export const ObjectDefRef = Symbol(
   process.env.MODE !== "production" ? "ObjectDefinition" : undefined,
 );

@@ -1,5 +1,25 @@
 # @osdk/maker-experimental
 
+## 0.87.0
+
+### Minor Changes
+
+- f4d94ba: Support multiple named media-set inputs and explicit upload destinations on scalar media properties.
+- 3282ead: Support TSv2 query/FBA source importing for Preview
+
+### Patch Changes
+
+- Updated dependencies [f4d94ba]
+- Updated dependencies [8aa522d]
+- Updated dependencies [749af7f]
+- Updated dependencies [3282ead]
+  - @osdk/maker@0.91.0
+  - @osdk/api@2.92.0
+  - @osdk/generator-converters.ontologyir@2.92.0
+  - @osdk/generator-converters.preview@0.66.0
+  - @osdk/maker-import@0.56.0
+  - @osdk/client.unstable@2.92.0
+
 ## 0.86.0
 
 ### Minor Changes

@@ -147,7 +147,11 @@ export function convertOntologyDefinitionToWireBlockData(
       return [
         ridGenerator.generateRidForInterface(apiName),
         {
-          interfaceType: convertInterface(interfaceType, ridGenerator),
+          interfaceType: convertInterface(
+            interfaceType,
+            ridGenerator,
+            ontologiesToScan,
+          ),
           ...(schemaMigrations !== undefined ? { schemaMigrations } : {}),
         },
       ];

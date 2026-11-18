@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+export type {
+  ActionTypeIsolationMode,
+  ActionTypeIsolationSettings,
+  ActionTypeRetrySettings,
+} from "@osdk/client.unstable";
+
 export type { ActionLevelValidationDefinition } from "./api/action/ActionLevelValidationDefinition.js";
 export type {
   ActionParameter,

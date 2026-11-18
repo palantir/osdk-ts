@@ -30,9 +30,13 @@ import type {
 import invariant from "tiny-invariant";
 
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
+import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { type FetchedObjectTypeDefinition } from "../ontology/OntologyProvider.js";
-import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
+import {
+  createOsdkObject,
+  NO_UNCASTABLE_PROPERTIES,
+} from "./convertWireToOsdkObjects/createOsdkObject.js";
 import type { InterfaceHolder } from "./convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "./convertWireToOsdkObjects/ObjectHolder.js";
 import type { SimpleOsdkProperties } from "./SimpleOsdkProperties.js";
@@ -71,6 +75,7 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   >,
   objectDefsByApiName?: Record<string, ObjectMetadata>,
+  includeAllBaseObjectProperties?: boolean,
 ): Promise<Array<InterfaceHolder>>;
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
@@ -90,6 +95,7 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   >,
   objectDefsByApiName?: Record<string, ObjectMetadata>,
+  includeAllBaseObjectProperties?: boolean,
 ): Promise<Array<ObjectHolder>>;
 export async function convertWireToOsdkObjects(
   client: MinimalClient,
@@ -109,6 +115,7 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   >,
   objectDefsByApiName?: Record<string, ObjectMetadata>,
+  includeAllBaseObjectProperties?: boolean,
 ): Promise<Array<ObjectHolder | InterfaceHolder>>;
 /**
  * @internal
@@ -131,6 +138,7 @@ export async function convertWireToOsdkObjects(
     InterfaceToObjectTypeMappingsV2
   > = {},
   objectDefsByApiName?: Record<string, ObjectMetadata>,
+  includeAllBaseObjectProperties: boolean = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
@@ -203,6 +211,14 @@ export async function convertWireToOsdkObjects(
       rawObj,
       derivedPropertyTypeByName,
       propertySecurities,
+      interfaceApiName && isInterfaceScoped
+        ? getUncastableProperties(
+            objectDef,
+            interfaceApiName,
+            selectedProps,
+            includeAllBaseObjectProperties,
+          )
+        : NO_UNCASTABLE_PROPERTIES,
     );
     if (interfaceApiName && isInterfaceScoped)
       osdkObject = osdkObject.$as(interfaceApiName);
@@ -211,6 +227,57 @@ export async function convertWireToOsdkObjects(
   }
 
   return ret;
+}
+
+function getUncastableProperties(
+  objectDef: ObjectMetadata,
+  interfaceApiName: string,
+  selectedProps: ReadonlyArray<string> | undefined,
+  includeAllBaseObjectProperties: boolean,
+): readonly string[] {
+  const implementations =
+    objectDef.interfaceImplementations?.[interfaceApiName];
+  if (implementations == null) return NO_UNCASTABLE_PROPERTIES;
+
+  const [interfaceNamespace] = extractNamespace(interfaceApiName);
+  const uncastableProperties = new Set<string>();
+  for (const [interfacePropertyApiName, implementation] of Object.entries(
+    implementations,
+  )) {
+    if (implementation.type === "localProperty") continue;
+    if (implementation.type !== "reduced" && includeAllBaseObjectProperties) {
+      continue;
+    }
+    if (selectedProps != null && selectedProps.length > 0) {
+      const [namespace, shortName] = extractNamespace(interfacePropertyApiName);
+      const selected =
+        selectedProps.includes(interfacePropertyApiName) ||
+        (namespace === interfaceNamespace && selectedProps.includes(shortName));
+      if (!selected) continue;
+    }
+    for (const backingProperty of getBackingProperties(implementation)) {
+      uncastableProperties.add(backingProperty);
+    }
+  }
+  return uncastableProperties.size > 0
+    ? [...uncastableProperties]
+    : NO_UNCASTABLE_PROPERTIES;
+}
+
+function getBackingProperties(
+  implementation: ObjectMetadata.InterfacePropertyImplementation,
+): string[] {
+  switch (implementation.type) {
+    case "localProperty":
+    case "structField":
+      return [implementation.propertyApiName];
+    case "struct":
+      return Object.values(implementation.mapping).map(
+        (field) => field.propertyApiName,
+      );
+    case "reduced":
+      return getBackingProperties(implementation.implementation);
+  }
 }
 
 function isConforming(
