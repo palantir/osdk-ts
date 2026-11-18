@@ -1247,9 +1247,8 @@ function validateStructFieldDefaultValue(
     sourceParameter != null,
     `${context} is referencing unknown parameter ${reference.parameterId}`,
   );
-  const isEarlier = seenParameterIds.has(reference.parameterId);
-  collector.check(
-    isEarlier,
+  const isEarlier = collector.check(
+    seenParameterIds.has(reference.parameterId),
     `${context} must reference an earlier parameter: ${reference.parameterId}`,
   );
   collector.assert(
@@ -1271,11 +1270,9 @@ function validateStructFieldDefaultValue(
     `${context} references unknown or non-struct property ${reference.propertyTypeId}`,
   );
   const isList = defaultValue.type === "objectParameterStructListFieldValue";
-  const matchingCardinality =
+  const matchingCardinality = collector.check(
     (sourceProperty.array === true) === isList &&
-    (parameter.type.type === "structList") === isList;
-  collector.check(
-    matchingCardinality,
+      (parameter.type.type === "structList") === isList,
     `${context} must match the source and target struct cardinality`,
   );
   const sourceField =
@@ -1289,15 +1286,11 @@ function validateStructFieldDefaultValue(
       ? sourceField.fieldType
       : sourceField,
   );
-  collector.check(
+  const matchingType = collector.check(
     sourceFieldType.type === targetField.type,
     `${context} has an incompatible source field type`,
   );
-  if (
-    isEarlier &&
-    matchingCardinality &&
-    sourceFieldType.type === targetField.type
-  ) {
+  if (isEarlier && matchingCardinality && matchingType) {
     defaultSources.add(
       JSON.stringify([reference.parameterId, reference.propertyTypeId]),
     );

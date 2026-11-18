@@ -35,12 +35,12 @@ it("collects failed checks with default or structured issues", () => {
     suggestion: "Use a supported property type.",
   };
 
-  collector.check(true, "Ignored check");
-  collector.check("truthy", issue);
+  expect(collector.check(true, "Ignored check")).toBe(true);
+  expect(collector.check("truthy", issue)).toBe(true);
   expect(collector.throwIfAnyIssues).not.toThrow();
 
-  collector.check(false, "Invalid definition.");
-  collector.check(undefined, issue);
+  expect(collector.check(false, "Invalid definition.")).toBe(false);
+  expect(collector.check(undefined, issue)).toBe(false);
   expect(collector.throwIfAnyIssues).toThrowError(
     expect.objectContaining({
       name: "MakerValidationError",
