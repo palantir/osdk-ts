@@ -374,9 +374,6 @@ async function fetchInterfacePage<
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: args.$snapshot ?? false,
-      defaultLoadLevel: buildDefaultLoadLevel(
-        args.$EXPERIMENTAL_defaultLoadLevel,
-      ),
     },
     client,
     interfaceType,
