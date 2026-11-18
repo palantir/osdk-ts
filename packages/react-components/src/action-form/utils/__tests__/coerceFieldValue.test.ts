@@ -121,6 +121,60 @@ describe("coerceFieldValue", () => {
     });
   });
 
+  describe("array values (multiplicity)", () => {
+    it("coerces each element of a string array", () => {
+      expect(coerceFieldValue("string", ["a", "b", "c"])).toEqual([
+        "a",
+        "b",
+        "c",
+      ]);
+    });
+
+    it("coerces each element of a numeric array", () => {
+      expect(coerceFieldValue("integer", ["1", "2", "3"])).toEqual([1, 2, 3]);
+    });
+
+    it("coerces each element of a double array", () => {
+      expect(coerceFieldValue("double", [1.5, "2.5"])).toEqual([1.5, 2.5]);
+    });
+
+    it("truncates float elements for integer type", () => {
+      expect(coerceFieldValue("integer", [3.14, 9.99])).toEqual([3, 9]);
+    });
+
+    it("coerces each element of a boolean array", () => {
+      expect(coerceFieldValue("boolean", [true, "false"])).toEqual([
+        true,
+        false,
+      ]);
+    });
+
+    it("coerces each element of a datetime array", () => {
+      const iso1 = "2024-01-15T10:30:00.000Z";
+      const iso2 = "2024-06-01T00:00:00.000Z";
+      expect(coerceFieldValue("datetime", [iso1, iso2])).toEqual([iso1, iso2]);
+    });
+
+    it("returns undefined elements for invalid array items", () => {
+      expect(coerceFieldValue("integer", ["abc", "2"])).toEqual([undefined, 2]);
+    });
+
+    it("preserves empty arrays", () => {
+      expect(coerceFieldValue("string", [])).toEqual([]);
+    });
+
+    it("passes through arrays when parameterType is undefined", () => {
+      expect(coerceFieldValue(undefined, ["a", "b"])).toEqual(["a", "b"]);
+    });
+
+    it("passes through arrays for complex object types", () => {
+      const objects = [{ id: 1 }, { id: 2 }];
+      expect(
+        coerceFieldValue({ type: "object", object: "Employee" }, objects),
+      ).toEqual(objects);
+    });
+  });
+
   describe("datetime/timestamp types", () => {
     it("passes through valid ISO strings for datetime", () => {
       const iso = "2024-01-15T10:30:00.000Z";
