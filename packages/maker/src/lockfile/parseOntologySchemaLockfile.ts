@@ -98,6 +98,15 @@ const instructionSchema = z.discriminatedUnion(
         }),
       })
       .passthrough(),
+    z
+      .object({
+        type: z.literal("addRequiredActionTypeConstraint"),
+        actionTypeConstraint: z.string({
+          message:
+            "Expected the api name of the action type constraint to require.",
+        }),
+      })
+      .passthrough(),
   ],
   appendRestoreAdviceFor("instruction"),
 );

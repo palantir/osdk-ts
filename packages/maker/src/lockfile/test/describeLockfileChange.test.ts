@@ -26,7 +26,7 @@ import type {
 } from "../OntologySchemaLockfile.js";
 import type {
   LockfileBreakingChange,
-  TargetPropertyState,
+  TargetState,
 } from "../validateOntologySchemaLockfile.js";
 
 const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
@@ -34,7 +34,7 @@ const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
 describe("describeBreakingChange", () => {
   function ambiguous(
     instructions: LockedInstruction[],
-    targets: TargetPropertyState[],
+    targets: TargetState[],
   ): string {
     return describeBreakingChange({
       code: "ambiguousDisappearance",
@@ -54,12 +54,14 @@ describe("describeBreakingChange", () => {
         ],
         [
           {
-            propertyApiName: "lastName",
+            kind: "property",
+            apiName: "lastName",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
           {
-            propertyApiName: "email",
+            kind: "property",
+            apiName: "email",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
@@ -77,7 +79,8 @@ describe("describeBreakingChange", () => {
         [{ type: "addRequiredProperty", property: "lastName" }],
         [
           {
-            propertyApiName: "lastName",
+            kind: "property",
+            apiName: "lastName",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
@@ -380,6 +383,34 @@ describe("describeBreakingChange", () => {
         expect(message).not.toContain("com.example.sendEmail");
       },
     );
+
+    it("explains an ambiguous disappearance over the target constraint", () => {
+      const message = ambiguous(
+        [
+          {
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "com.example.sendEmail",
+          },
+        ],
+        [
+          {
+            kind: "actionTypeConstraint",
+            apiName: "com.example.sendEmail",
+            previous: { requireImplementation: false },
+            next: undefined,
+          },
+        ],
+      );
+      expect(message).toContain(
+        'Instead, action type constraint "sendEmail" was removed from the interface.',
+      );
+      expect(message).toContain(
+        'To finalize it, set "sendEmail" to `requireImplementation: true`.',
+      );
+      expect(message).toContain(
+        'To delete it, leave "sendEmail" exactly as the lockfile records it.',
+      );
+    });
   });
 
   describe("authored names", () => {
@@ -420,7 +451,8 @@ describe("describeBreakingChange", () => {
           transitionId: "requireLastName",
           targets: [
             {
-              propertyApiName: NAMESPACED,
+              kind: "property",
+              apiName: NAMESPACED,
               previous: OPTIONAL_STRING,
               next: undefined,
             },

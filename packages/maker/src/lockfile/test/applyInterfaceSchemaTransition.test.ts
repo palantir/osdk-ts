@@ -54,7 +54,7 @@ describe("applyTransition", () => {
   it("reports the properties it changed", () => {
     expect(
       applyTransition(requireLastName, previousSchema, "strict")?.touched,
-    ).toStrictEqual(["lastName"]);
+    ).toStrictEqual([{ kind: "property", apiName: "lastName" }]);
   });
 
   it("is inapplicable to a schema missing the target property", () => {
@@ -91,6 +91,97 @@ describe("applyTransition", () => {
       expect(
         applyTransition(requireLastName, previousSchema, "strict")?.schema,
       ).toStrictEqual(sourceSchema({ required: true }));
+    });
+  });
+
+  describe("addRequiredActionTypeConstraint", () => {
+    const requireSendEmail: LockedTransition = {
+      id: "requireSendEmail",
+      gracePeriod: { type: "afterInstall", days: 30 },
+      instructions: [
+        {
+          type: "addRequiredActionTypeConstraint",
+          actionTypeConstraint: "com.example.sendEmail",
+        },
+      ],
+    };
+
+    function withSendEmail(
+      requireImplementation: boolean,
+    ): LockedInterfaceSchema {
+      return {
+        ...previousSchema,
+        actionTypeConstraints: {
+          "com.example.archive": { requireImplementation: true },
+          "com.example.sendEmail": { requireImplementation },
+        },
+      };
+    }
+
+    it("leaves the target constraint optional when applied leniently", () => {
+      expect(
+        applyTransition(requireSendEmail, withSendEmail(false), "lenient"),
+      ).toStrictEqual({
+        schema: withSendEmail(false),
+        touched: [
+          { kind: "actionTypeConstraint", apiName: "com.example.sendEmail" },
+        ],
+      });
+    });
+
+    it("requires the target constraint when applied strictly", () => {
+      expect(
+        applyTransition(requireSendEmail, withSendEmail(false), "strict")
+          ?.schema,
+      ).toStrictEqual(withSendEmail(true));
+    });
+
+    it("is inapplicable to a schema missing the target constraint", () => {
+      expect(
+        applyTransition(requireSendEmail, previousSchema, "strict"),
+      ).toBeUndefined();
+      expect(
+        applyTransition(requireSendEmail, previousSchema, "lenient"),
+      ).toBeUndefined();
+    });
+
+    it("reproduces only the mode matching whether the constraint is required", () => {
+      const strict = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "strict",
+      );
+      const lenient = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "lenient",
+      );
+
+      expect(reproduces(strict, withSendEmail(true))).toBe(true);
+      expect(reproduces(strict, withSendEmail(false))).toBe(false);
+      expect(reproduces(lenient, withSendEmail(false))).toBe(true);
+      expect(reproduces(lenient, withSendEmail(true))).toBe(false);
+    });
+
+    it("ignores the target constraint's parameters when reproducing", () => {
+      const strict = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "strict",
+      );
+      const required = withSendEmail(true);
+      expect(
+        reproduces(strict, {
+          ...required,
+          actionTypeConstraints: {
+            ...required.actionTypeConstraints,
+            "com.example.sendEmail": {
+              requireImplementation: true,
+              parameters: { subject: { requireImplementation: true } },
+            },
+          },
+        }),
+      ).toBe(true);
     });
   });
 });
