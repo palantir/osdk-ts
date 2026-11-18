@@ -1,5 +1,22 @@
 # @osdk/maker
 
+## 0.92.0
+
+### Minor Changes
+
+- b1658a9: Add support for edit validations in interface action type constraints.
+- 1987502: Add `interfaceActionsEnabled` to `defineObject` to set an object type's interface action settings
+- 6b847a0: Collect validation issues in a single error when defining links, shared property types, value types, and interface link constraints.
+- 1e58a90: Collect independent validation issues in interface, interface action-type constraint, folder, and interface-link action helper definitions. Rename the collecting method to `check`, add `assert` for terminal checks that narrow types, and update downstream collector usage.
+- e726b2a: expose action isolation settings
+- f1d12b0: Add spt mappings for non-interface object props
+
+### Patch Changes
+
+- Updated dependencies [f1d12b0]
+  - @osdk/generator-converters.ontologyir@2.93.0
+  - @osdk/api@2.93.0
+
 ## 0.91.0
 
 ### Minor Changes
