@@ -524,7 +524,7 @@ export function extractPropertyDatasource(
       const mediaSetDefinition: ObjectTypeDatasourceDefinition = {
         type: "mediaSetView",
         mediaSetView: {
-          assumedMarkings: [],
+          assumedMarkings: Object.keys(property.backingMediaSetMarkings ?? {}),
           clearOnDeleteProperties: [],
           mediaSetViewLocator:
             ridGenerator.generateMediaSetViewLocator(identifier),

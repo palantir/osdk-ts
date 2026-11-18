@@ -17,11 +17,13 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import type { MarkingType } from "@osdk/client.unstable";
 import type {
   FilesDatasourceOutputShape,
   InputShape,
   InputShapeMetadata,
   LocalizedTitleAndDescription,
+  MarkingsShape,
   OutputShape,
   Void,
 } from "@osdk/client.unstable/api";
@@ -37,6 +39,7 @@ export async function generateBackingMediaSetBlockResult(
   mediaSetName: string,
   buildDir: string,
   randomnessKey?: string,
+  markings: Record<string, MarkingType> = {},
 ): Promise<BlockGeneratorResult> {
   const blockIdentifier = `${mediaSetName}-backing-media-set`;
   const outputReadableId =
@@ -91,6 +94,27 @@ export async function generateBackingMediaSetBlockResult(
       isAccessedInReconcile: true,
     },
   };
+  for (const [group, markingType] of Object.entries(markings)) {
+    const readableId =
+      `media-set-marking-${group}-${markingType}` as ReadableId;
+    // client.unstable does not yet include Marketplace's resource-marking constraint.
+    const markingShape: MarkingsShape & {
+      shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] };
+    } = {
+      about: createLocalizedAbout(`Media set marking ${group}`),
+      operation: "USE",
+      affectedShapes: [outputBlockShapeId],
+      supportedMarkingsType: markingType,
+      stableId: `media-set.${group}`,
+      shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
+    };
+    inputs[readableId] = { type: "markings", markings: markingShape };
+    inputShapeMetadata[readableId] = {
+      isOptional: false,
+      isAccessedInReconcile: true,
+      reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+    };
+  }
   const mediaSetOutput: FilesDatasourceOutputShape = {
     about,
     datasourceType: {

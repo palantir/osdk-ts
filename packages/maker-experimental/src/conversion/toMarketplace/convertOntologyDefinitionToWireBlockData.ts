@@ -607,6 +607,13 @@ function buildKnownIdentifiers(
   // Collect additionalMandatoryMarkings from property security groups.
   Object.values(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
     (objectType) => {
+      for (const property of objectType.properties ?? []) {
+        for (const [markingId, markingType] of Object.entries(
+          property.backingMediaSetMarkings ?? {},
+        )) {
+          markingEntries.push({ markingId, markingType });
+        }
+      }
       // additionalMandatoryMarkings from property security groups
       (objectType.datasources ?? []).forEach((ds) => {
         if ("propertySecurityGroups" in ds && ds.propertySecurityGroups) {

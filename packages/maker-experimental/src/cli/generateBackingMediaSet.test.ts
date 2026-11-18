@@ -121,4 +121,36 @@ describe("generateBackingMediaSetBlockResult", () => {
       ),
     ).toBe('"1"');
   });
+  it("requires resource-marking inputs for the generated media set", async () => {
+    const name = "com.palantir.Document.file";
+    const result = await generateBackingMediaSetBlockResult(
+      name,
+      buildDir,
+      "salt",
+      {
+        maxClassification: "CBAC",
+        mandatoryMarkings: "MANDATORY",
+      },
+    );
+    const output = toBlockShapeId(
+      ReadableIdGenerator.getForMediaSetViewOutput(name),
+      "salt",
+    );
+    for (const [group, type] of [
+      ["maxClassification", "CBAC"],
+      ["mandatoryMarkings", "MANDATORY"],
+    ]) {
+      const id = `media-set-marking-${group}-${type}` as ReadableId;
+      expect(result.inputs[id]).toMatchObject({
+        type: "markings",
+        markings: {
+          operation: "USE",
+          supportedMarkingsType: type,
+          affectedShapes: [output],
+          shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
+        },
+      });
+      expect(result.input_shape_metadata[id].isOptional).toBe(false);
+    }
+  });
 });

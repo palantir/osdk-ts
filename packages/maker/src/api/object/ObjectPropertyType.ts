@@ -15,6 +15,7 @@
  */
 
 import type {
+  MarkingType,
   OntologyIrBaseFormatter,
   Visibility,
 } from "@osdk/client.unstable";
@@ -58,5 +59,10 @@ export interface ObjectPropertyTypeInner {
   editOnly?: boolean;
   /** Creates an empty multimodal Media Set to back this media reference when the ontology is installed. */
   includeEmptyBackingMediaSet?: boolean;
+  /**
+   * Marking input groups applied to the generated media set and assumed by its ontology datasource.
+   * Requires includeEmptyBackingMediaSet and declassification permission during installation.
+   */
+  backingMediaSetMarkings?: Record<string, MarkingType>;
   reference?: MediaPropertyReference;
 }

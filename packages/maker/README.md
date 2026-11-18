@@ -172,6 +172,25 @@ const imageProperty = defineSharedPropertyType({
 });
 ```
 
+### Markings on generated media sets
+
+Use marking input group names to apply markings to a generated backing media set and assume them on its ontology datasource:
+
+```typescript
+file: {
+  type: "mediaReference",
+  includeEmptyBackingMediaSet: true,
+  backingMediaSetMarkings: {
+    maxClassification: "CBAC",
+    mandatoryMarkings: "MANDATORY",
+  },
+}
+```
+
+Supply the same marking IDs to the media-set resource inputs and the corresponding ontology marking inputs at installation. For example, Apollo can supply `maximumClassificationMarkingIds` and `mandatoryMarkingAllowlist` to these inputs. Installation requires permission to apply and declassify those markings.
+
+Direct media-set reads require clearance for the applied markings. Object-based reads can use item tokens without inheriting the backing set's markings. Users who satisfy the file markings and have resource read permission can still read the media directly.
+
 ### Media sources and uploads
 
 Configure content backing on an object independently of the datasource supplying its property values. Declare each media set once in `referenceSources`, then select the readable sets and optional upload destination for each media property:

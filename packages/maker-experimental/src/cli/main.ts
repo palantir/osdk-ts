@@ -317,6 +317,7 @@ export default async function main(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    backingMediaSetMarkings,
     folders,
   } = await loadOntology(
     commandLineOpts.input,
@@ -576,6 +577,7 @@ export default async function main(
         mediaSetName,
         commandLineOpts.buildDir,
         commandLineOpts.randomnessKey,
+        backingMediaSetMarkings[mediaSetName],
       );
     }),
   );
