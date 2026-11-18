@@ -312,13 +312,14 @@ describe("ObjectSet", () => {
           count: 7,
         });
 
-        const asSameInterface = asObject.$as(StructImplementationInterface);
-        expect(asSameInterface.sLocal).toEqual("hello");
-        expect(asSameInterface.sStructField).toEqual("nested-label");
-
-        const asOtherInterface = asObject.$as(ComplexImplementationInterface);
-        expect(asOtherInterface.iLocal).toEqual("hello");
-        expect(asOtherInterface.iStructField).toEqual("nested-label");
+        expect(asObject.$as(StructImplementationInterface)).toMatchObject({
+          sLocal: "hello",
+          sStructField: "nested-label",
+        });
+        expect(asObject.$as(ComplexImplementationInterface)).toMatchObject({
+          iLocal: "hello",
+          iStructField: "nested-label",
+        });
       })();
     });
 
