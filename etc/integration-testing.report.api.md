@@ -9,7 +9,6 @@ import type { LinkTargets } from '@osdk/seed-helpers';
 import type { LinkTypeApiNamesFor } from '@osdk/api';
 import type { MockClient } from '@osdk/unit-testing';
 import type { ObjectTypeDefinition } from '@osdk/client';
-import type { OntologyFullMetadata } from '@osdk/foundry.ontologies';
 import type { PrimaryKeyType } from '@osdk/api';
 import type { SeedFunction } from '@osdk/seed-helpers';
 import type { SeedOutput } from '@osdk/seed-helpers';
@@ -40,7 +39,7 @@ export interface IntegrationClientConfig {
     	// (undocumented)
     caCertPath?: string;
     	// (undocumented)
-    metadata: OntologyFullMetadata;
+    metadata: unknown;
 }
 
 // @public (undocumented)
@@ -60,7 +59,7 @@ export interface IntegrationServer {
 // @public (undocumented)
 export interface IntegrationServerConfig {
     	foundryCliPath?: string;
-    	metadata: OntologyFullMetadata;
+    	metadata: unknown;
     	projectPath?: string;
 }
 
@@ -85,23 +84,23 @@ export type SeedClient = {
 
 // Warnings were encountered during analysis:
 //
+// src/types.ts:71:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:72:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:73:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:79:14 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:88:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:78:14 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:87:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:92:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:93:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:94:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:96:19 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/types.ts:96:13 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/types.ts:101:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:101:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:114:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:95:19 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/types.ts:95:13 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// src/types.ts:100:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:100:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:113:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:123:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:124:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:125:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:126:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:132:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:132:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:132:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:131:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:131:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:131:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 
 // (No @packageDocumentation comment for this package)
 

@@ -48,7 +48,7 @@ export namespace ObjectSetArgs {
     ORDER_BY_OPTIONS extends OrderByOptions<L>,
     L extends string = never,
   > {
-    $orderBy?: ORDER_BY_OPTIONS;
+    $orderBy?: ORDER_BY_OPTIONS & (ORDER_BY_OPTIONS | OrderByOptions<L>);
   }
 
   export interface AsyncIter<

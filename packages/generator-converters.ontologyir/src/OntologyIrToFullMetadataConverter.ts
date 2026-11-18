@@ -15,6 +15,7 @@
  */
 
 import type {
+  FunctionDiscovery,
   InterfacePropertyTypeType,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
@@ -50,22 +51,26 @@ import { toStructFieldRid } from "./ridUtils.js";
 
 // Type definitions for optional function discovery dependencies
 // These are declared inline to avoid compile-time dependency on optional packages
-export interface IDataType {
-  type: string;
-  [key: string]: unknown;
-}
-
 export interface IDiscoveredFunction {
-  locator: { type: string; typescript?: { functionName: string } };
-  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
+  locator: {
+    type: string;
+    typescript?: { functionName: string; filePath?: string };
+  };
+  inputs: Array<
+    { name: string; dataType: FunctionDiscovery.DataType; required?: boolean }
+  >;
   output:
-    | { type?: "single"; single: { dataType: IDataType } }
+    | { type?: "single"; single: { dataType: FunctionDiscovery.DataType } }
     | { type: "void"; void?: Record<string, never> };
   customTypes: Record<string, unknown>;
   ontologyProvenance?: {
     editedLinks: Record<string, {}>;
     editedObjects: Record<string, {}>;
     editedInterfaces: Record<string, {}>;
+  };
+  externalMetadata?: {
+    functionRid: string;
+    functionVersion: string;
   };
 }
 
@@ -82,14 +87,21 @@ interface IFunctionDiscovererConstructor {
   ): IFunctionDiscoverer;
 }
 
-// Python discovery output uses the same format as IDataType with type field at top level
+// Python discovery has a separate wire schema that is not generated here.
+interface IPythonDataType {
+  type: string;
+  [key: string]: unknown;
+}
+
 interface IPythonDiscoveredFunction {
   locator: {
     type: "python3";
     python3: { moduleName: string; functionName: string };
   };
-  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
-  output: { type: "single"; single: { dataType: IDataType } };
+  inputs: Array<
+    { name: string; dataType: IPythonDataType; required?: boolean }
+  >;
+  output: { type: "single"; single: { dataType: IPythonDataType } };
   customTypes?: Record<string, IPythonCustomType>;
   objectTypes?: Record<string, { objectApiName: string }>;
   objectSetTypes?: Record<string, { objectApiName: string }>;
@@ -97,12 +109,21 @@ interface IPythonDiscoveredFunction {
 
 interface IPythonCustomType {
   fieldMetadata: Record<string, { required?: boolean }>;
-  fields: Record<string, IDataType>;
+  fields: Record<string, IPythonDataType>;
 }
 
 interface IPythonDiscoveryResult {
   functions: IPythonDiscoveredFunction[];
   errors?: Array<unknown>;
+}
+
+interface IFunctionMetadata {
+  functions: Record<string, {
+    functionRid: string;
+    functionVersion: string;
+    repositoryRid: string;
+    containerHash: string;
+  }>;
 }
 
 function discoverPythonFunctions(
@@ -361,6 +382,17 @@ export class OntologyIrToFullMetadataConverter {
       functionsDir,
     );
 
+    const importedFunctionsDir = path.join(functionsDir, "external-imports");
+    const importedFunctionsMetadataPath = path.join(
+      importedFunctionsDir,
+      "functions-metadata.json",
+    );
+    const importedFunctionsMetadata: IFunctionMetadata = fs.existsSync(
+        importedFunctionsMetadataPath,
+      )
+      ? JSON.parse(fs.readFileSync(importedFunctionsMetadataPath, "utf-8"))
+      : { functions: {} };
+
     const program = this.createProgram(
       tsConfigPath,
       projectDir,
@@ -429,18 +461,45 @@ export class OntologyIrToFullMetadataConverter {
 
     // Normalize to forward slashes to match TypeScript's internal path format
     const normalizedFunctionsDir = functionsDir.replace(/\\/g, "/");
+    const importedFunctionsPathPrefix = path.resolve(importedFunctionsDir)
+      + path.sep;
     const fd = new FunctionDiscoverer(
-      program,
+      {
+        ...program,
+        // Keep dependencies available to the type checker without discovering them.
+        getRootFileNames: () =>
+          program.getRootFileNames().filter(fileName => {
+            if (!fileName.endsWith(".ts") || fileName.endsWith(".d.ts")) {
+              return false;
+            }
+            const sourcePath = path.resolve(
+              fileName.replace(/\\/g, "/"),
+            );
+            if (!sourcePath.startsWith(importedFunctionsPathPrefix)) {
+              return true;
+            }
+            // FunctionDiscoverer uses the source filename as the function name.
+            const functionName = path.basename(sourcePath, ".ts");
+            if (
+              !Object.prototype.hasOwnProperty.call(
+                importedFunctionsMetadata.functions,
+                functionName,
+              )
+            ) {
+              return false;
+            }
+            const metadata = importedFunctionsMetadata.functions[functionName];
+            return sourcePath.startsWith(
+              path.resolve(importedFunctionsDir, metadata.containerHash)
+                + path.sep,
+            );
+          }),
+      },
       projectDir,
       normalizedFunctionsDir,
       entityMetadataMapping,
     );
     const functions = fd.discover();
-
-    if (irOutputFile) {
-      fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
-      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
-    }
 
     const tsFunctions = functions.discoveredFunctions.filter(
       (func: IDiscoveredFunction) => func.locator.type === "typescript",
@@ -464,8 +523,15 @@ export class OntologyIrToFullMetadataConverter {
       );
     }
 
+    for (const func of tsFunctions) {
+      func.externalMetadata = importedFunctionsMetadata.functions[
+        func.locator.typescript!.functionName
+      ];
+    }
+
     if (irOutputFile) {
-      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+      fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions, null, 2));
     }
 
     return tsFunctions.flatMap((func: IDiscoveredFunction) => {
@@ -474,8 +540,9 @@ export class OntologyIrToFullMetadataConverter {
         return [
           {
             apiName: functionName,
-            rid: `ri.function-registry.main.function.${functionName}`,
-            version: "0.0.0",
+            rid: func.externalMetadata?.functionRid
+              ?? `ri.function-registry.main.function.${functionName}`,
+            version: func.externalMetadata?.functionVersion ?? "0.0.0",
             parameters: func.inputs.reduce<
               Record<ApiName, Ontologies.QueryParameterV2>
             >((acc, input, index) => {
@@ -545,7 +612,7 @@ export class OntologyIrToFullMetadataConverter {
       // which carry the actual objectApiName. The resolution must be recursive
       // to handle nested types (e.g. list[seller] produces
       // {type: "list", list: {elementsType: {type: "object", object: "<uuid>"}}}).
-      function resolveDataType(dt: IDataType): IDataType {
+      function resolveDataType(dt: IPythonDataType): IPythonDataType {
         if (dt.type === "object" && typeof dt.object === "string") {
           if (!objectTypes?.[dt.object]) {
             throw new Error(
@@ -573,7 +640,9 @@ export class OntologyIrToFullMetadataConverter {
           };
         }
         if (dt.type === "list") {
-          const listData = dt.list as { elementsType: IDataType } | undefined;
+          const listData = dt.list as
+            | { elementsType: IPythonDataType }
+            | undefined;
           if (listData?.elementsType) {
             const resolved = resolveDataType(listData.elementsType);
             if (resolved !== listData.elementsType) {
@@ -582,7 +651,9 @@ export class OntologyIrToFullMetadataConverter {
           }
         }
         if (dt.type === "set") {
-          const setData = dt.set as { elementsType: IDataType } | undefined;
+          const setData = dt.set as
+            | { elementsType: IPythonDataType }
+            | undefined;
           if (setData?.elementsType) {
             const resolved = resolveDataType(setData.elementsType);
             if (resolved !== setData.elementsType) {
@@ -592,7 +663,7 @@ export class OntologyIrToFullMetadataConverter {
         }
         if (dt.type === "optionalType") {
           const optData = dt.optionalType as
-            | { wrappedType: IDataType }
+            | { wrappedType: IPythonDataType }
             | undefined;
           if (optData?.wrappedType) {
             const resolved = resolveDataType(optData.wrappedType);
@@ -603,12 +674,10 @@ export class OntologyIrToFullMetadataConverter {
         }
         if (dt.type === "functionCustomType") {
           const typeId = dt.functionCustomType as string;
-          const customType = customTypes[typeId] as
-            | IPythonCustomType
-            | undefined;
+          const customType = customTypes[typeId];
           if (customType?.fields) {
             let changed = false;
-            const resolvedFields: Record<string, IDataType> = {};
+            const resolvedFields: Record<string, IPythonDataType> = {};
             for (const [key, fieldDt] of Object.entries(customType.fields)) {
               const resolved = resolveDataType(fieldDt);
               if (resolved !== fieldDt) changed = true;
@@ -642,7 +711,7 @@ export class OntologyIrToFullMetadataConverter {
           acc[input.name] = {
             // TODO (ethana): interface support for python queries
             dataType: convertDataType(
-              input.dataType,
+              input.dataType as unknown as FunctionDiscovery.DataType,
               customTypes,
               {},
               input.required,
@@ -652,7 +721,7 @@ export class OntologyIrToFullMetadataConverter {
           return acc;
         }, {}),
         output: convertDataType(
-          resolvedOutput,
+          resolvedOutput as unknown as FunctionDiscovery.DataType,
           customTypes,
           {},
         ),
@@ -1504,7 +1573,10 @@ export class OntologyIrToFullMetadataConverter {
       case "attachment":
         return { type: "attachment" };
       case "marking":
-        return { type: "marking" };
+        return {
+          type: "marking",
+          markingType: type.marking.markingType,
+        };
       case "cipherText":
         return { type: "cipherText" };
       case "mediaReference":

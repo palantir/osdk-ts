@@ -26,6 +26,8 @@ export type {
 } from "./config.js";
 export { defineConfig } from "./config.js";
 export type {
+  DatasetIdentifierV1 as DatasetIdentifier,
+  DatasetInputSpecV1 as DatasetInputSpec,
   OntologySdkInputSpecV1 as OntologySdkInputSpec,
   WidgetManifestConfigV1 as WidgetManifestConfig,
   WidgetSetAuthorizationsInputSpecV1 as WidgetSetAuthorizationsInputSpec,
@@ -33,7 +35,10 @@ export type {
   WidgetSetInputSpecV1 as WidgetSetInputSpec,
   WidgetSetManifestV1 as WidgetSetManifest,
 } from "./manifest.js";
-export { MANIFEST_FILE_LOCATION } from "./manifest.js";
+export {
+  MANIFEST_FILE_LOCATION,
+  ResourceUsageV1 as ResourceUsage,
+} from "./manifest.js";
 export {
   HostMessage,
   isHostSetHotkeysMessage,

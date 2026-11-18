@@ -2432,19 +2432,23 @@ describe("generator", () => {
       expect(json).toContain("\n    \"ontology\": {");
     });
 
-    it("declares the shim as a default export for esm and export = for cjs", async () => {
+    it("declares unknown metadata without imports for esm and cjs", async () => {
       const files = await generate(true);
 
       expect(
         files[`${BASE_PATH}/experimental/ontology-metadata.d.mts`],
-      ).toContain("export default ontologyFullMetadata;");
+      ).toBe(
+        "declare const ontologyFullMetadata: unknown;\n\nexport default ontologyFullMetadata;\n",
+      );
 
       // .d.ts is the fallback for resolvers that ignore the mts/cts split, so
       // it has to keep the `export =` form.
       for (const ext of ["d.cts", "d.ts"]) {
         expect(
           files[`${BASE_PATH}/experimental/ontology-metadata.${ext}`],
-        ).toContain("export = ontologyFullMetadata;");
+        ).toBe(
+          "declare const ontologyFullMetadata: unknown;\n\nexport = ontologyFullMetadata;\n",
+        );
       }
     });
   });

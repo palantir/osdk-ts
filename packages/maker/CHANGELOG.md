@@ -1,5 +1,46 @@
 # @osdk/maker
 
+## 0.91.0
+
+### Minor Changes
+
+- f4d94ba: Support multiple named media-set inputs and explicit upload destinations on scalar media properties.
+- 8aa522d: Use SDK identifiers in generated snippets for namespaced objects, interfaces, and actions, and for hyphenated action names.
+
+### Patch Changes
+
+- Updated dependencies [749af7f]
+- Updated dependencies [3282ead]
+  - @osdk/api@2.92.0
+  - @osdk/generator-converters.ontologyir@2.92.0
+
+## 0.90.0
+
+### Minor Changes
+
+- c331bfd: Fix the CommonJS declaration build by collecting datasource marking constraint validation errors with the other object validation issues.
+- c740c26: Add structured Maker validation errors and an issue collector. Integrate the new validation errors into `defineObject`.
+
+### Patch Changes
+
+- Updated dependencies [1fd4023]
+- Updated dependencies [406d3b6]
+- Updated dependencies [d13bd9f]
+  - @osdk/generator-converters.ontologyir@2.91.0
+  - @osdk/api@2.91.0
+
+## 0.89.0
+
+### Minor Changes
+
+- 7fed367: Add datasource-scoped `markingConstraints` with `mandatory.allowEmptyMarkings` and `cbac.allowEmptyMarkings` so installers can supply empty allowed marking sets independently for mandatory and classification constraints.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters.ontologyir@2.90.0
+
 ## 0.88.0
 
 ### Patch Changes

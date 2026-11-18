@@ -215,7 +215,9 @@ interface FetchPageSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<
+      PropertyKeys<Q> | (string & keyof RDPs)
+    > = {},
     PROPERTY_SECURITIES extends boolean = false,
     MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
@@ -226,7 +228,7 @@ interface FetchPageSignature<
       A,
       S,
       T,
-      never,
+      string & keyof RDPs,
       ORDER_BY_OPTIONS,
       PROPERTY_SECURITIES,
       MODIFIERS
@@ -310,7 +312,9 @@ interface FetchPageWithErrorsSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<
+      PropertyKeys<Q> | (string & keyof RDPs)
+    > = {},
     const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     args?: FetchPageArgs<
@@ -320,7 +324,7 @@ interface FetchPageWithErrorsSignature<
       A,
       S,
       T,
-      never,
+      string & keyof RDPs,
       ORDER_BY_OPTIONS,
       PROPERTY_SECURITIES,
       MODIFIERS
@@ -437,7 +441,9 @@ interface AsyncIterSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<
+      PropertyKeys<Q> | (string & keyof RDPs)
+    > = {},
     const MODIFIERS extends ApplyModifiersArg<Q> = {},
   >(
     args?: AsyncIterArgs<
@@ -447,7 +453,7 @@ interface AsyncIterSignature<
       A,
       S,
       T,
-      never,
+      string & keyof RDPs,
       ORDER_BY_OPTIONS,
       PROPERTY_SECURITIES,
       MODIFIERS

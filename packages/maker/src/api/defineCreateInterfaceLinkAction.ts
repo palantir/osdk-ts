@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionTypeIsolationSettings } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 
 import type { ActionLevelValidationDefinition } from "./action/ActionLevelValidationDefinition.js";
@@ -43,6 +44,7 @@ type CreateInterfaceLinkActionBaseDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  isolationSettings?: ActionTypeIsolationSettings;
   sourceParameter?: {
     id?: string;
     displayName?: string;
@@ -205,6 +207,9 @@ export function defineCreateInterfaceLinkAction(
       submissionMetadata: def.submissionMetadata,
     }),
     ...(def.permission && { permission: def.permission }),
+    ...(def.isolationSettings !== undefined && {
+      isolationSettings: def.isolationSettings,
+    }),
     ...(def.icon && { icon: def.icon }),
   });
 }
