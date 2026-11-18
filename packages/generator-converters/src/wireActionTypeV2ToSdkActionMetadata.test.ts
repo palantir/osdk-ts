@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import type { QueryDataType } from "@osdk/foundry.ontologies";
+import type { ActionTypeV2, QueryDataType } from "@osdk/foundry.ontologies";
 import { describe, expect, it, vi } from "vitest";
-import type { ActionTypeV2WithReturnType } from "./ActionTypeV2WithReturnType.js";
 import { wireActionTypeV2ToSdkActionMetadata } from "./wireActionTypeV2ToSdkActionMetadata.js";
 
-function actionType(returnType?: QueryDataType): ActionTypeV2WithReturnType {
+function actionType(returnType?: QueryDataType): ActionTypeV2 {
   return {
     apiName: "returnsValue",
     parameters: {},
@@ -78,6 +77,45 @@ describe(wireActionTypeV2ToSdkActionMetadata, () => {
         },
       },
     });
+  });
+
+  it("converts optional list items to nullable items", () => {
+    const result = wireActionTypeV2ToSdkActionMetadata(
+      actionType({
+        type: "array",
+        subType: {
+          type: "union",
+          unionTypes: [{ type: "string" }, { type: "null" }],
+        },
+      }),
+    );
+    expect(result.returnType).toEqual({
+      type: "array",
+      nullable: false,
+      array: { type: "string", nullable: true },
+    });
+  });
+
+  it.each<[string, QueryDataType]>([
+    ["an attachment", { type: "attachment" }],
+    [
+      "a union that is not an optional value",
+      { type: "union", unionTypes: [{ type: "string" }, { type: "integer" }] },
+    ],
+    [
+      "a map with boolean keys",
+      {
+        type: "entrySet",
+        keyType: { type: "boolean" },
+        valueType: { type: "string" },
+      },
+    ],
+  ])("drops and warns about %s return type", (_, returnType) => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const result = wireActionTypeV2ToSdkActionMetadata(actionType(returnType));
+    expect(result.returnType).toBeUndefined();
+    expect(warn).toHaveBeenCalledOnce();
+    warn.mockRestore();
   });
 
   it("drops and warns about return types the OSDK cannot represent", () => {

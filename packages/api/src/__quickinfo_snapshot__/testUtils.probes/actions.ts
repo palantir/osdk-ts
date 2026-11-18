@@ -24,11 +24,11 @@ import type { ActionReturnTypeForOptions } from "../../actions/ActionReturnTypeF
 import type {
   ActionEditResponse,
   ActionParam,
+  ActionResult,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "../../actions/Actions.js";
-import type { QueryResult } from "../../queries/Queries.js";
 import type { EmployeeApiTest } from "../../test/EmployeeApiTest.js";
 import type { FooInterfaceApiTest } from "../../test/FooInterfaceApiTest.js";
 
@@ -77,22 +77,22 @@ declare const actionValidationResponse: ActionValidationResponse;
 
 /** The edits-bearing payload carrying an action's return value. */
 declare const actionEditResponse_withReturnValue: ActionEditResponse<
-  QueryResult.PrimitiveType<"string">
+  ActionResult.PrimitiveType<"string">
 >;
 
 /** An action's return value, which is undefined if the OSDK could not convert it. */
 declare const actionEditResponse_withReturnValue_returnValue: ActionEditResponse<
-  QueryResult.PrimitiveType<"string">
+  ActionResult.PrimitiveType<"string">
 >["returnValue"];
 
 /** applyAction's resolved value for an action that returns a string. */
 declare const actionReturnType_withReturnValue: ActionReturnTypeForOptions<
   {},
-  QueryResult.PrimitiveType<"string">
+  ActionResult.PrimitiveType<"string">
 >;
 
 /** applyAction's resolved value for an action that returns a string, with $returnEdits: true. */
 declare const actionReturnType_withReturnValueAndEdits: ActionReturnTypeForOptions<
   { $returnEdits: true },
-  QueryResult.PrimitiveType<"string">
+  ActionResult.PrimitiveType<"string">
 >;

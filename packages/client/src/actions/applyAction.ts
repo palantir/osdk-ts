@@ -15,16 +15,17 @@
  */
 
 import type {
+  ActionDataTypeDefinition,
   ActionDefinition,
   ActionEditResponse,
   ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
+  ActionReturnValue,
   ApplyActionOptions,
   ApplyBatchActionOptions,
   CompileTimeMetadata as CompileTimeActionMetadata,
   DataValueClientToWire,
-  QueryDataTypeDefinition,
 } from "@osdk/api";
 import type {
   BatchApplyActionResponseV2,
@@ -45,7 +46,6 @@ import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialBy } from "../util/partialBy.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
-import type { SyncApplyActionResponseWithReturnValue } from "./SyncApplyActionResponseWithReturnValue.js";
 
 type BaseType<APD extends Pick<ActionMetadata.Parameter<any>, "type">> =
   APD["type"] extends ActionMetadata.DataType.Object<infer TTargetType>
@@ -118,10 +118,7 @@ export async function applyAction<
   action: AD,
   parameters?: P,
   options: Op = {} as Op,
-): Promise<
-  | ActionReturnTypeForOptions<Op>
-  | Pick<ActionEditResponse<unknown>, "returnValue">
-> {
+): Promise<ActionReturnTypeForOptions<Op> | ActionReturnValue<unknown>> {
   const clientWithHeaders = addUserAgentHeader(client, action);
   if (Array.isArray(parameters)) {
     invariant(
@@ -165,34 +162,31 @@ export async function applyAction<
     const actionMetadata = await client.ontologyProvider.getActionDefinition(
       action.unsanitizedApiName ?? action.apiName,
     );
-    const response: SyncApplyActionResponseWithReturnValue =
-      await Actions.apply(
-        clientWithHeaders,
-        await client.ontologyRid,
-        action.unsanitizedApiName ?? action.apiName,
-        {
-          parameters: await remapActionParams(
-            parameters as OsdkActionParameters<
-              CompileTimeActionMetadata<AD>["parameters"]
-            >,
-            client,
-            actionMetadata,
-          ),
-          options: {
-            mode: (options as ApplyActionOptions)?.$validateOnly
-              ? "VALIDATE_ONLY"
-              : "VALIDATE_AND_EXECUTE",
-            returnEdits: options?.$returnEdits
-              ? "ALL_V2_WITH_DELETIONS"
-              : "NONE",
-          },
+    const response = await Actions.apply(
+      clientWithHeaders,
+      await client.ontologyRid,
+      action.unsanitizedApiName ?? action.apiName,
+      {
+        parameters: await remapActionParams(
+          parameters as OsdkActionParameters<
+            CompileTimeActionMetadata<AD>["parameters"]
+          >,
+          client,
+          actionMetadata,
+        ),
+        options: {
+          mode: (options as ApplyActionOptions)?.$validateOnly
+            ? "VALIDATE_ONLY"
+            : "VALIDATE_AND_EXECUTE",
+          returnEdits: options?.$returnEdits ? "ALL_V2_WITH_DELETIONS" : "NONE",
         },
-        {
-          branch: client.branch,
-          transactionId: client.transactionId,
-          scenarioRid: client.scenarioRid,
-        },
-      );
+      },
+      {
+        branch: client.branch,
+        transactionId: client.transactionId,
+        scenarioRid: client.scenarioRid,
+      },
+    );
 
     if ((options as ApplyActionOptions)?.$validateOnly) {
       return response.validation as ActionReturnTypeForOptions<Op>;
@@ -229,7 +223,7 @@ export async function applyAction<
 async function remapActionReturnValue(
   client: MinimalClient,
   actionApiName: string,
-  returnType: QueryDataTypeDefinition,
+  returnType: ActionDataTypeDefinition,
   returnValue: DataValue | undefined,
 ): Promise<unknown> {
   if (returnValue === undefined) {

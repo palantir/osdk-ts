@@ -18,20 +18,20 @@ import type { ActionMetadata } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
+  ActionTypeV2,
   QueryDataType,
 } from "@osdk/foundry.ontologies";
 
-import type { ActionTypeV2WithReturnType } from "./ActionTypeV2WithReturnType.js";
 import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
+import { wireActionReturnTypeToActionDataTypeDefinition } from "./wireActionReturnTypeToActionDataTypeDefinition.js";
 import {
   ensureStringEnumSupportedOrUndefined,
   supportedReleaseStatus,
 } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
-import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(
-  input: ActionTypeV2WithReturnType,
+  input: ActionTypeV2,
   unsanitizedApiName?: string,
 ): ActionMetadata {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
@@ -74,7 +74,7 @@ function tryConvertActionReturnTypeToSdkReturnType(
   returnType: QueryDataType,
 ): ActionMetadata["returnType"] {
   try {
-    return wireQueryDataTypeToQueryDataTypeDefinition(returnType);
+    return wireActionReturnTypeToActionDataTypeDefinition(returnType);
   } catch (e) {
     // eslint-disable-next-line no-console
     console.warn(

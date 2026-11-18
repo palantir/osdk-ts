@@ -72,7 +72,7 @@ describe(generatePerActionDataFiles, () => {
     function actionReturning(
       apiName: string,
       returnType: QueryDataType,
-    ): ActionTypeV2 & { returnType: QueryDataType } {
+    ): ActionTypeV2 {
       return {
         apiName,
         parameters: {},
@@ -112,10 +112,10 @@ describe(generatePerActionDataFiles, () => {
             ActionDefinition,
             ActionMetadata,
             ActionParam,
+            ActionResult,
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,
-            QueryResult,
           } from '@osdk/client';
           import { $osdkMetadata } from '../../OntologyMetadata';
 
@@ -125,7 +125,7 @@ describe(generatePerActionDataFiles, () => {
 
             export interface Params {}
 
-            export type ReturnType = QueryResult.PrimitiveType<'string'>;
+            export type ReturnType = ActionResult.PrimitiveType<'string'>;
 
             // Represents a fqn of the action
             export interface Signatures {
@@ -193,13 +193,13 @@ describe(generatePerActionDataFiles, () => {
       });
 
       expect(files["/foo/ontology/actions/returnsOptional.ts"]).toContain(
-        "export type ReturnType = QueryResult.PrimitiveType<'integer'> | undefined;",
+        "export type ReturnType = ActionResult.PrimitiveType<'integer'> | undefined;",
       );
       expect(files["/foo/ontology/actions/returnsStruct.ts"]).toMatch(
-        /export interface ReturnType \{\s+name: QueryResult.PrimitiveType<'string'>;\s+\}/,
+        /export interface ReturnType \{\s+name: ActionResult.PrimitiveType<'string'>;\s+\}/,
       );
       expect(files["/foo/ontology/actions/returnsMap.ts"]).toMatch(
-        /export type ReturnType = Partial<\s*Record<QueryResult.PrimitiveType<'string'>,\s*QueryResult.PrimitiveType<'long'>>\s*>;/,
+        /export type ReturnType = Partial<\s*Record<ActionResult.PrimitiveType<'string'>,\s*ActionResult.PrimitiveType<'long'>>\s*>;/,
       );
     });
 
@@ -220,10 +220,10 @@ describe(generatePerActionDataFiles, () => {
       });
 
       expect(files["/foo/ontology/actions/returnsList.ts"]).toMatch(
-        /export type ReturnType = Array<\s*QueryResult.PrimitiveType<'integer'> \| undefined\s*> \| undefined;/,
+        /export type ReturnType = Array<\s*ActionResult.PrimitiveType<'integer'> \| undefined\s*>;/,
       );
       expect(files["/foo/ontology/actions/returnsSet.ts"]).toMatch(
-        /export type ReturnType = Array<\s*QueryResult.PrimitiveType<'integer'> \| undefined\s*>;/,
+        /export type ReturnType = Array<\s*ActionResult.PrimitiveType<'integer'> \| undefined\s*>;/,
       );
     });
 
@@ -232,7 +232,7 @@ describe(generatePerActionDataFiles, () => {
       const generated = files["/foo/ontology/actions/markTodoCompleted.ts"];
 
       expect(generated).not.toContain("export type ReturnType");
-      expect(generated).not.toContain("QueryResult");
+      expect(generated).not.toContain("ActionResult");
       expect(generated).toContain(
         "Promise<ActionReturnTypeForOptions<OP>>",
       );

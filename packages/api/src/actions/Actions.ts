@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
+import type {
+  DataValueClientToWire,
+  DataValueWireToClient,
+} from "../mapping/DataValueMapping.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import type { ActionPrimitiveDataTypes } from "../ontology/ActionDataTypeDefinition.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   CompileTimeMetadata,
@@ -118,20 +122,15 @@ export namespace ActionParam {
   export type NullValueType = typeof NULL_VALUE;
 }
 
-/**
- * Edits returned by an action, with a return value when its function declares one.
- * ReturnValue uses the same QueryResult helpers as generated query return types.
- */
-export type ActionEditResponse<ReturnValue = never> = [ReturnValue] extends [
-  never,
-]
-  ? ActionResults
-  : ActionResults & {
-      /**
-       * The value returned by the function backing the action, or undefined if the
-       * OSDK could not convert it. The action has still been applied.
-       */
-      returnValue: ReturnValue | undefined;
-    };
+export namespace ActionResult {
+  /**
+   * Helper type to convert action return type primitives to typescript types
+   */
+  export type PrimitiveType<T extends ActionPrimitiveDataTypes> =
+    DataValueWireToClient[T];
+}
+
+export type ActionEditResponse<ReturnValue = never> =
+  ActionResults<ReturnValue>;
 
 export type ActionValidationResponse = ValidateActionResponseV2;

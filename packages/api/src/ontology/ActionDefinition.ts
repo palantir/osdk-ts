@@ -15,12 +15,12 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { ActionDataTypeDefinition } from "./ActionDataTypeDefinition.js";
 import type { InterfaceDefinition } from "./InterfaceDefinition.js";
 import type {
   ObjectTypeDefinition,
   ReleaseStatus,
 } from "./ObjectTypeDefinition.js";
-import type { QueryDataTypeDefinition } from "./QueryDefinition.js";
 
 export interface ActionMetadata {
   type: "action";
@@ -40,7 +40,7 @@ export interface ActionMetadata {
   >;
   status: ReleaseStatus | undefined;
   rid: string;
-  returnType?: QueryDataTypeDefinition;
+  returnType?: ActionDataTypeDefinition;
 }
 
 export namespace ActionMetadata {
