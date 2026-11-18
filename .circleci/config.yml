@@ -105,26 +105,65 @@ commands:
       scope:
         type: string
     steps:
-      - restore_cache:
-          name: Restore turbo cache (<< parameters.scope >>)
-          keys:
-            - v3-turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
-            - v3-turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
-            # `build` is never parallel, so its cache is always at index 0.
-            - v3-turbo-{{ arch }}-build-0-{{ .Revision }}
-            - v3-turbo-{{ arch }}-build-0-
+      # main only ever restores main caches; branches layer their own cache on
+      # top of main's. Branches never restore other branches' caches.
+      - when:
+          condition: { equal: [main, << pipeline.git.branch >>] }
+          steps:
+            - restore_cache:
+                name: Restore turbo cache (<< parameters.scope >>)
+                keys:
+                  - v3-turbo-{{ arch }}-main-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+                  - v3-turbo-{{ arch }}-main-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
+                  # `build` is never parallel, so its cache is always at index 0.
+                  - v3-turbo-{{ arch }}-main-build-0-{{ .Revision }}
+                  - v3-turbo-{{ arch }}-main-build-0-
+      - unless:
+          condition: { equal: [main, << pipeline.git.branch >>] }
+          steps:
+            - restore_cache:
+                name: Restore main turbo cache (<< parameters.scope >>)
+                keys:
+                  - v3-turbo-{{ arch }}-main-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
+                  - v3-turbo-{{ arch }}-main-build-0-
+            # restore_cache only restores the first matching key, so the
+            # branch cache is a second step unpacked on top of main's.
+            - restore_cache:
+                name: Restore branch turbo cache (<< parameters.scope >>)
+                keys:
+                  - v3-turbo-{{ arch }}-pr-{{ .Branch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+                  - v3-turbo-{{ arch }}-pr-{{ .Branch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-
+                  - v3-turbo-{{ arch }}-pr-{{ .Branch }}-build-0-{{ .Revision }}
+                  - v3-turbo-{{ arch }}-pr-{{ .Branch }}-build-0-
 
   save-turbo-cache:
     parameters:
       scope:
         type: string
     steps:
-      - save_cache:
-          name: Save turbo cache (<< parameters.scope >>)
+      # turbo never evicts its local cache, so drop entries untouched for a week.
+      - run:
+          name: Prune turbo cache
           when: always
-          key: v3-turbo-{{ arch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
-          paths:
-            - .turbo/cache
+          command: find .turbo/cache -type f -mtime +7 -delete 2>/dev/null || true
+      - when:
+          condition: { equal: [main, << pipeline.git.branch >>] }
+          steps:
+            - save_cache:
+                name: Save turbo cache (<< parameters.scope >>)
+                when: always
+                key: v3-turbo-{{ arch }}-main-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+                paths:
+                  - .turbo/cache
+      - unless:
+          condition: { equal: [main, << pipeline.git.branch >>] }
+          steps:
+            - save_cache:
+                name: Save turbo cache (<< parameters.scope >>)
+                when: always
+                key: v3-turbo-{{ arch }}-pr-{{ .Branch }}-<< parameters.scope >>-{{ .Environment.CIRCLE_NODE_INDEX }}-{{ .Revision }}
+                paths:
+                  - .turbo/cache
 
   verify-working-tree-clean:
     description: Fail if a build step modified or generated files.
@@ -371,7 +410,7 @@ jobs:
   build-storybook:
     executor:
       name: node
-      resource-class: xlarge
+      resource-class: large
     environment:
       # Relative, because CircleCI serves artifacts under a path prefix
       STORYBOOK_BASE_PATH: ./
