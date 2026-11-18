@@ -39,11 +39,13 @@ export type FolderDefinition = Omit<Folder, "resources"> & {
 export function defineFolder(definition: FolderDefinition): FolderDefinition {
   const { id } = definition;
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
   const folder = normalizeFolderPath(id, definition.folder, collector);
-  addIssue(!folderDefinitions.has(id), `Folder id "${id}" is already defined`);
+  collector.check(
+    !folderDefinitions.has(id),
+    `Folder id "${id}" is already defined`,
+  );
   for (const existing of folderDefinitions.values()) {
-    addIssue(
+    collector.check(
       existing.folder !== folder,
       `Folder location "${folder}" has conflicting ids "${existing.id}" and "${id}"`,
     );
@@ -51,7 +53,7 @@ export function defineFolder(definition: FolderDefinition): FolderDefinition {
 
   const resources = definition.resources.map((resource) => {
     const apiName = typeof resource === "string" ? resource : resource.apiName;
-    addIssue(
+    collector.check(
       typeof apiName === "string" && apiName.trim().length > 0,
       `Folder "${id}": resource API names must be non-empty strings`,
     );
@@ -77,42 +79,41 @@ function normalizeFolderPath(
   folder: string,
   collector: MakerValidationIssueCollector,
 ): string | undefined {
-  const { addIssue } = collector;
-  addIssue(
+  collector.check(
     typeof id === "string" && id.trim().length > 0,
     "Folder id must be a non-empty string",
   );
   const context = `Folder "${id}"`;
-  addIssue(
+  collector.check(
     !/[\uD800-\uDFFF]/u.test(id),
     `${context}: folder id must contain valid Unicode`,
   );
-  addIssue(
+  collector.check(
     id !== "/",
     `${context}: the installation root cannot be assigned a folder id`,
   );
-  addIssue(
+  collector.check(
     typeof folder === "string",
     `${context}: folder path must be a string`,
   );
   if (typeof folder !== "string") return undefined;
   const segments = folder.split("/").filter((segment) => segment.length > 0);
-  addIssue(
+  collector.check(
     segments.length > 0,
     `${context}: the installation root cannot be assigned a folder id`,
   );
   for (const segment of segments) {
-    addIssue(
+    collector.check(
       segment !== "." && segment !== "..",
       `${context}: folder must not contain "." or ".." path segments`,
     );
     // In Unicode mode, this range matches unpaired surrogates, not valid pairs.
-    addIssue(
+    collector.check(
       !/[\uD800-\uDFFF]/u.test(segment),
       `${context}: folder names must contain valid Unicode`,
     );
     const length = encoder.encode(segment).length;
-    addIssue(
+    collector.check(
       length <= FOLDER_NAME_LIMIT,
       `${context}: folder name must be at most ${FOLDER_NAME_LIMIT} UTF-8 bytes (got ${length})`,
     );

@@ -40,9 +40,8 @@ import { validateDisplayMetadataLengths } from "./validateMetadataLengths.js";
 
 export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
   const linkDefinition = cloneDefinition(linkDefinitionInput);
-  addIssue(
+  collector.check(
     ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][
       linkDefinition.apiName
     ] === undefined,
@@ -87,7 +86,7 @@ export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
       ? { one: linkType.one, toMany: linkType.toMany }
       : { many: linkType.many, toMany: linkType.toMany };
   for (const [side, link] of Object.entries(sides)) {
-    addIssue(isValidApiName(link.metadata.apiName), {
+    collector.check(isValidApiName(link.metadata.apiName), {
       code: "invalid_api_name",
       message: `Invalid API name for link: ${link.metadata.apiName}`,
       path: [side, "metadata", "apiName"],

@@ -78,26 +78,21 @@ export function defineCreateInterfaceLinkAction(
   const def = cloneDefinition(defInput);
   const collector: MakerValidationIssueCollector =
     createValidationIssueCollector();
-  const { addIssue } = collector;
 
   const linkConstraint =
     typeof def.interfaceLink === "string" ? undefined : def.interfaceLink;
   // Constraint lookup requires a valid source interface.
-  if (
-    linkConstraint !== undefined &&
-    def.from !== undefined &&
-    def.from.apiName !== linkConstraint.from.apiName
-  ) {
-    collector.addTerminalIssue(
-      `"from" ("${def.from.apiName}") does not match the interface ("${linkConstraint.from.apiName}") that interface link constraint "${linkConstraint.apiName}" was defined on. Omit "from" to use the constraint's own interface.`,
-    );
-  }
+  collector.assert(
+    linkConstraint === undefined ||
+      def.from === undefined ||
+      def.from.apiName === linkConstraint.from.apiName,
+    `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`,
+  );
   const from = def.from ?? linkConstraint?.from;
-  if (from === undefined) {
-    collector.addTerminalIssue(
-      `"from" is required when "interfaceLink" is provided as a string (the api name).`,
-    );
-  }
+  collector.assert(
+    from !== undefined,
+    `"from" is required when "interfaceLink" is provided as a string (the api name).`,
+  );
 
   const interfaceLinkApiName =
     typeof def.interfaceLink === "string"
@@ -109,18 +104,16 @@ export function defineCreateInterfaceLinkAction(
   );
   const link = from.links.find((l) => l.metadata.apiName === linkApiName);
   // Target lookup requires an existing constraint targeting an interface.
-  if (link === undefined) {
-    collector.addTerminalIssue(
-      `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`,
-    );
-  }
-  if (link.linkedEntityTypeId.type !== "interfaceType") {
-    collector.addTerminalIssue(
-      `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`,
-    );
-  }
+  collector.assert(
+    link !== undefined,
+    `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`,
+  );
+  collector.assert(
+    link.linkedEntityTypeId.type === "interfaceType",
+    `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`,
+  );
   const targetApiName = link.linkedEntityTypeId.interfaceType;
-  addIssue(
+  collector.check(
     ontologyDefinition.INTERFACE_TYPE[targetApiName] !== undefined ||
       importedTypes.INTERFACE_TYPE[targetApiName] !== undefined,
     `Target interface "${targetApiName}" of interface link constraint "${interfaceLinkApiName}" is not defined.`,

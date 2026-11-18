@@ -48,7 +48,7 @@ export function validateInputApiName(
   collector: MakerValidationIssueCollector,
   path: MakerValidationIssue["path"],
 ): void {
-  collector.addIssue(isValidInputApiName(apiName), {
+  collector.check(isValidInputApiName(apiName), {
     code: "invalid_api_name",
     message: `Invalid input API name: ${apiName}`,
     path,

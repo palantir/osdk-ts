@@ -85,14 +85,13 @@ export function defineInterface(
   const interfaceDef = cloneDefinition(interfaceDefInput);
   const apiName = namespace + interfaceDef.apiName;
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
-  addIssue(
+  collector.check(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName] ===
       undefined,
     `Interface ${apiName} already exists`,
   );
 
-  addIssue(
+  collector.check(
     isValidNamespacedApiName(interfaceDef.apiName),
     `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${NAMESPACED_API_NAME_PATTERN}.`,
   );
@@ -145,7 +144,7 @@ export function defineInterface(
     Object.entries(interfaceDef.properties ?? {}).map<
       [string, InterfacePropertyType]
     >(([apiName, prop]) => {
-      addIssue(
+      collector.check(
         isValidApiName(apiName),
         `Invalid API name ${apiName} for property on interface ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
       );
@@ -186,7 +185,7 @@ export function defineInterface(
     interfaceDef.status ?? { type: "active" },
   );
 
-  addIssue(
+  collector.check(
     status.type !== "deprecated" ||
       (status.deprecated.message && status.deprecated.deadline),
     `Deprecated status must include message and deadline properties.`,
@@ -277,13 +276,13 @@ function verifyBasePropertyDefinition(
   collector: MakerValidationIssueCollector,
 ): SharedPropertyType {
   const unNamespacedTypeApiName = withoutNamespace(type.apiName);
-  collector.addIssue(
+  collector.check(
     type.type != null && (isPropertyTypeType(type.type) || isExotic(type.type)),
     `Invalid data type ${JSON.stringify(
       type,
     )} for property ${apiName} on InterfaceType ${apiName}`,
   );
-  collector.addIssue(
+  collector.check(
     namespace + apiName === type.apiName || apiName === unNamespacedTypeApiName,
     `property key and it's apiName must be identical. ${JSON.stringify({
       key: apiName,

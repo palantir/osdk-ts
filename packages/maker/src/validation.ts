@@ -46,10 +46,16 @@ export function throwIfAnyValidationIssues(
 }
 
 export interface MakerValidationIssueCollector {
-  /** Records an issue when the condition is falsy. Does not narrow its type. */
-  addIssue(condition: unknown, issue: string | MakerValidationIssue): void;
-  /** Records an issue and throws it with all previously collected issues. */
-  addTerminalIssue(issue: string | MakerValidationIssue): never;
+  /** Records an issue when the condition is falsy and continues without narrowing. */
+  check(condition: unknown, issue: string | MakerValidationIssue): void;
+  /**
+   * On a falsy condition, records the issue and throws all collected issues.
+   * TypeScript requires an explicitly typed collector variable for assertion calls.
+   */
+  assert(
+    condition: unknown,
+    issue: string | MakerValidationIssue,
+  ): asserts condition;
   throwIfAnyIssues(): void;
 }
 
@@ -57,7 +63,7 @@ export interface MakerValidationIssueCollector {
 export function createValidationIssueCollector(): MakerValidationIssueCollector {
   const issues: MakerValidationIssue[] = [];
   const collector: MakerValidationIssueCollector = {
-    addIssue(condition, issue) {
+    check(condition, issue) {
       if (!condition) {
         issues.push(
           typeof issue === "string"
@@ -66,9 +72,11 @@ export function createValidationIssueCollector(): MakerValidationIssueCollector 
         );
       }
     },
-    addTerminalIssue(issue) {
-      collector.addIssue(false, issue);
-      throw new MakerValidationError(issues);
+    assert(condition, issue) {
+      if (!condition) {
+        collector.check(false, issue);
+        throw new MakerValidationError(issues);
+      }
     },
     throwIfAnyIssues() {
       throwIfAnyValidationIssues(issues);

@@ -66,10 +66,9 @@ export function defineSharedPropertyType(
   sptDefInput: SharedPropertyTypeDefinition,
 ): SharedPropertyType {
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
   const sptDef = cloneDefinition(sptDefInput);
   const apiName = namespace + sptDef.apiName;
-  addIssue(
+  collector.check(
     ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName] ===
       undefined,
     {
@@ -79,7 +78,7 @@ export function defineSharedPropertyType(
     },
   );
 
-  addIssue(
+  collector.check(
     !shouldNotHaveRenderHints(sptDef.type) ||
       !hasRenderHints(sptDef.typeClasses),
     `Shared property type ${apiName} of type '${getPropertyTypeName(

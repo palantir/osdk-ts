@@ -73,7 +73,6 @@ export function defineObject(
   objectDefInput: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
   const objectDef = cloneDefinition(objectDefInput);
   validateMediaReferences(objectDef, collector);
   const apiName = namespace + objectDef.apiName;
@@ -81,7 +80,7 @@ export function defineObject(
     ? Object.keys(objectDef.properties)
     : [];
 
-  addIssue(
+  collector.check(
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName] ===
       undefined,
     {
@@ -91,18 +90,18 @@ export function defineObject(
     },
   );
 
-  addIssue(isValidObjectApiName(objectDef.apiName), {
+  collector.check(isValidObjectApiName(objectDef.apiName), {
     code: "invalid_api_name",
     message: `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
     path: ["apiName"],
   });
   const propertyBySharedPropertyType = new Map<string, string>();
   propertyApiNames.forEach((apiName) => {
-    addIssue(
+    collector.check(
       isValidApiName(apiName),
       `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
     );
-    addIssue(
+    collector.check(
       objectDef.properties?.[apiName]?.includeEmptyBackingMediaSet !== true ||
         objectDef.properties[apiName].type === "mediaReference",
       `Property ${apiName} on object ${objectDef.apiName} can only use includeEmptyBackingMediaSet when its type is mediaReference`,
@@ -113,23 +112,23 @@ export function defineObject(
       const previousProperty = propertyBySharedPropertyType.get(
         sharedPropertyType.apiName,
       );
-      addIssue(
+      collector.check(
         previousProperty === undefined,
         `Shared property type "${sharedPropertyType.apiName}" cannot back both "${previousProperty}" and "${apiName}" on object "${objectDef.apiName}". A shared property type can only back one property per object.`,
       );
       propertyBySharedPropertyType.set(sharedPropertyType.apiName, apiName);
     }
   });
-  addIssue(
+  collector.check(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
     `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
   );
-  addIssue(
+  collector.check(
     propertyApiNames.includes(objectDef.primaryKeyPropertyApiName),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} does not exist on object ${objectDef.apiName}`,
   );
 
-  addIssue(
+  collector.check(
     !objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly,
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
@@ -144,12 +143,12 @@ export function defineObject(
   for (const datasource of objectDef.datasources ?? []) {
     if (datasource.type === "derived") continue;
     const { markingConstraints } = datasource;
-    addIssue(
+    collector.check(
       markingConstraints?.mandatory === undefined ||
         hasMarkingProperty("MANDATORY"),
       `Object "${objectDef.apiName}" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.`,
     );
-    addIssue(
+    collector.check(
       markingConstraints?.cbac === undefined || hasMarkingProperty("CBAC"),
       `Object "${objectDef.apiName}" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.`,
     );
@@ -159,7 +158,7 @@ export function defineObject(
     const nonDatasetDatasources = objectDef.datasources.filter(
       (ds) => ds.type !== "dataset" && ds.type !== "derived",
     );
-    addIssue(
+    collector.check(
       nonDatasetDatasources.length === 0,
       `Object type "${objectDef.apiName}" has non-dataset datasources (${nonDatasetDatasources
         .map((ds) => ds.type)
@@ -174,7 +173,7 @@ export function defineObject(
     ) as ObjectTypeDatasourceDefinition_stream[]
   ).map((ds) => ds.retentionPeriod);
   retentionPeriods.forEach((retentionPeriod) => {
-    addIssue(
+    collector.check(
       retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
       `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
     );
@@ -183,7 +182,7 @@ export function defineObject(
   const baseDatasources = (objectDef.datasources ?? []).filter((ds) =>
     ["dataset", "stream", "restrictedView"].includes(ds.type),
   );
-  addIssue(
+  collector.check(
     baseDatasources.length <= 1,
     `Object ${objectDef.apiName} has more than one base datasource (got: [${baseDatasources
       .map((ds) => ds.type)
@@ -220,7 +219,7 @@ export function defineObject(
         }
       },
     );
-    addIssue(
+    collector.check(
       mismatchedProperties.length === 0,
       `Object "${objectDef.apiName}" has "${objectStatusType}" status, but the following properties have a different status: ${mismatchedProperties.join(
         ", ",
@@ -235,21 +234,21 @@ export function defineObject(
     objectDef.status.type === "deprecated"
   ) {
     const deadline = objectDef.status.deadline;
-    addIssue(
+    collector.check(
       deadline !== undefined && ISO_8601_DATETIME.test(deadline),
       `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`,
     );
   }
   const titleProp =
     objectDef.properties?.[objectDef.titlePropertyApiName]?.type;
-  addIssue(
+  collector.check(
     !isExotic(titleProp) ||
       (isStruct(titleProp) &&
         titleProp.mainValue &&
         !isExotic(titleProp.mainValue.type)),
     `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
-  addIssue(
+  collector.check(
     !isExotic(
       objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.type,
     ),
@@ -315,7 +314,7 @@ export function defineObject(
     const allFailedValidations = validations
       .concat(nonExistentInterfaceProperties)
       .filter((val) => val.type === "invalid");
-    addIssue(
+    collector.check(
       allFailedValidations.length === 0,
       "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
     );
@@ -421,9 +420,8 @@ function validateDerivedDatasource(
   datasource: ObjectTypeDatasourceDefinition_derived,
   collector: MakerValidationIssueCollector,
 ) {
-  const { addIssue } = collector;
   // there should be at least one link
-  addIssue(
+  collector.check(
     datasource.linkDefinition.length > 0,
     `Derived datasource for object '${objectDef.apiName}' must have at least one link.`,
   );
@@ -436,7 +434,7 @@ function validateDerivedDatasource(
         undefined,
   );
   missingLinks.forEach(({ linkType }) => {
-    addIssue(
+    collector.check(
       false,
       `Link type '${linkType.apiName}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
     );
@@ -446,7 +444,7 @@ function validateDerivedDatasource(
     (prop) => objectDef.properties?.[prop] === undefined,
   );
   missingProperties.forEach((prop) => {
-    addIssue(
+    collector.check(
       false,
       `Property '${prop}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
     );
@@ -521,7 +519,6 @@ function validateLinkedProperties(
   targetObjectApiName: string,
   collector: MakerValidationIssueCollector,
 ) {
-  const { addIssue } = collector;
   const foreignProperties = Object.values(
     datasource.propertyMapping,
   ) as string[];
@@ -532,7 +529,7 @@ function validateLinkedProperties(
     objectTypeApiName,
   );
   foreignProperties.forEach((prop) => {
-    addIssue(
+    collector.check(
       hasProperty(prop),
       `Property '${prop}' on object '${apiName}' is not defined`,
     );
@@ -546,7 +543,6 @@ function validateAggregations(
   targetObjectApiName: string,
   collector: MakerValidationIssueCollector,
 ) {
-  const { addIssue } = collector;
   const props = datasource.propertyMapping as Record<
     string,
     DerivedPropertyAggregation
@@ -560,12 +556,12 @@ function validateAggregations(
       case "collectList":
       case "collectSet":
         // property's type is collectible
-        addIssue(
+        collector.check(
           isCollectible(property),
           `Property '${propName}' on object '${objectDef.apiName}' is not collectible`,
         );
         // limit <= 100
-        addIssue(
+        collector.check(
           agg.limit <= 100,
           `[Error] Limit for collection '${propName}' on object '${objectDef.apiName}' is greater than 100`,
         );
@@ -573,7 +569,7 @@ function validateAggregations(
       case "avg":
       case "sum":
         // property's type is numeric
-        addIssue(
+        collector.check(
           isNumeric(property.type),
           `Property '${propName}' on object '${objectDef.apiName}' is not numeric`,
         );
@@ -583,7 +579,7 @@ function validateAggregations(
       case "approximateCardinality":
       case "exactCardinality":
         // property's type is primitive
-        addIssue(
+        collector.check(
           isPrimitive(property.type),
           `Property '${propName}' on object '${objectDef.apiName}' is not primitive`,
         );
@@ -606,7 +602,7 @@ function validateAggregations(
         objectDef,
         objectTypeApiName,
       );
-      addIssue(
+      collector.check(
         hasProperty(foreignProperty),
         `Property '${foreignProperty}' on object '${apiName}' is not defined`,
       );

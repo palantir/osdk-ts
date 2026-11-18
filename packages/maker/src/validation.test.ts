@@ -21,13 +21,13 @@ import {
   createValidationIssueCollector,
   formatValidationPath,
   MakerValidationError,
+  type MakerValidationIssueCollector,
   parseModel,
   throwIfAnyValidationIssues,
 } from "./validation.js";
 
 it("collects failed checks with default or structured issues", () => {
   const collector = createValidationIssueCollector();
-  const { addIssue, throwIfAnyIssues } = collector;
   const issue = {
     code: "invalid_format",
     message: "Invalid property.",
@@ -35,13 +35,13 @@ it("collects failed checks with default or structured issues", () => {
     suggestion: "Use a supported property type.",
   };
 
-  addIssue(true, "Ignored check");
-  addIssue("truthy", issue);
-  expect(throwIfAnyIssues).not.toThrow();
+  collector.check(true, "Ignored check");
+  collector.check("truthy", issue);
+  expect(collector.throwIfAnyIssues).not.toThrow();
 
-  addIssue(false, "Invalid definition.");
-  addIssue(undefined, issue);
-  expect(throwIfAnyIssues).toThrowError(
+  collector.check(false, "Invalid definition.");
+  collector.check(undefined, issue);
+  expect(collector.throwIfAnyIssues).toThrowError(
     expect.objectContaining({
       name: "MakerValidationError",
       issues: [
@@ -50,8 +50,8 @@ it("collects failed checks with default or structured issues", () => {
       ],
     }),
   );
-  expect(throwIfAnyIssues).toThrowError(MakerValidationError);
-  expect(throwIfAnyIssues).toThrowError(
+  expect(collector.throwIfAnyIssues).toThrowError(MakerValidationError);
+  expect(collector.throwIfAnyIssues).toThrowError(
     '[validation_error] Invalid definition.\n$["properties"]["file"] [invalid_format] Invalid property.\n  Use a supported property type.',
   );
 
@@ -60,10 +60,10 @@ it("collects failed checks with default or structured issues", () => {
   ).not.toThrow();
 });
 
-it("throws a terminal issue even when no earlier issues were collected", () => {
-  expect(() =>
-    createValidationIssueCollector().addTerminalIssue("Missing prerequisite."),
-  ).toThrowError(
+it("throws a failed assertion even when no earlier issues were collected", () => {
+  const collector: MakerValidationIssueCollector =
+    createValidationIssueCollector();
+  expect(() => collector.assert(false, "Missing prerequisite.")).toThrowError(
     expect.objectContaining({
       name: "MakerValidationError",
       issues: [
@@ -77,15 +77,17 @@ it("throws a terminal issue even when no earlier issues were collected", () => {
   );
 });
 
-it("includes earlier issues before a terminal issue when methods are destructured", () => {
-  const { addIssue, addTerminalIssue } = createValidationIssueCollector();
+it("only throws collected issues when an assertion fails", () => {
+  const collector: MakerValidationIssueCollector =
+    createValidationIssueCollector();
   const terminalIssue = {
     code: "missing_source",
     message: "Missing source.",
     path: [],
   };
-  addIssue(false, "Invalid parameter.");
-  expect(() => addTerminalIssue(terminalIssue)).toThrowError(
+  collector.check(false, "Invalid parameter.");
+  collector.assert("truthy", "Ignored assertion.");
+  expect(() => collector.assert(undefined, terminalIssue)).toThrowError(
     expect.objectContaining({
       name: "MakerValidationError",
       issues: [

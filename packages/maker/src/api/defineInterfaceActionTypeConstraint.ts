@@ -32,9 +32,8 @@ export function defineInterfaceActionTypeConstraint(
 ): void {
   const def = cloneDefinition(input);
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
 
-  addIssue(
+  collector.check(
     importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
       def.interfaceType.apiName
     ] == null,
@@ -46,7 +45,7 @@ export function defineInterfaceActionTypeConstraint(
     def.apiName,
   );
 
-  addIssue(
+  collector.check(
     def.interfaceType.actionTypeConstraints.find(
       (a) => a.metadata.apiName === apiNameWithNamespace,
     ) == null,
@@ -59,7 +58,7 @@ export function defineInterfaceActionTypeConstraint(
   > = {};
   const seenParamApiNames = new Set<string>();
   for (const param of def.parameters) {
-    addIssue(
+    collector.check(
       !seenParamApiNames.has(param.apiName),
       `Duplicate parameter constraint apiName "${param.apiName}" in action type constraint ${apiNameWithNamespace}`,
     );
