@@ -305,7 +305,6 @@ describe("ObjectSet", () => {
             $includeAllBaseObjectProperties: true,
           })
         ).data[0];
-        // @ts-expect-error
         const asObject = withAllBaseProperties.$as(ComplexImplementationObject);
         expect(asObject.nestedStruct).toEqual({
           label: "nested-label",
