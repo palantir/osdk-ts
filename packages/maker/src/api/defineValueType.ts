@@ -129,7 +129,6 @@ export function defineValueType(
   valueTypeDefInput: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
   const valueTypeDef = cloneDefinition(valueTypeDefInput);
   const {
     apiName: inputApiName,
@@ -142,7 +141,7 @@ export function defineValueType(
   const apiName = namespacePrefix ? namespace + inputApiName : inputApiName;
   const semverValidation =
     /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/u;
-  addIssue(semverValidation.test(version), {
+  collector.check(semverValidation.test(version), {
     code: "invalid_version",
     message: "Version is not a valid semver",
     path: ["version"],
@@ -153,7 +152,7 @@ export function defineValueType(
   const duplicateVersion = existingVersions.find(
     (vt) => vt.version === version,
   );
-  addIssue(duplicateVersion === undefined, {
+  collector.check(duplicateVersion === undefined, {
     code: "duplicate_definition",
     message: `Value type with apiName ${apiName} and version ${version} is already defined`,
     path: ["version"],

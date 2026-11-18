@@ -27,7 +27,7 @@ function validateMediaSet(
   collector: MakerValidationIssueCollector,
   path: MakerValidationIssue["path"],
 ): void {
-  collector.addIssue(locator.type === "apiName", {
+  collector.check(locator.type === "apiName", {
     code: "invalid_format",
     message: "Expected a media set API name locator",
     path,
@@ -42,18 +42,17 @@ export function validateMediaReferences(
   object: ObjectTypeDefinition,
   collector: MakerValidationIssueCollector,
 ): void {
-  const { addIssue } = collector;
   const declared = new Set<string>();
   for (const [index, source] of (object.referenceSources ?? []).entries()) {
     const path = ["referenceSources", index] as const;
-    addIssue(source.type === "media", {
+    collector.check(source.type === "media", {
       code: "invalid_media_reference",
       message: "Unsupported reference source type",
       path: [...path, "type"],
       suggestion: 'Set type to "media".',
     });
     validateMediaSet(source.mediaSet, collector, [...path, "mediaSet"]);
-    addIssue(!declared.has(source.mediaSet.apiName), {
+    collector.check(!declared.has(source.mediaSet.apiName), {
       code: "duplicate_media_source",
       message: `Duplicate media reference source on object ${object.apiName}: ${source.mediaSet.apiName}`,
       path: [...path, "mediaSet"],
@@ -68,7 +67,7 @@ export function validateMediaReferences(
 
     const context = `${object.apiName}.${name}`;
     const path = ["properties", name, "reference"] as const;
-    addIssue(
+    collector.check(
       !object.datasources?.some(
         (datasource) =>
           datasource.type === "derived" &&
@@ -82,7 +81,7 @@ export function validateMediaReferences(
       },
     );
 
-    addIssue(property.type === "mediaReference" && !property.array, {
+    collector.check(property.type === "mediaReference" && !property.array, {
       code: "invalid_media_reference",
       message: `${context} can only use reference on a scalar mediaReference`,
       path,
@@ -90,21 +89,21 @@ export function validateMediaReferences(
         'Use type: "mediaReference" without array, or remove reference.',
     });
 
-    addIssue(!property.includeEmptyBackingMediaSet, {
+    collector.check(!property.includeEmptyBackingMediaSet, {
       code: "invalid_media_reference",
       message: `${context} cannot combine reference with includeEmptyBackingMediaSet`,
       path,
       suggestion: "Choose reference or includeEmptyBackingMediaSet, not both.",
     });
 
-    addIssue(reference.type === "media", {
+    collector.check(reference.type === "media", {
       code: "invalid_media_reference",
       message: `${context} requires a media reference`,
       path: [...path, "type"],
       suggestion: 'Set reference.type to "media".',
     });
 
-    addIssue(reference.sources.length > 0, {
+    collector.check(reference.sources.length > 0, {
       code: "invalid_media_reference",
       message: `${context} requires at least one media source`,
       path: [...path, "sources"],
@@ -115,14 +114,14 @@ export function validateMediaReferences(
     for (const [index, source] of reference.sources.entries()) {
       const sourcePath = [...path, "sources", index];
       validateMediaSet(source, collector, sourcePath);
-      addIssue(declared.has(source.apiName), {
+      collector.check(declared.has(source.apiName), {
         code: "invalid_media_reference",
         message: `${context} selects an undeclared media source: ${source.apiName}`,
         path: sourcePath,
         suggestion:
           "Add this media set to the object's referenceSources, or select a declared set.",
       });
-      addIssue(!selected.has(source.apiName), {
+      collector.check(!selected.has(source.apiName), {
         code: "duplicate_media_source",
         message: `${context} selects a duplicate media source: ${source.apiName}`,
         path: sourcePath,
@@ -133,7 +132,7 @@ export function validateMediaReferences(
     if (reference.uploadDestination !== undefined) {
       const uploadPath = [...path, "uploadDestination"];
       validateMediaSet(reference.uploadDestination, collector, uploadPath);
-      addIssue(selected.has(reference.uploadDestination.apiName), {
+      collector.check(selected.has(reference.uploadDestination.apiName), {
         code: "invalid_media_reference",
         message: `${context} uploadDestination must be one of its sources`,
         path: uploadPath,

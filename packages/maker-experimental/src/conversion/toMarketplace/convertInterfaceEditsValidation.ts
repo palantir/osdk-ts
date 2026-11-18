@@ -126,7 +126,7 @@ function resolveReferences(
   let valid = true;
 
   function check(condition: boolean, message: string): boolean {
-    collector.addIssue(condition, message);
+    collector.check(condition, message);
     valid = valid && condition;
     return condition;
   }
@@ -221,7 +221,7 @@ function resolveReferences(
     });
   } catch (error) {
     if (!(error instanceof MakerValidationError)) throw error;
-    for (const issue of error.issues) collector.addIssue(false, issue);
+    for (const issue of error.issues) collector.check(false, issue);
     valid = false;
   }
   return valid ? { parameters, links } : undefined;

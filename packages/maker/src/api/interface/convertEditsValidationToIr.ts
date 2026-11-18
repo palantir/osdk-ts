@@ -49,7 +49,6 @@ export function convertEditsValidationToIr(
   constraintApiName: string,
 ): OntologyIrInterfaceActionTypeEditsValidation {
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
   const seenIds = new Set<string>();
   const location = `action type constraint "${constraintApiName}" on interface "${interfaceApiName}"`;
 
@@ -69,12 +68,12 @@ export function convertEditsValidationToIr(
         };
       case "entry": {
         const { id, subject } = condition.entry;
-        addIssue(typeof id === "string" && id.trim().length > 0, {
+        collector.check(typeof id === "string" && id.trim().length > 0, {
           code: "invalid_entry_id",
           message: `Edit validation entry ID on ${location} must not be blank`,
           path: [...path, "entry", "id"],
         });
-        addIssue(!seenIds.has(id), {
+        collector.check(!seenIds.has(id), {
           code: "duplicate_entry_id",
           message: `Duplicate edit validation entry ID "${id}" on ${location}`,
           path: [...path, "entry", "id"],

@@ -59,10 +59,9 @@ export function defineInterfaceLinkConstraint(
   linkDefInput: One | Many,
 ): InterfaceLinkConstraint {
   const collector = createValidationIssueCollector();
-  const { addIssue } = collector;
   const linkDef = cloneDefinition(linkDefInput);
 
-  addIssue(
+  collector.check(
     importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
       linkDef.from.apiName
     ] == null,
@@ -75,7 +74,7 @@ export function defineInterfaceLinkConstraint(
     `Interface "${linkDef.from.apiName}", link "${fromLinkMeta.apiName}"`,
     collector,
   );
-  addIssue(
+  collector.check(
     linkDef.from.links.find(
       (a) => a.metadata.apiName === fromLinkMeta.apiName,
     ) == null,
