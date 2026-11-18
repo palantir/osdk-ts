@@ -75,7 +75,7 @@ export function createValidationIssueCollector(): MakerValidationIssueCollector 
     assert(condition, issue) {
       if (!condition) {
         collector.check(false, issue);
-        throw new MakerValidationError(issues);
+        throw new MakerValidationError([...issues]);
       }
     },
     throwIfAnyIssues() {

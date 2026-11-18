@@ -98,6 +98,29 @@ it("only throws collected issues when an assertion fails", () => {
   );
 });
 
+it("keeps a thrown assertion's issues consistent with its message when the collector is reused", () => {
+  const collector: MakerValidationIssueCollector =
+    createValidationIssueCollector();
+  let error: unknown;
+  try {
+    collector.assert(false, "Missing source.");
+  } catch (caught) {
+    error = caught;
+  }
+
+  collector.check(false, "Invalid parameter.");
+  expect(() => collector.assert(false, "Missing target.")).toThrowError(
+    MakerValidationError,
+  );
+  expect(error).toBeInstanceOf(MakerValidationError);
+  expect(error).toMatchObject({
+    message: "[validation_error] Missing source.",
+    issues: [
+      { code: "validation_error", message: "Missing source.", path: [] },
+    ],
+  });
+});
+
 it("formats model-relative paths with escaped keys and numeric indices", () => {
   expect(formatValidationPath([])).toBe("$");
   expect(formatValidationPath(["items", 2, 'a."b'])).toBe(
