@@ -24,6 +24,7 @@ import { registerLazyAgents } from "./agents.js";
 import {
   ComplexImplementationInterface,
   complexImplementationObjectTypeWithLinkTypes,
+  StructImplementationInterface,
 } from "./complexImplementationTypes.js";
 import { BarInterface, FooInterface } from "./interfaceTypes.js";
 import {
@@ -73,6 +74,7 @@ export class LegacyFauxFoundry extends FauxFoundry {
     legacyFullOntology.registerInterfaceType(BarInterface);
     legacyFullOntology.registerInterfaceType(ComplexImplementationInterface);
     legacyFullOntology.registerInterfaceType(FooInterface);
+    legacyFullOntology.registerInterfaceType(StructImplementationInterface);
 
     legacyFullOntology.registerSharedPropertyType(fooSpt);
 
