@@ -489,9 +489,14 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
           break;
 
         case "success":
+          // cancelled before the ack arrived
+          if (isSubscriptionDone(sub)) break;
+
           // `"preparing"` should only be the status on an initial subscribe.
           const shouldFireOutOfDate =
             sub.status === "expired" || sub.status === "reconnecting";
+          // heartbeat responses for an already subscribed sub fire nothing
+          const shouldFireSuccess = sub.status === "preparing";
 
           if (process.env.NODE_ENV !== "production") {
             this.logger?.debug({ shouldFireOutOfDate }, "success");
@@ -505,7 +510,7 @@ export class ObjectSetListenerWebsocket extends SubscriptionWebsocket<
           }
           try {
             if (shouldFireOutOfDate) sub.listener.onOutOfDate();
-            else sub.listener.onSuccessfulSubscription();
+            else if (shouldFireSuccess) sub.listener.onSuccessfulSubscription();
           } catch (error) {
             this.logger?.error(
               error,
