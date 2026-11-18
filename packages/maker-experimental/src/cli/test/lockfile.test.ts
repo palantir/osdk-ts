@@ -234,6 +234,38 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
     });
   });
 
+  describe("replace", () => {
+    it("locks the in-flight migration", async () => {
+      await run("legacyPersonReplaceInFlight", "--write-locks");
+
+      expect(await readLockfile()).toStrictEqual({
+        version: 1,
+        interfaces: {
+          LegacyPerson: {
+            schema: {
+              properties: { fullName: { type: "string", required: true } },
+            },
+            transitions: [
+              {
+                id: "replaceWithPerson",
+                gracePeriod: { type: "afterInstall", days: 30 },
+                instructions: [
+                  {
+                    type: "replace",
+                    replacement: {
+                      interfaceType: "Person",
+                      propertyMappings: { fullName: "firstName" },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      });
+    });
+  });
+
   describe("function-backed second pass", () => {
     const blockDataFile = () =>
       path.join(workDir, "build", "temp_block_data", "ontology.json");
