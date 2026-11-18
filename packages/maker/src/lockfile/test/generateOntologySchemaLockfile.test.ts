@@ -18,6 +18,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import type { TypeClass } from "../../api/common/TypeClass.js";
 import { defineInterface } from "../../api/defineInterface.js";
+import { defineInterfaceActionTypeConstraint } from "../../api/defineInterfaceActionTypeConstraint.js";
 import {
   defineOntology,
   getOntologyDefinition,
@@ -522,6 +523,126 @@ describe("generateOntologySchemaLockfile", () => {
 
       expect(Object.keys(lockedSchema())).toEqual(["properties"]);
     });
+  });
+});
+
+describe("action type constraints", () => {
+  function constrain(
+    interfaceType: InterfaceType,
+    apiName: string,
+    requireImplementation: boolean,
+  ): void {
+    defineInterfaceActionTypeConstraint({
+      interfaceType,
+      apiName,
+      displayName: apiName,
+      description: apiName,
+      requireImplementation,
+      parameters: [],
+    });
+  }
+
+  it("records each directly-declared constraint by api name", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(person, "sendEmail", false);
+    constrain(person, "archive", true);
+
+    expect(lockedSchema().actionTypeConstraints).toEqual({
+      "com.palantir.archive": { requireImplementation: true },
+      "com.palantir.sendEmail": { requireImplementation: false },
+    });
+    // NB: should be sorted for lockfile stability
+    expect(
+      Object.keys(lockedSchema().actionTypeConstraints ?? {}),
+    ).toStrictEqual(["com.palantir.archive", "com.palantir.sendEmail"]);
+  });
+
+  it("does not record the constraints an extended interface declares", () => {
+    const named = defineInterface({
+      apiName: "Named",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(named, "rename", true);
+    defineInterface({
+      apiName: "Person",
+      extends: [named],
+      schemaMigrations: { transitions: [] },
+    });
+
+    expect(Object.keys(lockedSchema())).toEqual([
+      "properties",
+      "extendsInterfaces",
+    ]);
+  });
+
+  it("records whether each parameter is required, and on the concrete action only when set", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    defineInterfaceActionTypeConstraint({
+      interfaceType: person,
+      apiName: "sendEmail",
+      displayName: "Send email",
+      description: "Sends the person an email",
+      requireImplementation: false,
+      parameters: [
+        {
+          apiName: "subject",
+          displayName: "Subject",
+          type: { type: "string", string: {} },
+          requireImplementation: true,
+          isRequiredParameterOnConcreteAction: true,
+        },
+        {
+          apiName: "body",
+          displayName: "Body",
+          type: { type: "string", string: {} },
+          requireImplementation: false,
+          isRequiredParameterOnConcreteAction: false,
+        },
+        {
+          apiName: "cc",
+          displayName: "CC",
+          type: { type: "string", string: {} },
+          requireImplementation: false,
+        },
+      ],
+    });
+
+    const parameters =
+      lockedSchema().actionTypeConstraints?.["com.palantir.sendEmail"]
+        ?.parameters ?? {};
+    expect(parameters).toEqual({
+      body: { requireImplementation: false },
+      cc: { requireImplementation: false },
+      subject: {
+        requireImplementation: true,
+        isRequiredParameterOnConcreteAction: true,
+      },
+    });
+    // NB: should be sorted for lockfile stability, and `false` recorded the same as absent
+    expect(Object.keys(parameters)).toStrictEqual(["body", "cc", "subject"]);
+    expect(Object.keys(parameters.body)).toStrictEqual([
+      "requireImplementation",
+    ]);
+  });
+
+  it("omits parameters for a constraint that declares none", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(person, "archive", true);
+
+    expect(
+      Object.keys(
+        lockedSchema().actionTypeConstraints?.["com.palantir.archive"] ?? {},
+      ),
+    ).toStrictEqual(["requireImplementation"]);
   });
 });
 
