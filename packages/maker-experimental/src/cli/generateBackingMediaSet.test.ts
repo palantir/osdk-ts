@@ -148,15 +148,29 @@ describe("generateBackingMediaSetBlockResult", () => {
       markings: {
         operation: "USE",
         supportedMarkingsType: "MANDATORY",
-        supportedMarkingsTypesV2: [
-          "CBAC",
-          "MANDATORY_NOT_ORGANIZATION",
-          "ORGANIZATION",
-        ],
+        supportedMarkingsTypesV2: ["CBAC", "MANDATORY_NOT_ORGANIZATION"],
         affectedShapes: [output],
         shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
       },
     });
     expect(result.input_shape_metadata[id].isOptional).toBe(false);
+  });
+
+  it("excludes organization markings from mandatory resource inputs", async () => {
+    const result = await generateBackingMediaSetBlockResult(
+      "com.palantir.Document.file",
+      buildDir,
+      undefined,
+      { mandatoryMarkings: "MANDATORY" },
+    );
+    const input = Object.values(result.inputs).find(
+      (shape) => shape.type === "markings",
+    );
+    expect(input).toMatchObject({
+      markings: {
+        supportedMarkingsType: "MANDATORY",
+        supportedMarkingsTypesV2: ["MANDATORY_NOT_ORGANIZATION"],
+      },
+    });
   });
 });

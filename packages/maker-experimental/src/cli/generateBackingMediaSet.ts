@@ -25,6 +25,7 @@ import type {
   LocalizedTitleAndDescription,
   MarkingsShape,
   OutputShape,
+  SupportedMarkingsTypeV2,
   Void,
 } from "@osdk/client.unstable/api";
 
@@ -107,6 +108,12 @@ export async function generateBackingMediaSetBlockResult(
       operation: "USE",
       affectedShapes: [outputBlockShapeId],
       ...config.shapeTypes,
+      // Organization markings are inherited from the project, not applied to a media set directly.
+      supportedMarkingsTypesV2: [...new Set(Object.values(markings))]
+        .sort()
+        .map<SupportedMarkingsTypeV2>((type) =>
+          type === "CBAC" ? "CBAC" : "MANDATORY_NOT_ORGANIZATION",
+        ),
       stableId: `media-set.${groups.join(",")}`,
       shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
     };
