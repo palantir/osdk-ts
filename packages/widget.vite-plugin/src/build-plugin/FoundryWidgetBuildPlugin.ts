@@ -29,6 +29,7 @@ import {
   MODULE_EVALUATION_MODE,
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
+import { getResourcesJsonPath } from "../common/getResourcesJsonPath.js";
 import type { FoundryWidgetPluginOptions } from "../index.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
@@ -60,6 +61,11 @@ export function FoundryWidgetBuildPlugin(
      */
     configResolved(_config) {
       config = _config;
+      if (config.base !== "/") {
+        throw new Error(
+          `Foundry serves widget files from the root path, so Vite's base must be "/". Remove base from your Vite config or set it to "/". Found base "${config.base}".`,
+        );
+      }
     },
 
     /**
@@ -94,7 +100,7 @@ export function FoundryWidgetBuildPlugin(
         );
         const widgetSetInputSpec = await getWidgetSetInputSpec(
           path.join(projectDir, "package.json"),
-          path.join(projectDir, "resources.json"),
+          getResourcesJsonPath(config),
         );
         const widgetSetManifest = buildWidgetSetManifest(
           foundryConfig.foundryConfig.widgetSet.rid,

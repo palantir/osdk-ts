@@ -133,7 +133,7 @@ export interface WidgetSetDiscoveredInputSpecV1 {
   sdks: Array<OntologySdkInputSpecV1>;
 
   /**
-   * The widget set authorizations, read from the project's resources.json.
+   * The widget set authorizations, read from the project's public/resources.json.
    * Only present when resources.json exists with the expected format.
    * @optional
    */

@@ -1037,7 +1037,11 @@ describe("generator", () => {
         import type {
           AgentDefinition as $AgentDefinition,
           AgentParam as $AgentParam,
+          AgentResult as $AgentResult,
           AgentSession as $AgentSession,
+          AgentSessionState as $AgentSessionState,
+          AgentGetStateOptions as $AgentGetStateOptions,
+          AgentSendEventOptions as $AgentSendEventOptions,
         } from '@osdk/client/experimental';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1045,8 +1049,28 @@ describe("generator", () => {
         /** @beta */
         export namespace weatherAgent {
           export interface Signatures {
-            experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<$AgentSession>;
+            experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<weatherAgent.Session>;
+            experimental_getSession(sessionId: string): Promise<weatherAgent.Session>;
           }
+
+          export interface Session extends $AgentSession {
+            experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+            experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+          }
+
+          export interface SessionState extends $AgentSessionState {
+            arguments: { city: string };
+            agentState: { data: Record<string, never> };
+            contextItems: Record<string, ContextItem>;
+          }
+
+          export type ContextItem = never;
+
+          export type ContextItems = Record<never, never>;
+
+          export type SendEventArguments = never;
+
+          export type Events = Record<never, never>;
 
           export interface CreateSessionArguments {
             readonly city: string;
@@ -1781,7 +1805,11 @@ describe("generator", () => {
         import type {
           AgentDefinition as $AgentDefinition,
           AgentParam as $AgentParam,
+          AgentResult as $AgentResult,
           AgentSession as $AgentSession,
+          AgentSessionState as $AgentSessionState,
+          AgentGetStateOptions as $AgentGetStateOptions,
+          AgentSendEventOptions as $AgentSendEventOptions,
         } from '@osdk/api/unstable';
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1789,8 +1817,28 @@ describe("generator", () => {
         /** @beta */
         export namespace weatherAgent {
           export interface Signatures {
-            experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<$AgentSession>;
+            experimental_createSession(args: weatherAgent.CreateSessionArguments): Promise<weatherAgent.Session>;
+            experimental_getSession(sessionId: string): Promise<weatherAgent.Session>;
           }
+
+          export interface Session extends $AgentSession {
+            experimental_getState($options?: $AgentGetStateOptions): Promise<SessionState>;
+            experimental_sendEvent(event: SendEventArguments, $options?: $AgentSendEventOptions): Promise<void>;
+          }
+
+          export interface SessionState extends $AgentSessionState {
+            arguments: { city: string };
+            agentState: { data: Record<string, never> };
+            contextItems: Record<string, ContextItem>;
+          }
+
+          export type ContextItem = never;
+
+          export type ContextItems = Record<never, never>;
+
+          export type SendEventArguments = never;
+
+          export type Events = Record<never, never>;
 
           export interface CreateSessionArguments {
             readonly city: string;

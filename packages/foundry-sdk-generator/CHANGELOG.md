@@ -1,5 +1,32 @@
 # @osdk/foundry-sdk-generator
 
+## 2.89.0
+
+### Patch Changes
+
+- Updated dependencies [62ebddd]
+  - @osdk/client@2.89.0
+  - @osdk/generator@2.89.0
+  - @osdk/api@2.89.0
+  - @osdk/client.unstable@2.89.0
+  - @osdk/generator-converters@2.89.0
+  - @osdk/generator-utils@2.89.0
+
+## 2.88.0
+
+### Patch Changes
+
+- Updated dependencies [358fbfa]
+- Updated dependencies [1d0b110]
+- Updated dependencies [eb1fc8f]
+- Updated dependencies [e1ca298]
+  - @osdk/client@2.88.0
+  - @osdk/api@2.88.0
+  - @osdk/generator@2.88.0
+  - @osdk/generator-converters@2.88.0
+  - @osdk/client.unstable@2.88.0
+  - @osdk/generator-utils@2.88.0
+
 ## 2.87.0
 
 ### Patch Changes

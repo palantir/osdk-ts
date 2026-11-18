@@ -22,6 +22,13 @@ export function getObjectTypeApiNamesFromAgent(agent: EnhancedAgent): string[] {
   for (const { dataType } of agent.raw.argumentDefinitions) {
     getObjectTypesFromAgentDataType(dataType, types);
   }
+  for (const { payloadType } of agent.raw.eventDefinitions) {
+    getObjectTypesFromAgentDataType(payloadType, types);
+  }
+  getObjectTypesFromAgentDataType(agent.raw.agentStateType, types);
+  for (const { dataType } of agent.raw.contextItemDefinitions) {
+    getObjectTypesFromAgentDataType(dataType, types);
+  }
   return Array.from(types);
 }
 

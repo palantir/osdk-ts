@@ -483,6 +483,43 @@ const eventObject = defineObject({
 });
 ```
 
+### Datasource Marking Constraints
+
+Configure empty allowed marking sets on the datasource that backs the marking properties:
+
+```typescript
+const document = defineObject({
+  apiName: "document",
+  displayName: "Document",
+  pluralDisplayName: "Documents",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "id",
+  properties: {
+    id: { type: "string" },
+    classification: {
+      type: {
+        type: "marking",
+        markingType: "CBAC",
+        markingInputGroupName: "documentClassification",
+      },
+    },
+  },
+  datasources: [
+    {
+      type: "dataset",
+      markingConstraints: {
+        // Permit an empty maximum-classification
+        cbac: { allowEmptyMarkings: true },
+      },
+    },
+  ],
+});
+```
+
+`mandatory.allowEmptyMarkings` configures the shared allowed set of ordinary mandatory and organization markings; `cbac.allowEmptyMarkings` configures the maximum-classification set. Each requires a marking property of the corresponding category. Both default to false.
+
+Allowed markings, organizations, and maximum classification are supplied through Marketplace marking inputs. If an allowed set is empty, corresponding marking properties may contain only empty arrays. These options do not bypass access controls or configure read policies.
+
 ### Object with Property Security Groups
 
 ```typescript

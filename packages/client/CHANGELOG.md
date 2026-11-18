@@ -1,5 +1,35 @@
 # @osdk/client
 
+## 2.89.0
+
+### Minor Changes
+
+- 62ebddd: Add typed event names and payloads to agent sessions.
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+- @osdk/client.unstable@2.89.0
+- @osdk/generator-converters@2.89.0
+- @osdk/shared.test@2.61.0
+
+## 2.88.0
+
+### Minor Changes
+
+- 358fbfa: Add experimental support for looking up agent sessions by ID.
+- 1d0b110: Convert objects and object sets in agent session state to OSDK object identifiers and object sets.
+- eb1fc8f: Add experimental support for reading agent session state.
+- e1ca298: Preserve PalantirApiError type and metadata when re-throwing agent conversion errors.
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/generator-converters@2.88.0
+  - @osdk/shared.test@2.60.0
+  - @osdk/client.unstable@2.88.0
+
 ## 2.87.0
 
 ### Minor Changes

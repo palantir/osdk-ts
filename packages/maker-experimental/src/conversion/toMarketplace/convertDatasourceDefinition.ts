@@ -44,11 +44,13 @@ export function convertDatasourceDefinition(
   objectType: ObjectType,
   properties: ObjectPropertyType[],
   ridGenerator: OntologyRidGenerator,
+  baseDatasource:
+    | Exclude<
+        NonNullable<ObjectType["datasources"]>[number],
+        { type: "derived" }
+      >
+    | undefined,
 ): ObjectTypeDatasourceDefinition {
-  const baseDatasource = objectType.datasources?.find((ds) =>
-    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
-  );
-
   // Helper to get column names from properties
   const getColumnNames = (props: ObjectPropertyType[]): Set<string> => {
     return new Set(props.map((p) => p.apiName));
@@ -100,26 +102,6 @@ export function convertDatasourceDefinition(
         type: "restrictedViewV2",
         restrictedViewV2: {
           restrictedViewRid: restrictedViewLocator.rid,
-          propertyMapping: buildPropertyMapping(
-            properties,
-            objectType.apiName,
-            ridGenerator,
-          ),
-        },
-      };
-
-    case "derived":
-      // Use generateLocator for dataset datasources
-      const derivedDatasetLocator = ridGenerator.generateDatasetLocator(
-        objectType.apiName,
-        getColumnNames(properties),
-      );
-
-      return {
-        type: "datasetV2",
-        datasetV2: {
-          branchId: derivedDatasetLocator.branchId,
-          datasetRid: derivedDatasetLocator.rid,
           propertyMapping: buildPropertyMapping(
             properties,
             objectType.apiName,
