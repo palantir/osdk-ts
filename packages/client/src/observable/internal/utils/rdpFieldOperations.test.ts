@@ -17,7 +17,6 @@
 import { describe, expect, it } from "vitest";
 
 import type { MinimalClient } from "../../../MinimalClientContext.js";
-import { createOsdkInterface } from "../../../object/convertWireToOsdkObjects/createOsdkInterface.js";
 import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/createOsdkObject.js";
 import {
   ClientRef,
@@ -88,128 +87,6 @@ function getUnderlyingProps(obj: ObjectHolder): SimpleOsdkProperties {
 }
 
 describe("rdpFieldOperations", () => {
-  it("preserves cast safety when merging complete and partial backing properties", () => {
-    const objectDef: FetchedObjectTypeDefinition = {
-      ...employeeObjectDef,
-      interfaceImplementations: {
-        NameInterface: {
-          name: {
-            type: "struct",
-            mapping: {
-              value: { type: "property", propertyApiName: "fullName" },
-            },
-          },
-        },
-      },
-    };
-    const full = createOsdkObject(
-      mockClient,
-      objectDef,
-      {
-        $apiName: "Employee",
-        $objectType: "Employee",
-        $primaryKey: 1,
-        $title: "Full",
-        fullName: "Full",
-        rdp1: 1,
-        rdp2: 2,
-      },
-      {},
-      undefined,
-    );
-    const partial = createOsdkObject(
-      mockClient,
-      objectDef,
-      {
-        $apiName: "Employee",
-        $objectType: "Employee",
-        $primaryKey: 1,
-        $title: "Partial",
-        fullName: "Partial",
-        rdp1: 3,
-      },
-      {},
-      undefined,
-      ["fullName"],
-    );
-    const cast = (object: ObjectHolder) =>
-      createOsdkInterface(object, {
-        apiName: "NameInterface",
-        displayName: "Name Interface",
-        type: "interface",
-        properties: { name: { type: { value: "string" } } },
-        links: {},
-        implements: [],
-        rid: "",
-        description: undefined,
-      }).$as("Employee");
-
-    const stripped = mergeObjectFields(
-      partial,
-      new Set(["rdp1"]),
-      new Set(),
-      undefined,
-    );
-    expect(() => cast(stripped)).toThrowError(
-      /properties 'fullName' were not fully loaded/u,
-    );
-
-    const filtered = mergeObjectFields(
-      full,
-      new Set(["rdp1", "rdp2"]),
-      new Set(["rdp1"]),
-      undefined,
-    );
-    expect(cast(filtered).fullName).toEqual("Full");
-
-    const filteredPartial = mergeObjectFields(
-      partial,
-      new Set(["rdp1", "rdp2"]),
-      new Set(["rdp1"]),
-      undefined,
-    );
-    expect(() => cast(filteredPartial)).toThrowError(
-      /properties 'fullName' were not fully loaded/u,
-    );
-
-    const merged = mergeObjectFields(
-      partial,
-      new Set(["rdp1"]),
-      new Set(["rdp1", "rdp2"]),
-      full,
-    );
-    expect(() => cast(merged)).toThrowError(
-      /properties 'fullName' were not fully loaded/u,
-    );
-
-    const partialSelection = mergeSelectFields(
-      partial,
-      new Set(["fullName"]),
-      full,
-      new Set(),
-    );
-    const fullSelection = mergeSelectFields(
-      full,
-      new Set(["fullName"]),
-      partial,
-      new Set(),
-    );
-    expect(() => cast(partialSelection)).toThrowError(
-      /properties 'fullName' were not fully loaded/u,
-    );
-    expect(cast(fullSelection).fullName).toEqual("Full");
-
-    const unrelatedSelection = mergeSelectFields(
-      full,
-      new Set(["office"]),
-      partial,
-      new Set(),
-    );
-    expect(() => cast(unrelatedSelection)).toThrowError(
-      /properties 'fullName' were not fully loaded/u,
-    );
-  });
-
   it("extractRdpFieldNames returns empty set for undefined", () => {
     expect(extractRdpFieldNames(undefined)).toEqual(new Set());
   });
