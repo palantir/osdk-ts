@@ -16,7 +16,7 @@
 
 import type { ActionTypeBlockDataV2 } from "@osdk/client.unstable";
 import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
-import { getImportedTypes } from "@osdk/maker";
+import { getImportedTypes, validateOntology } from "@osdk/maker";
 import invariant from "tiny-invariant";
 
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
@@ -34,6 +34,7 @@ export function convertOntologyDefinition(
   packageForEdge = false,
 ): OntologyIrV2 {
   const importedTypes = getImportedTypes();
+  validateOntology({ ontology, importedTypes });
 
   const allOntologies = [ontology, importedTypes];
   const mainOntology = convertOntologyDefinitionToWireBlockData(
