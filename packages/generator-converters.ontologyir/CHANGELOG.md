@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.93.0
+
+### Minor Changes
+
+- f1d12b0: Add spt mappings for non-interface object props
+
+### Patch Changes
+
+- @osdk/client.unstable@2.93.0
+
 ## 2.92.0
 
 ### Minor Changes

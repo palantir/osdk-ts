@@ -1,5 +1,29 @@
 # @osdk/maker-experimental
 
+## 0.88.0
+
+### Minor Changes
+
+- 00c8e96: Convert interface action type constraint edit validations into Marketplace block data with packaged references.
+- 1987502: Add `interfaceActionsEnabled` to `defineObject` to set an object type's interface action settings
+- 1e58a90: Collect independent validation issues in interface, interface action-type constraint, folder, and interface-link action helper definitions. Rename the collecting method to `check`, add `assert` for terminal checks that narrow types, and update downstream collector usage.
+- e726b2a: expose action isolation settings
+- f1d12b0: Add spt mappings for non-interface object props
+
+### Patch Changes
+
+- Updated dependencies [b1658a9]
+- Updated dependencies [1987502]
+- Updated dependencies [6b847a0]
+- Updated dependencies [1e58a90]
+- Updated dependencies [e726b2a]
+- Updated dependencies [f1d12b0]
+  - @osdk/maker@0.92.0
+  - @osdk/generator-converters.ontologyir@2.93.0
+  - @osdk/maker-import@0.57.0
+  - @osdk/api@2.93.0
+  - @osdk/client.unstable@2.93.0
+
 ## 0.87.0
 
 ### Minor Changes
