@@ -16,14 +16,14 @@
 
 import { z } from "zod";
 
-import type {
-  InterfaceSchemaGracePeriod,
-  InterfaceSchemaMigrationInstruction,
-} from "../api/interface/InterfaceSchemaMigrations.js";
+import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
 import { isCanonicalIsoUtcDatetime } from "../api/interface/validateInterfaceSchemaMigrations.js";
 import type { CoversEveryVariant } from "../util/CoversEveryVariant.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
-import type { OntologySchemaLockfile } from "./OntologySchemaLockfile.js";
+import type {
+  LockedInstruction,
+  OntologySchemaLockfile,
+} from "./OntologySchemaLockfile.js";
 import {
   LOCKFILE_HEADER_KEY,
   ONTOLOGY_SCHEMA_LOCKFILE_VERSION,
@@ -278,7 +278,7 @@ const _COVERS_EVERY_GRACE_PERIOD: CoversEveryVariant<
   z.infer<typeof gracePeriodSchema>
 > = true;
 const _COVERS_EVERY_INSTRUCTION: CoversEveryVariant<
-  InterfaceSchemaMigrationInstruction,
+  LockedInstruction,
   z.infer<typeof instructionSchema>
 > = true;
 

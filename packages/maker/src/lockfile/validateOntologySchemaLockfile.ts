@@ -18,7 +18,6 @@ import { isDeepStrictEqual } from "node:util";
 
 import type { TypeClass } from "../api/common/TypeClass.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
-import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import {
   applyTransition,
@@ -28,6 +27,7 @@ import {
 import type { SourceCensus } from "./generateOntologySchemaLockfile.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
   LockedProperty,
@@ -79,14 +79,14 @@ export type LockfileBreakingChange =
       transitionId: string;
       targets: readonly TargetPropertyState[];
       /** What the vanished transition instructed, as the lockfile recorded it. */
-      instructions: readonly InterfaceSchemaMigrationInstruction[];
+      instructions: readonly LockedInstruction[];
     }
   | {
       code: "instructionsChanged";
       interfaceApiName: string;
       transitionId: string;
-      previousInstructions: readonly InterfaceSchemaMigrationInstruction[];
-      nextInstructions: readonly InterfaceSchemaMigrationInstruction[];
+      previousInstructions: readonly LockedInstruction[];
+      nextInstructions: readonly LockedInstruction[];
     }
   | {
       code: "interfaceExtensionAdded";
