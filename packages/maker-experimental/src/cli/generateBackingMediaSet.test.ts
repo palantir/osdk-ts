@@ -136,7 +136,7 @@ describe("generateBackingMediaSetBlockResult", () => {
       ReadableIdGenerator.getForMediaSetViewOutput(name),
       "salt",
     );
-    const id = `media-set-${ReadableIdGenerator.getForMarkingSet({
+    const id = `media-set-${name}-${ReadableIdGenerator.getForMarkingSet({
       mandatoryMarkings: "MANDATORY",
       maxClassification: "CBAC",
     })}` as ReadableId;
@@ -154,6 +154,31 @@ describe("generateBackingMediaSetBlockResult", () => {
       },
     });
     expect(result.input_shape_metadata[id].isOptional).toBe(false);
+  });
+
+  it("keeps resource inputs separate for media sets using the same marking groups", async () => {
+    const results = await Promise.all(
+      ["com.palantir.Document.file", "com.palantir.Attachment.file"].map(
+        (name) =>
+          generateBackingMediaSetBlockResult(name, buildDir, undefined, {
+            maxClassification: "CBAC",
+            mandatoryMarkings: "MANDATORY",
+          }),
+      ),
+    );
+    const inputs = results.map((result) =>
+      Object.entries(result.inputs).find(
+        ([, shape]) => shape.type === "markings",
+      ),
+    );
+    expect(inputs[0]?.[0]).toBeDefined();
+    expect(inputs[1]?.[0]).toBeDefined();
+    expect(inputs[0]?.[0]).not.toBe(inputs[1]?.[0]);
+    const shapes = inputs.map((entry) => entry?.[1]);
+    if (shapes[0]?.type !== "markings" || shapes[1]?.type !== "markings") {
+      throw new Error("Expected resource marking inputs");
+    }
+    expect(shapes[0].markings.stableId).not.toBe(shapes[1].markings.stableId);
   });
 
   it("excludes organization markings from mandatory resource inputs", async () => {

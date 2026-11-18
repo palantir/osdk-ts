@@ -99,7 +99,8 @@ export async function generateBackingMediaSetBlockResult(
   const groups = Object.keys(markings).sort();
   if (groups.length > 0) {
     const config = getMediaSetMarkings(markings);
-    const readableId = `media-set-${config.readableId}` as ReadableId;
+    const readableId =
+      `media-set-${mediaSetName}-${config.readableId}` as ReadableId;
     // client.unstable does not yet include Marketplace's resource-marking constraint.
     const markingShape: MarkingsShape & {
       shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] };
@@ -114,7 +115,7 @@ export async function generateBackingMediaSetBlockResult(
         .map<SupportedMarkingsTypeV2>((type) =>
           type === "CBAC" ? "CBAC" : "MANDATORY_NOT_ORGANIZATION",
         ),
-      stableId: `media-set.${groups.join(",")}`,
+      stableId: `media-set.${mediaSetName}.${groups.join(",")}`,
       shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
     };
     inputs[readableId] = { type: "markings", markings: markingShape };
