@@ -56,6 +56,14 @@ function extractValueByImplementation(
     case "struct": {
       const fieldMappings = Object.entries(impl.mapping);
       if (!multiplicity) {
+        if (
+          fieldMappings.every(
+            ([, fieldMapping]) =>
+              underlying[fieldMapping.propertyApiName] == null,
+          )
+        ) {
+          return undefined;
+        }
         return Object.fromEntries(
           fieldMappings.map(([fieldName, fieldMapping]) => [
             fieldName,
@@ -95,11 +103,34 @@ function extractValueByImplementation(
       );
     }
     case "reduced":
+      if (
+        getBackingProperties(impl.implementation).some((propertyApiName) =>
+          Array.isArray(underlying[propertyApiName]),
+        )
+      ) {
+        return undefined;
+      }
       return extractValueByImplementation(
         underlying,
         impl.implementation,
         false,
       );
+  }
+}
+
+export function getBackingProperties(
+  impl: ObjectMetadata.InterfacePropertyImplementation,
+): string[] {
+  switch (impl.type) {
+    case "localProperty":
+    case "structField":
+      return [impl.propertyApiName];
+    case "struct":
+      return Object.values(impl.mapping).map(
+        (fieldMapping) => fieldMapping.propertyApiName,
+      );
+    case "reduced":
+      return getBackingProperties(impl.implementation);
   }
 }
 
