@@ -27,7 +27,6 @@ import {
   importOntologyEntity,
   initializeOntologyState,
   OntologyEntityTypeEnum,
-  validateOntology,
   writeDependencyFile,
   writeStaticObjects,
 } from "@osdk/maker";
@@ -123,7 +122,6 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
-  validateOntology({ ontology: ontologyDefinition, importedTypes });
 
   const folderDefinitions = resolveFolderDefinitions(
     getFolderDefinitions(),
