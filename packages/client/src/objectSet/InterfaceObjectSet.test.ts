@@ -29,7 +29,7 @@ import {
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
-import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, it } from "vitest";
 
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
@@ -38,7 +38,7 @@ describe("ObjectSet", () => {
   let client: Client;
   let apiServer: SetupServer;
 
-  beforeAll(() => {
+  beforeEach(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client, apiServer } = testSetup);
     return () => {
@@ -136,9 +136,29 @@ describe("ObjectSet", () => {
       },
     };
 
-    it("derives interface property values from non-local implementations and rejects $as back to the OT", async () => {
+    it("casts struct implementations back to the OT with all base properties", async () => {
+      const structImplPropertiesV2 = {
+        ...complexImplPropertiesV2,
+        iReduced: {
+          type: "structFieldImplementation" as const,
+          structFieldOfProperty: {
+            propertyApiName: "multiStruct",
+            structFieldApiName: "beta",
+          },
+        },
+      };
       await apiServer.boundary(async () => {
         apiServer.use(
+          MockOntologiesV2.ObjectTypesV2.getFullMetadata(baseUrl, () => ({
+            ...stubData.complexImplementationObjectTypeWithLinkTypes,
+            implementsInterfaces2: {
+              ComplexImplementationInterface: {
+                ...stubData.complexImplementationObjectTypeWithLinkTypes
+                  .implementsInterfaces2!.ComplexImplementationInterface,
+                propertiesV2: structImplPropertiesV2,
+              },
+            },
+          })),
           MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
             baseUrl,
             () => ({
@@ -163,13 +183,20 @@ describe("ObjectSet", () => {
                 },
               ],
               ...wireMappings,
+              interfaceToObjectTypeMappingsV2: {
+                ComplexImplementationInterface: {
+                  ComplexImplementationObject: structImplPropertiesV2,
+                },
+              },
               totalCount: "1",
               propertySecurities: [],
             }),
           ),
         );
 
-        const result = await client(ComplexImplementationInterface).fetchPage();
+        const result = await client(ComplexImplementationInterface).fetchPage({
+          $includeAllBaseObjectProperties: true,
+        });
         expect(result.data).toHaveLength(1);
 
         const ifaceObj = result.data[0];
@@ -180,16 +207,30 @@ describe("ObjectSet", () => {
           { theAlpha: "first", theBeta: 1 },
           { theAlpha: "second", theBeta: 2 },
         ]);
-        expect(ifaceObj.iReduced).toEqual([1, 2, 3]);
+        expect(ifaceObj.iReduced).toEqual(42);
 
+        const objectType = ComplexImplementationObject;
         // @ts-expect-error
-        expect(() => ifaceObj.$as(ComplexImplementationObject)).toThrowError(
-          /has a non-local implementation/u,
-        );
+        const object = ifaceObj.$as(objectType);
+        expect(object).toMatchObject({
+          $primaryKey: "k1",
+          localValue: "hello",
+          nestedStruct: { label: "nested-label", count: 7 },
+          multiStruct: { alpha: "a-val", beta: 42, gamma: "ignored" },
+          multiStructArray: [
+            { alpha: "first", beta: 1, gamma: "ignored" },
+            { alpha: "second", beta: 2, gamma: "ignored" },
+          ],
+          arrayValue: [1, 2, 3],
+        });
+        expect(
+          // @ts-expect-error
+          ifaceObj.$as<ComplexImplementationObject>(objectType.apiName),
+        ).toBe(object);
       })();
     });
 
-    it("rejects a scalar backing property for an array struct implementation", async () => {
+    it("rejects casts with reduced implementations even with all base properties", async () => {
       await apiServer.boundary(async () => {
         apiServer.use(
           MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
@@ -200,7 +241,52 @@ describe("ObjectSet", () => {
                   __primaryKey: "k1",
                   __apiName: "ComplexImplementationObject",
                   id: "k1",
-                  multiStructArray: { alpha: "first", beta: 1 },
+                  arrayValue: 6,
+                },
+              ],
+              ...wireMappings,
+              totalCount: "1",
+              propertySecurities: [],
+            }),
+          ),
+        );
+
+        const {
+          data: [ifaceObj],
+        } = await client(ComplexImplementationInterface).fetchPage({
+          $includeAllBaseObjectProperties: true,
+        });
+        expect(ifaceObj.iReduced).toEqual(6);
+        const objectType = ComplexImplementationObject;
+        // @ts-expect-error
+        expect(() => ifaceObj.$as(objectType)).toThrowError(
+          /property 'iReduced' has a reduced implementation/u,
+        );
+        expect(() =>
+          // @ts-expect-error
+          ifaceObj.$as<ComplexImplementationObject>(objectType.apiName),
+        ).toThrowError(/property 'iReduced' has a reduced implementation/u);
+      })();
+    });
+
+    it("rejects backing properties with invalid struct or array shapes", async () => {
+      let nestedStruct: string | undefined;
+      let multiStructArray: { alpha: string; beta: number } | undefined = {
+        alpha: "first",
+        beta: 1,
+      };
+      await apiServer.boundary(async () => {
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+            baseUrl,
+            () => ({
+              data: [
+                {
+                  __primaryKey: "k1",
+                  __apiName: "ComplexImplementationObject",
+                  id: "k1",
+                  multiStructArray,
+                  nestedStruct,
                 },
               ],
               ...wireMappings,
@@ -213,6 +299,12 @@ describe("ObjectSet", () => {
         await expect(
           client(ComplexImplementationInterface).fetchPage(),
         ).rejects.toThrowError("Expected 'multiStructArray' to be an array");
+
+        multiStructArray = undefined;
+        nestedStruct = "nested-label";
+        await expect(
+          client(ComplexImplementationInterface).fetchPage(),
+        ).rejects.toThrowError("Expected 'nestedStruct' to be a struct");
       })();
     });
   });
