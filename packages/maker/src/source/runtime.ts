@@ -27,7 +27,7 @@ import { locateSource } from "./mapping.js";
 
 interface FailureSite {
   readonly fileName: string;
-  /** Zero-based authored coordinates; columns count UTF-16 code units. */
+  /** Zero-based authored coordinates. Columns count UTF-16 code units. */
   readonly line: number;
   readonly column: number;
   readonly argumentCount: number;
@@ -49,7 +49,7 @@ export class SourceSession {
   private readonly scripts = new Map<string, string>();
   private readonly failures = new WeakMap<MakerValidationError, FailureSite>();
 
-  /** ESM call sites use URLs; CommonJS call sites use filesystem paths. */
+  /** ESM call sites use URLs. CommonJS call sites use filesystem paths. */
   public registerScript(url: string): void {
     const fileName = fileURLToPath(url);
     this.scripts.set(url, fileName);
@@ -72,7 +72,7 @@ export class SourceSession {
   ): void => {
     if (this.failures.has(error)) return;
     // Structured sites avoid Error.prepareStackTrace. Match loaded scripts before
-    // applying source maps already enabled by the host; do not change global settings.
+    // applying source maps already enabled by the host. Do not change global settings.
     const sites = getCallSites(200, { sourceMap: false });
     const boundaryIndex = sites.findIndex(
       (site) => site.functionName === boundary.name,

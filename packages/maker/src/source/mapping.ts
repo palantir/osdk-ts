@@ -36,7 +36,7 @@ import type { SourceLocation, SourcePosition } from "./types.js";
  * even if that initializer is in the same file. Helper results behave similarly.
  *
  * Missing fields and uncertain writes stop traversal at the enclosing expression.
- * Paths must already refer to authored input; this function neither resolves
+ * Paths must already refer to authored input. This function neither resolves
  * bindings nor translates paths from normalized models.
  */
 export function locateSource(
@@ -92,10 +92,10 @@ export function locateSource(
     ) {
       const index = remaining[0];
       // A spread at/before the requested index makes its position uncertain:
-      // [5, ...items] has a known index 0; [...items, 5] has no known index for 5.
+      // [5, ...items] has a known index 0. [...items, 5] has no known index for 5.
       if (!node.elements.slice(0, index + 1).some(ts.isSpreadElement)) {
         const element = node.elements[index];
-        // A hole or absent element has no expression to highlight; retain the array.
+        // A hole or absent element has no expression to highlight. Retain the array.
         if (element !== undefined && !ts.isOmittedExpression(element)) {
           child = element;
         }
