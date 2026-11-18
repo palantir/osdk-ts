@@ -33,6 +33,7 @@ export function legacyToModernSingleAggregationResult<
   select: AC,
 ): AggregationResultsWithoutGroups<Q, AC> {
   const result: Record<string, Record<string, any>> = {};
+  const metricNames = new Map<string, { property: string; metric: string }>();
 
   // Seed the result with undefined for every selected metric so that
   // properties are always present, even when the server returns no metrics
@@ -43,16 +44,17 @@ export function legacyToModernSingleAggregationResult<
     }
     const { property, metric } = splitAggregationKey(selectKey);
     (result[property] ??= {})[metric] = undefined;
+    metricNames.set(`${property}.${metric}`, { property, metric });
   }
 
   for (const { name, value } of entry.metrics) {
     if (name === "count") {
       continue;
     }
-    const [property, metricType] = name.split(".");
-    if (result[property]) {
+    const selectedMetric = metricNames.get(name);
+    if (selectedMetric) {
       // guard against an unknown metric name
-      result[property][metricType] = value;
+      result[selectedMetric.property][selectedMetric.metric] = value;
     }
   }
 

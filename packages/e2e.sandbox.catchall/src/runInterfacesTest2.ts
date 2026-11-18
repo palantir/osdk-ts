@@ -212,6 +212,25 @@ export async function runInterfacesTest2(): Promise<void> {
     myFilteredInterfaceIdpData.data[1].mwaltherName,
   );
 
+  // Aggregations
+  const aggResult = await ontologyClient(MwaltherTestIdp).aggregate({
+    $select: {
+      "mwaltherName:approximateDistinct": "unordered",
+      "idpAge:min": "unordered",
+      $count: "unordered",
+    },
+  });
+
+  invariant(aggResult.$count > 0, "Expected interface objects to aggregate");
+  invariant(
+    aggResult.mwaltherName.approximateDistinct > 0,
+    "Expected an aggregation value for the shared property",
+  );
+  invariant(
+    typeof aggResult.idpAge.min === "number",
+    "Expected an aggregation value for the interface property",
+  );
+
   const interfaceObjectWithNonLocalImplementations = (
     await client(ReducerTestInterface).fetchPage()
   ).data[0];
