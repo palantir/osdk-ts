@@ -23,33 +23,42 @@ import {
   SourceValidationError,
 } from "./diagnostics.js";
 
-it("renders exact ranges with CRLF context, tab alignment, and a corrective suggestion", () => {
-  const text = "before\r\n\tvalue: 5,\r\nafter";
-  const diagnostic: SourceDiagnostic = {
-    code: "invalid",
-    message: "Invalid value",
-    path: ["items", 0],
-    suggestion: "Choose another value.",
-    source: {
-      fileName: "authoring.ts",
-      start: { offset: text.indexOf("5"), line: 2, column: 9 },
-      end: { offset: text.indexOf("5") + 1, line: 2, column: 10 },
-      precision: "exact",
-    },
-  };
+it.each([
+  { name: "LF", separator: "\n" },
+  { name: "CR", separator: "\r" },
+  { name: "CRLF", separator: "\r\n" },
+  { name: "line separator", separator: "\u2028" },
+  { name: "paragraph separator", separator: "\u2029" },
+])(
+  "renders exact ranges with $name context, tab alignment, and a corrective suggestion",
+  ({ separator }) => {
+    const text = ["before", "\tvalue: 5,", "after"].join(separator);
+    const diagnostic: SourceDiagnostic = {
+      code: "invalid",
+      message: "Invalid value",
+      path: ["items", 0],
+      suggestion: "Choose another value.",
+      source: {
+        fileName: "authoring.ts",
+        start: { offset: text.indexOf("5"), line: 2, column: 9 },
+        end: { offset: text.indexOf("5") + 1, line: 2, column: 10 },
+        precision: "exact",
+      },
+    };
 
-  expect(formatSourceDiagnostic(diagnostic, text)).toBe(
-    [
-      "authoring.ts:2:9 [invalid] Invalid value",
-      '  at $["items"][0]',
-      "1 | before",
-      "2 | \tvalue: 5,",
-      "  | \t       ^",
-      "3 | after",
-      "Choose another value.",
-    ].join("\n"),
-  );
-});
+    expect(formatSourceDiagnostic(diagnostic, text)).toBe(
+      [
+        "authoring.ts:2:9 [invalid] Invalid value",
+        '  at $["items"][0]',
+        "1 | before",
+        "2 | \tvalue: 5,",
+        "  | \t       ^",
+        "3 | after",
+        "Choose another value.",
+      ].join("\n"),
+    );
+  },
+);
 
 it("marks the first line of a multiline enclosing range and aligns a two-digit gutter", () => {
   const text =

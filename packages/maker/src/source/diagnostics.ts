@@ -49,7 +49,7 @@ export function formatSourceDiagnostic(
 ): string {
   const { source, code, message, suggestion, path } = diagnostic;
   const { start, end } = source;
-  const lines = text.split(/\r\n|\r|\n/u);
+  const lines = text.split(/\r\n|[\r\n\u2028\u2029]/u);
   const first = Math.max(1, start.line - 1);
   const last = Math.min(lines.length, start.line + 1);
   const gutter = String(last).length;

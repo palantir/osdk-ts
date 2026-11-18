@@ -1,6 +1,6 @@
 # Source-aware validation
 
-Source-aware loading connects Maker validation issues to authored source, so authors can find and fix invalid definitions without tracing generated code. It adds source locations and code frames; validation remains owned by the definition APIs.
+Source-aware loading adds source locations and code frames to validation errors from object type definitions (`defineObject`). Other definition APIs retain their existing errors without source locations. Validation remains owned by the definition APIs.
 
 Enable it with `maker-experimental --experimental-source-loader` on Node 24+, with the optional `typescript` peer installed. Older Node versions use ordinary imports.
 

@@ -108,7 +108,7 @@ export default async function main(
       },
       "experimental-source-loader": {
         describe:
-          "Use source-aware validation, Node 24+ is required. Older Node versions always use ordinary imports.",
+          "Add source locations to validation errors. Requires Node 24+, older versions use ordinary imports.",
         type: "boolean",
         default: false,
       },
