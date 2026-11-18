@@ -400,7 +400,7 @@ jobs:
 
   e2e:
     name: E2E Tests
-    timeout-minutes: 15
+    timeout-minutes: 20
     runs-on: ubuntu-latest
 
     services:

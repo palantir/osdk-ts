@@ -17,6 +17,7 @@
 import type {
   ActionStatus,
   ActionType,
+  ActionTypeIsolationSettings,
   BlueprintIcon,
   DefaultFormat,
   EntityPermission,
@@ -30,6 +31,7 @@ export type FunctionBackedActionTypeUserDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  isolationSettings?: ActionTypeIsolationSettings;
   defaultFormat?: DefaultFormat;
   enableLayoutSwitch?: boolean;
   submissionMetadata?: SubmissionMetadata;
@@ -44,6 +46,9 @@ export function defineFunctionBackedAction(
     apiName: def.apiName ?? `${def.functionApiName.toLowerCase()}-action`,
     displayName: def.displayName ?? `Function action ${def.functionApiName}`,
     description: def.description,
+    ...(def.isolationSettings !== undefined && {
+      isolationSettings: def.isolationSettings,
+    }),
     ...(def.permission !== undefined && { permission: def.permission }),
     rules: [
       {

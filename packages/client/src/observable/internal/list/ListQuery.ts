@@ -478,12 +478,14 @@ export abstract class ListQuery extends BaseListQuery<
           );
           // deal with the modified objects
           for (const obj of membership.modified) {
-            const key = this.store.objects.getCacheKey(obj, this.rdpConfig);
-            if (!existingList.has(key)) {
-              // object is new to the list
-              toAdd.add(obj);
-            }
+            toAdd.add(obj);
           }
+          const { keys, hasMissingObjects } =
+            this.store.objects.getAvailableCacheKeys(
+              toAdd,
+              this.rdpConfig,
+              batch,
+            );
 
           // anything thats been deleted can be removed, so start there
           const keysToRemove = new Set<CacheKey>(changes.deleted);
@@ -493,17 +495,24 @@ export abstract class ListQuery extends BaseListQuery<
             );
           }
           const newList = reconcileListChanges(existingList, {
-            keysToInsert: Array.from(toAdd, (obj) =>
-              this.store.objects.getCacheKey(obj, this.rdpConfig),
-            ),
+            keysToInsert: Array.from(keys).filter((key) => {
+              // object is new to the list
+              return !existingList.has(key);
+            }),
             keysToRemove,
           });
+          const requiresRefresh =
+            membership.needsRevalidation || hasMissingObjects;
 
           // If we got purely strict matches we can just update the list and move
           // on with our lives. But if we got sorta matches, then we need to revalidate
           // the list so we preemptively set it to loading to avoid thrashing the store.
           const status =
-            optimisticId || membership.hasUncertainMatches
+            (this.pendingFetch != null &&
+              existingEntry?.status === "loading") ||
+            requiresRefresh ||
+            optimisticId ||
+            membership.hasUncertainMatches
               ? "loading"
               : "loaded";
 
@@ -516,11 +525,11 @@ export abstract class ListQuery extends BaseListQuery<
             { type: "clientOrdered" },
             existingEntry?.value?.totalCount,
           );
-          return membership.needsRevalidation;
+          return requiresRefresh;
         },
       );
 
-      if (needsRevalidation) {
+      if (needsRevalidation && !optimisticId) {
         return this.revalidate(true);
       }
       return undefined;

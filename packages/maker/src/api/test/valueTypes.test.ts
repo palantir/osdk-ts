@@ -16,29 +16,40 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineObject } from "../defineObject.js";
 import {
   defineOntology,
   dumpOntologyFullMetadata,
   dumpValueTypeWireType,
+  getOntologyDefinition,
 } from "../defineOntology.js";
 import { defineValueType } from "../defineValueType.js";
+import { expectValidationIssues } from "./testUtils.js";
 
 describe("Value Types", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
   });
 
-  it("validates metadata when defining a value type", () => {
-    expect(() =>
-      defineValueType({
-        apiName: "Example",
-        displayName: "Example",
-        description: "a".repeat(100_000),
-        type: { type: "string" },
-        version: "1.0.0",
-      }),
-    ).toThrowError('Value type "Example" version "1.0.0": description');
+  it("collects version and metadata issues before registering a value type", () => {
+    expectValidationIssues(
+      () =>
+        defineValueType({
+          apiName: "Example",
+          displayName: "Example",
+          description: "a".repeat(100_000),
+          type: { type: "string" },
+          version: "invalid",
+        }),
+      [
+        { code: "invalid_version", path: ["version"] },
+        "description must be at most 500",
+      ],
+    );
+    expect(getOntologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE]).toEqual(
+      {},
+    );
   });
 
   it("Fails to define value type with incorrect semver", () => {
@@ -52,9 +63,7 @@ describe("Value Types", () => {
         },
         version: "not a version",
       }),
-    ).toThrowErrorMatchingInlineSnapshot(
-      "[Error: Invariant failed: Version is not a valid semver]",
-    );
+    ).toThrowError("Version is not a valid semver");
   });
 
   it("Tests convertProperty function with valueType constraints for string", () => {
@@ -244,17 +253,17 @@ describe("Value Types", () => {
       version: "1.0.0",
     });
 
-    expect(() =>
-      defineValueType({
-        apiName: "duplicateTest",
-        displayName: "Second Value Type",
-        type: {
-          type: "boolean",
-        },
-        version: "1.0.0",
-      }),
-    ).toThrowErrorMatchingInlineSnapshot(
-      "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]",
+    expectValidationIssues(
+      () =>
+        defineValueType({
+          apiName: "duplicateTest",
+          displayName: "Second Value Type",
+          type: {
+            type: "boolean",
+          },
+          version: "1.0.0",
+        }),
+      [{ code: "duplicate_definition", path: ["version"] }],
     );
   });
 

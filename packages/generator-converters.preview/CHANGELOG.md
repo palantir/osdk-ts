@@ -1,5 +1,38 @@
 # @osdk/generator-converters.preview
 
+## 0.66.0
+
+### Minor Changes
+
+- 3282ead: Support TSv2 query/FBA source importing for Preview
+
+### Patch Changes
+
+- Updated dependencies [3282ead]
+  - @osdk/generator-converters.ontologyir@2.92.0
+  - @osdk/foundry-sdk-generator@2.92.0
+  - @osdk/client.unstable@2.92.0
+
+## 0.65.0
+
+### Patch Changes
+
+- Updated dependencies [1fd4023]
+- Updated dependencies [406d3b6]
+- Updated dependencies [d13bd9f]
+- Updated dependencies [7fd2775]
+  - @osdk/generator-converters.ontologyir@2.91.0
+  - @osdk/foundry-sdk-generator@2.91.0
+  - @osdk/client.unstable@2.91.0
+
+## 0.64.0
+
+### Patch Changes
+
+- @osdk/foundry-sdk-generator@2.90.0
+- @osdk/client.unstable@2.90.0
+- @osdk/generator-converters.ontologyir@2.90.0
+
 ## 0.63.0
 
 ### Patch Changes
