@@ -17,17 +17,21 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import type { MarkingType } from "@osdk/client.unstable";
 import type {
   FilesDatasourceOutputShape,
   InputShape,
   InputShapeMetadata,
   LocalizedTitleAndDescription,
+  MarkingsShape,
   OutputShape,
+  SupportedMarkingsTypeV2,
   Void,
 } from "@osdk/client.unstable/api";
 
 import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
+import { getMediaSetMarkings } from "../util/mediaSetMarkings.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import { toBlockShapeId } from "./marketplaceSerialization/CodeBlockSpec.js";
 
@@ -37,6 +41,7 @@ export async function generateBackingMediaSetBlockResult(
   mediaSetName: string,
   buildDir: string,
   randomnessKey?: string,
+  markings: Record<string, MarkingType> = {},
 ): Promise<BlockGeneratorResult> {
   const blockIdentifier = `${mediaSetName}-backing-media-set`;
   const outputReadableId =
@@ -91,6 +96,35 @@ export async function generateBackingMediaSetBlockResult(
       isAccessedInReconcile: true,
     },
   };
+  const groups = Object.keys(markings).sort();
+  if (groups.length > 0) {
+    const config = getMediaSetMarkings(markings);
+    const readableId =
+      `media-set-${mediaSetName}-${config.readableId}` as ReadableId;
+    // client.unstable does not yet include Marketplace's resource-marking constraint.
+    const markingShape: MarkingsShape & {
+      shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] };
+    } = {
+      about: createLocalizedAbout(`Media set markings ${groups.join(", ")}`),
+      operation: "USE",
+      affectedShapes: [outputBlockShapeId],
+      ...config.shapeTypes,
+      // Organization markings are inherited from the project, not applied to a media set directly.
+      supportedMarkingsTypesV2: [...new Set(Object.values(markings))]
+        .sort()
+        .map<SupportedMarkingsTypeV2>((type) =>
+          type === "CBAC" ? "CBAC" : "MANDATORY_NOT_ORGANIZATION",
+        ),
+      stableId: `media-set.${mediaSetName}.${groups.join(",")}`,
+      shapeConstraints: { constraints: ["RESOURCE_MARKINGS"] },
+    };
+    inputs[readableId] = { type: "markings", markings: markingShape };
+    inputShapeMetadata[readableId] = {
+      isOptional: false,
+      isAccessedInReconcile: true,
+      reconcileAccessRequirements: "RESOURCE_EXISTENCE_REQUIRED",
+    };
+  }
   const mediaSetOutput: FilesDatasourceOutputShape = {
     about,
     datasourceType: {

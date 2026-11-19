@@ -108,6 +108,12 @@ export function defineObject(
     );
     const sharedPropertyType =
       objectDef.properties?.[apiName]?.sharedPropertyType;
+    collector.check(
+      objectDef.properties?.[apiName]?.backingMediaSetMarkings === undefined ||
+        (objectDef.properties[apiName].type === "mediaReference" &&
+          objectDef.properties[apiName].includeEmptyBackingMediaSet === true),
+      `Property ${apiName} on object ${objectDef.apiName} can only use backingMediaSetMarkings with includeEmptyBackingMediaSet on a mediaReference`,
+    );
     if (sharedPropertyType !== undefined) {
       const previousProperty = propertyBySharedPropertyType.get(
         sharedPropertyType.apiName,
