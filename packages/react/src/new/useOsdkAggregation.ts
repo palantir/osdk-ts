@@ -61,7 +61,7 @@ interface UseOsdkAggregationBaseOptions<
   }>;
 
   /**
-   * Aggregation options including groupBy and select
+   * Aggregation options including `$groupBy` and `$select`
    */
   aggregate: A;
 
@@ -130,11 +130,8 @@ export interface UseOsdkAggregationResult<
  * const { data, isLoading, error } = useOsdkAggregation(Employee, {
  *   where: { department: "Engineering" },
  *   aggregate: {
- *     groupBy: { department: "exact" },
- *     select: {
- *       avgSalary: { $avg: "salary" },
- *       count: { $count: {} }
- *     }
+ *     $groupBy: { department: "exact" },
+ *     $select: { "salary:avg": "unordered", $count: "unordered" }
  *   }
  * });
  *

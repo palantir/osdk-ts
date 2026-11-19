@@ -2,7 +2,8 @@
 
 import { Meta, Markdown } from "@storybook/addon-docs/blocks";
 import prerequisites from "@docs/Prerequisites.md?raw";
+import { formatGithubAlerts } from "../util/formatGithubAlerts.js";
 
 <Meta title="Docs/Installation" />
 
-<Markdown>{prerequisites}</Markdown>
+<Markdown>{formatGithubAlerts(prerequisites)}</Markdown>
