@@ -46,8 +46,8 @@ export function throwIfAnyValidationIssues(
 }
 
 export interface MakerValidationIssueCollector {
-  /** Records an issue when the condition is falsy and continues without narrowing. */
-  check(condition: unknown, issue: string | MakerValidationIssue): void;
+  /** Records an issue when the condition is falsy and returns whether it passed, without narrowing. */
+  check(condition: unknown, issue: string | MakerValidationIssue): boolean;
   /**
    * On a falsy condition, records the issue and throws all collected issues.
    * TypeScript requires an explicitly typed collector variable for assertion calls.
@@ -71,6 +71,7 @@ export function createValidationIssueCollector(): MakerValidationIssueCollector 
             : issue,
         );
       }
+      return Boolean(condition);
     },
     assert(condition, issue) {
       if (!condition) {
