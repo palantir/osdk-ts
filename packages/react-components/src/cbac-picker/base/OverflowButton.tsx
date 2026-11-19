@@ -47,7 +47,7 @@ export function OverflowButton({
 
   const handleOpenChange = React.useCallback((nextOpen: boolean) => {
     setOpen(nextOpen);
-    if (!nextOpen) {
+    if (nextOpen) {
       setQuery("");
     }
   }, []);
@@ -104,7 +104,9 @@ export function OverflowButton({
                 />
               ))}
               {filteredMarkings.length === 0 && (
-                <div className={styles.emptyState}>No matching markings</div>
+                <div className={styles.emptyState} role="status">
+                  No matching markings
+                </div>
               )}
             </div>
           </Popover.Popup>

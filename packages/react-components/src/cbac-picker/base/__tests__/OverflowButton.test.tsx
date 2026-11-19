@@ -92,7 +92,9 @@ describe("OverflowButton", () => {
       openPopover();
       await screen.findByRole("textbox", { name: "Search markings" });
       search("zulu");
-      expect(screen.getByText("No matching markings")).toBeDefined();
+      expect(screen.getByRole("status").textContent).toBe(
+        "No matching markings",
+      );
       for (const { label } of OVERFLOW_MARKINGS) {
         expect(screen.queryByRole("button", { name: label })).toBeNull();
       }

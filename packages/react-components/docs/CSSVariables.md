@@ -581,13 +581,16 @@ Styling for classification-based access control picker components.
 
 #### Miscellaneous
 
-| Variable                                | Default Value                               | Description               |
-| --------------------------------------- | ------------------------------------------- | ------------------------- |
-| `--osdk-cbac-expand-icon-color`         | `var(--osdk-typography-color-muted)`        | Expand icon color         |
-| `--osdk-cbac-disabled-opacity`          | `0.6`                                       | Disabled state opacity    |
-| `--osdk-cbac-overflow-button-padding`   | `var(--osdk-cbac-marking-button-padding)`   | Overflow button padding   |
-| `--osdk-cbac-overflow-button-font-size` | `var(--osdk-cbac-marking-button-font-size)` | Overflow button font size |
-| `--osdk-cbac-overflow-list-max-height`  | `240px`                                     | Overflow list max height  |
+| Variable                                | Default Value                                                         | Description                     |
+| --------------------------------------- | --------------------------------------------------------------------- | ------------------------------- |
+| `--osdk-cbac-expand-icon-color`         | `var(--osdk-typography-color-muted)`                                  | Expand icon color               |
+| `--osdk-cbac-disabled-opacity`          | `0.6`                                                                 | Disabled state opacity          |
+| `--osdk-cbac-overflow-button-padding`   | `var(--osdk-cbac-marking-button-padding)`                             | Overflow button padding         |
+| `--osdk-cbac-overflow-button-font-size` | `var(--osdk-cbac-marking-button-font-size)`                           | Overflow button font size       |
+| `--osdk-cbac-overflow-list-max-height`  | `240px`                                                               | Overflow list max height        |
+| `--osdk-cbac-overflow-popup-width`      | `240px`                                                               | Overflow popup width            |
+| `--osdk-cbac-overflow-empty-padding`    | `var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5)` | Overflow empty state padding    |
+| `--osdk-cbac-overflow-empty-color`      | `var(--osdk-typography-color-muted)`                                  | Overflow empty state text color |
 
 ### DateTime Picker
 

@@ -48,7 +48,7 @@
   display: flex;
   flex-direction: column;
   gap: calc(var(--osdk-surface-spacing) * 0.5);
-  max-height: var(--osdk-cbac-overflow-list-max-height);
+  width: var(--osdk-cbac-overflow-popup-width);
   padding: calc(var(--osdk-surface-spacing) * 0.5);
   background: var(--osdk-surface-background-color-default);
   border: 1px solid var(--osdk-surface-border-color-default);
@@ -63,11 +63,12 @@
 .overflowList {
   display: flex;
   flex-direction: column;
+  max-height: var(--osdk-cbac-overflow-list-max-height);
   overflow-y: auto;
 }
 
 .emptyState {
-  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5);
+  padding: var(--osdk-cbac-overflow-empty-padding);
   font-size: var(--osdk-cbac-overflow-button-font-size);
-  color: var(--osdk-typography-color-muted);
+  color: var(--osdk-cbac-overflow-empty-color);
 }

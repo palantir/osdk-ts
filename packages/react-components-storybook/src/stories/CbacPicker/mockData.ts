@@ -152,14 +152,14 @@ const OVERFLOW_COMPARTMENT_NAMES = [
   "Quartz",
   "Raven",
   "Summit",
-  "Tundra",
+  "Tundra Extended Special Access Compartment",
 ];
 
 export const mockOverflowCategoryGroups: CategoryMarkingGroup[] = [
   {
     category: compartmentCategory,
     markings: OVERFLOW_COMPARTMENT_NAMES.map((name) => ({
-      id: `m-${name.toLowerCase()}`,
+      id: `m-${name.toLowerCase().replaceAll(" ", "-")}`,
       categoryId: compartmentCategory.id,
       name,
     })),

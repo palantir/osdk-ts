@@ -67,9 +67,10 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
   const visibleMarkings = hasOverflow
     ? resolvedMarkings.slice(0, maxVisible - 1)
     : resolvedMarkings;
-  const overflowMarkings = hasOverflow
-    ? resolvedMarkings.slice(maxVisible - 1)
-    : [];
+  const overflowMarkings = React.useMemo(
+    () => (hasOverflow ? resolvedMarkings.slice(maxVisible - 1) : []),
+    [hasOverflow, resolvedMarkings, maxVisible],
+  );
 
   const gridItemCount = hasOverflow
     ? visibleMarkings.length + 1
