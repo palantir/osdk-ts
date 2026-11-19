@@ -1,5 +1,17 @@
 # @osdk/integration-testing
 
+## 0.20.0
+
+### Minor Changes
+
+- ee1136a: Less noisy logging for non-imported interface types
+
+### Patch Changes
+
+- Updated dependencies [4ebde4f]
+  - @osdk/client@2.94.0
+  - @osdk/api@2.94.0
+
 ## 0.19.0
 
 ### Patch Changes
