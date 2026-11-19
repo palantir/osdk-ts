@@ -179,6 +179,13 @@ export class ObjectSetHelper extends AbstractHelper<
       operations.loadPropertySecurity = true;
     }
 
+    if (
+      options.$includeAllBaseObjectProperties &&
+      options.baseObjectSet.$objectSetInternals.def.type === "interface"
+    ) {
+      operations.includeAllBaseObjectProperties = true;
+    }
+
     return operations as Canonical<ObjectSetOperations>;
   }
 }

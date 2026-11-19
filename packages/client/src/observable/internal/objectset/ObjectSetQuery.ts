@@ -123,6 +123,10 @@ export class ObjectSetQuery extends BaseListQuery<
     return this.#operations.withProperties;
   }
 
+  public override get includeAllBaseObjectProperties(): boolean {
+    return this.#operations.includeAllBaseObjectProperties === true;
+  }
+
   public get selectFields(): Canonical<readonly string[]> | undefined {
     return this.#operations.select;
   }
@@ -260,6 +264,9 @@ export class ObjectSetQuery extends BaseListQuery<
         : {}),
       ...(this.options.$loadPropertySecurityMetadata
         ? { $loadPropertySecurityMetadata: true }
+        : {}),
+      ...(this.includeAllBaseObjectProperties
+        ? { $includeAllBaseObjectProperties: true }
         : {}),
     });
 
