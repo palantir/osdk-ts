@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.93.0
+
+### Minor Changes
+
+- 367cd32: Support marking input groups on generated backing media sets and assume the same markings on their ontology datasources.
+- 2b42dc7: Collect independent action definition and convenience-action validation issues before registration. Return a boolean from validation collector checks so callers can reuse each result.
+
+### Patch Changes
+
+- @osdk/api@2.94.0
+- @osdk/generator-converters.ontologyir@2.94.0
+
 ## 0.92.0
 
 ### Minor Changes

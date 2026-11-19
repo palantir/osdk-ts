@@ -1,5 +1,7 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.94.0
+
 ## 2.93.0
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.94.0
+
+### Minor Changes
+
+- 4ebde4f: Hydrate interface object sets, interfaces, and arrays nested in query struct responses.
+
+### Patch Changes
+
+- @osdk/api@2.94.0
+- @osdk/client.unstable@2.94.0
+- @osdk/generator-converters@2.94.0
+
 ## 2.93.0
 
 ### Minor Changes
