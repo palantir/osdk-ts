@@ -132,6 +132,40 @@ export const mockCategoryGroups: CategoryMarkingGroup[] = [
   },
 ];
 
+const OVERFLOW_COMPARTMENT_NAMES = [
+  "Amber",
+  "Basalt",
+  "Cedar",
+  "Delta",
+  "Ember",
+  "Falcon",
+  "Granite",
+  "Harbor",
+  "Indigo",
+  "Juniper",
+  "Kestrel",
+  "Lantern",
+  "Meridian",
+  "Nimbus",
+  "Obsidian",
+  "Pioneer",
+  "Quartz",
+  "Raven",
+  "Summit",
+  "Tundra",
+];
+
+export const mockOverflowCategoryGroups: CategoryMarkingGroup[] = [
+  {
+    category: compartmentCategory,
+    markings: OVERFLOW_COMPARTMENT_NAMES.map((name) => ({
+      id: `m-${name.toLowerCase()}`,
+      categoryId: compartmentCategory.id,
+      name,
+    })),
+  },
+];
+
 export const mockBannerUnclassified: CbacBannerData = {
   classificationString: "UNCLASSIFIED",
   textColor: "#FFFFFF",

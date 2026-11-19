@@ -30,6 +30,7 @@ import {
   mockBannerTopSecret,
   mockBannerUnclassified,
   mockCategoryGroups,
+  mockOverflowCategoryGroups,
 } from "./mockData.js";
 
 const meta: Meta<typeof BaseCbacPicker> = {
@@ -144,6 +145,48 @@ function WithImpliedAndDisallowedPicker() {
 
 export const WithImpliedAndDisallowed: Story = {
   render: () => <WithImpliedAndDisallowedPicker />,
+};
+
+function WithOverflowPicker() {
+  const [selectedIds, setSelectedIds] = useState<string[]>(EMPTY_SELECTED);
+
+  const markingStates = useMemo(
+    () => computeMarkingStates(selectedIds, EMPTY_SELECTED, EMPTY_SELECTED),
+    [selectedIds],
+  );
+
+  const handleMarkingToggle = useCallback((markingId: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(markingId)
+        ? prev.filter((id) => id !== markingId)
+        : [...prev, markingId],
+    );
+  }, []);
+
+  return (
+    <div style={PICKER_STYLE}>
+      <BaseCbacPicker
+        categories={mockOverflowCategoryGroups}
+        markingStates={markingStates}
+        onMarkingToggle={handleMarkingToggle}
+      />
+    </div>
+  );
+}
+
+export const WithOverflow: Story = {
+  render: () => <WithOverflowPicker />,
+  parameters: {
+    docs: {
+      source: {
+        code: `<BaseCbacPicker
+  categories={categoriesWithMoreThanTwelveMarkings}
+  markingStates={markingStates}
+  onMarkingToggle={handleMarkingToggle}
+/>`,
+      },
+    },
+  },
 };
 
 function InDialogPicker() {
