@@ -44,6 +44,7 @@ export function NumberInputField({
   id,
   value,
   onChange,
+  onBlur,
   error,
   placeholder,
   min,
@@ -55,13 +56,10 @@ export function NumberInputField({
     formatNumberForDisplay(value),
   );
 
-  const [isFocused, setIsFocused] = useState(false);
   const prevValueRef = useRef(value);
 
-  // Sync external value → internal display string. While the user is typing,
-  // the stored value can differ from the text (e.g. a whole-number parameter
-  // truncates it), so the text is only replaced once editing ends.
-  if (prevValueRef.current !== value && !isFocused) {
+  // Sync external value → internal display string
+  if (prevValueRef.current !== value) {
     prevValueRef.current = value;
     const currentParsed = parseNumericValue(displayValue);
 
@@ -81,19 +79,6 @@ export function NumberInputField({
     },
     [onChange],
   );
-
-  const handleFocus = useCallback(() => {
-    setIsFocused(true);
-  }, []);
-
-  // Show the stored value once editing ends.
-  const handleBlur = useCallback(() => {
-    setIsFocused(false);
-    prevValueRef.current = value;
-    if (parseNumericValue(displayValue) !== value) {
-      setDisplayValue(formatNumberForDisplay(value));
-    }
-  }, [displayValue, value]);
 
   const applyStep = useCallback(
     (direction: 1 | -1) => {
@@ -130,6 +115,7 @@ export function NumberInputField({
     <div
       className={styles.osdkNumberInputWrapper}
       aria-invalid={error != null || undefined}
+      onBlur={onBlur}
     >
       <Input
         id={id}
@@ -139,8 +125,6 @@ export function NumberInputField({
         value={displayValue}
         onValueChange={handleValueChange}
         onKeyDown={handleKeyDown}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
         placeholder={placeholder}
         disabled={disabled}
       />

@@ -217,41 +217,17 @@ describe("NumberInputField", () => {
     });
   });
 
-  describe("blur", () => {
-    it("does not overwrite the typed text while focused when the value changes", () => {
-      const { rerender } = render(
-        <NumberInputField value={null} onChange={vi.fn()} />,
-      );
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-
-      fireEvent.focus(input);
-      fireEvent.change(input, { target: { value: "3.7" } });
-      rerender(<NumberInputField value={3} onChange={vi.fn()} />);
-      expect(input.value).toBe("3.7");
-
-      fireEvent.blur(input);
-      expect(input.value).toBe("3");
-    });
-
-    it("shows the stored value on blur when the typed text differs from it", () => {
-      render(<NumberInputField value={7} onChange={vi.fn()} />);
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-
-      fireEvent.change(input, { target: { value: "70" } });
-      expect(input.value).toBe("70");
-
-      fireEvent.blur(input);
-      expect(input.value).toBe("7");
-    });
-
-    it("keeps typed text on blur when it equals the stored value", () => {
-      render(<NumberInputField value={42} onChange={vi.fn()} />);
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-
-      fireEvent.change(input, { target: { value: "42.0" } });
-      fireEvent.blur(input);
-      expect(input.value).toBe("42.0");
-    });
+  it("uses an external reset while focused for display and subsequent stepping", () => {
+    const onChange = vi.fn();
+    const { rerender } = render(
+      <NumberInputField value={5} onChange={onChange} />,
+    );
+    const input = screen.getByRole("textbox") as HTMLInputElement;
+    fireEvent.focus(input);
+    rerender(<NumberInputField value={100} onChange={onChange} />);
+    expect(input.value).toBe("100");
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    expect(onChange).toHaveBeenLastCalledWith(101);
   });
 
   describe("step (ArrowUp/ArrowDown)", () => {

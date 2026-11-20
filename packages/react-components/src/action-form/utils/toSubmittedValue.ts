@@ -31,7 +31,10 @@ export function toSubmittedValue(value: unknown): unknown {
     return value.toISOString();
   }
   if (Array.isArray(value)) {
-    return value.map(toSubmittedValue);
+    const submittedValues = value.map(toSubmittedValue);
+    return submittedValues.some((member) => member === undefined)
+      ? undefined
+      : submittedValues;
   }
   return value;
 }

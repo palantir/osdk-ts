@@ -65,6 +65,21 @@ interface BooleanActionDef extends ActionDefinition<unknown> {
   };
 }
 
+interface NumericActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: { count: { type: "integer" } };
+    type: "action";
+    apiName: "NumericAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+const NumericAction = {
+  type: "action",
+  apiName: "NumericAction",
+} as NumericActionDef;
+
 const TestAction: TestActionDef = {
   type: "action",
   apiName: "TestAction",
@@ -133,6 +148,131 @@ describe("ActionForm", () => {
       result: "VALID",
       submissionCriteria: [],
       parameters: {},
+    });
+  });
+
+  describe("number parsing", () => {
+    it.each([
+      ["integer", "3.7", 3],
+      ["integer", "-3.7", -3],
+      ["long", "9.9", 9],
+      ["long", "-9.9", -9],
+      ["double", "3.7", 3.7],
+    ] as const)("parses %s %s only on blur", async (type, text, parsed) => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type, nullable: true } },
+        },
+      });
+      const onFormStateChange = vi.fn();
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          onFormStateChange={onFormStateChange}
+        />,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: text } });
+      expect(input.value).toBe(text);
+      const update = onFormStateChange.mock.calls.at(-1)?.[0] as (
+        state: Record<string, unknown>,
+      ) => Record<string, unknown>;
+      expect(update({})).toEqual({ count: Number(text) });
+      fireEvent.blur(input);
+      expect(input.value).toBe(String(parsed));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: parsed }),
+      );
+    });
+
+    it("preserves CUSTOM numeric edits through blur and submission", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formFieldDefinitions={[
+            {
+              fieldKey: "count",
+              label: "count",
+              fieldComponent: "CUSTOM",
+              fieldComponentProps: {
+                customRenderer: ({ id, onChange }) => (
+                  <input
+                    id={id}
+                    onChange={(event) => onChange?.(Number(event.target.value))}
+                  />
+                ),
+              },
+            },
+          ]}
+        />,
+      );
+      const input = screen.getByRole("textbox");
+      fireEvent.change(input, { target: { value: "3.7" } });
+      fireEvent.blur(input);
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
+    });
+
+    it("submits controlled values without metadata coercion", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formState={{ count: 3.7 }}
+          onFormStateChange={vi.fn()}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
+    });
+
+    it("submits untouched default values without metadata coercion", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formFieldDefinitions={[
+            {
+              fieldKey: "count",
+              label: "count",
+              fieldComponent: "NUMBER_INPUT",
+              defaultValue: 3.7,
+              fieldComponentProps: {},
+            },
+          ]}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
     });
   });
 

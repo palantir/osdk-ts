@@ -39,6 +39,18 @@ describe("toSubmittedValue", () => {
     ).toEqual(["2024-01-15T10:30:00.000Z", "2024-06-01T00:00:00.000Z"]);
   });
 
+  it.each([
+    { value: [null, null] },
+    { value: [1, undefined] },
+    { value: [null, 1] },
+    { value: [[1], [null]] },
+  ])(
+    "omits the whole parameter containing nullish members: $value",
+    ({ value }) => {
+      expect(toSubmittedValue(value)).toBeUndefined();
+    },
+  );
+
   it("passes every other value through unchanged", () => {
     const object = { id: 1 };
     expect(toSubmittedValue("hello")).toBe("hello");
