@@ -42,6 +42,7 @@ import type {
   TransformOptions,
 } from "@osdk/api/unstable";
 import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__executeFunctionAsync,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
@@ -197,7 +198,8 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | Experiment<"2.1.0">
       | Experiment<"2.59.0">
       | Experiment<"2.8.0">
-      | Experiment<"2.19.0">,
+      | Experiment<"2.19.0">
+      | Experiment<"2.95.0">,
   >(
     o: T,
   ): T extends ObjectTypeDefinition
@@ -216,7 +218,8 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                   | Experiment<"2.59.0">
                   | Experiment<"2.8.0">
                   | Experiment<"2.19.0">
-              ? { invoke: ExperimentFns<T> }
+                  | Experiment<"2.95.0">
+              ? ExperimentFns<T>
               : never {
     if (o.type === "object" || o.type === "interface") {
       return clientCtx.objectSetFactory(o, clientCtx) as any;
@@ -235,6 +238,17 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         : never as any;
     } else if (o.type === "experiment") {
       switch (o.name) {
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__executeFunctionAsync.name:
+          return {
+            async executeFunctionAsync(
+              query: QueryDefinition<unknown>,
+              params?: Record<string, unknown>,
+            ) {
+              const { applyQueryAsync } =
+                await import("./queries/applyQueryAsync.js");
+              return applyQueryAsync(clientCtx, query, params);
+            },
+          } as ReturnType<typeof clientFn<T>>;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction.name:
           return {
             async *executeStreamingFunction(
