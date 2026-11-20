@@ -29,6 +29,7 @@ import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { escapeJsDocText } from "../util/escapeJsDocText.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
+import { getActionReturnType } from "./getActionReturnType.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
 
 export async function generatePerActionDataFiles(
@@ -65,6 +66,23 @@ export async function generatePerActionDataFiles(
           action.unsanitizedApiName,
         ),
       );
+
+      function createReturnTypeDef() {
+        if (fullActionDef.returnType == null) {
+          return "";
+        }
+        const type = getActionReturnType(fullActionDef.returnType);
+        if (fullActionDef.returnType.nullable) {
+          return `export type ReturnType = ${type} | undefined;`;
+        }
+        return fullActionDef.returnType.type === "struct"
+          ? `export interface ReturnType ${type}`
+          : `export type ReturnType = ${type};`;
+      }
+
+      const applyActionReturnType = fullActionDef.returnType == null
+        ? "ActionReturnTypeForOptions<OP>"
+        : `ActionReturnTypeForOptions<OP, ${action.shortApiName}.ReturnType>`;
 
       function createParamsDef() {
         const entries = Object.entries(fullActionDef.parameters ?? {});
@@ -202,10 +220,12 @@ export async function generatePerActionDataFiles(
         }
             }
 
+            ${createReturnTypeDef()}
+
             // Represents a fqn of the action
             export interface Signatures {
               ${getDescriptionIfPresent(action.description)}
-              applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+              applyAction<OP extends ApplyActionOptions>(args: ${action.paramsIdentifier}, options?: OP): Promise<${applyActionReturnType}>;
 
               batchApplyAction<OP extends ApplyBatchActionOptions>(args: ReadonlyArray<${action.paramsIdentifier}>, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
             }
@@ -231,6 +251,7 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "returnType": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
           })
@@ -249,6 +270,7 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "returnType": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
           })
@@ -329,6 +351,7 @@ export async function generatePerActionDataFiles(
             ActionDefinition,
             ActionMetadata,
             ActionParam,
+            ${fullActionDef.returnType != null ? "ActionResult," : ""}
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,

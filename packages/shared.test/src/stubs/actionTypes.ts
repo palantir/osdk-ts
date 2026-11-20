@@ -283,6 +283,49 @@ export const MoveOffice: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
+/**
+ * A function-backed action that returns a value.
+ */
+export const RenameOffice: ActionTypeV2 = {
+  apiName: "renameOffice",
+  description: "Rename an office and return a summary of the change",
+  parameters: {
+    officeId: {
+      displayName: "Office ID",
+      dataType: { type: "string" },
+      required: true,
+      typeClasses: [],
+    },
+    newName: {
+      displayName: "New Name",
+      dataType: { type: "string" },
+      required: true,
+      typeClasses: [],
+    },
+  },
+  rid: "ri.ontology.main.action-type.4b7a5c1e-2f3d-4e8a-9b6c-1d2e3f4a5b6c",
+  operations: [
+    {
+      type: "modifyObject",
+      objectTypeApiName: officeObjectType.apiName,
+    },
+  ],
+  status: "ACTIVE",
+  returnType: {
+    type: "struct",
+    fields: [
+      { name: "newName", fieldType: { type: "string" } },
+      {
+        name: "previousName",
+        fieldType: {
+          type: "union",
+          unionTypes: [{ type: "string" }, { type: "null" }],
+        },
+      },
+    ],
+  },
+};
+
 export const ActionTakesObjectSet: ActionTypeV2 = {
   apiName: "actionTakesObjectSet",
   description: "An action which takes an Object Set",

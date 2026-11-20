@@ -15,11 +15,13 @@
  */
 
 import type {
+  ActionDataTypeDefinition,
   ActionDefinition,
   ActionEditResponse,
   ActionMetadata,
   ActionParam,
   ActionReturnTypeForOptions,
+  ActionReturnValue,
   ApplyActionOptions,
   ApplyBatchActionOptions,
   CompileTimeMetadata as CompileTimeActionMetadata,
@@ -34,6 +36,10 @@ import * as Actions from "@osdk/foundry.ontologies/Action";
 import invariant from "tiny-invariant";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
+import {
+  getRequiredDefinitions,
+  remapQueryResponse,
+} from "../queries/applyQuery.js";
 import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
@@ -112,7 +118,7 @@ export async function applyAction<
   action: AD,
   parameters?: P,
   options: Op = {} as Op,
-): Promise<ActionReturnTypeForOptions<Op>> {
+): Promise<ActionReturnTypeForOptions<Op> | ActionReturnValue<unknown>> {
   const clientWithHeaders = addUserAgentHeader(client, action);
   if (Array.isArray(parameters)) {
     invariant(
@@ -153,6 +159,9 @@ export async function applyAction<
         : undefined
     ) as ActionReturnTypeForOptions<Op>;
   } else {
+    const actionMetadata = await client.ontologyProvider.getActionDefinition(
+      action.unsanitizedApiName ?? action.apiName,
+    );
     const response = await Actions.apply(
       clientWithHeaders,
       await client.ontologyRid,
@@ -163,13 +172,7 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
-          // We make this call because, at the time of writing this,
-          // decimal parameters require knowing the parameter type to
-          // serialize their data over the wire. We can remove this call
-          // if we allow the wire to accept JSON Numbers directly.
-          await client.ontologyProvider.getActionDefinition(
-            action.unsanitizedApiName ?? action.apiName,
-          ),
+          actionMetadata,
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -195,13 +198,50 @@ export async function applyAction<
     }
 
     const edits = response.edits;
-    return (
-      options?.$returnEdits
-        ? edits?.type === "edits"
-          ? remapActionResponse(response)
-          : edits
-        : undefined
-    ) as ActionReturnTypeForOptions<Op>;
+    const editsResult = options?.$returnEdits
+      ? edits?.type === "edits"
+        ? remapActionResponse(response)
+        : edits
+      : undefined;
+
+    if (actionMetadata.returnType == null) {
+      return editsResult as ActionReturnTypeForOptions<Op>;
+    }
+
+    return {
+      ...editsResult,
+      returnValue: await remapActionReturnValue(
+        client,
+        actionMetadata.apiName,
+        actionMetadata.returnType,
+        response.returnValue,
+      ),
+    };
+  }
+}
+
+async function remapActionReturnValue(
+  client: MinimalClient,
+  actionApiName: string,
+  returnType: ActionDataTypeDefinition,
+  returnValue: DataValue | undefined,
+): Promise<unknown> {
+  if (returnValue === undefined) {
+    return undefined;
+  }
+  try {
+    return await remapQueryResponse(
+      client,
+      returnType,
+      returnValue,
+      await getRequiredDefinitions(returnType, client),
+    );
+  } catch (e) {
+    client.logger?.warn(
+      { error: e, actionApiName },
+      "Could not read the value the action returned, so returnValue is undefined. The action was still applied.",
+    );
+    return undefined;
   }
 }
 
