@@ -15,10 +15,7 @@
  */
 
 import type { Client } from "../Client.js";
-import {
-  buildScenarioClient,
-  type EXPERIMENTAL_ScenarioClient,
-} from "./ScenarioClient.js";
+import { buildScenarioClient, type ScenarioClient } from "./ScenarioClient.js";
 
 /**
  * Attach to an existing ontology scenario. Synchronous — no network call is made. The returned client scopes all
@@ -28,13 +25,11 @@ import {
  *   from. Throws at runtime if the client is already scoped to a scenario. If the client has an active transaction,
  *   the transaction is ignored (a warning is logged) and the client is scoped to the scenario.
  * @param scenarioRid - The RID of the scenario to attach to.
- * @returns a {@link EXPERIMENTAL_ScenarioClient} bound to `scenarioRid`.
- *
- * @beta This is an experimental, unstable feature subject to change.
+ * @returns a {@link ScenarioClient} bound to `scenarioRid`.
  *
  * @example
  * ```ts
- * import { withScenario } from "@osdk/client/unstable-do-not-use";
+ * import { withScenario } from "@osdk/client";
  *
  * const scenario = withScenario(client, "ri.actions..scenario.abc");
  * const page = await scenario(Doctor).fetchPage();
@@ -44,6 +39,6 @@ import {
 export function withScenario(
   client: Client,
   scenarioRid: string,
-): EXPERIMENTAL_ScenarioClient {
+): ScenarioClient {
   return buildScenarioClient(client, scenarioRid);
 }

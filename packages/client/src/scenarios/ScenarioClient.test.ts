@@ -28,7 +28,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { mockFetchResponse } from "../createClient.test.js";
-import { withScenario } from "./withScenario.js";
+import { withScenario } from "../index.js";
 
 describe("ScenarioClient methods", () => {
   const ontologyRid = "ri.not.important";
@@ -94,7 +94,7 @@ describe("ScenarioClient methods", () => {
     });
   });
 
-  describe("getEditedEntities (page form)", () => {
+  describe("getEditedObjects (page form)", () => {
     it("calls the listScenarioEditedObjects endpoint with pageSize/pageToken", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       const mock: ListScenarioEditedObjectsResponse = {
@@ -106,7 +106,7 @@ describe("ScenarioClient methods", () => {
       };
       mockFetchResponse(fetchFunction, mock);
 
-      const result = await scenario.getEditedEntities(Employee, {
+      const result = await scenario.getEditedObjects(Employee, {
         pageSize: 100,
         pageToken: "tok-1",
       });
@@ -129,7 +129,7 @@ describe("ScenarioClient methods", () => {
     });
   });
 
-  describe("getConflictingObjects (page form)", () => {
+  describe("EXPERIMENTAL_DO_NOT_USE_getConflictingObjects (page form)", () => {
     it("calls the conflicting objects endpoint and converts object locators", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       const mock: ListScenarioConflictingObjectsResponse = {
@@ -141,10 +141,11 @@ describe("ScenarioClient methods", () => {
       };
       mockFetchResponse(fetchFunction, mock);
 
-      const result = await scenario.getConflictingObjects(Employee, {
-        pageSize: 1_000,
-        pageToken: "tok-1",
-      });
+      const result =
+        await scenario.EXPERIMENTAL_DO_NOT_USE_getConflictingObjects(Employee, {
+          pageSize: 1_000,
+          pageToken: "tok-1",
+        });
 
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
@@ -167,7 +168,7 @@ describe("ScenarioClient methods", () => {
     });
   });
 
-  describe("conflictingObjectsAsyncIter", () => {
+  describe("EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter", () => {
     it("paginates lazily through empty pages without deduplicating", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       const page1: ListScenarioConflictingObjectsResponse = {
@@ -188,9 +189,10 @@ describe("ScenarioClient methods", () => {
       mockFetchResponse(fetchFunction, emptyPage);
       mockFetchResponse(fetchFunction, page3);
 
-      const iterator = scenario.conflictingObjectsAsyncIter(Employee, {
-        pageSize: 1_000,
-      });
+      const iterator =
+        scenario.EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter(Employee, {
+          pageSize: 1_000,
+        });
       expect(fetchFunction).not.toHaveBeenCalled();
 
       await expect(iterator.next()).resolves.toEqual({
@@ -233,7 +235,7 @@ describe("ScenarioClient methods", () => {
     });
   });
 
-  describe("editedEntitiesAsyncIter", () => {
+  describe("editedObjectsAsyncIter", () => {
     it("paginates and dedupes by $primaryKey across pages", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
 
@@ -255,7 +257,7 @@ describe("ScenarioClient methods", () => {
       mockFetchResponse(fetchFunction, page2);
 
       const keys: unknown[] = [];
-      for await (const obj of scenario.editedEntitiesAsyncIter(Employee)) {
+      for await (const obj of scenario.editedObjectsAsyncIter(Employee)) {
         keys.push(obj.$primaryKey);
       }
 
@@ -276,7 +278,7 @@ describe("ScenarioClient methods", () => {
       mockFetchResponse(fetchFunction, mock);
 
       const keys: unknown[] = [];
-      for await (const obj of scenario.editedEntitiesAsyncIter(Employee)) {
+      for await (const obj of scenario.editedObjectsAsyncIter(Employee)) {
         keys.push(obj.$primaryKey);
       }
 

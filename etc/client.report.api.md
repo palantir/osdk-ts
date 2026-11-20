@@ -29,6 +29,7 @@ import { InterfaceDefinition } from '@osdk/api';
 import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
+import type { LinkTypeApiNamesFor } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import { Media } from '@osdk/api';
 import { MediaFullMetadata } from '@osdk/api';
@@ -36,7 +37,9 @@ import { MediaItemMetadata } from '@osdk/api';
 import { MediaMetadata as MediaMetadata_2 } from '@osdk/api';
 import { MediaReference } from '@osdk/api';
 import { MediaUpload } from '@osdk/api';
+import type { MinimalDirectedObjectLinkInstance } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
+import type { ObjectIdentifiers } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
@@ -150,7 +153,47 @@ export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefiniti
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
 
+// @public
+export function createScenario(client: Client, options?: {
+    	expireAfter?: Date
+}): Promise<ScenarioClient>;
+
 export { DerivedProperty }
+
+// @public
+export interface EditedLinksForObjectType {
+    	// (undocumented)
+    linkTypes: string[];
+    	// (undocumented)
+    objectTypeApiName: string;
+}
+
+// @public
+export interface EditedLinksPage<
+	Q extends ObjectOrInterfaceDefinition,
+	LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>
+> {
+    	// (undocumented)
+    data: MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>[];
+    	// (undocumented)
+    nextPageToken?: string;
+}
+
+// @public
+export interface EditedObjectsPage<Q extends ObjectTypeDefinition> {
+    	// (undocumented)
+    data: ObjectIdentifiers<Q>[];
+    	// (undocumented)
+    nextPageToken?: string;
+}
+
+// @beta
+export interface EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q extends ObjectTypeDefinition> {
+    	// (undocumented)
+    data: ObjectIdentifiers<Q>[];
+    	// (undocumented)
+    nextPageToken?: string;
+}
 
 // @public
 export const extractDate: (dateTime: string) => string;
@@ -245,6 +288,51 @@ export type ResultOrError<T extends object> = ({
     	err?: unknown
 };
 
+// @public
+export interface ScenarioClient extends Client {
+    	editedLinksAsyncIter<
+    		Q extends ObjectOrInterfaceDefinition,
+    		LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>
+    	>(sourceObjectType: Q, linkType: LINK_TYPE_API_NAME, options?: {
+        		pageSize?: number
+        	}): AsyncIterableIterator<MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>>;
+    	editedObjectsAsyncIter<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
+        		pageSize?: number
+        	}): AsyncIterableIterator<ObjectIdentifiers<Q>>;
+    	// @beta
+    EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
+        		pageSize?: number
+        	}): AsyncIterableIterator<ObjectIdentifiers<Q>>;
+    	// @beta
+    EXPERIMENTAL_DO_NOT_USE_getConflictingObjects<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
+        		pageSize?: number
+        		pageToken?: string
+        	}): Promise<EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q>>;
+    	getEditedEntityTypes(): Promise<ScenarioEditedEntityTypes>;
+    	getEditedLinks<
+    		Q extends ObjectOrInterfaceDefinition,
+    		LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>
+    	>(sourceObjectType: Q, linkType: LINK_TYPE_API_NAME, options?: {
+        		pageSize?: number
+        		pageToken?: string
+        	}): Promise<EditedLinksPage<Q, LINK_TYPE_API_NAME>>;
+    	getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(sourceObjectType: Q): Promise<LinkTypeApiNamesFor<Q>[]>;
+    	getEditedObjects<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
+        		pageSize?: number
+        		pageToken?: string
+        	}): Promise<EditedObjectsPage<Q>>;
+    	getScenarioReference(): string;
+    	rebase(): Promise<void>;
+}
+
+// @public
+export interface ScenarioEditedEntityTypes {
+    	// (undocumented)
+    linkTypes: EditedLinksForObjectType[];
+    	// (undocumented)
+    objectTypes: string[];
+}
+
 export { SingleLinkAccessor }
 
 export { ThreeDimensionalAggregation }
@@ -260,6 +348,9 @@ export { VersionBound }
 export { WhereClause }
 
 export { WireObjectSet }
+
+// @public
+export function withScenario(client: Client, scenarioRid: string): ScenarioClient;
 
 // (No @packageDocumentation comment for this package)
 

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createScenario,
-  type EXPERIMENTAL_ScenarioClient,
-} from "@osdk/client/unstable-do-not-use";
+import { createScenario, type ScenarioClient } from "@osdk/client";
 import {
   createScenarioTestOsdk,
   scenarioOsdkTestAction,
@@ -28,7 +25,7 @@ import { client } from "./client.js";
 import { logger } from "./logger.js";
 
 export async function runScenariosTest(): Promise<void> {
-  const scenario: EXPERIMENTAL_ScenarioClient = await createScenario(client);
+  const scenario: ScenarioClient = await createScenario(client);
   const scenarioRid = scenario.getScenarioReference();
   logger.info({ scenarioRid }, "createScenario minted a fresh scenario");
 
@@ -41,15 +38,15 @@ export async function runScenariosTest(): Promise<void> {
   const editedTypes = await scenario.getEditedEntityTypes();
   logger.info(editedTypes, "scenario edited entity types after action");
 
-  const editedEntities = await scenario.getEditedEntities(ScenarioTestOsdk, {
+  const editedObjects = await scenario.getEditedObjects(ScenarioTestOsdk, {
     pageSize: 50,
   });
   logger.info(
     {
-      count: editedEntities.data.length,
-      sample: editedEntities.data.slice(0, 3),
+      count: editedObjects.data.length,
+      sample: editedObjects.data.slice(0, 3),
     },
-    "scenario edited ScenarioTestOsdk entities",
+    "scenario edited ScenarioTestOsdk objects",
   );
 
   const res = await client(scenarioOsdkTestAction).applyAction(

@@ -21,10 +21,7 @@ import {
 
 import { additionalContext, type Client } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  buildScenarioClient,
-  type EXPERIMENTAL_ScenarioClient,
-} from "./ScenarioClient.js";
+import { buildScenarioClient, type ScenarioClient } from "./ScenarioClient.js";
 
 /**
  * Mint a fresh ontology scenario and return a client scoped to it.
@@ -34,13 +31,11 @@ import {
  *   the transaction is ignored (a warning is logged) and the client is scoped to the new scenario. When the base
  *   client has a branch set, the newly minted scenario uses that branch as its base.
  * @param options - Optional settings for the new scenario.
- * @returns a {@link EXPERIMENTAL_ScenarioClient} bound to the freshly minted scenario RID.
- *
- * @beta This is an experimental, unstable feature subject to change.
+ * @returns a {@link ScenarioClient} bound to the freshly minted scenario RID.
  *
  * @example
  * ```ts
- * import { createScenario } from "@osdk/client/unstable-do-not-use";
+ * import { createScenario } from "@osdk/client";
  *
  * const expireAfter = new Date(Date.now() + 60 * 60 * 1000);
  * const scenario = await createScenario(client, { expireAfter });
@@ -52,7 +47,7 @@ export async function createScenario(
   options?: {
     expireAfter?: Date;
   },
-): Promise<EXPERIMENTAL_ScenarioClient> {
+): Promise<ScenarioClient> {
   const ctx: MinimalClient = client[additionalContext];
 
   if (ctx.scenarioRid != null) {
