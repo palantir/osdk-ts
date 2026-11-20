@@ -84,7 +84,6 @@ export type ActionSignatureFromDef<T extends ActionDefinition<any>> = {
     : CompileTimeActionMetadata<T>["signatures"]["batchApplyAction"];
 };
 
-
 export type ActionReturnValueFromDef<T extends ActionDefinition<any>> =
   ActionSignatureFromDef<T>["applyAction"] extends <
     OP extends ApplyActionOptions,
