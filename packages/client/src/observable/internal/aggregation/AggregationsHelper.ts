@@ -28,7 +28,6 @@ import type {
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
-import type { Canonical } from "../Canonical.js";
 import type { IntersectCanonicalizer } from "../IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
@@ -139,7 +138,8 @@ export class AggregationsHelper extends AbstractHelper<
         ? this.intersectCanonicalizer.canonicalize(intersectWith)
         : undefined;
 
-    const canonAggregate = this.canonicalizeAggregate(aggregate);
+    const canonAggregate =
+      this.store.genericCanonicalizer.canonicalize(aggregate);
 
     const aggregationCacheKey = this.cacheKeys.get<AggregationCacheKey>(
       "aggregation",
@@ -165,12 +165,5 @@ export class AggregationsHelper extends AbstractHelper<
         options,
       );
     });
-  }
-
-  private canonicalizeAggregate<
-    T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
-  >(aggregate: A): Canonical<A> {
-    return JSON.parse(JSON.stringify(aggregate)) as Canonical<A>;
   }
 }
