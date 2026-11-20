@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as oauth4webapi from "oauth4webapi";
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import {
   afterAll,
@@ -320,6 +321,40 @@ describe(createPublicOauthClient, () => {
     });
   });
 
+  it("starts a new login instead of completing an abandoned one", async () => {
+    setupWindowLocation("https://foundry.local/some/page");
+    setupLocalState({});
+    vi.mocked(commonJs.readSession).mockImplementation(() => ({
+      codeVerifier: "abandoned-verifier",
+      state: "abandoned-state",
+      oldUrl: "https://foundry.local/some/page",
+    }));
+    setupClient({ ...BASE_CLIENT_ARGS });
+
+    await expectRedirectToMultipass(client());
+
+    expect(hoistedMocks.makeTokenAndSaveRefresh).not.toHaveBeenCalled();
+  });
+
+  it("rejects when the auth server redirects back with an error", async () => {
+    setupWindowLocation("https://my.redirect.url.local/?error=access_denied");
+    setupLocalState({});
+    vi.mocked(commonJs.readSession).mockImplementation(() => ({
+      codeVerifier: "verifier",
+      state: "state",
+      oldUrl: "https://foundry.local/some/page",
+    }));
+    const callbackError = new Error('response parameter "state" missing');
+    vi.mocked(oauth4webapi.validateAuthResponse).mockImplementationOnce(() => {
+      throw callbackError;
+    });
+    setupClient({ ...BASE_CLIENT_ARGS });
+
+    await expect(client()).rejects.toBe(callbackError);
+
+    expect(mockWindow.location.assign).not.toHaveBeenCalled();
+  });
+
   describe.each<{
     name: string;
     currentUrl: URL;
@@ -522,6 +557,10 @@ describe(createPublicOauthClient, () => {
 
       if (initialState.sessionStorage.codeVerifier) {
         it("tries to auth with return results", async () => {
+          const callbackUrl = new URL(currentUrl);
+          callbackUrl.searchParams.set("code", "a-code");
+          setupWindowLocation(callbackUrl.toString());
+
           await expect(client()).resolves.toEqual(ACCESS_TOKEN);
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledTimes(1);
           expect(hoistedMocks.makeTokenAndSaveRefresh).toHaveBeenCalledWith(
