@@ -19,10 +19,10 @@ import type { FieldType } from "../FormFieldApi.js";
 /**
  * Coerces a raw form field value to match the expected type for the given
  * field type. Returns `undefined` when coercion fails
- * (e.g. non-numeric string for a number field).
+ * (e.g. an non-parsable date string).
  *
- * Complex types (object, objectSet, struct, interface) are passed through
- * unchanged since they cannot be meaningfully coerced.
+ * Only `datetime` and `timestamp` values are coerced; every other value is
+ * passed through unchanged.
  */
 export function coerceFieldValue(
   parameterType: FieldType | undefined,
@@ -39,42 +39,7 @@ export function coerceFieldValue(
     return coerced.some((v) => v === undefined) ? undefined : coerced;
   }
 
-  if (parameterType == null) {
-    return rawValue;
-  }
-
-  // TODO: Handle complex object types later
-  if (typeof parameterType === "object") {
-    return rawValue;
-  }
-
   switch (parameterType) {
-    case "string":
-    case "marking":
-    case "geohash":
-    case "geoshape":
-    case "objectType":
-      return typeof rawValue === "string" ? rawValue : String(rawValue);
-
-    case "integer":
-    case "long": {
-      const maybeNumber = extractNumber(rawValue);
-      return maybeNumber != null ? Math.trunc(maybeNumber) : undefined;
-    }
-
-    case "double": {
-      return extractNumber(rawValue);
-    }
-
-    case "boolean": {
-      if (typeof rawValue === "boolean") {
-        return rawValue;
-      }
-      if (rawValue === "true") return true;
-      if (rawValue === "false") return false;
-      return undefined;
-    }
-
     case "datetime":
     case "timestamp": {
       if (typeof rawValue === "string") {
@@ -86,24 +51,7 @@ export function coerceFieldValue(
       return undefined;
     }
 
-    case "attachment":
-    case "mediaReference":
-      return rawValue;
-
     default:
       return rawValue;
   }
-}
-
-function extractNumber(rawValue: unknown): number | undefined {
-  if (typeof rawValue === "number") {
-    return rawValue;
-  }
-  if (typeof rawValue === "string") {
-    const trimmed = rawValue.trim();
-    if (trimmed === "") return undefined;
-    const parsed = Number(trimmed);
-    return Number.isNaN(parsed) ? undefined : parsed;
-  }
-  return undefined;
 }

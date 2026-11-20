@@ -39,9 +39,9 @@ describe("coerceFieldValue", () => {
       expect(coerceFieldValue("string", "hello")).toBe("hello");
     });
 
-    it("coerces non-strings to strings", () => {
-      expect(coerceFieldValue("string", 42)).toBe("42");
-      expect(coerceFieldValue("string", true)).toBe("true");
+    it("passes non-strings through unchanged", () => {
+      expect(coerceFieldValue("string", 42)).toBe(42);
+      expect(coerceFieldValue("string", true)).toBe(true);
     });
 
     it("handles marking type as string", () => {
@@ -54,50 +54,15 @@ describe("coerceFieldValue", () => {
   });
 
   describe("numeric types", () => {
-    it("passes through numbers for integer type", () => {
-      expect(coerceFieldValue("integer", 42)).toBe(42);
-    });
-
-    it("parses numeric strings for integer type", () => {
-      expect(coerceFieldValue("integer", "42")).toBe(42);
-    });
-
-    it("returns undefined for non-numeric strings", () => {
-      expect(coerceFieldValue("integer", "abc")).toBe(undefined);
-    });
-
-    it("passes through numbers for double type", () => {
-      expect(coerceFieldValue("double", 3.14)).toBe(3.14);
-    });
-
-    it("parses numeric strings for double type", () => {
-      expect(coerceFieldValue("double", "3.14")).toBe(3.14);
-    });
-
-    it("handles long type", () => {
+    it("passes numbers through unchanged", () => {
+      expect(coerceFieldValue("integer", 3.7)).toBe(3.7);
       expect(coerceFieldValue("long", 1000000)).toBe(1000000);
-      expect(coerceFieldValue("long", "1000000")).toBe(1000000);
-    });
-
-    it("returns undefined for empty string", () => {
-      expect(coerceFieldValue("integer", "")).toBe(undefined);
-      expect(coerceFieldValue("double", "")).toBe(undefined);
-      expect(coerceFieldValue("long", "  ")).toBe(undefined);
-    });
-
-    it("truncates floats for integer types", () => {
-      expect(coerceFieldValue("integer", 3.14)).toBe(3);
-      expect(coerceFieldValue("integer", "3.14")).toBe(3);
-      expect(coerceFieldValue("long", 9.99)).toBe(9);
-    });
-
-    it("preserves floats for double type", () => {
       expect(coerceFieldValue("double", 3.14)).toBe(3.14);
     });
 
-    it("returns undefined for non-string non-number values", () => {
-      expect(coerceFieldValue("integer", true)).toBe(undefined);
-      expect(coerceFieldValue("double", true)).toBe(undefined);
+    it("passes numeric strings through unchanged", () => {
+      expect(coerceFieldValue("integer", "42")).toBe("42");
+      expect(coerceFieldValue("double", "3.14")).toBe("3.14");
     });
   });
 
@@ -107,17 +72,9 @@ describe("coerceFieldValue", () => {
       expect(coerceFieldValue("boolean", false)).toBe(false);
     });
 
-    it("parses string 'true'", () => {
-      expect(coerceFieldValue("boolean", "true")).toBe(true);
-    });
-
-    it("parses string 'false'", () => {
-      expect(coerceFieldValue("boolean", "false")).toBe(false);
-    });
-
-    it("returns undefined for non-boolean values", () => {
-      expect(coerceFieldValue("boolean", "yes")).toBe(undefined);
-      expect(coerceFieldValue("boolean", 1)).toBe(undefined);
+    it("passes non-boolean values through unchanged", () => {
+      expect(coerceFieldValue("boolean", "true")).toBe("true");
+      expect(coerceFieldValue("boolean", 1)).toBe(1);
     });
   });
 
@@ -130,22 +87,18 @@ describe("coerceFieldValue", () => {
       ]);
     });
 
-    it("coerces each element of a numeric array", () => {
-      expect(coerceFieldValue("integer", ["1", "2", "3"])).toEqual([1, 2, 3]);
+    it("passes numeric array elements through unchanged", () => {
+      expect(coerceFieldValue("integer", ["1", 2.5])).toEqual(["1", 2.5]);
     });
 
-    it("coerces each element of a double array", () => {
-      expect(coerceFieldValue("double", [1.5, "2.5"])).toEqual([1.5, 2.5]);
+    it("passes double array elements through unchanged", () => {
+      expect(coerceFieldValue("double", [1.5, "2.5"])).toEqual([1.5, "2.5"]);
     });
 
-    it("truncates float elements for integer type", () => {
-      expect(coerceFieldValue("integer", [3.14, 9.99])).toEqual([3, 9]);
-    });
-
-    it("coerces each element of a boolean array", () => {
+    it("passes boolean array elements through unchanged", () => {
       expect(coerceFieldValue("boolean", [true, "false"])).toEqual([
         true,
-        false,
+        "false",
       ]);
     });
 
@@ -156,8 +109,6 @@ describe("coerceFieldValue", () => {
     });
 
     it("returns undefined when any element fails coercion", () => {
-      expect(coerceFieldValue("integer", ["abc", "2"])).toBe(undefined);
-      expect(coerceFieldValue("boolean", [true, "yes"])).toBe(undefined);
       expect(coerceFieldValue("datetime", ["2024-01-15", "not-a-date"])).toBe(
         undefined,
       );

@@ -228,6 +228,109 @@ describe("BaseForm", () => {
   });
 
   // TODO: expand this test to cover all field types
+  describe("number field", () => {
+    function renderNumberForm(
+      fieldType: "integer" | "long" | "double",
+      onSubmit: (state: Record<string, unknown>) => void,
+    ): HTMLInputElement {
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "count",
+              fieldComponent: "NUMBER_INPUT",
+              fieldType,
+              label: "count",
+              fieldComponentProps: {},
+            }),
+          ]}
+          onSubmit={onSubmit}
+        />,
+      );
+      return screen.getByRole("textbox", { name: /count/u });
+    }
+
+    async function submitAndExpect(
+      onSubmit: ReturnType<typeof vi.fn>,
+      count: unknown,
+    ): Promise<void> {
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({ count }),
+        );
+      });
+    }
+
+    it("keeps the typed text while focused and shows the truncated integer on blur", async () => {
+      const onSubmit = vi.fn();
+      const input = renderNumberForm("integer", onSubmit);
+
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "3.7" } });
+      expect(input.value).toBe("3.7");
+
+      fireEvent.blur(input);
+      expect(input.value).toBe("3");
+      await submitAndExpect(onSubmit, 3);
+    });
+
+    it("truncates a negative fractional integer toward zero", async () => {
+      const onSubmit = vi.fn();
+      const input = renderNumberForm("integer", onSubmit);
+
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "-3.7" } });
+      fireEvent.blur(input);
+      expect(input.value).toBe("-3");
+      await submitAndExpect(onSubmit, -3);
+    });
+
+    it("lets the user type a whole number through fractional intermediate text", async () => {
+      const onSubmit = vi.fn();
+      const input = renderNumberForm("integer", onSubmit);
+
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "1.5" } });
+      expect(input.value).toBe("1.5");
+      fireEvent.change(input, { target: { value: "1.5e1" } });
+      expect(input.value).toBe("1.5e1");
+
+      fireEvent.blur(input);
+      expect(input.value).toBe("1.5e1");
+      await submitAndExpect(onSubmit, 15);
+    });
+
+    it("accepts scientific notation for whole numbers", async () => {
+      const onSubmit = vi.fn();
+      const input = renderNumberForm("integer", onSubmit);
+
+      fireEvent.change(input, { target: { value: "3e7" } });
+      expect(input.value).toBe("3e7");
+      await submitAndExpect(onSubmit, 30000000);
+    });
+
+    it("truncates long values the same way", async () => {
+      const onSubmit = vi.fn();
+      const input = renderNumberForm("long", onSubmit);
+
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "9.9" } });
+      fireEvent.blur(input);
+      expect(input.value).toBe("9");
+      await submitAndExpect(onSubmit, 9);
+    });
+
+    it("keeps fractional doubles", async () => {
+      const onSubmit = vi.fn();
+      const input = renderNumberForm("double", onSubmit);
+
+      fireEvent.change(input, { target: { value: "3.7" } });
+      expect(input.value).toBe("3.7");
+      await submitAndExpect(onSubmit, 3.7);
+    });
+  });
+
   describe("dropdown field", () => {
     it("renders dropdown from formContent", () => {
       render(

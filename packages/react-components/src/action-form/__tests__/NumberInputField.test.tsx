@@ -217,6 +217,43 @@ describe("NumberInputField", () => {
     });
   });
 
+  describe("blur", () => {
+    it("does not overwrite the typed text while focused when the value changes", () => {
+      const { rerender } = render(
+        <NumberInputField value={null} onChange={vi.fn()} />,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "3.7" } });
+      rerender(<NumberInputField value={3} onChange={vi.fn()} />);
+      expect(input.value).toBe("3.7");
+
+      fireEvent.blur(input);
+      expect(input.value).toBe("3");
+    });
+
+    it("shows the stored value on blur when the typed text differs from it", () => {
+      render(<NumberInputField value={7} onChange={vi.fn()} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+
+      fireEvent.change(input, { target: { value: "70" } });
+      expect(input.value).toBe("70");
+
+      fireEvent.blur(input);
+      expect(input.value).toBe("7");
+    });
+
+    it("keeps typed text on blur when it equals the stored value", () => {
+      render(<NumberInputField value={42} onChange={vi.fn()} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+
+      fireEvent.change(input, { target: { value: "42.0" } });
+      fireEvent.blur(input);
+      expect(input.value).toBe("42.0");
+    });
+  });
+
   describe("step (ArrowUp/ArrowDown)", () => {
     it("increments and decrements by step on arrow keys", () => {
       const onChange = vi.fn();

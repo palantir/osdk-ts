@@ -16,6 +16,7 @@
 
 import React from "react";
 
+import type { FieldType } from "../../FormFieldApi.js";
 import { NumberInputField } from "../NumberInputField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
 import {
@@ -31,7 +32,7 @@ export function NumberInputFieldAdapter({
   error,
 }: FieldAdapterProps<"NUMBER_INPUT">): React.ReactElement {
   const { fieldValue, onFieldValueChange } = useFieldValueConverter(
-    NUMBER_CONVERTER,
+    getNumberConverter(fieldDefinition.fieldType),
     value,
     onChange,
   );
@@ -48,7 +49,32 @@ export function NumberInputFieldAdapter({
   );
 }
 
+/**
+ * Whole-number parameters store the typed number truncated toward zero; the
+ * input shows the stored number once editing ends.
+ */
+function getNumberConverter(
+  fieldType: FieldType | undefined,
+): FieldValueConverter<number | null> {
+  switch (fieldType) {
+    case "integer":
+    case "long":
+      return WHOLE_NUMBER_CONVERTER;
+    default:
+      return NUMBER_CONVERTER;
+  }
+}
+
+function toNumberFieldValue(value: unknown): number | null {
+  return typeof value === "number" ? value : null;
+}
+
 const NUMBER_CONVERTER: FieldValueConverter<number | null> = {
-  toFieldValue: (value) => (typeof value === "number" ? value : null),
+  toFieldValue: toNumberFieldValue,
   toParameterValue: passThroughFieldValue,
+};
+
+const WHOLE_NUMBER_CONVERTER: FieldValueConverter<number | null> = {
+  toFieldValue: toNumberFieldValue,
+  toParameterValue: (value) => (value != null ? Math.trunc(value) : null),
 };
