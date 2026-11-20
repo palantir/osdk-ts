@@ -10,6 +10,15 @@ import type { Polygon } from 'geojson';
 import type { SingleKeyObject } from 'type-fest';
 
 // @public (undocumented)
+export interface ActionArrayDataType extends BaseActionDataTypeDefinition<"array"> {
+    	// (undocumented)
+    array: ActionDataTypeDefinition;
+}
+
+// @public
+export type ActionDataTypeDefinition = ActionPrimitiveDataType | ActionArrayDataType | ActionSetDataType | ActionMapDataType | ActionStructDataType;
+
+// @public (undocumented)
 export interface ActionDefinition<T_signatures = never> {
     	// Warning: (ae-forgotten-export) The symbol "ActionCompileTimeMetadata" needs to be exported by the entry point index.d.ts
     //
@@ -30,7 +39,18 @@ export interface ActionDefinition<T_signatures = never> {
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type ActionEditResponse = ActionResults;
+export type ActionEditResponse<ReturnValue = never> = ActionResults<ReturnValue>;
+
+// @public (undocumented)
+export interface ActionMapDataType extends BaseActionDataTypeDefinition<"map"> {
+    	// (undocumented)
+    keyType: ActionPrimitiveDataType<ActionMapKeyDataTypes>;
+    	// (undocumented)
+    valueType: ActionDataTypeDefinition;
+}
+
+// @public (undocumented)
+export type ActionMapKeyDataTypes = Exclude<ActionPrimitiveDataTypes, "boolean">;
 
 // @public (undocumented)
 export interface ActionMetadata {
@@ -47,6 +67,8 @@ export interface ActionMetadata {
         	}>>;
     	// (undocumented)
     parameters: Record<any, ActionMetadata.Parameter<any>>;
+    	// (undocumented)
+    returnType?: ActionDataTypeDefinition;
     	// (undocumented)
     rid: string;
     	// Warning: (ae-forgotten-export) The symbol "ReleaseStatus" needs to be exported by the entry point index.d.ts
@@ -161,11 +183,43 @@ export namespace ActionParam {
 }
 
 // @public (undocumented)
-export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatchActionOptions> = Op extends {
+export type ActionPrimitiveDataType<T extends ActionPrimitiveDataTypes = ActionPrimitiveDataTypes> = BaseActionDataTypeDefinition<T>;
+
+// @public (undocumented)
+export type ActionPrimitiveDataTypes = "boolean" | "date" | "double" | "float" | "integer" | "long" | "string" | "timestamp";
+
+// @public (undocumented)
+export namespace ActionResult {
+    	// (undocumented)
+    export type PrimitiveType<T extends ActionPrimitiveDataTypes> = DataValueWireToClient[T];
+}
+
+// @public (undocumented)
+export type ActionReturnTypeForOptions<
+	Op extends ApplyActionOptions | ApplyBatchActionOptions,
+	ReturnValue = never
+> = Op extends {
     	$validateOnly: true
 } ? ActionValidationResponse : Op extends {
     	$returnEdits: true
-} ? ActionEditResponse : undefined;
+} ? ActionEditResponse<ReturnValue> : [ReturnValue] extends [never] ? undefined : ActionReturnValue<ReturnValue>;
+
+// @public
+export type ActionReturnValue<ReturnValue> = {
+    	returnValue: ReturnValue | undefined
+};
+
+// @public (undocumented)
+export interface ActionSetDataType extends BaseActionDataTypeDefinition<"set"> {
+    	// (undocumented)
+    set: ActionDataTypeDefinition;
+}
+
+// @public (undocumented)
+export interface ActionStructDataType extends BaseActionDataTypeDefinition<"struct"> {
+    	// (undocumented)
+    struct: Record<string, ActionDataTypeDefinition>;
+}
 
 // Warning: (ae-forgotten-export) The symbol "ValidateActionResponseV2" needs to be exported by the entry point index.d.ts
 //
@@ -317,7 +371,7 @@ export interface Attachment {
 
 // @public (undocumented)
 export interface AttachmentMetadata {
-	// (undocumented)
+    	// (undocumented)
     filename: string;
     	// (undocumented)
     mediaType: string;
@@ -378,6 +432,12 @@ export interface BandInfo {
     	// (undocumented)
     unitInterpretation?: UnitInterpretation;
 }
+
+// @public (undocumented)
+export type BaseActionDataTypeDefinition<T extends string> = {
+    	nullable?: boolean
+    	type: T
+};
 
 // @public (undocumented)
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {

@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
+import type {
+  DataValueClientToWire,
+  DataValueWireToClient,
+} from "../mapping/DataValueMapping.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import type { ActionPrimitiveDataTypes } from "../ontology/ActionDataTypeDefinition.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   CompileTimeMetadata,
@@ -118,5 +122,15 @@ export namespace ActionParam {
   export type NullValueType = typeof NULL_VALUE;
 }
 
-export type ActionEditResponse = ActionResults;
+export namespace ActionResult {
+  /**
+   * Helper type to convert action return type primitives to typescript types
+   */
+  export type PrimitiveType<T extends ActionPrimitiveDataTypes> =
+    DataValueWireToClient[T];
+}
+
+export type ActionEditResponse<ReturnValue = never> =
+  ActionResults<ReturnValue>;
+
 export type ActionValidationResponse = ValidateActionResponseV2;

@@ -8,6 +8,16 @@ type actionEditResponse = (ObjectEdits | LargeScaleObjectEdits) & {
   editedObjectTypes: Array<String>;
 };
 
+/** The edits-bearing payload carrying an action's return value. */
+type actionEditResponse_withReturnValue =
+  & ((ObjectEdits | LargeScaleObjectEdits) & {
+    editedObjectTypes: Array<String>;
+  })
+  & ActionReturnValue<string>;
+
+/** An action's return value, which is undefined if the OSDK could not convert it. */
+type actionEditResponse_withReturnValue_returnValue = string | undefined;
+
 /** What an interface-typed action parameter accepts. */
 type actionParam_interfaceType = {
   $objectType: "Employee";
@@ -36,6 +46,16 @@ type actionParam_primitiveType_string = string;
 type actionParam_structType =
   & { name: string; age: number; joined: string }
   & {};
+
+/** applyAction's resolved value for an action that returns a string. */
+type actionReturnType_withReturnValue = { returnValue: string | undefined };
+
+/** applyAction's resolved value for an action that returns a string, with $returnEdits: true. */
+type actionReturnType_withReturnValueAndEdits =
+  & ((ObjectEdits | LargeScaleObjectEdits) & {
+    editedObjectTypes: Array<String>;
+  })
+  & ActionReturnValue<string>;
 
 /** The validation-only response returned when $validateOnly: true. */
 type actionValidationResponse = ValidateActionResponseV2;

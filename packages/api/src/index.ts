@@ -15,9 +15,11 @@
  */
 
 export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
+export type { ActionReturnValue } from "./actions/ActionResults.js";
 export type {
   ActionEditResponse,
   ActionParam,
+  ActionResult,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
@@ -165,6 +167,17 @@ export type {
   MinimalDirectedObjectLinkInstance,
 } from "./objectSet/ObjectSetLinks.js";
 export type { ObjectSetSubscription } from "./objectSet/ObjectSetListener.js";
+export type {
+  ActionArrayDataType,
+  ActionDataTypeDefinition,
+  ActionMapDataType,
+  ActionMapKeyDataTypes,
+  ActionPrimitiveDataType,
+  ActionPrimitiveDataTypes,
+  ActionSetDataType,
+  ActionStructDataType,
+  BaseActionDataTypeDefinition,
+} from "./ontology/ActionDataTypeDefinition.js";
 export type {
   ActionDefinition,
   ActionMetadata,
