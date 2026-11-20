@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as oauth4webapi from "oauth4webapi";
 /* eslint-disable @typescript-eslint/consistent-type-imports */
 import {
   afterAll,
@@ -317,6 +318,58 @@ describe(createPublicOauthClient, () => {
       await expect(tokenPromise).resolves.toEqual("some token");
 
       expect(hoistedMocks.makeTokenAndSaveRefresh).toBeCalledTimes(1);
+    });
+  });
+
+  describe("refresh failures", () => {
+    const refreshTokenKey = `@osdk/oauth : refresh : ${BASE_CLIENT_ARGS.clientId}`;
+
+    beforeEach(() => {
+      setupWindowLocation("https://foundry.local");
+      vi.mocked(commonJs.readSession).mockImplementation(() => ({}));
+      setupLocalState({
+        refresh_token: "refreshToken",
+        requestedScopes: "api:read-data",
+      });
+      // getStorage() only returns localStorage in a browser build
+      vi.stubEnv("TARGET", "browser");
+    });
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it("keeps the refresh token and does not redirect when the token endpoint is unreachable", async () => {
+      setupClient({ ...BASE_CLIENT_ARGS, scopes: ["api:read-data"] });
+      const networkError = new TypeError("Failed to fetch");
+      vi.mocked(oauth4webapi.refreshTokenGrantRequest).mockRejectedValueOnce(
+        networkError,
+      );
+
+      await expect(client()).rejects.toBe(networkError);
+
+      expect(mockLocalStorage.removeItem).not.toHaveBeenCalled();
+      expect(mockWindow.location.assign).not.toHaveBeenCalled();
+    });
+
+    it("removes the refresh token and redirects to login when the server refuses it", async () => {
+      setupClient({ ...BASE_CLIENT_ARGS, scopes: ["api:read-data"] });
+      vi.mocked(oauth4webapi.isOAuth2Error).mockReturnValueOnce(true);
+
+      await expectRedirectToMultipass(client());
+
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(refreshTokenKey);
+    });
+
+    it("removes the refresh token and throws when refresh is refused", async () => {
+      setupClient({ ...BASE_CLIENT_ARGS, scopes: ["api:read-data"] });
+      vi.mocked(oauth4webapi.isOAuth2Error).mockReturnValueOnce(true);
+
+      await expect(client.refresh()).rejects.toThrowError(
+        "Could not refresh token",
+      );
+
+      expect(mockLocalStorage.removeItem).toHaveBeenCalledWith(refreshTokenKey);
     });
   });
 
