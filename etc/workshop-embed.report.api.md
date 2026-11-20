@@ -5,7 +5,7 @@
 ```ts
 
 // @public
-export function connectToWorkshopModule<TVariables extends WorkshopVariableMap = WorkshopVariableMap>({ targetWindow, targetOrigin, signal, timeoutMs, hostWindow }: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection<TVariables>>;
+export function connectToWorkshopModule<TVariables extends WorkshopVariableMap = WorkshopVariableMap>(input: ConnectToWorkshopModuleOptions): Promise<WorkshopModuleConnection<TVariables>>;
 
 // @public
 export interface ConnectToWorkshopModuleOptions {
@@ -17,7 +17,7 @@ export interface ConnectToWorkshopModuleOptions {
 }
 
 // @public
-export function listenForWorkshopModuleEmbedMessages<TVariables extends WorkshopVariableMap = WorkshopVariableMap>({ onConnect, hostWindow }?: ListenForWorkshopModuleEmbedMessagesOptions<TVariables>): () => void;
+export function listenForWorkshopModuleEmbedMessages<TVariables extends WorkshopVariableMap = WorkshopVariableMap>(input?: ListenForWorkshopModuleEmbedMessagesOptions<TVariables>): () => void;
 
 // @public
 export interface ListenForWorkshopModuleEmbedMessagesOptions<TVariables extends WorkshopVariableMap = WorkshopVariableMap> {

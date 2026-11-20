@@ -31,7 +31,7 @@
     "@changesets/changelog-git": "^0.2.1",
     "@changesets/cli": "^2.29.6",
     "@microsoft/api-documenter": "^7.30.5",
-    "@microsoft/api-extractor": "^7.58.7",
+    "@microsoft/api-extractor": "^7.60.1",
     "@monorepolint/archetypes": "0.6.0-alpha.4",
     "@monorepolint/cli": "0.6.0-alpha.4",
     "@monorepolint/config": "0.6.0-alpha.4",

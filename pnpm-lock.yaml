@@ -98,7 +98,7 @@ importers:
         specifier: ^7.30.5
         version: 7.30.20(@types/node@26.1.1)
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
+        specifier: ^7.60.1
         version: 7.60.1(@types/node@26.1.1)
       '@monorepolint/archetypes':
         specifier: 0.6.0-alpha.4
@@ -1914,7 +1914,7 @@ importers:
         specifier: ^7.30.5
         version: 7.30.20(@types/node@18.19.124)
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
+        specifier: ^7.60.1
         version: 7.60.1(@types/node@18.19.124)
       '@osdk/client':
         specifier: workspace:~
@@ -1991,7 +1991,7 @@ importers:
         specifier: ^7.30.5
         version: 7.30.20(@types/node@26.1.1)
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
+        specifier: ^7.60.1
         version: 7.60.1(@types/node@26.1.1)
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -2302,7 +2302,7 @@ importers:
         specifier: ^7.30.5
         version: 7.30.20(@types/node@26.1.1)
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
+        specifier: ^7.60.1
         version: 7.60.1(@types/node@26.1.1)
       '@osdk/client.test.ontology':
         specifier: workspace:*
@@ -4440,7 +4440,7 @@ importers:
         specifier: ^7.30.5
         version: 7.30.20(@types/node@18.19.124)
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
+        specifier: ^7.60.1
         version: 7.60.1(@types/node@18.19.124)
       '@osdk/client.test.ontology':
         specifier: workspace:~
@@ -4686,7 +4686,7 @@ importers:
         specifier: ^7.30.5
         version: 7.30.20(@types/node@26.1.1)
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
+        specifier: ^7.60.1
         version: 7.60.1(@types/node@26.1.1)
       '@osdk/api':
         specifier: workspace:~
@@ -6063,7 +6063,7 @@ importers:
         specifier: ^7.30.5
         version: 7.30.20(@types/node@26.1.1)
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
+        specifier: ^7.60.1
         version: 7.60.1(@types/node@26.1.1)
       '@osdk/api':
         specifier: workspace:~
@@ -6422,7 +6422,7 @@ importers:
         specifier: ^7.30.5
         version: 7.30.20(@types/node@26.1.1)
       '@microsoft/api-extractor':
-        specifier: ^7.58.7
+        specifier: ^7.60.1
         version: 7.60.1(@types/node@26.1.1)
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
