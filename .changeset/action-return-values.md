@@ -5,4 +5,4 @@
 "@osdk/generator-converters": minor
 ---
 
-Return and type the value produced by a function-backed action: `applyAction` resolves to `{ returnValue }` (merged with edits when `$returnEdits` is set), and generated actions get a `ReturnType` built from the new `ActionDataTypeDefinition` and `ActionResult` types. Maps nested in struct query results are now converted to records.
+Return and type the value produced by a function-backed action: `applyAction` resolves to `{ returnValue }` (merged with edits when `$returnEdits` is set), and generated actions get a `ReturnType` built from the new `ActionDataTypeDefinition` and `ActionResult` types.

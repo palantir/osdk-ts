@@ -1,5 +1,31 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.94.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.94.0
+
+## 2.93.0
+
+### Minor Changes
+
+- f1d12b0: Add spt mappings for non-interface object props
+
+### Patch Changes
+
+- @osdk/client.unstable@2.93.0
+
+## 2.92.0
+
+### Minor Changes
+
+- 3282ead: Support TSv2 query/FBA source importing for Preview
+
+### Patch Changes
+
+- @osdk/client.unstable@2.92.0
+
 ## 2.91.0
 
 ### Minor Changes

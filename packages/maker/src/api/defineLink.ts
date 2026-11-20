@@ -15,7 +15,6 @@
  */
 
 import type { LinkTypeMetadata } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 
 import { isValidApiName } from "../util/ApiNameValidator.js";
 import { createValidationIssueCollector } from "../validation.js";
@@ -40,16 +39,18 @@ import type {
 import { validateDisplayMetadataLengths } from "./validateMetadataLengths.js";
 
 export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
+  const collector = createValidationIssueCollector();
   const linkDefinition = cloneDefinition(linkDefinitionInput);
-  if (
+  collector.check(
     ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][
       linkDefinition.apiName
-    ] !== undefined
-  ) {
-    throw new Error(
-      `Link type with apiName ${linkDefinition.apiName} is already defined`,
-    );
-  }
+    ] === undefined,
+    {
+      code: "duplicate_definition",
+      message: `Link type with apiName ${linkDefinition.apiName} is already defined`,
+      path: ["apiName"],
+    },
+  );
   // Validation involving linked objects is deferred to convertLink.ts because
   // circular dependencies can reference objects that have not been defined yet.
 
@@ -84,8 +85,12 @@ export function defineLink(linkDefinitionInput: LinkTypeDefinition): LinkType {
     "one" in linkType
       ? { one: linkType.one, toMany: linkType.toMany }
       : { many: linkType.many, toMany: linkType.toMany };
-  const collector = createValidationIssueCollector();
   for (const [side, link] of Object.entries(sides)) {
+    collector.check(isValidApiName(link.metadata.apiName), {
+      code: "invalid_api_name",
+      message: `Invalid API name for link: ${link.metadata.apiName}`,
+      path: [side, "metadata", "apiName"],
+    });
     validateDisplayMetadataLengths(
       link.metadata.displayMetadata,
       `Link type "${linkType.apiName}", ${side} "${link.metadata.apiName}"`,
@@ -127,10 +132,6 @@ function convertUserIntermediaryLinkDefinition(
 function convertLinkTypeMetadata(
   metadata: LinkTypeMetadataUserDefinition,
 ): LinkTypeMetadata {
-  invariant(
-    isValidApiName(metadata.apiName),
-    `Invalid API name for link: ${metadata.apiName}`,
-  );
   return {
     apiName: metadata.apiName,
     displayMetadata: {

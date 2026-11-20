@@ -77,6 +77,9 @@ export function defineDeleteInterfaceObjectAction(
       validation: convertValidationRule(def.actionLevelValidation, parameters),
     }),
     ...(def.permission && { permission: def.permission }),
+    ...(def.isolationSettings !== undefined && {
+      isolationSettings: def.isolationSettings,
+    }),
     ...(def.icon && { icon: def.icon }),
   });
 }

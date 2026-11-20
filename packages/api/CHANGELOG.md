@@ -1,5 +1,15 @@
 # @osdk/api
 
+## 2.94.0
+
+## 2.93.0
+
+## 2.92.0
+
+### Minor Changes
+
+- 749af7f: Restore property name suggestions inside `$orderBy` objects while preserving relevance ordering.
+
 ## 2.91.0
 
 ## 2.90.0

@@ -18,6 +18,7 @@ import { createOsdkObject } from "../../../object/convertWireToOsdkObjects/creat
 import {
   ClientRef,
   ObjectDefRef,
+  UncastableProperties,
   UnderlyingOsdkObject,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -87,7 +88,14 @@ function stripRdpFields(
     }
   }
 
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    value[ClientRef],
+    objectDef,
+    newProps,
+    {},
+    undefined,
+    value[UncastableProperties],
+  );
 }
 
 function isSuperset(
@@ -129,7 +137,14 @@ function filterToRdpFields(
     }
   }
 
-  return createOsdkObject(value[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    value[ClientRef],
+    objectDef,
+    newProps,
+    {},
+    undefined,
+    value[UncastableProperties],
+  );
 }
 
 export function mergeSelectFields(
@@ -163,16 +178,29 @@ export function mergeSelectFields(
     }
   }
 
+  const uncastableProperties = new Set(existingValue[UncastableProperties]);
   for (const key of Object.keys(sourceUnderlying)) {
     // Take the source's derived fields, plus the base props it selected.
     if (sourceRdpFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
     } else if (key in objectDef.properties && selectFields.has(key)) {
       newProps[key] = sourceUnderlying[key];
+      if (sourceValue[UncastableProperties].includes(key)) {
+        uncastableProperties.add(key);
+      } else {
+        uncastableProperties.delete(key);
+      }
     }
   }
 
-  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    sourceValue[ClientRef],
+    objectDef,
+    newProps,
+    {},
+    undefined,
+    [...uncastableProperties],
+  );
 }
 
 export function mergeObjectFields(
@@ -234,5 +262,12 @@ export function mergeObjectFields(
     }
   }
 
-  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
+  return createOsdkObject(
+    sourceValue[ClientRef],
+    objectDef,
+    newProps,
+    {},
+    undefined,
+    sourceValue[UncastableProperties],
+  );
 }

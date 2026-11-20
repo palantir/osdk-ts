@@ -53,7 +53,7 @@ export function validateMetadataLength(
   }
   const length =
     unit === "UTF-8 bytes" ? encoder.encode(value).length : value.length;
-  collector.addIssue(
+  collector.check(
     length <= limit,
     `${context}: ${field} must be at most ${limit} ${unit} (got ${length})`,
   );

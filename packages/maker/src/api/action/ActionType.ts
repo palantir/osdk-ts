@@ -16,6 +16,7 @@
 
 import type {
   ActionTypeApiName,
+  ActionTypeIsolationSettings,
   DisplayMetadataConfigurationDefaultLayout,
   DisplayMetadataConfigurationDisplayAndFormat,
   OntologyIrActionTypeEntities,
@@ -41,6 +42,8 @@ interface ActionTypeInner {
   displayName: string;
   description: string;
   icon: { locator: BlueprintIcon; color: string };
+  /** Controls runtime isolation and retries. Omit to use platform defaults. */
+  isolationSettings: ActionTypeIsolationSettings;
   parameters: Array<ActionParameter>;
   rules: Array<OntologyIrLogicRule>;
   sections: Record<SectionId, ActionSection>;
