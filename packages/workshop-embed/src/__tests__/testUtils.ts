@@ -14,10 +14,29 @@
  * limitations under the License.
  */
 
-import { vi } from "vitest";
+import { type Mock, vi } from "vitest";
 
-export function createTestWindow() {
-  const target = Object.assign(new EventTarget(), {
+export interface TestWindow extends EventTarget {
+  parent: Window;
+  location: { search: string };
+  postMessage: Mock;
+  asWindow(): Window;
+}
+
+export interface TestPort extends EventTarget {
+  postMessage: Mock;
+  close: Mock;
+  start: Mock;
+  asPort(): MessagePort;
+}
+
+export interface TestChannel {
+  port1: TestPort;
+  port2: TestPort;
+}
+
+export function createTestWindow(): TestWindow {
+  const target: TestWindow = Object.assign(new EventTarget(), {
     parent: undefined as unknown as Window,
     location: { search: "?workshopEmbed=1" },
     postMessage: vi.fn(),
@@ -29,8 +48,8 @@ export function createTestWindow() {
   return target;
 }
 
-export function createTestPort() {
-  const port = Object.assign(new EventTarget(), {
+export function createTestPort(): TestPort {
+  const port: TestPort = Object.assign(new EventTarget(), {
     postMessage: vi.fn(),
     close: vi.fn(),
     start: vi.fn(),
@@ -41,13 +60,9 @@ export function createTestPort() {
   return port;
 }
 
-export function createTestChannel() {
+export function createTestChannel(): TestChannel {
   return { port1: createTestPort(), port2: createTestPort() };
 }
-
-export type TestWindow = ReturnType<typeof createTestWindow>;
-export type TestPort = ReturnType<typeof createTestPort>;
-export type TestChannel = ReturnType<typeof createTestChannel>;
 
 export function dispatchMessage(
   target: EventTarget,
