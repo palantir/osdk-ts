@@ -20,6 +20,9 @@ const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/u;
 const ID_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 250;
+const DISPLAY_NAME_MAX_LENGTH = 100;
+const PARAMETERS_MAX_COUNT = 50;
+const EVENTS_MAX_COUNT = 50;
 
 /**
  * Validates the requirements that can't be expressed via TypeScript type-checking
@@ -32,6 +35,7 @@ export function validateWidgetConfig(
   validateWidgetName(config.name);
   validateWidgetDescription(config.description);
   validateWidgetParameters(config.parameters);
+  validateWidgetEvents(config.events, config.parameters);
   validateReadOnlyParameters(config);
 }
 
@@ -65,6 +69,9 @@ function validateWidgetDescription(description?: string): void {
 }
 
 function validateWidgetParameters(parameters: ParameterConfig): void {
+  if (Object.keys(parameters).length > PARAMETERS_MAX_COUNT) {
+    throw new Error(`Parameter count can be at most ${PARAMETERS_MAX_COUNT}`);
+  }
   for (const [parameterId, parameterConfig] of Object.entries(parameters)) {
     if (parameterId.length > ID_MAX_LENGTH) {
       throw new Error(
@@ -76,6 +83,11 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
         `Parameter id "${parameterId}" does not match allowed pattern (must be camelCase)`,
       );
     }
+    if (parameterConfig.displayName.length > DISPLAY_NAME_MAX_LENGTH) {
+      throw new Error(
+        `Parameter "${parameterId}" display name length can be at most ${DISPLAY_NAME_MAX_LENGTH} characters`,
+      );
+    }
     if (parameterConfig.type === "objectSet") {
       if (
         typeof parameterConfig.allowedType.internalDoNotUseMetadata?.rid !==
@@ -85,6 +97,47 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
           `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2. Provided type: '${JSON.stringify(
             parameterConfig.allowedType,
           )}'`,
+        );
+      }
+    }
+  }
+}
+
+function validateWidgetEvents(
+  events: WidgetConfig<ParameterConfig>["events"],
+  parameters: ParameterConfig,
+): void {
+  if (Object.keys(events).length > EVENTS_MAX_COUNT) {
+    throw new Error(`Event count can be at most ${EVENTS_MAX_COUNT}`);
+  }
+  const parameterIds = new Set(Object.keys(parameters));
+  for (const [eventId, event] of Object.entries(events)) {
+    if (eventId.length > ID_MAX_LENGTH) {
+      throw new Error(
+        `Event id length can be at most ${ID_MAX_LENGTH} characters`,
+      );
+    }
+    if (!ID_PATTERN.test(eventId)) {
+      throw new Error(
+        `Event id "${eventId}" does not match allowed pattern (must be camelCase)`,
+      );
+    }
+    if (event.displayName.length > DISPLAY_NAME_MAX_LENGTH) {
+      throw new Error(
+        `Event "${eventId}" display name length can be at most ${DISPLAY_NAME_MAX_LENGTH} characters`,
+      );
+    }
+    const seen = new Set<string>();
+    for (const parameterId of event.parameterUpdateIds) {
+      if (seen.has(parameterId)) {
+        throw new Error(
+          `Event "${eventId}" has duplicate parameter update id "${parameterId}"`,
+        );
+      }
+      seen.add(parameterId);
+      if (!parameterIds.has(parameterId)) {
+        throw new Error(
+          `Event "${eventId}" parameter update id "${parameterId}" does not match any parameter id`,
         );
       }
     }
