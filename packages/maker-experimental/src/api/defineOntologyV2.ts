@@ -59,6 +59,9 @@ import type { OntologyIrV2 } from "./OntologyIrV2.js";
 export interface OntologyPackagingOptions {
   // EDGE packages datasource definitions for both cloud and edge. Defaults to CLOUD.
   targetEnvironment?: "CLOUD" | "EDGE";
+  //The OntologySchemaMigrationInputs shape is not packaged for EDGE, since edge stacks
+  // can lag far behind and may not support it. Set to package it anyway.
+  packageSchemaMigrationInputsForEdge?: boolean;
 }
 
 export interface OntologyV2Result {
@@ -149,6 +152,8 @@ export async function defineOntologyV2(
     ridGenerator,
     functionsIr,
     randomnessKey,
+    packagingOptions.targetEnvironment !== "EDGE" ||
+      packagingOptions.packageSchemaMigrationInputsForEdge === true,
   );
   const folders = getOntologyFolders(folderDefinitions, shapes.outputShapes);
   const folderLocations = getFolderLocationInputs(folders);
