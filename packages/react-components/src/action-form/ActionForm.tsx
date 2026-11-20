@@ -41,8 +41,8 @@ import type {
   FormFieldDefinition,
   RendererFieldDefinition,
 } from "./FormFieldApi.js";
-import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
+import { toSubmittedValue } from "./utils/toSubmittedValue.js";
 
 const EMPTY_FORM_CONTENT: ReadonlyArray<FormContentItem> = [];
 const EMPTY_VALIDATION_ERRORS: ReadonlyArray<FormErrorEntry> = [];
@@ -93,6 +93,17 @@ function getParameterErrorMessage(
     }
   }
   return "The parameter value is invalid";
+}
+
+function toSubmittedFormState(
+  formState: Record<string, unknown>,
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(formState).map(([key, value]) => [
+      key,
+      toSubmittedValue(value),
+    ]),
+  );
 }
 
 function toRendererDef<Q extends ActionDefinition<unknown>>(
@@ -210,17 +221,6 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   const formContent =
     customFieldDefinitions ?? rendererFieldDefinitions ?? EMPTY_FORM_CONTENT;
 
-  const coerceFormState = useCallback(
-    (rawState: Record<string, unknown>): Record<string, unknown> => {
-      const coerced: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(rawState)) {
-        coerced[key] = coerceFieldValue(parameters?.[key]?.type, value);
-      }
-      return coerced;
-    },
-    [parameters],
-  );
-
   const formStateRef = useRef<Record<string, unknown>>(
     controlledFormState != null
       ? (controlledFormState as Record<string, unknown>)
@@ -234,7 +234,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     if (onSubmit != null) {
       return;
     }
-    const formState = coerceFormState(formStateRef.current);
+    const formState = toSubmittedFormState(formStateRef.current);
     try {
       const validation = await osdkValidateAction(formState);
       if (validation != null) {
@@ -253,7 +253,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const handleSubmit = useCallback(
     async (rawFormState: Record<string, unknown>) => {
-      const formState = coerceFormState(rawFormState) as FormState<Q>;
+      const formState = toSubmittedFormState(rawFormState) as FormState<Q>;
       try {
         if (onSubmit != null) {
           await onSubmit(formState, osdkApplyAction);
@@ -275,7 +275,6 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       }
     },
     [
-      coerceFormState,
       osdkValidateAction,
       onValidationResponse,
       onSubmit,
