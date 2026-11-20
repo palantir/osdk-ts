@@ -1,5 +1,11 @@
 # @osdk/maker-experimental
 
+## 0.90.0
+
+### Minor Changes
+
+- 277db79: Add flag to write imported block data output
+
 ## 0.89.0
 
 ### Minor Changes
