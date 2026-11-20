@@ -18,6 +18,11 @@ import React from "react";
 
 import { SwitchField } from "../SwitchField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
+import {
+  passThroughFieldValue,
+  type FieldValueConverter,
+} from "./FieldValueConverter.js";
+import { useFieldValueConverter } from "./useFieldValueConverter.js";
 
 export function SwitchFieldAdapter({
   fieldDefinition,
@@ -25,15 +30,25 @@ export function SwitchFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"SWITCH">): React.ReactElement {
+  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
+    BOOLEAN_CONVERTER,
+    value,
+    onChange,
+  );
   return (
     <SwitchField
       id={fieldDefinition.fieldKey}
       label={fieldDefinition.label}
-      value={!!value}
-      onChange={onChange}
+      value={fieldValue}
+      onChange={onFieldValueChange}
       error={error}
       {...fieldDefinition.fieldComponentProps}
       disabled={fieldDefinition.disabled === true}
     />
   );
 }
+
+const BOOLEAN_CONVERTER: FieldValueConverter<boolean | null> = {
+  toFieldValue: (value) => !!value,
+  toParameterValue: passThroughFieldValue,
+};

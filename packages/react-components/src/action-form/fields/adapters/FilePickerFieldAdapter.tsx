@@ -18,6 +18,11 @@ import React from "react";
 
 import { FilePickerField } from "../FilePickerField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
+import {
+  passThroughFieldValue,
+  type FieldValueConverter,
+} from "./FieldValueConverter.js";
+import { useFieldValueConverter } from "./useFieldValueConverter.js";
 
 export function FilePickerFieldAdapter({
   fieldDefinition,
@@ -25,11 +30,16 @@ export function FilePickerFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"FILE_PICKER">): React.ReactElement {
+  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
+    FILE_CONVERTER,
+    value,
+    onChange,
+  );
   return (
     <FilePickerField
       id={fieldDefinition.fieldKey}
-      value={coerceToFileValue(value)}
-      onChange={onChange}
+      value={fieldValue}
+      onChange={onFieldValueChange}
       error={error}
       {...fieldDefinition.fieldComponentProps}
       disabled={fieldDefinition.disabled === true}
@@ -37,7 +47,12 @@ export function FilePickerFieldAdapter({
   );
 }
 
-function coerceToFileValue(value: unknown): File | File[] | null {
+const FILE_CONVERTER: FieldValueConverter<File | File[] | null> = {
+  toFieldValue: toFileValue,
+  toParameterValue: passThroughFieldValue,
+};
+
+function toFileValue(value: unknown): File | File[] | null {
   if (value instanceof File) {
     return value;
   }
@@ -47,7 +62,6 @@ function coerceToFileValue(value: unknown): File | File[] | null {
   return null;
 }
 
-// TODO: Move and share with `coerceFieldValue`
 function isFileArray(value: unknown[]): value is File[] {
   return value.every((v) => v instanceof File);
 }

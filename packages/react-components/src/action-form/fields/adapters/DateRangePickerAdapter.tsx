@@ -22,6 +22,11 @@ import {
   EMPTY_RANGE,
 } from "../../../shared/calendar/index.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
+import {
+  passThroughFieldValue,
+  type FieldValueConverter,
+} from "./FieldValueConverter.js";
+import { useFieldValueConverter } from "./useFieldValueConverter.js";
 
 export function DateRangePickerAdapter({
   fieldDefinition,
@@ -29,11 +34,16 @@ export function DateRangePickerAdapter({
   onChange,
   portalContainer,
 }: PortalFieldAdapterProps<"DATE_RANGE_INPUT">): React.ReactElement {
+  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
+    DATE_RANGE_CONVERTER,
+    value,
+    onChange,
+  );
   return (
     <DateRangePicker
       id={fieldDefinition.fieldKey}
-      value={coerceToDateRange(value)}
-      onChange={onChange}
+      value={fieldValue}
+      onChange={onFieldValueChange}
       placeholderStart={fieldDefinition.placeholder}
       {...fieldDefinition.fieldComponentProps}
       disabled={fieldDefinition.disabled === true}
@@ -42,7 +52,12 @@ export function DateRangePickerAdapter({
   );
 }
 
-function coerceToDateRange(value: unknown): DateRange {
+const DATE_RANGE_CONVERTER: FieldValueConverter<DateRange | null> = {
+  toFieldValue: toDateRange,
+  toParameterValue: passThroughFieldValue,
+};
+
+function toDateRange(value: unknown): DateRange {
   if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;
   const start = value[0] instanceof Date ? value[0] : null;
   const end = value[1] instanceof Date ? value[1] : null;

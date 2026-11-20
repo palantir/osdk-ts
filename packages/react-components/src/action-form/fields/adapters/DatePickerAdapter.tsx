@@ -18,6 +18,11 @@ import React from "react";
 
 import { DatePicker } from "../../../shared/calendar/index.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
+import {
+  passThroughFieldValue,
+  type FieldValueConverter,
+} from "./FieldValueConverter.js";
+import { useFieldValueConverter } from "./useFieldValueConverter.js";
 
 export function DatePickerAdapter({
   fieldDefinition,
@@ -26,13 +31,17 @@ export function DatePickerAdapter({
   error,
   portalContainer,
 }: PortalFieldAdapterProps<"DATETIME_PICKER">): React.ReactElement {
+  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
+    DATE_CONVERTER,
+    value,
+    onChange,
+  );
   return (
     <DatePicker
       id={fieldDefinition.fieldKey}
       placeholder={fieldDefinition.placeholder}
-      // TODO: Use coerceFieldValue
-      value={value instanceof Date ? value : null}
-      onChange={onChange}
+      value={fieldValue}
+      onChange={onFieldValueChange}
       error={error}
       {...fieldDefinition.fieldComponentProps}
       disabled={fieldDefinition.disabled === true}
@@ -40,3 +49,8 @@ export function DatePickerAdapter({
     />
   );
 }
+
+const DATE_CONVERTER: FieldValueConverter<Date | null> = {
+  toFieldValue: (value) => (value instanceof Date ? value : null),
+  toParameterValue: passThroughFieldValue,
+};

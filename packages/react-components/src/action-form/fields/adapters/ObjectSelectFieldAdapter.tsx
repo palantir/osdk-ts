@@ -19,6 +19,11 @@ import React from "react";
 
 import { ObjectSelectField } from "../ObjectSelectField.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
+import {
+  passThroughFieldValue,
+  type FieldValueConverter,
+} from "./FieldValueConverter.js";
+import { useFieldValueConverter } from "./useFieldValueConverter.js";
 
 export function ObjectSelectFieldAdapter({
   fieldDefinition,
@@ -27,11 +32,16 @@ export function ObjectSelectFieldAdapter({
   error,
   portalContainer,
 }: PortalFieldAdapterProps<"OBJECT_SELECT">): React.ReactElement {
+  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
+    OBJECT_CONVERTER,
+    value,
+    onChange,
+  );
   return (
     <ObjectSelectField
       id={fieldDefinition.fieldKey}
-      value={narrowToOsdkObject(value)}
-      onChange={onChange}
+      value={fieldValue}
+      onChange={onFieldValueChange}
       placeholder={fieldDefinition.placeholder}
       error={error}
       {...fieldDefinition.fieldComponentProps}
@@ -40,6 +50,12 @@ export function ObjectSelectFieldAdapter({
     />
   );
 }
+
+const OBJECT_CONVERTER: FieldValueConverter<Osdk.Instance<ObjectTypeDefinition> | null> =
+  {
+    toFieldValue: narrowToOsdkObject,
+    toParameterValue: passThroughFieldValue,
+  };
 
 /** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
 function narrowToOsdkObject(

@@ -18,6 +18,11 @@ import React from "react";
 
 import { NumberInputField } from "../NumberInputField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
+import {
+  passThroughFieldValue,
+  type FieldValueConverter,
+} from "./FieldValueConverter.js";
+import { useFieldValueConverter } from "./useFieldValueConverter.js";
 
 export function NumberInputFieldAdapter({
   fieldDefinition,
@@ -25,12 +30,16 @@ export function NumberInputFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"NUMBER_INPUT">): React.ReactElement {
-  // TODO: Use coerceFieldValue
+  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
+    NUMBER_CONVERTER,
+    value,
+    onChange,
+  );
   return (
     <NumberInputField
       id={fieldDefinition.fieldKey}
-      value={typeof value === "number" ? value : null}
-      onChange={onChange}
+      value={fieldValue}
+      onChange={onFieldValueChange}
       placeholder={fieldDefinition.placeholder}
       error={error}
       {...fieldDefinition.fieldComponentProps}
@@ -38,3 +47,8 @@ export function NumberInputFieldAdapter({
     />
   );
 }
+
+const NUMBER_CONVERTER: FieldValueConverter<number | null> = {
+  toFieldValue: (value) => (typeof value === "number" ? value : null),
+  toParameterValue: passThroughFieldValue,
+};

@@ -18,6 +18,8 @@ import React from "react";
 
 import { TextAreaField } from "../TextAreaField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
+import { TEXT_CONVERTER } from "./FieldValueConverter.js";
+import { useFieldValueConverter } from "./useFieldValueConverter.js";
 
 export function TextAreaFieldAdapter({
   fieldDefinition,
@@ -25,11 +27,16 @@ export function TextAreaFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"TEXT_AREA">): React.ReactElement {
+  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
+    TEXT_CONVERTER,
+    value,
+    onChange,
+  );
   return (
     <TextAreaField
       id={fieldDefinition.fieldKey}
-      value={value != null ? String(value) : ""}
-      onChange={onChange}
+      value={fieldValue}
+      onChange={onFieldValueChange}
       placeholder={fieldDefinition.placeholder}
       error={error}
       {...fieldDefinition.fieldComponentProps}
