@@ -15,12 +15,23 @@
  */
 
 import type { Client } from "@osdk/client";
+import { createClient } from "@osdk/client";
+import { Employee } from "@osdk/client.test.ontology";
 import type { ObservableClient } from "@osdk/client/observable";
-import { render } from "@testing-library/react";
+import type * as ObservableClientModule from "@osdk/client/observable";
+import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
+import {
+  act,
+  cleanup,
+  render,
+  renderHook,
+  waitFor,
+} from "@testing-library/react";
 import React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { OsdkProvider } from "../OsdkProvider.js";
+import { useOsdkObject } from "../useOsdkObject.js";
 
 const { createObservableClientMock } = vi.hoisted(() => ({
   createObservableClientMock: vi.fn(() => ({}) as unknown as ObservableClient),
@@ -52,7 +63,76 @@ function expectedOptions(overrides?: {
 
 describe("OsdkProvider", () => {
   afterEach(() => {
+    cleanup();
     vi.clearAllMocks();
+  });
+
+  it("accepts creation options only when passing a regular client instead of an ObservableClient", () => {
+    type Props = React.ComponentProps<typeof OsdkProvider>;
+    expectTypeOf<{
+      children: null;
+      client: Client;
+      devMode: { actionDelayMs: number };
+    }>().toMatchTypeOf<Props>();
+    expectTypeOf<{
+      children: null;
+      client: ObservableClient;
+      enableDevTools: boolean;
+    }>().toMatchTypeOf<Props>();
+    expectTypeOf<{
+      children: null;
+      client: ObservableClient;
+      devMode: { actionDelayMs: number };
+    }>().not.toMatchTypeOf<Props>();
+    expectTypeOf<{
+      children: null;
+      observableClient: ObservableClient;
+    }>().not.toMatchTypeOf<Props>();
+    expectTypeOf<{ children: null }>().not.toMatchTypeOf<Props>();
+  });
+
+  it("two providers sharing an observable client keep it usable when one unmounts", async ({
+    onTestFinished,
+  }) => {
+    const { createObservableClient } = await vi.importActual<
+      typeof ObservableClientModule
+    >("@osdk/client/observable");
+    const { client, apiServer, fauxFoundry } = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    onTestFinished(() => apiServer.close());
+    ontologies.addEmployeeOntology(fauxFoundry.getDefaultOntology());
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    const employee = dataStore.registerObject(Employee, {
+      employeeId: 1,
+      fullName: "John Doe",
+    });
+    const observableClient = createObservableClient(client);
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <OsdkProvider client={observableClient} enableDevTools={false}>
+        {children}
+      </OsdkProvider>
+    );
+    const first = renderHook(() => useOsdkObject(Employee, 1), { wrapper });
+    const second = renderHook(() => useOsdkObject(Employee, 1), { wrapper });
+
+    await waitFor(() =>
+      expect([
+        first.result.current.object?.fullName,
+        second.result.current.object?.fullName,
+      ]).toEqual(["John Doe", "John Doe"]),
+    );
+    expect(first.result.current.object).toBe(second.result.current.object);
+
+    first.unmount();
+    dataStore.replaceObjectOrThrow({ ...employee, fullName: "Jane Doe" });
+    await act(async () => {
+      await observableClient.invalidateObjectType(Employee);
+    });
+    await waitFor(() =>
+      expect(second.result.current.object?.fullName).toBe("Jane Doe"),
+    );
   });
 
   it("passes the devMode option through to createObservableClient", () => {
