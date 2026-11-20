@@ -15,7 +15,7 @@
  */
 
 import { TypeHelpers as TH } from "@osdk/faux";
-import type { ActionTypeV2, QueryDataType } from "@osdk/foundry.ontologies";
+import type { ActionTypeV2 } from "@osdk/foundry.ontologies";
 
 import { BarInterface, FooInterface } from "./interfaceTypes.js";
 import { employeeObjectType, officeObjectType } from "./objectTypes.js";
@@ -285,11 +285,8 @@ export const MoveOffice: ActionTypeV2 = {
 
 /**
  * A function-backed action that returns a value.
- *
- * TODO: Drop the `returnType` intersection once the pinned
- * @osdk/foundry.ontologies includes it on `ActionTypeV2`.
  */
-export const RenameOffice: ActionTypeV2 & { returnType: QueryDataType } = {
+export const RenameOffice: ActionTypeV2 = {
   apiName: "renameOffice",
   description: "Rename an office and return a summary of the change",
   parameters: {

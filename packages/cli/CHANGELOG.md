@@ -1,5 +1,23 @@
 # @osdk/cli
 
+## 0.122.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.94.0
+
+## 0.121.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.93.0
+
+## 0.120.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.92.0
+
 ## 0.119.0
 
 ### Patch Changes

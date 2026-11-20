@@ -20,7 +20,6 @@ import type {
   SharedPropertyTypeGothamMapping,
   Visibility,
 } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 
 import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
@@ -66,15 +65,20 @@ export interface SharedPropertyTypeDefinition {
 export function defineSharedPropertyType(
   sptDefInput: SharedPropertyTypeDefinition,
 ): SharedPropertyType {
+  const collector = createValidationIssueCollector();
   const sptDef = cloneDefinition(sptDefInput);
   const apiName = namespace + sptDef.apiName;
-  invariant(
+  collector.check(
     ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName] ===
       undefined,
-    `Shared property type ${apiName} already exists`,
+    {
+      code: "duplicate_definition",
+      message: `Shared property type ${apiName} already exists`,
+      path: ["apiName"],
+    },
   );
 
-  invariant(
+  collector.check(
     !shouldNotHaveRenderHints(sptDef.type) ||
       !hasRenderHints(sptDef.typeClasses),
     `Shared property type ${apiName} of type '${getPropertyTypeName(
@@ -92,7 +96,6 @@ export function defineSharedPropertyType(
       (shouldNotHaveRenderHints(sptDef.type) ? [] : defaultTypeClasses),
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
-  const collector = createValidationIssueCollector();
   const context = `Shared property type "${apiName}"`;
   validateDisplayMetadataLengths(fullSpt, context, collector);
   validateStructFieldMetadata(fullSpt.type, context, collector);

@@ -46,6 +46,14 @@ import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 export function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
+  invariant(
+    (objectType.referenceSources?.length ?? 0) === 0 &&
+      !objectType.properties?.some(
+        (property) => property.reference !== undefined,
+      ),
+    `Object ${objectType.apiName}: explicit media bindings are unsupported in legacy maker conversion`,
+  );
+
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType);
 

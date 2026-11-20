@@ -49,6 +49,7 @@ import {
 import invariant from "tiny-invariant";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { getMediaSetMarkings } from "../../util/mediaSetMarkings.js";
 import { buildDatasource } from "./convertActionHelpers.js";
 import {
   convertDatasourceDefinition,
@@ -125,6 +126,52 @@ export function convertObject(
     .flatMap((prop) =>
       extractPropertyDatasource(prop, objectType.apiName, ridGenerator),
     );
+
+  const mediaDatasources = (objectType.referenceSources ?? []).flatMap(
+    ({ mediaSet }) => {
+      const properties = (objectType.properties ?? []).filter((property) =>
+        property.reference?.sources.some(
+          (source) => source.apiName === mediaSet.apiName,
+        ),
+      );
+      if (properties.length === 0) return [];
+      return [
+        buildDatasource(
+          `${objectType.apiName}.media.${mediaSet.apiName}`,
+          {
+            type: "mediaSetView",
+            mediaSetView: {
+              assumedMarkings: [],
+              clearOnDeleteProperties: [],
+              mediaSetViewLocator: ridGenerator.generateMediaSetViewLocator(
+                mediaSet.apiName,
+              ),
+              properties: properties.map((property) =>
+                ridGenerator.generatePropertyRid(
+                  property.apiName,
+                  objectType.apiName,
+                ),
+              ),
+              uploadProperties: properties
+                .filter(
+                  (property) =>
+                    property.reference?.uploadDestination?.apiName ===
+                    mediaSet.apiName,
+                )
+                .map((property) =>
+                  ridGenerator.generatePropertyRid(
+                    property.apiName,
+                    objectType.apiName,
+                  ),
+                ),
+            },
+          },
+          ridGenerator,
+        ),
+      ];
+    },
+  );
+  propertyDatasources.push(...mediaDatasources);
 
   const classificationGroupMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],
@@ -470,6 +517,7 @@ export function extractPropertyDatasource(
         buildDatasource(property.apiName, geotimeDefinition, ridGenerator),
       ];
     case "mediaReference":
+      if (property.reference !== undefined) return [];
       const propertyRid = ridGenerator.generatePropertyRid(
         property.apiName,
         objectTypeApiName,
@@ -477,7 +525,9 @@ export function extractPropertyDatasource(
       const mediaSetDefinition: ObjectTypeDatasourceDefinition = {
         type: "mediaSetView",
         mediaSetView: {
-          assumedMarkings: [],
+          assumedMarkings: getMediaSetMarkings(
+            property.backingMediaSetMarkings ?? {},
+          ).placeholderMarkings,
           clearOnDeleteProperties: [],
           mediaSetViewLocator:
             ridGenerator.generateMediaSetViewLocator(identifier),
@@ -677,6 +727,15 @@ function buildEntityMetadata(
       objectType.apiName,
       objectType.editsHistoryConfig,
     ),
+    ...(objectType.interfaceActionsEnabled === undefined
+      ? {}
+      : {
+          interfaceSettings: {
+            enableInterfaceActions: objectType.interfaceActionsEnabled
+              ? { type: "enabled", enabled: {} }
+              : { type: "disabled", disabled: {} },
+          },
+        }),
   };
   return metadata as MarketplaceObjectTypeEntityMetadata;
 }

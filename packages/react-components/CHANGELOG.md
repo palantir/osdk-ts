@@ -1,5 +1,20 @@
 # @osdk/react-components
 
+## 0.73.0
+
+### Minor Changes
+
+- 064d65c: Fix coerceFieldValue destroying array values for multiplicity parameters on submit
+
+### Patch Changes
+
+- Updated dependencies [4ca8bbe]
+- Updated dependencies [f5e52d1]
+  - @osdk/client@2.93.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/react@2.93.0
+  - @osdk/api@2.93.0
+
 ## 0.72.0
 
 ### Minor Changes

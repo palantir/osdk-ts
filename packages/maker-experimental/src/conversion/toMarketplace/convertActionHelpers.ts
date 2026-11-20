@@ -868,6 +868,9 @@ function buildActionMetadata(
     rid: ridGenerator.generateRidForActionType(action.apiName),
     version: "",
     apiName: action.apiName,
+    ...(action.isolationSettings !== undefined && {
+      isolationSettings: action.isolationSettings,
+    }),
     notificationSettings: {
       renderingSettings: {
         type: "anyNotificationRenderingCanFail" as const,

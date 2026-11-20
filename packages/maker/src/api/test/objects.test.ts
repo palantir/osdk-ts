@@ -157,6 +157,33 @@ describe("Object Types", () => {
     );
   });
 
+  it.each([
+    { type: "mediaReference" as const },
+    { type: "string" as const, includeEmptyBackingMediaSet: true },
+  ])(
+    "rejects backing media markings without a generated media reference: %j",
+    (property) => {
+      expect(() =>
+        defineObject({
+          apiName: "Document",
+          displayName: "Document",
+          pluralDisplayName: "Documents",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            file: {
+              ...property,
+              backingMediaSetMarkings: { maxClassification: "CBAC" },
+            },
+          },
+        }),
+      ).toThrow(
+        "can only use backingMediaSetMarkings with includeEmptyBackingMediaSet on a mediaReference",
+      );
+    },
+  );
+
   it("allows an empty backing Media Set for a media reference property", () => {
     const object = defineObject({
       titlePropertyApiName: "id",

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionReturnValue } from "./ActionResults.js";
 import type {
   ActionEditResponse,
   ActionValidationResponse,
@@ -32,4 +33,4 @@ export type ActionReturnTypeForOptions<
     ? ActionEditResponse<ReturnValue>
     : [ReturnValue] extends [never]
       ? undefined
-      : { returnValue: ReturnValue | undefined };
+      : ActionReturnValue<ReturnValue>;

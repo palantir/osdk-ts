@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  DataValue,
-  SyncApplyActionResponseV2,
-} from "@osdk/foundry.ontologies";
+import type { ResourceLocator } from "../ResourceLocator.js";
 
-/**
- * `SyncApplyActionResponseV2` with the `returnValue` field added to the API
- * Gateway spec.
- *
- * TODO: Remove once the pinned @osdk/foundry.ontologies includes `returnValue`.
- */
-export type SyncApplyActionResponseWithReturnValue =
-  SyncApplyActionResponseV2 & { returnValue?: DataValue };
+export interface MediaReferenceSource {
+  readonly type: "media";
+  readonly mediaSet: ResourceLocator;
+}
+
+export interface MediaPropertyReference {
+  readonly type: "media";
+  /** Media sets declared in the object's referenceSources that can supply content. */
+  readonly sources: readonly ResourceLocator[];
+  /** The source for new uploads. Omission disables uploads through this property. */
+  readonly uploadDestination?: ResourceLocator;
+}

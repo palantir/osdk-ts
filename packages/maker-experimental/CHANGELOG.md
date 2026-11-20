@@ -1,5 +1,71 @@
 # @osdk/maker-experimental
 
+## 0.90.0
+
+### Minor Changes
+
+- 277db79: Add flag to write imported block data output
+
+## 0.89.0
+
+### Minor Changes
+
+- 367cd32: Support marking input groups on generated backing media sets and assume the same markings on their ontology datasources.
+
+### Patch Changes
+
+- Updated dependencies [367cd32]
+- Updated dependencies [2b42dc7]
+  - @osdk/maker@0.93.0
+  - @osdk/maker-import@0.58.0
+  - @osdk/api@2.94.0
+  - @osdk/client.unstable@2.94.0
+  - @osdk/generator-converters.ontologyir@2.94.0
+
+## 0.88.0
+
+### Minor Changes
+
+- 00c8e96: Convert interface action type constraint edit validations into Marketplace block data with packaged references.
+- 1987502: Add `interfaceActionsEnabled` to `defineObject` to set an object type's interface action settings
+- 1e58a90: Collect independent validation issues in interface, interface action-type constraint, folder, and interface-link action helper definitions. Rename the collecting method to `check`, add `assert` for terminal checks that narrow types, and update downstream collector usage.
+- e726b2a: expose action isolation settings
+- f1d12b0: Add spt mappings for non-interface object props
+
+### Patch Changes
+
+- Updated dependencies [b1658a9]
+- Updated dependencies [1987502]
+- Updated dependencies [6b847a0]
+- Updated dependencies [1e58a90]
+- Updated dependencies [e726b2a]
+- Updated dependencies [f1d12b0]
+  - @osdk/maker@0.92.0
+  - @osdk/generator-converters.ontologyir@2.93.0
+  - @osdk/maker-import@0.57.0
+  - @osdk/api@2.93.0
+  - @osdk/client.unstable@2.93.0
+
+## 0.87.0
+
+### Minor Changes
+
+- f4d94ba: Support multiple named media-set inputs and explicit upload destinations on scalar media properties.
+- 3282ead: Support TSv2 query/FBA source importing for Preview
+
+### Patch Changes
+
+- Updated dependencies [f4d94ba]
+- Updated dependencies [8aa522d]
+- Updated dependencies [749af7f]
+- Updated dependencies [3282ead]
+  - @osdk/maker@0.91.0
+  - @osdk/api@2.92.0
+  - @osdk/generator-converters.ontologyir@2.92.0
+  - @osdk/generator-converters.preview@0.66.0
+  - @osdk/maker-import@0.56.0
+  - @osdk/client.unstable@2.92.0
+
 ## 0.86.0
 
 ### Minor Changes

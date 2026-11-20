@@ -16,6 +16,7 @@
 
 import type { OntologyIrBaseParameterConstraintType } from "@osdk/client.unstable";
 
+import type { InterfaceActionTypeEditsValidationDefinition } from "./interface/InterfaceActionTypeEditsValidationDefinition.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 
 export interface ParameterConstraintDefinition {
@@ -33,4 +34,5 @@ export interface InterfaceActionTypeConstraintDefinition {
   description: string;
   requireImplementation: boolean;
   parameters: Array<ParameterConstraintDefinition>;
+  editsValidation?: InterfaceActionTypeEditsValidationDefinition;
 }

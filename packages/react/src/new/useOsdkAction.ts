@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  ActionReturnValue,
   ActionValidationResponse,
 } from "@osdk/client";
 import { ActionValidationError } from "@osdk/client";
@@ -40,9 +41,8 @@ export type UseOsdkActionData<Q extends ActionDefinition<any>> = [
   ActionReturnValueFromDef<Q>,
 ] extends [never]
   ? ActionEditResponse
-  : ActionEditResponse & {
-      returnValue?: ActionReturnValueFromDef<Q> | undefined;
-    };
+  : ActionEditResponse &
+      Partial<ActionReturnValue<ActionReturnValueFromDef<Q>>>;
 
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   /**

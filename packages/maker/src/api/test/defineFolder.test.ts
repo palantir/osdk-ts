@@ -24,6 +24,7 @@ import {
   getOntologyDefinition,
   initializeOntologyState,
 } from "../defineOntology.js";
+import { expectValidationIssues } from "./testUtils.js";
 
 const objectDefinition = {
   apiName: "Person",
@@ -73,6 +74,25 @@ describe("defineFolder", () => {
       defineFolder({ id: "other", folder: "people//", resources: [] }),
     ).toThrow('Folder location "/people" has conflicting ids');
     expect(getFolderDefinitions()).toHaveLength(1);
+  });
+
+  it("collects ID, runtime path type, and resource issues without registering a folder", () => {
+    expectValidationIssues(
+      () =>
+        defineFolder({
+          id: " ",
+          // @ts-expect-error Validate runtime callers with a non-string path.
+          folder: null,
+          resources: ["", " "],
+        }),
+      [
+        "id must be a non-empty string",
+        "path must be a string",
+        "resource API names",
+        "resource API names",
+      ],
+    );
+    expect(getFolderDefinitions()).toEqual([]);
   });
 
   it.each([

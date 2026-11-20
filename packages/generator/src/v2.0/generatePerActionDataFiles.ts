@@ -29,7 +29,7 @@ import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { escapeJsDocText } from "../util/escapeJsDocText.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
-import { getQueryParamType } from "./generatePerQueryDataFiles.js";
+import { getActionReturnType } from "./getActionReturnType.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
 
 export async function generatePerActionDataFiles(
@@ -67,22 +67,20 @@ export async function generatePerActionDataFiles(
         ),
       );
 
-      const { returnType } = fullActionDef;
-
       function createReturnTypeDef() {
-        if (returnType == null) {
+        if (fullActionDef.returnType == null) {
           return "";
         }
-        const type = getQueryParamType(enhancedOntology, returnType, "Result");
-        if (returnType.nullable) {
+        const type = getActionReturnType(fullActionDef.returnType);
+        if (fullActionDef.returnType.nullable) {
           return `export type ReturnType = ${type} | undefined;`;
         }
-        return returnType.type === "struct"
+        return fullActionDef.returnType.type === "struct"
           ? `export interface ReturnType ${type}`
           : `export type ReturnType = ${type};`;
       }
 
-      const applyActionReturnType = returnType == null
+      const applyActionReturnType = fullActionDef.returnType == null
         ? "ActionReturnTypeForOptions<OP>"
         : `ActionReturnTypeForOptions<OP, ${action.shortApiName}.ReturnType>`;
 
@@ -353,10 +351,10 @@ export async function generatePerActionDataFiles(
             ActionDefinition,
             ActionMetadata,
             ActionParam,
+            ${fullActionDef.returnType != null ? "ActionResult," : ""}
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,
-            ${returnType != null ? "QueryResult," : ""}
           } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}

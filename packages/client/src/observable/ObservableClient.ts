@@ -17,7 +17,6 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
-  ActionReturnTypeForOptions,
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
@@ -73,10 +72,7 @@ export namespace ObservableClient {
    * action returns a value.
    */
   export type ApplyActionResult<Q extends ActionDefinition<any>> =
-    ActionReturnTypeForOptions<
-      { $returnEdits: true },
-      ActionReturnValueFromDef<Q>
-    >;
+    ActionEditResponse<ActionReturnValueFromDef<Q>>;
 }
 
 export interface CacheSnapshot {

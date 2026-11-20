@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import type { ActionTypeV2, QueryDataType } from "@osdk/foundry.ontologies";
-
-/**
- * `ActionTypeV2` with the `returnType` field added to the API Gateway spec.
- *
- * TODO: Remove once the pinned @osdk/foundry.ontologies includes `returnType`.
- */
-export type ActionTypeV2WithReturnType = ActionTypeV2 & {
-  returnType?: QueryDataType;
+/** Identifies a named resource input. The consumer determines the resource type. */
+export type ResourceLocator = {
+  readonly type: "apiName";
+  readonly apiName: string;
 };

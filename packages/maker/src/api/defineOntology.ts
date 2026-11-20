@@ -546,6 +546,9 @@ export function convertAction(
               } as unknown as ActionTypeStatus)
             : action.status,
         entities: action.entities,
+        ...(action.isolationSettings !== undefined && {
+          isolationSettings: action.isolationSettings,
+        }),
       },
     },
   };

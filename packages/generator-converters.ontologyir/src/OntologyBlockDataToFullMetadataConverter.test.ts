@@ -542,6 +542,35 @@ describe("links involving imported objects", () => {
 });
 
 describe(OntologyBlockDataToFullMetadataConverter, () => {
+  it.each([false, true])(
+    "preserves direct shared property mappings with interfaces: %s",
+    (withInterface) => {
+      const blockData = createBlockData({ interface: withInterface });
+      const objectType = blockData.objectTypes[objectRid].objectType;
+      if (!withInterface) {
+        objectType.implementsInterfaces = [];
+        objectType.implementsInterfaces2 = [];
+      }
+      objectType.propertyTypes[objectPropertyRid("taskTitle")]
+        .sharedPropertyTypeApiName = "com.example.title";
+      objectType.propertyTypes[objectPropertyRid("taskStatus")]
+        .sharedPropertyTypeApiName = "com.example.status";
+      objectType.propertyTypes[objectPropertyRid("taskStatus")]
+        .sharedPropertyTypeRid = statusSharedPropertyRid;
+
+      const result = OntologyBlockDataToFullMetadataConverter
+        .getFullMetadataFromBlockData(blockData);
+
+      expect(result.objectTypes[objectApiName].sharedPropertyTypeMapping)
+        .toEqual({
+          "com.example.title": "taskTitle",
+          "com.example.status": "taskStatus",
+        });
+      expect(result.objectTypes[objectApiName].objectType.properties)
+        .toHaveProperty("id");
+    },
+  );
+
   it.each(
     [
       ["manyToMany", "Target"],
