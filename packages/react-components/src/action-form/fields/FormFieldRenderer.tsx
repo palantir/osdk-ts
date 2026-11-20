@@ -28,11 +28,11 @@ import { DropdownFieldAdapter } from "./adapters/DropdownFieldAdapter.js";
 import { FilePickerFieldAdapter } from "./adapters/FilePickerFieldAdapter.js";
 import { NumberInputFieldAdapter } from "./adapters/NumberInputFieldAdapter.js";
 import { ObjectSelectFieldAdapter } from "./adapters/ObjectSelectFieldAdapter.js";
+import { ObjectSetFieldAdapter } from "./adapters/ObjectSetFieldAdapter.js";
 import { RadioButtonsFieldAdapter } from "./adapters/RadioButtonsFieldAdapter.js";
 import { SwitchFieldAdapter } from "./adapters/SwitchFieldAdapter.js";
 import { TextAreaFieldAdapter } from "./adapters/TextAreaFieldAdapter.js";
 import { TextInputFieldAdapter } from "./adapters/TextInputFieldAdapter.js";
-import { ObjectSetField } from "./ObjectSetField.js";
 import { TextInputField } from "./TextInputField.js";
 
 const UNSUPPORTED_FIELD_MESSAGE =
@@ -224,13 +224,7 @@ function renderFieldComponent(
         />
       );
     case "OBJECT_SET":
-      return (
-        <ObjectSetField
-          id={fieldDefinition.fieldKey}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={fieldDefinition.disabled === true}
-        />
-      );
+      return <ObjectSetFieldAdapter fieldDefinition={fieldDefinition} />;
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }

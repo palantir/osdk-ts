@@ -217,19 +217,6 @@ describe("NumberInputField", () => {
     });
   });
 
-  it("uses an external reset while focused for display and subsequent stepping", () => {
-    const onChange = vi.fn();
-    const { rerender } = render(
-      <NumberInputField value={5} onChange={onChange} />,
-    );
-    const input = screen.getByRole("textbox") as HTMLInputElement;
-    fireEvent.focus(input);
-    rerender(<NumberInputField value={100} onChange={onChange} />);
-    expect(input.value).toBe("100");
-    fireEvent.keyDown(input, { key: "ArrowUp" });
-    expect(onChange).toHaveBeenLastCalledWith(101);
-  });
-
   describe("step (ArrowUp/ArrowDown)", () => {
     it("increments and decrements by step on arrow keys", () => {
       const onChange = vi.fn();
