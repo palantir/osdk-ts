@@ -43,8 +43,19 @@ export interface SeedLinkEntry {
   targetKey: string;
 }
 
-/** The final serializable seed data output. */
+/** The final serializable Ontology seed data output. */
 export interface SeedOutput {
   objects: Record<string, Array<Record<string, unknown>>>;
   links: SeedLinkEntry[];
+}
+
+/** The final serializable Admin seed data output. */
+export interface AdminSeedOutput {
+  users: unknown[];
+}
+
+/** The final serializable Foundry seed data output. */
+export interface FoundrySeedOutput {
+  ontology: SeedOutput;
+  admin: AdminSeedOutput;
 }
