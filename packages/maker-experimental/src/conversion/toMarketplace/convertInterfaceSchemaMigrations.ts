@@ -89,7 +89,14 @@ export function convertInterfaceSchemaMigrations(
     ),
   );
 
-  return { interfacePropertyTypeRidsToApiNames, schemaTransitions };
+  return {
+    interfaceActionTypeConstraintRidsToApiNames: {},
+    interfaceLinkTypeRidsToApiNames: {},
+    interfaceParameterConstraintRidsToApiNames: {},
+    interfacePropertyTypeRidsToApiNames,
+    interfaceTypeRidsToApiNames: {},
+    schemaTransitions,
+  };
 }
 
 /** How a property the instruction names is identified on the wire. */
