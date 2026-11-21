@@ -20,6 +20,7 @@ import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import { MultiMap } from "./collections/MultiMap.js";
 import type { FunctionCacheKey } from "./function/FunctionCacheKey.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./list/ListCacheKey.js";
 import type { MediaMetadataCacheKey } from "./media/MediaMetadataCacheKey.js";
@@ -29,6 +30,7 @@ import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
 export class Changes {
   modifiedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
   addedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
+  writtenCacheKeys: Set<KnownCacheKey> = new Set<KnownCacheKey>();
 
   added: Set<
     | AggregationCacheKey

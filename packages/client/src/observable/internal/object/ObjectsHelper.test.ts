@@ -26,6 +26,7 @@ import {
   ObjectDefRef,
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { Canonical } from "../Canonical.js";
+import { createChangedObjects } from "../Changes.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { Store } from "../Store.js";
 import {
@@ -75,6 +76,37 @@ describe("ObjectsHelper.propagateWrite RDP merge", () => {
     return () => {
       store = undefined!;
     };
+  });
+
+  it("only exposes object cache keys written by the current update", () => {
+    const query = store.objects.getQuery({
+      apiName: Employee,
+      pk: emp.$primaryKey,
+    });
+    store.batch({}, (batch) => {
+      batch.write(query.cacheKey, emp as any, "loaded");
+    });
+
+    const stale = store.batch({ changes: createChangedObjects() }, (batch) =>
+      store.objects.getAvailableCacheKeys([emp as any], undefined, batch),
+    ).retVal;
+    expect(stale).toEqual({ keys: new Set(), hasMissingObjects: true });
+
+    const current = store.batch(
+      { changes: createChangedObjects() },
+      (batch) => {
+        batch.write(query.cacheKey, emp as any, "loaded");
+        return store.objects.getAvailableCacheKeys(
+          [emp as any],
+          undefined,
+          batch,
+        );
+      },
+    ).retVal;
+    expect(current).toEqual({
+      keys: new Set([query.cacheKey]),
+      hasMissingObjects: false,
+    });
   });
 
   it("skips merge when incoming object already has all expected RDP fields", () => {

@@ -78,13 +78,18 @@ describe("ObjectSetQuery cache reconciliation", () => {
     } as unknown as ObjectHolder;
   }
 
-  function createChanges(employee: ObjectHolder, isNew: boolean = true) {
-    const sourceQuery = store.objects.getQuery({
+  function createChanges(
+    employee: ObjectHolder,
+    isNew: boolean = true,
+    sourceCacheKey?: ObjectCacheKey,
+  ) {
+    sourceCacheKey ??= store.objects.getQuery({
       apiName: Employee,
       pk: employee.$primaryKey,
-    });
+    }).cacheKey;
     const changes = createChangedObjects();
-    changes.registerObject(sourceQuery.cacheKey, employee, isNew);
+    changes.registerObject(sourceCacheKey, employee, isNew);
+    changes.writtenCacheKeys.add(sourceCacheKey);
     return changes;
   }
 
@@ -313,7 +318,10 @@ describe("ObjectSetQuery cache reconciliation", () => {
     });
     const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
 
-    query.maybeUpdateAndRevalidate(createChanges(employee), undefined);
+    query.maybeUpdateAndRevalidate(
+      createChanges(employee, true, targetObjectQuery.cacheKey),
+      undefined,
+    );
 
     expect(revalidate).not.toHaveBeenCalled();
     expect(store.getValue(query.cacheKey)).toMatchObject({
@@ -336,7 +344,10 @@ describe("ObjectSetQuery cache reconciliation", () => {
     query.pendingFetch = Promise.resolve();
     const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
 
-    query.maybeUpdateAndRevalidate(createChanges(employee), undefined);
+    query.maybeUpdateAndRevalidate(
+      createChanges(employee, true, targetObjectQuery.cacheKey),
+      undefined,
+    );
 
     expect(revalidate).not.toHaveBeenCalled();
     expect(store.getValue(query.cacheKey)).toMatchObject({
@@ -360,7 +371,10 @@ describe("ObjectSetQuery cache reconciliation", () => {
     query.pendingFetch = Promise.resolve();
     const revalidate = vitest.spyOn(query, "revalidate").mockResolvedValue();
 
-    query.maybeUpdateAndRevalidate(createChanges(employee), undefined);
+    query.maybeUpdateAndRevalidate(
+      createChanges(employee, true, targetObjectQuery.cacheKey),
+      undefined,
+    );
 
     expect(revalidate).not.toHaveBeenCalled();
     expect(store.getValue(query.cacheKey)).toMatchObject({
