@@ -167,7 +167,7 @@ describe("ObjectSet", () => {
                     { alpha: "first", beta: 1, gamma: "ignored" },
                     { alpha: "second", beta: 2, gamma: "ignored" },
                   ],
-                  arrayValue: [1, 2, 3],
+                  arrayValue: 3,
                 },
               ],
               ...wireMappings,
@@ -188,12 +188,92 @@ describe("ObjectSet", () => {
           { theAlpha: "first", theBeta: 1 },
           { theAlpha: "second", theBeta: 2 },
         ]);
-        expect(ifaceObj.iReduced).toEqual([1, 2, 3]);
+        expect(ifaceObj.iReduced).toEqual(3);
 
         // @ts-expect-error
         expect(() => ifaceObj.$as(ComplexImplementationObject)).toThrowError(
           "properties 'nestedStruct', 'multiStruct', 'multiStructArray', 'arrayValue' were not fully loaded",
         );
+      })();
+    });
+
+    it("omits interface properties whose backing properties were not loaded", async () => {
+      await apiServer.boundary(async () => {
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+            baseUrl,
+            () => ({
+              data: [
+                {
+                  __primaryKey: "k1",
+                  __apiName: "ComplexImplementationObject",
+                  id: "k1",
+                  localValue: "hello",
+                },
+              ],
+              ...wireMappings,
+              totalCount: "1",
+              propertySecurities: [],
+            }),
+          ),
+        );
+
+        const view = (
+          await client(ComplexImplementationInterface).fetchPage({
+            $select: ["iLocal"],
+          })
+        ).data[0];
+
+        expect(Object.keys(view).filter((key) => !key.startsWith("$"))).toEqual(
+          ["iLocal"],
+        );
+        expect(JSON.parse(JSON.stringify(view))).not.toHaveProperty("iStruct");
+      })();
+    });
+
+    it("derives interface properties when casting a directly loaded object, leaving reduced properties unset", async () => {
+      await apiServer.boundary(async () => {
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.load(baseUrl, () => ({
+            data: [
+              {
+                __primaryKey: "k1",
+                __apiName: "ComplexImplementationObject",
+                id: "k1",
+                localValue: "hello",
+                nestedStruct: { label: "nested-label", count: 7 },
+                multiStruct: { alpha: "a-val", beta: 42, gamma: "ignored" },
+                multiStructArray: [
+                  { alpha: "first", beta: 1, gamma: "ignored" },
+                  { alpha: "second", beta: 2, gamma: "ignored" },
+                ],
+                arrayValue: [1, 2, 3],
+              },
+            ],
+            totalCount: "1",
+            propertySecurities: [],
+          })),
+        );
+
+        const object = (await client(ComplexImplementationObject).fetchPage())
+          .data[0];
+        const view = object.$as(ComplexImplementationInterface);
+
+        expect(
+          Object.fromEntries(
+            Object.entries(view).filter(([key]) => !key.startsWith("$")),
+          ),
+        ).toEqual({
+          iLocal: "hello",
+          iStructField: "nested-label",
+          iStruct: { theAlpha: "a-val", theBeta: 42 },
+          iStructArray: [
+            { theAlpha: "first", theBeta: 1 },
+            { theAlpha: "second", theBeta: 2 },
+          ],
+        });
+        // @ts-expect-error
+        expect(view.$as(ComplexImplementationObject)).toBe(object);
       })();
     });
 
