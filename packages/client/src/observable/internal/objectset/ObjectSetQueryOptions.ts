@@ -87,6 +87,12 @@ export interface ObserveObjectSetOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When true, includes all properties of the underlying concrete object type
+   * for interface object sets. Has no effect for object type sets.
+   */
+  $includeAllBaseObjectProperties?: boolean;
 }
 
 export interface ObjectSetQueryOptions extends ObserveObjectSetOptions<

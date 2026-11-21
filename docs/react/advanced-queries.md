@@ -220,6 +220,7 @@ still fetch data normally but won't receive real-time updates.
 - `where` — Filter objects
 - `withProperties` — Add derived/computed properties
 - `$select` — Restrict which properties are returned for each object
+- `$includeAllBaseObjectProperties` — For interface object sets, load every property of each underlying object type so `$as(ObjectType)` returns the full object. Has no effect for object type sets.
 - `union` — Combine with other ObjectSets
 - `intersect` — Find common objects with other ObjectSets
 - `subtract` — Remove objects that exist in other ObjectSets

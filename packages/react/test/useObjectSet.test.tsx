@@ -309,6 +309,27 @@ describe(useObjectSet, () => {
       expect(result.current.data).toBeUndefined();
       expect(result.current.isLoading).toBe(true);
     });
+
+    it("resubscribes when $includeAllBaseObjectProperties changes", () => {
+      const wrapper = createWrapper();
+      const interfaceObjectSet =
+        createMockInterfaceObjectSet(MockInterfaceType);
+
+      const { rerender } = renderHook(
+        ({ includeAll }) =>
+          useObjectSet(interfaceObjectSet, {
+            $includeAllBaseObjectProperties: includeAll,
+          }),
+        { wrapper, initialProps: { includeAll: false } },
+      );
+      rerender({ includeAll: true });
+
+      expect(
+        mockObserveObjectSet.mock.calls.map(
+          ([, options]) => options.$includeAllBaseObjectProperties,
+        ),
+      ).toEqual([false, true]);
+    });
   });
 
   describe("isLoading when disabled", () => {

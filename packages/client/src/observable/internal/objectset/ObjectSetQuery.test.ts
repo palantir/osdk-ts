@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet } from "@osdk/api";
-import { Employee, Office } from "@osdk/client.test.ontology";
+import { Employee, FooInterface, Office } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it, vitest } from "vitest";
 
@@ -421,5 +421,75 @@ describe("ObjectSetQuery websocket out of date", () => {
     (query as unknown as { onOswOutOfDate(): void }).onOswOutOfDate();
 
     expect(revalidate).toHaveBeenCalledWith(true);
+  });
+});
+
+describe("ObjectSetQuery $includeAllBaseObjectProperties", () => {
+  let client: Client;
+  let fauxFoundry: FauxFoundry;
+  const defer = createDefer();
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+    fauxFoundry = testSetup.fauxFoundry;
+    ontologies.addEmployeeOntology(testSetup.fauxFoundry.getDefaultOntology());
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  async function loadOffices($includeAllBaseObjectProperties: boolean) {
+    const observer = mockObserver<ObserveObjectSetArgs<typeof FooInterface>>();
+    defer(
+      createObservableClient(client).observeObjectSet(
+        client(FooInterface),
+        { $includeAllBaseObjectProperties },
+        observer,
+      ),
+    );
+    const { resolvedList } = await waitForPayload(
+      observer,
+      (p) => p.status === "loaded",
+    );
+    return resolvedList?.map((foo) => foo.$as(Employee).office);
+  }
+
+  it("loads every object type property for interface object sets", async () => {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    dataStore.registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+      office: "NYC",
+    });
+
+    expect(await loadOffices(true)).toEqual(["NYC"]);
+    expect(await loadOffices(false)).toEqual([undefined]);
+  });
+
+  it("ignores the option for object type sets", () => {
+    const store = new Store(client);
+    const getQuery = (
+      baseObjectSet:
+        | ObjectSet<typeof FooInterface>
+        | ObjectSet<typeof Employee>,
+    ) =>
+      store.objectSets.getQuery({
+        baseObjectSet,
+        $includeAllBaseObjectProperties: true,
+        mode: "offline",
+      });
+
+    expect(getQuery(client(FooInterface)).includeAllBaseObjectProperties).toBe(
+      true,
+    );
+    expect(getQuery(client(Employee)).includeAllBaseObjectProperties).toBe(
+      false,
+    );
   });
 });
