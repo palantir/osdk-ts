@@ -31,13 +31,11 @@ export interface WidgetBuildOutputs extends BuildOutputs {
 export async function getWidgetBuildOutputs(
   bundle: Rollup.OutputBundle,
   input: string,
+  root: string,
   buildDir: string,
   server: ViteDevServer,
 ): Promise<WidgetBuildOutputs> {
-  const inputHtmlFilePath = path.resolve(
-    buildDir,
-    path.relative(process.cwd(), input),
-  );
+  const inputHtmlFilePath = path.resolve(buildDir, path.relative(root, input));
   const buildOutputs = extractBuildOutputs(inputHtmlFilePath);
   const scriptPaths = new Set(
     buildOutputs.scripts.map((script) => script.src.slice(1)),
