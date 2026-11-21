@@ -22,8 +22,10 @@ import {
   formatValidationPath,
   MakerValidationError,
   type MakerValidationIssueCollector,
+  observeDefinitionFailures,
   parseModel,
   throwIfAnyValidationIssues,
+  withDefinitionDiagnostics,
 } from "./validation.js";
 
 it("collects failed checks with default or structured issues", () => {
@@ -192,6 +194,69 @@ it("identifies each unknown field while preserving other structural issues", () 
 it("accepts empty validation groups", () => {
   expect(() => throwIfAnyValidationIssues()).not.toThrow();
   expect(() => throwIfAnyValidationIssues([], [])).not.toThrow();
+});
+
+function definition(): void {}
+
+it("preserves errors when observation fails and stops observing after cleanup", () => {
+  const error = new MakerValidationError([]);
+  const stack = error.stack;
+
+  const observed: Array<readonly [MakerValidationError, number]> = [];
+  const stopFailing = observeDefinitionFailures(() => {
+    throw new RangeError("observer failed");
+  });
+
+  const stop = observeDefinitionFailures((observedError, _boundary, count) => {
+    observed.push([observedError, count]);
+  });
+
+  try {
+    expect(() =>
+      withDefinitionDiagnostics(definition, 2, () => {
+        throw error;
+      }),
+    ).toThrow(error);
+    expect(observed).toEqual([[error, 2]]);
+    expect(error.stack).toBe(stack);
+  } finally {
+    stopFailing();
+    stop();
+  }
+
+  expect(() =>
+    withDefinitionDiagnostics(definition, 1, () => {
+      throw error;
+    }),
+  ).toThrow(error);
+  expect(observed).toHaveLength(1);
+});
+
+it("returns the original value and leaves unrelated exceptions unobserved", () => {
+  const observed: MakerValidationError[] = [];
+  const stop = observeDefinitionFailures((error) => {
+    observed.push(error);
+  });
+  const value = {};
+  const error = new RangeError("original");
+  let calls = 0;
+  try {
+    expect(
+      withDefinitionDiagnostics(definition, 1, () => {
+        calls++;
+        return value;
+      }),
+    ).toBe(value);
+    expect(calls).toBe(1);
+    expect(() =>
+      withDefinitionDiagnostics(definition, 1, () => {
+        throw error;
+      }),
+    ).toThrow(error);
+    expect(observed).toEqual([]);
+  } finally {
+    stop();
+  }
 });
 
 it("combines readonly issue groups in order without losing diagnostic details", () => {
