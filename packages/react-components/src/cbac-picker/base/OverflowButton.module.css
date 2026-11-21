@@ -44,14 +44,31 @@
   color: var(--osdk-intent-primary-rest);
 }
 
-.overflowList {
+.overflowPopup {
   display: flex;
   flex-direction: column;
-  max-height: var(--osdk-cbac-overflow-list-max-height);
-  overflow-y: auto;
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
+  width: var(--osdk-cbac-overflow-popup-width);
   padding: calc(var(--osdk-surface-spacing) * 0.5);
   background: var(--osdk-surface-background-color-default);
   border: 1px solid var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-surface-elevation-2);
+}
+
+.overflowSearch {
+  flex-shrink: 0;
+}
+
+.overflowList {
+  display: flex;
+  flex-direction: column;
+  max-height: var(--osdk-cbac-overflow-list-max-height);
+  overflow-y: auto;
+}
+
+.emptyState {
+  padding: var(--osdk-cbac-overflow-empty-padding);
+  font-size: var(--osdk-cbac-overflow-button-font-size);
+  color: var(--osdk-cbac-overflow-empty-color);
 }

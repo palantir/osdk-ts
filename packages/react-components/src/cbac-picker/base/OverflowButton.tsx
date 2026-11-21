@@ -19,6 +19,7 @@ import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React from "react";
 
+import { SearchBar } from "../../base-components/search-bar/SearchBar.js";
 import type { MarkingSelectionState } from "../types.js";
 import { OverflowItem } from "./OverflowItem.js";
 
@@ -42,9 +43,33 @@ export function OverflowButton({
   onMarkingToggle,
 }: OverflowButtonProps): React.ReactElement {
   const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
+
+  const handleOpenChange = React.useCallback((nextOpen: boolean) => {
+    setOpen(nextOpen);
+    if (nextOpen) {
+      setQuery("");
+    }
+  }, []);
+
+  const handleQueryChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(event.target.value);
+    },
+    [],
+  );
+
+  const filteredMarkings = React.useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    return normalizedQuery.length === 0
+      ? overflowMarkings
+      : overflowMarkings.filter((marking) =>
+          marking.label.toLowerCase().includes(normalizedQuery),
+        );
+  }, [overflowMarkings, query]);
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
+    <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger
         render={
           <Button
@@ -59,18 +84,31 @@ export function OverflowButton({
       />
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start">
-          <Popover.Popup className={styles.overflowList}>
-            {overflowMarkings.map((marking) => (
-              <OverflowItem
-                key={marking.id}
-                id={marking.id}
-                label={marking.label}
-                description={marking.description}
-                selectionState={marking.selectionState}
-                disabled={marking.disabled}
-                onToggle={onMarkingToggle}
-              />
-            ))}
+          <Popover.Popup className={styles.overflowPopup}>
+            <SearchBar
+              value={query}
+              onChange={handleQueryChange}
+              placeholder="Search markings"
+              className={styles.overflowSearch}
+            />
+            <div className={styles.overflowList}>
+              {filteredMarkings.map((marking) => (
+                <OverflowItem
+                  key={marking.id}
+                  id={marking.id}
+                  label={marking.label}
+                  description={marking.description}
+                  selectionState={marking.selectionState}
+                  disabled={marking.disabled}
+                  onToggle={onMarkingToggle}
+                />
+              ))}
+              {filteredMarkings.length === 0 && (
+                <div className={styles.emptyState} role="status">
+                  No matching markings
+                </div>
+              )}
+            </div>
           </Popover.Popup>
         </Popover.Positioner>
       </Popover.Portal>

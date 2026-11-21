@@ -158,4 +158,8 @@
     --osdk-cbac-marking-button-font-size
   );
   --osdk-cbac-overflow-list-max-height: 240px;
+  --osdk-cbac-overflow-popup-width: 240px;
+  --osdk-cbac-overflow-empty-padding: var(--osdk-surface-spacing)
+    calc(var(--osdk-surface-spacing) * 1.5);
+  --osdk-cbac-overflow-empty-color: var(--osdk-typography-color-muted);
 }
