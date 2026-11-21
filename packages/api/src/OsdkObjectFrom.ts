@@ -124,11 +124,12 @@ export type MapPropNamesToInterface<
 
 /**
  * True iff the OT `TO` implements interface `FROM` with at least one
- * non-`localProperty` implementation.
+ * implementation that cannot be cast with the selected options.
  */
-type OtHasNonLocalInterfaceImpl<
+type OtHasUnsupportedInterfaceImpl<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ObjectTypeDefinition,
+  OPTIONS extends string,
   Implementations = ApiNameAsString<FROM> extends keyof NonNullable<
     CompileTimeMetadata<TO>["interfaceImplementations"]
   >
@@ -140,7 +141,11 @@ type OtHasNonLocalInterfaceImpl<
   ? false
   : {
         [K in keyof Implementations]: Implementations[K] extends {
-          type: "localProperty";
+          type:
+            | "localProperty"
+            | ("$allBaseProperties" extends OPTIONS
+                ? "struct" | "structField"
+                : never);
         }
           ? never
           : K;
@@ -319,7 +324,7 @@ export namespace Osdk {
       >(
         type: [Q] extends [InterfaceDefinition]
           ? NEW_Q extends ObjectTypeDefinition
-            ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true
+            ? OtHasUnsupportedInterfaceImpl<Q, NEW_Q, OPTIONS> extends true
               ? never
               : NEW_Q | string
             : NEW_Q | string

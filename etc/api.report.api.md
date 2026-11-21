@@ -1817,7 +1817,7 @@ export namespace Osdk {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
-        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: [Q] extends [InterfaceDefinition] ? NEW_Q extends ObjectTypeDefinition ? OtHasNonLocalInterfaceImpl<Q, NEW_Q> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
+        		readonly $as: <NEW_Q extends HasModifiers<P> extends true ? ValidToFrom<Q> & ObjectTypeDefinition : ValidToFrom<Q>>(type: [Q] extends [InterfaceDefinition] ? NEW_Q extends ObjectTypeDefinition ? OtHasUnsupportedInterfaceImpl<Q, NEW_Q, OPTIONS> extends true ? never : NEW_Q | string : NEW_Q | string : NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
             			ObjectMetadata: ObjectMetadata
@@ -2540,8 +2540,8 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:312:35 - (ae-forgotten-export) The symbol "OtHasNonLocalInterfaceImpl" needs to be exported by the entry point index.d.ts
-// src/OsdkObjectFrom.ts:357:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:317:35 - (ae-forgotten-export) The symbol "OtHasUnsupportedInterfaceImpl" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:362:13 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:35:3 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
