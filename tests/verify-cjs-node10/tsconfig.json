@@ -2,6 +2,9 @@
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "node10",
+    // This fixture deliberately verifies node10 module resolution; silence the
+    // TypeScript 6 deprecation so the intentional setting still type-checks.
+    "ignoreDeprecations": "6.0",
     "target": "es2020",
     "skipLibCheck": true,
     "rootDir": "src",

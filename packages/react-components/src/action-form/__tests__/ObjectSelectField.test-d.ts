@@ -96,9 +96,9 @@ const formFieldBothSources: FormFieldDefinition<AssignManagerAction> = {
   fieldKey: "manager",
   fieldComponent: "OBJECT_SELECT",
   label: "Manager",
+  // @ts-expect-error objectType and objectSet are mutually exclusive
   fieldComponentProps: {
     objectType: EMPLOYEE_TYPE,
-    // @ts-expect-error objectType and objectSet are mutually exclusive
     objectSet: employeeObjectSet,
   },
 };
