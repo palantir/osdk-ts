@@ -231,6 +231,7 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "returnType": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
           })
@@ -249,6 +250,7 @@ export async function generatePerActionDataFiles(
             "displayName": () => undefined,
             "modifiedEntities": () => undefined,
             "parameters": () => undefined,
+            "returnType": () => undefined,
             "rid": () => undefined,
             "status": () => undefined,
           })

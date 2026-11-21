@@ -16,7 +16,22 @@
 
 // These are migrated from @osdk/foundry.internal to avoid coupling the apis
 
-export type ActionResults = (ObjectEdits | LargeScaleObjectEdits) & {
+export type ActionResults<ReturnValue = never> = [ReturnValue] extends [never]
+  ? ActionEdits
+  : ActionEdits & ActionReturnValue<ReturnValue>;
+
+/**
+ * The value returned by the function backing an action.
+ */
+export type ActionReturnValue<ReturnValue> = {
+  /**
+   * The value returned by the function backing the action, or undefined if the
+   * OSDK could not convert it. The action has still been applied.
+   */
+  returnValue: ReturnValue | undefined;
+};
+
+type ActionEdits = (ObjectEdits | LargeScaleObjectEdits) & {
   editedObjectTypes: Array<String>;
 };
 

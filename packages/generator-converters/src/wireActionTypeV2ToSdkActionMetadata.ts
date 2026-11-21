@@ -19,10 +19,12 @@ import type {
   ActionParameterType,
   ActionParameterV2,
   ActionTypeV2,
+  QueryDataType,
 } from "@osdk/foundry.ontologies";
 
 import { GeneratorError } from "./GeneratorError.js";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
+import { wireActionReturnTypeToActionDataTypeDefinition } from "./wireActionReturnTypeToActionDataTypeDefinition.js";
 import {
   ensureStringEnumSupportedOrUndefined,
   supportedReleaseStatus,
@@ -56,7 +58,31 @@ export function wireActionTypeV2ToSdkActionMetadata(
       input.status,
       supportedReleaseStatus,
     ),
+    ...(input.returnType != null
+      ? {
+        returnType: tryConvertActionReturnTypeToSdkReturnType(
+          input.apiName,
+          input.returnType,
+        ),
+      }
+      : {}),
   };
+}
+
+function tryConvertActionReturnTypeToSdkReturnType(
+  actionApiName: string,
+  returnType: QueryDataType,
+): ActionMetadata["returnType"] {
+  try {
+    return wireActionReturnTypeToActionDataTypeDefinition(returnType);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Action "${actionApiName}" returns a type the OSDK does not support, so applyAction will not return its value.`,
+      e,
+    );
+    return undefined;
+  }
 }
 
 function wireActionParameterV2ToSdkParameterDefinition(
