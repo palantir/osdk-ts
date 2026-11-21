@@ -14,23 +14,94 @@
  * limitations under the License.
  */
 
-import { Employee, Office } from "@osdk/client.test.ontology";
+import {
+  Employee,
+  FooInterface,
+  Office,
+  Person,
+  promoteEmployee,
+} from "@osdk/client.test.ontology";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { SetupServer } from "@osdk/shared.test";
-import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  FauxFoundry,
+  msw,
+  startNodeApiServer,
+  stubData,
+} from "@osdk/shared.test";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import type { Client } from "../../../Client.js";
+import { additionalContext } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
-import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import {
+  createObjectSet,
+  getWireObjectSet,
+} from "../../../objectSet/createObjectSet.js";
+import { ObservableClientImpl } from "../ObservableClientImpl.js";
 import { Store } from "../Store.js";
 import { WIRE_OBJECT_SET_IDX } from "./AggregationCacheKey.js";
+
+type AggregationState = { status: string; result: unknown; error?: Error };
 
 const logger = new TestLogger({}, { level: "debug" });
 
 function setupOntology(fauxFoundry: FauxFoundry) {
   const fauxOntology = fauxFoundry.getDefaultOntology();
-  ontologies.addEmployeeOntology(fauxOntology);
+  fauxOntology.registerObjectType(stubData.officeObjectTypeWithLinkTypes);
+  fauxOntology.registerInterfaceType(stubData.FooInterface);
+  fauxOntology.registerObjectType({
+    ...stubData.personWithLinkTypes,
+    implementsInterfaces: ["FooInterface"],
+    implementsInterfaces2: {
+      FooInterface: {
+        properties: { fooSpt: "name", fooIdp: "name" },
+        propertiesV2: {
+          fooSpt: {
+            type: "localPropertyImplementation",
+            propertyApiName: "name",
+          },
+          fooIdp: {
+            type: "localPropertyImplementation",
+            propertyApiName: "name",
+          },
+        },
+        links: {},
+        actionTypes: {},
+      },
+    },
+  });
+  fauxOntology.registerObjectType({
+    ...stubData.employeeObjectWithLinkTypes,
+    implementsInterfaces2: {
+      FooInterface: {
+        ...stubData.employeeObjectWithLinkTypes.implementsInterfaces2
+          .FooInterface,
+        properties: { fooSpt: "fullName", fooIdp: "office" },
+      },
+    },
+  });
+  fauxOntology.registerActionType(
+    stubData.PromoteEmployee,
+    (batch, payload) => {
+      batch.modifyObject<typeof Employee>(
+        Employee.apiName,
+        payload.parameters.employeeId as number,
+        {
+          fullName: payload.parameters.newTitle as string,
+        },
+      );
+    },
+  );
 }
 
 describe("aggregation ObjectSet support", () => {
@@ -55,13 +126,30 @@ describe("aggregation ObjectSet support", () => {
 
   beforeEach(() => {
     apiServer.resetHandlers();
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    dataStore.registerObject(Employee, {
+      employeeId: 1,
+      fullName: "Alice",
+      office: "NYC",
+    });
+    dataStore.registerObject(Employee, {
+      employeeId: 2,
+      fullName: "Bob",
+      office: "SF",
+    });
+    dataStore.registerObject(Person, { id: 3, name: "Alice" });
     store = new Store(client);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it("includes wireObjectSet in cache key when provided", () => {
     const pivotedSet = client(Employee).pivotTo("officeLink");
 
-    const query = store.aggregations.getQueryWithObjectSet({
+    const query = store.aggregations.getQuery({
       type: Office,
       objectSet: pivotedSet,
       where: {},
@@ -76,7 +164,7 @@ describe("aggregation ObjectSet support", () => {
   it("invalidates pivoted aggregations on source type invalidation", async () => {
     const pivotedSet = client(Employee).pivotTo("officeLink");
 
-    const query = store.aggregations.getQueryWithObjectSet({
+    const query = store.aggregations.getQuery({
       type: Office,
       objectSet: pivotedSet,
       where: {},
@@ -106,5 +194,232 @@ describe("aggregation ObjectSet support", () => {
 
     await query.invalidateObjectType("Employee", undefined);
     expect(revalidateSpy).not.toHaveBeenCalled();
+  });
+
+  describe("errors", () => {
+    async function observeError(
+      observableClient: ObservableClientImpl,
+      objectSet: Parameters<
+        ObservableClientImpl["observeAggregation"]
+      >[0]["objectSet"],
+    ): Promise<AggregationState | undefined> {
+      let payload: AggregationState | undefined;
+      const subscription = await observableClient.observeAggregation(
+        {
+          type: Employee,
+          objectSet,
+          aggregate: { $select: { $count: "unordered" } },
+        },
+        {
+          next: (value) => {
+            payload = value;
+          },
+          error: (error) => {
+            throw error;
+          },
+          complete: () => {},
+        },
+      );
+      try {
+        await vi.waitFor(() => expect(payload?.status).toBe("error"));
+        return payload;
+      } finally {
+        subscription.unsubscribe();
+      }
+    }
+
+    it("reports dependency lookup failures separately from aggregation failures", async () => {
+      apiServer.use(
+        msw.http.post(
+          "https://stack.palantir.com/api/v2/ontologies/:ontology/objectSets/aggregate",
+          () =>
+            msw.HttpResponse.json({
+              data: [{ group: {}, metrics: [{ name: "count", value: 1 }] }],
+            }),
+        ),
+      );
+      const staticSet = createObjectSet(Employee, client[additionalContext], {
+        type: "static",
+        objects: [],
+      });
+
+      const payload = await observeError(
+        new ObservableClientImpl(store),
+        staticSet,
+      );
+
+      expect(payload?.error?.message).toBe(
+        "Failed to resolve the object types that invalidate this aggregation",
+      );
+      expect(payload?.error?.cause).toEqual(
+        new Error("Unsupported ObjectSet type static"),
+      );
+    });
+
+    it("reports the underlying error when the aggregation request fails", async () => {
+      apiServer.use(
+        msw.http.post(
+          "https://stack.palantir.com/api/v2/ontologies/:ontology/objectSets/aggregate",
+          () =>
+            msw.HttpResponse.json(
+              {
+                errorCode: "INVALID_ARGUMENT",
+                errorName: "InvalidAggregationRange",
+                errorInstanceId: "instance-id",
+                parameters: {},
+              },
+              { status: 400 },
+            ),
+        ),
+      );
+
+      const payload = await observeError(
+        new ObservableClientImpl(store),
+        client(Employee).pivotTo("lead"),
+      );
+
+      expect(payload?.error).toBeInstanceOf(PalantirApiError);
+      expect(payload?.error).toMatchObject({
+        errorName: "InvalidAggregationRange",
+        statusCode: 400,
+      });
+    });
+  });
+
+  describe("interfaces", () => {
+    it("observes narrowed interface sets and refreshes after invalidation", async () => {
+      let count = 1;
+      apiServer.use(
+        msw.http.post(
+          "https://stack.palantir.com/api/v2/ontologies/:ontology/objectSets/aggregate",
+          () =>
+            msw.HttpResponse.json({
+              data: [{ group: {}, metrics: [{ name: "count", value: count }] }],
+            }),
+        ),
+      );
+      const observableClient = new ObservableClientImpl(store);
+      let payload: AggregationState | undefined;
+      const subscription = await observableClient.observeAggregation(
+        {
+          type: Employee,
+          objectSet: client(FooInterface).narrowToType(Employee),
+          where: { fullName: "Alice" },
+          aggregate: { $select: { $count: "unordered" } },
+        },
+        {
+          next: (value) => {
+            payload = value;
+          },
+          error: (error) => {
+            throw error;
+          },
+          complete: () => {},
+        },
+      );
+
+      try {
+        await vi.waitFor(() => expect(payload?.result).toEqual({ $count: 1 }));
+        count = 2;
+        await observableClient.invalidateObjectType(Employee);
+        expect(payload?.result).toEqual({ $count: 2 });
+      } finally {
+        subscription.unsubscribe();
+      }
+    });
+
+    it("observes interface aggregates and refreshes after an action", async () => {
+      const observableClient = new ObservableClientImpl(store);
+      let latest: AggregationState | undefined;
+      const subscription = observableClient.observeAggregation(
+        {
+          type: FooInterface,
+          aggregate: {
+            $groupBy: { fooSpt: "exact" },
+            $select: {
+              $count: "unordered",
+              "fooSpt:exactDistinct": "unordered",
+            },
+          },
+        },
+        {
+          next: (payload) => {
+            latest = payload;
+          },
+          error: (error) => {
+            throw error;
+          },
+          complete: () => {},
+        },
+      );
+      try {
+        await vi.waitFor(() => expect(latest?.status).toBe("loaded"));
+        expect(latest?.result).toEqual([
+          {
+            $group: { fooSpt: "Alice" },
+            $count: 2,
+            fooSpt: { exactDistinct: 1 },
+          },
+          {
+            $group: { fooSpt: "Bob" },
+            $count: 1,
+            fooSpt: { exactDistinct: 1 },
+          },
+        ]);
+
+        await observableClient.applyAction(promoteEmployee, {
+          employeeId: 2,
+          newTitle: "Alice",
+          newCompensation: 100,
+        });
+        await vi.waitFor(() =>
+          expect(latest?.result).toEqual([
+            {
+              $group: { fooSpt: "Alice" },
+              $count: 3,
+              fooSpt: { exactDistinct: 1 },
+            },
+          ]),
+        );
+      } finally {
+        subscription.unsubscribe();
+      }
+    });
+
+    it("filters and intersects supplied interface sets and refreshes on edits", async () => {
+      const observableClient = new ObservableClientImpl(store);
+      let payload: AggregationState | undefined;
+      const subscription = await observableClient.observeAggregation(
+        {
+          type: FooInterface,
+          objectSet: client(FooInterface).where({ fooIdp: "NYC" }),
+          where: { fooSpt: { $startsWith: "A" } },
+          intersectWith: [{ where: { fooSpt: "Alice" } }],
+          aggregate: { $select: { $count: "unordered" } },
+        },
+        {
+          next: (value) => {
+            payload = value;
+          },
+          error: (error) => {
+            throw error;
+          },
+          complete: () => {},
+        },
+      );
+
+      try {
+        await vi.waitFor(() => expect(payload?.result).toEqual({ $count: 1 }));
+        const dataStore = fauxFoundry.getDefaultDataStore();
+        dataStore.replaceObjectOrThrow({
+          ...dataStore.getObjectOrThrow("Employee", 1),
+          office: "SF",
+        });
+        await observableClient.invalidateObjectType(Employee);
+        expect(payload?.result).toEqual({ $count: 0 });
+      } finally {
+        subscription.unsubscribe();
+      }
+    });
   });
 });

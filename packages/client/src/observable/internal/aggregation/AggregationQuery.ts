@@ -19,6 +19,7 @@ import type {
   AggregationsResults,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
@@ -27,6 +28,10 @@ import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 
 import { additionalContext } from "../../../Client.js";
+import {
+  createObjectSet,
+  getWireObjectSet,
+} from "../../../objectSet/createObjectSet.js";
 import type {
   CommonObserveOptions,
   Status,
@@ -45,7 +50,9 @@ import {
   AGGREGATE_IDX,
   type AggregationCacheKey,
   API_NAME_IDX,
+  INTERSECT_IDX,
   RDP_IDX,
+  TYPE_IDX,
   WHERE_IDX,
   WIRE_OBJECT_SET_IDX,
 } from "./AggregationCacheKey.js";
@@ -83,20 +90,19 @@ export interface AggregationPayloadBase {
   error?: Error;
 }
 
-export abstract class AggregationQuery extends Query<
+export class AggregationQuery extends Query<
   AggregationCacheKey,
   AggregationPayloadBase,
   CommonObserveOptions
 > {
-  protected apiName: string;
-  protected canonicalWhere: Canonical<SimpleWhereClause>;
-  protected canonicalAggregate: Canonical<
-    AggregateOpts<ObjectOrInterfaceDefinition>
-  >;
-  protected rdpConfig: Canonical<Rdp> | undefined;
-  protected parsedWireObjectSet: WireObjectSet | undefined;
-  #invalidationTypes: Set<string>;
+  #apiName: string;
+  #canonicalWhere: Canonical<SimpleWhereClause>;
+  #canonicalAggregate: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>;
+  #rdpConfig: Canonical<Rdp> | undefined;
+  #parsedWireObjectSet: WireObjectSet | undefined;
+  #invalidationTypes: Set<string> | undefined;
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
+  #error: Error | undefined;
 
   constructor(
     store: Store,
@@ -120,45 +126,53 @@ export abstract class AggregationQuery extends Query<
           )
         : undefined,
     );
-    this.apiName = cacheKey.otherKeys[API_NAME_IDX];
-    this.canonicalWhere = cacheKey.otherKeys[WHERE_IDX];
-    this.rdpConfig = cacheKey.otherKeys[RDP_IDX];
-    this.canonicalAggregate = cacheKey.otherKeys[AGGREGATE_IDX];
+    this.#apiName = cacheKey.otherKeys[API_NAME_IDX];
+    this.#canonicalWhere = cacheKey.otherKeys[WHERE_IDX];
+    this.#rdpConfig = cacheKey.otherKeys[RDP_IDX];
+    this.#canonicalAggregate = cacheKey.otherKeys[AGGREGATE_IDX];
 
     const serializedObjectSet = cacheKey.otherKeys[WIRE_OBJECT_SET_IDX];
-    this.#invalidationTypes = new Set([this.apiName]);
     if (serializedObjectSet) {
-      this.parsedWireObjectSet = JSON.parse(
+      this.#parsedWireObjectSet = JSON.parse(
         serializedObjectSet,
       ) as WireObjectSet;
-      this.#invalidationTypesPromise = this.#computeInvalidationTypes(
-        this.parsedWireObjectSet,
-      );
+    }
+    if (
+      this.cacheKey.otherKeys[TYPE_IDX] === "object" &&
+      !this.#parsedWireObjectSet &&
+      !this.#rdpConfig
+    ) {
+      this.#invalidationTypes = new Set([this.#apiName]);
+    } else {
+      void this.ensureInvalidationTypesReady().catch(() => undefined);
     }
   }
 
-  async #computeInvalidationTypes(
-    wireObjectSet: WireObjectSet,
-  ): Promise<Set<string>> {
+  ensureInvalidationTypesReady(): Promise<Set<string>> {
+    if (this.#invalidationTypes) {
+      return Promise.resolve(this.#invalidationTypes);
+    }
+    this.#invalidationTypesPromise ??= this.#computeInvalidationTypes().finally(
+      () => {
+        this.#invalidationTypesPromise = undefined;
+      },
+    );
+    return this.#invalidationTypesPromise;
+  }
+
+  async #computeInvalidationTypes(): Promise<Set<string>> {
     try {
-      const { invalidationSet } = await getObjectTypesThatInvalidate(
+      const { counts } = await getObjectTypesThatInvalidate(
         this.store.client[additionalContext],
-        wireObjectSet,
+        getWireObjectSet(this.#createObjectSet()),
       );
-      return new Set([this.apiName, ...invalidationSet]);
-    } catch (error) {
-      this.store.logger?.error(
-        "Failed to compute invalidation types for aggregation, falling back to base type only",
-        error,
+      this.#invalidationTypes = new Set(Object.keys(counts));
+      return this.#invalidationTypes;
+    } catch (cause) {
+      throw new Error(
+        "Failed to resolve the object types that invalidate this aggregation",
+        { cause },
       );
-      return new Set([this.apiName]);
-    }
-  }
-
-  async ensureInvalidationTypesReady(): Promise<void> {
-    if (this.#invalidationTypesPromise) {
-      this.#invalidationTypes = await this.#invalidationTypesPromise;
-      this.#invalidationTypesPromise = undefined;
     }
   }
 
@@ -174,7 +188,7 @@ export abstract class AggregationQuery extends Query<
             lastUpdated: x.lastUpdated,
             error:
               x.status === "error"
-                ? new Error("Aggregation failed")
+                ? (this.#error ?? new Error("Aggregation failed"))
                 : undefined,
           };
         }),
@@ -198,21 +212,67 @@ export abstract class AggregationQuery extends Query<
     }
 
     try {
-      const result = await this._fetchAggregation();
-
+      const objectSet = this.#createObjectSet();
+      const [result] = await Promise.all([
+        objectSet.aggregate(
+          this.#canonicalAggregate as Parameters<typeof objectSet.aggregate>[0],
+        ),
+        this.ensureInvalidationTypesReady(),
+      ]);
       this.store.batch({}, (batch) => {
         this.writeToStore(result, "loaded", batch);
       });
-    } catch (err) {
-      this.store.batch({}, (batch) => {
-        this.writeToStore(undefined, "error", batch);
-      });
+    } catch (error) {
+      this.#writeError(error);
     }
   }
 
-  protected abstract _fetchAggregation(): Promise<
-    AggregationCacheKey["__cacheKey"]["value"]
-  >;
+  #writeError(error: unknown): void {
+    this.#error = error instanceof Error ? error : new Error(String(error));
+    this.store.batch({}, (batch) => {
+      this.writeToStore(undefined, "error", batch);
+    });
+  }
+
+  #createObjectSet(): ObjectSet<ObjectOrInterfaceDefinition> {
+    const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
+    const rdpConfig: Rdp | undefined = this.#rdpConfig;
+    const objectOrInterfaceDef = {
+      type: this.cacheKey.otherKeys[TYPE_IDX],
+      apiName: this.#apiName,
+    } as ObjectOrInterfaceDefinition;
+
+    let objectSet = createObjectSet(
+      objectOrInterfaceDef,
+      this.store.client[additionalContext],
+      this.#parsedWireObjectSet,
+    );
+
+    if (rdpConfig) {
+      objectSet = objectSet.withProperties(rdpConfig);
+    }
+
+    objectSet = objectSet.where(this.#canonicalWhere);
+
+    if (intersectWith != null && intersectWith.length > 0) {
+      const intersectSets = intersectWith.map((whereClause) => {
+        let intersectSet = createObjectSet(
+          objectOrInterfaceDef,
+          this.store.client[additionalContext],
+        );
+
+        if (rdpConfig) {
+          intersectSet = intersectSet.withProperties(rdpConfig);
+        }
+
+        return intersectSet.where(whereClause);
+      });
+
+      objectSet = objectSet.intersect(...intersectSets);
+    }
+
+    return objectSet;
+  }
 
   writeToStore(
     data: AggregationCacheKey["__cacheKey"]["value"],
@@ -224,14 +284,22 @@ export abstract class AggregationQuery extends Query<
     return batch.read(this.cacheKey)!;
   }
 
-  invalidateObjectType = (
+  invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.#invalidationTypes.has(objectType)) {
+    let invalidationTypes: Set<string>;
+    try {
+      invalidationTypes = await this.ensureInvalidationTypesReady();
+    } catch (error) {
+      changes?.modified.add(this.cacheKey);
+      this.#writeError(error);
+      return;
+    }
+
+    if (invalidationTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
-    return Promise.resolve();
   };
 }

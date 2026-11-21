@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "@osdk/api";
-import type { Client } from "@osdk/client";
-import { Employee } from "@osdk/client.test.ontology";
+import type { AggregationsResults, ObjectSet } from "@osdk/api";
+import { type Client, createClient } from "@osdk/client";
+import { Employee, FooInterface } from "@osdk/client.test.ontology";
 import type { ObservableClient, Observer } from "@osdk/client/observable";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { OsdkContext } from "../OsdkContext.js";
 import { useOsdkAggregation } from "../useOsdkAggregation.js";
 
 const AGGREGATE = { $select: { $count: "unordered" } } as const;
+const osdkClient = createClient(
+  "https://stack.palantir.com",
+  "ri.ontology.main.ontology.test",
+  () => Promise.resolve("token"),
+);
 
 function createMockObservableClient(): {
   client: ObservableClient;
@@ -74,6 +79,120 @@ describe("useOsdkAggregation", () => {
       invalidateObjectType,
     } = createMockObservableClient());
   });
+
+  it.each(["object type", "object set"])(
+    "returns typed grouped results for an %s",
+    async (source) => {
+      const objectSet =
+        source === "object set"
+          ? osdkClient(Employee).where({ fullName: "Alice" })
+          : undefined;
+      const aggregate = {
+        $groupBy: { fullName: "exact" },
+        $select: { $count: "unordered", "fullName:exactDistinct": "unordered" },
+      } as const;
+      const options = objectSet ? { objectSet, aggregate } : { aggregate };
+      const unsubscribe = vi.fn();
+      const subscription = objectSet
+        ? Promise.resolve({ unsubscribe })
+        : { unsubscribe };
+      let observer: Observer<unknown> | undefined;
+      observeAggregation.mockImplementation((_args, obs: Observer<unknown>) => {
+        observer = obs;
+        return subscription;
+      });
+
+      const { result, unmount } = renderHook(
+        () => useOsdkAggregation(Employee, options),
+        { wrapper: createWrapper(observableClient) },
+      );
+
+      expectTypeOf(result.current.data).toEqualTypeOf<
+        AggregationsResults<typeof Employee, typeof aggregate> | undefined
+      >();
+      expect(observeAggregation).toHaveBeenCalledWith(
+        expect.objectContaining({ type: Employee, ...options }),
+        expect.any(Object),
+      );
+      expect(result.current.isLoading).toBe(true);
+
+      const data: AggregationsResults<typeof Employee, typeof aggregate> = [
+        {
+          $group: { fullName: "Alice" },
+          $count: 2,
+          fullName: { exactDistinct: 1 },
+        },
+      ];
+      await act(async () => {
+        await subscription;
+        observer?.next({ status: "loaded", result: data });
+      });
+
+      expect(result.current.data).toEqual(data);
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBeUndefined();
+
+      unmount();
+      expect(unsubscribe).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it.each(["interface type", "interface set"])(
+    "returns typed grouped results for an %s",
+    async (source) => {
+      const objectSet =
+        source === "interface set"
+          ? osdkClient(FooInterface).where({ fooSpt: "Alice" })
+          : undefined;
+      const aggregate = {
+        $groupBy: { fooSpt: "exact" },
+        $select: { $count: "unordered", "fooSpt:exactDistinct": "unordered" },
+      } as const;
+      const options = objectSet ? { objectSet, aggregate } : { aggregate };
+      const unsubscribe = vi.fn();
+      const subscription = objectSet
+        ? Promise.resolve({ unsubscribe })
+        : { unsubscribe };
+      let observer: Observer<unknown> | undefined;
+      observeAggregation.mockImplementation((_args, obs: Observer<unknown>) => {
+        observer = obs;
+        return subscription;
+      });
+
+      const { result, unmount } = renderHook(
+        () => useOsdkAggregation(FooInterface, options),
+        { wrapper: createWrapper(observableClient) },
+      );
+
+      expectTypeOf(result.current.data).toEqualTypeOf<
+        AggregationsResults<typeof FooInterface, typeof aggregate> | undefined
+      >();
+      expect(observeAggregation).toHaveBeenCalledWith(
+        expect.objectContaining({ type: FooInterface, ...options }),
+        expect.any(Object),
+      );
+      expect(result.current.isLoading).toBe(true);
+
+      const data: AggregationsResults<typeof FooInterface, typeof aggregate> = [
+        {
+          $group: { fooSpt: "Alice" },
+          $count: 2,
+          fooSpt: { exactDistinct: 1 },
+        },
+      ];
+      await act(async () => {
+        await subscription;
+        observer?.next({ status: "loaded", result: data });
+      });
+
+      expect(result.current.data).toEqual(data);
+      expect(result.current.isLoading).toBe(false);
+      expect(result.current.error).toBeUndefined();
+
+      unmount();
+      expect(unsubscribe).toHaveBeenCalledTimes(1);
+    },
+  );
 
   describe("enabled option", () => {
     it("does not call observeAggregation when enabled is false", () => {
