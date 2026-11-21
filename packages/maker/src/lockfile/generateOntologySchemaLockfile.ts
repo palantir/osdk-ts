@@ -19,7 +19,6 @@ import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unst
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../api/common/TypeClass.js";
-import { mapPropertyNames } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
@@ -32,10 +31,12 @@ import {
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
 } from "../api/interface/InterfacePropertyType.js";
+import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedInstruction,
   LockedInterfaceSchema,
   LockedInterfaceType,
   LockedProperty,
@@ -199,7 +200,7 @@ function lockTypeClasses(
 function lockInterfaceSchemaMigrationTransitions(
   interfaceType: InterfaceType,
 ): LockedTransition[] {
-  const { schemaMigrations, propertiesV3 } = interfaceType;
+  const { schemaMigrations } = interfaceType;
   if (schemaMigrations === undefined) {
     return [];
   }
@@ -209,15 +210,33 @@ function lockInterfaceSchemaMigrationTransitions(
       id: transition.id,
       gracePeriod: transition.gracePeriod,
       instructions: transition.instructions
-        .map((instruction) =>
-          mapPropertyNames(instruction, (propertyApiName) =>
-            wireApiNameOf(instruction.type, propertyApiName, propertiesV3),
-          ),
-        )
+        .map((instruction) => lockInstruction(instruction, interfaceType))
         // Instructions have no unique stable identifier, so JSON them instead for sort stability
         .sort((a, b) => compare(JSON.stringify(a), JSON.stringify(b))),
     }))
     .sort((a, b) => compare(a.id, b.id));
+}
+
+function lockInstruction(
+  instruction: InterfaceSchemaMigrationInstruction,
+  interfaceType: InterfaceType,
+): LockedInstruction {
+  switch (instruction.type) {
+    case "addRequiredProperty":
+      return {
+        type: "addRequiredProperty",
+        property: wireApiNameOf(
+          instruction.type,
+          instruction.property,
+          interfaceType.propertiesV3,
+        ),
+      };
+    default:
+      // TODO: add a never exhaustiveness check once there's more than one instruction type
+      throw new Error(
+        `Unknown schema migration instruction type: ${instruction.type}`,
+      );
+  }
 }
 
 /**

@@ -16,9 +16,9 @@
 
 import { isDeepStrictEqual } from "node:util";
 
-import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { LockedPropertyType } from "./LockedPropertyType.js";
 import type {
+  LockedInstruction,
   LockedInterfaceSchema,
   LockedProperty,
   LockedTransition,
@@ -50,7 +50,7 @@ interface PropertyTransition {
 
 /** The per-property changes an instruction makes, keyed by the property each one applies to. */
 function editsOf(
-  instruction: InterfaceSchemaMigrationInstruction,
+  instruction: LockedInstruction,
 ): ReadonlyMap<string, PropertyTransition> {
   switch (instruction.type) {
     case "addRequiredProperty":

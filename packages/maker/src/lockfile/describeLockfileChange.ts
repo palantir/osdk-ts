@@ -21,13 +21,13 @@ import {
   describeFinalization,
   describeInstruction,
   describeSuggestedTransition,
-  mapPropertyNames,
 } from "../api/interface/describeInterfaceSchemaMigrationInstruction.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import { describeType } from "./LockedPropertyType.js";
 import type {
+  LockedInstruction,
   LockedValueType,
   PropertyDeclaration,
 } from "./OntologySchemaLockfile.js";
@@ -273,6 +273,26 @@ export function describeWarning(warning: LockfileWarning): string {
   }
 }
 
+/**
+ * The instruction as the author would have written it, for prose.
+ */
+function toAuthoredInstruction(
+  instruction: LockedInstruction,
+): InterfaceSchemaMigrationInstruction {
+  switch (instruction.type) {
+    case "addRequiredProperty":
+      return {
+        type: "addRequiredProperty",
+        property: authoredKeyOf(instruction.property),
+      };
+    default:
+      // TODO: add a never exhaustiveness check once there's more than one instruction type
+      throw new Error(
+        `Unknown schema migration instruction type: ${instruction.type}`,
+      );
+  }
+}
+
 function describeValueType(valueType: LockedValueType): string {
   return valueType.packageNamespace === ""
     ? valueType.apiName
@@ -320,11 +340,11 @@ function describeTypeClasses(typeClasses: readonly TypeClass[]): string {
 
 /** A transition's instructions, named as the author wrote them. */
 function describeInstructions(
-  instructions: readonly InterfaceSchemaMigrationInstruction[],
+  instructions: readonly LockedInstruction[],
 ): string {
   return `[${instructions
     .map((instruction) =>
-      describeInstruction(mapPropertyNames(instruction, authoredKeyOf)),
+      describeInstruction(toAuthoredInstruction(instruction)),
     )
     .join(", ")}]`;
 }
@@ -354,11 +374,11 @@ function describeTargetDrift(targets: readonly TargetPropertyState[]): string {
 
 /** Everything the author would do to have the transition be finalized instead. */
 function describeFinalizations(
-  instructions: readonly InterfaceSchemaMigrationInstruction[],
+  instructions: readonly LockedInstruction[],
 ): string {
   return instructions
     .map((instruction) =>
-      describeFinalization(mapPropertyNames(instruction, authoredKeyOf)),
+      describeFinalization(toAuthoredInstruction(instruction)),
     )
     .join(", and ");
 }
