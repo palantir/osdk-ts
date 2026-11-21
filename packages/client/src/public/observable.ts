@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export type { ActionSignatureFromDef } from "../actions/applyAction.js";
+export type {
+  ActionReturnValueFromDef,
+  ActionSignatureFromDef,
+} from "../actions/applyAction.js";
 export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
   CacheEntry,

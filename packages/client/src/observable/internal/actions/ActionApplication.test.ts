@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty, ObjectSet } from "@osdk/api";
+import type {
+  ActionDefinition,
+  ActionEditResponse,
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+  DerivedProperty,
+  ObjectSet,
+} from "@osdk/api";
 import {
   addOne,
   editTodo,
@@ -23,6 +31,10 @@ import {
   Office,
   Todo,
 } from "@osdk/client.test.ontology";
+import type {
+  ActionTypeV2,
+  SyncApplyActionResponseV2,
+} from "@osdk/foundry.ontologies";
 import {
   FauxFoundry,
   ontologies,
@@ -36,6 +48,7 @@ import {
   beforeEach,
   describe,
   expect,
+  expectTypeOf,
   it,
   vi,
 } from "vitest";
@@ -45,6 +58,8 @@ import { createClient } from "../../../createClient.js";
 import type { FunctionPayload } from "../../FunctionPayload.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
+import type { ObservableClient } from "../../ObservableClient.js";
+import { createObservableClient } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { Store } from "../Store.js";
 import { mockObserver } from "../testUtils.js";
@@ -542,5 +557,87 @@ describe("ActionApplication invalidation", () => {
 
       consoleWarnSpy.mockRestore();
     });
+  });
+});
+
+interface ReturnsNameSignatures {
+  applyAction<OP extends ApplyActionOptions>(
+    args: { name: string },
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP, string>>;
+
+  batchApplyAction<OP extends ApplyBatchActionOptions>(
+    args: ReadonlyArray<{ name: string }>,
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP>>;
+}
+
+const returnsName: ActionDefinition<ReturnsNameSignatures> = {
+  type: "action",
+  apiName: "returnsName",
+};
+
+describe("ObservableClient action return values", () => {
+  let observableClient: ObservableClient;
+
+  beforeAll(() => {
+    const { client, apiServer, fauxFoundry } = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    const def: ActionTypeV2 = {
+      apiName: "returnsName",
+      parameters: {
+        name: {
+          dataType: { type: "string" },
+          required: true,
+          displayName: "Name",
+          typeClasses: [],
+        },
+      },
+      rid: "ri.actions.main.action-type.returnsName",
+      status: "ACTIVE",
+      operations: [],
+      returnType: { type: "string" },
+    };
+    fauxFoundry.getDefaultOntology().registerActionType(
+      def,
+      (_batch, payload): SyncApplyActionResponseV2 => ({
+        validation: { parameters: {}, result: "VALID", submissionCriteria: [] },
+        edits: {
+          type: "edits",
+          edits: [],
+          addedObjectCount: 0,
+          modifiedObjectsCount: 0,
+          deletedObjectsCount: 0,
+          addedLinksCount: 0,
+          deletedLinksCount: 0,
+        },
+        returnValue: `Hello ${payload.parameters.name}`,
+      }),
+    );
+    observableClient = createObservableClient(client);
+
+    return () => {
+      apiServer.close();
+    };
+  });
+
+  it("includes the return value alongside the edits", async () => {
+    const result = await observableClient.applyAction(returnsName, {
+      name: "Anna",
+    });
+
+    expectTypeOf(result).toEqualTypeOf<ActionEditResponse<string>>();
+    expect(result).toMatchObject({ type: "edits", returnValue: "Hello Anna" });
+  });
+
+  it("does not type a return value for batches", () => {
+    const applyBatch = () =>
+      observableClient.applyAction(returnsName, [{ name: "Anna" }]);
+
+    expectTypeOf(
+      applyBatch,
+    ).returns.resolves.toEqualTypeOf<ActionEditResponse>();
   });
 });
