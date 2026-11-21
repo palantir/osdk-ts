@@ -405,6 +405,11 @@ export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
    * Placeholder text shown when the input is empty.
    */
   placeholder?: string;
+
+  /**
+   * Called when focus leaves a descendant of the input and stepper container.
+   */
+  onBlur?: React.FocusEventHandler<HTMLDivElement>;
 }
 
 /**

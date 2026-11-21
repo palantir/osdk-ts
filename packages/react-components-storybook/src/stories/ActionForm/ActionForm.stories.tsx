@@ -14,25 +14,44 @@
  * limitations under the License.
  */
 
+import type { ActionFormProps } from "@osdk/react-components/action-form";
 import { ActionForm } from "@osdk/react-components/action-form";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { generatedFieldsStoryAction } from "../../mocks/fauxFoundry.js";
 
 const generatedFieldsActionDefinition =
   generatedFieldsStoryAction.actionDefinition;
 
-function DefaultActionFormStory(): React.ReactElement {
+type GeneratedFieldsOnSubmit = NonNullable<
+  ActionFormProps<typeof generatedFieldsActionDefinition>["onSubmit"]
+>;
+
+interface DefaultActionFormStoryProps {
+  onSubmit?: GeneratedFieldsOnSubmit;
+}
+
+function DefaultActionFormStory({
+  onSubmit,
+}: DefaultActionFormStoryProps): React.ReactElement {
   return (
     <div className="osdkFormCard">
       <ActionForm
         actionDefinition={generatedFieldsActionDefinition}
+        onSubmit={onSubmit}
         showFormTitle={true}
       />
     </div>
   );
 }
+
+const submittedValuesSpy = fn().mockName("onSubmit");
+
+const handleSubmittedValues: GeneratedFieldsOnSubmit = (formState) => {
+  submittedValuesSpy(formState);
+};
 
 const meta = {
   title: "Components/ActionForm",
@@ -49,12 +68,53 @@ const meta = {
       },
     },
   },
+  argTypes: {
+    onSubmit: { control: false, table: { category: "Events" } },
+  },
 } satisfies Meta<typeof DefaultActionFormStory>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {
+    onSubmit: handleSubmittedValues,
+  },
+  play: async ({ canvasElement }) => {
+    submittedValuesSpy.mockClear();
+
+    const canvas = within(canvasElement);
+    await userEvent.type(
+      await canvas.findByRole("textbox", { name: /Full name/u }),
+      "Ada Lovelace",
+    );
+
+    // Integer fields keep fractional input while editing and truncate on blur.
+    const yearsInput = await canvas.findByRole("textbox", {
+      name: /Years of experience/u,
+    });
+    await userEvent.type(yearsInput, "3.7");
+    await expect(yearsInput).toHaveValue("3.7");
+    await userEvent.tab();
+    await expect(yearsInput).toHaveValue("3");
+
+    await userEvent.type(
+      await canvas.findByRole("combobox", { name: /Start date/u }),
+      "2026-01-15{Enter}",
+    );
+
+    await userEvent.click(canvas.getByRole("button", { name: /submit/iu }));
+
+    // The date picker stores local midnight; submission converts it to ISO.
+    await waitFor(() =>
+      expect(submittedValuesSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          yearsExperience: 3,
+          startDate: new Date(2026, 0, 15).toISOString(),
+        }),
+      ),
+    );
+  },
   parameters: {
     docs: {
       description: {

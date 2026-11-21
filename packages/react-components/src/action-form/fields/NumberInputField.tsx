@@ -44,6 +44,7 @@ export function NumberInputField({
   id,
   value,
   onChange,
+  onBlur,
   error,
   placeholder,
   min,
@@ -114,6 +115,7 @@ export function NumberInputField({
     <div
       className={styles.osdkNumberInputWrapper}
       aria-invalid={error != null || undefined}
+      onBlur={onBlur}
     >
       <Input
         id={id}
