@@ -29,6 +29,11 @@ export type {
 } from "../agents/AgentSession.js";
 export type { Experiment, ExperimentFns } from "../experimental/Experiment.js";
 
+export {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__executeFunctionAsync,
+  type FunctionExecution,
+  type FunctionExecutionResult,
+} from "../experimental/executeFunctionAsync.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "../experimental/executeStreamingFunction.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid } from "../experimental/fetchOneByRid.js";
 export {
