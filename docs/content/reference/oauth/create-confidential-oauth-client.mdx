@@ -1,0 +1,72 @@
+---
+title: createConfidentialOauthClient
+description: Create a server-side token provider that authenticates with a client ID and secret using the client credentials grant.
+---
+
+```ts
+import { createConfidentialOauthClient } from "@osdk/oauth";
+
+function createConfidentialOauthClient(
+  client_id: string,
+  client_secret: string,
+  url: string,
+  scopes?: string[],
+  fetchFn?: typeof globalThis.fetch,
+  ctxPath?: string,
+): ConfidentialOauthClient;
+```
+
+Returns a function you pass as the `tokenProvider` of `createClient` or `createPlatformClient`. It requests a token on the first call and requests a new one after the current token expires. Use it only on a server or in a script, where the secret stays private.
+
+## Parameters
+
+The parameters are positional and have no options type, so this table is written by hand.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `client_id` | `string` | | The client ID of your Developer Console application. |
+| `client_secret` | `string` | | The client secret of the application. |
+| `url` | `string` | | The base URL of your Foundry stack. |
+| `scopes` | `string[]` | `["api:read-data", "api:write-data", "api:use-ontologies-read", "api:use-ontologies-write"]` | The OAuth scopes to request. |
+| `fetchFn` | `typeof fetch` | `globalThis.fetch` | The `fetch` implementation for token requests. |
+| `ctxPath` | `string` | `"multipass"` | The context path of the authorization server. |
+
+## Returns
+
+`ConfidentialOauthClient`:
+
+| Member | Type | Description |
+| --- | --- | --- |
+| `()` | `() => Promise<string>` | Returns a valid access token, requesting a new one if needed. |
+| `getTokenOrUndefined` | `() => string \| undefined` | The current access token, or `undefined` if there is none or it expired. |
+| `signIn` | `() => Promise<Token>` | Requests a new token. |
+| `signOut` | `() => Promise<void>` | Revokes the access token. Throws when there is no token. |
+| `addEventListener` | `(type, listener, options?) => void` | Listens for `"signIn"` or `"signOut"`. |
+| `removeEventListener` | `(type, listener, options?) => void` | Removes a listener. |
+
+## Example
+
+```ts title="scripts/countEmployees.ts"
+import { $ontologyRid, Employee } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { createConfidentialOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+const auth = createConfidentialOauthClient(
+  process.env.FOUNDRY_CLIENT_ID!,
+  process.env.FOUNDRY_CLIENT_SECRET!,
+  foundryUrl,
+  ["api:use-ontologies-read", "api:read-data"],
+);
+
+const client = createClient(foundryUrl, $ontologyRid, auth);
+
+const { $count } = await client(Employee).aggregate({ $select: { $count: "unordered" } });
+console.log(`${$count} employees`);
+```
+
+## See also
+
+- [Authentication](/authentication)
+- [Node.js](/frameworks/node)

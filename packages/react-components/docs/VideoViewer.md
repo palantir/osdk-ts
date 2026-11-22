@@ -1,6 +1,6 @@
 # VideoViewer
 
-A React component for rendering video using the browser's native `<video>` element with standard playback controls.
+`VideoViewer` plays video from an OSDK `Media` object in the browser's native `<video>` element with standard playback controls.
 
 ## Import
 
