@@ -396,10 +396,10 @@ export abstract class ListQuery extends BaseListQuery<
   ): Promise<Osdk.Instance<any>[]>;
 
   invalidateObjectOrInterfaceType = async (
-    objectType: string,
+    apiName: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (await this.revalidateObjectType(objectType)) {
+    if (await this.revalidateObjectType(apiName)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }

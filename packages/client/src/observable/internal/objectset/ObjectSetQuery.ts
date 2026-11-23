@@ -468,12 +468,12 @@ export class ObjectSetQuery extends BaseListQuery<
   // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   invalidateObjectOrInterfaceType = async (
-    objectType: string,
+    apiName: string,
     changes: Changes | undefined,
   ): Promise<void> => {
     if (
-      this.#objectTypes.has(objectType) ||
-      (this.#rdpInvalidationSet?.has(objectType) ?? false)
+      this.#objectTypes.has(apiName) ||
+      (this.#rdpInvalidationSet?.has(apiName) ?? false)
     ) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);

@@ -32,7 +32,12 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import { Store } from "./Store.js";
-import { createDefer, mockListSubCallback, updateList } from "./testUtils.js";
+import {
+  createDefer,
+  mockListSubCallback,
+  mockSingleSubCallback,
+  updateList,
+} from "./testUtils.js";
 import { expectStandardObserveLink } from "./testUtils/observeLink/expectStandardObserveLink.js";
 import { expectStandardObserveObject } from "./testUtils/observeObject/expectStandardObserveObject.js";
 
@@ -801,6 +806,59 @@ describe("Store Invalidation Type Isolation", () => {
       await cache.invalidateObject(Todo, TODO_1_ID);
 
       await new Promise((resolve) => setTimeout(resolve, 500));
+      expect(officeLinkSubFn.next).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("invalidateObjectOrInterfaceType with an interface API name", () => {
+    it("refreshes object queries observed through that interface", async () => {
+      const subFn = mockSingleSubCallback();
+      defer(
+        cache.objects.observe(
+          { apiName: FooInterface, pk: EMPLOYEE_1_ID },
+          subFn,
+        ),
+      );
+      await vi.waitFor(() => {
+        expect(subFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({ status: "loaded" }),
+        );
+      });
+      subFn.next.mockClear();
+
+      await cache.invalidateObjectOrInterfaceType(
+        FooInterface.apiName,
+        undefined,
+      );
+
+      await vi.waitFor(() => {
+        expect(subFn.next).toHaveBeenCalled();
+      });
+    });
+
+    it("does not refresh link queries unrelated to that interface", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const { linkSubFn: officeLinkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "officeLink",
+        targetType: Office,
+        expected: [expect.objectContaining({ $primaryKey: OFFICE_1_ID })],
+      });
+      officeLinkSubFn.next.mockClear();
+
+      await cache.invalidateObjectOrInterfaceType(
+        FooInterface.apiName,
+        undefined,
+      );
+
       expect(officeLinkSubFn.next).not.toHaveBeenCalled();
     });
   });

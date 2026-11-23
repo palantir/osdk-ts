@@ -202,14 +202,14 @@ export class ObjectQuery extends Query<
   }
 
   invalidateObjectOrInterfaceType = async (
-    objectType: string,
+    apiName: string,
     changes: Changes | undefined,
   ): Promise<void> => {
+    if (this.#apiName === apiName) {
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
     if (this.#defType === "object") {
-      if (this.#apiName === objectType) {
-        changes?.modified.add(this.cacheKey);
-        return this.revalidate(true);
-      }
       return;
     }
 
@@ -222,7 +222,7 @@ export class ObjectQuery extends Query<
       this.#implementingTypes = new Set(metadata.implementedBy ?? []);
     }
 
-    if (this.#implementingTypes.has(objectType)) {
+    if (this.#implementingTypes.has(apiName)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }

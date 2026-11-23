@@ -196,11 +196,11 @@ export class FunctionQuery extends Query<
   }
 
   invalidateObjectOrInterfaceType = (
-    objectType: string,
+    apiName: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    // Check if this function depends on the given object type
-    if (this.#dependsOn?.includes(objectType)) {
+    // Check if this function depends on the given object or interface type
+    if (this.#dependsOn?.includes(apiName)) {
       changes?.registerFunction(this.cacheKey);
       return this.revalidate(true);
     }
