@@ -63,16 +63,8 @@ export async function runActionReturnValuesTest(): Promise<void> {
     "Expected ObservableClient applyAction to include a number returnValue",
   );
 
-  const batchResult: unknown = await mjMainClient(
-    modifyTestEschwartz,
-  ).batchApplyAction([params], { $returnEdits: true });
-  console.log("batchApplyAction result:", batchResult);
-  invariant(
-    typeof batchResult === "object" &&
-      batchResult != null &&
-      !("returnValue" in batchResult),
-    "Expected batchApplyAction not to include a returnValue",
-  );
+  // batchApplyAction is not exercised: this action's function uses Ontology
+  // transactions, which Foundry does not support in bulk mode.
 }
 
 void runActionReturnValuesTest();
