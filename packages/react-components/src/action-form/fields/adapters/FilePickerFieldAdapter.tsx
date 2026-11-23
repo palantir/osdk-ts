@@ -36,6 +36,7 @@ export function FilePickerFieldAdapter({
   return (
     <ConvertedField
       converter={FILE_CONVERTER}
+      label={fieldDefinition.label}
       value={value}
       onChange={onChange}
       disabled={disabled}

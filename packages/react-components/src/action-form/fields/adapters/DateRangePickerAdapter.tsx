@@ -40,6 +40,7 @@ export function DateRangePickerAdapter({
   return (
     <ConvertedField
       converter={DATE_RANGE_CONVERTER}
+      label={fieldDefinition.label}
       value={value}
       onChange={onChange}
       disabled={disabled}

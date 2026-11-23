@@ -21,6 +21,7 @@ import type { FieldValueConverter } from "./FieldValueConverter.js";
 
 interface ConvertedFieldProps<F> {
   converter: FieldValueConverter<F>;
+  label: string | undefined;
   /** The stored parameter value. */
   value: unknown;
   /** Writes a parameter value to form state. */
@@ -40,6 +41,7 @@ interface ConvertedFieldProps<F> {
  */
 export function ConvertedField<F>({
   converter,
+  label,
   value,
   onChange,
   disabled,
@@ -57,6 +59,7 @@ export function ConvertedField<F>({
     case "err":
       return (
         <UnexpectedFieldValue
+          label={label}
           error={result.error}
           onChange={onChange}
           disabled={disabled}

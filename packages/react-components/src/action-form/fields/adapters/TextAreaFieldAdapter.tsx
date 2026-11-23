@@ -31,6 +31,7 @@ export function TextAreaFieldAdapter({
   return (
     <ConvertedField
       converter={TEXT_CONVERTER}
+      label={fieldDefinition.label}
       value={value}
       onChange={onChange}
       disabled={disabled}

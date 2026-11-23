@@ -23,6 +23,8 @@ import type { UnexpectedValueError } from "./adapters/FieldValueConverter.js";
 import styles from "./UnexpectedFieldValue.module.css";
 
 interface UnexpectedFieldValueProps {
+  /** The field's label, so the Clear button names the field it clears. */
+  label: string | undefined;
   error: UnexpectedValueError;
   /** Writes a parameter value to form state. */
   onChange: (value: unknown) => void;
@@ -34,6 +36,7 @@ interface UnexpectedFieldValueProps {
  * component can't display, so the value is never hidden from the user.
  */
 export function UnexpectedFieldValue({
+  label,
   error,
   onChange,
   disabled,
@@ -47,6 +50,7 @@ export function UnexpectedFieldValue({
         <>
           {error.message}{" "}
           <ActionButton
+            aria-label={label != null ? `Clear ${label}` : undefined}
             variant="primary"
             appearance="minimal"
             onClick={handleClear}

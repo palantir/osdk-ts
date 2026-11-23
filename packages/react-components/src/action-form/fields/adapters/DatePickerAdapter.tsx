@@ -38,6 +38,7 @@ export function DatePickerAdapter({
   return (
     <ConvertedField
       converter={DATE_CONVERTER}
+      label={fieldDefinition.label}
       value={value}
       onChange={onChange}
       disabled={disabled}

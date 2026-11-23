@@ -513,10 +513,9 @@ export const WithUnexpectedValues: Story = {
     ).toBeInTheDocument();
 
     // Clearing an unexpected value brings back the field component.
-    const [, clearQuantityButton] = canvas.getAllByRole("button", {
-      name: "Clear",
-    });
-    await userEvent.click(clearQuantityButton);
+    await userEvent.click(
+      canvas.getByRole("button", { name: "Clear Quantity" }),
+    );
     await expect(
       await canvas.findByRole("textbox", { name: /Quantity/u }),
     ).toHaveValue("");

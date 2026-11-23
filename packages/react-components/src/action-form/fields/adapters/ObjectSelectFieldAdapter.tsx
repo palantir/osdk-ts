@@ -38,6 +38,7 @@ export function ObjectSelectFieldAdapter({
   return (
     <ConvertedField
       converter={OBJECT_CONVERTER}
+      label={fieldDefinition.label}
       value={value}
       onChange={onChange}
       disabled={disabled}

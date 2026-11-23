@@ -36,6 +36,7 @@ export function SwitchFieldAdapter({
   return (
     <ConvertedField
       converter={BOOLEAN_CONVERTER}
+      label={fieldDefinition.label}
       value={value}
       onChange={onChange}
       disabled={disabled}
