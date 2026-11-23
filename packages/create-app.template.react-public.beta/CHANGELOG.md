@@ -1,5 +1,21 @@
 # @osdk/create-app.template.react-public.beta
 
+## 2.94.0
+
+## 2.93.0
+
+### Minor Changes
+
+- 2f414e9: Bump vite in create-app and create-widget templates to ^7.3.8 to patch the dev server remote code execution advisory (https://github.com/vitejs/vite/security/advisories/GHSA-p4f5-76q4-ffq7)
+
+## 2.92.0
+
+## 2.91.0
+
+## 2.90.0
+
+## 2.89.0
+
 ## 2.88.0
 
 ## 2.87.0

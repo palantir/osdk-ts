@@ -20,7 +20,12 @@ import { defineCreateInterfaceLinkAction } from "../defineCreateInterfaceLinkAct
 import { defineDeleteInterfaceLinkAction } from "../defineDeleteInterfaceLinkAction.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
-import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
+import {
+  defineOntology,
+  dumpOntologyFullMetadata,
+  ontologyDefinition,
+} from "../defineOntology.js";
+import { expectValidationIssues } from "./testUtils.js";
 
 describe("defineCreateInterfaceLinkAction", () => {
   beforeEach(async () => {
@@ -635,10 +640,17 @@ describe("defineDeleteInterfaceLinkAction", () => {
       toOne: company,
     });
 
-    expect(() =>
-      // @ts-expect-error "from" is required when interfaceLink is a string
-      defineDeleteInterfaceLinkAction({ interfaceLink: "employer" }),
-    ).toThrow(/"from" is required/u);
+    expectValidationIssues(
+      () =>
+        // @ts-expect-error "from" is required when interfaceLink is a string
+        defineDeleteInterfaceLinkAction({
+          interfaceLink: "employer",
+          sourceParameter: { id: "same" },
+          targetParameter: { id: "same" },
+        }),
+      ["must differ", '"from" is required'],
+    );
+    expect(ontologyDefinition.ACTION_TYPE).toEqual({});
   });
 
   it("throws when source and target parameter ids collide", () => {

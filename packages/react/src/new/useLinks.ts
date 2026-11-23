@@ -42,6 +42,12 @@ interface UseLinksBaseOptions<T extends ObjectOrInterfaceDefinition> {
    */
   pageSize?: number;
 
+  /**
+   * Fetch all pages when true, or at least this many linked objects per source
+   * when a number is provided. Defaults to manual pagination.
+   */
+  autoFetchMore?: boolean | number;
+
   /** Sorting options for the linked objects */
   orderBy?: {
     [K in PropertyKeys<T>]?: "asc" | "desc";
@@ -73,8 +79,8 @@ interface UseLinksBaseOptions<T extends ObjectOrInterfaceDefinition> {
   /**
    * Enable or disable the query.
    *
-   * When `false`, the query will not automatically execute. It will still
-   * return any cached data, but will not fetch from the server.
+   * When `false`, the query does not run and the hook returns no data, even
+   * if the cache already holds a result.
    *
    * This is useful for:
    * - Lazy/on-demand queries that should wait for user interaction
@@ -202,6 +208,7 @@ export function useLinks<
             linkName,
             where: canonOptions.where,
             pageSize: otherOptions.pageSize,
+            autoFetchMore: otherOptions.autoFetchMore,
             orderBy: canonOptions.orderBy,
             mode: otherOptions.mode,
             dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
@@ -225,6 +232,7 @@ export function useLinks<
     linkName,
     canonOptions.where,
     otherOptions.pageSize,
+    otherOptions.autoFetchMore,
     canonOptions.orderBy,
     otherOptions.mode,
     otherOptions.dedupeIntervalMs,

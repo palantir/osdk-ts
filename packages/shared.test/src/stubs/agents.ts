@@ -423,6 +423,9 @@ export const acceptedAgentEvent: SendEventResponse = {
 
 const weatherEventResponses: Record<string, SendEventResponse> = {
   [JSON.stringify({
+    event: { eventType: "SetTemperature", payload: null },
+  })]: acceptedAgentEvent,
+  [JSON.stringify({
     event: { eventType: "LookupWeather", payload: { city: "Paris" } },
   })]: acceptedAgentEvent,
   [JSON.stringify({

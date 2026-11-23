@@ -1,0 +1,189 @@
+---
+title: Actions
+description: Apply Ontology actions with applyAction and batchApplyAction, validate parameters first, read returned edits, and handle ActionValidationError.
+foundryDocs:
+  - title: Action types
+    path: action-types/overview
+---
+
+Actions are the way to change Ontology data: they create, modify, and delete objects and links according to rules defined in Foundry. `client(modifyEmployee)` returns an invoker with two methods, `applyAction` for one request and `batchApplyAction` for several.
+
+```ts title="src/promote.ts"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { ActionValidationError } from "@osdk/client";
+import { client } from "./client";
+
+const employee = await client(Employee).fetchOne(12345);
+
+try {
+  await client(modifyEmployee).applyAction({
+    employee,
+    jobTitle: "Senior Engineer",
+  });
+} catch (e) {
+  if (e instanceof ActionValidationError) {
+    console.error("Rejected by validation", e.validation);
+  } else {
+    throw e;
+  }
+}
+```
+
+`applyAction` rejects when the action fails, so always await it inside `try`/`catch` or attach `.catch`. The parameter names and types come from your generated SDK. In the example SDK, `modifyEmployee` takes `employee` (required), `jobTitle`, and `department`.
+
+## Options
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `$returnEdits` | `boolean` | `false` | Resolve to the edits the action made. See [Read the edits](#read-the-edits). |
+| `$validateOnly` | `boolean` | `false` | Check the parameters without applying the action. See [Validate first](#validate-first). `applyAction` only. |
+
+You cannot set both on one call; the types reject it.
+
+| Options | `applyAction` resolves to |
+| --- | --- |
+| None | `undefined` |
+| `{ $returnEdits: true }` | `ActionEditResponse` |
+| `{ $validateOnly: true }` | `ActionValidationResponse` |
+
+When `applyAction` resolves, the action has run. Edits to objects in Object Storage V2 are visible to the next read. Edits in Object Storage V1 are eventually consistent and can take a moment to appear.
+
+## Parameter values
+
+| Parameter type | Pass |
+| --- | --- |
+| Object | A loaded object, its primary key, or `{ $apiName, $primaryKey }`. |
+| Interface | A plain `{ $objectType, $primaryKey }` object, where `$objectType` is the concrete object type. Do not pass a loaded object: the client would send only its primary key. |
+| Object set | An object set, such as `client(Employee).where({ ... })`. |
+| Primitive | A value of the parameter's TypeScript type: `string`, `number`, `boolean`. Dates and timestamps are ISO 8601 strings. `long` and `decimal` accept a `number` or a `string`. |
+| List | An array of values of the element type. |
+| Struct | An object whose keys are the struct's fields. |
+| Attachment | An attachment RID, a `File`, or the result of `createAttachmentUpload`. See [Attachments and media](./media.mdx#upload-through-an-action). |
+| Media reference | A `MediaUpload`, a `Media` from an object, or a `MediaReference`. See [Attachments and media](./media.mdx#upload-through-an-action). |
+
+Omit an optional parameter to leave it out of the request. Pass `null` to send an empty value, which clears the property in a modify action:
+
+```ts title="src/clearTitle.ts"
+import { modifyEmployee } from "@my-app/sdk";
+import { client } from "./client";
+
+await client(modifyEmployee).applyAction({ employee: 12345, jobTitle: null });
+```
+
+Parameter default values configured on the action type are not applied when you call the action from the client. Pass every value you need.
+
+## Validate first
+
+`$validateOnly: true` runs the action's submission criteria and parameter constraints without applying it. It resolves to the validation result, valid or not, and does not throw on an invalid result:
+
+```ts title="src/validate.ts"
+import { modifyEmployee } from "@my-app/sdk";
+import { client } from "./client";
+
+const validation = await client(modifyEmployee).applyAction(
+  { employee: 12345, department: "Research" },
+  { $validateOnly: true },
+);
+
+if (validation.result === "INVALID") {
+  for (const [name, parameter] of Object.entries(validation.parameters)) {
+    if (parameter.result === "INVALID") {
+      console.warn(`${name} is invalid`, parameter.evaluatedConstraints);
+    }
+  }
+}
+```
+
+The validation result has this shape:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `result` | `"VALID" \| "INVALID"` | The overall result. |
+| `submissionCriteria` | `{ result, configuredFailureMessage? }[]` | One entry per submission criterion, with the failure message configured on the action type. |
+| `parameters` | `Record<string, { result, required, evaluatedConstraints }>` | One entry per parameter. `evaluatedConstraints` lists the checks that ran, such as `range`, `stringLength`, `oneOf`, or `stringRegexMatch`. |
+
+## Handle validation errors
+
+When you apply an action whose validation fails, `applyAction` throws an `ActionValidationError` from `@osdk/client`. Its `validation` field holds the same validation result:
+
+```ts title="src/validationMessage.ts"
+import { modifyEmployee } from "@my-app/sdk";
+import { ActionValidationError } from "@osdk/client";
+import { client } from "./client";
+
+function describeValidation(error: ActionValidationError): string {
+  const criteria = error.validation.submissionCriteria
+    .filter((criterion) => criterion.result === "INVALID")
+    .flatMap((criterion) => criterion.configuredFailureMessage ?? []);
+  const parameters = Object.entries(error.validation.parameters)
+    .filter(([, parameter]) => parameter.result === "INVALID")
+    .map(([name]) => `${name} is invalid`);
+  return [...criteria, ...parameters].join("\n") || "The action was rejected.";
+}
+
+try {
+  await client(modifyEmployee).applyAction({ employee: 12345, department: "Research" });
+} catch (e) {
+  console.error(e instanceof ActionValidationError ? describeValidation(e) : e);
+}
+```
+
+Every other failure, such as a missing permission or an invalid parameter type, rejects with a `PalantirApiError`. See [Errors](./errors.mdx).
+
+## Read the edits
+
+`$returnEdits: true` resolves to the edits the action made:
+
+```ts title="src/edits.ts"
+import { modifyEmployee } from "@my-app/sdk";
+import { client } from "./client";
+
+const result = await client(modifyEmployee).applyAction(
+  { employee: 12345, jobTitle: "Staff Engineer" },
+  { $returnEdits: true },
+);
+
+if (result.type === "edits") {
+  for (const edited of result.modifiedObjects) {
+    console.log(`Modified ${edited.objectType} ${edited.primaryKey}`);
+  }
+}
+console.log("Edited types:", result.editedObjectTypes);
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `type` | `"edits" \| "largeScaleEdits"` | `"largeScaleEdits"` when the action made too many edits to list. Only `editedObjectTypes` is set then. |
+| `addedObjects`, `modifiedObjects`, `deletedObjects` | `{ objectType, primaryKey }[]` | The objects the action created, changed, and deleted. |
+| `addedLinks`, `deletedLinks` | `{ linkTypeApiNameAtoB, linkTypeApiNameBtoA, aSideObject, bSideObject }[]` | The links the action created and removed. |
+| `deletedObjectsCount`, `deletedLinksCount` | `number` | The number of deletions. |
+| `editedObjectTypes` | `string[]` | The API names of every object type the action touched. |
+
+The edits name objects by type and primary key. To read the new values, load the objects again.
+
+## Apply in a batch
+
+`batchApplyAction` takes an array of parameter objects for the same action and applies them in one request:
+
+```ts title="src/bulkRetitle.ts"
+import { modifyEmployee } from "@my-app/sdk";
+import { client } from "./client";
+
+const ids = [101, 102, 103];
+
+const result = await client(modifyEmployee).batchApplyAction(
+  ids.map((employee) => ({ employee, jobTitle: "Engineer II" })),
+  { $returnEdits: true },
+);
+```
+
+Differences from `applyAction`:
+
+- It accepts `$returnEdits` but not `$validateOnly`.
+- It does not throw `ActionValidationError`. If a request in the batch fails, the call rejects with a `PalantirApiError`.
+- A batch holds up to 20 requests. Actions that only modify objects in Object Storage V2 and call no functions may have a higher limit. For more, split the array and send several batches.
+- Action notifications are not sent for batched requests.
+
+## In React
+
+`useOsdkAction` from `@osdk/react` wraps `applyAction`, tracks pending and validation state, and refreshes cached objects after the action. See [Actions in React](/react/actions).

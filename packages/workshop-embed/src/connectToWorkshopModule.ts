@@ -27,7 +27,7 @@ export interface ConnectToWorkshopModuleOptions {
   targetOrigin: string;
   /** Abort to cancel the attempt or disconnect an established connection. */
   signal?: AbortSignal;
-  /** Maximum handshake duration in milliseconds. Defaults to 10000. */
+  /** Maximum time to acknowledge the port and receive the module schema, in milliseconds. Defaults to 10000. */
   timeoutMs?: number;
   /** Window hosting the iframe. Defaults to the current window. */
   hostWindow?: Window;
@@ -35,7 +35,7 @@ export interface ConnectToWorkshopModuleOptions {
 
 /**
  * Establishes a dedicated port using the Workshop embed handshake.
- * Resolves only after the peer acknowledges the transferred port. Rejects on timeout,
+ * Resolves after Workshop acknowledges the transferred port and supplies its module schema. Rejects on timeout,
  * cancellation, or connection failure. Call again after iframe navigation.
  * @public
  */
@@ -67,23 +67,21 @@ export function connectToWorkshopModule<
     const sessionId = createSessionId();
     const { port1, port2 } = new MessageChannel();
     let transferred = false;
+    let acknowledged = false;
     const handshakeTimeout = setTimeout(
       () => fail(new Error("Workshop handshake timed out.")),
       timeoutMs,
     );
     const probeInterval = setInterval(sendProbe, 250);
 
-    const { connection, dispose } = createConnection<TVariables>(
-      port1,
-      sessionId,
-      () => {
+    const { connection, dispose, hasModuleSchema } =
+      createConnection<TVariables>(port1, sessionId, () => {
         stopHandshake();
         signal?.removeEventListener("abort", abort);
         hostWindow.removeEventListener("pagehide", abort);
         if (!transferred) port2.close();
-        fail(new Error("Workshop port closed before acknowledgement."));
-      },
-    );
+        fail(new Error("Workshop port closed before the module was ready."));
+      });
 
     function stopHandshake() {
       clearTimeout(handshakeTimeout);
@@ -132,6 +130,9 @@ export function connectToWorkshopModule<
         message.type === "connected" &&
         message.sessionId === sessionId
       ) {
+        acknowledged = true;
+      }
+      if (acknowledged && hasModuleSchema()) {
         stopHandshake();
         resolve(connection);
       }

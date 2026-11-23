@@ -166,7 +166,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         ? { ...sharedPropertyTypes, ...importedTypes.sharedPropertyTypes }
         : sharedPropertyTypes,
       objectTypes,
-      queryTypes: {},
+      queryTypes: importedTypes?.queryTypes ?? {},
       actionTypes: importedTypes
         ? { ...actionTypes, ...importedTypes.actionTypes }
         : actionTypes,
@@ -340,6 +340,17 @@ export class OntologyBlockDataToFullMetadataConverter {
           links: {},
           actionTypes: {},
         };
+      }
+
+      for (const property of Object.values(object.propertyTypes)) {
+        if (
+          property.sharedPropertyTypeApiName != null
+          && property.apiName != null
+          && properties[property.apiName] != null
+        ) {
+          sharedPropertyTypeMappings[property.sharedPropertyTypeApiName] =
+            property.apiName;
+        }
       }
 
       const objectApiName = object.apiName!;

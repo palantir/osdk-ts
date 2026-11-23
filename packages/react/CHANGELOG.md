@@ -1,5 +1,72 @@
 # @osdkkit/react
 
+## 2.94.0
+
+### Patch Changes
+
+- Updated dependencies [4ebde4f]
+  - @osdk/client@2.94.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.94.0
+
+## 2.93.0
+
+### Patch Changes
+
+- Updated dependencies [4ca8bbe]
+- Updated dependencies [f5e52d1]
+  - @osdk/client@2.93.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.93.0
+
+## 2.92.0
+
+### Patch Changes
+
+- Updated dependencies [749af7f]
+  - @osdk/api@2.92.0
+  - @osdk/client@2.92.0
+  - @osdk/aip-core@0.13.0
+
+## 2.91.0
+
+### Minor Changes
+
+- f1a74a8: Apply linked-object filters and expose automatic pagination through useLinks.
+
+  Preserve filters on nested operands in shape link set operations.
+
+### Patch Changes
+
+- Updated dependencies [5fade0a]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [5d80e0f]
+- Updated dependencies [0bcfdc9]
+- Updated dependencies [f1a74a8]
+- Updated dependencies [2e21fee]
+- Updated dependencies [a37fdfc]
+  - @osdk/client@2.91.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.91.0
+
+## 2.90.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/client@2.90.0
+  - @osdk/aip-core@0.13.0
+
+## 2.89.0
+
+### Patch Changes
+
+- Updated dependencies [62ebddd]
+  - @osdk/client@2.89.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.89.0
+
 ## 2.88.0
 
 ### Patch Changes

@@ -32,9 +32,40 @@ export type ObjectTypeDatasourceDefinition =
 
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
+  markingConstraints?: ObjectTypeDatasourceMarkingConstraints;
   objectSecurityPolicy?: ObjectSecurityPolicy;
   propertySecurityGroups?: Array<PropertySecurityGroup>;
 }
+
+/**
+ * Settings for the marking-value constraints on a datasource, not read-access
+ * policies. Allowed markings, organizations, and maximum classification are
+ * supplied through Marketplace marking inputs, not configured here.
+ */
+export type ObjectTypeDatasourceMarkingConstraints = {
+  /**
+   * Settings for the shared constraint on ordinary mandatory and organization
+   * markings. Requires a `MANDATORY` marking property on the datasource.
+   */
+  mandatory?: ObjectTypeMarkingConstraintSettings;
+  /**
+   * Settings for the maximum-classification constraint. Requires a `CBAC`
+   * marking property on the datasource.
+   */
+  cbac?: ObjectTypeMarkingConstraintSettings;
+};
+
+export type ObjectTypeMarkingConstraintSettings = {
+  /**
+   * Allows the datasource's allowed marking set to be empty. In that case,
+   * corresponding marking properties may contain only empty arrays. This does
+   * not bypass access controls or govern whether individual rows may have empty
+   * marking arrays when the allowed set is nonempty.
+   *
+   * Defaults to false. Omitted from serialized output when undefined.
+   */
+  allowEmptyMarkings?: boolean;
+};
 
 export interface ObjectSecurityPolicy {
   name: string;
@@ -53,12 +84,14 @@ export interface PropertySecurityGroup {
 
 export interface ObjectTypeDatasourceDefinition_stream {
   type: "stream";
+  markingConstraints?: ObjectTypeDatasourceMarkingConstraints;
   // Retention period must be in ISO 8601 duration format
   retentionPeriod?: string;
 }
 
 export interface ObjectTypeDatasourceDefinition_restrictedView {
   type: "restrictedView";
+  markingConstraints?: ObjectTypeDatasourceMarkingConstraints;
 }
 
 export interface ObjectTypeDatasourceDefinition_derived {
@@ -88,6 +121,7 @@ export type DerivedPropertyAggregation =
 
 export interface ObjectTypeDatasourceDefinition_direct {
   type: "direct";
+  markingConstraints?: ObjectTypeDatasourceMarkingConstraints;
   objectSecurityPolicy?: ObjectSecurityPolicy;
   propertySecurityGroups?: Array<PropertySecurityGroup>;
 }

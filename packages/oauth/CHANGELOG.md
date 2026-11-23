@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.15.0
+
+### Minor Changes
+
+- 1b79220: Add a `realmId` option to public OAuth clients that sends `_realm` on the authorize request to select the authentication provider for login.
+
 ## 1.14.0
 
 ### Minor Changes

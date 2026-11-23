@@ -1,5 +1,90 @@
 # @osdk/foundry-sdk-generator
 
+## 2.94.0
+
+### Patch Changes
+
+- Updated dependencies [4ebde4f]
+  - @osdk/client@2.94.0
+  - @osdk/api@2.94.0
+  - @osdk/client.unstable@2.94.0
+  - @osdk/generator-converters@2.94.0
+  - @osdk/generator-utils@2.94.0
+  - @osdk/generator@2.94.0
+
+## 2.93.0
+
+### Patch Changes
+
+- Updated dependencies [4ca8bbe]
+- Updated dependencies [f5e52d1]
+  - @osdk/client@2.93.0
+  - @osdk/api@2.93.0
+  - @osdk/client.unstable@2.93.0
+  - @osdk/generator-converters@2.93.0
+  - @osdk/generator-utils@2.93.0
+  - @osdk/generator@2.93.0
+
+## 2.92.0
+
+### Patch Changes
+
+- Updated dependencies [4d5f672]
+- Updated dependencies [749af7f]
+  - @osdk/generator@2.92.0
+  - @osdk/api@2.92.0
+  - @osdk/client@2.92.0
+  - @osdk/client.unstable@2.92.0
+  - @osdk/generator-converters@2.92.0
+  - @osdk/generator-utils@2.92.0
+
+## 2.91.0
+
+### Minor Changes
+
+- 7fd2775: Declare generated experimental ontology metadata as `unknown` without importing `@osdk/foundry.ontologies` or adding a generated dependency. Integration-testing also accepts metadata as `unknown`, avoiding type mismatches between platform SDK versions.
+
+### Patch Changes
+
+- Updated dependencies [5fade0a]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [5d80e0f]
+- Updated dependencies [0bcfdc9]
+- Updated dependencies [f1a74a8]
+- Updated dependencies [2e21fee]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [7fd2775]
+  - @osdk/client@2.91.0
+  - @osdk/generator@2.91.0
+  - @osdk/api@2.91.0
+  - @osdk/client.unstable@2.91.0
+  - @osdk/generator-converters@2.91.0
+  - @osdk/generator-utils@2.91.0
+
+## 2.90.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/client@2.90.0
+  - @osdk/generator@2.90.0
+  - @osdk/generator-converters@2.90.0
+  - @osdk/client.unstable@2.90.0
+  - @osdk/generator-utils@2.90.0
+
+## 2.89.0
+
+### Patch Changes
+
+- Updated dependencies [62ebddd]
+  - @osdk/client@2.89.0
+  - @osdk/generator@2.89.0
+  - @osdk/api@2.89.0
+  - @osdk/client.unstable@2.89.0
+  - @osdk/generator-converters@2.89.0
+  - @osdk/generator-utils@2.89.0
+
 ## 2.88.0
 
 ### Patch Changes

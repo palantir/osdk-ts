@@ -33,20 +33,43 @@ import {
 } from "../index.js";
 import type {
   WorkshopModuleConnection,
+  WorkshopModuleHostConnection,
   WorkshopVariableMap,
   WorkshopVariableValue,
   WorkshopVariableValues,
 } from "../index.js";
+import { isModuleSchemaMessage } from "../schema.js";
 import { createTestWindow, type TestWindow } from "./testUtils.js";
 
 describe("scalar variables", () => {
   let sender: WorkshopModuleConnection;
-  let receiver: WorkshopModuleConnection;
+  let receiver: WorkshopModuleHostConnection;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const channel = new MessageChannel();
     sender = createConnection(channel.port1, "session", () => {}).connection;
-    receiver = createConnection(channel.port2, "session", () => {}).connection;
+    createConnection(channel.port2, "session", () => {}, "workshop").activate(
+      (connection) => {
+        receiver = connection;
+      },
+    );
+    const received = new Promise<void>((resolve) => {
+      sender.port.addEventListener(
+        "message",
+        function receive(event: MessageEvent<unknown>) {
+          if (!isModuleSchemaMessage(event.data)) return;
+          sender.port.removeEventListener("message", receive);
+          resolve();
+        },
+      );
+    });
+    receiver.setModuleSchema({
+      searchText: { type: "string", isList: false },
+      count: { type: "number", isList: false },
+      enabled: { type: "boolean", isList: false },
+      selectedName: { type: "string", isList: false },
+    });
+    await received;
   });
 
   afterEach(() => {
@@ -274,8 +297,14 @@ describe("declared variable types", () => {
           hostWindow: child.asWindow(),
           onConnect(connection) {
             expectTypeOf(connection).toEqualTypeOf<
-              WorkshopModuleConnection<ModuleVariables>
+              WorkshopModuleHostConnection<ModuleVariables>
             >();
+            connection.setModuleSchema({
+              searchText: { type: "string", isList: false },
+              count: { type: "number", isList: false },
+              enabled: { type: "boolean", isList: false },
+            });
+            connection.setVariables({ count: 0 });
             resolve(connection);
           },
         });
@@ -289,6 +318,11 @@ describe("declared variable types", () => {
     expectTypeOf(connection).toEqualTypeOf<
       WorkshopModuleConnection<ModuleVariables>
     >();
+    // @ts-expect-error Only Workshop's host connection can publish schemas.
+    expectTypeOf(connection.setModuleSchema);
+    expect(connection).not.toHaveProperty("setModuleSchema");
+    // Subscribe immediately after connecting to receive the module's first output.
+    await expect(nextVariables(connection)).resolves.toEqual({ count: 0 });
     sender = connection;
     receiver = await accepted;
   });

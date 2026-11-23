@@ -37,6 +37,10 @@ export const weatherAgentVersion: AgentDefinitionVersion = {
         fields: [{ name: "city", dataType: { type: "string" } }],
       },
     },
+    {
+      eventType: "SetTemperature",
+      payloadType: { type: "nullable", wrappedType: { type: "double" } },
+    },
   ],
   agentStateType: {
     type: "struct",
@@ -44,6 +48,10 @@ export const weatherAgentVersion: AgentDefinitionVersion = {
   },
   contextItemDefinitions: [
     { contextItemType: "weather-result", dataType: { type: "string" } },
+    {
+      contextItemType: "temperature",
+      dataType: { type: "nullable", wrappedType: { type: "integer" } },
+    },
   ],
 };
 

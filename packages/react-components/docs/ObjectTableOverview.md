@@ -3,16 +3,18 @@ title: ObjectTable
 description: An OSDK-aware data table for ontology objects. Renders rows from an object type, ObjectSet, or interface, with built-in column configuration, selection, sorting, pinning, resizing, and inline editing.
 ---
 
-> **Beta** — exported from `@osdk/react-components/object-table`.
+> [!NOTE]
+> This component is in beta. Import it from `@osdk/react-components/object-table`.
 
 ## Usage
 
 ObjectTable fetches its own data. Wrap your app in `OsdkProvider` and import the package styles once (see [Prerequisites](./Prerequisites.md) for the `@layer` order), then pass an object type — columns, sorting, filtering, and selection are wired up out of the box.
 
-> **Note** — `@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
+> [!NOTE]
+> `@my-app/sdk` is a placeholder for your generated SDK package. Replace it with your package name.
 
 ```tsx
-import { Office } from "@my/osdk";
+import { Office } from "@my-app/sdk";
 import { ObjectTable } from "@osdk/react-components/object-table";
 
 function OfficesPage() {
@@ -74,6 +76,7 @@ Type parameters: `Q extends ObjectOrInterfaceDefinition`, `RDPs extends Record<s
 
 The ObjectTable emits a stable set of `data-*` attributes on its rendered DOM and exposes every visual property through `--osdk-table-*` CSS variables. Together they let you override appearance via the table's `className` (or any ancestor) without forking the component.
 
+> [!NOTE]
 > **Class names are internal.** ObjectTable uses CSS Modules, so its class names are hashed at build time and are **not** part of the public API. Style states and elements by targeting the documented `data-*` attributes and CSS variables below — the only consumer-facing class name is the one you pass via the `className` prop. Token defaults live in `src/tokens/component-tokens/table.css`; the `--osdk-*` values they reference are defined in `src/tokens/base-tokens/base.css`.
 
 | Element                | Data attributes                                                                                                                                                            | CSS variables                                                                                                                                                                                                                                                                                                                                                                  |

@@ -1,5 +1,82 @@
 # @osdk/maker
 
+## 0.93.0
+
+### Minor Changes
+
+- 367cd32: Support marking input groups on generated backing media sets and assume the same markings on their ontology datasources.
+- 2b42dc7: Collect independent action definition and convenience-action validation issues before registration. Return a boolean from validation collector checks so callers can reuse each result.
+
+### Patch Changes
+
+- @osdk/api@2.94.0
+- @osdk/generator-converters.ontologyir@2.94.0
+
+## 0.92.0
+
+### Minor Changes
+
+- b1658a9: Add support for edit validations in interface action type constraints.
+- 1987502: Add `interfaceActionsEnabled` to `defineObject` to set an object type's interface action settings
+- 6b847a0: Collect validation issues in a single error when defining links, shared property types, value types, and interface link constraints.
+- 1e58a90: Collect independent validation issues in interface, interface action-type constraint, folder, and interface-link action helper definitions. Rename the collecting method to `check`, add `assert` for terminal checks that narrow types, and update downstream collector usage.
+- e726b2a: expose action isolation settings
+- f1d12b0: Add spt mappings for non-interface object props
+
+### Patch Changes
+
+- Updated dependencies [f1d12b0]
+  - @osdk/generator-converters.ontologyir@2.93.0
+  - @osdk/api@2.93.0
+
+## 0.91.0
+
+### Minor Changes
+
+- f4d94ba: Support multiple named media-set inputs and explicit upload destinations on scalar media properties.
+- 8aa522d: Use SDK identifiers in generated snippets for namespaced objects, interfaces, and actions, and for hyphenated action names.
+
+### Patch Changes
+
+- Updated dependencies [749af7f]
+- Updated dependencies [3282ead]
+  - @osdk/api@2.92.0
+  - @osdk/generator-converters.ontologyir@2.92.0
+
+## 0.90.0
+
+### Minor Changes
+
+- c331bfd: Fix the CommonJS declaration build by collecting datasource marking constraint validation errors with the other object validation issues.
+- c740c26: Add structured Maker validation errors and an issue collector. Integrate the new validation errors into `defineObject`.
+
+### Patch Changes
+
+- Updated dependencies [1fd4023]
+- Updated dependencies [406d3b6]
+- Updated dependencies [d13bd9f]
+  - @osdk/generator-converters.ontologyir@2.91.0
+  - @osdk/api@2.91.0
+
+## 0.89.0
+
+### Minor Changes
+
+- 7fed367: Add datasource-scoped `markingConstraints` with `mandatory.allowEmptyMarkings` and `cbac.allowEmptyMarkings` so installers can supply empty allowed marking sets independently for mandatory and classification constraints.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters.ontologyir@2.90.0
+
+## 0.88.0
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+- @osdk/generator-converters.ontologyir@2.89.0
+
 ## 0.87.0
 
 ### Patch Changes

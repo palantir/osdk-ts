@@ -50,11 +50,11 @@ export interface ScopeResources {
  * Helpers for declaring resource scope.
  *
  * Or use these helpers:
- *   `resources: ScopeResources.defaultScopeResources`  — use the repo's default scope from resources.json
+ *   `resources: ScopeResources.defaultResources`  — use the repo's default scope from resources.json
  */
 export namespace ScopeResources {
   /**
-   * Sentinel value: discovery populates scope from `defaultResources` declared in functions.json.
+   * Sentinel value: discovery populates scope from `defaultResources` declared in resources.json.
    */
   export const defaultResources: unique symbol = Symbol(
     "ScopeResources.defaultResources",
@@ -62,33 +62,57 @@ export namespace ScopeResources {
 }
 
 /**
- * Declare read-only marking requirements for callers of this function.
+ * Declare the maximum authorization using the deprecated `read` field.
+ *
+ * @deprecated Use `ScopeAuthorization` with `max` instead.
  */
 export interface ScopeReadAuthorization {
-  read: string[];
+  /** @deprecated Use `max` instead. */
+  read: string[] | string[][];
 }
 
 /**
  * Declare read and write marking requirements for callers of this function.
+ *
+ * @deprecated Write authorization is not supported in function scopes.
  */
 export interface ScopeReadWriteAuthorization extends ScopeReadAuthorization {
   write: string[];
 }
 
 /**
+ * Declare minimum and maximum authorization using marking aliases from resources.json.
+ * A flat list requires every marking. A list of lists requires at least one marking
+ * from each inner list (conjunctive normal form).
+ * Omitting a bound imposes no constraint for that bound.
+ */
+export interface ScopeAuthorization {
+  /** The minimum authorization required to execute the function. */
+  min?: string[] | string[][];
+  /** The maximum authorization the function may execute with. */
+  max?: string[] | string[][];
+  /** Use `max` instead of combining `read` with `min` or `max`. */
+  read?: never;
+  /** Write authorization is not supported in function scopes. */
+  write?: never;
+}
+
+/**
  * Helpers for declaring authorization scope.
  *
  * Or use these helpers:
- *   `authorization: ScopeAuthorization.defaultRead`  — use the repo's default read authorization from functions.json
+ *   `authorization: ScopeAuthorization.defaultRead`  — use the repo's default read authorization from resources.json
  */
 export namespace ScopeAuthorization {
   /**
    * Sentinel value: the generated function inherits authorization from its caller.
+   * @deprecated Omit `authorization` to impose no authorization constraint.
    */
   export const inherit: unique symbol = Symbol("ScopeAuthorization.inherit");
 
   /**
-   * Sentinel value: discovery uses `defaultAuthorization.read` declared in functions.json.
+   * Sentinel value: discovery uses `defaultAuthorization.read` declared in resources.json.
+   * Default authorization is only applied when explicitly requested with this sentinel.
    */
   export const defaultRead: unique symbol = Symbol(
     "ScopeAuthorization.defaultRead",
@@ -97,13 +121,18 @@ export namespace ScopeAuthorization {
 
 /**
  * The scope declaration for a function.
- * Accepts plain object literals or the sentinel/factory helpers from `ScopeResources` and `ReadOnlyAuthorization`.
+ * Accepts plain object literals or the sentinels from `ScopeResources` and `ScopeAuthorization`.
  */
 export interface Scope {
   resources: ScopeResources | typeof ScopeResources.defaultResources;
-  authorization:
-    | ScopeReadAuthorization
-    | ScopeReadWriteAuthorization
+  /** Omitting authorization or providing an empty object imposes no authorization constraint. */
+  authorization?:
+    | ScopeAuthorization
+    | (ScopeReadAuthorization & {
+        min?: never;
+        max?: never;
+        write?: never;
+      })
     | typeof ScopeAuthorization.inherit
     | typeof ScopeAuthorization.defaultRead;
 }

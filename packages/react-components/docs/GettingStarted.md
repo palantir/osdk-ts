@@ -1,9 +1,11 @@
 # Getting Started
 
+Install `@osdk/react-components`, import its styles, set up `OsdkProvider`, and render your first `ObjectTable`.
+
 ## 1. Install
 
 ```bash
-npm install @osdk/react-components @osdk/react @osdk/client @osdk/api react react-dom classnames
+npm install @osdk/react-components @osdk/react @osdk/client @osdk/api @osdk/oauth react react-dom classnames
 ```
 
 ## 2. Import styles
@@ -27,18 +29,25 @@ Add portal isolation to your root element:
 
 ## 3. Set up the provider
 
-Wrap your application with `OsdkProvider`:
+Create a client with an OAuth token provider and wrap your application with `OsdkProvider`:
 
 ```tsx
 import { createClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
 import { OsdkProvider } from "@osdk/react";
 
+const foundryUrl = "https://your-stack.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "your-client-id",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+);
+
 const client = createClient(
-  "https://your-stack.palantirfoundry.com",
+  foundryUrl,
   "ri.ontology.main.ontology.{UUID}",
-  async () => {
-    // return your auth token
-  },
+  auth,
 );
 
 function App() {
@@ -50,12 +59,11 @@ function App() {
 
 ```tsx
 import { ObjectTable } from "@osdk/react-components/object-table";
-import { Employee } from "@your-osdk-package";
+import { Employee } from "@my-app/sdk";
 
 function EmployeeDirectory() {
   return <ObjectTable objectType={Employee} />;
 }
 ```
 
-That's it! The `ObjectTable` handles data fetching, pagination, and sorting
-out of the box.
+`ObjectTable` handles data fetching, pagination, and sorting for you.

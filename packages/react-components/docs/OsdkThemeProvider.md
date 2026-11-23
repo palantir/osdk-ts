@@ -1,24 +1,12 @@
 # OsdkThemeProvider
 
-Provides OSDK theme state to descendants and writes a `data-bp-color-scheme` attribute onto the document so the OSDK + Blueprint design tokens activate the right theme. Components inside the provider re-render automatically when the resolved theme changes.
+`OsdkThemeProvider` manages light and dark theme state and sets the `data-bp-color-scheme` attribute that switches the OSDK and Blueprint design tokens.
+
+Components inside the provider re-render when the resolved theme changes.
 
 ## Prerequisites
 
 Before using `OsdkThemeProvider`, complete the library setup described in [Prerequisites](./Prerequisites.md), in particular the CSS layer imports - the provider only flips an attribute; the OSDK token CSS does the rest.
-
-## Table of Contents
-
-- [Import](#import)
-- [Quick start](#quick-start)
-- [Props reference](#props-reference)
-- [`useOsdkTheme` hook](#useosdktheme-hook)
-- [Examples](#examples)
-  - [Default: follow the OS preference](#default-follow-the-os-preference)
-  - [Force light or dark with `defaultTheme`](#force-light-or-dark-with-defaulttheme)
-  - [Build a `ThemeToggle`](#build-a-themetoggle)
-  - [Drive the theme from an external store (controlled mode)](#drive-the-theme-from-an-external-store-controlled-mode)
-  - [Scope theming to a subtree](#scope-theming-to-a-subtree)
-- [Branching on the resolved theme in JS](#branching-on-the-resolved-theme-in-js)
 
 ## Import
 
@@ -47,6 +35,7 @@ function App() {
 
 With no props the provider follows `prefers-color-scheme` and re-renders when the OS preference changes. To override the OS at runtime, descendants call `setTheme` from [`useOsdkTheme`](#useosdktheme-hook).
 
+> [!IMPORTANT]
 > **Always render the provider somewhere above OSDK components.** OSDK components stay in light mode without it — the CSS only flips when `data-bp-color-scheme="dark"` is on an ancestor, and the provider is the supported way to manage that attribute. If an external store already owns your theme value, use [controlled mode](#drive-the-theme-from-an-external-store-controlled-mode) instead of skipping the provider — that way descendants can still call `useOsdkTheme`.
 
 ## Props reference
