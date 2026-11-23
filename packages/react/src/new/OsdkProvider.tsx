@@ -20,7 +20,7 @@ import type {
   ObservableClientOptions,
 } from "@osdk/client/observable";
 import { createObservableClient } from "@osdk/client/observable";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo } from "react";
 
 import { getRegisteredDevTools } from "../public/devtools-registry.js";
 import { REACT_USER_AGENT } from "../util/UserAgent.js";
@@ -31,6 +31,9 @@ import { UserAgentContext } from "./UserAgentContext.js";
 declare const process: { env: { NODE_ENV: string } };
 const __DEV__ =
   typeof process === "undefined" || process.env.NODE_ENV !== "production";
+
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 type OsdkProviderOptions = {
   children: React.ReactNode;
@@ -91,7 +94,7 @@ export function OsdkProvider(props: OsdkProviderOptions): React.JSX.Element {
     ],
   );
 
-  useEffect(
+  useIsomorphicLayoutEffect(
     () => observableClient?.registerUserAgent(REACT_USER_AGENT),
     [observableClient],
   );
