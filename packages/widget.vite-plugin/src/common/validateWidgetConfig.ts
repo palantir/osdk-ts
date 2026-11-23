@@ -19,8 +19,8 @@ import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/u;
 const ID_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 100;
-const DESCRIPTION_MAX_LENGTH = 250;
 const DISPLAY_NAME_MAX_LENGTH = 100;
+const DESCRIPTION_MAX_LENGTH = 250;
 const PARAMETERS_MAX_COUNT = 50;
 const EVENTS_MAX_COUNT = 50;
 
@@ -131,13 +131,13 @@ function validateWidgetEvents(
     for (const parameterId of event.parameterUpdateIds) {
       if (seen.has(parameterId)) {
         throw new Error(
-          `Event "${eventId}" has duplicate parameter update id "${parameterId}"`,
+          `Event "${eventId}" lists parameter "${parameterId}" more than once`,
         );
       }
       seen.add(parameterId);
       if (!parameterIds.has(parameterId)) {
         throw new Error(
-          `Event "${eventId}" parameter update id "${parameterId}" does not match any parameter id`,
+          `Event "${eventId}" updates unknown parameter "${parameterId}"`,
         );
       }
     }

@@ -201,30 +201,21 @@ describe("validateWidgetConfig", () => {
     invalidConfig.events.updateParameters.parameterUpdateIds.push("paramOne");
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      'Event "updateParameters" has duplicate parameter update id "paramOne"',
+      'Event "updateParameters" lists parameter "paramOne" more than once',
     );
   });
 
-  test("throws for event parameter update id that does not match a parameter", () => {
-    const invalidConfig = getValidConfig();
-    invalidConfig.events.updateParameters.parameterUpdateIds.push(
-      "missingParam",
-    );
+  test("throws for event parameter update id that is not a parameter", () => {
+    for (const parameterId of ["missingParam", "constructor"]) {
+      const invalidConfig = getValidConfig();
+      invalidConfig.events.updateParameters.parameterUpdateIds.push(
+        parameterId,
+      );
 
-    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      'Event "updateParameters" parameter update id "missingParam" does not match any parameter id',
-    );
-  });
-
-  test("throws for event parameter update id inherited from Object.prototype", () => {
-    const invalidConfig = getValidConfig();
-    invalidConfig.events.updateParameters.parameterUpdateIds.push(
-      "constructor",
-    );
-
-    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      'Event "updateParameters" parameter update id "constructor" does not match any parameter id',
-    );
+      expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+        `Event "updateParameters" updates unknown parameter "${parameterId}"`,
+      );
+    }
   });
 
   test("accepts valid object set parameter using object types", () => {
