@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
+import type { DataValueWireToClient } from "../mapping/DataValueMapping.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 import type { OsdkBase } from "../OsdkBase.js";
+import type { AgentPrimitiveType } from "./AgentPrimitiveType.js";
 
 /** @beta */
 export namespace AgentResult {
+  export type PrimitiveType<T extends AgentPrimitiveType> = T extends "long"
+    ? number
+    : DataValueWireToClient[T];
+
   export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T>;
 
   export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
