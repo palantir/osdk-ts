@@ -31,6 +31,12 @@ function getReturnValue(result: unknown): unknown {
   return result.returnValue;
 }
 
+// The action's backing function can fail when applied back to back, so pause
+// between calls.
+function waitBetweenCalls(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 1000));
+}
+
 export async function runActionReturnValuesTest(): Promise<void> {
   const params = { gpa: 3.5, age: 21, favFood: "pizza", graduated: false };
 
@@ -43,6 +49,7 @@ export async function runActionReturnValuesTest(): Promise<void> {
     `Expected a number returnValue, got ${typeof returnValue}`,
   );
 
+  await waitBetweenCalls();
   const resultWithEdits: unknown = await mjMainClient(
     modifyTestEschwartz,
   ).applyAction(params, { $returnEdits: true });
@@ -52,6 +59,7 @@ export async function runActionReturnValuesTest(): Promise<void> {
     "Expected a number returnValue alongside the edits",
   );
 
+  await waitBetweenCalls();
   const observableClient = createObservableClient(mjMainClient);
   const observableResult: unknown = await observableClient.applyAction(
     modifyTestEschwartz,
@@ -64,7 +72,8 @@ export async function runActionReturnValuesTest(): Promise<void> {
   );
 
   // batchApplyAction is not exercised: this action's function uses Ontology
-  // transactions, which Foundry does not support in bulk mode.
+  // transactions, which Foundry does not support in bulk mode, so batches
+  // cannot be applied.
 }
 
 void runActionReturnValuesTest();
