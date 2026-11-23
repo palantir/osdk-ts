@@ -19,7 +19,6 @@ import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/u;
 const ID_MAX_LENGTH = 100;
 const NAME_MAX_LENGTH = 100;
-const DISPLAY_NAME_MAX_LENGTH = 100;
 const DESCRIPTION_MAX_LENGTH = 250;
 const PARAMETERS_MAX_COUNT = 50;
 const EVENTS_MAX_COUNT = 50;
@@ -85,9 +84,9 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
         `Parameter id "${parameterId}" does not match allowed pattern (must be camelCase)`,
       );
     }
-    if (parameterConfig.displayName.length > DISPLAY_NAME_MAX_LENGTH) {
+    if (parameterConfig.displayName.length > NAME_MAX_LENGTH) {
       throw new Error(
-        `Parameter "${parameterId}" display name length can be at most ${DISPLAY_NAME_MAX_LENGTH} characters`,
+        `Parameter "${parameterId}" display name length can be at most ${NAME_MAX_LENGTH} characters`,
       );
     }
     if (parameterConfig.type === "objectSet") {
@@ -124,9 +123,9 @@ function validateWidgetEvents(
         `Event id "${eventId}" does not match allowed pattern (must be camelCase)`,
       );
     }
-    if (event.displayName.length > DISPLAY_NAME_MAX_LENGTH) {
+    if (event.displayName.length > NAME_MAX_LENGTH) {
       throw new Error(
-        `Event "${eventId}" display name length can be at most ${DISPLAY_NAME_MAX_LENGTH} characters`,
+        `Event "${eventId}" display name length can be at most ${NAME_MAX_LENGTH} characters`,
       );
     }
     const seen = new Set<string>();
