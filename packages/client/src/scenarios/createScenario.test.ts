@@ -92,7 +92,7 @@ describe("createScenario", () => {
     });
   });
 
-  it("creates from main when the parent has branch metadata cached", async () => {
+  it("preserves branch and cached metadata when creating from a scenario", async () => {
     const branch = "my-branch";
     const expireAfter = new Date("2026-09-20T12:00:00.000Z");
     const newScenarioRid = "ri.actions..scenario.new";
@@ -113,18 +113,20 @@ describe("createScenario", () => {
     };
     mockFetchResponse(fetchFunction, createResponse);
 
-    const scenario = await createScenario(client, { expireAfter });
+    const original = withScenario(client, "ri.actions..scenario.original");
+    const scenario = await createScenario(original, { expireAfter });
 
     expect(fetchFunction).toHaveBeenCalledTimes(1);
     expect(JSON.parse(fetchFunction.mock.calls[0][1]?.body as string)).toEqual({
+      base: { type: "branch", branch },
       expireAfter: expireAfter.toISOString(),
     });
-    mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+    mockFetchResponse(fetchFunction, { data: [] });
     await scenario(BarInterface).fetchPage();
-    expect(fetchFunction).toHaveBeenCalledTimes(3);
-    for (const [input] of fetchFunction.mock.calls) {
-      expect(new URL(String(input)).searchParams.has("branch")).toBe(false);
-    }
+    expect(fetchFunction).toHaveBeenCalledTimes(2);
+    const scenarioUrl = new URL(String(fetchFunction.mock.lastCall?.[0]));
+    expect(scenarioUrl.searchParams.get("branch")).toBe(branch);
+    expect(scenarioUrl.searchParams.get("scenarioRid")).toBe(newScenarioRid);
     mockFetchResponse(fetchFunction, { data: [] });
     await client(BarInterface).fetchPage();
     expect(

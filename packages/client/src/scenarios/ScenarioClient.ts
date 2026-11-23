@@ -27,7 +27,6 @@ import { OntologyScenarios } from "@osdk/foundry.ontologies";
 import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
-import { createStandardOntologyProviderFactory } from "../ontology/StandardOntologyProvider.js";
 
 /**
  * The set of many-to-many link types modified within a scenario for one source object type. Returned as part of
@@ -230,7 +229,7 @@ export function isScenarioClient(value: unknown): value is ScenarioClient {
 
 /**
  * Shared internal builder used by both {@link withScenario} and {@link createScenario}.
- * Replaces the parent's transaction, scenario, and branch scope without changing the parent.
+ * Replaces the parent's transaction and scenario scope while preserving its branch and leaving the parent unchanged.
  * Derives a {@link Client} via `createClientFromContext` and adds {@link ScenarioClient} methods.
  *
  * @internal
@@ -243,18 +242,11 @@ export function buildScenarioClient(
 
   const scenarioCtx: MinimalClient = {
     ...ctx,
-    branch: undefined,
     transactionId: undefined,
     flushEdits: undefined,
     scenarioRid,
     clientCacheKey: {} as ClientCacheKey,
   };
-  if (ctx.branch != null) {
-    scenarioCtx.ontologyProvider = createStandardOntologyProviderFactory({})(
-      scenarioCtx,
-    );
-    scenarioCtx.narrowTypeInterfaceOrObjectMapping = {};
-  }
   const inner: Client = createClientFromContext(scenarioCtx);
 
   const innerCtx: MinimalClient = inner[additionalContext];

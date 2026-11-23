@@ -119,7 +119,7 @@ describe("withScenario", () => {
     for (const [input] of fetchFunction.mock.calls) {
       const requestUrl = new URL(String(input));
       expect(requestUrl.searchParams.has("transactionId")).toBe(false);
-      expect(requestUrl.searchParams.has("branch")).toBe(false);
+      expect(requestUrl.searchParams.get("branch")).toBe("my-branch");
       if (
         requestUrl.pathname.endsWith("/apply") ||
         requestUrl.pathname.endsWith("/execute")
@@ -134,7 +134,7 @@ describe("withScenario", () => {
       "ri.actions..scenario.abc",
     );
     expect(url.searchParams.has("transactionId")).toBe(false);
-    mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+    mockFetchResponse(fetchFunction, { data: [] });
     await txClient(BarInterface).fetchPage();
     expect(flushEdits).toHaveBeenCalledTimes(1);
     expect(

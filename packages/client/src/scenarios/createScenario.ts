@@ -27,8 +27,8 @@ import { buildScenarioClient, type ScenarioClient } from "./ScenarioClient.js";
  * Mint a fresh ontology scenario and return a client scoped to it.
  *
  * @param client - The base {@link Client} to derive authentication and ontology context from.
- *   The scenario is always created from committed main, without the client's transaction edits,
- *   scenario state, or branch scope. The original client is unchanged. Rolling back its transaction
+ *   The scenario uses the client's branch, or main if no branch is set, without the client's
+ *   transaction edits or scenario state. The original client is unchanged. Rolling back its transaction
  *   does not undo the new scenario or its edits.
  * @param options - Optional settings for the new scenario.
  * @returns a {@link ScenarioClient} bound to the freshly minted scenario RID.
@@ -50,13 +50,16 @@ export async function createScenario(
 ): Promise<ScenarioClient> {
   const ctx: MinimalClient = {
     ...client[additionalContext],
-    branch: undefined,
     transactionId: undefined,
     flushEdits: undefined,
     scenarioRid: undefined,
   };
 
   const request: CreateOntologyScenarioRequest = {};
+
+  if (ctx.branch != null) {
+    request.base = { type: "branch", branch: ctx.branch };
+  }
 
   if (options?.expireAfter != null) {
     request.expireAfter = options.expireAfter.toISOString();

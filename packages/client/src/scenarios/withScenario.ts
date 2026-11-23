@@ -22,8 +22,8 @@ import { buildScenarioClient, type ScenarioClient } from "./ScenarioClient.js";
  * subsequent operations (`fetchPage`, `applyAction`, `executeFunction`, etc.) to the given `scenarioRid`.
  *
  * @param client - The base {@link Client} to derive authentication and ontology context from.
- *   The returned client replaces any transaction, scenario, or branch scope with the requested
- *   scenario. The original client is unchanged. Scenario operations do not join the original
+ *   The returned client replaces any transaction or scenario scope with the requested
+ *   scenario and preserves the branch. The original client is unchanged. Scenario operations do not join the original
  *   transaction and are not undone by its rollback.
  * @param scenarioRid - The RID of the scenario to attach to.
  * @returns a {@link ScenarioClient} bound to `scenarioRid`.
