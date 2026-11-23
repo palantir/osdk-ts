@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+import type { DataType, StructField } from "@osdk/foundry.agents";
 import path from "node:path";
+import type { EnhancedAgent } from "../GenerateContext/EnhancedAgent.js";
+import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
+import type { MinimalFs } from "../MinimalFs.js";
+import { getObjectImports } from "../shared/getObjectImports.js";
+import { getObjectTypeApiNamesFromAgent } from "../shared/getObjectTypeApiNamesFromAgent.js";
+import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
 
 export async function generatePerAgentDataFiles({
@@ -39,28 +46,167 @@ export async function generatePerAgentDataFiles({
   await fs.mkdir(outDir, { recursive: true });
 
   const agents = Object.values(ontology.agents);
+  await Promise.all(agents.map(agent =>
+    generateAgentFile(
+      fs,
+      outDir,
+      relOutDir,
+      agent,
+      importExt,
+      ontology,
+      forInternalUse,
+      agentVersionReferences,
+    )
+  ));
 
-  await Promise.all(
-    agents.map(async (agent) => {
-      const name = agent.shortApiName;
-      const apiName = JSON.stringify(agent.fullApiName);
-      const version = JSON.stringify(
-        agentVersionReferences.get(agent.fullApiName) ?? agent.raw.version,
-      );
-      await fs.writeFile(
-        path.join(outDir, `${name}.ts`),
-        await formatTs(`
-      import type { VersionBound } from "${
-          forInternalUse ? "@osdk/api" : "@osdk/client"
-        }";
-      import type { AgentDefinition } from "${
-          forInternalUse ? "@osdk/api/unstable" : "@osdk/client/experimental"
-        }";
+  await fs.writeFile(
+    `${outDir}.ts`,
+    await formatTs(
+      agents.length === 0
+        ? "export {};"
+        : agents.map(agent =>
+          `export { ${agent.shortApiName} } from "${
+            agent.getImportPathRelTo(relOutDir)
+          }";`
+        ).join("\n"),
+    ),
+  );
+}
+
+async function generateAgentFile(
+  fs: MinimalFs,
+  outDir: string,
+  relOutDir: string,
+  agent: EnhancedAgent,
+  importExt: string,
+  ontology: EnhancedOntologyDefinition,
+  forInternalUse: boolean,
+  agentVersionReferences: ReadonlyMap<string, string>,
+) {
+  const name = agent.shortApiName;
+  const relFilePath = path.join(relOutDir, `${name}.ts`);
+  const objectTypes = new Set(
+    getObjectTypeApiNamesFromAgent(agent).map(o =>
+      ontology.requireObjectType(o)
+    ),
+  );
+  const importObjects = getObjectImports(objectTypes, "", relFilePath, true);
+  const apiName = JSON.stringify(agent.fullApiName);
+  const version = JSON.stringify(
+    agentVersionReferences.get(agent.fullApiName) ?? agent.raw.version,
+  );
+  const createSessionArgs = agent.raw.argumentDefinitions;
+  // TODO(mhogberg): Use isOptional instead of checking nullable here once it is available in the public API.
+  const optional = createSessionArgs.every(p => p.dataType.type === "nullable");
+  const eventNames = agent.raw.eventDefinitions.map(event => event.eventType);
+  const contextItem =
+    agent.raw.contextItemDefinitions.map(item =>
+      `{ type: ${JSON.stringify(item.contextItemType)}; data: ContextItems[${
+        JSON.stringify(item.contextItemType)
+      }]; }`
+    ).join(" | ") || "never";
+  const sendEventArguments =
+    eventNames.map(name =>
+      `{ ${
+        eventNames.map(eventName =>
+          eventName === name
+            ? `readonly ${JSON.stringify(eventName)}: Events[${
+              JSON.stringify(eventName)
+            }];`
+            : `readonly ${JSON.stringify(eventName)}?: never;`
+        ).join("\n")
+      } }`
+    ).join(" | ") || "never";
+
+  await fs.writeFile(
+    path.join(outDir, `${name}.ts`),
+    await formatTs(`
+      import type { VersionBound as $VersionBound } from "${
+      forInternalUse ? "@osdk/api" : "@osdk/client"
+    }";
+      import type { AgentDefinition as $AgentDefinition, AgentParam as $AgentParam, AgentResult as $AgentResult, AgentSession as $AgentSession, AgentSessionState as $AgentSessionState, AgentGetStateOptions as $AgentGetStateOptions, AgentSendEventOptions as $AgentSendEventOptions } from "${
+      forInternalUse ? "@osdk/api/unstable" : "@osdk/client/experimental"
+    }";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
       import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
+      ${importObjects}
 
       /** @beta */
-      export interface ${name} extends AgentDefinition, VersionBound<$ExpectedClientVersion> {
+      export namespace ${name} {
+        export interface Signatures {
+          experimental_createSession(args${
+      optional ? "?" : ""
+    }: ${name}.CreateSessionArguments): Promise<${name}.Session>;
+          experimental_getSession(sessionId: string): Promise<${name}.Session>;
+        }
+
+        export interface Session extends $AgentSession {
+          experimental_getState(
+            $options?: $AgentGetStateOptions,
+          ): Promise<SessionState>;
+          experimental_sendEvent(
+            event: SendEventArguments,
+            $options?: $AgentSendEventOptions,
+          ): Promise<void>;
+        }
+
+        export interface SessionState extends $AgentSessionState {
+          arguments: ${
+      createSessionArgs.length === 0
+        ? "Record<string, never>"
+        : `{ ${agentFields(ontology, createSessionArgs, "Result", true)} }`
+    };
+          agentState: { data: ${
+      getAgentDataType(ontology, agent.raw.agentStateType, "Result")
+    }; };
+          contextItems: Record<string, ContextItem>;
+        }
+
+        export type ContextItem = ${contextItem};
+
+        ${
+      agent.raw.contextItemDefinitions.length === 0
+        ? "export type ContextItems = Record<never, never>;"
+        : `export interface ContextItems { ${
+          agentFields(
+            ontology,
+            agent.raw.contextItemDefinitions.map(item => ({
+              name: item.contextItemType,
+              dataType: item.dataType,
+            })),
+            "Result",
+          )
+        } }`
+    }
+
+        export type SendEventArguments = ${sendEventArguments};
+
+        ${
+      agent.raw.eventDefinitions.length === 0
+        ? "export type Events = Record<never, never>;"
+        : `export interface Events { ${
+          agentFields(
+            ontology,
+            agent.raw.eventDefinitions.map(event => ({
+              name: event.eventType,
+              dataType: event.payloadType,
+            })),
+            "Param",
+          )
+        } }`
+    }
+
+        ${
+      createSessionArgs.length === 0
+        ? "export type CreateSessionArguments = Record<string, never>;"
+        : `export interface CreateSessionArguments { ${
+          agentFields(ontology, createSessionArgs, "Param", true)
+        } }`
+    }
+      }
+
+      /** @beta */
+      export interface ${name} extends $AgentDefinition<${name}.Signatures>, $VersionBound<$ExpectedClientVersion> {
         type: "agent";
         apiName: ${apiName};
         version: ${version};
@@ -75,25 +221,80 @@ export async function generatePerAgentDataFiles({
         osdkMetadata: $osdkMetadata,
       };
     `),
-      );
-    }),
   );
+}
 
-  await fs.writeFile(
-    `${outDir}.ts`,
-    await formatTs(
-      agents.length === 0
-        ? "export {};"
-        : agents
-          .map(
-            (agent) =>
-              `export { ${agent.shortApiName} } from "${
-                agent.getImportPathRelTo(
-                  relOutDir,
-                )
-              }";`,
-          )
-          .join("\n"),
-    ),
+function agentFields(
+  ontology: EnhancedOntologyDefinition,
+  fields: ReadonlyArray<StructField>,
+  type: "Param" | "Result",
+  topLevel = false,
+): string {
+  return stringify(
+    Object.fromEntries(fields.map(field => [field.name, field.dataType])),
+    {
+      "*": (dataType, _formatter, name) => {
+        // TODO(mhogberg): Use isOptional instead of checking nullable here once it is available in the public API.
+        const optional = topLevel && dataType.type === "nullable";
+        return [
+          `${type === "Param" ? "readonly " : ""}${JSON.stringify(name)}${
+            optional ? "?" : ""
+          }`,
+          getAgentDataType(ontology, dataType, type),
+        ];
+      },
+    },
   );
+}
+
+export function getAgentDataType(
+  ontology: EnhancedOntologyDefinition,
+  input: DataType,
+  type: "Param" | "Result",
+): string {
+  const recurse = (dataType: DataType) =>
+    getAgentDataType(ontology, dataType, type);
+  switch (input.type) {
+    case "boolean":
+    case "date":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "short":
+    case "string":
+    case "timestamp":
+      return `$Agent${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
+    case "nullable":
+      return `(${recurse(input.wrappedType)}) | null`;
+    case "list":
+      return `${type === "Param" ? "Readonly" : ""}Array<${
+        recurse(input.elementType)
+      }>`;
+    case "record":
+      return type === "Param"
+        ? `Readonly<Record<string, ${recurse(input.valueType)}>>`
+        : `Record<string, ${recurse(input.valueType)}>`;
+    case "struct":
+      return input.fields.length === 0
+        ? "Record<string, never>"
+        : `{ ${agentFields(ontology, input.fields, type)} }`;
+    case "discriminatedUnion":
+      return input.members.map(member =>
+        `{ ${type === "Param" ? "readonly " : ""}${
+          JSON.stringify(input.discriminatorKey)
+        }: ${JSON.stringify(member.discriminatorValue)};
+          ${agentFields(ontology, member.fields, type)} }`
+      ).join(" | ") || "never";
+    case "object":
+    case "objectSet":
+      return `$Agent${type}.${
+        input.type === "object" ? "ObjectType" : "ObjectSetType"
+      }<${
+        ontology.requireObjectType(input.objectTypeApiName)
+          .getImportedDefinitionIdentifier(true)
+      }>`;
+    default:
+      return "unknown";
+  }
 }

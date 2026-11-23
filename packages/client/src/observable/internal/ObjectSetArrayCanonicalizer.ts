@@ -18,9 +18,9 @@ import type { Canonical } from "./Canonical.js";
 import { WeakRefTrie } from "./WeakRefTrie.js";
 
 export class ObjectSetArrayCanonicalizer {
-  #unionTrie = new WeakRefTrie<string[]>();
-  #intersectTrie = new WeakRefTrie<string[]>();
-  #subtractTrie = new WeakRefTrie<string[]>();
+  #unionTrie = new WeakRefTrie<string[]>((items) => [...items]);
+  #intersectTrie = new WeakRefTrie<string[]>((items) => [...items]);
+  #subtractTrie = new WeakRefTrie<string[]>((items) => [...items]);
 
   canonicalizeUnion(items: string[]): Canonical<string[]> {
     const sorted = [...items].sort();

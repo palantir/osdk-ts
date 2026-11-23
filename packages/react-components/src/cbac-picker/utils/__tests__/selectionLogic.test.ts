@@ -24,6 +24,8 @@ import type {
 import {
   computeMarkingStates,
   groupMarkingsByCategory,
+  sortCategoriesByPriority,
+  sortMarkingsByProminenceAndPriority,
   toggleMarking,
 } from "../selectionLogic.js";
 
@@ -197,6 +199,55 @@ describe("groupMarkingsByCategory", () => {
     expect(groups[1].category.id).toBe("a");
   });
 
+  describe("ordering", () => {
+    it("sorts categories by priority and their markings by prominence and priority", () => {
+      const categories: PickerMarkingCategory[] = [
+        { ...categoryA, priority: "2" },
+        { ...categoryB, priority: "10" },
+      ];
+      const unsortedMarkings: PickerMarking[] = [
+        { id: "a1", categoryId: "a", name: "A1" },
+        { id: "b-missing", categoryId: "b", name: "Missing", priority: "100" },
+        {
+          id: "b-uncommon",
+          categoryId: "b",
+          name: "Uncommon",
+          priority: "50",
+          prominence: "UNCOMMON" as const,
+        },
+        {
+          id: "b-low",
+          categoryId: "b",
+          name: "Low",
+          priority: "2",
+          prominence: "COMMON" as const,
+        },
+        {
+          id: "b-high",
+          categoryId: "b",
+          name: "High",
+          priority: "10",
+          prominence: "COMMON" as const,
+        },
+      ];
+
+      const groups = groupMarkingsByCategory(unsortedMarkings, categories);
+
+      expect(
+        groups.map(({ category, markings: categoryMarkings }) => ({
+          categoryId: category.id,
+          markingIds: categoryMarkings.map((marking) => marking.id),
+        })),
+      ).toEqual([
+        {
+          categoryId: "b",
+          markingIds: ["b-high", "b-low", "b-uncommon", "b-missing"],
+        },
+        { categoryId: "a", markingIds: ["a1"] },
+      ]);
+    });
+  });
+
   it("excludes categories with no markings", () => {
     const groups = groupMarkingsByCategory(markings, [
       categoryA,
@@ -226,5 +277,64 @@ describe("groupMarkingsByCategory", () => {
     expect(groups).toHaveLength(2);
     const allMarkingIds = groups.flatMap((g) => g.markings.map((m) => m.id));
     expect(allMarkingIds).not.toContain("orphan");
+  });
+});
+
+describe("sortCategoriesByPriority", () => {
+  it("orders by descending numeric priority, preserving ties and placing missing priorities last", () => {
+    const categories = Object.freeze([
+      { id: "missing-z" },
+      { id: "two-z", priority: "2" },
+      { id: "negative", priority: "-1" },
+      { id: "ten", priority: "10" },
+      { id: "missing-a" },
+      { id: "two-a", priority: "2" },
+    ]);
+
+    expect(sortCategoriesByPriority(categories).map((c) => c.id)).toEqual([
+      "ten",
+      "two-z",
+      "two-a",
+      "negative",
+      "missing-z",
+      "missing-a",
+    ]);
+  });
+});
+
+describe("sortMarkingsByProminenceAndPriority", () => {
+  it("orders common, uncommon, then missing-prominence markings by descending priority within each group", () => {
+    const markings = Object.freeze([
+      { id: "uncommon-low", priority: "50", prominence: "UNCOMMON" as const },
+      { id: "common-low", priority: "2", prominence: "COMMON" as const },
+      { id: "missing-low", priority: "1" },
+      { id: "uncommon-high", priority: "100", prominence: "UNCOMMON" as const },
+      { id: "missing-high", priority: "500" },
+      { id: "common-high", priority: "10", prominence: "COMMON" as const },
+    ]);
+
+    expect(
+      sortMarkingsByProminenceAndPriority(markings).map((m) => m.id),
+    ).toEqual([
+      "common-high",
+      "common-low",
+      "uncommon-high",
+      "uncommon-low",
+      "missing-high",
+      "missing-low",
+    ]);
+  });
+
+  it("preserves input order for ties and places missing priorities last within a group", () => {
+    const markings = Object.freeze([
+      { id: "missing-z", prominence: "COMMON" as const },
+      { id: "two-z", priority: "2", prominence: "COMMON" as const },
+      { id: "missing-a", prominence: "COMMON" as const },
+      { id: "two-a", priority: "2", prominence: "COMMON" as const },
+    ]);
+
+    expect(
+      sortMarkingsByProminenceAndPriority(markings).map((m) => m.id),
+    ).toEqual(["two-z", "two-a", "missing-z", "missing-a"]);
   });
 });

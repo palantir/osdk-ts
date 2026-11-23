@@ -20,6 +20,7 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type {
+  FunctionDiscovery,
   OntologyIrSecurityGroupGranularCondition,
   SecurityGroupComparisonValue,
 } from "@osdk/client.unstable";
@@ -30,6 +31,7 @@ import type {
 import type {
   ActionType,
   InterfaceType,
+  ObjectTypeDatasourceMarkingConstraints,
   PropertyTypeTypeVector,
   SecurityConditionDefinition,
 } from "@osdk/maker";
@@ -92,17 +94,49 @@ function resolvedShapePreset(resolvedShape: ResolvedBlockSetInputShape) {
   };
 }
 
+async function withFunctionsIr<T>(
+  inputs: FunctionsIr["discoveredFunctions"][number]["inputs"],
+  run: (functionsIrFile: string) => Promise<T>,
+): Promise<T> {
+  const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "maker-fba-"));
+  const functionsIrFile = path.join(outputDir, "functions-ir.json");
+  const functionsIr: FunctionsIr = {
+    discoveredFunctions: [
+      {
+        locator: {
+          type: "typescript",
+          typescript: { functionName: "updateTags" },
+        },
+        inputs,
+        output: { type: "void" },
+        customTypes: {},
+        ontologyProvenance: {
+          editedObjects: { "com.palantir.TaggedObject": {} },
+          editedLinks: {},
+          editedInterfaces: {},
+        },
+      },
+    ],
+  };
+  try {
+    fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
+    return await run(functionsIrFile);
+  } finally {
+    fs.rmSync(outputDir, { recursive: true, force: true });
+  }
+}
+
 describe("Experimental Test Suite", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
   });
 
   describe("Function-backed action parameter requirements", () => {
-    const stringList = {
+    const stringList: FunctionDiscovery.DataType = {
       type: "list",
-      list: { elementsType: { type: "string" } },
+      list: { elementsType: { type: "string", string: {} } },
     };
-    const objectList = {
+    const objectList: FunctionDiscovery.DataType = {
       type: "list",
       list: {
         elementsType: {
@@ -111,11 +145,11 @@ describe("Experimental Test Suite", () => {
         },
       },
     };
-    const optionalStringList = {
+    const optionalStringList: FunctionDiscovery.DataType = {
       type: "optionalType",
       optionalType: { wrappedType: stringList },
     };
-    const geoPointList = {
+    const geoPointList: FunctionDiscovery.DataType = {
       type: "list",
       list: {
         elementsType: {
@@ -126,8 +160,8 @@ describe("Experimental Test Suite", () => {
     };
 
     it.each([
-      ["string", { type: "string" }, true, "required"],
-      ["string", { type: "string" }, false, "notRequired"],
+      ["string", { type: "string", string: {} }, true, "required"],
+      ["string", { type: "string", string: {} }, false, "notRequired"],
       ["stringList", stringList, true, "listLengthValidation"],
       ["stringList", stringList, false, "listLengthValidation"],
       ["stringList", stringList, undefined, "listLengthValidation"],
@@ -137,32 +171,48 @@ describe("Experimental Test Suite", () => {
     ] as const)(
       "uses %s-compatible requirements for %j with required=%s",
       async (parameterType, dataType, required, requirementType) => {
-        const outputDir = fs.mkdtempSync(
-          path.join(os.tmpdir(), "maker-function-action-requirements-"),
+        const result = await withFunctionsIr(
+          [{ name: "tags", dataType, required }],
+          (functionsIrFile) =>
+            defineOntologyV2(
+              "com.palantir.",
+              () => {
+                defineObject({
+                  apiName: "TaggedObject",
+                  displayName: "Tagged object",
+                  pluralDisplayName: "Tagged objects",
+                  titlePropertyApiName: "id",
+                  primaryKeyPropertyApiName: "id",
+                  properties: {
+                    id: { type: "string" },
+                    tags: { type: "string", array: true },
+                  },
+                });
+                defineFunctionBackedAction({ functionApiName: "updateTags" });
+              },
+              undefined,
+              undefined,
+              functionsIrFile,
+            ),
         );
-        const functionsIrFile = path.join(outputDir, "functions-ir.json");
-        const functionsIr: FunctionsIr = {
-          discoveredFunctions: [
-            {
-              locator: {
-                type: "typescript",
-                typescript: { functionName: "updateTags" },
-              },
-              inputs: [{ name: "tags", dataType, required }],
-              output: { type: "void" },
-              customTypes: {},
-              ontologyProvenance: {
-                editedObjects: { "com.palantir.TaggedObject": {} },
-                editedLinks: {},
-                editedInterfaces: {},
-              },
-            },
-          ],
-        };
+        const actions = Object.values(result.ontologyIr.ontology.actionTypes);
+        expect(actions).toHaveLength(1);
+        const action = actions[0].actionType;
+        expect(action.metadata.parameters.tags.type.type).toBe(parameterType);
+        expect(
+          action.actionTypeLogic.validation.parameterValidations.tags
+            .defaultValidation.validation.required,
+        ).toEqual({ type: requirementType, [requirementType]: {} });
+      },
+    );
+  });
 
-        try {
-          fs.writeFileSync(functionsIrFile, JSON.stringify(functionsIr));
-          const result = await defineOntologyV2(
+  describe("Function-backed action configuration", () => {
+    it("passes display, permission and isolation settings through", async () => {
+      const result = await withFunctionsIr(
+        [{ name: "tag", dataType: { type: "string", string: {} } }],
+        (functionsIrFile) =>
+          defineOntologyV2(
             "com.palantir.",
             () => {
               defineObject({
@@ -171,30 +221,66 @@ describe("Experimental Test Suite", () => {
                 pluralDisplayName: "Tagged objects",
                 titlePropertyApiName: "id",
                 primaryKeyPropertyApiName: "id",
-                properties: {
-                  id: { type: "string" },
-                  tags: { type: "string", array: true },
-                },
+                properties: { id: { type: "string" } },
               });
-              defineFunctionBackedAction({ functionApiName: "updateTags" });
+              defineFunctionBackedAction({
+                functionApiName: "updateTags",
+                isolationSettings: {
+                  isolationMode: {
+                    type: "snapshotIsolation",
+                    snapshotIsolation: {},
+                  },
+                  retrySettings: { type: "default", default: {} },
+                },
+                defaultFormat: "TABLE",
+                enableLayoutSwitch: true,
+                submissionMetadata: {
+                  successMessage: "Tags updated",
+                  undoButtonConfiguration: true,
+                },
+                permission: "publicProject",
+                icon: { locator: "tag", color: "#2D72D2" },
+              });
             },
             undefined,
             undefined,
             functionsIrFile,
-          );
-          const actions = Object.values(result.ontologyIr.ontology.actionTypes);
-          expect(actions).toHaveLength(1);
-          const action = actions[0].actionType;
-          expect(action.metadata.parameters.tags.type.type).toBe(parameterType);
-          expect(
-            action.actionTypeLogic.validation.parameterValidations.tags
-              .defaultValidation.validation.required,
-          ).toEqual({ type: requirementType, [requirementType]: {} });
-        } finally {
-          fs.rmSync(outputDir, { recursive: true, force: true });
+          ),
+      );
+      const [[actionRid, { actionType }]] = Object.entries(
+        result.ontologyIr.ontology.actionTypes,
+      );
+      const { displayMetadata } = actionType.metadata;
+      expect(actionType.metadata.isolationSettings).toEqual({
+        isolationMode: { type: "snapshotIsolation", snapshotIsolation: {} },
+        retrySettings: { type: "default", default: {} },
+      });
+      expect(displayMetadata.configuration).toMatchObject({
+        defaultLayout: "TABLE",
+        enableLayoutUserSwitch: true,
+      });
+      expect(displayMetadata.icon).toEqual({
+        type: "blueprint",
+        blueprint: { locator: "tag", color: "#2D72D2" },
+      });
+      expect(displayMetadata.successMessage).toEqual([
+        { type: "message", message: "Tags updated" },
+      ]);
+      expect(displayMetadata.undoButtonConfiguration).toBe(true);
+      expect(
+        result.ontologyIr.ontology.blockPermissionInformation?.actionTypes[
+          actionRid
+        ],
+      ).toMatchInlineSnapshot(`
+        {
+          "restrictionStatus": {
+            "hasRolesApplied": true,
+            "ontologyPackageRid": null,
+            "publicProject": true,
+          },
         }
-      },
-    );
+      `);
+    });
   });
 
   describe("Empty backing Media Sets", () => {
@@ -297,6 +383,156 @@ describe("Experimental Test Suite", () => {
         ).toEqual([[combinedMarkingId]]);
       },
     );
+
+    describe("datasource markingConstraints allowEmptyMarkings", () => {
+      function defineDocument(
+        markingConstraints: ObjectTypeDatasourceMarkingConstraints | undefined,
+        markingTypes: Array<"CBAC" | "MANDATORY"> = ["CBAC", "MANDATORY"],
+      ) {
+        return defineObject({
+          apiName: "document",
+          displayName: "Document",
+          pluralDisplayName: "Documents",
+          titlePropertyApiName: "id",
+          primaryKeyPropertyApiName: "id",
+          properties: {
+            id: { type: "string" },
+            ...(markingTypes.includes("CBAC") && {
+              classification: {
+                type: {
+                  type: "marking",
+                  markingType: "CBAC",
+                  markingInputGroupName: "classificationGroup",
+                },
+              },
+            }),
+            ...(markingTypes.includes("MANDATORY") && {
+              mandatory: {
+                type: {
+                  type: "marking",
+                  markingType: "MANDATORY",
+                  markingInputGroupName: "mandatoryGroup",
+                },
+              },
+            }),
+          },
+          datasources: [{ type: "dataset", markingConstraints }],
+        });
+      }
+
+      async function getDataSecurity(
+        markingConstraints: ObjectTypeDatasourceMarkingConstraints | undefined,
+      ) {
+        const result = await defineOntologyV2("com.palantir.", () => {
+          defineDocument(markingConstraints);
+        });
+        const document = Object.values(
+          result.ontologyIr.ontology.objectTypes,
+        )[0];
+        const datasources = document.datasources;
+        expect(datasources).toHaveLength(1);
+        return datasources[0].dataSecurity;
+      }
+
+      it("emits allowEmptyMarkings on the mandatory constraint", async () => {
+        expect(
+          await getDataSecurity({ mandatory: { allowEmptyMarkings: true } }),
+        ).toEqual({
+          classificationConstraint: { markings: ["classificationGroup"] },
+          markingConstraint: {
+            markingIds: ["mandatoryGroup"],
+            allowEmptyMarkings: true,
+          },
+        });
+      });
+
+      it("emits allowEmptyMarkings on the classification constraint", async () => {
+        expect(
+          await getDataSecurity({ cbac: { allowEmptyMarkings: true } }),
+        ).toEqual({
+          classificationConstraint: {
+            markings: ["classificationGroup"],
+            allowEmptyMarkings: true,
+          },
+          markingConstraint: { markingIds: ["mandatoryGroup"] },
+        });
+      });
+
+      it("emits allowEmptyMarkings on both constraints independently", async () => {
+        expect(
+          await getDataSecurity({
+            mandatory: { allowEmptyMarkings: true },
+            cbac: { allowEmptyMarkings: false },
+          }),
+        ).toEqual({
+          classificationConstraint: {
+            markings: ["classificationGroup"],
+            allowEmptyMarkings: false,
+          },
+          markingConstraint: {
+            markingIds: ["mandatoryGroup"],
+            allowEmptyMarkings: true,
+          },
+        });
+      });
+
+      it("emits an explicit false", async () => {
+        const dataSecurity = await getDataSecurity({
+          mandatory: { allowEmptyMarkings: false },
+          cbac: { allowEmptyMarkings: false },
+        });
+        expect(dataSecurity?.markingConstraint).toHaveProperty(
+          "allowEmptyMarkings",
+          false,
+        );
+        expect(dataSecurity?.classificationConstraint).toHaveProperty(
+          "allowEmptyMarkings",
+          false,
+        );
+      });
+
+      it.each([
+        ["no markingConstraints", undefined],
+        ["empty markingConstraints", {}],
+        ["empty constraint settings", { mandatory: {}, cbac: {} }],
+      ])("leaves allowEmptyMarkings unset with %s", async (_, input) => {
+        const dataSecurity = await getDataSecurity(input);
+        expect(dataSecurity).toEqual({
+          classificationConstraint: { markings: ["classificationGroup"] },
+          markingConstraint: { markingIds: ["mandatoryGroup"] },
+        });
+        expect(
+          dataSecurity?.markingConstraint?.allowEmptyMarkings,
+        ).toBeUndefined();
+        expect(
+          dataSecurity?.classificationConstraint?.allowEmptyMarkings,
+        ).toBeUndefined();
+      });
+
+      it("throws when markingConstraints.mandatory is set without a MANDATORY marking property", async () => {
+        await defineOntologyV2("com.palantir.", () => {
+          expect(() =>
+            defineDocument({ mandatory: { allowEmptyMarkings: true } }, [
+              "CBAC",
+            ]),
+          ).toThrowErrorMatchingInlineSnapshot(
+            `[MakerValidationError: [validation_error] Object "document" sets datasource markingConstraints.mandatory but has no MANDATORY marking property. Add a MANDATORY marking property or remove markingConstraints.mandatory.]`,
+          );
+        });
+      });
+
+      it("throws when markingConstraints.cbac is set without a CBAC marking property", async () => {
+        await defineOntologyV2("com.palantir.", () => {
+          expect(() =>
+            defineDocument({ cbac: { allowEmptyMarkings: true } }, [
+              "MANDATORY",
+            ]),
+          ).toThrowErrorMatchingInlineSnapshot(
+            `[MakerValidationError: [validation_error] Object "document" sets datasource markingConstraints.cbac but has no CBAC marking property. Add a CBAC marking property or remove markingConstraints.cbac.]`,
+          );
+        });
+      });
+    });
   });
 
   describe("Security group dependencies", () => {
@@ -541,647 +777,8 @@ describe("Experimental Test Suite", () => {
           },
         },
       });
-      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-        {
-          "actionTypes": {
-            "com.palantir.create-object-foo": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "addObjectRule": {
-                          "objectTypeId": "com.palantir.foo",
-                          "propertyValues": {
-                            "date": {
-                              "parameterId": "date",
-                              "type": "parameterId",
-                            },
-                            "id": {
-                              "parameterId": "id",
-                              "type": "parameterId",
-                            },
-                            "team": {
-                              "parameterId": "team",
-                              "type": "parameterId",
-                            },
-                          },
-                          "structFieldValues": {},
-                        },
-                        "type": "addObjectRule",
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "true": {},
-                            "type": "true",
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "date": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "dateTimePicker": {},
-                              "type": "dateTimePicker",
-                            },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "datetime": {
-                                "datetime": {
-                                  "maximum": undefined,
-                                  "minimum": undefined,
-                                },
-                                "type": "datetime",
-                              },
-                              "type": "datetime",
-                            },
-                            "required": {
-                              "notRequired": {},
-                              "type": "notRequired",
-                            },
-                          },
-                        },
-                      },
-                      "id": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "textInput": {},
-                              "type": "textInput",
-                            },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "text": {
-                                "text": {},
-                                "type": "text",
-                              },
-                              "type": "text",
-                            },
-                            "required": {
-                              "notRequired": {},
-                              "type": "notRequired",
-                            },
-                          },
-                        },
-                      },
-                      "ref": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "dropdown": {},
-                              "type": "dropdown",
-                            },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "objectQuery": {
-                                "objectQuery": {},
-                                "type": "objectQuery",
-                              },
-                              "type": "objectQuery",
-                            },
-                            "required": {
-                              "notRequired": {},
-                              "type": "notRequired",
-                            },
-                          },
-                        },
-                      },
-                      "team": {
-                        "conditionalOverrides": [],
-                        "defaultValidation": {
-                          "display": {
-                            "prefill": {
-                              "objectParameterPropertyValue": {
-                                "parameterId": "ref",
-                                "propertyTypeId": "foo",
-                              },
-                              "type": "objectParameterPropertyValue",
-                            },
-                            "renderHint": {
-                              "textInput": {},
-                              "type": "textInput",
-                            },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "text": {
-                                "text": {},
-                                "type": "text",
-                              },
-                              "type": "text",
-                            },
-                            "required": {
-                              "notRequired": {},
-                              "type": "notRequired",
-                            },
-                          },
-                        },
-                      },
-                    },
-                    "sectionValidations": {},
-                  },
-                },
-                "metadata": {
-                  "apiName": "com.palantir.create-object-foo",
-                  "displayMetadata": {
-                    "applyingMessage": [],
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Create Foo",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#000000",
-                        "locator": "edit",
-                      },
-                      "type": "blueprint",
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "entities": {
-                    "affectedInterfaceTypes": [],
-                    "affectedLinkTypes": [],
-                    "affectedObjectTypes": [
-                      "com.palantir.foo",
-                    ],
-                    "typeGroups": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "ref",
-                    "team",
-                    "id",
-                    "date",
-                  ],
-                  "parameters": {
-                    "date": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "Date",
-                        "typeClasses": [],
-                      },
-                      "id": "date",
-                      "type": {
-                        "date": {},
-                        "type": "date",
-                      },
-                    },
-                    "id": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "Id",
-                        "typeClasses": [],
-                      },
-                      "id": "id",
-                      "type": {
-                        "string": {},
-                        "type": "string",
-                      },
-                    },
-                    "ref": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "Ref",
-                        "typeClasses": [],
-                      },
-                      "id": "ref",
-                      "type": {
-                        "objectReference": {
-                          "objectTypeId": "myImport",
-                        },
-                        "type": "objectReference",
-                      },
-                    },
-                    "team": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "Team",
-                        "typeClasses": [],
-                      },
-                      "id": "team",
-                      "type": {
-                        "string": {},
-                        "type": "string",
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                },
-              },
-            },
-          },
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "interfaceTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-            "sharedPropertyTypes": {},
-          },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {
-            "com.palantir.foo": {
-              "datasources": [
-                {
-                  "datasource": {
-                    "datasetV2": {
-                      "datasetRid": "com.palantir.foo",
-                      "propertyMapping": {
-                        "date": {
-                          "column": "date",
-                          "type": "column",
-                        },
-                        "id": {
-                          "column": "id",
-                          "type": "column",
-                        },
-                        "team": {
-                          "column": "team",
-                          "type": "column",
-                        },
-                      },
-                    },
-                    "type": "datasetV2",
-                  },
-                  "datasourceName": "com.palantir.foo",
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
-                  },
-                  "redacted": false,
-                },
-              ],
-              "entityMetadata": {
-                "aliases": [],
-                "arePatchesEnabled": false,
-                "editsHistory": undefined,
-              },
-              "objectType": {
-                "allImplementsInterfaces": {},
-                "apiName": "com.palantir.foo",
-                "displayMetadata": {
-                  "description": undefined,
-                  "displayName": "Foo",
-                  "groupDisplayName": undefined,
-                  "icon": {
-                    "blueprint": {
-                      "color": "#2D72D2",
-                      "locator": "cube",
-                    },
-                    "type": "blueprint",
-                  },
-                  "pluralDisplayName": "Foos",
-                  "visibility": "NORMAL",
-                },
-                "implementsInterfaces2": [],
-                "primaryKeys": [
-                  "id",
-                ],
-                "propertyTypes": {
-                  "date": {
-                    "apiName": "date",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Date",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                    "type": {
-                      "date": {},
-                      "type": "date",
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
-                      },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "valueType": undefined,
-                  },
-                  "id": {
-                    "apiName": "id",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Id",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
-                      },
-                      "type": "string",
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
-                      },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "valueType": undefined,
-                  },
-                  "team": {
-                    "apiName": "team",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Team",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
-                      },
-                      "type": "string",
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
-                      },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "valueType": undefined,
-                  },
-                },
-                "redacted": false,
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-                "titlePropertyTypeRid": "id",
-              },
-              "propertySecurityGroupPackagingVersion": {
-                "type": "v2",
-                "v2": {},
-              },
-            },
-          },
-          "sharedPropertyTypes": {},
-        }
-      `);
-      expect(dumpOntologyFullMetadata().importedOntology).toMatchInlineSnapshot(
-        `
-        {
-          "actionTypes": {},
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "interfaceTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-            "sharedPropertyTypes": {},
-          },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {
-            "myImport": {
-              "datasources": [
-                {
-                  "datasource": {
-                    "datasetV2": {
-                      "datasetRid": "myImport",
-                      "propertyMapping": {
-                        "id": {
-                          "column": "id",
-                          "type": "column",
-                        },
-                        "name": {
-                          "column": "name",
-                          "type": "column",
-                        },
-                      },
-                    },
-                    "type": "datasetV2",
-                  },
-                  "datasourceName": "myImport",
-                  "editsConfiguration": {
-                    "onlyAllowPrivilegedEdits": false,
-                  },
-                  "redacted": false,
-                },
-              ],
-              "entityMetadata": {
-                "aliases": [],
-                "arePatchesEnabled": false,
-                "editsHistory": undefined,
-              },
-              "objectType": {
-                "allImplementsInterfaces": {},
-                "apiName": "myImport",
-                "displayMetadata": {
-                  "description": undefined,
-                  "displayName": "MyImport",
-                  "groupDisplayName": undefined,
-                  "icon": {
-                    "blueprint": {
-                      "color": "#2D72D2",
-                      "locator": "cube",
-                    },
-                    "type": "blueprint",
-                  },
-                  "pluralDisplayName": "MyImports",
-                  "visibility": "NORMAL",
-                },
-                "implementsInterfaces2": [],
-                "primaryKeys": [
-                  "id",
-                ],
-                "propertyTypes": {
-                  "id": {
-                    "apiName": "id",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Id",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
-                      },
-                      "type": "string",
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
-                      },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "valueType": undefined,
-                  },
-                  "name": {
-                    "apiName": "name",
-                    "baseFormatter": undefined,
-                    "dataConstraints": undefined,
-                    "displayMetadata": {
-                      "description": undefined,
-                      "displayName": "Name",
-                      "visibility": "NORMAL",
-                    },
-                    "indexedForSearch": true,
-                    "inlineAction": undefined,
-                    "ruleSetBinding": undefined,
-                    "sharedPropertyTypeApiName": undefined,
-                    "sharedPropertyTypeRid": undefined,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
-                      },
-                      "type": "string",
-                    },
-                    "typeClasses": [
-                      {
-                        "kind": "render_hint",
-                        "name": "SELECTABLE",
-                      },
-                      {
-                        "kind": "render_hint",
-                        "name": "SORTABLE",
-                      },
-                    ],
-                    "valueType": undefined,
-                  },
-                },
-                "redacted": false,
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-                "titlePropertyTypeRid": "id",
-              },
-              "propertySecurityGroupPackagingVersion": {
-                "type": "v2",
-                "v2": {},
-              },
-            },
-          },
-          "sharedPropertyTypes": {},
-        }
-      `,
-      );
+      expect(dumpOntologyFullMetadata().ontology).toMatchSnapshot();
+      expect(dumpOntologyFullMetadata().importedOntology).toMatchSnapshot();
     });
   });
 
@@ -3118,6 +2715,71 @@ describe("Experimental Test Suite", () => {
       ).rejects.toThrow(
         "Vector property 'com.palantir.embedding' must have an integer 'dimension' of at least 1, but got 0",
       );
+    });
+  });
+
+  describe("Decimal properties", () => {
+    const defaultedIr = {
+      type: "decimal",
+      decimal: { precision: 5, scale: 2 },
+    };
+
+    it("defaults precision and scale on an object property", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineObject({
+          apiName: "foo",
+          displayName: "Foo",
+          pluralDisplayName: "Foos",
+          titlePropertyApiName: "bar",
+          primaryKeyPropertyApiName: "bar",
+          properties: {
+            bar: { type: "string" },
+            amount: { type: "decimal" },
+          },
+        });
+      });
+
+      const objectType = Object.values(
+        result.ontologyIr.ontology.objectTypes,
+      )[0].objectType;
+      const amount = Object.values(objectType.propertyTypes).find(
+        (p) => p.apiName === "amount",
+      )!;
+      expect(amount.type).toEqual(defaultedIr);
+    });
+
+    it("defaults only the missing field on a shared property type", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineSharedPropertyType({
+          apiName: "amount",
+          type: { type: "decimal", precision: 10 },
+        });
+      });
+
+      const spt = Object.values(
+        result.ontologyIr.ontology.sharedPropertyTypes,
+      )[0].sharedPropertyType;
+      expect(spt.type).toEqual({
+        type: "decimal",
+        decimal: { precision: 10, scale: 2 },
+      });
+    });
+
+    it("defaults precision and scale on an interface-defined property", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineInterface({
+          apiName: "bar",
+          displayName: "Bar",
+          properties: { amount: { type: { type: "decimal" } } },
+        });
+      });
+
+      const interfaceType = Object.values(
+        result.ontologyIr.ontology.interfaceTypes,
+      )[0].interfaceType;
+      const prop = Object.values(interfaceType.propertiesV3)[0];
+      invariant(prop.type === "interfaceDefinedPropertyType");
+      expect(prop.interfaceDefinedPropertyType.type).toEqual(defaultedIr);
     });
   });
 });

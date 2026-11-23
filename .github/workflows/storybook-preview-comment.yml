@@ -1,0 +1,130 @@
+name: Storybook Preview Comment
+
+# CircleCI's build-storybook job stores the preview as an artifact and reports a
+# commit status. This turns a successful status into a PR comment linking the
+# preview. `status` workflows always run main's copy of this file, so PR code
+# never runs next to the write token.
+on: status
+
+permissions: {}
+
+jobs:
+  comment:
+    name: Comment with the Storybook preview link
+    if: "github.event.context == 'ci/circleci: build-storybook' && github.event.state == 'success'"
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Comment with the preview link
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.sha }}
+          TARGET_URL: ${{ github.event.target_url }}
+        run: |
+          set -euo pipefail
+
+          # Anyone with write access can post a status, so take only the workflow
+          # and job UUIDs from it and confirm with CircleCI that the job really is
+          # a successful build-storybook of this commit.
+          uuid='[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          if ! [[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || \
+            ! [[ "$TARGET_URL" =~ ^https://app\.circleci\.com/workflow/($uuid)/job/($uuid)$ ]]; then
+            echo "Unexpected status: sha '$SHA', target_url '$TARGET_URL'."
+            exit 1
+          fi
+          workflow_id="${BASH_REMATCH[1]}"
+          job_id="${BASH_REMATCH[2]}"
+
+          workflow=$(curl -fsS "https://circleci.com/api/v2/workflow/$workflow_id")
+          read -r workflow_project pipeline_id <<< "$(jq -r '[.project_slug, .pipeline_id] | @tsv' <<< "$workflow")"
+          if [ "$workflow_project" != "gh/$REPO" ] || ! [[ "$pipeline_id" =~ ^$uuid$ ]]; then
+            echo "CircleCI workflow $workflow_id does not belong to gh/$REPO."
+            exit 1
+          fi
+
+          jobs=$(curl -fsS "https://circleci.com/api/v2/workflow/$workflow_id/job")
+          read -r name state job_project <<< "$(
+            jq -r --arg id "$job_id" '.items[] | select(.id == $id) | [.name, .status, .project_slug] | @tsv' <<< "$jobs"
+          )"
+          if [ "$name" != build-storybook ] || [ "$state" != success ] || [ "$job_project" != "gh/$REPO" ]; then
+            echo "CircleCI job $job_id is '$name' ($state), not a successful build-storybook of $REPO."
+            exit 1
+          fi
+
+          pipeline=$(curl -fsS "https://circleci.com/api/v2/pipeline/$pipeline_id")
+          read -r pipeline_project revision origin target <<< "$(
+            jq -r '[.project_slug, .vcs.revision, .vcs.origin_repository_url, .vcs.target_repository_url] | @tsv' \
+              <<< "$pipeline"
+          )"
+          if [ "$pipeline_project" != "gh/$REPO" ] || [ "$revision" != "$SHA" ] || \
+            [ "$origin" != "https://github.com/$REPO" ] || \
+            [ "$target" != "https://github.com/$REPO" ]; then
+            echo "CircleCI pipeline $pipeline_id is at $revision, not a $REPO pipeline for $SHA."
+            exit 1
+          fi
+
+          url="https://output.circle-artifacts.com/output/job/$job_id/artifacts/0/storybook-static/index.html"
+          if ! curl -fsS -o /dev/null "$url"; then
+            echo "CircleCI job $job_id has no Storybook index.html artifact."
+            exit 1
+          fi
+
+          pr=$(gh api "repos/$REPO/commits/$SHA/pulls" --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\")][0].number // empty")
+          if [ -z "$pr" ]; then
+            echo "No open PR has $SHA as its head; nothing to comment on."
+            exit 0
+          fi
+
+          # The invisible marker line lets later pushes edit this comment.
+          cat > /tmp/storybook-preview.md <<EOF
+          <!-- storybook-preview -->
+          <h3>$(gh api "repos/$REPO/commits/$SHA" --jq '.commit.message' | head -1)</h3>
+          Build artifact links for this commit: <strong><a href="$url">storybook</a></strong>
+
+          <em>This is an automated comment from the Storybook Preview Comment workflow.</em>
+          EOF
+
+          comment_id=$(gh api --paginate "repos/$REPO/issues/$pr/comments" --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- storybook-preview -->"))) | .id' | head -1)
+          if [ -n "$comment_id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$comment_id" -F body=@/tmp/storybook-preview.md > /dev/null
+          else
+            gh api "repos/$REPO/issues/$pr/comments" -F body=@/tmp/storybook-preview.md > /dev/null
+          fi
+
+      # Same marker as above, so the next successful run replaces this comment.
+      # target_url is left out of the body because whoever posted the status controls it.
+      - name: Comment that the preview link failed
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          if ! [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            exit 0
+          fi
+          pr=$(gh api "repos/$REPO/commits/$SHA/pulls" --jq "[.[] | select(.state == \"open\" and .head.sha == \"$SHA\")][0].number // empty")
+          if [ -z "$pr" ]; then
+            exit 0
+          fi
+
+          cat > /tmp/storybook-preview.md <<EOF
+          <!-- storybook-preview -->
+          <h3>:warning: Storybook preview link failed</h3>
+          CircleCI reported that build-storybook passed for $SHA, but this workflow could not post the preview link. Please check <a href="$RUN_URL">the workflow run</a>.
+
+          <em>This is an automated comment from the Storybook Preview Comment workflow.</em>
+          EOF
+
+          comment_id=$(gh api --paginate "repos/$REPO/issues/$pr/comments" --jq '.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- storybook-preview -->"))) | .id' | head -1)
+          if [ -n "$comment_id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$comment_id" -F body=@/tmp/storybook-preview.md > /dev/null
+          else
+            gh api "repos/$REPO/issues/$pr/comments" -F body=@/tmp/storybook-preview.md > /dev/null
+          fi

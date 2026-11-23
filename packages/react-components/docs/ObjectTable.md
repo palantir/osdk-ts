@@ -1,6 +1,6 @@
 # ObjectTable
 
-A comprehensive guide for using the ObjectTable component from `@osdk/react-components`.
+`ObjectTable` renders OSDK objects from an object type, object set, or interface as a table with sorting, selection, pinning, resizing, and inline editing.
 
 ## Prerequisites
 
@@ -9,20 +9,6 @@ Before using ObjectTable, make sure you have completed the library setup describ
 - Installing the required dependencies
 - Wrapping your app with `OsdkProvider`
 - Adding the CSS imports and configuring `@layer` order
-
-## Table of Contents
-
-- [Basic Usage](#basic-usage)
-- [Props Reference](#props-reference)
-- [Column Definitions](#column-definitions)
-- [Examples](#examples)
-- [Advanced Features](#advanced-features)
-- [Exporting Data](#exporting-data)
-- [Headless Hooks](#headless-hooks)
-- [TypeScript Tips](#typescript-tips)
-- [Best Practices](#best-practices)
-- [Troubleshooting](#troubleshooting)
-- [Theming](#theming)
 
 ## Import
 
@@ -36,16 +22,15 @@ import type {
 
 ## Basic Usage
 
-:::note About `@my/osdk`
-`@my/osdk` is a placeholder for **your generated SDK package** (e.g. `@your-app/sdk`). Replace it with the actual package name in your project.
-:::
+> [!NOTE]
+> `@my-app/sdk` is a placeholder for your generated SDK package. Replace it with your package name.
 
 ### Minimal Example
 
 The simplest way to use ObjectTable is with just an object type:
 
 ```typescript
-import { Office } from "@my/osdk";
+import { Office } from "@my-app/sdk";
 import { ObjectTable } from "@osdk/react-components/object-table";
 
 function OfficesPage() {
@@ -322,7 +307,7 @@ Displays header and cell with the provided custom renderers.
 ### Example 1: Basic Table with Custom Column Definitions
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import {
   type ColumnDefinition,
   ObjectTable,
@@ -359,7 +344,7 @@ function EmployeesTable() {
 ### Example 2: Table with Multiple Selection
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { ObjectTable } from "@osdk/react-components/object-table";
 
 function EmployeesTable() {
@@ -375,7 +360,7 @@ function EmployeesTable() {
 ### Example 3: Table with Default Sorting
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { ObjectTable } from "@osdk/react-components/object-table";
 
 function EmployeesTable() {
@@ -394,7 +379,7 @@ function EmployeesTable() {
 ### Example 4: Custom Cell Rendering
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import {
   type ColumnDefinition,
   ObjectTable,
@@ -431,7 +416,7 @@ function EmployeesTable() {
 ### Example 5: Custom Header Rendering
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import {
   type ColumnDefinition,
   ObjectTable,
@@ -481,7 +466,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 ### Example 7: Context Menu on Cell Right-Click
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { ObjectTable } from "@osdk/react-components/object-table";
 
 function EmployeesTable() {
@@ -518,7 +503,7 @@ function EmployeesTable() {
 ### Example 8: Row Click Handler
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { ObjectTable } from "@osdk/react-components/object-table";
 import { useRouter } from "next/router";
 
@@ -543,7 +528,7 @@ function EmployeesTable() {
 You can filter by object properties and derived properties by including them in the `WhereClause`:
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { DerivedProperty } from "@osdk/client";
 import {
   type ColumnDefinition,
@@ -591,7 +576,7 @@ function EmployeesWithManagerTable() {
 ### Example 10: Controlled Sorting
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { ObjectTable } from "@osdk/react-components/object-table";
 import { useState } from "react";
 
@@ -618,7 +603,7 @@ function EmployeesTable() {
 ### Example 11: Controlled Row Selection
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import { ObjectTable } from "@osdk/react-components/object-table";
 import { useState } from "react";
 
@@ -693,7 +678,7 @@ function EmployeesTable() {
 In a custom column type, you can render anything in the column by passing in renderHeader and renderCell props.
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import {
   type ColumnDefinition,
   ObjectTable,
@@ -732,7 +717,7 @@ function EmployeesTable() {
 Enable inline editing with validation, dropdown selectors, and bulk submission:
 
 ```typescript
-import { Employee, updateMultipleEmployees } from "@my/osdk";
+import { Employee, updateMultipleEmployees } from "@my-app/sdk";
 import { useOsdkAction } from "@osdk/react";
 import {
   type CellEditInfo,
@@ -874,7 +859,7 @@ function EditableEmployeesTable() {
 Pass a function to `editable` to gate editing per row, and a `getFieldComponentProps` function to compute editor props from the row's data:
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import {
   type ColumnDefinition,
   ObjectTable,
@@ -905,7 +890,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 Use the `ColumnConfigDialog` component to create a custom column configuration experience:
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import {
   ColumnConfigDialog,
   type ColumnDefinition,
@@ -1034,7 +1019,7 @@ This example demonstrates:
 Display values computed by OSDK functions (queries) alongside regular property columns. Function columns automatically handle loading states, caching, and deduplication.
 
 ```typescript
-import { Employee, getEmployeeMetrics } from "@my/osdk";
+import { Employee, getEmployeeMetrics } from "@my-app/sdk";
 import {
   type ColumnDefinition,
   ObjectTable,
@@ -1208,7 +1193,7 @@ Adjust row height for better readability:
 Use `getRowAttributes` to apply custom HTML attributes (typically `data-*` attributes) to each `<tr>` element. This is the recommended pattern for conditional row styling — for example, changing a row's background color based on the underlying object's state.
 
 ```tsx
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import type { Osdk } from "@osdk/api";
 import { ObjectTable } from "@osdk/react-components/object-table";
 import { useCallback } from "react";
@@ -1306,7 +1291,7 @@ The snapshot reflects the table's current column visibility, ordering, and pinni
 The snapshot also carries `totalCount` — the number of objects matching the underlying object set as reported by the API, encoded as a string (or `undefined` when no count was provided). It may exceed the number of loaded rows, so it's handy for surfacing "exported N of M".
 
 ```typescript
-import type { Employee } from "@my/osdk";
+import type { Employee } from "@my-app/sdk";
 import {
   ObjectTable,
   type ObjectTableHandle,
@@ -1373,7 +1358,8 @@ The hooks are unopinionated about rendering — they produce the state and colum
 npm install @tanstack/react-table
 ```
 
-> **⚠️ Match the `@tanstack/react-table` version.** `@osdk/react-components` bundles its own copy of `@tanstack/react-table`, and the hook return types (`ColumnDef`, `Table`, `SortingState`, `OnChangeFn`, …) come from that copy. TanStack types are **invariant** in their type parameters, and this package augments `@tanstack/react-table` via `declare module` (adding table/column `meta` fields). If your app resolves a **different** `@tanstack/react-table` version than the one this package uses, you may hit confusing type errors — e.g. a `ColumnDef` or `Table` produced by these hooks reported as not assignable to the one from your copy, or the augmented `meta` fields missing.
+> [!WARNING]
+> **Match the `@tanstack/react-table` version.** `@osdk/react-components` bundles its own copy of `@tanstack/react-table`, and the hook return types (`ColumnDef`, `Table`, `SortingState`, `OnChangeFn`, …) come from that copy. TanStack types are **invariant** in their type parameters, and this package augments `@tanstack/react-table` via `declare module` (adding table/column `meta` fields). If your app resolves a **different** `@tanstack/react-table` version than the one this package uses, you may hit confusing type errors — e.g. a `ColumnDef` or `Table` produced by these hooks reported as not assignable to the one from your copy, or the augmented `meta` fields missing.
 >
 > Install a version that matches the one this package depends on (see `@tanstack/react-table` in `@osdk/react-components`'s `package.json`) — and dedupe so a single copy is resolved (e.g. a pnpm `overrides` / npm `overrides` / yarn `resolutions` entry if a transitive dependency pulls in another version).
 
@@ -1397,7 +1383,7 @@ Available hooks (import from `@osdk/react-components/object-table`):
 A minimal custom table wiring data, columns, and sorting together:
 
 ```tsx
-import type { Employee } from "@my/osdk";
+import type { Employee } from "@my-app/sdk";
 import {
   useColumnDefs,
   useObjectTableData,
@@ -1471,7 +1457,7 @@ Add `useRowSelection` + `useSelectionColumn` for selection, `useColumnPinning` /
 Use TypeScript generics to ensure type safety:
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import {
   type ColumnDefinition,
   ObjectTable,
@@ -1498,7 +1484,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
 Let TypeScript infer types from your OSDK object type:
 
 ```typescript
-import { Employee } from "@my/osdk";
+import { Employee } from "@my-app/sdk";
 import type { PropertyKeys } from "@osdk/client";
 
 // PropertyKeys gives you all valid property names
@@ -1776,4 +1762,4 @@ See [Row Attributes and Conditional Row Styling](#row-attributes-and-conditional
 - [ObjectTable API Reference](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/object-table/ObjectTableApi.ts)
 - [ObjectTable Implementation](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/src/object-table/ObjectTable.tsx)
 - [PeopleApp Examples](https://github.com/palantir/osdk-ts/blob/main/packages/e2e.sandbox.peopleapp/src/app/employees/EmployeesTable.tsx)
-- [@osdk/react Documentation](https://github.com/palantir/osdk-ts/blob/main/docs/react/getting-started.md)
+- [@osdk/react documentation](https://palantir.github.io/osdk-ts/react/objects)

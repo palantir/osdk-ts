@@ -57,13 +57,15 @@ export function stringify<T extends Record<string, any>>(
 
   for (const key of sortedKeys) {
     const value = obj[key];
-    const res =
-      (customizer[key as keyof T] ?? customizer["*"] ?? defaultCustomizer)(
-        value,
-        (value) => JSON.stringify(value, null, 2),
-        key as any,
-        defaultKeyFormatter,
-      );
+    const keyCustomizer = Object.hasOwn(customizer, key)
+      ? customizer[key as keyof T]
+      : undefined;
+    const res = (keyCustomizer ?? customizer["*"] ?? defaultCustomizer)(
+      value,
+      (value) => JSON.stringify(value, null, 2),
+      key as any,
+      defaultKeyFormatter,
+    );
 
     if (res) {
       if (typeof res === "string") {

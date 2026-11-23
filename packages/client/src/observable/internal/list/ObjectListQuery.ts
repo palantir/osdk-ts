@@ -24,8 +24,7 @@ import type {
 } from "@osdk/api";
 
 import { additionalContext } from "../../../Client.js";
-import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ListObjectChanges } from "../base-list/reconcileListChanges.js";
 import type { Changes } from "../Changes.js";
 import type { Store } from "../Store.js";
 import {
@@ -36,15 +35,6 @@ import {
   RDP_IDX,
   RIDS_IDX,
 } from "./ListQuery.js";
-
-type ExtractRelevantObjectsResult = Record<
-  "added" | "modified",
-  {
-    all: (ObjectHolder | InterfaceHolder)[];
-    strictMatches: Set<ObjectHolder | InterfaceHolder>;
-    sortaMatches: Set<ObjectHolder | InterfaceHolder>;
-  }
->;
 
 export class ObjectListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
@@ -146,23 +136,13 @@ export class ObjectListQuery extends ListQuery {
     return Promise.resolve(data);
   }
 
-  protected extractRelevantObjects(
-    changes: Changes,
-  ): ExtractRelevantObjectsResult {
+  protected extractRelevantObjects(changes: Changes): ListObjectChanges {
     return {
-      added: {
-        all:
-          changes.addedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX]) ?? [],
-        strictMatches: new Set(),
-        sortaMatches: new Set(),
-      },
-      modified: {
-        all:
-          changes.modifiedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX]) ??
-          [],
-        strictMatches: new Set(),
-        sortaMatches: new Set(),
-      },
+      added:
+        changes.addedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX]) ?? [],
+      modified:
+        changes.modifiedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX]) ??
+        [],
     };
   }
 }

@@ -16,6 +16,7 @@
 
 import * as fs from "fs";
 
+import type { MarkingType } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
@@ -52,6 +53,7 @@ import {
   OntologyRidGeneratorImpl,
   ReadableIdGenerator,
 } from "../util/generateRid.js";
+import { getMediaSetMarkings } from "../util/mediaSetMarkings.js";
 import type { OntologyIrV2 } from "./OntologyIrV2.js";
 
 export interface OntologyPackagingOptions {
@@ -68,6 +70,7 @@ export interface OntologyV2Result {
   backingDatasourceApiNames: string[];
   backingDatasourceLinkApiNames: string[];
   backingMediaSetNames: string[];
+  backingMediaSetMarkings: Record<string, Record<string, MarkingType>>;
   folders: OntologyFolder[];
 }
 
@@ -199,19 +202,85 @@ export async function defineOntologyV2(
     })
     .map(([apiName]) => apiName);
 
-  const backingMediaSetNames = Object.values(
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
-  ).flatMap((ontologyEntity) => {
-    const objectType = ontologyEntity as ObjectType;
-    return (objectType.properties ?? [])
-      .filter(
-        ({ includeEmptyBackingMediaSet }) =>
-          includeEmptyBackingMediaSet === true,
-      )
-      .map(({ apiName }) => `${objectType.apiName}.${apiName}`);
-  });
+  const backingMediaSetMarkings = Object.fromEntries(
+    Object.values(
+      ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+    ).flatMap((ontologyEntity) => {
+      const objectType = ontologyEntity as ObjectType;
+      return (objectType.properties ?? [])
+        .filter(
+          ({ includeEmptyBackingMediaSet }) =>
+            includeEmptyBackingMediaSet === true,
+        )
+        .map(
+          ({ apiName, backingMediaSetMarkings }) =>
+            [
+              `${objectType.apiName}.${apiName}`,
+              backingMediaSetMarkings ?? {},
+            ] as const,
+        );
+    }),
+  );
+  const backingMediaSetNames = Object.keys(backingMediaSetMarkings);
 
-  for (const mediaSetName of backingMediaSetNames) {
+  for (const object of Object.values(
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+  )) {
+    for (const property of (object as ObjectType).properties ?? []) {
+      const markings = property.backingMediaSetMarkings ?? {};
+      const groups = Object.keys(markings).sort();
+      if (groups.length > 0) {
+        const { readableId, shapeTypes } = getMediaSetMarkings(markings);
+        const existing = shapes.inputShapes.get(readableId);
+        const affectedShape = ridGenerator.toBlockInternalId(
+          ReadableIdGenerator.getForObjectProperty(
+            (object as ObjectType).apiName,
+            property.apiName,
+          ),
+        );
+        shapes.inputShapes.set(readableId, {
+          type: "markings",
+          markings: {
+            ...(existing?.type === "markings"
+              ? existing.markings
+              : {
+                  about: {
+                    fallbackTitle: `Assumed media markings ${groups.join(", ")}`,
+                    fallbackDescription: "",
+                    localizedTitle: {},
+                    localizedDescription: {},
+                  },
+                  ...shapeTypes,
+                  stableId: groups.join(","),
+                }),
+            operation: "DECLASSIFY",
+            affectedShapes: [
+              ...new Set([
+                ...(existing?.type === "markings"
+                  ? existing.markings.affectedShapes
+                  : []),
+                affectedShape,
+              ]),
+            ],
+          },
+        });
+      }
+    }
+  }
+
+  const explicitMediaSetNames = Object.values(
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+  ).flatMap((object) =>
+    (object.properties ?? []).flatMap(
+      (property) =>
+        property.reference?.sources.map((source) => source.apiName) ?? [],
+    ),
+  );
+
+  for (const mediaSetName of [
+    ...backingMediaSetNames,
+    ...explicitMediaSetNames,
+  ]) {
     shapes.inputShapeMetadata.set(
       ReadableIdGenerator.getForMediaSetView(mediaSetName),
       {
@@ -257,10 +326,14 @@ export async function defineOntologyV2(
     importedTypes,
     shapes,
     blockDataAddOn,
-    importedInputPresets: importedShapes.inputPresets,
+    importedInputPresets: new Map([
+      ...importedShapes.inputPresets,
+      ...(shapes.inputPresets ?? []),
+    ]),
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    backingMediaSetMarkings,
     folders,
   };
 }

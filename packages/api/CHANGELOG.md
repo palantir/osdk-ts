@@ -1,5 +1,39 @@
 # @osdk/api
 
+## 2.94.0
+
+## 2.93.0
+
+## 2.92.0
+
+### Minor Changes
+
+- 749af7f: Restore property name suggestions inside `$orderBy` objects while preserving relevance ordering.
+
+## 2.91.0
+
+## 2.90.0
+
+### Minor Changes
+
+- b8cfd7c: Add static typing for agent session state returned by `experimental_getState`.
+
+## 2.89.0
+
+## 2.88.0
+
+### Minor Changes
+
+- eb1fc8f: Add experimental support for reading agent session state.
+
+## 2.87.0
+
+### Minor Changes
+
+- 093d27c: Add experimental support for sending events to agent sessions.
+- ff00439: Adding support for phonetic search
+- 8300415: Add generated argument types for agent session creation.
+
 ## 2.86.0
 
 ### Minor Changes

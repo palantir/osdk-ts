@@ -20,6 +20,11 @@ import type { PropertyTypeType } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 
+/** Precision applied to decimal properties that don't specify one. */
+export const DEFAULT_DECIMAL_PRECISION = 5;
+/** Scale applied to decimal properties that don't specify one. */
+export const DEFAULT_DECIMAL_SCALE = 2;
+
 export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
   ridGenerator: OntologyRidGenerator,
@@ -139,8 +144,8 @@ export function propertyTypeTypeToOntologyIrType(
       return {
         type: "decimal",
         decimal: {
-          precision: type.precision,
-          scale: type.scale,
+          precision: type.precision ?? DEFAULT_DECIMAL_PRECISION,
+          scale: type.scale ?? DEFAULT_DECIMAL_SCALE,
         },
       };
 
@@ -159,7 +164,13 @@ export function propertyTypeTypeToOntologyIrType(
       return { type: "geohash", geohash: {} };
 
     case type === "decimal":
-      return { type, [type]: { precision: undefined, scale: undefined } };
+      return {
+        type,
+        [type]: {
+          precision: DEFAULT_DECIMAL_PRECISION,
+          scale: DEFAULT_DECIMAL_SCALE,
+        },
+      };
 
     case type === "string":
       return {

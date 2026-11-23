@@ -14,54 +14,47 @@
  * limitations under the License.
  */
 
-import type { BaseWorkshopModuleProps } from "@osdk/react-components/experimental/workshop-module";
-import { BaseWorkshopModule } from "@osdk/react-components/experimental/workshop-module";
+import { WorkshopModule } from "@osdk/react-components/experimental/workshop-module";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function isFoundryUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch {
-    return false;
-  }
-}
+import type { WorkshopModuleStoryProps } from "./WorkshopModuleStory.js";
+import { WorkshopModuleStory } from "./WorkshopModuleStory.js";
 
-const meta: Meta<BaseWorkshopModuleProps> = {
+const meta: Meta<WorkshopModuleStoryProps> = {
   title: "Components/WorkshopModule",
-  component: BaseWorkshopModule,
+  component: WorkshopModule,
   args: {
     foundryUrl: "",
+    theme: "light",
     moduleRid: "ri.workshop.main.module.example",
     moduleVersion: "published",
     title: "Workshop module preview",
   },
-  render: (args: BaseWorkshopModuleProps) => (
-    <div style={{ height: "24rem" }}>
-      {isFoundryUrl(args.foundryUrl) ? (
-        <BaseWorkshopModule {...args} />
-      ) : (
-        <p>
-          Set foundryUrl to your Foundry URL and moduleRid to a module you can
-          access in the controls below. Rendering requires a signed-in Foundry
-          session.
-        </p>
-      )}
-    </div>
-  ),
+  render: (args) => <WorkshopModuleStory {...args} />,
   parameters: {
     controls: { expanded: true },
     docs: {
       description: {
         component:
-          "This story makes no requests until a Foundry URL is supplied. Provide your own URL and module RID in the controls to render a real Workshop module. The version defaults to published; use latest for the latest saved version.",
+          "WorkshopModule reads the Foundry URL from OsdkProvider and inherits the initial theme from OsdkThemeProvider. The Provider controls configure this story's providers. No iframe loads until you supply a Foundry URL; rendering requires a signed-in Foundry session. For explicit foundryUrl and defaultTheme props, see Building Blocks / BaseWorkshopModule.",
       },
     },
   },
   argTypes: {
     foundryUrl: {
+      name: "Provider Foundry URL",
       control: "text",
-      description: "Your Foundry base URL. Leave blank to disable the iframe.",
+      description:
+        "Base URL for the client passed to OsdkProvider. Leave blank to disable the iframe.",
+      table: { category: "Provider" },
+    },
+    theme: {
+      name: "Provider theme",
+      control: "select",
+      options: ["light", "dark", "system"],
+      description:
+        "Theme supplied by OsdkThemeProvider. Changing this control remounts the module to apply its new initial theme.",
+      table: { category: "Provider" },
     },
     moduleRid: {
       control: "text",
@@ -70,8 +63,6 @@ const meta: Meta<BaseWorkshopModuleProps> = {
     moduleVersion: {
       control: "select",
       options: ["latest", "published"],
-      description:
-        "latest for the latest saved version, or published for the published version. Defaults to published.",
     },
     title: { control: "text" },
     className: { control: "text" },
@@ -86,11 +77,14 @@ export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `<BaseWorkshopModule
-  foundryUrl="https://example.palantirfoundry.com"
-  moduleRid="ri.workshop.main.module.example"
-  style={{ height: "24rem" }}
-/>`,
+        code: `<OsdkProvider client={client}>
+  <OsdkThemeProvider theme="light">
+    <WorkshopModule
+      moduleRid="ri.workshop.main.module.example"
+      style={{ height: "24rem" }}
+    />
+  </OsdkThemeProvider>
+</OsdkProvider>`,
       },
     },
   },

@@ -74,13 +74,13 @@ export function useCbacPickerState(
     isLoading: categoriesLoading,
     error: categoriesError,
     refetch: refetchCategories,
-  } = useMarkingCategories(options);
+  } = useMarkingCategories({ ...options, markingType: "CBAC" });
   const {
     markings: rawMarkings,
     isLoading: markingsLoading,
     error: markingsError,
     refetch: refetchMarkings,
-  } = useMarkings(options);
+  } = useMarkings({ ...options, markingType: "CBAC" });
   const {
     banner: latestBanner,
     isLoading: bannerLoading,

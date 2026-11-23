@@ -3,4 +3,4 @@
 "@osdk/react": patch
 ---
 
-Support observable aggregations on interfaces, including supplied interface object sets in `useOsdkAggregation`. Refresh interface aggregations when an implementing object type is invalidated.
+Support observable aggregations on interfaces, including supplied interface object sets in `useOsdkAggregation`. Refresh interface aggregations when an implementing object type is invalidated. Observed aggregations now report the underlying request error, and a distinct error when their invalidation dependencies cannot be resolved.

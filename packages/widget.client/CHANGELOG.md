@@ -1,5 +1,60 @@
 # @osdk/widget.client
 
+## 3.94.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.94.0
+
+## 3.93.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.93.0
+
+## 3.92.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.92.0
+
+## 3.91.0
+
+### Patch Changes
+
+- Updated dependencies [ee09000]
+- Updated dependencies [3371bee]
+  - @osdk/widget.api@3.91.0
+
+## 3.90.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.90.0
+
+## 3.89.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.89.0
+
+## 3.88.0
+
+### Patch Changes
+
+- @osdk/widget.api@3.88.0
+
+## 3.87.0
+
+### Minor Changes
+
+- 1fd9dc4: Forward host theme updates to widgets and expose the theme through the React provider.
+
+### Patch Changes
+
+- Updated dependencies [1fd9dc4]
+  - @osdk/widget.api@3.87.0
+
 ## 3.86.0
 
 ### Patch Changes

@@ -21,6 +21,7 @@ import {
   Person,
   promoteEmployee,
 } from "@osdk/client.test.ontology";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { SetupServer } from "@osdk/shared.test";
 import {
   FauxFoundry,
@@ -40,14 +41,18 @@ import {
 } from "vitest";
 
 import type { Client } from "../../../Client.js";
+import { additionalContext } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
-import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import {
+  createObjectSet,
+  getWireObjectSet,
+} from "../../../objectSet/createObjectSet.js";
 import { ObservableClientImpl } from "../ObservableClientImpl.js";
 import { Store } from "../Store.js";
 import { WIRE_OBJECT_SET_IDX } from "./AggregationCacheKey.js";
 
-type AggregationState = { status: string; result: unknown };
+type AggregationState = { status: string; result: unknown; error?: Error };
 
 const logger = new TestLogger({}, { level: "debug" });
 
@@ -190,6 +195,96 @@ describe("aggregation ObjectSet support", () => {
 
     await query.invalidateObjectOrInterfaceType("Employee", undefined);
     expect(revalidateSpy).not.toHaveBeenCalled();
+  });
+
+  describe("errors", () => {
+    async function observeError(
+      observableClient: ObservableClientImpl,
+      objectSet: Parameters<
+        ObservableClientImpl["observeAggregation"]
+      >[0]["objectSet"],
+    ): Promise<AggregationState | undefined> {
+      let payload: AggregationState | undefined;
+      const subscription = await observableClient.observeAggregation(
+        {
+          type: Employee,
+          objectSet,
+          aggregate: { $select: { $count: "unordered" } },
+        },
+        {
+          next: (value) => {
+            payload = value;
+          },
+          error: (error) => {
+            throw error;
+          },
+          complete: () => {},
+        },
+      );
+      try {
+        await vi.waitFor(() => expect(payload?.status).toBe("error"));
+        return payload;
+      } finally {
+        subscription.unsubscribe();
+      }
+    }
+
+    it("reports dependency lookup failures separately from aggregation failures", async () => {
+      apiServer.use(
+        msw.http.post(
+          "https://stack.palantir.com/api/v2/ontologies/:ontology/objectSets/aggregate",
+          () =>
+            msw.HttpResponse.json({
+              data: [{ group: {}, metrics: [{ name: "count", value: 1 }] }],
+            }),
+        ),
+      );
+      const staticSet = createObjectSet(Employee, client[additionalContext], {
+        type: "static",
+        objects: [],
+      });
+
+      const payload = await observeError(
+        new ObservableClientImpl(store),
+        staticSet,
+      );
+
+      expect(payload?.error?.message).toBe(
+        "Failed to resolve the object types that invalidate this aggregation",
+      );
+      expect(payload?.error?.cause).toEqual(
+        new Error("Unsupported ObjectSet type static"),
+      );
+    });
+
+    it("reports the underlying error when the aggregation request fails", async () => {
+      apiServer.use(
+        msw.http.post(
+          "https://stack.palantir.com/api/v2/ontologies/:ontology/objectSets/aggregate",
+          () =>
+            msw.HttpResponse.json(
+              {
+                errorCode: "INVALID_ARGUMENT",
+                errorName: "InvalidAggregationRange",
+                errorInstanceId: "instance-id",
+                parameters: {},
+              },
+              { status: 400 },
+            ),
+        ),
+      );
+
+      const payload = await observeError(
+        new ObservableClientImpl(store),
+        client(Employee).pivotTo("lead"),
+      );
+
+      expect(payload?.error).toBeInstanceOf(PalantirApiError);
+      expect(payload?.error).toMatchObject({
+        errorName: "InvalidAggregationRange",
+        statusCode: 400,
+      });
+    });
   });
 
   describe("interfaces", () => {

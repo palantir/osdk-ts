@@ -1,5 +1,152 @@
 # @osdk/maker-experimental
 
+## 0.90.0
+
+### Minor Changes
+
+- 277db79: Add flag to write imported block data output
+
+## 0.89.0
+
+### Minor Changes
+
+- 367cd32: Support marking input groups on generated backing media sets and assume the same markings on their ontology datasources.
+
+### Patch Changes
+
+- Updated dependencies [367cd32]
+- Updated dependencies [2b42dc7]
+  - @osdk/maker@0.93.0
+  - @osdk/maker-import@0.58.0
+  - @osdk/api@2.94.0
+  - @osdk/client.unstable@2.94.0
+  - @osdk/generator-converters.ontologyir@2.94.0
+
+## 0.88.0
+
+### Minor Changes
+
+- 00c8e96: Convert interface action type constraint edit validations into Marketplace block data with packaged references.
+- 1987502: Add `interfaceActionsEnabled` to `defineObject` to set an object type's interface action settings
+- 1e58a90: Collect independent validation issues in interface, interface action-type constraint, folder, and interface-link action helper definitions. Rename the collecting method to `check`, add `assert` for terminal checks that narrow types, and update downstream collector usage.
+- e726b2a: expose action isolation settings
+- f1d12b0: Add spt mappings for non-interface object props
+
+### Patch Changes
+
+- Updated dependencies [b1658a9]
+- Updated dependencies [1987502]
+- Updated dependencies [6b847a0]
+- Updated dependencies [1e58a90]
+- Updated dependencies [e726b2a]
+- Updated dependencies [f1d12b0]
+  - @osdk/maker@0.92.0
+  - @osdk/generator-converters.ontologyir@2.93.0
+  - @osdk/maker-import@0.57.0
+  - @osdk/api@2.93.0
+  - @osdk/client.unstable@2.93.0
+
+## 0.87.0
+
+### Minor Changes
+
+- f4d94ba: Support multiple named media-set inputs and explicit upload destinations on scalar media properties.
+- 3282ead: Support TSv2 query/FBA source importing for Preview
+
+### Patch Changes
+
+- Updated dependencies [f4d94ba]
+- Updated dependencies [8aa522d]
+- Updated dependencies [749af7f]
+- Updated dependencies [3282ead]
+  - @osdk/maker@0.91.0
+  - @osdk/api@2.92.0
+  - @osdk/generator-converters.ontologyir@2.92.0
+  - @osdk/generator-converters.preview@0.66.0
+  - @osdk/maker-import@0.56.0
+  - @osdk/client.unstable@2.92.0
+
+## 0.86.0
+
+### Minor Changes
+
+- d13bd9f: Support geo point and geo shape function inputs and outputs during local SDK generation, and use exhaustive discovery type conversion.
+
+### Patch Changes
+
+- Updated dependencies [1fd4023]
+- Updated dependencies [c331bfd]
+- Updated dependencies [c740c26]
+- Updated dependencies [406d3b6]
+- Updated dependencies [d13bd9f]
+  - @osdk/generator-converters.ontologyir@2.91.0
+  - @osdk/maker@0.90.0
+  - @osdk/generator-converters.preview@0.65.0
+  - @osdk/api@2.91.0
+  - @osdk/client.unstable@2.91.0
+  - @osdk/maker-import@0.55.0
+
+## 0.85.0
+
+### Minor Changes
+
+- 7fed367: Add datasource-scoped `markingConstraints` with `mandatory.allowEmptyMarkings` and `cbac.allowEmptyMarkings` so installers can supply empty allowed marking sets independently for mandatory and classification constraints.
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+- Updated dependencies [7fed367]
+  - @osdk/api@2.90.0
+  - @osdk/maker@0.89.0
+  - @osdk/generator-converters.preview@0.64.0
+  - @osdk/maker-import@0.54.0
+  - @osdk/client.unstable@2.90.0
+  - @osdk/generator-converters.ontologyir@2.90.0
+
+## 0.84.0
+
+### Patch Changes
+
+- @osdk/generator-converters.preview@0.63.0
+- @osdk/api@2.89.0
+- @osdk/client.unstable@2.89.0
+- @osdk/generator-converters.ontologyir@2.89.0
+- @osdk/maker@0.88.0
+- @osdk/maker-import@0.53.0
+
+## 0.83.0
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/maker@0.87.0
+  - @osdk/client.unstable@2.88.0
+  - @osdk/generator-converters.ontologyir@2.88.0
+  - @osdk/generator-converters.preview@0.62.0
+  - @osdk/maker-import@0.52.0
+
+## 0.82.0
+
+### Minor Changes
+
+- e837c76: Default decimal properties to precision 5 and scale 2 when unspecified, matching OMS defaults.
+- 0f211db: defineFunctionBackedAction now accepts additional simple configurations.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [e837c76]
+- Updated dependencies [ff00439]
+- Updated dependencies [ef3e772]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/maker@0.86.0
+  - @osdk/generator-converters.preview@0.61.0
+  - @osdk/client.unstable@2.87.0
+  - @osdk/generator-converters.ontologyir@2.87.0
+  - @osdk/maker-import@0.51.0
+
 ## 0.81.0
 
 ### Minor Changes

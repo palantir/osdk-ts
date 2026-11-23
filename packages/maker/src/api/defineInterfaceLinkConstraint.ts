@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import invariant from "tiny-invariant";
-
+import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -59,9 +58,10 @@ type One = {
 export function defineInterfaceLinkConstraint(
   linkDefInput: One | Many,
 ): InterfaceLinkConstraint {
+  const collector = createValidationIssueCollector();
   const linkDef = cloneDefinition(linkDefInput);
 
-  invariant(
+  collector.check(
     importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
       linkDef.from.apiName
     ] == null,
@@ -72,14 +72,19 @@ export function defineInterfaceLinkConstraint(
   validateDisplayMetadataLengths(
     fromLinkMeta,
     `Interface "${linkDef.from.apiName}", link "${fromLinkMeta.apiName}"`,
+    collector,
   );
-
-  invariant(
+  collector.check(
     linkDef.from.links.find(
       (a) => a.metadata.apiName === fromLinkMeta.apiName,
     ) == null,
-    `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`,
+    {
+      code: "duplicate_definition",
+      message: `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`,
+      path: ["apiName"],
+    },
   );
+  collector.throwIfAnyIssues();
 
   const cardinality = linkDef.toMany ? "MANY" : "SINGLE";
   const to = linkDef.toMany ?? linkDef.toOne;

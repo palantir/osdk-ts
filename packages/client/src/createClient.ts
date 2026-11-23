@@ -56,6 +56,7 @@ import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.clie
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import { createAgentSession } from "./agents/createAgentSession.js";
+import { getAgentSession } from "./agents/getAgentSession.js";
 import type { AgentSignatureFromDef } from "./agents/types.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
@@ -112,12 +113,19 @@ class AgentClient<
   D extends AgentDefinition<unknown>,
 > implements AgentSignatureFromDef<D> {
   constructor(clientCtx: MinimalClient, agentDef: AgentDefinition<unknown>) {
+    this.experimental_getSession = getAgentSession.bind(
+      undefined,
+      clientCtx,
+      agentDef,
+    );
     this.experimental_createSession = createAgentSession.bind(
       undefined,
       clientCtx,
       agentDef,
     );
   }
+
+  experimental_getSession: AgentSignatureFromDef<D>["experimental_getSession"];
 
   experimental_createSession: (...args: any[]) => any;
 }
