@@ -16,6 +16,7 @@ export {
   deleteOsdkTestObject,
   deleteScenarioTestOsdk,
   editOsdkTestObject,
+  modifyTestEschwartz,
   scenarioOsdkTestAction,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';

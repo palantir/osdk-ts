@@ -550,6 +550,50 @@
                     "objectTypeApiName": "StructPersonOpisTeam"
                 }
             ]
+        },
+        "modify-test-eschwartz": {
+            "apiName": "modify-test-eschwartz",
+            "displayName": "Modify TestESchwartz",
+            "status": "EXPERIMENTAL",
+            "parameters": {
+                "graduated": {
+                    "displayName": "Graduated",
+                    "dataType": {
+                        "type": "boolean"
+                    },
+                    "required": false,
+                    "typeClasses": []
+                },
+                "gpa": {
+                    "displayName": "Gpa",
+                    "dataType": {
+                        "type": "double"
+                    },
+                    "required": true,
+                    "typeClasses": []
+                },
+                "favFood": {
+                    "displayName": "Fav Food",
+                    "dataType": {
+                        "type": "string"
+                    },
+                    "required": false,
+                    "typeClasses": []
+                },
+                "age": {
+                    "displayName": "Age",
+                    "dataType": {
+                        "type": "integer"
+                    },
+                    "required": false,
+                    "typeClasses": []
+                }
+            },
+            "rid": "ri.actions.main.action-type.9b1748d2-4fe5-4638-b281-a73a151c8e6f",
+            "operations": [],
+            "returnType": {
+                "type": "double"
+            }
         }
     },
     "objectTypes": {

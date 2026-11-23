@@ -15,4 +15,5 @@ export { deleteFooInterface } from './actions/deleteFooInterface.js';
 export { deleteOsdkTestObject } from './actions/deleteOsdkTestObject.js';
 export { deleteScenarioTestOsdk } from './actions/deleteScenarioTestOsdk.js';
 export { editOsdkTestObject } from './actions/editOsdkTestObject.js';
+export { modifyTestEschwartz } from './actions/modifyTestEschwartz.js';
 export { scenarioOsdkTestAction } from './actions/scenarioOsdkTestAction.js';
