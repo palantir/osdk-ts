@@ -25,7 +25,7 @@ import { BaseForm } from "@osdk/react-components/action-form";
 import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useMemo, useState } from "react";
-import { fn } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -438,6 +438,119 @@ function ControlledFormStory(): React.ReactElement {
       </div>
       <BaseForm
         formContent={formContent}
+        formState={formState}
+        onFieldValueChange={handleFieldValueChange}
+        onSubmit={handleSubmit}
+      />
+    </div>
+  );
+}
+
+const unexpectedValuesFormContent: ReadonlyArray<FormContentItem> = [
+  field({
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    fieldComponentProps: {},
+  }),
+  field({
+    fieldKey: "quantity",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Quantity",
+    fieldComponentProps: {},
+  }),
+  field({
+    fieldKey: "startDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Start Date",
+    fieldComponentProps: {},
+  }),
+  field({
+    fieldKey: "isRemote",
+    fieldComponent: "SWITCH",
+    label: "Remote",
+    fieldComponentProps: {},
+  }),
+  field({
+    fieldKey: "availability",
+    fieldComponent: "DATE_RANGE_INPUT",
+    label: "Availability",
+    isRequired: true,
+    fieldComponentProps: {},
+  }),
+];
+
+// Values a parent could pass that these field components can't display.
+const UNEXPECTED_FORM_STATE: Record<string, unknown> = {
+  name: { first: "Ada" },
+  quantity: "42",
+  startDate: "2026-11-19",
+  isRemote: "false",
+  // Empty to the required rule, and not a date range.
+  availability: [],
+};
+
+export const WithUnexpectedValues: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "When a stored value has a shape the field component can't display, the field says what it expected in place of the component and offers to clear the value. These values don't block submit; they are submitted unchanged for server validation to report. Validation errors still show under such a field: the empty array in the required Availability field is both rejected by the date range field and empty to the required rule, so after a submit attempt it also shows the required error, which blocks submit.",
+      },
+    },
+  },
+  render: () => <UnexpectedValuesFormStory />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    submitSpy.mockClear();
+
+    // Each field says what it expected instead of hiding the value.
+    await expect(
+      await canvas.findByText("Expected a number, received: string"),
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByText("Expected 2 dates, received: 0"),
+    ).toBeInTheDocument();
+
+    // Clearing an unexpected value brings back the field component.
+    const [, clearQuantityButton] = canvas.getAllByRole("button", {
+      name: "Clear",
+    });
+    await userEvent.click(clearQuantityButton);
+    await expect(
+      await canvas.findByRole("textbox", { name: /Quantity/u }),
+    ).toHaveValue("");
+
+    // Only the required error blocks submit; unexpected values add no errors.
+    await userEvent.click(canvas.getByRole("button", { name: "Submit" }));
+    await expect(
+      await canvas.findAllByText("This field is required"),
+    ).not.toHaveLength(0);
+    await expect(canvas.getByText("1 issue")).toBeInTheDocument();
+    await expect(submitSpy).not.toHaveBeenCalled();
+  },
+};
+
+function UnexpectedValuesFormStory(): React.ReactElement {
+  const [formState, setFormState] = useState(UNEXPECTED_FORM_STATE);
+
+  const handleFieldValueChange = useCallback(
+    (fieldKey: string, value: unknown) => {
+      setFormState((prev) => ({ ...prev, [fieldKey]: value }));
+    },
+    [],
+  );
+
+  return (
+    <div>
+      <div className="osdkFormStorySpacing">
+        <strong>Current Form State:</strong>
+        <pre className="osdkCodeOutput">
+          {JSON.stringify(formState, null, 2)}
+        </pre>
+      </div>
+      <BaseForm
+        formContent={unexpectedValuesFormContent}
         formState={formState}
         onFieldValueChange={handleFieldValueChange}
         onSubmit={handleSubmit}

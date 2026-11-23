@@ -16,13 +16,15 @@
 
 import React from "react";
 
+import { Result } from "../../../shared/Result.js";
 import { SwitchField } from "../SwitchField.js";
+import { ConvertedField } from "./ConvertedField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
 import {
   passThroughFieldValue,
   type FieldValueConverter,
 } from "./FieldValueConverter.js";
-import { useFieldValueConverter } from "./useFieldValueConverter.js";
+import { getValueType } from "./getValueType.js";
 
 export function SwitchFieldAdapter({
   fieldDefinition,
@@ -30,25 +32,39 @@ export function SwitchFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"SWITCH">): React.ReactElement {
-  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
-    BOOLEAN_CONVERTER,
-    value,
-    onChange,
-  );
   return (
-    <SwitchField
-      id={fieldDefinition.fieldKey}
-      label={fieldDefinition.label}
-      value={fieldValue}
-      onChange={onFieldValueChange}
-      error={error}
-      {...fieldDefinition.fieldComponentProps}
+    <ConvertedField
+      converter={BOOLEAN_CONVERTER}
+      value={value}
+      onChange={onChange}
       disabled={fieldDefinition.disabled === true}
-    />
+    >
+      {(fieldValue, onFieldValueChange) => (
+        <SwitchField
+          id={fieldDefinition.fieldKey}
+          label={fieldDefinition.label}
+          value={fieldValue}
+          onChange={onFieldValueChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+          disabled={fieldDefinition.disabled === true}
+        />
+      )}
+    </ConvertedField>
   );
 }
 
 const BOOLEAN_CONVERTER: FieldValueConverter<boolean | null> = {
-  toFieldValue: (value) => !!value,
+  toFieldValue: (value) => {
+    if (value == null) {
+      return Result.ok(false);
+    }
+    if (typeof value === "boolean") {
+      return Result.ok(value);
+    }
+    return Result.err({
+      message: `Expected a boolean (true or false), received: ${getValueType(value)}`,
+    });
+  },
   toParameterValue: passThroughFieldValue,
 };

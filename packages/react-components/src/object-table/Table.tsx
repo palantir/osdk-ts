@@ -24,10 +24,10 @@ import React, {
   useState,
 } from "react";
 
+import { NonIdealState } from "../shared/NonIdealState.js";
 import { PortalContainerProvider } from "../shared/PortalContainerContext.js";
 import { useFocusedRow } from "./hooks/useFocusedRow.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
-import { NonIdealState } from "./NonIdealState.js";
 import { TableBody } from "./TableBody.js";
 import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
@@ -370,10 +370,16 @@ function BaseTableInner<TData extends RowData>({
             (renderEmptyState != null ? (
               renderEmptyState()
             ) : (
-              <NonIdealState message={"No Data"} />
+              <NonIdealState
+                className={styles.osdkTableNonIdealState}
+                message={"No Data"}
+              />
             ))}
           {error != null && (
-            <NonIdealState message={`Error Loading Data: ${error.message}`} />
+            <NonIdealState
+              className={styles.osdkTableNonIdealState}
+              message={`Error Loading Data: ${error.message}`}
+            />
           )}
         </div>
         {showEditFooter && hasEditableColumns && editableConfig && (

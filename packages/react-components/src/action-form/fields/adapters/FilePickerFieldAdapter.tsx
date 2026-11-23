@@ -16,13 +16,15 @@
 
 import React from "react";
 
+import { Result } from "../../../shared/Result.js";
 import { FilePickerField } from "../FilePickerField.js";
+import { ConvertedField } from "./ConvertedField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
 import {
   passThroughFieldValue,
   type FieldValueConverter,
 } from "./FieldValueConverter.js";
-import { useFieldValueConverter } from "./useFieldValueConverter.js";
+import { getValueType } from "./getValueType.js";
 
 export function FilePickerFieldAdapter({
   fieldDefinition,
@@ -30,38 +32,45 @@ export function FilePickerFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"FILE_PICKER">): React.ReactElement {
-  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
-    FILE_CONVERTER,
-    value,
-    onChange,
-  );
   return (
-    <FilePickerField
-      id={fieldDefinition.fieldKey}
-      value={fieldValue}
-      onChange={onFieldValueChange}
-      error={error}
-      {...fieldDefinition.fieldComponentProps}
+    <ConvertedField
+      converter={FILE_CONVERTER}
+      value={value}
+      onChange={onChange}
       disabled={fieldDefinition.disabled === true}
-    />
+    >
+      {(fieldValue, onFieldValueChange) => (
+        <FilePickerField
+          id={fieldDefinition.fieldKey}
+          value={fieldValue}
+          onChange={onFieldValueChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+          disabled={fieldDefinition.disabled === true}
+        />
+      )}
+    </ConvertedField>
   );
 }
 
 const FILE_CONVERTER: FieldValueConverter<File | File[] | null> = {
-  toFieldValue: toFileValue,
+  toFieldValue: (value) => {
+    if (value == null) {
+      return Result.ok(null);
+    }
+    if (
+      value instanceof File ||
+      (Array.isArray(value) && value.every(isFile))
+    ) {
+      return Result.ok(value);
+    }
+    return Result.err({
+      message: `Expected a file or a list of files, received: ${getValueType(value)}`,
+    });
+  },
   toParameterValue: passThroughFieldValue,
 };
 
-function toFileValue(value: unknown): File | File[] | null {
-  if (value instanceof File) {
-    return value;
-  }
-  if (Array.isArray(value) && isFileArray(value)) {
-    return value;
-  }
-  return null;
-}
-
-function isFileArray(value: unknown[]): value is File[] {
-  return value.every((v) => v instanceof File);
+function isFile(value: unknown): value is File {
+  return value instanceof File;
 }

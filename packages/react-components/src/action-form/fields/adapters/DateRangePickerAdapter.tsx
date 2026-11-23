@@ -21,12 +21,14 @@ import {
   DateRangePicker,
   EMPTY_RANGE,
 } from "../../../shared/calendar/index.js";
+import { Result } from "../../../shared/Result.js";
+import { ConvertedField } from "./ConvertedField.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
 import {
   passThroughFieldValue,
   type FieldValueConverter,
 } from "./FieldValueConverter.js";
-import { useFieldValueConverter } from "./useFieldValueConverter.js";
+import { getValueType } from "./getValueType.js";
 
 export function DateRangePickerAdapter({
   fieldDefinition,
@@ -34,33 +36,55 @@ export function DateRangePickerAdapter({
   onChange,
   portalContainer,
 }: PortalFieldAdapterProps<"DATE_RANGE_INPUT">): React.ReactElement {
-  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
-    DATE_RANGE_CONVERTER,
-    value,
-    onChange,
-  );
   return (
-    <DateRangePicker
-      id={fieldDefinition.fieldKey}
-      value={fieldValue}
-      onChange={onFieldValueChange}
-      placeholderStart={fieldDefinition.placeholder}
-      {...fieldDefinition.fieldComponentProps}
+    <ConvertedField
+      converter={DATE_RANGE_CONVERTER}
+      value={value}
+      onChange={onChange}
       disabled={fieldDefinition.disabled === true}
-      portalContainer={portalContainer}
-    />
+    >
+      {(fieldValue, onFieldValueChange) => (
+        <DateRangePicker
+          id={fieldDefinition.fieldKey}
+          value={fieldValue}
+          onChange={onFieldValueChange}
+          placeholderStart={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+          disabled={fieldDefinition.disabled === true}
+          portalContainer={portalContainer}
+        />
+      )}
+    </ConvertedField>
   );
 }
 
 const DATE_RANGE_CONVERTER: FieldValueConverter<DateRange | null> = {
-  toFieldValue: toDateRange,
+  toFieldValue: (value) => {
+    if (value == null) {
+      return Result.ok(EMPTY_RANGE);
+    }
+    if (!Array.isArray(value)) {
+      return Result.err({
+        message: `Expected a date range, received: ${getValueType(value)}`,
+      });
+    }
+    if (value.length !== 2) {
+      return Result.err({
+        message: `Expected 2 dates, received: ${value.length}`,
+      });
+    }
+    const nonDate: unknown = value.find((item) => !isDateOrEmpty(item));
+    if (nonDate !== undefined) {
+      return Result.err({
+        message: `Expected a start and end date, received: ${getValueType(value)}`,
+      });
+    }
+    const [start, end]: Array<Date | null | undefined> = value;
+    return Result.ok([start ?? null, end ?? null]);
+  },
   toParameterValue: passThroughFieldValue,
 };
 
-function toDateRange(value: unknown): DateRange {
-  if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;
-  const start = value[0] instanceof Date ? value[0] : null;
-  const end = value[1] instanceof Date ? value[1] : null;
-  if (start == null && end == null) return EMPTY_RANGE;
-  return [start, end];
+function isDateOrEmpty(value: unknown): boolean {
+  return value == null || value instanceof Date;
 }

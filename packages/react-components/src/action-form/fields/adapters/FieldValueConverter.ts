@@ -14,15 +14,29 @@
  * limitations under the License.
  */
 
+import { Result } from "../../../shared/Result.js";
+import { getValueType } from "./getValueType.js";
+
 /**
  * The paired conversion an adapter applies between the parameter value held
  * in form state and the field value its component displays and emits.
  */
 export interface FieldValueConverter<F> {
-  /** Turns the stored parameter value into the field value to display. */
-  toFieldValue: (parameterValue: unknown) => F;
+  /**
+   * Turns the stored parameter value into the field value to display, or
+   * reports why the component can't display it.
+   */
+  toFieldValue: (parameterValue: unknown) => FieldValueResult<F>;
   /** Turns the field value the component emits into the value to store. */
   toParameterValue: (fieldValue: F) => unknown;
+}
+
+export type FieldValueResult<F> = Result<F, UnexpectedValueError>;
+
+/** Why a field component can't display the stored parameter value. */
+export interface UnexpectedValueError {
+  /** The complete message shown to the user, e.g. "Expected a number, received: string" */
+  message: string;
 }
 
 /** Stores the emitted field value unchanged. */
@@ -30,10 +44,18 @@ export function passThroughFieldValue<F>(fieldValue: F): F {
   return fieldValue;
 }
 
-/** Shows any stored value as text; used by the text input and text area. */
+/** Shows a stored string as text; used by the text input and text area. */
 export const TEXT_CONVERTER: FieldValueConverter<string | null> = {
-  // TODO: Use better function than `String`
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
-  toFieldValue: (value) => (value != null ? String(value) : ""),
+  toFieldValue: (value) => {
+    if (value == null) {
+      return Result.ok("");
+    }
+    if (typeof value === "string") {
+      return Result.ok(value);
+    }
+    return Result.err({
+      message: `Expected text, received: ${getValueType(value)}`,
+    });
+  },
   toParameterValue: passThroughFieldValue,
 };

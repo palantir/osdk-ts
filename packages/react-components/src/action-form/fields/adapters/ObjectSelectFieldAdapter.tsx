@@ -17,13 +17,15 @@
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React from "react";
 
+import { Result } from "../../../shared/Result.js";
 import { ObjectSelectField } from "../ObjectSelectField.js";
+import { ConvertedField } from "./ConvertedField.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
 import {
   passThroughFieldValue,
   type FieldValueConverter,
 } from "./FieldValueConverter.js";
-import { useFieldValueConverter } from "./useFieldValueConverter.js";
+import { getValueType } from "./getValueType.js";
 
 export function ObjectSelectFieldAdapter({
   fieldDefinition,
@@ -32,37 +34,48 @@ export function ObjectSelectFieldAdapter({
   error,
   portalContainer,
 }: PortalFieldAdapterProps<"OBJECT_SELECT">): React.ReactElement {
-  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
-    OBJECT_CONVERTER,
-    value,
-    onChange,
-  );
   return (
-    <ObjectSelectField
-      id={fieldDefinition.fieldKey}
-      value={fieldValue}
-      onChange={onFieldValueChange}
-      placeholder={fieldDefinition.placeholder}
-      error={error}
-      {...fieldDefinition.fieldComponentProps}
+    <ConvertedField
+      converter={OBJECT_CONVERTER}
+      value={value}
+      onChange={onChange}
       disabled={fieldDefinition.disabled === true}
-      portalContainer={portalContainer}
-    />
+    >
+      {(fieldValue, onFieldValueChange) => (
+        <ObjectSelectField
+          id={fieldDefinition.fieldKey}
+          value={fieldValue}
+          onChange={onFieldValueChange}
+          placeholder={fieldDefinition.placeholder}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+          disabled={fieldDefinition.disabled === true}
+          portalContainer={portalContainer}
+        />
+      )}
+    </ConvertedField>
   );
 }
 
 const OBJECT_CONVERTER: FieldValueConverter<Osdk.Instance<ObjectTypeDefinition> | null> =
   {
-    toFieldValue: narrowToOsdkObject,
+    toFieldValue: (value) => {
+      if (value == null) {
+        return Result.ok(null);
+      }
+      if (isOsdkObject(value)) {
+        return Result.ok(value);
+      }
+      return Result.err({
+        message: `Expected an Ontology object, received: ${getValueType(value)}`,
+      });
+    },
     toParameterValue: passThroughFieldValue,
   };
 
 /** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
-function narrowToOsdkObject(
+function isOsdkObject(
   value: unknown,
-): Osdk.Instance<ObjectTypeDefinition> | null {
-  if (value != null && typeof value === "object" && "$primaryKey" in value) {
-    return value as Osdk.Instance<ObjectTypeDefinition>;
-  }
-  return null;
+): value is Osdk.Instance<ObjectTypeDefinition> {
+  return value != null && typeof value === "object" && "$primaryKey" in value;
 }

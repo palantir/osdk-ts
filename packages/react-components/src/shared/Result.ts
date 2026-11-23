@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import React from "react";
+/** The outcome of an operation that either produces a value or fails. */
+export type Result<T, E> = { type: "ok"; value: T } | { type: "err"; error: E };
 
-import styles from "./NonIdealState.module.css";
-
-interface NonIdealStateProps {
-  message: string;
-}
-
-export function NonIdealState({
-  message,
-}: NonIdealStateProps): React.ReactElement {
-  return (
-    <div className={styles.container}>
-      <div className={styles.message}>{message}</div>
-    </div>
-  );
-}
+export const Result: {
+  ok: <T>(value: T) => Result<T, never>;
+  err: <E>(error: E) => Result<never, E>;
+} = {
+  ok: (value) => ({ type: "ok", value }),
+  err: (error) => ({ type: "err", error }),
+};

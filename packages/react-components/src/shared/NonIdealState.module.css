@@ -21,7 +21,6 @@
 }
 
 .message {
-  padding: calc(var(--osdk-surface-spacing) * 5);
   color: var(--osdk-typography-color-muted);
   font-style: italic;
 }

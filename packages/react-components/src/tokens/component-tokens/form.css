@@ -69,4 +69,7 @@
   /* Form footer error indicator */
   --osdk-form-footer-error-color: var(--osdk-form-error-color);
   --osdk-form-footer-error-font-size: var(--osdk-typography-size-body-medium);
+
+  /* Unexpected field value, shown in place of a field that can't display its value */
+  --osdk-form-unexpected-value-min-height: var(--osdk-input-min-height);
 }

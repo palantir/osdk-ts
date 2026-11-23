@@ -16,10 +16,16 @@
 
 import React, { useCallback } from "react";
 
+import { Result } from "../../../shared/Result.js";
 import type { FieldType } from "../../FormFieldApi.js";
 import { NumberInputField } from "../NumberInputField.js";
+import { ConvertedField } from "./ConvertedField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
-import type { FieldValueConverter } from "./FieldValueConverter.js";
+import {
+  passThroughFieldValue,
+  type FieldValueConverter,
+} from "./FieldValueConverter.js";
+import { getValueType } from "./getValueType.js";
 
 export function NumberInputFieldAdapter({
   fieldDefinition,
@@ -27,8 +33,7 @@ export function NumberInputFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"NUMBER_INPUT">): React.ReactElement {
-  const converter = getNumberConverter(fieldDefinition.fieldType);
-  const fieldValue = converter.toFieldValue(value);
+  const { fieldType } = fieldDefinition;
   const { onBlur, ...otherProps } = fieldDefinition.fieldComponentProps;
   // Defer integer/long truncation until blur so fractional values remain editable.
   // For example, keep 3.7 while typing, then store and display 3 on blur (-3.7 becomes -3).
@@ -37,45 +42,63 @@ export function NumberInputFieldAdapter({
     (event: React.FocusEvent<HTMLDivElement>) => {
       onBlur?.(event);
       // Parse only when focus leaves the input and stepper controls together.
-      // Preserve nullish or nonnumeric external values instead of coercing them on blur.
       if (
         event.currentTarget.contains(event.relatedTarget) ||
         typeof value !== "number"
       ) {
         return;
       }
-      const parsedValue = converter.toParameterValue(value);
-      if (!Object.is(parsedValue, value)) {
-        onChange(parsedValue);
+      const storedValue = toStoredNumber(value, fieldType);
+      if (!Object.is(storedValue, value)) {
+        onChange(storedValue);
       }
     },
-    [converter, value, onChange, onBlur],
+    [value, fieldType, onChange, onBlur],
   );
   return (
-    <NumberInputField
-      id={fieldDefinition.fieldKey}
-      value={fieldValue}
+    <ConvertedField
+      converter={NUMBER_CONVERTER}
+      value={value}
       onChange={onChange}
-      placeholder={fieldDefinition.placeholder}
-      error={error}
-      {...otherProps}
-      onBlur={handleBlur}
       disabled={fieldDefinition.disabled === true}
-    />
+    >
+      {(fieldValue, onFieldValueChange) => (
+        <NumberInputField
+          id={fieldDefinition.fieldKey}
+          value={fieldValue}
+          onChange={onFieldValueChange}
+          placeholder={fieldDefinition.placeholder}
+          error={error}
+          {...otherProps}
+          onBlur={handleBlur}
+          disabled={fieldDefinition.disabled === true}
+        />
+      )}
+    </ConvertedField>
   );
 }
 
 /**
- * Numeric fields use this conversion on blur so editing retains the full number.
+ * Shows stored numbers, fractional ones included so they stay editable while
+ * typed. Integer and long values are truncated on blur.
  */
-function getNumberConverter(
+const NUMBER_CONVERTER: FieldValueConverter<number | null> = {
+  toFieldValue: (value) =>
+    value == null || typeof value === "number"
+      ? Result.ok(value ?? null)
+      : Result.err({
+          message: `Expected a number, received: ${getValueType(value)}`,
+        }),
+  toParameterValue: passThroughFieldValue,
+};
+
+function toStoredNumber(
+  value: number,
   fieldType: FieldType | undefined,
-): FieldValueConverter<number | null> {
-  return {
-    toFieldValue: (value) => (typeof value === "number" ? value : null),
-    toParameterValue: (value) =>
-      value != null && (fieldType === "integer" || fieldType === "long")
-        ? Math.trunc(value)
-        : value,
-  };
+): number {
+  return isWholeNumberType(fieldType) ? Math.trunc(value) : value;
+}
+
+function isWholeNumberType(fieldType: FieldType | undefined): boolean {
+  return fieldType === "integer" || fieldType === "long";
 }

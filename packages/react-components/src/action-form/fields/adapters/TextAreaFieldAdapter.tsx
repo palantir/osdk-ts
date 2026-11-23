@@ -17,9 +17,9 @@
 import React from "react";
 
 import { TextAreaField } from "../TextAreaField.js";
+import { ConvertedField } from "./ConvertedField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
 import { TEXT_CONVERTER } from "./FieldValueConverter.js";
-import { useFieldValueConverter } from "./useFieldValueConverter.js";
 
 export function TextAreaFieldAdapter({
   fieldDefinition,
@@ -27,20 +27,24 @@ export function TextAreaFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"TEXT_AREA">): React.ReactElement {
-  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
-    TEXT_CONVERTER,
-    value,
-    onChange,
-  );
   return (
-    <TextAreaField
-      id={fieldDefinition.fieldKey}
-      value={fieldValue}
-      onChange={onFieldValueChange}
-      placeholder={fieldDefinition.placeholder}
-      error={error}
-      {...fieldDefinition.fieldComponentProps}
+    <ConvertedField
+      converter={TEXT_CONVERTER}
+      value={value}
+      onChange={onChange}
       disabled={fieldDefinition.disabled === true}
-    />
+    >
+      {(fieldValue, onFieldValueChange) => (
+        <TextAreaField
+          id={fieldDefinition.fieldKey}
+          value={fieldValue}
+          onChange={onFieldValueChange}
+          placeholder={fieldDefinition.placeholder}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+          disabled={fieldDefinition.disabled === true}
+        />
+      )}
+    </ConvertedField>
   );
 }

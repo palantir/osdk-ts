@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+import { isValid } from "date-fns";
 import React from "react";
 
 import { DatePicker } from "../../../shared/calendar/index.js";
+import { Result } from "../../../shared/Result.js";
+import { ConvertedField } from "./ConvertedField.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
 import {
   passThroughFieldValue,
   type FieldValueConverter,
 } from "./FieldValueConverter.js";
-import { useFieldValueConverter } from "./useFieldValueConverter.js";
+import { getValueType } from "./getValueType.js";
 
 export function DatePickerAdapter({
   fieldDefinition,
@@ -31,26 +34,40 @@ export function DatePickerAdapter({
   error,
   portalContainer,
 }: PortalFieldAdapterProps<"DATETIME_PICKER">): React.ReactElement {
-  const { fieldValue, onFieldValueChange } = useFieldValueConverter(
-    DATE_CONVERTER,
-    value,
-    onChange,
-  );
   return (
-    <DatePicker
-      id={fieldDefinition.fieldKey}
-      placeholder={fieldDefinition.placeholder}
-      value={fieldValue}
-      onChange={onFieldValueChange}
-      error={error}
-      {...fieldDefinition.fieldComponentProps}
+    <ConvertedField
+      converter={DATE_CONVERTER}
+      value={value}
+      onChange={onChange}
       disabled={fieldDefinition.disabled === true}
-      portalContainer={portalContainer}
-    />
+    >
+      {(fieldValue, onFieldValueChange) => (
+        <DatePicker
+          id={fieldDefinition.fieldKey}
+          placeholder={fieldDefinition.placeholder}
+          value={fieldValue}
+          onChange={onFieldValueChange}
+          error={error}
+          {...fieldDefinition.fieldComponentProps}
+          disabled={fieldDefinition.disabled === true}
+          portalContainer={portalContainer}
+        />
+      )}
+    </ConvertedField>
   );
 }
 
 const DATE_CONVERTER: FieldValueConverter<Date | null> = {
-  toFieldValue: (value) => (value instanceof Date ? value : null),
+  toFieldValue: (value) => {
+    if (value == null) {
+      return Result.ok(null);
+    }
+    if (value instanceof Date && isValid(value)) {
+      return Result.ok(value);
+    }
+    return Result.err({
+      message: `Expected a date, received: ${getValueType(value)}`,
+    });
+  },
   toParameterValue: passThroughFieldValue,
 };
