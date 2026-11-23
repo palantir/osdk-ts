@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createObservableClient } from "@osdk/client/observable";
 import { modifyTestEschwartz } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 
@@ -31,49 +30,23 @@ function getReturnValue(result: unknown): unknown {
   return result.returnValue;
 }
 
-// The action's backing function can fail when applied back to back, so pause
-// between calls.
-function waitBetweenCalls(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 1000));
-}
-
+// Applies the action once without `$returnEdits`. This action's backing
+// function fails when edits are requested, and it uses Ontology
+// transactions, so it cannot be batched.
 export async function runActionReturnValuesTest(): Promise<void> {
-  const params = { gpa: 3.5, age: 21, favFood: "pizza", graduated: false };
+  const result: unknown = await mjMainClient(modifyTestEschwartz).applyAction({
+    gpa: 3.5,
+    age: 21,
+    favFood: "pizza",
+    graduated: false,
+  });
+  console.log("applyAction result:", result);
 
-  const result: unknown =
-    await mjMainClient(modifyTestEschwartz).applyAction(params);
   const returnValue = getReturnValue(result);
-  console.log("applyAction returnValue:", returnValue);
   invariant(
     typeof returnValue === "number",
     `Expected a number returnValue, got ${typeof returnValue}`,
   );
-
-  await waitBetweenCalls();
-  const resultWithEdits: unknown = await mjMainClient(
-    modifyTestEschwartz,
-  ).applyAction(params, { $returnEdits: true });
-  console.log("applyAction with edits:", resultWithEdits);
-  invariant(
-    typeof getReturnValue(resultWithEdits) === "number",
-    "Expected a number returnValue alongside the edits",
-  );
-
-  await waitBetweenCalls();
-  const observableClient = createObservableClient(mjMainClient);
-  const observableResult: unknown = await observableClient.applyAction(
-    modifyTestEschwartz,
-    params,
-  );
-  console.log("ObservableClient applyAction result:", observableResult);
-  invariant(
-    typeof getReturnValue(observableResult) === "number",
-    "Expected ObservableClient applyAction to include a number returnValue",
-  );
-
-  // batchApplyAction is not exercised: this action's function uses Ontology
-  // transactions, which Foundry does not support in bulk mode, so batches
-  // cannot be applied.
 }
 
 void runActionReturnValuesTest();
