@@ -16,6 +16,7 @@
 
 import { client } from "./client.js";
 import { checkUnstableBulkLinks } from "./public/checkUnstableBulkLinks.js";
+import { runActionReturnValuesTest } from "./runActionReturnValuesTest.js";
 import { runAgentsTest } from "./runAgentsTest.js";
 import { runAggregationGroupByDatesTest } from "./runAggregationGroupByDatesTest.js";
 import { runAggregationsTest } from "./runAggregationsTest.js";
@@ -84,6 +85,8 @@ async function runTests() {
     await runFetchByRidTest();
 
     await runApplyFormatterTest();
+
+    await runActionReturnValuesTest();
 
     if (testScenarios) {
       await runScenariosTest();

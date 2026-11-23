@@ -80,6 +80,15 @@ export const mjClient: Client = createClient(
   loggingFetch,
 );
 
+export const mjMainClient: Client = createClient(
+  process.env.TERTIARY_FOUNDRY_STACK ?? "",
+  "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
+  // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
+  async () => process.env.TERTIARY_FOUNDRY_USER_TOKEN ?? "",
+  { logger },
+  loggingFetch,
+);
+
 export const cipherTextOntologyClient: Client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
