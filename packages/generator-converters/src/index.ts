@@ -15,6 +15,7 @@
  */
 
 export { GeneratorError } from "./GeneratorError.js";
+export { wireActionReturnTypeToActionDataTypeDefinition } from "./wireActionReturnTypeToActionDataTypeDefinition.js";
 export { wireActionTypeV2ToSdkActionMetadata } from "./wireActionTypeV2ToSdkActionMetadata.js";
 export {
   __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
