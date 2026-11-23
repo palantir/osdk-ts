@@ -95,8 +95,10 @@ export interface ScenarioClient extends Client {
 
   /**
    * Rebase this scenario onto the latest data from its base
+   *
+   * @beta This is an experimental feature subject to change.
    */
-  rebase(): Promise<void>;
+  EXPERIMENTAL_DO_NOT_USE_rebase(): Promise<void>;
 
   /**
    * List the object types and many-to-many link types that have been modified within this scenario. Useful as a
@@ -141,15 +143,6 @@ export interface ScenarioClient extends Client {
     objectType: Q,
     options?: { pageSize?: number },
   ): AsyncIterableIterator<ObjectIdentifiers<Q>>;
-
-  /**
-   * List the outgoing many-to-many link API names that have been modified within this scenario for the given
-   * source object type. One-to-many link edits surface as object edits on the FK-owning side and are not returned
-   * here.
-   */
-  getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(
-    sourceObjectType: Q,
-  ): Promise<LinkTypeApiNamesFor<Q>[]>;
 
   /**
    * Get a page of directed link instances edited within this scenario for a given source object type and link
@@ -341,20 +334,6 @@ export function buildScenarioClient(
     } while (pageToken != null);
   }
 
-  async function getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(
-    sourceObjectType: Q,
-  ): Promise<LinkTypeApiNamesFor<Q>[]> {
-    const ontologyRid = await innerCtx.ontologyRid;
-    const response = await OntologyScenarios.listScenarioEditedLinkTypes(
-      innerCtx,
-      ontologyRid,
-      scenarioRid,
-      sourceObjectType.apiName,
-      { preview: true },
-    );
-    return response.data as LinkTypeApiNamesFor<Q>[];
-  }
-
   async function getEditedLinks<
     Q extends ObjectOrInterfaceDefinition,
     LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
@@ -484,7 +463,7 @@ export function buildScenarioClient(
     getScenarioReference: {
       value: () => scenarioRid,
     },
-    rebase: {
+    EXPERIMENTAL_DO_NOT_USE_rebase: {
       value: rebase,
     },
     getEditedEntityTypes: {
@@ -495,9 +474,6 @@ export function buildScenarioClient(
     },
     editedObjectsAsyncIter: {
       value: editedObjectsAsyncIter,
-    },
-    getEditedLinkTypes: {
-      value: getEditedLinkTypes,
     },
     getEditedLinks: {
       value: getEditedLinks,

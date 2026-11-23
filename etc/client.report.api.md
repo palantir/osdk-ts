@@ -308,6 +308,8 @@ export interface ScenarioClient extends Client {
         		pageSize?: number
         		pageToken?: string
         	}): Promise<EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q>>;
+    	// @beta
+    EXPERIMENTAL_DO_NOT_USE_rebase(): Promise<void>;
     	getEditedEntityTypes(): Promise<ScenarioEditedEntityTypes>;
     	getEditedLinks<
     		Q extends ObjectOrInterfaceDefinition,
@@ -316,13 +318,11 @@ export interface ScenarioClient extends Client {
         		pageSize?: number
         		pageToken?: string
         	}): Promise<EditedLinksPage<Q, LINK_TYPE_API_NAME>>;
-    	getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(sourceObjectType: Q): Promise<LinkTypeApiNamesFor<Q>[]>;
     	getEditedObjects<Q extends ObjectTypeDefinition>(objectType: Q, options?: {
         		pageSize?: number
         		pageToken?: string
         	}): Promise<EditedObjectsPage<Q>>;
     	getScenarioReference(): string;
-    	rebase(): Promise<void>;
 }
 
 // @public

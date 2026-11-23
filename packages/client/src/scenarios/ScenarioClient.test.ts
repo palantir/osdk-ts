@@ -19,7 +19,6 @@ import type {
   ListScenarioConflictingObjectsResponse,
   ListScenarioEditedEntityTypesResponse,
   ListScenarioEditedLinksResponse,
-  ListScenarioEditedLinkTypesResponse,
   ListScenarioEditedObjectsResponse,
 } from "@osdk/foundry.ontologies";
 import type { MockedFunction } from "vitest";
@@ -46,12 +45,12 @@ describe("ScenarioClient methods", () => {
     );
   });
 
-  describe("rebase", () => {
+  describe("EXPERIMENTAL_DO_NOT_USE_rebase", () => {
     it("rebases the scenario onto the latest base data", async () => {
       const scenario = withScenario(client, "ri.actions..scenario.abc");
       mockFetchResponse(fetchFunction, undefined);
 
-      await scenario.rebase();
+      await scenario.EXPERIMENTAL_DO_NOT_USE_rebase();
 
       expect(fetchFunction).toHaveBeenCalledTimes(1);
       const url = new URL(
@@ -284,28 +283,6 @@ describe("ScenarioClient methods", () => {
 
       expect(keys).toEqual([42]);
       expect(fetchFunction).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe("getEditedLinkTypes", () => {
-    it("calls listScenarioEditedLinkTypes scoped to the source object type", async () => {
-      const scenario = withScenario(client, "ri.actions..scenario.abc");
-      const mock: ListScenarioEditedLinkTypesResponse = {
-        data: ["lead", "peeps"],
-      };
-      mockFetchResponse(fetchFunction, mock);
-
-      const result = await scenario.getEditedLinkTypes(Employee);
-
-      expect(fetchFunction).toHaveBeenCalledTimes(1);
-      const url = new URL(
-        fetchFunction.mock.calls[0][0] as string,
-        "https://mock.com",
-      );
-      expect(url.pathname).toMatch(
-        /\/scenarios\/ri\.actions\.\.scenario\.abc\/objectTypes\/Employee\/outgoingLinkTypes\/edited$/u,
-      );
-      expect(result).toEqual(["lead", "peeps"]);
     });
   });
 
