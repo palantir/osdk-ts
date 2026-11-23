@@ -26,7 +26,10 @@ function user(id: string, status: User["status"] = "ACTIVE"): User {
 describe("AdminSeedBuilder", () => {
   it("builds an empty seed and preserves users in creation order", () => {
     const builder = new AdminSeedBuilder();
-    expect(builder.build()).toStrictEqual({ users: [] });
+    expect(builder.build()).toStrictEqual({
+      users: [],
+      currentUserId: undefined,
+    });
 
     const first = user("first");
     const second = user("second", "DELETED");
@@ -35,7 +38,10 @@ describe("AdminSeedBuilder", () => {
     expect(() => builder.createUser(user(first.id, "DELETED"))).toThrow(
       "User with ID first already exists",
     );
-    expect(builder.build()).toStrictEqual({ users: [first, second] });
+    expect(builder.build()).toStrictEqual({
+      users: [first, second],
+      currentUserId: undefined,
+    });
   });
 
   it("enforces username uniqueness within each realm until the user is removed", () => {
@@ -81,9 +87,15 @@ describe("AdminSeedBuilder", () => {
     });
 
     builder.deleteUser(secondId);
-    expect(builder.build()).toStrictEqual({ users: [] });
+    expect(builder.build()).toStrictEqual({
+      users: [],
+      currentUserId: undefined,
+    });
     builder.createUser(second);
-    expect(builder.build()).toStrictEqual({ users: [second] });
+    expect(builder.build()).toStrictEqual({
+      users: [second],
+      currentUserId: undefined,
+    });
   });
 
   it("takes snapshots of user attributes on create and build", () => {
