@@ -36,12 +36,13 @@ export function DateRangePickerAdapter({
   onChange,
   portalContainer,
 }: PortalFieldAdapterProps<"DATE_RANGE_INPUT">): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   return (
     <ConvertedField
       converter={DATE_RANGE_CONVERTER}
       value={value}
       onChange={onChange}
-      disabled={fieldDefinition.disabled === true}
+      disabled={disabled}
     >
       {(fieldValue, onFieldValueChange) => (
         <DateRangePicker
@@ -50,7 +51,7 @@ export function DateRangePickerAdapter({
           onChange={onFieldValueChange}
           placeholderStart={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
-          disabled={fieldDefinition.disabled === true}
+          disabled={disabled}
           portalContainer={portalContainer}
         />
       )}
@@ -70,7 +71,10 @@ const DATE_RANGE_CONVERTER: FieldValueConverter<DateRange | null> = {
     }
     if (value.length !== 2) {
       return Result.err({
-        message: `Expected 2 dates, received: ${value.length}`,
+        message:
+          value.length === 0
+            ? `Expected 2 dates, received an empty array`
+            : `Expected 2 dates, received: ${value.length}`,
       });
     }
     const nonDate: unknown = value.find((item) => !isDateOrEmpty(item));

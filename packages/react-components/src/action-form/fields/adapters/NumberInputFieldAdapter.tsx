@@ -33,6 +33,7 @@ export function NumberInputFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"NUMBER_INPUT">): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   const { fieldType } = fieldDefinition;
   const { onBlur, ...otherProps } = fieldDefinition.fieldComponentProps;
   // Defer integer/long truncation until blur so fractional values remain editable.
@@ -60,7 +61,7 @@ export function NumberInputFieldAdapter({
       converter={NUMBER_CONVERTER}
       value={value}
       onChange={onChange}
-      disabled={fieldDefinition.disabled === true}
+      disabled={disabled}
     >
       {(fieldValue, onFieldValueChange) => (
         <NumberInputField
@@ -71,7 +72,7 @@ export function NumberInputFieldAdapter({
           error={error}
           {...otherProps}
           onBlur={handleBlur}
-          disabled={fieldDefinition.disabled === true}
+          disabled={disabled}
         />
       )}
     </ConvertedField>

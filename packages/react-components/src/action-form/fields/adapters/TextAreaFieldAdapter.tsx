@@ -27,12 +27,13 @@ export function TextAreaFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"TEXT_AREA">): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   return (
     <ConvertedField
       converter={TEXT_CONVERTER}
       value={value}
       onChange={onChange}
-      disabled={fieldDefinition.disabled === true}
+      disabled={disabled}
     >
       {(fieldValue, onFieldValueChange) => (
         <TextAreaField
@@ -42,7 +43,7 @@ export function TextAreaFieldAdapter({
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
-          disabled={fieldDefinition.disabled === true}
+          disabled={disabled}
         />
       )}
     </ConvertedField>

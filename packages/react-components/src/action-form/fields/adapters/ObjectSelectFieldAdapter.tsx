@@ -34,12 +34,13 @@ export function ObjectSelectFieldAdapter({
   error,
   portalContainer,
 }: PortalFieldAdapterProps<"OBJECT_SELECT">): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   return (
     <ConvertedField
       converter={OBJECT_CONVERTER}
       value={value}
       onChange={onChange}
-      disabled={fieldDefinition.disabled === true}
+      disabled={disabled}
     >
       {(fieldValue, onFieldValueChange) => (
         <ObjectSelectField
@@ -49,7 +50,7 @@ export function ObjectSelectFieldAdapter({
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
-          disabled={fieldDefinition.disabled === true}
+          disabled={disabled}
           portalContainer={portalContainer}
         />
       )}

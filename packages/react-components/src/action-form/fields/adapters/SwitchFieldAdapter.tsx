@@ -32,12 +32,13 @@ export function SwitchFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"SWITCH">): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   return (
     <ConvertedField
       converter={BOOLEAN_CONVERTER}
       value={value}
       onChange={onChange}
-      disabled={fieldDefinition.disabled === true}
+      disabled={disabled}
     >
       {(fieldValue, onFieldValueChange) => (
         <SwitchField
@@ -47,7 +48,7 @@ export function SwitchFieldAdapter({
           onChange={onFieldValueChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
-          disabled={fieldDefinition.disabled === true}
+          disabled={disabled}
         />
       )}
     </ConvertedField>

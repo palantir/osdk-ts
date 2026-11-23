@@ -32,12 +32,13 @@ export function FilePickerFieldAdapter({
   onChange,
   error,
 }: FieldAdapterProps<"FILE_PICKER">): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   return (
     <ConvertedField
       converter={FILE_CONVERTER}
       value={value}
       onChange={onChange}
-      disabled={fieldDefinition.disabled === true}
+      disabled={disabled}
     >
       {(fieldValue, onFieldValueChange) => (
         <FilePickerField
@@ -46,7 +47,7 @@ export function FilePickerFieldAdapter({
           onChange={onFieldValueChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
-          disabled={fieldDefinition.disabled === true}
+          disabled={disabled}
         />
       )}
     </ConvertedField>

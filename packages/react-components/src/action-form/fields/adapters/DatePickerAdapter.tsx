@@ -34,12 +34,13 @@ export function DatePickerAdapter({
   error,
   portalContainer,
 }: PortalFieldAdapterProps<"DATETIME_PICKER">): React.ReactElement {
+  const disabled = fieldDefinition.disabled === true;
   return (
     <ConvertedField
       converter={DATE_CONVERTER}
       value={value}
       onChange={onChange}
-      disabled={fieldDefinition.disabled === true}
+      disabled={disabled}
     >
       {(fieldValue, onFieldValueChange) => (
         <DatePicker
@@ -49,7 +50,7 @@ export function DatePickerAdapter({
           onChange={onFieldValueChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
-          disabled={fieldDefinition.disabled === true}
+          disabled={disabled}
           portalContainer={portalContainer}
         />
       )}
