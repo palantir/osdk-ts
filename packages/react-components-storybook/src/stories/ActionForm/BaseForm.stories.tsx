@@ -509,7 +509,7 @@ export const WithUnexpectedValues: Story = {
       await canvas.findByText("Expected a number, received: string"),
     ).toBeInTheDocument();
     await expect(
-      canvas.getByText("Expected 2 dates, received: 0"),
+      canvas.getByText("Expected 2 dates, received an empty array"),
     ).toBeInTheDocument();
 
     // Clearing an unexpected value brings back the field component.
