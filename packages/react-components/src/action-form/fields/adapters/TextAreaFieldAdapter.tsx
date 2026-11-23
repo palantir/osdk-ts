@@ -36,11 +36,11 @@ export function TextAreaFieldAdapter({
       onChange={onChange}
       disabled={disabled}
     >
-      {(fieldValue, onFieldValueChange) => (
+      {(fieldValue) => (
         <TextAreaField
           id={fieldDefinition.fieldKey}
           value={fieldValue}
-          onChange={onFieldValueChange}
+          onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}

@@ -158,7 +158,7 @@ describe("ActionForm", () => {
       ["long", "9.9", 9],
       ["long", "-9.9", -9],
       ["double", "3.7", 3.7],
-    ] as const)("parses %s %s only on blur", async (type, text, parsed) => {
+    ] as const)("truncates %s %s on blur", async (type, text, parsed) => {
       vi.mocked(useOsdkMetadata).mockReturnValue({
         loading: false,
         metadata: {
@@ -241,6 +241,66 @@ describe("ActionForm", () => {
           onFormStateChange={vi.fn()}
         />,
       );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
+    });
+
+    it("keeps a fractional controlled value when the field is focused and blurred without edits", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      const onFormStateChange = vi.fn();
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formState={{ count: 3.7 }}
+          onFormStateChange={onFormStateChange}
+        />,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+      expect(input.value).toBe("3.7");
+      expect(onFormStateChange).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
+    });
+
+    it("keeps a fractional default value when the field is focused and blurred without edits", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formFieldDefinitions={[
+            {
+              fieldKey: "count",
+              label: "count",
+              fieldComponent: "NUMBER_INPUT",
+              defaultValue: 3.7,
+              fieldComponentProps: {},
+            },
+          ]}
+        />,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+      expect(input.value).toBe("3.7");
+      expect(screen.queryByText("Edited")).toBeNull();
       fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
       await vi.waitFor(() =>
         expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),

@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import { isValid } from "date-fns";
 import React from "react";
 
 import { DatePicker } from "../../../shared/calendar/index.js";
 import { Result } from "../../../shared/Result.js";
 import { ConvertedField } from "./ConvertedField.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
-import {
-  passThroughFieldValue,
-  type FieldValueConverter,
-} from "./FieldValueConverter.js";
+import type { FieldValueConverter } from "./FieldValueConverter.js";
 import { getValueType } from "./getValueType.js";
 
 export function DatePickerAdapter({
@@ -43,12 +39,12 @@ export function DatePickerAdapter({
       onChange={onChange}
       disabled={disabled}
     >
-      {(fieldValue, onFieldValueChange) => (
+      {(fieldValue) => (
         <DatePicker
           id={fieldDefinition.fieldKey}
           placeholder={fieldDefinition.placeholder}
           value={fieldValue}
-          onChange={onFieldValueChange}
+          onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
@@ -64,12 +60,11 @@ const DATE_CONVERTER: FieldValueConverter<Date | null> = {
     if (value == null) {
       return Result.ok(null);
     }
-    if (value instanceof Date && isValid(value)) {
+    if (value instanceof Date) {
       return Result.ok(value);
     }
     return Result.err({
       message: `Expected a date, received: ${getValueType(value)}`,
     });
   },
-  toParameterValue: passThroughFieldValue,
 };

@@ -18,8 +18,8 @@ import { Result } from "../../../shared/Result.js";
 import { getValueType } from "./getValueType.js";
 
 /**
- * The paired conversion an adapter applies between the parameter value held
- * in form state and the field value its component displays and emits.
+ * Checks the parameter value held in form state and narrows it to the field
+ * value its component displays. The component's changes are stored as emitted.
  */
 export interface FieldValueConverter<F> {
   /**
@@ -27,8 +27,6 @@ export interface FieldValueConverter<F> {
    * reports why the component can't display it.
    */
   toFieldValue: (parameterValue: unknown) => FieldValueResult<F>;
-  /** Turns the field value the component emits into the value to store. */
-  toParameterValue: (fieldValue: F) => unknown;
 }
 
 export type FieldValueResult<F> = Result<F, UnexpectedValueError>;
@@ -37,11 +35,6 @@ export type FieldValueResult<F> = Result<F, UnexpectedValueError>;
 export interface UnexpectedValueError {
   /** The complete message shown to the user, e.g. "Expected a number, received: string" */
   message: string;
-}
-
-/** Stores the emitted field value unchanged. */
-export function passThroughFieldValue<F>(fieldValue: F): F {
-  return fieldValue;
 }
 
 /** Shows a stored string as text; used by the text input and text area. */
@@ -57,5 +50,4 @@ export const TEXT_CONVERTER: FieldValueConverter<string | null> = {
       message: `Expected text, received: ${getValueType(value)}`,
     });
   },
-  toParameterValue: passThroughFieldValue,
 };

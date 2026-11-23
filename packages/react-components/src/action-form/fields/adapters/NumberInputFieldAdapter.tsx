@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 
 import { Result } from "../../../shared/Result.js";
 import type { FieldType } from "../../FormFieldApi.js";
 import { NumberInputField } from "../NumberInputField.js";
 import { ConvertedField } from "./ConvertedField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
-import {
-  passThroughFieldValue,
-  type FieldValueConverter,
-} from "./FieldValueConverter.js";
+import type { FieldValueConverter } from "./FieldValueConverter.js";
 import { getValueType } from "./getValueType.js";
 
 export function NumberInputFieldAdapter({
@@ -38,15 +35,26 @@ export function NumberInputFieldAdapter({
   const { onBlur, ...otherProps } = fieldDefinition.fieldComponentProps;
   // Defer integer/long truncation until blur so fractional values remain editable.
   // For example, keep 3.7 while typing, then store and display 3 on blur (-3.7 becomes -3).
+  // Only the user's edits are truncated; untouched defaults and controlled values stay as given.
+  const isEditedSinceFocusRef = useRef(false);
+  const handleChange = useCallback(
+    (fieldValue: number | null) => {
+      isEditedSinceFocusRef.current = true;
+      onChange(fieldValue);
+    },
+    [onChange],
+  );
   // Convert before the event bubbles to the form's blur validation.
   const handleBlur = useCallback(
     (event: React.FocusEvent<HTMLDivElement>) => {
       onBlur?.(event);
-      // Parse only when focus leaves the input and stepper controls together.
-      if (
-        event.currentTarget.contains(event.relatedTarget) ||
-        typeof value !== "number"
-      ) {
+      // Truncate only when focus leaves the input and stepper controls together.
+      if (event.currentTarget.contains(event.relatedTarget)) {
+        return;
+      }
+      const isEdited = isEditedSinceFocusRef.current;
+      isEditedSinceFocusRef.current = false;
+      if (!isEdited || typeof value !== "number") {
         return;
       }
       const storedValue = toStoredNumber(value, fieldType);
@@ -64,11 +72,11 @@ export function NumberInputFieldAdapter({
       onChange={onChange}
       disabled={disabled}
     >
-      {(fieldValue, onFieldValueChange) => (
+      {(fieldValue) => (
         <NumberInputField
           id={fieldDefinition.fieldKey}
           value={fieldValue}
-          onChange={onFieldValueChange}
+          onChange={handleChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...otherProps}
@@ -91,7 +99,6 @@ const NUMBER_CONVERTER: FieldValueConverter<number | null> = {
       : Result.err({
           message: `Expected a number, received: ${getValueType(value)}`,
         }),
-  toParameterValue: passThroughFieldValue,
 };
 
 function toStoredNumber(

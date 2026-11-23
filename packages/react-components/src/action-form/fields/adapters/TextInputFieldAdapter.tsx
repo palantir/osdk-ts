@@ -36,11 +36,11 @@ export function TextInputFieldAdapter({
       onChange={onChange}
       disabled={disabled}
     >
-      {(fieldValue, onFieldValueChange) => (
+      {(fieldValue) => (
         <TextInputField
           id={fieldDefinition.fieldKey}
           value={fieldValue}
-          onChange={onFieldValueChange}
+          onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}

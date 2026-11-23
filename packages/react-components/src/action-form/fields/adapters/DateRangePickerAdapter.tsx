@@ -24,10 +24,7 @@ import {
 import { Result } from "../../../shared/Result.js";
 import { ConvertedField } from "./ConvertedField.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
-import {
-  passThroughFieldValue,
-  type FieldValueConverter,
-} from "./FieldValueConverter.js";
+import type { FieldValueConverter } from "./FieldValueConverter.js";
 import { getValueType } from "./getValueType.js";
 
 export function DateRangePickerAdapter({
@@ -45,11 +42,11 @@ export function DateRangePickerAdapter({
       onChange={onChange}
       disabled={disabled}
     >
-      {(fieldValue, onFieldValueChange) => (
+      {(fieldValue) => (
         <DateRangePicker
           id={fieldDefinition.fieldKey}
           value={fieldValue}
-          onChange={onFieldValueChange}
+          onChange={onChange}
           placeholderStart={fieldDefinition.placeholder}
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
@@ -78,8 +75,7 @@ const DATE_RANGE_CONVERTER: FieldValueConverter<DateRange | null> = {
             : `Expected 2 dates, received: ${value.length}`,
       });
     }
-    const nonDate: unknown = value.find((item) => !isDateOrEmpty(item));
-    if (nonDate !== undefined) {
+    if (!value.every(isDateOrEmpty)) {
       return Result.err({
         message: `Expected a start and end date, received: ${getValueType(value)}`,
       });
@@ -87,7 +83,6 @@ const DATE_RANGE_CONVERTER: FieldValueConverter<DateRange | null> = {
     const [start, end]: Array<Date | null | undefined> = value;
     return Result.ok([start ?? null, end ?? null]);
   },
-  toParameterValue: passThroughFieldValue,
 };
 
 function isDateOrEmpty(value: unknown): boolean {

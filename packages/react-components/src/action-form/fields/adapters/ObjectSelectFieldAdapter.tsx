@@ -21,10 +21,7 @@ import { Result } from "../../../shared/Result.js";
 import { ObjectSelectField } from "../ObjectSelectField.js";
 import { ConvertedField } from "./ConvertedField.js";
 import type { PortalFieldAdapterProps } from "./FieldAdapterProps.js";
-import {
-  passThroughFieldValue,
-  type FieldValueConverter,
-} from "./FieldValueConverter.js";
+import type { FieldValueConverter } from "./FieldValueConverter.js";
 import { getValueType } from "./getValueType.js";
 
 export function ObjectSelectFieldAdapter({
@@ -43,11 +40,11 @@ export function ObjectSelectFieldAdapter({
       onChange={onChange}
       disabled={disabled}
     >
-      {(fieldValue, onFieldValueChange) => (
+      {(fieldValue) => (
         <ObjectSelectField
           id={fieldDefinition.fieldKey}
           value={fieldValue}
-          onChange={onFieldValueChange}
+          onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           error={error}
           {...fieldDefinition.fieldComponentProps}
@@ -72,7 +69,6 @@ const OBJECT_CONVERTER: FieldValueConverter<Osdk.Instance<ObjectTypeDefinition> 
         message: `Expected an Ontology object, received: ${getValueType(value)}`,
       });
     },
-    toParameterValue: passThroughFieldValue,
   };
 
 /** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */

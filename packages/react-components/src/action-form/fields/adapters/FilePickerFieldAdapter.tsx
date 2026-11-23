@@ -20,10 +20,7 @@ import { Result } from "../../../shared/Result.js";
 import { FilePickerField } from "../FilePickerField.js";
 import { ConvertedField } from "./ConvertedField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
-import {
-  passThroughFieldValue,
-  type FieldValueConverter,
-} from "./FieldValueConverter.js";
+import type { FieldValueConverter } from "./FieldValueConverter.js";
 import { getValueType } from "./getValueType.js";
 
 export function FilePickerFieldAdapter({
@@ -41,11 +38,11 @@ export function FilePickerFieldAdapter({
       onChange={onChange}
       disabled={disabled}
     >
-      {(fieldValue, onFieldValueChange) => (
+      {(fieldValue) => (
         <FilePickerField
           id={fieldDefinition.fieldKey}
           value={fieldValue}
-          onChange={onFieldValueChange}
+          onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
@@ -70,7 +67,6 @@ const FILE_CONVERTER: FieldValueConverter<File | File[] | null> = {
       message: `Expected a file or a list of files, received: ${getValueType(value)}`,
     });
   },
-  toParameterValue: passThroughFieldValue,
 };
 
 function isFile(value: unknown): value is File {

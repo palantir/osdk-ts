@@ -20,10 +20,7 @@ import { Result } from "../../../shared/Result.js";
 import { SwitchField } from "../SwitchField.js";
 import { ConvertedField } from "./ConvertedField.js";
 import type { FieldAdapterProps } from "./FieldAdapterProps.js";
-import {
-  passThroughFieldValue,
-  type FieldValueConverter,
-} from "./FieldValueConverter.js";
+import type { FieldValueConverter } from "./FieldValueConverter.js";
 import { getValueType } from "./getValueType.js";
 
 export function SwitchFieldAdapter({
@@ -41,12 +38,12 @@ export function SwitchFieldAdapter({
       onChange={onChange}
       disabled={disabled}
     >
-      {(fieldValue, onFieldValueChange) => (
+      {(fieldValue) => (
         <SwitchField
           id={fieldDefinition.fieldKey}
           label={fieldDefinition.label}
           value={fieldValue}
-          onChange={onFieldValueChange}
+          onChange={onChange}
           error={error}
           {...fieldDefinition.fieldComponentProps}
           disabled={disabled}
@@ -68,5 +65,4 @@ const BOOLEAN_CONVERTER: FieldValueConverter<boolean | null> = {
       message: `Expected a boolean (true or false), received: ${getValueType(value)}`,
     });
   },
-  toParameterValue: passThroughFieldValue,
 };
