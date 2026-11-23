@@ -110,39 +110,40 @@ describe(wireActionTypeV2ToSdkActionMetadata, () => {
         valueType: { type: "string" },
       },
     ],
-  ])("drops and warns about %s return type", (_, returnType) => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const result = wireActionTypeV2ToSdkActionMetadata(actionType(returnType));
-    expect(result.returnType).toBeUndefined();
-    expect(warn).toHaveBeenCalledOnce();
-    warn.mockRestore();
-  });
-
-  it("drops and warns about return types the OSDK cannot represent", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    const result = wireActionTypeV2ToSdkActionMetadata(
-      actionType({
+    [
+      "a list of an unsupported type",
+      {
         type: "array",
         subType: {
           type: "unsupported",
           unsupportedType: "Attachment",
           params: {},
         },
-      }),
-    );
-    expect(result.returnType).toBeUndefined();
-    expect(result.apiName).toBe("returnsValue");
-    expect(warn).toHaveBeenCalledOnce();
-    expect(warn).toHaveBeenCalledWith(
-      `Action "returnsValue" returns a type the OSDK does not support, so applyAction will not return its value.`,
-      expect.any(Error),
-    );
-    warn.mockRestore();
-  });
-
-  it("does not warn when the return type converts", () => {
+      },
+    ],
+    [
+      "a struct with an unsupported field",
+      {
+        type: "struct",
+        fields: [
+          { name: "name", fieldType: { type: "string" } },
+          { name: "file", fieldType: { type: "attachment" } },
+        ],
+      },
+    ],
+    [
+      "a map with unsupported values",
+      {
+        type: "entrySet",
+        keyType: { type: "string" },
+        valueType: { type: "attachment" },
+      },
+    ],
+  ])("omits %s return type without logging", (_, returnType) => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    wireActionTypeV2ToSdkActionMetadata(actionType({ type: "string" }));
+    const result = wireActionTypeV2ToSdkActionMetadata(actionType(returnType));
+    expect(result).not.toHaveProperty("returnType");
+    expect(result.apiName).toBe("returnsValue");
     expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
   });
