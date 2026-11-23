@@ -135,7 +135,7 @@ describe("validateWidgetConfig", () => {
     invalidConfig.events = {};
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "Parameter count can be at most 50",
+      "Widget can have at most 50 parameters",
     );
   });
 
@@ -192,7 +192,7 @@ describe("validateWidgetConfig", () => {
     invalidConfig.events = getEvents(51);
 
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "Event count can be at most 50",
+      "Widget can have at most 50 events",
     );
   });
 

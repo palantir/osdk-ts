@@ -70,7 +70,9 @@ function validateWidgetDescription(description?: string): void {
 
 function validateWidgetParameters(parameters: ParameterConfig): void {
   if (Object.keys(parameters).length > PARAMETERS_MAX_COUNT) {
-    throw new Error(`Parameter count can be at most ${PARAMETERS_MAX_COUNT}`);
+    throw new Error(
+      `Widget can have at most ${PARAMETERS_MAX_COUNT} parameters`,
+    );
   }
   for (const [parameterId, parameterConfig] of Object.entries(parameters)) {
     if (parameterId.length > ID_MAX_LENGTH) {
@@ -108,7 +110,7 @@ function validateWidgetEvents(
   parameters: ParameterConfig,
 ): void {
   if (Object.keys(events).length > EVENTS_MAX_COUNT) {
-    throw new Error(`Event count can be at most ${EVENTS_MAX_COUNT}`);
+    throw new Error(`Widget can have at most ${EVENTS_MAX_COUNT} events`);
   }
   const parameterIds = new Set(Object.keys(parameters));
   for (const [eventId, event] of Object.entries(events)) {
