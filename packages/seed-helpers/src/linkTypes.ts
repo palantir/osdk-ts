@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-// Compile-time helpers that constrain `SeedBuilder.link` to real link names and
+// Compile-time helpers that constrain `OntologySeedBuilder.link` to real link names and
 // correctly-typed targets. They mirror the `AddLink*` helpers behind
-// `EditBatch.link` in @osdk/functions, using `SeedRef` in place of `ObjectLocator`.
+// `EditBatch.link` in @osdk/functions, using `OntologySeedRef` in place of `ObjectLocator`.
 
 import type {
   CompileTimeMetadata,
@@ -25,7 +25,7 @@ import type {
   ObjectTypeDefinition,
 } from "@osdk/api";
 
-import type { SeedRef } from "./types.js";
+import type { OntologySeedRef } from "./types.js";
 
 /**
  * The object or interface type on the far side of `Q`'s `A` link.
@@ -43,5 +43,7 @@ export type LinkTargets<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
   A extends LinkTypeApiNamesFor<Q>,
 > = CompileTimeMetadata<Q>["links"][A]["multiplicity"] extends true
-  ? SeedRef<LinkTargetType<Q, A>> | Array<SeedRef<LinkTargetType<Q, A>>>
-  : SeedRef<LinkTargetType<Q, A>>;
+  ?
+      | OntologySeedRef<LinkTargetType<Q, A>>
+      | Array<OntologySeedRef<LinkTargetType<Q, A>>>
+  : OntologySeedRef<LinkTargetType<Q, A>>;

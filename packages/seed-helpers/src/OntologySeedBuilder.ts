@@ -26,21 +26,25 @@ import { consola } from "consola";
 import invariant from "tiny-invariant";
 
 import type { LinkTargets } from "./linkTypes.js";
-import type { SeedOutput, SeedProps, SeedRef } from "./types.js";
+import type {
+  OntologySeedOutput,
+  OntologySeedProps,
+  OntologySeedRef,
+} from "./types.js";
 import { validateSeedObject } from "./validation.js";
 
-export type SeedFunction<T> = (seed: SeedBuilder) => T;
+export type OntologySeedFunction<T> = (seed: OntologySeedBuilder) => T;
 
 interface SeedLinkRecord {
-  source: SeedRef<ObjectTypeDefinition>;
+  source: OntologySeedRef<ObjectTypeDefinition>;
   apiName: string;
-  target: SeedRef<ObjectTypeDefinition>;
+  target: OntologySeedRef<ObjectTypeDefinition>;
 }
 
 function linkIdentity(
-  source: SeedRef<ObjectTypeDefinition>,
+  source: OntologySeedRef<ObjectTypeDefinition>,
   apiName: string,
-  target: SeedRef<ObjectTypeDefinition>,
+  target: OntologySeedRef<ObjectTypeDefinition>,
 ): string {
   return [
     source.$apiName,
@@ -51,9 +55,9 @@ function linkIdentity(
   ].join(":");
 }
 
-export class SeedBuilder {
+export class OntologySeedBuilder {
   #metadata: Ontology.OntologyFullMetadata;
-  #objectMap: Map<string, Map<string, SeedProps<ObjectTypeDefinition>>>;
+  #objectMap: Map<string, Map<string, OntologySeedProps<ObjectTypeDefinition>>>;
   #links: Map<string, SeedLinkRecord>;
 
   /**
@@ -94,7 +98,7 @@ export class SeedBuilder {
    * Merges an existing seed output. Must match the metadata supplied at construction.
    * @param seed Seed output to derive from
    */
-  addAll(seed: SeedOutput): void {
+  addAll(seed: OntologySeedOutput): void {
     const objectEntries = Object.entries(seed.objects).flatMap(
       ([apiName, objects]) => objects.map((o) => [apiName, o] as const),
     );
@@ -131,7 +135,7 @@ export class SeedBuilder {
    * Set the current state to the provided seed.
    * @param seed Seed output to reset to. Resets the seed builder if undefined.
    */
-  set(seed?: SeedOutput): void {
+  set(seed?: OntologySeedOutput): void {
     this.#reset();
     if (typeof seed !== "undefined") {
       this.addAll(seed);
@@ -139,18 +143,18 @@ export class SeedBuilder {
   }
 
   /**
-   * Returns a SeedRef<Q> regardless of the existence of the object.
+   * Returns a OntologySeedRef<Q> regardless of the existence of the object.
    * @param o Object Type
    * @param primaryKey
-   * @returns SeedRef<Q>
+   * @returns OntologySeedRef<Q>
    */
   #ref<Q extends ObjectTypeDefinition>(
     o: Q,
     primaryKey: PrimaryKeyType<Q>,
-  ): SeedRef<Q> {
+  ): OntologySeedRef<Q> {
     const objectType = this.#objectType(o.apiName);
     const props = this.#getObjectTypeMap(o.apiName).get(String(primaryKey)) as
-      | SeedProps<Q>
+      | OntologySeedProps<Q>
       | undefined;
     const base: OsdkBase<Q> = {
       $apiName: o.apiName,
@@ -162,7 +166,7 @@ export class SeedBuilder {
     return Object.freeze({
       ...base,
       ...props,
-    }) as SeedRef<Q>;
+    }) as OntologySeedRef<Q>;
   }
 
   /**
@@ -174,7 +178,7 @@ export class SeedBuilder {
   ref<Q extends ObjectTypeDefinition>(
     o: Q,
     primaryKey: PrimaryKeyType<Q>,
-  ): SeedRef<Q> | undefined {
+  ): OntologySeedRef<Q> | undefined {
     if (!this.#getObjectTypeMap(o.apiName).has(String(primaryKey))) {
       return;
     }
@@ -189,8 +193,8 @@ export class SeedBuilder {
    */
   create<Q extends ObjectTypeDefinition>(
     o: Q,
-    props: SeedProps<Q>,
-  ): SeedRef<Q> {
+    props: OntologySeedProps<Q>,
+  ): OntologySeedRef<Q> {
     const objectType = this.#objectType(o.apiName);
     const primaryKeyValue = props[
       objectType.primaryKey as keyof typeof props
@@ -212,7 +216,7 @@ export class SeedBuilder {
     return Object.freeze({
       ...base,
       ...props,
-    }) as SeedRef<Q>;
+    }) as OntologySeedRef<Q>;
   }
 
   /**
@@ -224,11 +228,11 @@ export class SeedBuilder {
    * @returns The same reference passed in
    */
   update<Q extends ObjectTypeDefinition>(
-    ref: SeedRef<Q>,
+    ref: OntologySeedRef<Q>,
     props: Partial<
-      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+      Omit<OntologySeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
     >,
-  ): SeedRef<Q> {
+  ): OntologySeedRef<Q> {
     const { $apiName, $primaryKey } = ref;
     const objectType = this.#objectType($apiName);
     const stringPrimaryKeyValue = String($primaryKey);
@@ -258,7 +262,7 @@ export class SeedBuilder {
    * Removes the referenced object from the seed.
    * @param ref Reference to the object to delete
    */
-  delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): void {
+  delete<Q extends ObjectTypeDefinition>(ref: OntologySeedRef<Q>): void {
     const { $apiName, $primaryKey } = ref;
     this.#objectType($apiName);
     const stringPrimaryKeyValue = String($primaryKey);
@@ -277,12 +281,12 @@ export class SeedBuilder {
    * @param target Reference (or references) to the target object(s)
    */
   link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
+    source: OntologySeedRef<Q>,
     apiName: A,
     target: LinkTargets<Q, A>,
   ): void {
     const targets = (Array.isArray(target) ? target : [target]) as Array<
-      SeedRef<ObjectTypeDefinition>
+      OntologySeedRef<ObjectTypeDefinition>
     >;
     for (const t of targets) {
       this.#recordLink(source, apiName, t);
@@ -290,9 +294,9 @@ export class SeedBuilder {
   }
 
   #recordLink(
-    source: SeedRef<ObjectTypeDefinition>,
+    source: OntologySeedRef<ObjectTypeDefinition>,
     apiName: string,
-    target: SeedRef<ObjectTypeDefinition>,
+    target: OntologySeedRef<ObjectTypeDefinition>,
   ): void {
     this.#links.set(linkIdentity(source, apiName, target), {
       source,
@@ -308,12 +312,12 @@ export class SeedBuilder {
    * @param target Reference (or references) to the target object(s)
    */
   unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
+    source: OntologySeedRef<Q>,
     apiName: A,
     target: LinkTargets<Q, A>,
   ): void {
     const targets = (Array.isArray(target) ? target : [target]) as Array<
-      SeedRef<ObjectTypeDefinition>
+      OntologySeedRef<ObjectTypeDefinition>
     >;
     let removed = 0;
     for (const t of targets) {
@@ -334,8 +338,8 @@ export class SeedBuilder {
    * Validates the accumulated objects and links and returns the seed output.
    * @returns The built seed output
    */
-  build(): SeedOutput {
-    const objects: SeedOutput["objects"] = {};
+  build(): OntologySeedOutput {
+    const objects: OntologySeedOutput["objects"] = {};
     const entries = this.#objectMap.entries();
     let nextEntry = entries.next();
     while (!nextEntry.done) {
@@ -350,7 +354,7 @@ export class SeedBuilder {
       }
       nextEntry = entries.next();
     }
-    const links: SeedOutput["links"] = [];
+    const links: OntologySeedOutput["links"] = [];
     const linkEntries = this.#links.entries();
     let nextLink = linkEntries.next();
     while (!nextLink.done) {
@@ -365,12 +369,12 @@ export class SeedBuilder {
       });
       nextLink = linkEntries.next();
     }
-    return { objects, links } as SeedOutput;
+    return { objects, links } as OntologySeedOutput;
   }
 
   #getObjectTypeMap(
     objectTypeApiName: string,
-  ): Map<string, SeedProps<ObjectTypeDefinition>> {
+  ): Map<string, OntologySeedProps<ObjectTypeDefinition>> {
     if (!this.#objectMap.has(objectTypeApiName)) {
       this.#objectMap.set(objectTypeApiName, new Map());
     }
@@ -382,16 +386,16 @@ export class SeedBuilder {
  * Utility handle for building seeds from a metadata
  * @param ontologyMetadata Ontology metadata to instantiate seed builder from
  * @param fn handle to create seeds, may return an arbitrary value
- * @returns Tuple of [SeedOutput, T]: Seed output and arbitrary value returned from fn
+ * @returns The ontology seed output and the context returned by the callback
  */
-export function createSeedWithMetadata<T>(
+export function createOntologySeedWithMetadata<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
-  fn: SeedFunction<T>,
+  fn: OntologySeedFunction<T>,
 ): {
-  output: SeedOutput;
+  output: OntologySeedOutput;
   context: T;
 } {
-  const sb = new SeedBuilder(ontologyMetadata);
+  const sb = new OntologySeedBuilder(ontologyMetadata);
   const context = fn(sb);
   return {
     output: sb.build(),

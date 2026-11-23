@@ -19,6 +19,7 @@ import type {
   ObjectTypeDefinition,
   OsdkBase,
 } from "@osdk/api";
+import type { User } from "@osdk/foundry.admin";
 
 type PartialForOptionalProperties<T> = {
   [K in keyof T as undefined extends T[K] ? K : never]?: NonNullable<T[K]>;
@@ -26,15 +27,15 @@ type PartialForOptionalProperties<T> = {
   [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
 };
 
-export type SeedProps<T extends ObjectTypeDefinition> =
+export type OntologySeedProps<T extends ObjectTypeDefinition> =
   PartialForOptionalProperties<CompileTimeMetadata<T>["props"]>;
 
-export type SeedRef<Q extends ObjectTypeDefinition> = Readonly<
-  OsdkBase<Q> & SeedProps<Q>
+export type OntologySeedRef<Q extends ObjectTypeDefinition> = Readonly<
+  OsdkBase<Q> & OntologySeedProps<Q>
 >;
 
 /** A link entry in the seed output. */
-export interface SeedLinkEntry {
+export interface OntologySeedLinkEntry {
   name: string;
   linkType: string;
   sourceObjectType: string;
@@ -44,18 +45,19 @@ export interface SeedLinkEntry {
 }
 
 /** The final serializable Ontology seed data output. */
-export interface SeedOutput {
+export interface OntologySeedOutput {
   objects: Record<string, Array<Record<string, unknown>>>;
-  links: SeedLinkEntry[];
+  links: OntologySeedLinkEntry[];
 }
 
 /** The final serializable Admin seed data output. */
 export interface AdminSeedOutput {
-  users: unknown[];
+  users: User[];
+  currentUserId: User["id"] | undefined;
 }
 
 /** The final serializable Foundry seed data output. */
 export interface FoundrySeedOutput {
-  ontology: SeedOutput;
+  ontology: OntologySeedOutput;
   admin: AdminSeedOutput;
 }

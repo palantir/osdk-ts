@@ -18,8 +18,13 @@ import { Employee, Office } from "@osdk/client.test.ontology";
 import type * as Ontology from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 
-import { createSeedWithMetadata, SeedBuilder } from "./SeedBuilder.js";
-import type { SeedRef } from "./types.js";
+import {
+  createOntologySeedWithMetadata,
+  createSeedWithMetadata,
+  OntologySeedBuilder,
+  type OntologySeedRef,
+  SeedBuilder,
+} from "./index.js";
 
 type WireType = Ontology.ObjectPropertyType["type"];
 
@@ -29,8 +34,8 @@ type WireType = Ontology.ObjectPropertyType["type"];
  * metadata, so it must list the properties the tests set (`fullName`) alongside
  * the primary keys.
  */
-function newBuilder(): SeedBuilder {
-  return new SeedBuilder(
+function newBuilder(): OntologySeedBuilder {
+  return new OntologySeedBuilder(
     makeMetadata({
       [Employee.apiName]: makeObjectType(
         Employee.apiName,
@@ -48,7 +53,7 @@ function newBuilder(): SeedBuilder {
 }
 
 /** A hand-built ref for exercising code paths that don't go through `create`. */
-function employeeRef(employeeId: number): SeedRef<Employee> {
+function employeeRef(employeeId: number): OntologySeedRef<Employee> {
   return {
     $apiName: "Employee",
     $objectType: "Employee",
@@ -56,7 +61,7 @@ function employeeRef(employeeId: number): SeedRef<Employee> {
     $primaryKey: employeeId,
     $title: undefined,
     employeeId,
-  } as unknown as SeedRef<Employee>;
+  } as unknown as OntologySeedRef<Employee>;
 }
 
 /** Builds a wire `ObjectTypeFullMetadata` from a compact spec. */
@@ -98,7 +103,12 @@ function makeMetadata(
   } as Ontology.OntologyFullMetadata;
 }
 
-describe("SeedBuilder", () => {
+describe("OntologySeedBuilder", () => {
+  it("exports the original builder and factory names as aliases", () => {
+    expect(SeedBuilder).toBe(OntologySeedBuilder);
+    expect(createSeedWithMetadata).toBe(createOntologySeedWithMetadata);
+  });
+
   describe("create", () => {
     it("stores the object and returns a frozen ref exposing OsdkBase identifiers and props, preserving the primary key's type", () => {
       const sb = newBuilder();
@@ -158,7 +168,9 @@ describe("SeedBuilder", () => {
       employeeType.objectType.properties.fullName.dataConstraints = {
         nullability: "NOT_NULLABLE",
       };
-      const sb = new SeedBuilder(makeMetadata({ Employee: employeeType }));
+      const sb = new OntologySeedBuilder(
+        makeMetadata({ Employee: employeeType }),
+      );
       const ref = sb.create(Employee, { employeeId: 1, fullName: undefined });
       expect(ref.fullName).toBeUndefined();
 
@@ -222,7 +234,7 @@ describe("SeedBuilder", () => {
   });
 
   it("throws when the object type is not in the schema, for create/update/delete", () => {
-    const sb = new SeedBuilder(makeMetadata({}));
+    const sb = new OntologySeedBuilder(makeMetadata({}));
     expect(() => sb.create(Employee, { employeeId: 1 })).toThrow(
       "Object type 'Employee' is not defined in the ontology",
     );
@@ -442,7 +454,7 @@ describe("SeedBuilder", () => {
   });
 });
 
-describe("createSeed", () => {
+describe("createOntologySeedWithMetadata", () => {
   const metadata = makeMetadata({
     Employee: makeObjectType("Employee", "employeeId", {
       employeeId: "integer",
@@ -452,7 +464,7 @@ describe("createSeed", () => {
   });
 
   it("runs the callback, returns the built output, and derives primary keys from metadata", () => {
-    const { output: out } = createSeedWithMetadata(metadata, (sb) => {
+    const { output: out } = createOntologySeedWithMetadata(metadata, (sb) => {
       const office = sb.create(Office, { officeId: "NYC" });
       const emp = sb.create(Employee, { employeeId: 1, fullName: "Alice" });
       sb.link(emp, "officeLink", office);
@@ -468,7 +480,7 @@ describe("createSeed", () => {
     const bad = makeMetadata({
       Bad: makeObjectType("Bad", "missingPk", { someOther: "string" }),
     });
-    expect(() => createSeedWithMetadata(bad, () => {})).toThrow(
+    expect(() => createOntologySeedWithMetadata(bad, () => {})).toThrow(
       /Primary key 'missingPk' is not among the object's properties/u,
     );
   });

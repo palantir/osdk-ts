@@ -17,11 +17,11 @@
 import type * as Ontology from "@osdk/foundry.ontologies";
 
 import { AdminSeedBuilder } from "./AdminSeedBuilder.js";
-import { SeedBuilder } from "./SeedBuilder.js";
+import { OntologySeedBuilder } from "./OntologySeedBuilder.js";
 import type { FoundrySeedOutput } from "./types.js";
 
 export type FoundrySeedFunction<T> = (seedFns: {
-  ontologySeed: SeedBuilder;
+  ontologySeed: OntologySeedBuilder;
   adminSeed: AdminSeedBuilder;
 }) => T;
 
@@ -29,7 +29,7 @@ export type FoundrySeedFunction<T> = (seedFns: {
  * Utility handle for building Foundry seeds from a metadata
  * @param ontologyMetadata Ontology metadata to instantiate seed builder from
  * @param fn handle to create seeds, may return an arbitrary value
- * @returns Tuple of [SeedOutput, T]: Seed output and arbitrary value returned from fn
+ * @returns The Foundry seed output and the context returned by the callback
  */
 export function createFoundrySeed<T>(
   ontologyMetadata: Ontology.OntologyFullMetadata,
@@ -38,7 +38,7 @@ export function createFoundrySeed<T>(
   output: FoundrySeedOutput;
   context: T;
 } {
-  const ontologySeed = new SeedBuilder(ontologyMetadata);
+  const ontologySeed = new OntologySeedBuilder(ontologyMetadata);
   const adminSeed = new AdminSeedBuilder();
 
   const context = seedFns({ ontologySeed, adminSeed });
