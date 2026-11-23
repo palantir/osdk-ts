@@ -34,6 +34,7 @@ export interface PickerMarkingCategory {
   description: string;
   categoryType: "CONJUNCTIVE" | "DISJUNCTIVE";
   markingType: "MANDATORY" | "CBAC";
+  priority?: string;
 }
 
 export interface PickerMarking {
@@ -41,6 +42,8 @@ export interface PickerMarking {
   categoryId: string;
   name: string;
   description?: string;
+  priority?: string;
+  prominence?: "COMMON" | "UNCOMMON";
 }
 
 export interface CategoryMarkingGroup {

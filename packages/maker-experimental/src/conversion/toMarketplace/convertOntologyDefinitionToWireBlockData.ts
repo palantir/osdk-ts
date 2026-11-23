@@ -43,6 +43,7 @@ import {
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
+import { getMediaSetMarkings } from "../../util/mediaSetMarkings.js";
 import { convertAction } from "./convertActionHelpers.js";
 import { convertInterface } from "./convertInterface.js";
 import { convertInterfaceSchemaMigrations } from "./convertInterfaceSchemaMigrations.js";
@@ -147,7 +148,11 @@ export function convertOntologyDefinitionToWireBlockData(
       return [
         ridGenerator.generateRidForInterface(apiName),
         {
-          interfaceType: convertInterface(interfaceType, ridGenerator),
+          interfaceType: convertInterface(
+            interfaceType,
+            ridGenerator,
+            ontologiesToScan,
+          ),
           ...(schemaMigrations !== undefined ? { schemaMigrations } : {}),
         },
       ];
@@ -637,6 +642,21 @@ function buildKnownIdentifiers(
     const blockInternalId = ridGenerator.toBlockInternalId(readableId);
     markingsMappings[blockInternalId] = [markingId];
   });
+
+  // The installer resolves each assumed-marking set through one input, including mixed marking types.
+  for (const object of Object.values(
+    ontology[OntologyEntityTypeEnum.OBJECT_TYPE],
+  )) {
+    for (const property of object.properties ?? []) {
+      const markings = property.backingMediaSetMarkings ?? {};
+      if (Object.keys(markings).length > 0) {
+        const { readableId, placeholderMarkings } =
+          getMediaSetMarkings(markings);
+        markingsMappings[ridGenerator.toBlockInternalId(readableId)] =
+          placeholderMarkings;
+      }
+    }
+  }
 
   return {
     actionParameterIds: actionParameterIdMappings,

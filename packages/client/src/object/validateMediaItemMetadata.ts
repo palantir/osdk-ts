@@ -16,6 +16,8 @@
 
 import type { MediaItemMetadata, UnknownMediaItemMetadata } from "@osdk/api";
 
+import { getMediaSizeBytes } from "./getMediaSizeBytes.js";
+
 /**
  * Compile-time enforcement: every member of `MediaItemMetadata["type"]` must appear as a key.
  * Adding a variant to the `MediaItemMetadata` union without updating this record fails to
@@ -44,15 +46,23 @@ const KNOWN_VARIANTS: ReadonlySet<string> = new Set(
  * can track; without this check, an unknown `type` string would slip through the type cast
  * and silently break downstream `switch (itemMetadata.type)` narrowing in caller code.
  *
- * Known variants pass through unchanged. Unknown variants are wrapped as
+ * known variants read sizeBytes from sizeBytesLong because the legacy wire field is capped
+ * older responses retain their sizeBytes value
+ *
+ * Unknown variants are wrapped as
  * `UnknownMediaItemMetadata` with the raw wire payload preserved on `raw`, so callers can
  * handle the forward-compat case explicitly instead of relying on a runtime throw.
  */
 export function validateMediaItemMetadata(raw: {
   type: string;
+  sizeBytes?: unknown;
+  sizeBytesLong?: unknown;
 }): MediaItemMetadata | UnknownMediaItemMetadata {
   if (KNOWN_VARIANTS.has(raw.type)) {
-    return raw as MediaItemMetadata;
+    const sizeBytes = getMediaSizeBytes(raw);
+    return (
+      raw.sizeBytes === sizeBytes ? raw : { ...raw, sizeBytes }
+    ) as MediaItemMetadata;
   }
   return {
     type: "unknown",

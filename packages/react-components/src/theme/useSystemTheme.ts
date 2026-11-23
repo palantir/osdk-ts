@@ -32,7 +32,7 @@ function subscribe(callback: () => void): () => void {
   return () => mql.removeEventListener("change", callback);
 }
 
-function getSnapshot(): ResolvedOsdkTheme {
+export function getSystemTheme(): ResolvedOsdkTheme {
   if (
     typeof window === "undefined" ||
     typeof window.matchMedia !== "function"
@@ -52,5 +52,5 @@ function getServerSnapshot(): ResolvedOsdkTheme {
  * changes. SSR-safe: returns `"light"` on the server.
  */
 export function useSystemTheme(): ResolvedOsdkTheme {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return useSyncExternalStore(subscribe, getSystemTheme, getServerSnapshot);
 }

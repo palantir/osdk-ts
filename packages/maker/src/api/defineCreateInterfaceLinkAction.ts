@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import invariant from "tiny-invariant";
+import type { ActionTypeIsolationSettings } from "@osdk/client.unstable";
 
+import {
+  createValidationIssueCollector,
+  type MakerValidationIssueCollector,
+} from "../validation.js";
 import type { ActionLevelValidationDefinition } from "./action/ActionLevelValidationDefinition.js";
 import type { ActionParameter } from "./action/ActionParameter.js";
 import type { ActionSection } from "./action/ActionSection.js";
@@ -43,6 +47,7 @@ type CreateInterfaceLinkActionBaseDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  isolationSettings?: ActionTypeIsolationSettings;
   sourceParameter?: {
     id?: string;
     displayName?: string;
@@ -74,17 +79,20 @@ export function defineCreateInterfaceLinkAction(
   defInput: CreateInterfaceLinkActionUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
+  const collector: MakerValidationIssueCollector =
+    createValidationIssueCollector();
 
   const linkConstraint =
     typeof def.interfaceLink === "string" ? undefined : def.interfaceLink;
-  invariant(
+  // Constraint lookup requires a valid source interface.
+  collector.assert(
     linkConstraint === undefined ||
       def.from === undefined ||
       def.from.apiName === linkConstraint.from.apiName,
     `"from" ("${def.from?.apiName}") does not match the interface ("${linkConstraint?.from.apiName}") that interface link constraint "${linkConstraint?.apiName}" was defined on. Omit "from" to use the constraint's own interface.`,
   );
   const from = def.from ?? linkConstraint?.from;
-  invariant(
+  collector.assert(
     from !== undefined,
     `"from" is required when "interfaceLink" is provided as a string (the api name).`,
   );
@@ -98,20 +106,23 @@ export function defineCreateInterfaceLinkAction(
     interfaceLinkApiName,
   );
   const link = from.links.find((l) => l.metadata.apiName === linkApiName);
-  invariant(
+  // Target lookup requires an existing constraint targeting an interface.
+  collector.assert(
     link !== undefined,
     `Interface link constraint "${interfaceLinkApiName}" not found on interface "${from.apiName}". Define it with defineInterfaceLinkConstraint first.`,
   );
-  invariant(
+  collector.assert(
     link.linkedEntityTypeId.type === "interfaceType",
     `Interface link constraint "${interfaceLinkApiName}" on "${from.apiName}" does not link to an interface type.`,
   );
   const targetApiName = link.linkedEntityTypeId.interfaceType;
-  invariant(
+  collector.check(
     ontologyDefinition.INTERFACE_TYPE[targetApiName] !== undefined ||
       importedTypes.INTERFACE_TYPE[targetApiName] !== undefined,
     `Target interface "${targetApiName}" of interface link constraint "${interfaceLinkApiName}" is not defined.`,
   );
+  // Parameter construction and defineAction require a defined target interface.
+  collector.throwIfAnyIssues();
 
   const sourceId = def.sourceParameter?.id ?? "source";
   const targetId = def.targetParameter?.id ?? "target";
@@ -205,6 +216,9 @@ export function defineCreateInterfaceLinkAction(
       submissionMetadata: def.submissionMetadata,
     }),
     ...(def.permission && { permission: def.permission }),
+    ...(def.isolationSettings !== undefined && {
+      isolationSettings: def.isolationSettings,
+    }),
     ...(def.icon && { icon: def.icon }),
   });
 }

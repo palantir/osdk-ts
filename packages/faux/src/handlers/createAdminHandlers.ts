@@ -32,14 +32,42 @@ export const createAdminHandlers: FauxFoundryHandlersFactory = (
   baseUrl,
   fauxFoundry,
 ) => [
-  Admin.Markings.applyListMarkings(baseUrl, (): ListMarkingsResponse => {
-    return fauxFoundry.getAdmin().listMarkings();
-  }),
+  Admin.Markings.applyListMarkings(
+    baseUrl,
+    ({ request }): ListMarkingsResponse => {
+      const markingType = new URL(request.url).searchParams.get("markingType");
+      const admin = fauxFoundry.getAdmin();
+      const markings = admin.listMarkings();
+      if (markingType == null) {
+        return markings;
+      }
+
+      // Marking type is defined on the category, not on individual markings.
+      const categoryIds = new Set(
+        admin
+          .listMarkingCategories()
+          .data.filter((category) => category.markingType === markingType)
+          .map((category) => category.id),
+      );
+      return {
+        data: markings.data.filter((marking) =>
+          categoryIds.has(marking.categoryId),
+        ),
+      };
+    },
+  ),
 
   Admin.MarkingCategories.applyListMarkingCategories(
     baseUrl,
-    (): ListMarkingCategoriesResponse => {
-      return fauxFoundry.getAdmin().listMarkingCategories();
+    ({ request }): ListMarkingCategoriesResponse => {
+      const markingType = new URL(request.url).searchParams.get("markingType");
+      const { data } = fauxFoundry.getAdmin().listMarkingCategories();
+      return {
+        data:
+          markingType == null
+            ? data
+            : data.filter((category) => category.markingType === markingType),
+      };
     },
   ),
 

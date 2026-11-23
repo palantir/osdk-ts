@@ -407,6 +407,8 @@ async function fetchInterfacePage<
       false,
       result.interfaceToObjectTypeMappings,
       result.interfaceToObjectTypeMappingsV2,
+      undefined,
+      args.$includeAllBaseObjectProperties,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,

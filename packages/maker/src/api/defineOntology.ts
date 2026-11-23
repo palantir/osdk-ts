@@ -57,6 +57,7 @@ import type {
 } from "./links/LinkType.js";
 import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
 import type { ObjectType } from "./object/ObjectType.js";
+import type { ObjectTypeDatasourceMarkingConstraints } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 
 // type -> apiName -> entity
@@ -239,6 +240,7 @@ export function buildDatasource(
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
+  markingConstraints?: ObjectTypeDatasourceMarkingConstraints,
 ): OntologyIrMarketplaceObjectTypeDatasource {
   const needsSecurity =
     classificationMarkingGroupName !== undefined ||
@@ -249,11 +251,14 @@ export function buildDatasource(
         classificationConstraint: classificationMarkingGroupName
           ? {
               markingGroupName: classificationMarkingGroupName,
+              allowEmptyMarkings: markingConstraints?.cbac?.allowEmptyMarkings,
             }
           : undefined,
         markingConstraint: mandatoryMarkingGroupName
           ? {
               markingGroupName: mandatoryMarkingGroupName,
+              allowEmptyMarkings:
+                markingConstraints?.mandatory?.allowEmptyMarkings,
             }
           : undefined,
       }
@@ -541,6 +546,9 @@ export function convertAction(
               } as unknown as ActionTypeStatus)
             : action.status,
         entities: action.entities,
+        ...(action.isolationSettings !== undefined && {
+          isolationSettings: action.isolationSettings,
+        }),
       },
     },
   };

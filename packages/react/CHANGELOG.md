@@ -1,5 +1,103 @@
 # @osdkkit/react
 
+## 2.94.0
+
+### Patch Changes
+
+- Updated dependencies [4ebde4f]
+  - @osdk/client@2.94.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.94.0
+
+## 2.93.0
+
+### Patch Changes
+
+- Updated dependencies [4ca8bbe]
+- Updated dependencies [f5e52d1]
+  - @osdk/client@2.93.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.93.0
+
+## 2.92.0
+
+### Patch Changes
+
+- Updated dependencies [749af7f]
+  - @osdk/api@2.92.0
+  - @osdk/client@2.92.0
+  - @osdk/aip-core@0.13.0
+
+## 2.91.0
+
+### Minor Changes
+
+- f1a74a8: Apply linked-object filters and expose automatic pagination through useLinks.
+
+  Preserve filters on nested operands in shape link set operations.
+
+### Patch Changes
+
+- Updated dependencies [5fade0a]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [5d80e0f]
+- Updated dependencies [0bcfdc9]
+- Updated dependencies [f1a74a8]
+- Updated dependencies [2e21fee]
+- Updated dependencies [a37fdfc]
+  - @osdk/client@2.91.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.91.0
+
+## 2.90.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/client@2.90.0
+  - @osdk/aip-core@0.13.0
+
+## 2.89.0
+
+### Patch Changes
+
+- Updated dependencies [62ebddd]
+  - @osdk/client@2.89.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.89.0
+
+## 2.88.0
+
+### Patch Changes
+
+- Updated dependencies [358fbfa]
+- Updated dependencies [1d0b110]
+- Updated dependencies [eb1fc8f]
+- Updated dependencies [e1ca298]
+  - @osdk/client@2.88.0
+  - @osdk/api@2.88.0
+  - @osdk/aip-core@0.13.0
+
+## 2.87.0
+
+### Minor Changes
+
+- a0703ee: Add markingType filtering to marking hooks and request only CBAC markings and categories in CbacPicker and CbacPickerDialog, ordering categories by descending priority and markings by common, uncommon, then unspecified prominence with descending priority within each group. Apply the same ordering to CbacBannerPopover. Honor markingType filters in FauxFoundry's marking and category handlers.
+- 960ecf0: Restore workspace-derived OSDK peer requirements and stop release tooling from replacing them with older versions inferred from changelog history. Published peer ranges now require at least the workspace versions used to build these packages.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [3c3014d]
+- Updated dependencies [e674a83]
+- Updated dependencies [8300415]
+- Updated dependencies [9c93e57]
+  - @osdk/api@2.87.0
+  - @osdk/client@2.87.0
+  - @osdk/aip-core@0.13.0
+
 ## 2.86.0
 
 ### Patch Changes

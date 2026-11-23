@@ -4,3 +4,7 @@
   height: 100%;
   border: 0;
 }
+
+.iframe[hidden] {
+  display: none;
+}

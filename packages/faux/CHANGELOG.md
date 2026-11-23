@@ -1,5 +1,63 @@
 # @osdk/shared.test
 
+## 0.69.0
+
+### Patch Changes
+
+- Updated dependencies [749af7f]
+  - @osdk/api@2.92.0
+  - @osdk/generator-converters@2.92.0
+
+## 0.68.0
+
+### Patch Changes
+
+- @osdk/api@2.91.0
+- @osdk/generator-converters@2.91.0
+
+## 0.67.0
+
+### Patch Changes
+
+- Updated dependencies [b8cfd7c]
+  - @osdk/api@2.90.0
+  - @osdk/generator-converters@2.90.0
+
+## 0.66.0
+
+### Patch Changes
+
+- @osdk/api@2.89.0
+- @osdk/generator-converters@2.89.0
+
+## 0.65.0
+
+### Minor Changes
+
+- 358fbfa: Add experimental support for looking up agent sessions by ID.
+- eb1fc8f: Add experimental support for reading agent session state.
+
+### Patch Changes
+
+- Updated dependencies [eb1fc8f]
+  - @osdk/api@2.88.0
+  - @osdk/generator-converters@2.88.0
+
+## 0.64.0
+
+### Minor Changes
+
+- 093d27c: Add experimental support for sending events to agent sessions.
+- a0703ee: Add markingType filtering to marking hooks and request only CBAC markings and categories in CbacPicker and CbacPickerDialog, ordering categories by descending priority and markings by common, uncommon, then unspecified prominence with descending priority within each group. Apply the same ordering to CbacBannerPopover. Honor markingType filters in FauxFoundry's marking and category handlers.
+
+### Patch Changes
+
+- Updated dependencies [093d27c]
+- Updated dependencies [ff00439]
+- Updated dependencies [8300415]
+  - @osdk/api@2.87.0
+  - @osdk/generator-converters@2.87.0
+
 ## 0.63.0
 
 ### Patch Changes

@@ -27,8 +27,16 @@ function generateConjure() {
 
     printf "Fetching conjure IR\n  Coordinate: %s\n  Path: %s\n" "$GROUP_ID:$ARTIFACT_ID" "$OUT_DIR"
     "$SCRIPT_DIR/getConjureIr.sh" "$GROUP_ID" "$ARTIFACT_ID"
+    local IR_PATH="${SCRIPT_DIR}/../tmp/${ARTIFACT_ID}.conjure.json"
+    local ALLOWLIST="${SCRIPT_DIR}/conjure-types/${ARTIFACT_ID/%-api/}.json"
+    if [[ -f "$ALLOWLIST" ]]; then
+        local FILTERED_IR="${SCRIPT_DIR}/../tmp/${ARTIFACT_ID}.filtered.conjure.json"
+        node "${SCRIPT_DIR}/filterConjureTypes.mjs" "$IR_PATH" "$ALLOWLIST" > "$FILTERED_IR"
+        IR_PATH="$FILTERED_IR"
+    fi
+
     echo "  - Generating typescript"
-    $CONJURE_LITE generate --ir "${SCRIPT_DIR}/../tmp/${ARTIFACT_ID}.conjure.json" --outDir "$OUT_DIR" --header ""
+    $CONJURE_LITE generate --ir "$IR_PATH" --outDir "$OUT_DIR" --header ""
 
     formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
 }
@@ -37,6 +45,7 @@ generateConjure "com.palantir.ontology" "type-registry-api" "${SCRIPT_DIR}/../pa
 generateConjure "com.palantir.object-set-service" "object-set-service-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.ontology" "ontology-metadata-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.functions" "function-executor-api" "${SCRIPT_DIR}/../packages/client.unstable"
+generateConjure "com.palantir.functions.typescript.runtime" "functions-typescript-discovery-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.foundry.third-party-application-service" "third-party-application-service-api" "${SCRIPT_DIR}/../packages/client.unstable.tpsa"
 
 # Reset git changes if the generated files are only changed by copyright year

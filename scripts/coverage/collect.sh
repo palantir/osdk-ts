@@ -6,7 +6,7 @@
 #
 # @osdk/react-components runs in its OWN turbo invocation: its large happy-dom
 # suite starves the other ~80 test processes under concurrency and can trip
-# vitest's worker-RPC timeout ("Timeout calling onTaskUpdate"). ci.yml isolates
+# vitest's worker-RPC timeout ("Timeout calling onTaskUpdate"). CircleCI isolates
 # it in the test matrix for the same reason; we do the same here so the coverage
 # run is reliable (important once this gates merges).
 #

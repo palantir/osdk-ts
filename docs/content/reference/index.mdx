@@ -1,0 +1,68 @@
+---
+title: API reference
+description: Signatures, options, and return types for the public APIs of @osdk/react, @osdk/client, @osdk/oauth, and @osdk/aip-core.
+---
+
+Look up the exact signature, options, and return type of each public API. Most option and return tables are generated from the TypeScript source and its JSDoc; a page says so when a table is written by hand. For walkthroughs, follow the "See also" links on each page.
+
+## `@osdk/react`
+
+| API | Description |
+| --- | --- |
+| [`OsdkProvider`](./react/osdk-provider.mdx) | Shares a client and its cache with the hooks below it. |
+| [`useOsdkObjects`](./react/use-osdk-objects.mdx) | Loads a list of objects of one type or interface. |
+| [`useOsdkObject`](./react/use-osdk-object.mdx) | Loads one object by primary key, or observes an instance. |
+| [`useLinks`](./react/use-links.mdx) | Loads the objects linked from one or more objects. |
+| [`useObjectSet`](./react/use-object-set.mdx) | Loads a list from an `ObjectSet`, with set operations and pivots. |
+| [`useStableObjectSet`](./react/use-stable-object-set.mdx) | Keeps an `ObjectSet` referentially stable across renders. |
+| [`useOsdkAggregation`](./react/use-osdk-aggregation.mdx) | Runs a server-side aggregation. |
+| [`useOsdkFunction`](./react/use-osdk-function.mdx) | Executes a function and caches the result. |
+| [`useOsdkFunctions`](./react/use-osdk-functions.mdx) | Executes several functions from one hook. |
+| [`useOsdkAction`](./react/use-osdk-action.mdx) | Applies or validates an action. |
+| [`useDebouncedCallback`](./react/use-debounced-callback.mdx) | Debounces a callback, with cancel and flush. |
+| [`useOsdkMetadata`](./react/use-osdk-metadata.mdx) | Fetches metadata for an object type, interface, or action. |
+| [`useOsdkClient`](./react/use-osdk-client.mdx) | Returns the `Client` from `OsdkProvider`. |
+| [`useObservableClient`](./react/use-observable-client.mdx) | Returns the `ObservableClient` that backs the cache. |
+| [`@osdk/react/testing`](./react/testing.mdx) | `TestOsdkProvider` and `fakeObservableClient` for unit tests. |
+
+## `@osdk/react/platform-apis`
+
+| API | Description |
+| --- | --- |
+| [`useCurrentFoundryUser`](./react/platform-apis.mdx#usecurrentfoundryuser) | Gets the signed-in user. |
+| [`useFoundryUser`](./react/platform-apis.mdx#usefoundryuser) | Gets a user by ID. |
+| [`useFoundryUsersList`](./react/platform-apis.mdx#usefoundryuserslist) | Lists users, one page at a time. |
+| [`useMarkings`](./react/platform-apis.mdx#usemarkings) | Lists markings. |
+| [`useMarkingCategories`](./react/platform-apis.mdx#usemarkingcategories) | Lists marking categories. |
+| [`useUserViewMarkings`](./react/platform-apis.mdx#useuserviewmarkings) | Gets the markings a user can view. |
+| [`useCbacBanner`](./react/platform-apis.mdx#usecbacbanner) | Gets the classification banner for marking IDs. |
+| [`useCbacMarkingRestrictions`](./react/platform-apis.mdx#usecbacmarkingrestrictions) | Gets implied, disallowed, and required markings. |
+
+## `@osdk/client`
+
+| API | Description |
+| --- | --- |
+| [`createClient`](./client/create-client.mdx) | Creates the client for one Ontology. |
+| [`createPlatformClient`](./client/create-platform-client.mdx) | Creates a client for platform APIs only. |
+| [`ObjectSet`](./client/object-set.mdx) | Filters, set operations, pivots, aggregation, paging, and subscriptions. |
+| [`Osdk.Instance`](./client/osdk-instance.mdx) | The type of a loaded object and its `$` fields. |
+| [`WhereClause`](./client/where-clause.mdx) | Filter operators by property type. |
+| [`PalantirApiError`, `ActionValidationError`](./client/errors.mdx) | Errors thrown by the client. |
+
+## `@osdk/oauth`
+
+| API | Description |
+| --- | --- |
+| [`createPublicOauthClient`](./oauth/create-public-oauth-client.mdx) | Browser sign-in with the authorization code flow and PKCE. |
+| [`createConfidentialOauthClient`](./oauth/create-confidential-oauth-client.mdx) | Server-side tokens from a client ID and secret. |
+| [`createAuthlessClient`](./oauth/create-authless-client.mdx) | A token provider for public resources. |
+
+## `@osdk/aip-core`
+
+| API | Description |
+| --- | --- |
+| [`foundryModel`](./aip-core/foundry-model.mdx) | Creates a model handle for the Language Model Service. |
+| [`generateText`](./aip-core/generate-text.mdx) | Generates a complete response. |
+| [`streamText`](./aip-core/stream-text.mdx) | Streams a response as it is generated. |
+| [`LmsChatTransport`](./aip-core/lms-chat-transport.mdx) | A `ChatTransport` for chat UIs. |
+| [`generateMessageId`, `getUIMessageText`](./aip-core/utilities.mdx) | Helpers for `UIMessage` conversations. |

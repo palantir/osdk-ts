@@ -151,6 +151,9 @@ export function defineModifyObjectAction(
       submissionMetadata: def.submissionMetadata,
     }),
     ...(def.permission && { permission: def.permission }),
+    ...(def.isolationSettings !== undefined && {
+      isolationSettings: def.isolationSettings,
+    }),
     ...(def.icon && { icon: def.icon }),
   });
 }

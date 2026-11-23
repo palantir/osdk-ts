@@ -1,0 +1,164 @@
+---
+title: Optimistic updates
+description: Show an action's result before the server responds by layering optimistic edits on the cache, with automatic rollback when the action fails.
+---
+
+{/* cspell:ignore refetched refetches */}
+
+An optimistic update shows the expected result of an action as soon as the user triggers it. You describe the edits, the cache shows them on top of the real data, and they are removed when the action finishes, whether it succeeds or fails.
+
+## Add an optimistic update
+
+Add `$optimisticUpdate` to the parameters you pass to `applyAction` from `useOsdkAction`. The callback receives a builder for the edits you expect:
+
+```tsx title="src/DepartmentPicker.tsx"
+import { Employee, modifyEmployee } from "@my-app/sdk";
+import { useOsdkAction, useOsdkObject } from "@osdk/react";
+
+export function DepartmentPicker({ employee }: { employee: Employee.OsdkInstance }) {
+  const { object, isOptimistic } = useOsdkObject(employee);
+  const { applyAction, error } = useOsdkAction(modifyEmployee);
+  const current = object ?? employee;
+
+  async function moveTo(department: string) {
+    try {
+      await applyAction({
+        employee,
+        department,
+        $optimisticUpdate: (update) => {
+          update.updateObject(employee.$clone({ department }));
+        },
+      });
+    } catch (e) {
+      console.error("modifyEmployee failed", e);
+    }
+  }
+
+  return (
+    <div>
+      <p>
+        {current.fullName} works in {current.department}
+        {isOptimistic && " (saving)"}
+      </p>
+      <button onClick={() => void moveTo("Platform")}>Move to Platform</button>
+      {error && <p role="alert">The move failed and was undone.</p>}
+    </div>
+  );
+}
+```
+
+`$optimisticUpdate` runs synchronously when you call `applyAction`, before the request is sent. The `$` prefix keeps it apart from the action's own parameters, and it is not sent to the server.
+
+## Builder methods
+
+Each method returns the builder, so you can chain calls.
+
+| Method | Description |
+| --- | --- |
+| `updateObject(instance)` | Replaces a cached object with `instance`. Build it with `$clone`. |
+| `createObject(type, primaryKey, properties)` | Adds a new object of `type` to the cache. `properties` lists every property of the type; pass `undefined` for values you do not know yet. |
+| `deleteObject(instance)` | Removes the object from the cache and from every list that contains it. |
+
+OSDK objects are immutable. `$clone` returns a copy with the properties you pass changed:
+
+```ts
+const moved = employee.$clone({ department: "Platform" });
+```
+
+### Create an object
+
+The server assigns the real primary key, so give the optimistic object a temporary one that cannot collide with a real object. This example uses `applyAction` from `useOsdkAction(createOffice)`, for an `Office` type whose properties are `officeId`, `name`, and `city`:
+
+```ts
+await applyAction({
+  name,
+  city,
+  $optimisticUpdate: (update) => {
+    const temporaryId = `tmp-${crypto.randomUUID()}`;
+    update.createObject(Office, temporaryId, {
+      officeId: temporaryId,
+      name,
+      city,
+    });
+  },
+});
+```
+
+Lists of that type add the new object if it matches their `where` clause. When the action finishes, the temporary object goes away and the real one loads in its place.
+
+### Edit several objects
+
+One callback can describe every edit the action makes. For an action that moves a lead and their reports to a new department:
+
+```ts
+$optimisticUpdate: (update) => {
+  update
+    .updateObject(lead.$clone({ department }))
+    .updateObject(report.$clone({ department }));
+},
+```
+
+## What happens when the action runs
+
+<Steps>
+<Step>
+
+### The optimistic layer is applied
+
+Your edits go into a separate layer on top of the cached server data. Every component that reads an edited object, or a list that contains one, re-renders with the edits.
+
+</Step>
+<Step>
+
+### The action is sent
+
+The request goes to Foundry while the layer is shown. `isPending` from `useOsdkAction` is `true`.
+
+</Step>
+<Step>
+
+### The layer is removed
+
+If the action succeeds, the cache first refetches every object the server reports as edited, then removes the layer, so the UI moves from your edits to the server's values without showing the old ones in between.
+
+If the action fails, the layer is removed straight away and the UI returns to the previous server values. `applyAction` rejects and `error` is set. You do not undo anything yourself.
+
+</Step>
+</Steps>
+
+An optimistic edit can add an object to a list or remove a deleted one, but it does not remove an object that stops matching a list's `where` clause. That list catches up when the server responds.
+
+Because the layer is always removed, write the update you expect the server to make. If the server's result differs, for example a property computed on the server, the server's value replaces yours when the layer goes.
+
+## Show that a change is pending
+
+Hooks that read from the cache report whether what they show includes optimistic edits:
+
+| Hook | Field | `true` when |
+| --- | --- | --- |
+| `useOsdkObject` | `isOptimistic` | The object comes from an optimistic layer. |
+| `useOsdkObjects`, `useObjectSet`, `useLinks` | `isOptimistic` | The membership or order of the list comes from an optimistic layer. An edit that only changes properties of an object already in the list does not set it; check those objects with `useOsdkObject`. |
+
+Use `isOptimistic` for a subtle "saving" cue, and `isPending` from `useOsdkAction` to disable controls.
+
+## Simulate latency in development
+
+Against a fast backend, the optimistic state can disappear before you see it. In development builds, the cache waits 1000 ms after the server responds before removing the layer, so you can check that the optimistic state renders correctly. The first time it waits, it logs a message to the console.
+
+The delay applies only to single `applyAction` calls that pass `$optimisticUpdate`. Batches and actions without an optimistic update are not delayed, and production builds never delay. Change it with the `devMode` prop on `OsdkProvider`:
+
+```tsx title="src/main.tsx"
+import { OsdkProvider } from "@osdk/react";
+import { client } from "./client";
+import { App } from "./App";
+
+export function Root() {
+  return (
+    <OsdkProvider client={client} devMode={{ actionDelayMs: 200 }}>
+      <App />
+    </OsdkProvider>
+  );
+}
+```
+
+Set `actionDelayMs: 0` to turn the delay off. `devMode` also accepts `logLevel` and `debug` for logging cache internals; see [Invalidate the cache](./cache-invalidation.mdx#debug-the-cache).

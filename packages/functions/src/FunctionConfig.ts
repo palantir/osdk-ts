@@ -20,6 +20,9 @@ export interface FunctionConfig {
   apiName?: string;
   sources?: string[];
   /**
+   * In scoped mode, omitting scope uses `defaultResources` from resources.json
+   * without imposing an authorization constraint.
+   *
    * @experimental
    */
   scope?: Scope;
