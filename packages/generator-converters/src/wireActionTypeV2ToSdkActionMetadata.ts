@@ -19,7 +19,6 @@ import type {
   ActionParameterType,
   ActionParameterV2,
   ActionTypeV2,
-  QueryDataType,
 } from "@osdk/foundry.ontologies";
 
 import { GeneratorError } from "./GeneratorError.js";
@@ -35,6 +34,11 @@ export function wireActionTypeV2ToSdkActionMetadata(
   unsanitizedApiName?: string,
 ): ActionMetadata {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
+  // Unsupported return types are dropped. Generators warn about them; this
+  // also runs on every client metadata load, so it stays silent.
+  const returnType = input.returnType != null
+    ? wireActionReturnTypeToActionDataTypeDefinition(input.returnType)
+    : undefined;
   return {
     type: "action",
     apiName: input.apiName,
@@ -58,31 +62,8 @@ export function wireActionTypeV2ToSdkActionMetadata(
       input.status,
       supportedReleaseStatus,
     ),
-    ...(input.returnType != null
-      ? {
-        returnType: tryConvertActionReturnTypeToSdkReturnType(
-          input.apiName,
-          input.returnType,
-        ),
-      }
-      : {}),
+    ...(returnType != null ? { returnType } : {}),
   };
-}
-
-function tryConvertActionReturnTypeToSdkReturnType(
-  actionApiName: string,
-  returnType: QueryDataType,
-): ActionMetadata["returnType"] {
-  try {
-    return wireActionReturnTypeToActionDataTypeDefinition(returnType);
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `Action "${actionApiName}" returns a type the OSDK does not support, so applyAction will not return its value.`,
-      e,
-    );
-    return undefined;
-  }
 }
 
 function wireActionParameterV2ToSdkParameterDefinition(

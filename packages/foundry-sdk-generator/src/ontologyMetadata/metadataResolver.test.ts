@@ -29,11 +29,12 @@ import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 describe("Load Ontologies Metadata", () => {
   let ontologyMetadataResolver: OntologyMetadataResolver;
   let apiServer: SetupServerApi;
+  let fauxFoundry: LegacyFauxFoundry;
 
   beforeAll(async () => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry());
 
-    ({ apiServer } = testSetup);
+    ({ apiServer, fauxFoundry } = testSetup);
     ontologyMetadataResolver = new OntologyMetadataResolver(
       await testSetup.auth(),
       testSetup.fauxFoundry.baseUrl,
@@ -334,6 +335,41 @@ describe("Load Ontologies Metadata", () => {
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(0);
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(0);
     expect(Object.keys(fullMetadata.queryTypes)).toHaveLength(0);
+  });
+
+  it("Warns about, but still loads, actions with unsupported return types", async () => {
+    fauxFoundry.getDefaultOntology().registerActionType({
+      apiName: "returnsAttachment",
+      parameters: {},
+      rid: "ri.actions.main.action-type.returnsAttachment",
+      status: "ACTIVE",
+      operations: [],
+      returnType: { type: "attachment" },
+    });
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const ontologyDefinitions = await ontologyMetadataResolver
+      .getWireOntologyDefinition(
+        "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+        {
+          objectTypesApiNamesToLoad: [],
+          actionTypesApiNamesToLoad: ["returnsAttachment"],
+        },
+      );
+
+    if (ontologyDefinitions.isErr()) {
+      console.error(ontologyDefinitions.error);
+      throw new Error();
+    }
+    expect(
+      Object.keys(ontologyDefinitions.value.requestedMetadata.actionTypes),
+    ).toEqual(["returnsAttachment"]);
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn).toHaveBeenCalledWith(
+      `Action "returnsAttachment" returns a type the OSDK does not support, so applyAction will not return its value.`,
+      "{\"type\":\"attachment\"}",
+    );
+    warn.mockRestore();
   });
 
   it("Loads object, action, interface types without link types", async () => {

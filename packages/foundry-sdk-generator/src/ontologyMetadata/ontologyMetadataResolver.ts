@@ -28,7 +28,10 @@ import type {
   QueryTypeV2,
 } from "@osdk/foundry.ontologies";
 import type { WireOntologyDefinition } from "@osdk/generator";
-import { GeneratorError } from "@osdk/generator-converters";
+import {
+  GeneratorError,
+  wireActionReturnTypeToActionDataTypeDefinition,
+} from "@osdk/generator-converters";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { randomBytes } from "node:crypto";
 import { Result } from "./Result.js";
@@ -682,6 +685,7 @@ export class OntologyMetadataResolver {
       if (result.isErr()) {
         errors.push(...result.error);
       }
+      warnIfActionReturnTypeUnsupported(action);
     }
 
     if (missingActionTypes.length > 0) {
@@ -1001,6 +1005,24 @@ export class OntologyMetadataResolver {
           ),
         ]);
     }
+  }
+}
+
+/**
+ * The action is still generated, but without a return type, so applyAction
+ * will not return the value.
+ */
+function warnIfActionReturnTypeUnsupported(actionType: ActionTypeV2): void {
+  if (
+    actionType.returnType != null
+    && wireActionReturnTypeToActionDataTypeDefinition(actionType.returnType)
+      == null
+  ) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Action "${actionType.apiName}" returns a type the OSDK does not support, so applyAction will not return its value.`,
+      JSON.stringify(actionType.returnType),
+    );
   }
 }
 

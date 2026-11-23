@@ -20,9 +20,14 @@ import type {
 } from "@osdk/api";
 import type { QueryDataType } from "@osdk/foundry.ontologies";
 
+/**
+ * Converts an action's wire return type to its SDK definition. Returns
+ * `undefined` when the OSDK cannot represent the type, including when any
+ * nested type is unsupported.
+ */
 export function wireActionReturnTypeToActionDataTypeDefinition(
   input: QueryDataType,
-): ActionDataTypeDefinition {
+): ActionDataTypeDefinition | undefined {
   switch (input.type) {
     case "boolean":
     case "date":
@@ -34,61 +39,68 @@ export function wireActionReturnTypeToActionDataTypeDefinition(
     case "timestamp":
       return { type: input.type, nullable: false };
 
-    case "array":
-      return {
-        type: "array",
-        array: wireActionReturnTypeToActionDataTypeDefinition(input.subType),
-        nullable: false,
-      };
+    case "array": {
+      const array = wireActionReturnTypeToActionDataTypeDefinition(
+        input.subType,
+      );
+      return array != null
+        ? { type: "array", array, nullable: false }
+        : undefined;
+    }
 
-    case "set":
-      return {
-        type: "set",
-        set: wireActionReturnTypeToActionDataTypeDefinition(input.subType),
-        nullable: false,
-      };
+    case "set": {
+      const set = wireActionReturnTypeToActionDataTypeDefinition(input.subType);
+      return set != null ? { type: "set", set, nullable: false } : undefined;
+    }
 
     case "union": {
+      // Only optional values (`T | null`) are supported.
       const nonNullTypes = input.unionTypes.filter(t => t.type !== "null");
       if (
         nonNullTypes.length !== 1
         || nonNullTypes.length === input.unionTypes.length
       ) {
-        throw new Error(
-          "Union return types are only supported as an optional value",
-        );
+        return undefined;
       }
-      return {
-        ...wireActionReturnTypeToActionDataTypeDefinition(nonNullTypes[0]),
-        nullable: true,
-      };
+      const inner = wireActionReturnTypeToActionDataTypeDefinition(
+        nonNullTypes[0],
+      );
+      return inner != null ? { ...inner, nullable: true } : undefined;
     }
 
-    case "struct":
-      return {
-        type: "struct",
-        struct: Object.fromEntries(input.fields.map(f => [
-          f.name,
-          wireActionReturnTypeToActionDataTypeDefinition(f.fieldType),
-        ])),
-        nullable: false,
-      };
+    case "struct": {
+      const struct: Record<string, ActionDataTypeDefinition> = {};
+      for (const field of input.fields) {
+        const fieldType = wireActionReturnTypeToActionDataTypeDefinition(
+          field.fieldType,
+        );
+        if (fieldType == null) {
+          return undefined;
+        }
+        struct[field.name] = fieldType;
+      }
+      return { type: "struct", struct, nullable: false };
+    }
 
     case "entrySet": {
       const keyType = wireActionReturnTypeToActionDataTypeDefinition(
         input.keyType,
       );
-      if (!isMapKeyType(keyType.type) || keyType.nullable) {
-        throw new Error(
-          `Map return types with a key type of ${keyType.type} are not supported`,
-        );
+      const valueType = wireActionReturnTypeToActionDataTypeDefinition(
+        input.valueType,
+      );
+      if (
+        keyType == null
+        || valueType == null
+        || !isMapKeyType(keyType.type)
+        || keyType.nullable
+      ) {
+        return undefined;
       }
       return {
         type: "map",
         keyType: { type: keyType.type, nullable: false },
-        valueType: wireActionReturnTypeToActionDataTypeDefinition(
-          input.valueType,
-        ),
+        valueType,
         nullable: false,
       };
     }
@@ -106,13 +118,11 @@ export function wireActionReturnTypeToActionDataTypeDefinition(
     case "typeReference":
     case "unsupported":
     case "void":
-      throw new Error(`Action return type ${input.type} is not supported`);
+      return undefined;
 
     default: {
       const _: never = input;
-      throw new Error(
-        `Unknown action return type ${(input as { type: string }).type}`,
-      );
+      return undefined;
     }
   }
 }
