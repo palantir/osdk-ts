@@ -27,6 +27,7 @@ import { OntologyScenarios } from "@osdk/foundry.ontologies";
 import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import { createStandardOntologyProviderFactory } from "../ontology/StandardOntologyProvider.js";
 
 /**
  * The set of many-to-many link types modified within a scenario for one source object type. Returned as part of
@@ -228,10 +229,9 @@ export function isScenarioClient(value: unknown): value is ScenarioClient {
 }
 
 /**
- * Shared internal builder used by both {@link withScenario} and {@link createScenario}. Throws if the parent client
- * is already inside a scenario. If the parent client has an active transaction, the transaction is ignored (a warning
- * is logged) and the client is scoped to the scenario instead. Derives a {@link Client} from the parent's context via
- * `createClientFromContext` and decorates it with {@link ScenarioClient}-only methods.
+ * Shared internal builder used by both {@link withScenario} and {@link createScenario}.
+ * Replaces the parent's transaction, scenario, and branch scope without changing the parent.
+ * Derives a {@link Client} via `createClientFromContext` and adds {@link ScenarioClient} methods.
  *
  * @internal
  */
@@ -241,25 +241,21 @@ export function buildScenarioClient(
 ): ScenarioClient {
   const ctx: MinimalClient = parent[additionalContext];
 
-  if (ctx.transactionId != null) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      "withScenario / createScenario: the supplied client has an active transaction. Ignoring the transaction and scoping to the scenario instead.",
-    );
-  }
-  if (ctx.scenarioRid != null) {
-    throw new Error(
-      "withScenario / createScenario: the supplied client already has an active scenario. Scenarios cannot be nested.",
-    );
-  }
-
-  const inner: Client = createClientFromContext({
+  const scenarioCtx: MinimalClient = {
     ...ctx,
+    branch: undefined,
     transactionId: undefined,
     flushEdits: undefined,
     scenarioRid,
     clientCacheKey: {} as ClientCacheKey,
-  });
+  };
+  if (ctx.branch != null) {
+    scenarioCtx.ontologyProvider = createStandardOntologyProviderFactory({})(
+      scenarioCtx,
+    );
+    scenarioCtx.narrowTypeInterfaceOrObjectMapping = {};
+  }
+  const inner: Client = createClientFromContext(scenarioCtx);
 
   const innerCtx: MinimalClient = inner[additionalContext];
 

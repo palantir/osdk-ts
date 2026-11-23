@@ -92,7 +92,7 @@ describe("createScenario", () => {
     });
   });
 
-  it("creates scenario with branch and expireAfter", async () => {
+  it("creates from main when the parent has branch metadata cached", async () => {
     const branch = "my-branch";
     const expireAfter = new Date("2026-09-20T12:00:00.000Z");
     const newScenarioRid = "ri.actions..scenario.new";
@@ -105,28 +105,40 @@ describe("createScenario", () => {
       fetchFunction,
     );
 
+    mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+    await client(BarInterface).fetchPage();
+    fetchFunction.mockClear();
     const createResponse: CreateOntologyScenarioResponse = {
       scenarioRid: newScenarioRid,
     };
     mockFetchResponse(fetchFunction, createResponse);
 
-    await createScenario(client, { expireAfter });
+    const scenario = await createScenario(client, { expireAfter });
 
     expect(fetchFunction).toHaveBeenCalledTimes(1);
     expect(JSON.parse(fetchFunction.mock.calls[0][1]?.body as string)).toEqual({
-      base: {
-        type: "branch",
-        branch,
-      },
       expireAfter: expireAfter.toISOString(),
     });
+    mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+    await scenario(BarInterface).fetchPage();
+    expect(fetchFunction).toHaveBeenCalledTimes(3);
+    for (const [input] of fetchFunction.mock.calls) {
+      expect(new URL(String(input)).searchParams.has("branch")).toBe(false);
+    }
+    mockFetchResponse(fetchFunction, { data: [] });
+    await client(BarInterface).fetchPage();
+    expect(
+      new URL(String(fetchFunction.mock.lastCall?.[0])).searchParams.get(
+        "branch",
+      ),
+    ).toBe(branch);
   });
 
-  it("warns and ignores an active transaction, scoping to the new scenario", async () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+  it("creates an independent scenario without flushing the parent transaction", async () => {
+    const flushEdits = vi.fn(async () => {});
     const txClient = createClientWithTransaction(
       "ri.transactions..transaction.xyz",
-      async () => {},
+      flushEdits,
       "https://mock.com",
       ontologyRid,
       () => "Token",
@@ -141,13 +153,57 @@ describe("createScenario", () => {
 
     const scenario = await createScenario(txClient);
 
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/u));
     expect(scenario.getScenarioReference()).toBe(newScenarioRid);
-    warnSpy.mockRestore();
+    mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+    await scenario(BarInterface).fetchPage();
+    expect(flushEdits).not.toHaveBeenCalled();
+    for (const [input] of fetchFunction.mock.calls) {
+      expect(new URL(String(input)).searchParams.has("transactionId")).toBe(
+        false,
+      );
+    }
+    expect(
+      new URL(String(fetchFunction.mock.lastCall?.[0])).searchParams.get(
+        "scenarioRid",
+      ),
+    ).toBe(newScenarioRid);
+    mockFetchResponse(fetchFunction, { data: [] });
+    await txClient(BarInterface).fetchPage();
+    expect(flushEdits).toHaveBeenCalledTimes(1);
+    expect(
+      new URL(String(fetchFunction.mock.lastCall?.[0])).searchParams.get(
+        "transactionId",
+      ),
+    ).toBe("ri.transactions..transaction.xyz");
   });
 
-  it("rejects a client already scoped to a scenario at runtime", async () => {
-    const scenario = withScenario(client, "ri.actions..scenario.abc");
-    await expect(createScenario(scenario)).rejects.toThrow(/scenario/u);
+  it("creates from main when the parent is already scoped to a scenario", async () => {
+    const original = withScenario(client, "ri.actions..scenario.abc");
+    mockFetchResponse(fetchFunction, {
+      scenarioRid: "ri.actions..scenario.new",
+    });
+    const scenario = await createScenario(original);
+    expect(
+      new URL(String(fetchFunction.mock.calls[0][0])).searchParams.has(
+        "scenarioRid",
+      ),
+    ).toBe(false);
+    expect(JSON.parse(fetchFunction.mock.calls[0][1]?.body as string)).toEqual(
+      {},
+    );
+    mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+    await scenario(BarInterface).fetchPage();
+    expect(
+      new URL(String(fetchFunction.mock.lastCall?.[0])).searchParams.get(
+        "scenarioRid",
+      ),
+    ).toBe("ri.actions..scenario.new");
+    mockFetchResponse(fetchFunction, { data: [] });
+    await original(BarInterface).fetchPage();
+    expect(
+      new URL(String(fetchFunction.mock.lastCall?.[0])).searchParams.get(
+        "scenarioRid",
+      ),
+    ).toBe("ri.actions..scenario.abc");
   });
 });

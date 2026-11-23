@@ -21,9 +21,10 @@ import { buildScenarioClient, type ScenarioClient } from "./ScenarioClient.js";
  * Attach to an existing ontology scenario. Synchronous — no network call is made. The returned client scopes all
  * subsequent operations (`fetchPage`, `applyAction`, `executeFunction`, etc.) to the given `scenarioRid`.
  *
- * @param client - The base {@link Client} to derive context (`baseUrl`, `ontologyRid`, `tokenProvider`, `branch`, …)
- *   from. Throws at runtime if the client is already scoped to a scenario. If the client has an active transaction,
- *   the transaction is ignored (a warning is logged) and the client is scoped to the scenario.
+ * @param client - The base {@link Client} to derive authentication and ontology context from.
+ *   The returned client replaces any transaction, scenario, or branch scope with the requested
+ *   scenario. The original client is unchanged. Scenario operations do not join the original
+ *   transaction and are not undone by its rollback.
  * @param scenarioRid - The RID of the scenario to attach to.
  * @returns a {@link ScenarioClient} bound to `scenarioRid`.
  *
