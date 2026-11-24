@@ -22,6 +22,7 @@ import type {
 import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../api/common/OntologyEntityTypeEnum.js";
 import type { TypeClass } from "../api/common/TypeClass.js";
+import { namespace } from "../api/defineOntology.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
@@ -36,6 +37,7 @@ import {
 } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaMigrationInstruction } from "../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../api/interface/InterfaceType.js";
+import { combineApiNamespaceIfMissing } from "../api/namespace/combineApiNamespaceIfMissing.js";
 import type { Nullability } from "../api/properties/Nullability.js";
 import { normalizePropertyType } from "./LockedPropertyType.js";
 import type {
@@ -291,6 +293,14 @@ function lockInstruction(
           instruction.type,
           instruction.property,
           interfaceType.propertiesV3,
+        ),
+      };
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        actionTypeConstraint: combineApiNamespaceIfMissing(
+          namespace,
+          instruction.actionTypeConstraint,
         ),
       };
     default:
