@@ -122,6 +122,7 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
+
   const folderDefinitions = resolveFolderDefinitions(
     getFolderDefinitions(),
     ontologyDefinition,
