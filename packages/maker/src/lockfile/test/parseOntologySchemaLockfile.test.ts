@@ -14,9 +14,30 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
-import type { OntologySchemaLockfile } from "../OntologySchemaLockfile.js";
+import { defineInterface } from "../../api/defineInterface.js";
+import { defineInterfaceActionTypeConstraint } from "../../api/defineInterfaceActionTypeConstraint.js";
+import { defineInterfaceLinkConstraint } from "../../api/defineInterfaceLinkConstraint.js";
+import {
+  defineOntology,
+  getImportedTypes,
+  getOntologyDefinition,
+} from "../../api/defineOntology.js";
+import { defineSharedPropertyType } from "../../api/defineSpt.js";
+import type { InterfaceSchemaGracePeriod } from "../../api/interface/InterfaceSchemaMigrations.js";
+import type { InterfaceType } from "../../api/interface/InterfaceType.js";
+import { generateOntologySchemaLockfile } from "../generateOntologySchemaLockfile.js";
+import type {
+  LockedActionTypeConstraint,
+  LockedActionTypeConstraintReplacement,
+  LockedInstruction,
+  LockedInterfaceSchema,
+  LockedInterfaceTypeReplacement,
+  LockedParameterConstraint,
+  LockedProperty,
+  OntologySchemaLockfile,
+} from "../OntologySchemaLockfile.js";
 import {
   LOCKFILE_HEADER_KEY,
   serializeLockfile,
@@ -26,44 +47,252 @@ import {
   upgradeLockfile,
 } from "../parseOntologySchemaLockfile.js";
 
-describe("parseLockfile", () => {
-  const property = { type: "string", required: false };
-  const transition = {
-    id: "requireLastName",
-    gracePeriod: { type: "afterInstall", days: 30 },
-    instructions: [{ type: "addRequiredProperty", property: "lastName" }],
-  };
+// Each list must name every key of its type, so adding a locked field fails to compile here until
+// the fixture below is taught to exercise it.
+const EVERY_PROPERTY_FIELD = {
+  type: true,
+  required: true,
+  declaredBy: true,
+  primaryKeyConstraint: true,
+  nullability: true,
+  valueType: true,
+  typeClasses: true,
+} satisfies Record<keyof LockedProperty, true>;
+const EVERY_SCHEMA_FIELD = {
+  properties: true,
+  extendsInterfaces: true,
+  actionTypeConstraints: true,
+} satisfies Record<keyof LockedInterfaceSchema, true>;
+const EVERY_ACTION_TYPE_CONSTRAINT_FIELD = {
+  requireImplementation: true,
+  parameters: true,
+} satisfies Record<keyof LockedActionTypeConstraint, true>;
+const EVERY_PARAMETER_CONSTRAINT_FIELD = {
+  requireImplementation: true,
+  isRequiredParameterOnConcreteAction: true,
+} satisfies Record<keyof LockedParameterConstraint, true>;
+const EVERY_INSTRUCTION_TYPE = {
+  addRequiredProperty: true,
+  addRequiredActionTypeConstraint: true,
+  replace: true,
+} satisfies Record<LockedInstruction["type"], true>;
+const EVERY_REPLACEMENT_FIELD = {
+  interfaceType: true,
+  propertyMappings: true,
+  linkTypeConstraintMappings: true,
+  actionTypeConstraintMappings: true,
+} satisfies Record<keyof LockedInterfaceTypeReplacement, true>;
+const EVERY_ACTION_TYPE_CONSTRAINT_REPLACEMENT_FIELD = {
+  actionTypeConstraint: true,
+  parameterMappings: true,
+} satisfies Record<keyof LockedActionTypeConstraintReplacement, true>;
+const EVERY_GRACE_PERIOD_TYPE = {
+  afterInstall: true,
+  deadline: true,
+} satisfies Record<InterfaceSchemaGracePeriod["type"], true>;
 
+function defineActionTypeConstraint(
+  interfaceType: InterfaceType,
+  apiName: string,
+  parameters: string[],
+  { isRequiredParameterOnConcreteAction = false } = {},
+): void {
+  defineInterfaceActionTypeConstraint({
+    interfaceType,
+    apiName,
+    displayName: apiName,
+    description: apiName,
+    requireImplementation: false,
+    parameters: parameters.map((parameter) => ({
+      apiName: parameter,
+      displayName: parameter,
+      type: { type: "string", string: {} },
+      requireImplementation: false,
+      isRequiredParameterOnConcreteAction,
+    })),
+  });
+}
+
+/**
+ * Locks an ontology that, across its interfaces, records every optional field the lockfile has.
+ * A replace must be its interface's only transition, hence `Contact` alongside `Person`.
+ */
+function lockEveryField(): OntologySchemaLockfile {
+  const named = defineInterface({
+    apiName: "Named",
+    properties: { name: { type: "string" } },
+    schemaMigrations: { transitions: [] },
+  });
+  const email = defineSharedPropertyType({
+    apiName: "email",
+    type: "string",
+    typeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
+  });
+  const person = defineInterface({
+    apiName: "Person",
+    extends: [named],
+    properties: {
+      email: { sharedPropertyType: email, required: false },
+      id: { type: "string", primaryKeyConstraint: "MUST_BE_PK" },
+      lastName: { type: "string", required: false },
+      ssn: {
+        type: "string",
+        nullability: { noNulls: true, noEmptyCollections: false },
+        valueType: {
+          packageNamespace: "com.example",
+          apiName: "Ssn",
+          version: "1.2.0",
+          displayMetadata: {},
+        },
+      },
+    },
+    schemaMigrations: {
+      transitions: [
+        {
+          id: "requireLastName",
+          title: "Require last name",
+          gracePeriod: { type: "afterInstall", days: 30 },
+          instructions: [{ type: "addRequiredProperty", property: "lastName" }],
+        },
+        {
+          id: "requireSendEmail",
+          title: "Require send email",
+          gracePeriod: { type: "deadline", deadline: "2027-01-31T00:00:00Z" },
+          instructions: [
+            {
+              type: "addRequiredActionTypeConstraint",
+              actionTypeConstraint: "sendEmail",
+            },
+          ],
+        },
+      ],
+    },
+  });
+  defineActionTypeConstraint(person, "sendEmail", ["subject"], {
+    isRequiredParameterOnConcreteAction: true,
+  });
+
+  const contactV2 = defineInterface({
+    apiName: "ContactV2",
+    properties: { fullName: { type: "string" } },
+  });
+  defineInterfaceLinkConstraint({
+    apiName: "supervisor",
+    from: contactV2,
+    toOne: contactV2,
+  });
+  defineActionTypeConstraint(contactV2, "notify", ["title"]);
+  const contact = defineInterface({
+    apiName: "Contact",
+    properties: { name: { type: "string" } },
+    schemaMigrations: {
+      transitions: [
+        {
+          id: "replaceWithContactV2",
+          title: "Replace with ContactV2",
+          gracePeriod: { type: "afterInstall", days: 30 },
+          instructions: [
+            {
+              type: "replace",
+              replacement: {
+                interfaceType: contactV2,
+                propertyMappings: { name: "fullName" },
+                linkTypeConstraintMappings: { manager: "supervisor" },
+                actionTypeConstraintMappings: {
+                  sendMessage: {
+                    actionTypeConstraint: "notify",
+                    parameterMappings: { subject: "title" },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+  });
+  defineInterfaceLinkConstraint({
+    apiName: "manager",
+    from: contact,
+    toOne: contact,
+  });
+  defineActionTypeConstraint(contact, "sendMessage", ["subject"]);
+
+  return generateOntologySchemaLockfile({
+    ontology: getOntologyDefinition(),
+    importedTypes: getImportedTypes(),
+  });
+}
+
+/** The sorted union of every key on `objects`. */
+function keysSeen(objects: readonly object[]): string[] {
+  return [...new Set(objects.flatMap((object) => Object.keys(object)))].sort();
+}
+
+function keysOf(every: object): string[] {
+  return Object.keys(every).sort();
+}
+
+beforeEach(async () => {
+  await defineOntology("com.palantir.", () => {}, undefined);
+});
+
+describe("parseLockfile", () => {
   function parse(lockfile: unknown) {
     return parseLockfile(JSON.stringify(lockfile), "lock.json");
   }
 
-  /** A lockfile whose sole interface entry is `entry`, well-formed or not. */
-  function withInterface(entry: unknown) {
-    return { version: 1, interfaces: { Person: entry } };
-  }
-
-  const wellFormed = withInterface({
-    schema: { properties: { lastName: property } },
-    transitions: [transition],
+  it("reads back exactly what the generator wrote", () => {
+    const generated = lockEveryField();
+    expect(
+      parseLockfile(serializeLockfile(generated), "lock.json"),
+    ).toStrictEqual(generated);
   });
 
-  it("returns a well-formed lockfile unchanged", () => {
-    expect(parse(wellFormed)).toStrictEqual(wellFormed);
-  });
+  it("exercises every locked field in the round-trip fixture", () => {
+    const locked = Object.values(lockEveryField().interfaces);
+    const schemas = locked.map(({ schema }) => schema);
+    const transitions = locked.flatMap(({ transitions }) => transitions);
+    const instructions = transitions.flatMap(
+      ({ instructions }) => instructions,
+    );
+    const replacements = instructions.flatMap((instruction) =>
+      instruction.type === "replace" ? [instruction.replacement] : [],
+    );
 
-  it("drops the header comment `serializeLockfile` writes", () => {
-    const onDisk = serializeLockfile(wellFormed as OntologySchemaLockfile);
-    expect(onDisk).toContain(`"${LOCKFILE_HEADER_KEY}"`);
-    expect(parseLockfile(onDisk, "lock.json")).toStrictEqual(wellFormed);
-  });
-
-  it("drops a header an author has rewritten, rather than preserving it", () => {
-    const edited = {
-      [LOCKFILE_HEADER_KEY]: "I modified it",
-      ...wellFormed,
-    };
-    expect(parse(edited)).toStrictEqual(wellFormed);
+    expect(
+      keysSeen(schemas.flatMap(({ properties }) => Object.values(properties))),
+    ).toEqual(keysOf(EVERY_PROPERTY_FIELD));
+    expect(keysSeen(schemas)).toEqual(keysOf(EVERY_SCHEMA_FIELD));
+    const actionTypeConstraints = schemas.flatMap(({ actionTypeConstraints }) =>
+      Object.values(actionTypeConstraints ?? {}),
+    );
+    expect(keysSeen(actionTypeConstraints)).toEqual(
+      keysOf(EVERY_ACTION_TYPE_CONSTRAINT_FIELD),
+    );
+    expect(
+      keysSeen(
+        actionTypeConstraints.flatMap(({ parameters }) =>
+          Object.values(parameters ?? {}),
+        ),
+      ),
+    ).toEqual(keysOf(EVERY_PARAMETER_CONSTRAINT_FIELD));
+    expect([...new Set(instructions.map(({ type }) => type))].sort()).toEqual(
+      keysOf(EVERY_INSTRUCTION_TYPE),
+    );
+    expect(keysSeen(replacements)).toEqual(keysOf(EVERY_REPLACEMENT_FIELD));
+    expect(
+      keysSeen(
+        replacements.flatMap(({ actionTypeConstraintMappings }) =>
+          Object.values(actionTypeConstraintMappings ?? {}),
+        ),
+      ),
+    ).toEqual(keysOf(EVERY_ACTION_TYPE_CONSTRAINT_REPLACEMENT_FIELD));
+    expect(
+      [
+        ...new Set(transitions.map(({ gracePeriod }) => gracePeriod.type)),
+      ].sort(),
+    ).toEqual(keysOf(EVERY_GRACE_PERIOD_TYPE));
   });
 
   it("accepts a lockfile that locks no interfaces", () => {
@@ -72,12 +301,21 @@ describe("parseLockfile", () => {
     expect(parse(none)).toStrictEqual(none);
   });
 
-  it("accepts an interface with no properties and no transitions", () => {
-    const empty = withInterface({
-      schema: { properties: {} },
-      transitions: [],
-    });
-    expect(parse(empty)).toStrictEqual(empty);
+  it("drops the header comment `serializeLockfile` writes", () => {
+    const none: OntologySchemaLockfile = { version: 1, interfaces: {} };
+    const onDisk = serializeLockfile(none);
+    expect(onDisk).toContain(`"${LOCKFILE_HEADER_KEY}"`);
+    expect(parseLockfile(onDisk, "lock.json")).toStrictEqual(none);
+  });
+
+  it("drops a header an author has rewritten, rather than preserving it", () => {
+    expect(
+      parse({
+        [LOCKFILE_HEADER_KEY]: "I modified it",
+        version: 1,
+        interfaces: {},
+      }),
+    ).toStrictEqual({ version: 1, interfaces: {} });
   });
 
   it("rejects invalid JSON", () => {
@@ -103,343 +341,179 @@ describe("parseLockfile", () => {
     );
   });
 
-  it.each([
-    ["missing", { version: 1 }],
-    ["null", { version: 1, interfaces: null }],
-  ])("rejects `interfaces` being %s", (_name, lockfile) => {
-    expect(() => parse(lockfile)).toThrowError(
-      /lock\.json is not a valid ontology schema lockfile:\n {2}interfaces: Expected an object keyed by interface api name/u,
-    );
-  });
+  const property = { type: "string", required: false };
+  const transition = {
+    id: "requireLastName",
+    gracePeriod: { type: "afterInstall", days: 30 },
+    instructions: [{ type: "addRequiredProperty", property: "lastName" }],
+  };
 
-  it("rejects an interface entry that is not an object", () => {
-    expect(() => parse(withInterface(null))).toThrowError(
-      /interfaces\.Person: Expected an object recording the interface's locked schema and transitions/u,
-    );
-  });
-
-  it.each([
-    ["missing", { transitions: [] }],
-    ["not under `schema`", { properties: {}, transitions: [] }],
-  ])("rejects `schema` being %s", (_name, entry) => {
-    expect(() => parse(withInterface(entry))).toThrowError(
-      /interfaces\.Person\.schema: Expected an object with a "properties" key/u,
-    );
-  });
-
-  it("rejects `schema.properties` being null", () => {
-    const entry = { schema: { properties: null }, transitions: [] };
-    expect(() => parse(withInterface(entry))).toThrowError(
-      /interfaces\.Person\.schema\.properties: Expected an object keyed by property api name/u,
-    );
-  });
-
-  it.each([
-    ["missing", { schema: { properties: {} } }],
-    ["not an array", { schema: { properties: {} }, transitions: 1 }],
-  ])("rejects `transitions` being %s", (_name, entry) => {
-    expect(() => parse(withInterface(entry))).toThrowError(
-      /interfaces\.Person\.transitions: Expected an array of in-flight schema migrations/u,
-    );
-  });
-
-  /** Builds a lockfile whose sole "lastName" property has the given definition. */
-  function withPropertyDefinition(definition: unknown) {
-    return withInterface({
-      schema: { properties: { lastName: definition } },
-      transitions: [],
-    });
-  }
-
-  it("rejects a property that is not an object", () => {
-    expect(() => parse(withPropertyDefinition(null))).toThrowError(
-      /properties\.lastName: Expected an object recording the property's locked type/u,
-    );
-  });
-
-  it.each([
-    ["absent", { required: false }],
-    ["null", { type: null, required: false }],
-  ])("rejects a property whose `type` is %s", (_name, broken) => {
-    expect(() => parse(withPropertyDefinition(broken))).toThrowError(
-      /properties\.lastName\.type: Expected a recorded property type/u,
-    );
-  });
-
-  it.each([
-    ["absent", { type: "string" }],
-    ['the string "false"', { type: "string", required: "false" }],
-  ])("rejects a property whose `required` is %s", (_name, broken) => {
-    expect(() => parse(withPropertyDefinition(broken))).toThrowError(
-      /properties\.lastName\.required: Expected a boolean/u,
-    );
-  });
-
-  it("accepts a property that records type classes", () => {
-    const typeClasses = [{ kind: "render_hint", name: "SORTABLE" }];
-    const parsed = parse(withPropertyDefinition({ ...property, typeClasses }));
-    expect(
-      parsed.interfaces.Person.schema.properties.lastName.typeClasses,
-    ).toEqual(typeClasses);
-  });
-
-  it("accepts a property that records no type classes", () => {
-    const parsed = parse(withPropertyDefinition(property));
-    expect(
-      parsed.interfaces.Person.schema.properties.lastName,
-    ).not.toHaveProperty("typeClasses");
-  });
-
-  it.each([
-    ["not an array", { ...property, typeClasses: {} }],
-    ["an array of strings", { ...property, typeClasses: ["SORTABLE"] }],
-  ])("rejects a property whose `typeClasses` is %s", (_name, broken) => {
-    expect(() => parse(withPropertyDefinition(broken))).toThrowError(
-      /properties\.lastName\.typeClasses/u,
-    );
-  });
-
-  it("accepts a property a shared property type backs", () => {
-    const parsed = parse(
-      withPropertyDefinition({ ...property, declaredBy: "sharedPropertyType" }),
-    );
-    expect(parsed.interfaces.Person.schema.properties.lastName.declaredBy).toBe(
-      "sharedPropertyType",
-    );
-  });
-
-  it("rejects a property that spells out the inline default", () => {
-    expect(() =>
-      parse(withPropertyDefinition({ ...property, declaredBy: "interface" })),
-    ).toThrowError(/properties\.lastName\.declaredBy/u);
-  });
-
-  it.each(["MUST_BE_PK", "CANNOT_BE_PK"])(
-    "accepts a property constrained to %s",
-    (primaryKeyConstraint) => {
-      const parsed = parse(
-        withPropertyDefinition({ ...property, primaryKeyConstraint }),
-      );
-      expect(
-        parsed.interfaces.Person.schema.properties.lastName
-          .primaryKeyConstraint,
-      ).toBe(primaryKeyConstraint);
-    },
-  );
-
-  it("rejects a property that spells out the unconstrained default", () => {
-    expect(() =>
-      parse(
-        withPropertyDefinition({
-          ...property,
-          primaryKeyConstraint: "NO_RESTRICTION",
-        }),
-      ),
-    ).toThrowError(/properties\.lastName\.primaryKeyConstraint/u);
-  });
-
-  it("accepts a property that records what it forbids", () => {
-    const nullability = { noNulls: true, noEmptyCollections: false };
-    const parsed = parse(withPropertyDefinition({ ...property, nullability }));
-    expect(
-      parsed.interfaces.Person.schema.properties.lastName.nullability,
-    ).toEqual(nullability);
-  });
-
-  it("rejects a nullability that forbids nothing", () => {
-    expect(() =>
-      parse(
-        withPropertyDefinition({
-          ...property,
-          nullability: { noNulls: false, noEmptyCollections: false },
-        }),
-      ),
-    ).toThrowError(/properties\.lastName\.nullability/u);
-  });
-
-  it("rejects a nullability missing a flag", () => {
-    expect(() =>
-      parse(
-        withPropertyDefinition({ ...property, nullability: { noNulls: true } }),
-      ),
-    ).toThrowError(
-      /properties\.lastName\.nullability\.noEmptyCollections: Expected a boolean/u,
-    );
-  });
-
-  it("accepts an interface that records what it extends", () => {
-    const parsed = parse(
-      withInterface({
-        schema: {
-          properties: { lastName: property },
-          extendsInterfaces: ["com.palantir.Named"],
-        },
-        transitions: [],
-      }),
-    );
-    expect(parsed.interfaces.Person.schema.extendsInterfaces).toEqual([
-      "com.palantir.Named",
-    ]);
-  });
-
-  it("rejects an empty `extendsInterfaces`", () => {
-    expect(() =>
-      parse(
-        withInterface({
-          schema: { properties: { lastName: property }, extendsInterfaces: [] },
-          transitions: [],
-        }),
-      ),
-    ).toThrowError(/schema\.extendsInterfaces/u);
-  });
-
-  it("rejects an `extendsInterfaces` entry that is not an api name", () => {
-    expect(() =>
-      parse(
-        withInterface({
+  /** A lockfile locking only `Person`, whose schema and sole transition take `overrides`. */
+  function withPerson({
+    schema = {},
+    lastName = {},
+    transition: transitionOverrides = {},
+  }: {
+    schema?: Record<string, unknown>;
+    lastName?: Record<string, unknown>;
+    transition?: Record<string, unknown>;
+  }) {
+    return {
+      version: 1,
+      interfaces: {
+        Person: {
           schema: {
-            properties: { lastName: property },
-            extendsInterfaces: [{ apiName: "com.palantir.Named" }],
+            properties: { lastName: { ...property, ...lastName } },
+            ...schema,
           },
-          transitions: [],
-        }),
-      ),
-    ).toThrowError(
-      /schema\.extendsInterfaces\[0\]: Expected the api name of an extended interface/u,
-    );
-  });
-
-  it("rejects an empty `actionTypeConstraints`", () => {
-    expect(() =>
-      parse(
-        withInterface({
-          schema: { properties: {}, actionTypeConstraints: {} },
-          transitions: [],
-        }),
-      ),
-    ).toThrowError(
-      /schema\.actionTypeConstraints: Expected at least one action type constraint/u,
-    );
-  });
-
-  /** A lockfile whose sole interface declares `sendEmail` with the given parameters. */
-  function withParameters(parameters: unknown) {
-    return withInterface({
-      schema: {
-        properties: {},
-        actionTypeConstraints: {
-          sendEmail: { requireImplementation: false, parameters },
+          transitions: [{ ...transition, ...transitionOverrides }],
         },
-      },
-      transitions: [],
-    });
-  }
-
-  it("accepts parameter constraints", () => {
-    const parameters = {
-      body: { requireImplementation: false },
-      subject: {
-        requireImplementation: true,
-        isRequiredParameterOnConcreteAction: true,
       },
     };
-    const parsed = parse(withParameters(parameters));
-    expect(
-      parsed.interfaces.Person.schema.actionTypeConstraints?.sendEmail
-        .parameters,
-    ).toEqual(parameters);
-  });
+  }
 
-  it.each([
-    [
-      "an empty `parameters`",
-      {},
-      /parameters: Expected at least one parameter constraint/u,
-    ],
-    [
-      "a parameter not required on the concrete action recorded longhand",
-      {
-        subject: {
-          requireImplementation: true,
-          isRequiredParameterOnConcreteAction: false,
-        },
+  function withReplacement(mappings: Record<string, unknown>) {
+    return withPerson({
+      transition: {
+        instructions: [
+          {
+            type: "replace",
+            replacement: {
+              interfaceType: "com.palantir.PersonV2",
+              ...mappings,
+            },
+          },
+        ],
       },
-      /subject\.isRequiredParameterOnConcreteAction: Expected `true`, or no value at all/u,
-    ],
-    [
-      "a parameter without `requireImplementation`",
-      { subject: {} },
-      /subject\.requireImplementation: Expected a boolean/u,
-    ],
-  ])("rejects %s", (_name, parameters, message) => {
-    expect(() => parse(withParameters(parameters))).toThrowError(message);
-  });
+    });
+  }
 
-  it("accepts a property that records a value type", () => {
-    const valueType = { packageNamespace: "com.example", apiName: "Ssn" };
-    const parsed = parse(withPropertyDefinition({ ...property, valueType }));
-    expect(
-      parsed.interfaces.Person.schema.properties.lastName.valueType,
-    ).toEqual(valueType);
-  });
-
-  it("rejects a value type missing its `apiName`", () => {
-    expect(() =>
-      parse(
-        withPropertyDefinition({
-          ...property,
-          valueType: { packageNamespace: "com.example" },
-        }),
-      ),
-    ).toThrowError(
-      /properties\.lastName\.valueType\.apiName: Expected a value type api name/u,
-    );
-  });
-
-  it("rejects a type class missing its `name`", () => {
-    expect(() =>
-      parse(
-        withPropertyDefinition({
-          ...property,
-          typeClasses: [{ kind: "render_hint" }],
-        }),
-      ),
-    ).toThrowError(
-      /properties\.lastName\.typeClasses\[0\]\.name: Expected a type class name/u,
-    );
-  });
-
-  /** Builds a lockfile whose sole transition is `wellFormed`'s, overridden by `overrides`. */
-  function withTransition(overrides: Record<string, unknown>) {
-    return withInterface({
-      schema: { properties: { lastName: property } },
-      transitions: [{ ...transition, ...overrides }],
+  function withDeadline(deadline: string) {
+    return withPerson({
+      transition: { gracePeriod: { type: "deadline", deadline } },
     });
   }
 
   it.each([
-    ["null", null],
-    ["absent", undefined],
-    ["empty", ""],
-  ])("rejects a transition whose id is %s", (_name, id) => {
-    expect(() => parse(withTransition({ id }))).toThrowError(
-      /transitions\[0\]\.id: Expected a non-empty transition id/u,
-    );
+    ["2026-01-31T00:00:00Z"],
+    ["2026-01-31T00:00:00.000Z"],
+    // `toISOString` renders years past 9999 with a sign and six digits
+    ["+010000-01-01T00:00:00.000Z"],
+  ])("accepts a deadline of %s", (deadline) => {
+    const lockfile = withDeadline(deadline);
+    expect(parse(lockfile)).toStrictEqual(lockfile);
   });
 
+  // Only the checks we wrote ourselves; zod's built-in type and presence checks are its own to test.
   it.each([
-    ["absent", undefined],
-    ["null", null],
-    ["of an unrecognized kind", { type: "someFutureKind" }],
-  ])("rejects a transition whose grace period is %s", (_name, gracePeriod) => {
-    expect(() => parse(withTransition({ gracePeriod }))).toThrowError(
-      /transitions\[0\]\.gracePeriod.*Restore the grace period the last published release declared/u,
-    );
+    [
+      "a deadline with non-canonical fractional seconds",
+      withDeadline("2026-01-31T00:00:00.1Z"),
+      /gracePeriod\.deadline: Expected an ISO-8601 UTC datetime/u,
+    ],
+    [
+      "a date-only deadline",
+      withDeadline("2026-01-31"),
+      /gracePeriod\.deadline: Expected an ISO-8601 UTC datetime/u,
+    ],
+    [
+      "a deadline offset from UTC",
+      withDeadline("2026-01-31T00:00:00+01:00"),
+      /gracePeriod\.deadline: Expected an ISO-8601 UTC datetime/u,
+    ],
+    [
+      "a deadline that is not a datetime",
+      withDeadline("next Tuesday"),
+      /gracePeriod\.deadline: Expected an ISO-8601 UTC datetime/u,
+    ],
+    [
+      "a grace period of an unrecognized kind",
+      withPerson({ transition: { gracePeriod: { type: "someFutureKind" } } }),
+      /transitions\[0\]\.gracePeriod\.type: .*Restore the grace period the last published release declared/u,
+    ],
+    [
+      "an instruction of an unrecognized type",
+      withPerson({
+        transition: {
+          instructions: [{ type: "renameProperty", property: "lastName" }],
+        },
+      }),
+      /instructions\[0\]\.type: .*Restore the instruction the last published release declared/u,
+    ],
+    [
+      "a property with no type",
+      withPerson({ lastName: { type: undefined } }),
+      /properties\.lastName\.type: Expected a recorded property type/u,
+    ],
+    [
+      "a property with a null type",
+      withPerson({ lastName: { type: null } }),
+      /properties\.lastName\.type: Expected a recorded property type/u,
+    ],
+    [
+      "a nullability that forbids nothing",
+      withPerson({
+        lastName: {
+          nullability: { noNulls: false, noEmptyCollections: false },
+        },
+      }),
+      /properties\.lastName\.nullability: Expected a nullability that forbids something/u,
+    ],
+    [
+      "an empty actionTypeConstraints",
+      withPerson({ schema: { actionTypeConstraints: {} } }),
+      /schema\.actionTypeConstraints: Expected at least one action type constraint/u,
+    ],
+    [
+      "an empty parameters",
+      withPerson({
+        schema: {
+          actionTypeConstraints: {
+            "com.palantir.sendEmail": {
+              requireImplementation: false,
+              parameters: {},
+            },
+          },
+        },
+      }),
+      /sendEmail\.parameters: Expected at least one parameter constraint/u,
+    ],
+    [
+      "an empty propertyMappings",
+      withReplacement({ propertyMappings: {} }),
+      /propertyMappings: Expected at least one property mapping, or no value at all/u,
+    ],
+    [
+      "an empty linkTypeConstraintMappings",
+      withReplacement({ linkTypeConstraintMappings: {} }),
+      /linkTypeConstraintMappings: Expected at least one link type constraint mapping, or no value at all/u,
+    ],
+    [
+      "an empty actionTypeConstraintMappings",
+      withReplacement({ actionTypeConstraintMappings: {} }),
+      /actionTypeConstraintMappings: Expected at least one action type constraint mapping, or no value at all/u,
+    ],
+    [
+      "an empty parameterMappings",
+      withReplacement({
+        actionTypeConstraintMappings: {
+          "com.palantir.sendEmail": {
+            actionTypeConstraint: "com.palantir.notify",
+            parameterMappings: {},
+          },
+        },
+      }),
+      /parameterMappings: Expected at least one parameter mapping, or no value at all/u,
+    ],
+  ])("rejects %s", (_name, lockfile, message) => {
+    expect(() => parse(lockfile)).toThrowError(message);
   });
 
   it("renders a located, actionable message", () => {
     expect(() =>
-      parse(withTransition({ gracePeriod: { type: "someFutureKind" } })),
+      parse(
+        withPerson({ transition: { gracePeriod: { type: "someFutureKind" } } }),
+      ),
     ).toThrowError(
       "lock.json is not a valid ontology schema lockfile:\n" +
         "  interfaces.Person.transitions[0].gracePeriod.type: Invalid discriminator value. " +
@@ -448,178 +522,10 @@ describe("parseLockfile", () => {
     );
   });
 
-  it.each([
-    ["absent", { type: "afterInstall" }],
-    ["null", { type: "afterInstall", days: null }],
-    ['the string "30"', { type: "afterInstall", days: "30" }],
-  ])(
-    "rejects an 'afterInstall' grace period whose days are %s",
-    (_name, gracePeriod) => {
-      expect(() => parse(withTransition({ gracePeriod }))).toThrowError(
-        /gracePeriod\.days: Expected a number of days/u,
-      );
-    },
-  );
-
-  it.each([
-    ["absent", { type: "deadline" }],
-    ["not a string", { type: "deadline", deadline: 20260131 }],
-    ["not a datetime", { type: "deadline", deadline: "next Tuesday" }],
-    [
-      "non-canonical fractional seconds",
-      { type: "deadline", deadline: "2026-01-31T00:00:00.1Z" },
-    ],
-    ["date-only", { type: "deadline", deadline: "2026-01-31" }],
-    [
-      "offset from UTC",
-      {
-        type: "deadline",
-        deadline: "2026-01-31T00:00:00+01:00",
-      },
-    ],
-  ])(
-    "rejects a 'deadline' grace period whose deadline is %s",
-    (_name, gracePeriod) => {
-      expect(() => parse(withTransition({ gracePeriod }))).toThrowError(
-        /gracePeriod\.deadline: Expected an ISO-8601 UTC datetime/u,
-      );
-    },
-  );
-
-  it.each([
-    ["2026-01-31T00:00:00Z"],
-    ["2026-01-31T00:00:00.000Z"],
-    ["+010000-01-01T00:00:00.000Z"],
-  ])("accepts an ISO-8601 UTC deadline of %s", (deadline) => {
-    const published = withTransition({
-      gracePeriod: { type: "deadline", deadline },
-    });
-    expect(parse(published)).toStrictEqual(published);
-  });
-
-  it.each([
-    ["absent", undefined],
-    ["empty", []],
-    ["not an array", {}],
-  ])(
-    "rejects a transition whose instructions are %s",
-    (_name, instructions) => {
-      expect(() => parse(withTransition({ instructions }))).toThrowError(
-        /transitions\[0\]\.instructions: Expected a non-empty array of instructions/u,
-      );
-    },
-  );
-
-  it("rejects an instruction of an unrecognized type", () => {
-    expect(() =>
-      parse(
-        withTransition({
-          instructions: [{ type: "renameProperty", property: "lastName" }],
-        }),
-      ),
-    ).toThrowError(
-      /instructions\[0\]\.type: .*Restore the instruction the last published release declared/u,
-    );
-  });
-
-  it("rejects an `addRequiredProperty` instruction that names no property", () => {
-    expect(() =>
-      parse(
-        withTransition({
-          instructions: [{ type: "addRequiredProperty", property: 5 }],
-        }),
-      ),
-    ).toThrowError(
-      /instructions\[0\]\.property: Expected the api name of the property to require/u,
-    );
-  });
-
-  it.each([
-    [
-      "an addRequiredProperty",
-      { type: "addRequiredProperty", property: "lastName" },
-    ],
-    [
-      "an addRequiredActionTypeConstraint",
-      {
-        type: "addRequiredActionTypeConstraint",
-        actionTypeConstraint: "com.palantir.sendEmail",
-      },
-    ],
-    [
-      "a replace",
-      {
-        type: "replace",
-        replacement: {
-          interfaceType: "com.palantir.PersonV2",
-          propertyMappings: { name: "fullName" },
-          actionTypeConstraintMappings: {
-            "com.palantir.sendEmail": {
-              actionTypeConstraint: "com.palantir.notify",
-              parameterMappings: { subject: "title" },
-            },
-          },
-        },
-      },
-    ],
-  ])("accepts %s instruction", (_name, instruction) => {
-    const lockfile = withTransition({ instructions: [instruction] });
-    expect(parse(lockfile)).toStrictEqual(lockfile);
-  });
-
-  it("rejects an `addRequiredActionTypeConstraint` instruction that names no constraint", () => {
-    expect(() =>
-      parse(
-        withTransition({
-          instructions: [{ type: "addRequiredActionTypeConstraint" }],
-        }),
-      ),
-    ).toThrowError(
-      /instructions\[0\]\.actionTypeConstraint: Expected the api name of the action type constraint to require/u,
-    );
-  });
-
-  it("rejects a `replace` instruction that records no replacement", () => {
-    expect(() =>
-      parse(withTransition({ instructions: [{ type: "replace" }] })),
-    ).toThrowError(
-      /instructions\[0\]\.replacement: Expected an object recording the replacement interface/u,
-    );
-  });
-
-  it.each([
-    ["propertyMappings", { propertyMappings: {} }],
-    ["linkTypeConstraintMappings", { linkTypeConstraintMappings: {} }],
-    ["actionTypeConstraintMappings", { actionTypeConstraintMappings: {} }],
-    [
-      "parameterMappings",
-      {
-        actionTypeConstraintMappings: {
-          "com.palantir.sendEmail": {
-            actionTypeConstraint: "com.palantir.notify",
-            parameterMappings: {},
-          },
-        },
-      },
-    ],
-  ])("rejects a replacement that records an empty %s", (field, mappings) => {
-    const replacement = { interfaceType: "com.palantir.PersonV2", ...mappings };
-    expect(() =>
-      parse(
-        withTransition({ instructions: [{ type: "replace", replacement }] }),
-      ),
-    ).toThrowError(
-      new RegExp(
-        `${field}: Expected at least one .* mapping, or no value at all`,
-        "u",
-      ),
-    );
-  });
-
   it("reports every problem at once, rather than one build at a time", () => {
-    const badMerge = withInterface({
-      schema: { properties: { lastName: { type: "string" } } },
-      transitions: [{ ...transition, id: "", instructions: [] }],
+    const badMerge = withPerson({
+      lastName: { required: undefined },
+      transition: { id: "", instructions: [] },
     });
 
     const message = (() => {
