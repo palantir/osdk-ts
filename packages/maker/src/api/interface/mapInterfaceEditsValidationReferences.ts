@@ -44,11 +44,14 @@ import {
   type MakerValidationIssueCollector,
 } from "../../validation.js";
 import type { OntologyDefinition } from "../common/OntologyDefinition.js";
-import type { OntologyContext } from "../validateOntology.js";
 import { collectInterfaceDefinitions } from "./collectInterfaceDefinitions.js";
 import type { InterfaceType } from "./InterfaceType.js";
 
-/** Converts each entity an interface edit validation references into the ID it is packaged under. */
+/**
+ * Converts each entity an interface edit validation references into the ID it is packaged under.
+ *
+ * @internal
+ */
 export interface InterfaceEditsValidationReferenceConverters {
   convertObject: (objectTypeApiName: string) => string;
   convertInterface: (interfaceApiName: string) => string;
@@ -60,32 +63,10 @@ export interface InterfaceEditsValidationReferenceConverters {
 }
 
 /**
- * Validates that every interface edit validation references entities that are defined or imported.
- */
-export function validateInterfaceEditsValidations({
-  ontology,
-  importedTypes,
-}: OntologyContext): void {
-  const ontologies = [ontology, importedTypes];
-  const collector = createValidationIssueCollector();
-  for (const interfaceType of Object.values(ontology.INTERFACE_TYPE)) {
-    for (const constraint of interfaceType.actionTypeConstraints ?? []) {
-      if (constraint.editsValidation == null) continue;
-      resolveReferences(
-        constraint.editsValidation,
-        interfaceType,
-        constraint,
-        ontologies,
-        collector,
-      );
-    }
-  }
-  collector.throwIfAnyIssues();
-}
-
-/**
  * Rewrites the entities an interface edit validation references using `converters`, or returns
  * `undefined` if any reference can't be resolved.
+ *
+ * @internal
  */
 export function mapInterfaceEditsValidationReferences(
   validation: OntologyIrInterfaceActionTypeEditsValidation,
@@ -115,7 +96,8 @@ export function mapInterfaceEditsValidationReferences(
   });
 }
 
-function resolveReferences(
+/** Resolves the parameters and links an interface edit validation references, recording any that can't be resolved in `collector`. */
+export function resolveReferences(
   validation: OntologyIrInterfaceActionTypeEditsValidation,
   interfaceType: InterfaceType,
   constraint: Pick<
@@ -194,23 +176,6 @@ function resolveReferences(
     )
       return apiName;
     const [declaringInterface] = declarations;
-    const link = interfaces
-      .get(declaringInterface)
-      ?.links.find((candidate) => candidate.metadata.apiName === apiName);
-    check(
-      link !== undefined,
-      `Define or import interface "${declaringInterface}" to package link "${apiName}" referenced by ${location}`,
-    );
-    if (link === undefined) return apiName;
-    check(
-      link.linkedEntityTypeId.type === "interfaceType",
-      `Object link references are not supported when packaging ${location}`,
-    );
-    if (link.linkedEntityTypeId.type !== "interfaceType") return apiName;
-    check(
-      interfaces.has(link.linkedEntityTypeId.interfaceType),
-      `Define or import interface "${link.linkedEntityTypeId.interfaceType}" targeted by link "${apiName}" referenced by ${location}`,
-    );
     links.set(apiName, declaringInterface);
     return apiName;
   }

@@ -23,8 +23,10 @@ import { assert, beforeEach, describe, expect, it } from "vitest";
 import type { InterfaceType } from "../../index.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
+import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, initializeOntologyState } from "../defineOntology.js";
+import { importOntologyEntity } from "../importOntologyEntity.js";
 import type {
   InterfaceActionTypeEditsValidationConditionDefinition,
   InterfaceActionTypeEditsValidationDefinition,
@@ -323,7 +325,74 @@ describe("edit validation references", () => {
       `Define or import object type "${NS}MissingObject" referenced by edit validation on action type constraint "${NS}editTask" of interface "${NS}Task"`,
     );
   });
+
+  it("accepts a link whose target interface is neither defined nor imported", async () => {
+    await expect(
+      defineOntology(
+        NS,
+        () => {
+          const iface = defineInterface({ apiName: "Task" });
+          defineInterfaceLinkConstraint({
+            apiName: "relatedTasks",
+            from: iface,
+            toMany: "com.missing.Target",
+          });
+          defineConstraint(iface, linkValidation());
+        },
+        undefined,
+      ),
+    ).resolves.toBeDefined();
+  });
+
+  it("accepts a link declared on an embedded parent that is neither defined nor imported", async () => {
+    const parent = defineInterface({ apiName: "Parent" });
+    defineInterfaceLinkConstraint({
+      apiName: "relatedTasks",
+      from: parent,
+      toMany: parent,
+    });
+    const middle = defineInterface({ apiName: "Middle", extends: parent });
+    await expect(
+      defineOntology(
+        NS,
+        () => {
+          importOntologyEntity(middle);
+          defineConstraint(
+            defineInterface({ apiName: "Task", extends: middle }),
+            linkValidation(),
+          );
+        },
+        undefined,
+      ),
+    ).resolves.toBeDefined();
+  });
 });
+
+function linkValidation(): InterfaceActionTypeEditsValidationDefinition {
+  const anyCompatibleObject = {
+    type: "anyCompatibleObject" as const,
+    anyCompatibleObject: {},
+  };
+  return {
+    condition: {
+      type: "entry",
+      entry: {
+        id: "create-related-task",
+        subject: {
+          type: "implementingObjectInterfaceLink",
+          implementingObjectInterfaceLink: {
+            type: "create",
+            create: {
+              interfaceLinkTypeApiName: `${NS}relatedTasks`,
+              source: anyCompatibleObject,
+              target: anyCompatibleObject,
+            },
+          },
+        },
+      },
+    },
+  };
+}
 
 function defineConstraint(
   interfaceType: InterfaceType,

@@ -26,6 +26,7 @@ import invariant from "tiny-invariant";
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyIrV2 } from "../../api/OntologyIrV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
+import { validateInterfaceEditsValidationsPackageable } from "./convertInterfaceEditsValidation.js";
 import { flattenInterface } from "./convertObject.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
 import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
@@ -41,6 +42,7 @@ export function convertOntologyDefinition(
   validateOntology({ ontology, importedTypes });
 
   const allOntologies = [ontology, importedTypes];
+  validateInterfaceEditsValidationsPackageable(ontology, allOntologies);
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,

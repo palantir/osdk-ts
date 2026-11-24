@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
-import { validateInterfaceEditsValidations } from "./interface/mapInterfaceEditsValidationReferences.js";
+import { validateInterfaceEditsValidations } from "./interface/validateInterfaceEditsValidations.js";
 import { validateInterfaceSchemaMigrationReferences } from "./interface/validateInterfaceSchemaMigrationReferences.js";
 import { validateActionTypeImplementationReferences } from "./object/validateActionTypeImplementationReferences.js";
 
