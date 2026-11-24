@@ -15,5 +15,5 @@
  */
 
 .osdkUnexpectedFieldValue {
-  min-height: var(--osdk-form-unexpected-value-min-height);
+  min-height: var(--osdk-input-min-height);
 }

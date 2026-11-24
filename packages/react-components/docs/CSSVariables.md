@@ -1240,12 +1240,6 @@ Styling for form components.
 | `--osdk-form-error-font-size` | `var(--osdk-typography-size-body-small)` | Error message font size  |
 | `--osdk-form-error-color`     | `var(--osdk-typography-color-error)`     | Error message color      |
 
-#### Unexpected value
-
-| Variable                                  | Default Value                  | Description                                                                          |
-| ----------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------ |
-| `--osdk-form-unexpected-value-min-height` | `var(--osdk-input-min-height)` | Minimum height of the message shown in place of a field that can't display its value |
-
 ### Form Section
 
 Styling for the `FormSection` container, including its header, expandable

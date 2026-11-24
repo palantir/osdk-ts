@@ -22,6 +22,9 @@
  * and controlled `formState` consumers, so the conversion happens here, at
  * submit. Every other value, including user-provided strings, is submitted
  * unchanged; invalid values are left for validation to flag.
+ *
+ * TODO: Store submit-ready values (e.g. ISO date strings) so this conversion
+ * can be dropped, as a breaking change before v1.x.
  */
 export function toSubmittedValue(value: unknown): unknown {
   if (value == null) {
@@ -31,6 +34,8 @@ export function toSubmittedValue(value: unknown): unknown {
     return value.toISOString();
   }
   if (Array.isArray(value)) {
+    // TODO: Revisit omitting the whole parameter when any item is nullish.
+    // This preserves the previous behavior.
     const submittedValues = value.map(toSubmittedValue);
     return submittedValues.some((member) => member === undefined)
       ? undefined

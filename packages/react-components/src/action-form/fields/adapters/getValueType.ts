@@ -40,22 +40,5 @@ function getScalarType(value: unknown): string {
   if (typeof File !== "undefined" && value instanceof File) {
     return "file";
   }
-  switch (typeof value) {
-    case "string":
-      return "string";
-    case "number":
-      return "number";
-    case "boolean":
-      return "boolean";
-    case "bigint":
-      return "bigint";
-    case "symbol":
-      return "symbol";
-    case "function":
-      return "function";
-    case "object":
-      return "object";
-    case "undefined":
-      return "undefined";
-  }
+  return typeof value;
 }

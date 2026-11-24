@@ -47,6 +47,8 @@ export function NumberInputFieldAdapter({
   // Convert before the event bubbles to the form's blur validation.
   const handleBlur = useCallback(
     (event: React.FocusEvent<HTMLDivElement>) => {
+      // TODO: Call onBlur only when focus leaves the input and stepper container,
+      // in both this adapter and NumberInputField. Deferred as a breaking change.
       onBlur?.(event);
       // Truncate only when focus leaves the input and stepper controls together.
       if (event.currentTarget.contains(event.relatedTarget)) {
