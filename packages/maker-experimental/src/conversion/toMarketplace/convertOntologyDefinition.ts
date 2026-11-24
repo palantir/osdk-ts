@@ -16,14 +16,16 @@
 
 import type { ActionTypeBlockDataV2 } from "@osdk/client.unstable";
 import type { OntologyDefinition } from "@osdk/maker";
-import { getImportedTypes, validateOntology } from "@osdk/maker";
+import {
+  collectInterfaceDefinitions,
+  getImportedTypes,
+  validateOntology,
+} from "@osdk/maker";
 import invariant from "tiny-invariant";
 
 import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyIrV2 } from "../../api/OntologyIrV2.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
-import { collectInterfaceDefinitions } from "./collectInterfaceDefinitions.js";
-import { validateInterfaceEditsValidations } from "./convertInterfaceEditsValidation.js";
 import { flattenInterface } from "./convertObject.js";
 import { convertOntologyDefinitionToWireBlockData } from "./convertOntologyDefinitionToWireBlockData.js";
 import { convertValueTypeToWireBlockData } from "./convertValueTypeToWireBlockData.js";
@@ -39,7 +41,6 @@ export function convertOntologyDefinition(
   validateOntology({ ontology, importedTypes });
 
   const allOntologies = [ontology, importedTypes];
-  validateInterfaceEditsValidations(ontology, allOntologies);
   const mainOntology = convertOntologyDefinitionToWireBlockData(
     ontology,
     ridGenerator,
@@ -53,7 +54,7 @@ export function convertOntologyDefinition(
     ridGenerator,
   );
 
-  validateInterfaceActionImplementations(ontology, importedTypes, [
+  validateRequiredActionParameters(ontology, [
     ...Object.values(importedOntology.actionTypes),
     ...Object.values(mainOntology.actionTypes),
   ]);
@@ -108,15 +109,16 @@ export function convertOntologyDefinition(
   };
 }
 
-function validateInterfaceActionImplementations(
+/**
+ * Validates that every action parameter mapped to a parameter constraint requiring it is required.
+ *
+ * NOTE: This runs on converted actions, since function-backed actions only get their parameters
+ * once function discovery runs during conversion.
+ */
+function validateRequiredActionParameters(
   ontology: OntologyDefinition,
-  importedTypes: OntologyDefinition,
   convertedActions: ActionTypeBlockDataV2[],
 ): void {
-  const actionApiNames = new Set([
-    ...Object.keys(ontology.ACTION_TYPE),
-    ...Object.keys(importedTypes.ACTION_TYPE),
-  ]);
   const actionsByApiName = new Map(
     convertedActions.map(({ actionType }) => [
       actionType.metadata.apiName,
@@ -135,12 +137,6 @@ function validateInterfaceActionImplementations(
         constraintApiName,
         { actionTypeApiName, parameterMapping },
       ] of Object.entries(implementation.actionTypeImplementations ?? {})) {
-        if (!actionApiNames.has(actionTypeApiName)) {
-          validationErrors.push(
-            `Action "${actionTypeApiName}" referenced by action type constraint "${constraintApiName}" on interface "${implementation.implements.apiName}" for object "${objectType.apiName}" is not defined or imported`,
-          );
-          continue;
-        }
         const action = actionsByApiName.get(actionTypeApiName);
         // Wait until function discovery provides the Action's parameters before validating them.
         if (action === undefined) continue;

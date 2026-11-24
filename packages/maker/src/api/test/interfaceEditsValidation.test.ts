@@ -24,7 +24,7 @@ import type { InterfaceType } from "../../index.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceActionTypeConstraint } from "../defineInterfaceActionTypeConstraint.js";
 import { defineObject } from "../defineObject.js";
-import { initializeOntologyState } from "../defineOntology.js";
+import { defineOntology, initializeOntologyState } from "../defineOntology.js";
 import type {
   InterfaceActionTypeEditsValidationConditionDefinition,
   InterfaceActionTypeEditsValidationDefinition,
@@ -292,6 +292,36 @@ describe("edit validation entry IDs", () => {
     expect(() =>
       defineConstraint(defineInterface({ apiName: "Task" }), authored),
     ).toThrow("must not be blank");
+  });
+});
+
+describe("edit validation references", () => {
+  it("rejects a reference to an object type that is neither defined nor imported", async () => {
+    await expect(
+      defineOntology(
+        NS,
+        () => {
+          defineConstraint(defineInterface({ apiName: "Task" }), {
+            condition: {
+              type: "entry",
+              entry: {
+                id: "create-missing",
+                subject: {
+                  type: "concreteObject",
+                  concreteObject: {
+                    objectType: `${NS}MissingObject`,
+                    operation: { type: "create", create: {} },
+                  },
+                },
+              },
+            },
+          });
+        },
+        undefined,
+      ),
+    ).rejects.toThrow(
+      `Define or import object type "${NS}MissingObject" referenced by edit validation on action type constraint "${NS}editTask" of interface "${NS}Task"`,
+    );
   });
 });
 

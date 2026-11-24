@@ -125,7 +125,12 @@ export type {
   InterfaceSchemaTransition,
   InterfaceTypeReplacement,
 } from "./api/interface/InterfaceSchemaMigrations.js";
+export { collectInterfaceDefinitions } from "./api/interface/collectInterfaceDefinitions.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
+export {
+  type InterfaceEditsValidationReferenceConverters,
+  mapInterfaceEditsValidationReferences,
+} from "./api/interface/mapInterfaceEditsValidationReferences.js";
 export type {
   ResolvedInterfaceActionTypeConstraint,
   ResolvedInterfaceLinkTypeConstraint,
