@@ -24,6 +24,16 @@ export class AdminSeedBuilder {
   #users = new Map<User["id"], User>();
   #currentUserId: User["id"] | undefined;
 
+  /** Merges users in order and applies the seed's current user selection, if present. */
+  addAll(seed: AdminSeedOutput): void {
+    for (const user of seed.users) {
+      this.createUser(user);
+    }
+    if (seed.currentUserId != null) {
+      this.setCurrentUser(seed.currentUserId);
+    }
+  }
+
   /** Adds a user to the seed and returns their ID. */
   createUser(user: User): User["id"] {
     invariant(

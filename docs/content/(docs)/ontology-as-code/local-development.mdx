@@ -219,8 +219,9 @@ npx @osdk/seed-compiler --metadata ontology-metadata.json --seed-dir seed --outp
 | `--metadata` | Required. The `ontology-metadata.json` that the SDK generator writes with `--experimentalOntologyMetadata`. |
 | `--seed-dir` | Required. A directory of seed files. Every top-level `.mts` file whose name does not start with `$` is loaded, in file name order. |
 | `-o`, `--output` | Required. Where to write the merged JSON. |
+| `--format` | Both formats accept ontology and Foundry seed files. The default, `ontology`, writes objects and links. Use `foundry` to write both `ontology` and `admin` sections. |
 
-Each seed file default-exports the result of `createSeedWithMetadata` from `@osdk/seed-helpers`, or its `output`. All files are merged through one builder, so primary keys must be unique across the whole directory, and a link can reference objects created in any file:
+Each seed file default-exports the result of an ontology seed helper or `createFoundrySeed` from `@osdk/seed-helpers`, or the result's `output`. Primary keys must be unique across the whole directory, and a link can reference objects created in any file:
 
 ```ts title="seed/employees.mts"
 import { Employee, Office } from "@my-app/sdk";

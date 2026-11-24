@@ -24,6 +24,20 @@ function user(id: string, status: User["status"] = "ACTIVE"): User {
 }
 
 describe("AdminSeedBuilder", () => {
+  it("merges users in order and keeps the last explicit current user", () => {
+    const builder = new AdminSeedBuilder();
+    const first = user("first");
+    const second = user("second");
+    const third = user("third");
+    builder.addAll({ users: [first], currentUserId: first.id });
+    builder.addAll({ users: [second], currentUserId: second.id });
+    builder.addAll({ users: [third], currentUserId: undefined });
+    expect(builder.build()).toStrictEqual({
+      users: [first, second, third],
+      currentUserId: second.id,
+    });
+  });
+
   it("builds an empty seed and preserves users in creation order", () => {
     const builder = new AdminSeedBuilder();
     expect(builder.build()).toStrictEqual({

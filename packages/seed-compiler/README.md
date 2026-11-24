@@ -19,10 +19,23 @@ seed-compiler \
 | `--metadata` | Path to the `ontology-metadata.json` file written by the SDK generator. Backs the `OntologySeedBuilder` the files are merged through.   |
 | `--seed-dir` | Directory containing seed `.mts` files. All top-level `.mts` files are loaded, sorted by filename for deterministic output, and merged. |
 | `--output`   | Path where the merged seed JSON is written.                                                                                             |
+| `--format`   | Output format. Use `ontology` (default) for objects and links, or `foundry` to also include admin users.                                |
+
+Both functions accept ontology and Foundry seed files. `mergeSeedData(files, metadata)`
+returns a `Promise<FoundrySeedOutput>` containing `{ ontology, admin }`.
+`compileSeedData(files, outputPath, metadata)` writes `{ objects, links }` to disk
+and returns a `Promise<void>`. Pass `"foundry"` as the fourth argument to write
+`{ ontology, admin }` instead.
+
+A file can select an active user defined in that file or
+an earlier one. The last file to set `currentUserId` determines the current user.
 
 ## Authoring seed files
 
-Seed files use a metadata-bound `createSeed` — `createOntologySeedWithMetadata()` from
+Foundry seed files default-export the result of `createFoundrySeed` from
+`@osdk/seed-helpers` or its `.output`.
+
+Ontology seed files use a metadata-bound `createSeed` — `createOntologySeedWithMetadata()` from
 `@osdk/seed-helpers` partially applied to your ontology's metadata — together with
 the user's generated `@ontology/sdk`. Each file must **default-export either the
 `createSeed(...)` result** (the `{ output, context }` object) **or its `.output`**
