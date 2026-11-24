@@ -20,16 +20,18 @@ import type {
   OntologyIrBaseParameterConstraintType,
   OntologyIrInterfaceActionTypeConstraint,
 } from "@osdk/client.unstable";
-import type { InterfaceType } from "@osdk/maker";
+import type { InterfaceType, OntologyDefinition } from "@osdk/maker";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { resolveInterfaceTypeRid } from "./convertActionParameters.js";
+import { convertInterfaceEditsValidation } from "./convertInterfaceEditsValidation.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
+  ontologies: OntologyDefinition[],
 ): MarketplaceInterfaceType {
   const {
     __type,
@@ -107,35 +109,53 @@ export function convertInterface(
       ),
     })),
     actionTypeConstraints: (interfaceType.actionTypeConstraints ?? []).map(
-      (constraint: OntologyIrInterfaceActionTypeConstraint) => ({
-        ...constraint,
-        rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
-          constraint.metadata.apiName,
-          interfaceType.apiName,
-        ),
-        parameters: Object.fromEntries(
-          Object.entries(constraint.parameters ?? {}).map(
-            ([paramApiName, paramConstraint]) => {
-              const paramDisplayApiName =
-                paramConstraint.displayMetadata.apiName!;
-              return [
-                ridGenerator.generateRidForInterfaceParameterConstraint(
-                  constraint.metadata.apiName,
-                  interfaceType.apiName,
-                  paramDisplayApiName,
-                ),
-                {
-                  ...paramConstraint,
-                  type: convertParameterConstraintTypeReferencesToBlockData(
-                    paramConstraint.type,
-                    ridGenerator,
-                  ),
-                },
-              ];
-            },
+      ({
+        editsValidation,
+        ...constraint
+      }: OntologyIrInterfaceActionTypeConstraint) => {
+        const convertedEditsValidation =
+          editsValidation == null
+            ? editsValidation
+            : convertInterfaceEditsValidation(
+                editsValidation,
+                interfaceType,
+                constraint,
+                ridGenerator,
+                ontologies,
+              );
+        return {
+          ...constraint,
+          ...(convertedEditsValidation !== undefined
+            ? { editsValidation: convertedEditsValidation }
+            : {}),
+          rid: ridGenerator.generateRidForInterfaceActionTypeConstraint(
+            constraint.metadata.apiName,
+            interfaceType.apiName,
           ),
-        ),
-      }),
+          parameters: Object.fromEntries(
+            Object.entries(constraint.parameters ?? {}).map(
+              ([paramApiName, paramConstraint]) => {
+                const paramDisplayApiName =
+                  paramConstraint.displayMetadata.apiName!;
+                return [
+                  ridGenerator.generateRidForInterfaceParameterConstraint(
+                    constraint.metadata.apiName,
+                    interfaceType.apiName,
+                    paramDisplayApiName,
+                  ),
+                  {
+                    ...paramConstraint,
+                    type: convertParameterConstraintTypeReferencesToBlockData(
+                      paramConstraint.type,
+                      ridGenerator,
+                    ),
+                  },
+                ];
+              },
+            ),
+          ),
+        };
+      },
     ),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],

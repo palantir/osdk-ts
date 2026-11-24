@@ -172,6 +172,67 @@ const imageProperty = defineSharedPropertyType({
 });
 ```
 
+### Markings on generated media sets
+
+Use marking input group names to apply markings to a generated backing media set and assume them on its ontology datasource:
+
+```typescript
+file: {
+  type: "mediaReference",
+  includeEmptyBackingMediaSet: true,
+  backingMediaSetMarkings: {
+    maxClassification: "CBAC",
+    mandatoryMarkings: "MANDATORY",
+  },
+}
+```
+
+At installation, supply the combined classification and non-organization mandatory marking IDs to both inputs. Organization markings are inherited from the project and can also be included in the ontology assumed-markings input. Apollo can supply `maximumClassificationMarkingIds` and `mandatoryMarkingAllowlist`; filter organization markings out of the resource input. Installation requires permission to apply and declassify the selected markings.
+
+Direct media-set reads require clearance for the applied markings. Object-based reads can use item tokens without inheriting the backing set's markings. Users who satisfy the file markings and have resource read permission can still read the media directly.
+
+### Media sources and uploads
+
+Configure content backing on an object independently of the datasource supplying its property values. Declare each media set once in `referenceSources`, then select the readable sets and optional upload destination for each media property:
+
+```typescript
+import { defineObject, type ResourceLocator } from "@osdk/maker";
+
+const archive = {
+  type: "apiName",
+  apiName: "archive",
+} as const;
+
+// OR use satisfies ResourceLocator
+const uploads = {
+  type: "apiName",
+  apiName: "uploads",
+} satisfies ResourceLocator;
+
+defineObject({
+  apiName: "Document",
+  displayName: "Document",
+  pluralDisplayName: "Documents",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "id",
+  referenceSources: [
+    { type: "media", mediaSet: archive },
+    { type: "media", mediaSet: uploads },
+  ],
+  properties: {
+    id: { type: "string" },
+    file: {
+      type: "mediaReference",
+      reference: {
+        type: "media",
+        sources: [archive, uploads],
+        uploadDestination: uploads,
+      },
+    },
+  },
+});
+```
+
 ### Geographic Data
 
 ```typescript
@@ -482,6 +543,43 @@ const eventObject = defineObject({
   ],
 });
 ```
+
+### Datasource Marking Constraints
+
+Configure empty allowed marking sets on the datasource that backs the marking properties:
+
+```typescript
+const document = defineObject({
+  apiName: "document",
+  displayName: "Document",
+  pluralDisplayName: "Documents",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "id",
+  properties: {
+    id: { type: "string" },
+    classification: {
+      type: {
+        type: "marking",
+        markingType: "CBAC",
+        markingInputGroupName: "documentClassification",
+      },
+    },
+  },
+  datasources: [
+    {
+      type: "dataset",
+      markingConstraints: {
+        // Permit an empty maximum-classification
+        cbac: { allowEmptyMarkings: true },
+      },
+    },
+  ],
+});
+```
+
+`mandatory.allowEmptyMarkings` configures the shared allowed set of ordinary mandatory and organization markings; `cbac.allowEmptyMarkings` configures the maximum-classification set. Each requires a marking property of the corresponding category. Both default to false.
+
+Allowed markings, organizations, and maximum classification are supplied through Marketplace marking inputs. If an allowed set is empty, corresponding marking properties may contain only empty arrays. These options do not bypass access controls or configure read policies.
 
 ### Object with Property Security Groups
 

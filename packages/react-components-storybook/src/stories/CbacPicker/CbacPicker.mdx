@@ -18,7 +18,8 @@
 
 import { Meta, Markdown } from "@storybook/addon-docs/blocks";
 import cbacPickerDocs from "@docs/CbacPicker.md?raw";
+import { formatGithubAlerts } from "../../util/formatGithubAlerts.js";
 
 <Meta title="Components/CbacPicker/Docs" tags={["beta"]}/>
 
-<Markdown>{cbacPickerDocs}</Markdown>
+<Markdown>{formatGithubAlerts(cbacPickerDocs)}</Markdown>

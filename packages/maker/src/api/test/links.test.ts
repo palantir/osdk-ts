@@ -32,12 +32,59 @@ import { type InterfaceType } from "../interface/InterfaceType.js";
 import type { UserLinkTypeStatus } from "../links/LinkType.js";
 import type { ObjectType } from "../object/ObjectType.js";
 import type { ObjectTypeStatus } from "../object/ObjectTypeStatus.js";
+import { createLinkDefinition, expectValidationIssues } from "./testUtils.js";
 
 describe("Link Types", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
   });
   describe("Object Links", () => {
+    it.each(["one", "many"] as const)(
+      "collects %s link issues without registering or replacing invalid definitions",
+      (side) => {
+        const definition = createLinkDefinition(side);
+        const source = "one" in definition ? definition.one : definition.many;
+        source.metadata.apiName = "invalid-name";
+        definition.toMany.metadata = {
+          apiName: "also-invalid",
+          displayName: "a".repeat(1_001),
+        };
+        expectValidationIssues(
+          () => defineLink(definition),
+          [
+            { code: "invalid_api_name", path: [side, "metadata", "apiName"] },
+            {
+              code: "invalid_api_name",
+              path: ["toMany", "metadata", "apiName"],
+            },
+            "displayName",
+          ],
+        );
+        expect(
+          getOntologyDefinition()[OntologyEntityTypeEnum.LINK_TYPE],
+        ).toEqual({});
+
+        source.metadata.apiName = "targets";
+        definition.toMany.metadata = {
+          apiName: "sources",
+          displayName: "Sources",
+        };
+        const registered = defineLink(definition);
+        source.metadata.apiName = "invalid-name";
+        expectValidationIssues(
+          () => defineLink(definition),
+          [
+            { code: "duplicate_definition", path: ["apiName"] },
+            { code: "invalid_api_name", path: [side, "metadata", "apiName"] },
+          ],
+        );
+        expect(
+          getOntologyDefinition()[OntologyEntityTypeEnum.LINK_TYPE]
+            .sourceToTarget,
+        ).toBe(registered);
+      },
+    );
+
     describe("status compatibility", () => {
       const deprecatedObject = {
         type: "deprecated",
@@ -313,45 +360,13 @@ describe("Link Types", () => {
     });
 
     it("does not allow duplicate link API names", () => {
-      const sourceObject = defineObject({
-        titlePropertyApiName: "id",
-        apiName: "sourceObject",
-        displayName: "Source Object",
-        pluralDisplayName: "Source Objects",
-        primaryKeyPropertyApiName: "id",
-        properties: { id: { type: "string" } },
-      });
-
-      const otherObject = defineObject({
-        titlePropertyApiName: "id",
-        apiName: "otherObject",
-        displayName: "Other Object",
-        pluralDisplayName: "Other Objects",
-        primaryKeyPropertyApiName: "id",
-        properties: {
-          id: { type: "string" },
-          objectId: { type: "string" },
-        },
-      });
-
-      const defineDuplicateLink = () =>
-        defineLink({
-          apiName: "objectToOtherObject",
-          one: {
-            object: sourceObject,
-            metadata: { apiName: "sourceObjects" },
-          },
-          toMany: {
-            object: otherObject,
-            metadata: { apiName: "otherObjects" },
-          },
-          manyForeignKeyProperty: "objectId",
-        });
+      const definition = createLinkDefinition("one");
+      const defineDuplicateLink = () => defineLink(definition);
 
       defineDuplicateLink();
 
       expect(defineDuplicateLink).toThrowError(
-        "Link type with apiName objectToOtherObject is already defined",
+        "Link type with apiName sourceToTarget is already defined",
       );
     });
 
@@ -775,7 +790,7 @@ describe("Link Types", () => {
   });
 
   describe("ILTs", () => {
-    it("validates metadata before adding an interface link", () => {
+    it("collects duplicate and metadata issues before adding an interface link", () => {
       const from = defineInterface({ apiName: "Example" });
       expect(() =>
         defineInterfaceLinkConstraint({
@@ -788,6 +803,22 @@ describe("Link Types", () => {
         'Interface "com.palantir.Example", link "com.palantir.related": description',
       );
       expect(from.links).toEqual([]);
+
+      const definition = {
+        apiName: "related",
+        from,
+        toMany: "com.palantir.Other",
+      };
+      defineInterfaceLinkConstraint(definition);
+      expectValidationIssues(
+        () =>
+          defineInterfaceLinkConstraint({
+            ...definition,
+            description: "a".repeat(100_000),
+          }),
+        ["description", { code: "duplicate_definition", path: ["apiName"] }],
+      );
+      expect(from.links).toHaveLength(1);
     });
 
     let a: InterfaceType;

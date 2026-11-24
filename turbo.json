@@ -317,7 +317,5 @@
         "check-gen-props"
       ]
     }
-  },
-
-  "globalDependencies": ["config/tsconfig.base.json"]
+  }
 }

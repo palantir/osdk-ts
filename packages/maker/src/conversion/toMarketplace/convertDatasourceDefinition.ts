@@ -37,10 +37,13 @@ import type { SecurityConditionDefinition } from "../../api/object/SecurityCondi
 export function convertDatasourceDefinition(
   objectType: ObjectType,
   properties: ObjectPropertyType[],
+  baseDatasource:
+    | Exclude<
+        NonNullable<ObjectType["datasources"]>[number],
+        { type: "derived" }
+      >
+    | undefined,
 ): OntologyIrObjectTypeDatasourceDefinition {
-  const baseDatasource = objectType.datasources?.find((ds) =>
-    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type),
-  );
   switch (baseDatasource?.type) {
     case "stream":
       const window = baseDatasource.retentionPeriod;
@@ -64,14 +67,6 @@ export function convertDatasourceDefinition(
         type: "restrictedViewV2",
         restrictedViewV2: {
           restrictedViewRid: objectType.apiName,
-          propertyMapping: buildPropertyMapping(properties),
-        },
-      };
-    case "derived":
-      return {
-        type: "datasetV2",
-        datasetV2: {
-          datasetRid: objectType.apiName,
           propertyMapping: buildPropertyMapping(properties),
         },
       };

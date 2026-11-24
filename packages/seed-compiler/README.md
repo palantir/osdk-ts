@@ -16,17 +16,17 @@ seed-compiler \
 
 | Flag         | Description                                                                                                                             |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `--metadata` | Path to the `ontology-metadata.json` file written by the SDK generator. Backs the `SeedBuilder` the files are merged through.           |
+| `--metadata` | Path to the `ontology-metadata.json` file written by the SDK generator. Backs the `OntologySeedBuilder` the files are merged through.   |
 | `--seed-dir` | Directory containing seed `.mts` files. All top-level `.mts` files are loaded, sorted by filename for deterministic output, and merged. |
 | `--output`   | Path where the merged seed JSON is written.                                                                                             |
 
 ## Authoring seed files
 
-Seed files use a metadata-bound `createSeed` — `createSeedWithMetadata()` from
+Seed files use a metadata-bound `createSeed` — `createOntologySeedWithMetadata()` from
 `@osdk/seed-helpers` partially applied to your ontology's metadata — together with
 the user's generated `@ontology/sdk`. Each file must **default-export either the
 `createSeed(...)` result** (the `{ output, context }` object) **or its `.output`**
-(a bare `SeedOutput`); the compiler tells the two apart structurally and treats
+(a bare `OntologySeedOutput`); the compiler tells the two apart structurally and treats
 them identically. Exporting the result itself is the recommended form, since
 `context` stays available to anything else importing the file:
 
@@ -62,21 +62,22 @@ where `createSeed` is defined once per project as:
 ```ts
 import metadata from "@ontology/sdk/experimental/ontology-metadata";
 import {
-  createSeedWithMetadata,
-  type SeedFunction,
-  type SeedOutput,
+  createOntologySeedWithMetadata,
+  type OntologySeedFunction,
+  type OntologySeedOutput,
 } from "@osdk/seed-helpers";
 
 export const createSeed = <T>(
-  fn: SeedFunction<T>,
-): { output: SeedOutput; context: T } => createSeedWithMetadata(metadata, fn);
+  fn: OntologySeedFunction<T>,
+): { output: OntologySeedOutput; context: T } =>
+  createOntologySeedWithMetadata(metadata, fn);
 ```
 
 ## Validation
 
 Validation is not this package's job. `@osdk/seed-helpers` validates every object as
 `seed.create()` / `seed.update()` inserts it, and again when the compiler feeds each
-file's output into its shared `SeedBuilder`:
+file's output into its shared `OntologySeedBuilder`:
 
 - **Object types** must be defined in the ontology (via the metadata file).
 - **Property names** must exist on the object type, and values must be non-null and
@@ -85,7 +86,7 @@ file's output into its shared `SeedBuilder`:
   (`timestamp`, `date`, `datetime`, `long`, `decimal`).
 - **Primary keys** must be unique within an object type.
 
-Because all files are merged through one `SeedBuilder`, primary-key uniqueness holds
+Because all files are merged through one `OntologySeedBuilder`, primary-key uniqueness holds
 across the whole directory, not just within a file. The compiler's only addition is
 the seed file's name in the error message, so a conflict points at the file that
 introduced it.

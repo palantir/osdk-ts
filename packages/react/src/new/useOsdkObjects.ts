@@ -108,8 +108,8 @@ interface UseOsdkObjectsBaseOptions<
   /**
    * Enable or disable the query.
    *
-   * When `false`, the query will not automatically execute. It will still
-   * return any cached data, but will not fetch from the server.
+   * When `false`, the query does not run and the hook returns no data, even
+   * if the cache already holds a result.
    *
    * @default true
    */

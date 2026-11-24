@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+export type {
+  ActionTypeIsolationMode,
+  ActionTypeIsolationSettings,
+  ActionTypeRetrySettings,
+} from "@osdk/client.unstable";
+
 export type { ActionLevelValidationDefinition } from "./api/action/ActionLevelValidationDefinition.js";
 export type {
   ActionParameter,
@@ -111,12 +117,31 @@ export {
 } from "./api/interface/InterfacePropertyType.js";
 export { getFlattenedInterfaceProperties } from "./api/interface/getFlattenedInterfaceProperties.js";
 export type {
+  InterfaceActionTypeConstraintReplacement,
+  InterfacePropertyTypeReplacement,
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaMigrations,
   InterfaceSchemaTransition,
+  InterfaceTypeReplacement,
 } from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
+export type {
+  ResolvedInterfaceActionTypeConstraint,
+  ResolvedInterfaceLinkTypeConstraint,
+  ResolvedInterfaceMember,
+  ResolvedInterfaceProperty,
+} from "./api/interface/ResolvedInterfaceMember.js";
+export type {
+  ResolvedInterfaceActionTypeConstraintMapping,
+  ResolvedInterfaceMemberMapping,
+  ResolvedInterfacePropertyMapping,
+  ResolvedInterfaceTypeReplacement,
+} from "./api/interface/resolveInterfaceTypeReplacement.js";
+export {
+  resolveInterfaceProperty,
+  resolveInterfaceTypeReplacement,
+} from "./api/interface/resolveInterfaceTypeReplacement.js";
 export type {
   LinkType,
   OneToManyLinkTypeDefinition,
@@ -125,6 +150,11 @@ export type {
 export type { InterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export type { EditsHistoryConfig } from "./api/object/EditsHistoryConfig.js";
 export type { InterfaceImplementation } from "./api/object/InterfaceImplementation.js";
+export type { ResourceLocator } from "./api/ResourceLocator.js";
+export type {
+  MediaPropertyReference,
+  MediaReferenceSource,
+} from "./api/object/MediaReference.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
 export type {
@@ -132,6 +162,8 @@ export type {
   ObjectTypeDatasourceDefinition_dataset,
   ObjectTypeDatasourceDefinition_derived,
   ObjectTypeDatasourceDefinition_direct,
+  ObjectTypeDatasourceMarkingConstraints,
+  ObjectTypeMarkingConstraintSettings,
 } from "./api/object/ObjectTypeDatasourceDefinition.js";
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
 export { resolveDerivedPropertyLinks } from "./api/object/resolveDerivedPropertyLinks.js";
@@ -151,6 +183,10 @@ export {
   shouldNotHaveRenderHints,
   validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
+export {
+  type OntologyContext,
+  validateOntology,
+} from "./api/validateOntology.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export type {
   AuthoringDataConstraint,
@@ -160,6 +196,15 @@ export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
+export {
+  createValidationIssueCollector,
+  formatValidationPath,
+  MakerValidationError,
+  type MakerValidationIssue,
+  type MakerValidationIssueCollector,
+  parseModel,
+  throwIfAnyValidationIssues,
+} from "./validation.js";
 export { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "./lockfile/OntologySchemaLockfile.js";
 export {
   reconcileOntologySchemaLockfile,

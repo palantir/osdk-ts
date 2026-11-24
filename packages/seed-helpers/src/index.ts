@@ -14,10 +14,38 @@
  * limitations under the License.
  */
 
+export { AdminSeedBuilder } from "./AdminSeedBuilder.js";
 export {
-  createSeedWithMetadata,
-  SeedBuilder,
-  type SeedFunction,
-} from "./SeedBuilder.js";
-export type { SeedLinkEntry, SeedOutput, SeedProps, SeedRef } from "./types.js";
+  createFoundrySeed,
+  type FoundrySeedFunction,
+} from "./createFoundrySeed.js";
+export {
+  createOntologySeedWithMetadata,
+  OntologySeedBuilder,
+  type OntologySeedFunction,
+} from "./OntologySeedBuilder.js";
+export type {
+  AdminSeedOutput,
+  FoundrySeedOutput,
+  OntologySeedLinkEntry,
+  OntologySeedOutput,
+  OntologySeedProps,
+  OntologySeedRef,
+} from "./types.js";
 export type { LinkTargetType, LinkTargets } from "./linkTypes.js";
+export {
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  createSeedWithMetadata,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  SeedBuilder,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  type SeedFunction,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  type SeedLinkEntry,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  type SeedOutput,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  type SeedProps,
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  type SeedRef,
+} from "./legacySeed.js";

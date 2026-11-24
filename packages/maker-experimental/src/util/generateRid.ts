@@ -16,6 +16,7 @@
 
 import type {
   InterfaceTypeSchemaTransitionRid,
+  MarkingType,
   ValueTypeReference,
 } from "@osdk/client.unstable";
 import type {
@@ -24,6 +25,7 @@ import type {
   FilesDatasourceLocator,
   GeotimeSeriesIntegrationRid,
   GroupId,
+  InputPreset,
   InputShape,
   InputShapeMetadata,
   InterfaceActionTypeConstraintRid,
@@ -211,6 +213,7 @@ export interface BiMap<K, V> {
  * BlockShapes container for input and output shapes
  */
 export interface BlockShapes {
+  inputPresets?: Map<ReadableId, InputPreset>;
   inputShapes: Map<ReadableId, InputShape>;
   outputShapes: Map<ReadableId, OutputShape>;
   inputShapeMetadata: Map<ReadableId, InputShapeMetadata>;
@@ -413,6 +416,16 @@ export class ReadableIdGenerator {
     supportedMarkingsType: "CBAC" | "MANDATORY",
   ): ReadableId {
     return `marking-${markingId}-${supportedMarkingsType}` as ReadableId;
+  }
+
+  static getForMarkingSet(markings: Record<string, MarkingType>): ReadableId {
+    const entries = Object.keys(markings)
+      .sort()
+      .map((group) => [group, markings[group]] as const);
+    if (entries.length === 1) {
+      return this.getForMarking(entries[0][0], entries[0][1]);
+    }
+    return `marking-set-${JSON.stringify(entries)}` as ReadableId;
   }
 
   static getForFunction(functionApiName: string): ReadableId {

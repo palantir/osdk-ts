@@ -19,7 +19,10 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import type * as Ontology from "@osdk/foundry.ontologies";
-import { createSeedWithMetadata, type SeedOutput } from "@osdk/seed-helpers";
+import {
+  createOntologySeedWithMetadata,
+  type OntologySeedOutput,
+} from "@osdk/seed-helpers";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { compileSeedData } from "./compileSeedData.js";
@@ -105,9 +108,9 @@ function writeSeedFile(name: string, source: string): string {
  */
 function writeSeed(
   name: string,
-  fn: Parameters<typeof createSeedWithMetadata>[1],
+  fn: Parameters<typeof createOntologySeedWithMetadata>[1],
 ): string {
-  const result = createSeedWithMetadata(metadata, fn);
+  const result = createOntologySeedWithMetadata(metadata, fn);
   return writeSeedFile(
     name,
     `export default { output: ${JSON.stringify(result.output)}, context: ${
@@ -116,8 +119,8 @@ function writeSeed(
   );
 }
 
-function readOutput(outputPath: string): SeedOutput {
-  return JSON.parse(fs.readFileSync(outputPath, "utf-8")) as SeedOutput;
+function readOutput(outputPath: string): OntologySeedOutput {
+  return JSON.parse(fs.readFileSync(outputPath, "utf-8")) as OntologySeedOutput;
 }
 
 describe("compileSeedData", () => {
@@ -283,7 +286,7 @@ describe("compileSeedData", () => {
   // The `{ output, context }` form is exercised by every test above, since
   // that is what `writeSeed` emits. This covers the other accepted form, and
   // omits `links` to pin that they default to [].
-  it("accepts a bare SeedOutput — the .output of a createSeed() result", async () => {
+  it("accepts a bare OntologySeedOutput — the .output of a createSeed() result", async () => {
     const file = writeSeedFile(
       "01-bare.mts",
       `export default { objects: { Employee: [{ employeeId: "emp-001" }] } };\n`,

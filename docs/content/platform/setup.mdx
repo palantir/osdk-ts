@@ -1,0 +1,132 @@
+---
+title: Set up the Platform SDK
+description: Install @osdk/foundry packages, create a client with createPlatformClient or reuse an OSDK client, and request the OAuth scopes each API needs.
+foundryDocs:
+  - title: API authentication
+    path: api/v2/general/overview/authentication
+---
+
+{/* cspell:ignore mediasets datahealth thirdpartyapplications */}
+
+Install the `@osdk/foundry.*` packages you need, create a client, and make sure your token carries the scopes those APIs require.
+
+## Install
+
+Install `@osdk/client` for the client, `@osdk/oauth` for tokens, and one package per API area:
+
+```npm
+npm install @osdk/client @osdk/oauth @osdk/foundry.admin
+```
+
+Add more packages as you need them, for example `@osdk/foundry.datasets` or `@osdk/foundry.mediasets`. See the [package list](./index.mdx#packages) for every package. Shared types such as `PageToken` live in `@osdk/foundry.core`, which each package depends on; install it directly if you import its types.
+
+## Create a platform client
+
+If your app does not use the Ontology SDK, create a client with `createPlatformClient`:
+
+```ts
+createPlatformClient(baseUrl, tokenProvider, options?, fetchFn?)
+```
+
+| Argument | Type | Description |
+| --- | --- | --- |
+| `baseUrl` | `string` | The base URL of your Foundry stack, such as `https://example.palantirfoundry.com`. Requests go to `<baseUrl>/api/v2/...`. An empty string throws `baseUrl cannot be empty`. |
+| `tokenProvider` | `() => Promise<string>` | Returns a bearer token for each request. Usually an OAuth client from `@osdk/oauth`. |
+| `options` | `undefined` | Reserved. Pass `undefined` if you need to set `fetchFn`. |
+| `fetchFn` | `typeof fetch` | The `fetch` used for every request. Defaults to the global `fetch`. |
+
+```ts title="src/platformClient.ts"
+import { createPlatformClient } from "@osdk/client";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+export const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+  { scopes: ["api:admin-read"] },
+);
+
+export const platformClient = createPlatformClient(foundryUrl, auth);
+```
+
+The returned `PlatformClient` works only with `@osdk/foundry.*` functions. It has no Ontology, so it cannot load objects or apply actions.
+
+## Reuse an OSDK client
+
+A client from `createClient` also works with every platform function. `Client` extends the same `SharedClient` interface that the platform functions accept, so you do not need a second client:
+
+```ts title="src/currentUser.ts"
+import { $ontologyRid } from "@my-app/sdk";
+import { createClient } from "@osdk/client";
+import { Users } from "@osdk/foundry.admin";
+import { createPublicOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+const auth = createPublicOauthClient(
+  "<your-client-id>",
+  foundryUrl,
+  "http://localhost:8080/auth/callback",
+  {
+    scopes: [
+      "api:read-data",
+      "api:write-data",
+      "api:use-ontologies-read",
+      "api:use-ontologies-write",
+      "api:admin-read",
+    ],
+  },
+);
+
+export const client = createClient(foundryUrl, $ontologyRid, auth);
+
+export async function currentUsername(): Promise<string> {
+  const user = await Users.getCurrent(client);
+  return user.username;
+}
+```
+
+In React, `OsdkProvider` holds this client and the hooks in `@osdk/react/platform-apis` call the admin APIs with it. See [Users and markings in React](/react/platform-apis).
+
+Both kinds of client add the `Authorization` header to each request and retry a request up to three times, with backoff, when Foundry responds with `429` or `503`.
+
+## Request scopes
+
+Each function's JSDoc lists the OAuth scopes it needs under **Required Scopes**. Foundry rejects calls from a token that lacks them. The scopes used by the packages on these pages:
+
+| Package | Read | Write |
+| --- | --- | --- |
+| `@osdk/foundry.admin` | `api:admin-read` | `api:admin-write` |
+| `@osdk/foundry.datasets` | `api:datasets-read` | `api:datasets-write` |
+| `@osdk/foundry.mediasets` | `api:mediasets-read` | `api:mediasets-write`, plus `api:mediasets-transform` for transformations |
+| `@osdk/foundry.ontologies` | `api:ontologies-read` | `api:ontologies-write` |
+| `@osdk/foundry.filesystem` | `api:filesystem-read` | `api:filesystem-write` |
+| `@osdk/foundry.orchestration` | `api:orchestration-read` | `api:orchestration-write` |
+
+Some endpoints differ from their package's pattern. For example, `MarkingMembers.list` needs `api:admin-write`, `MediaSets.uploadMedia` needs `api:ontologies-read` and `api:ontologies-write`, and `Groups.listCurrent` needs no scope. Check the JSDoc of each function you call; your editor shows it on hover.
+
+Pass the scopes to your OAuth client, and allow each one for your application on **OAuth & scopes** in Developer Console. `@osdk/oauth` only requests the four Ontology scopes by default, so add platform scopes explicitly. A stored refresh token is reused only for the same set of scopes, so changing `scopes` signs users in again. See [Authentication](../(docs)/authentication.mdx#scopes).
+
+For a server or scheduled job, pass the scopes as the fourth argument of `createConfidentialOauthClient`:
+
+```ts title="src/serverClient.ts"
+import { createPlatformClient } from "@osdk/client";
+import { createConfidentialOauthClient } from "@osdk/oauth";
+
+const foundryUrl = "https://example.palantirfoundry.com";
+
+const auth = createConfidentialOauthClient(
+  "<your-client-id>",
+  "<your-client-secret>",
+  foundryUrl,
+  ["api:datasets-read", "api:datasets-write"],
+);
+
+export const platformClient = createPlatformClient(foundryUrl, auth);
+```
+
+## Next steps
+
+Read [Call platform APIs](./calling-apis.mdx) for argument order, pagination, and error handling.

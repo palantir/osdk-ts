@@ -57,7 +57,9 @@ import type {
 } from "./links/LinkType.js";
 import type { InterfaceImplementation } from "./object/InterfaceImplementation.js";
 import type { ObjectType } from "./object/ObjectType.js";
+import type { ObjectTypeDatasourceMarkingConstraints } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
+import { type OntologyContext, validateOntology } from "./validateOntology.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -104,7 +106,7 @@ export async function defineOntology(
   snippetFileOutputDir?: string,
   randomnessKey?: string,
   /** Runs once the ontology is fully registered, but before anything is written to disk. */
-  beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
+  beforeWrite?: (context: OntologyContext) => void | Promise<void>,
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -131,7 +133,9 @@ export async function defineOntology(
     consola.debug("Unexpected error while processing the body of the ontology");
     throw e;
   }
-  await beforeWrite?.(ontologyDefinition);
+  const context = { ontology: ontologyDefinition, importedTypes };
+  validateOntology(context);
+  await beforeWrite?.(context);
   if (outputDir) {
     writeStaticObjects(outputDir);
   }
@@ -239,6 +243,7 @@ export function buildDatasource(
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
+  markingConstraints?: ObjectTypeDatasourceMarkingConstraints,
 ): OntologyIrMarketplaceObjectTypeDatasource {
   const needsSecurity =
     classificationMarkingGroupName !== undefined ||
@@ -249,11 +254,14 @@ export function buildDatasource(
         classificationConstraint: classificationMarkingGroupName
           ? {
               markingGroupName: classificationMarkingGroupName,
+              allowEmptyMarkings: markingConstraints?.cbac?.allowEmptyMarkings,
             }
           : undefined,
         markingConstraint: mandatoryMarkingGroupName
           ? {
               markingGroupName: mandatoryMarkingGroupName,
+              allowEmptyMarkings:
+                markingConstraints?.mandatory?.allowEmptyMarkings,
             }
           : undefined,
       }
@@ -541,6 +549,9 @@ export function convertAction(
               } as unknown as ActionTypeStatus)
             : action.status,
         entities: action.entities,
+        ...(action.isolationSettings !== undefined && {
+          isolationSettings: action.isolationSettings,
+        }),
       },
     },
   };

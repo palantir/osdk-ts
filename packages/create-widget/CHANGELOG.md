@@ -1,5 +1,51 @@
 # @osdk/create-widget
 
+## 3.94.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.94.0
+
+## 3.93.0
+
+### Minor Changes
+
+- 2f414e9: Bump vite in create-app and create-widget templates to ^7.3.8 to patch the dev server remote code execution advisory (https://github.com/vitejs/vite/security/advisories/GHSA-p4f5-76q4-ffq7)
+
+### Patch Changes
+
+- @osdk/generator-utils@2.93.0
+
+## 3.92.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.92.0
+
+## 3.91.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.91.0
+
+## 3.90.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.90.0
+
+## 3.89.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.89.0
+
+## 3.88.0
+
+### Patch Changes
+
+- @osdk/generator-utils@2.88.0
+
 ## 3.87.0
 
 ### Patch Changes

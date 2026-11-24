@@ -16,23 +16,25 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { InterfaceSchemaMigrationInstruction } from "../../api/interface/InterfaceSchemaMigrations.js";
 import {
   describeBreakingChange,
   describeWarning,
 } from "../describeLockfileChange.js";
-import type { LockedProperty } from "../OntologySchemaLockfile.js";
+import type {
+  LockedInstruction,
+  LockedProperty,
+} from "../OntologySchemaLockfile.js";
 import type {
   LockfileBreakingChange,
-  TargetPropertyState,
+  TargetState,
 } from "../validateOntologySchemaLockfile.js";
 
 const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
 
 describe("describeBreakingChange", () => {
   function ambiguous(
-    instructions: InterfaceSchemaMigrationInstruction[],
-    targets: TargetPropertyState[],
+    instructions: LockedInstruction[],
+    targets: TargetState[],
   ): string {
     return describeBreakingChange({
       code: "ambiguousDisappearance",
@@ -52,12 +54,14 @@ describe("describeBreakingChange", () => {
         ],
         [
           {
-            propertyApiName: "lastName",
+            kind: "property",
+            apiName: "lastName",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
           {
-            propertyApiName: "email",
+            kind: "property",
+            apiName: "email",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
@@ -75,7 +79,8 @@ describe("describeBreakingChange", () => {
         [{ type: "addRequiredProperty", property: "lastName" }],
         [
           {
-            propertyApiName: "lastName",
+            kind: "property",
+            apiName: "lastName",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
@@ -89,7 +94,7 @@ describe("describeBreakingChange", () => {
   it("says a transition targeting no property cannot be read either way", () => {
     expect(
       ambiguous([{ type: "addRequiredProperty", property: "x" }], []),
-    ).toContain("it targets no property");
+    ).toContain("it targets nothing in the interface's schema");
   });
 
   describe("remediation", () => {
@@ -103,7 +108,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyRemoved",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
         expected: 'Restore "lastName" to the interface.',
       },
@@ -121,7 +126,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousType: "string",
           nextType: "integer",
         },
@@ -134,7 +139,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyTypeChanged",
           interfaceApiName: "Person",
-          property: "nicknames",
+          propertyApiName: "nicknames",
           previousType: "string",
           nextType: { type: "array", subtype: "string" },
         },
@@ -146,7 +151,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousDeclaration: "interface",
           nextDeclaration: "sharedPropertyType",
         },
@@ -159,7 +164,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyDeclarationChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousDeclaration: "sharedPropertyType",
           nextDeclaration: "interface",
         },
@@ -170,8 +175,8 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyNamespaceChanged",
           interfaceApiName: "Person",
-          previousApiName: "com.palantir.lastName",
-          nextApiName: "com.example.lastName",
+          previousPropertyApiName: "com.palantir.lastName",
+          nextPropertyApiName: "com.example.lastName",
         },
         expected:
           'property "lastName" is now backed by shared property type ' +
@@ -182,8 +187,8 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyNamespaceChanged",
           interfaceApiName: "Person",
-          previousApiName: "com.palantir.lastName",
-          nextApiName: "com.example.lastName",
+          previousPropertyApiName: "com.palantir.lastName",
+          nextPropertyApiName: "com.example.lastName",
         },
         expected: 'Back "lastName" with "com.palantir.lastName" again.',
       },
@@ -192,7 +197,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
-          property: "name",
+          propertyApiName: "name",
           previousNullability: { noNulls: false, noEmptyCollections: false },
           nextNullability: { noNulls: true, noEmptyCollections: false },
         },
@@ -204,7 +209,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "nullabilityTightened",
           interfaceApiName: "Person",
-          property: "name",
+          propertyApiName: "name",
           previousNullability: { noNulls: true, noEmptyCollections: false },
           nextNullability: { noNulls: true, noEmptyCollections: true },
         },
@@ -215,7 +220,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
-          property: "ssn",
+          propertyApiName: "ssn",
           previousValueType: undefined,
           nextValueType: {
             packageNamespace: "com.example",
@@ -230,7 +235,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "valueTypeChanged",
           interfaceApiName: "Person",
-          property: "ssn",
+          propertyApiName: "ssn",
           previousValueType: {
             packageNamespace: "com.example",
             apiName: "Ssn",
@@ -247,7 +252,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousTypeClasses: [],
           nextTypeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
         },
@@ -260,7 +265,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyTypeClassesChanged",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
           previousTypeClasses: [{ kind: "render_hint", name: "SORTABLE" }],
           nextTypeClasses: [],
         },
@@ -271,7 +276,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
-          property: "id",
+          propertyApiName: "id",
           previousConstraint: "NO_RESTRICTION",
           nextConstraint: "MUST_BE_PK",
         },
@@ -283,7 +288,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "primaryKeyConstraintChanged",
           interfaceApiName: "Person",
-          property: "id",
+          propertyApiName: "id",
           previousConstraint: "MUST_BE_PK",
           nextConstraint: "CANNOT_BE_PK",
         },
@@ -302,7 +307,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "propertyBecameRequired",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       },
       {
@@ -310,7 +315,7 @@ describe("describeBreakingChange", () => {
         breakingChange: {
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
-          property: "lastName",
+          propertyApiName: "lastName",
         },
       },
     ])("suggests a transition for $name", ({ breakingChange }) => {
@@ -318,6 +323,118 @@ describe("describeBreakingChange", () => {
         '{ id: "require-lastName", title: "Require lastName", ' +
           'gracePeriod: { type: "afterInstall", days: 30 }, ' +
           'instructions: [{ type: "addRequiredProperty", property: "lastName" }] }',
+      );
+    });
+  });
+
+  describe("action type constraints", () => {
+    const SUGGESTED =
+      '{ id: "require-sendEmail", title: "Require sendEmail", ' +
+      'gracePeriod: { type: "afterInstall", days: 30 }, ' +
+      'instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "sendEmail" }] }';
+
+    it.each<LockfileBreakingChange>([
+      {
+        code: "actionTypeConstraintBecameRequired",
+        interfaceApiName: "Person",
+        actionTypeConstraintApiName: "com.example.sendEmail",
+      },
+      {
+        code: "requiredActionTypeConstraintAdded",
+        interfaceApiName: "Person",
+        actionTypeConstraintApiName: "com.example.sendEmail",
+      },
+    ])("suggests the transition to declare for $code", (breakingChange) => {
+      const message = describeBreakingChange(breakingChange);
+      expect(message).toContain(SUGGESTED);
+      expect(message).toContain("`requireImplementation: false`");
+      expect(message).not.toContain("com.example.sendEmail");
+    });
+
+    const subject = {
+      interfaceApiName: "Person",
+      actionTypeConstraintApiName: "com.example.sendEmail",
+      parameterApiName: "subject",
+    };
+
+    it.each<[LockfileBreakingChange, string]>([
+      [
+        { code: "parameterBecameRequired", ...subject },
+        "`requireImplementation: false`",
+      ],
+      [
+        { code: "requiredParameterAdded", ...subject },
+        "`requireImplementation: false`",
+      ],
+      [
+        { code: "parameterBecameRequiredOnConcreteAction", ...subject },
+        "`isRequiredParameterOnConcreteAction: false`",
+      ],
+    ])(
+      "names the parameter and authored constraint for $0.code, with no migration to suggest",
+      (breakingChange, fix) => {
+        const message = describeBreakingChange(breakingChange);
+        expect(message).toContain('parameter "subject"');
+        expect(message).toContain('action type constraint "sendEmail"');
+        expect(message).toContain(
+          "no currently-supported interface schema migration can phase that in",
+        );
+        expect(message).toContain(fix);
+        expect(message).not.toContain("com.example.sendEmail");
+      },
+    );
+
+    it("explains an ambiguous disappearance over the target constraint", () => {
+      const message = ambiguous(
+        [
+          {
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "com.example.sendEmail",
+          },
+        ],
+        [
+          {
+            kind: "actionTypeConstraint",
+            apiName: "com.example.sendEmail",
+            previous: { requireImplementation: false },
+            next: undefined,
+          },
+        ],
+      );
+      expect(message).toContain(
+        'Instead, action type constraint "sendEmail" was removed from the interface.',
+      );
+      expect(message).toContain(
+        'To finalize it, set "sendEmail" to `requireImplementation: true`.',
+      );
+      expect(message).toContain(
+        'To delete it, leave "sendEmail" exactly as the lockfile records it.',
+      );
+    });
+  });
+
+  describe("replacement", () => {
+    it("names the replacement of a changed replace instruction", () => {
+      expect(
+        describeBreakingChange({
+          code: "instructionsChanged",
+          interfaceApiName: "Person",
+          transitionId: "replace",
+          previousInstructions: [
+            {
+              type: "replace",
+              replacement: { interfaceType: "com.example.PersonV2" },
+            },
+          ],
+          nextInstructions: [
+            {
+              type: "replace",
+              replacement: { interfaceType: "com.example.PersonV3" },
+            },
+          ],
+        }),
+      ).toContain(
+        'from [replace("com.example.PersonV2")] to [replace("com.example.PersonV3")]',
       );
     });
   });
@@ -332,7 +449,7 @@ describe("describeBreakingChange", () => {
         describeBreakingChange({
           code: "requiredPropertyAdded",
           interfaceApiName: "Person",
-          property: NAMESPACED,
+          propertyApiName: NAMESPACED,
         }),
       ).toContain(
         '{ id: "require-lastName", title: "Require lastName", ' +
@@ -345,7 +462,7 @@ describe("describeBreakingChange", () => {
       const message = describeBreakingChange({
         code: "propertyRemoved",
         interfaceApiName: "Person",
-        property: NAMESPACED,
+        propertyApiName: NAMESPACED,
       });
 
       expect(message).toContain('Restore "lastName" to the interface.');
@@ -360,7 +477,8 @@ describe("describeBreakingChange", () => {
           transitionId: "requireLastName",
           targets: [
             {
-              propertyApiName: NAMESPACED,
+              kind: "property",
+              apiName: NAMESPACED,
               previous: OPTIONAL_STRING,
               next: undefined,
             },
@@ -424,13 +542,13 @@ describe("describeWarning", () => {
   const requirementRelaxed = describeWarning({
     code: "requirementRelaxed",
     interfaceApiName: "Person",
-    property: "com.example.lastName",
+    propertyApiName: "com.example.lastName",
   });
 
   const valueTypeRemoved = describeWarning({
     code: "valueTypeRemoved",
     interfaceApiName: "Person",
-    property: "com.example.ssn",
+    propertyApiName: "com.example.ssn",
     previousValueType: { packageNamespace: "com.example", apiName: "Ssn" },
   });
 
@@ -443,7 +561,7 @@ describe("describeWarning", () => {
   const nullabilityRelaxed = describeWarning({
     code: "nullabilityRelaxed",
     interfaceApiName: "Person",
-    property: "com.example.name",
+    propertyApiName: "com.example.name",
     previousNullability: { noNulls: true, noEmptyCollections: true },
     nextNullability: { noNulls: false, noEmptyCollections: false },
   });
@@ -451,8 +569,52 @@ describe("describeWarning", () => {
   const primaryKeyConstraintRelaxed = describeWarning({
     code: "primaryKeyConstraintRelaxed",
     interfaceApiName: "Person",
-    property: "com.example.id",
+    propertyApiName: "com.example.id",
     previousConstraint: "MUST_BE_PK",
+  });
+
+  const actionTypeConstraintRequirementRelaxed = describeWarning({
+    code: "actionTypeConstraintRequirementRelaxed",
+    interfaceApiName: "Person",
+    actionTypeConstraintApiName: "com.example.sendEmail",
+  });
+
+  const actionTypeConstraintRemoved = describeWarning({
+    code: "actionTypeConstraintRemoved",
+    interfaceApiName: "Person",
+    actionTypeConstraintApiName: "com.example.sendEmail",
+  });
+
+  const parameterRequirementRelaxed = describeWarning({
+    code: "parameterRequirementRelaxed",
+    interfaceApiName: "Person",
+    actionTypeConstraintApiName: "com.example.sendEmail",
+    parameterApiName: "subject",
+  });
+
+  const parameterNoLongerRequiredOnConcreteAction = describeWarning({
+    code: "parameterNoLongerRequiredOnConcreteAction",
+    interfaceApiName: "Person",
+    actionTypeConstraintApiName: "com.example.sendEmail",
+    parameterApiName: "subject",
+  });
+
+  it("names the parameter and authored constraint that were relaxed", () => {
+    expect(parameterRequirementRelaxed).toContain(
+      'parameter "subject" of action type constraint "sendEmail" no longer requires implementation',
+    );
+    expect(parameterNoLongerRequiredOnConcreteAction).toContain(
+      'parameter "subject" of action type constraint "sendEmail" no longer has to be required',
+    );
+  });
+
+  it("names the authored constraint that no longer requires implementation", () => {
+    expect(actionTypeConstraintRequirementRelaxed).toContain(
+      'action type constraint "sendEmail" no longer requires implementation',
+    );
+    expect(actionTypeConstraintRemoved).toContain(
+      'action type constraint "sendEmail" was removed',
+    );
   });
 
   it("names the key the author wrote for a relaxed requirement", () => {
@@ -518,6 +680,26 @@ describe("describeWarning", () => {
       name: "a dropped primary key constraint",
       message: primaryKeyConstraintRelaxed,
       affected: "free to map it either way",
+    },
+    {
+      name: "a constraint no longer required",
+      message: actionTypeConstraintRequirementRelaxed,
+      affected: "will start finding it missing",
+    },
+    {
+      name: "a removed constraint",
+      message: actionTypeConstraintRemoved,
+      affected: "will stop finding it",
+    },
+    {
+      name: "a parameter no longer required",
+      message: parameterRequirementRelaxed,
+      affected: "may not reach the action",
+    },
+    {
+      name: "a parameter no longer required on the concrete action",
+      message: parameterNoLongerRequiredOnConcreteAction,
+      affected: "will start finding it missing",
     },
   ])(
     "says who is affected by $name without demanding a fix",

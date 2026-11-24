@@ -18,11 +18,12 @@ import type {
   InterfaceParameterConstraintApiName,
   OntologyIrInterfaceParameterConstraint,
 } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 
+import { createValidationIssueCollector } from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { importedTypes, namespace } from "./defineOntology.js";
+import { convertEditsValidationToIr } from "./interface/convertEditsValidationToIr.js";
 import type { InterfaceActionTypeConstraintDefinition } from "./InterfaceActionTypeConstraintDefinition.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 
@@ -30,8 +31,9 @@ export function defineInterfaceActionTypeConstraint(
   input: InterfaceActionTypeConstraintDefinition,
 ): void {
   const def = cloneDefinition(input);
+  const collector = createValidationIssueCollector();
 
-  invariant(
+  collector.check(
     importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][
       def.interfaceType.apiName
     ] == null,
@@ -43,7 +45,7 @@ export function defineInterfaceActionTypeConstraint(
     def.apiName,
   );
 
-  invariant(
+  collector.check(
     def.interfaceType.actionTypeConstraints.find(
       (a) => a.metadata.apiName === apiNameWithNamespace,
     ) == null,
@@ -56,7 +58,7 @@ export function defineInterfaceActionTypeConstraint(
   > = {};
   const seenParamApiNames = new Set<string>();
   for (const param of def.parameters) {
-    invariant(
+    collector.check(
       !seenParamApiNames.has(param.apiName),
       `Duplicate parameter constraint apiName "${param.apiName}" in action type constraint ${apiNameWithNamespace}`,
     );
@@ -73,6 +75,7 @@ export function defineInterfaceActionTypeConstraint(
     };
   }
 
+  collector.throwIfAnyIssues();
   def.interfaceType.actionTypeConstraints.push({
     metadata: {
       apiName: apiNameWithNamespace,
@@ -80,6 +83,15 @@ export function defineInterfaceActionTypeConstraint(
       description: def.description,
     },
     parameters,
+    ...(def.editsValidation !== undefined
+      ? {
+          editsValidation: convertEditsValidationToIr(
+            def.editsValidation,
+            def.interfaceType.apiName,
+            apiNameWithNamespace,
+          ),
+        }
+      : {}),
     requireImplementation: def.requireImplementation,
   });
 }

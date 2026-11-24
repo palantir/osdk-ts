@@ -16,14 +16,42 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 
+import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineObject } from "../defineObject.js";
-import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
+import {
+  defineOntology,
+  dumpOntologyFullMetadata,
+  getOntologyDefinition,
+} from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import { expectValidationIssues } from "./testUtils.js";
+
 describe("SPTs", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, undefined);
+  });
+
+  it("collects render hint and metadata issues before registering a shared property type", () => {
+    expectValidationIssues(
+      () =>
+        defineSharedPropertyType({
+          apiName: "invalidMetadata",
+          type: "mediaReference",
+          typeClasses: [{ kind: "render_hint", name: "SELECTABLE" }],
+          displayName: "x".repeat(1001),
+          description: "x".repeat(10001),
+        }),
+      [
+        "should not have render hints",
+        "displayName must be at most 1000",
+        "description must be at most 10000",
+      ],
+    );
+    expect(
+      getOntologyDefinition()[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+    ).toEqual({});
   });
 
   it("doesn't let you create the same spt twice", () => {
@@ -32,13 +60,9 @@ describe("SPTs", () => {
       type: "string",
     });
 
-    expect(() => {
-      defineSharedPropertyType({
-        apiName: "foo",
-        type: "string",
-      });
-    }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Shared property type com.palantir.foo already exists]`,
+    expectValidationIssues(
+      () => defineSharedPropertyType({ apiName: "foo", type: "string" }),
+      [{ code: "duplicate_definition", path: ["apiName"] }],
     );
   });
 

@@ -19,6 +19,7 @@ import { Errors, OpenApiCallError } from "@osdk/faux";
 import type {
   AgentSession,
   CreateAgentSessionRequest,
+  SessionStateAvailable,
   SendEventResponse,
 } from "@osdk/foundry.agents";
 import deepEqual from "fast-deep-equal";
@@ -29,6 +30,7 @@ import {
   noArgumentsAgentOtherVersion,
   noArgumentsAgentVersion,
   objectArgumentsAgentApiName,
+  objectArgumentsAgentOtherVersion,
   objectArgumentsAgentVersion,
   optionalArgumentsAgentApiName,
   optionalArgumentsAgentVersion,
@@ -205,6 +207,23 @@ export const structuredArgumentsAgentResponse: AgentSession = {
   agentVersion: structuredArgumentsAgentVersion.version,
 };
 
+export const objectArgumentsAgentOtherVersionRequest: CreateAgentSessionRequest =
+  {
+    agent: {
+      type: "agentApiName",
+      ontology: defaultOntologyMetadata.rid as string,
+      agentApiName: objectArgumentsAgentApiName,
+    },
+    agentVersion: objectArgumentsAgentOtherVersion.version,
+    arguments: {},
+  };
+
+export const objectArgumentsAgentOtherVersionResponse: AgentSession = {
+  ...objectArgumentsAgentResponse,
+  id: "object-arguments-session-other-version",
+  agentVersion: objectArgumentsAgentOtherVersion.version,
+};
+
 export function registerLazyAgents(fauxOntology: FauxOntology): void {
   fauxOntology.registerAgent(
     weatherAgentApiName,
@@ -214,6 +233,9 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         [JSON.stringify(weatherAgentRequest)]: weatherAgentResponse,
       },
       weatherEventResponses,
+      {
+        [weatherAgentResponse.id]: weatherAgentState,
+      },
     ),
   );
 
@@ -226,6 +248,9 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
           weatherAgentOtherVersionResponse,
       },
       weatherEventResponses,
+      {
+        [weatherAgentOtherVersionResponse.id]: weatherAgentState,
+      },
     ),
   );
 
@@ -237,6 +262,9 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         [JSON.stringify(noArgumentsAgentRequest)]: noArgumentsAgentResponse,
       },
       {},
+      {
+        [noArgumentsAgentResponse.id]: { ...weatherAgentState, arguments: {} },
+      },
     ),
   );
 
@@ -248,6 +276,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         [JSON.stringify(noArgumentsAgentOtherVersionRequest)]:
           noArgumentsAgentOtherVersionResponse,
       },
+      {},
       {},
     ),
   );
@@ -263,6 +292,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
           optionalArgumentsAgentResponse,
       },
       {},
+      {},
     ),
   );
 
@@ -274,6 +304,7 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         [JSON.stringify(structuredArgumentsAgentRequest)]:
           structuredArgumentsAgentResponse,
       },
+      {},
       {},
     ),
   );
@@ -317,6 +348,71 @@ export function registerLazyAgents(fauxOntology: FauxOntology): void {
         }
         return acceptedAgentEvent;
       },
+      (_request, dataStore) => {
+        const objectSetRid = "ri.object-set.main.object-set.agent-state";
+        dataStore.registerObjectSet(objectSetRid, employeeObjectSet);
+        const data = objectArgumentsAgentRequest(objectSetRid).arguments;
+        return {
+          ...weatherAgentState,
+          arguments: data,
+          agentState: { data },
+          contextItems: {
+            selection: { contextItemType: "selection", data },
+          },
+          contextItemOrder: ["selection"],
+        };
+      },
+    ),
+  );
+
+  fauxOntology.registerAgent(
+    objectArgumentsAgentApiName,
+    objectArgumentsAgentOtherVersion,
+    createLazyAgentImpl(
+      {
+        [JSON.stringify(objectArgumentsAgentOtherVersionRequest)]:
+          objectArgumentsAgentOtherVersionResponse,
+      },
+      {
+        [JSON.stringify({
+          event: {
+            eventType: "SelectEmployees",
+            payload: {
+              ontologyRid: defaultOntologyMetadata.rid,
+              objectTypeApiName: "Employee",
+              primaryKey: { employeeId: 50030 },
+            },
+          },
+        })]: acceptedAgentEvent,
+      },
+      {
+        [objectArgumentsAgentOtherVersionResponse.id]: {
+          ...weatherAgentState,
+          arguments: {},
+          agentState: {
+            data: {
+              ontologyRid: defaultOntologyMetadata.rid,
+              objectTypeApiName: "Employee",
+              primaryKey: { employeeId: 50030 },
+            },
+          },
+          contextItems: {
+            selection: {
+              contextItemType: "selection",
+              data: { retained: true },
+            },
+            newer: {
+              contextItemType: "new-selection",
+              data: {
+                ontologyRid: defaultOntologyMetadata.rid,
+                objectTypeApiName: "Employee",
+                primaryKey: { employeeId: 50030 },
+              },
+            },
+          },
+          contextItemOrder: ["selection", "newer"],
+        },
+      },
     ),
   );
 }
@@ -327,9 +423,30 @@ export const acceptedAgentEvent: SendEventResponse = {
 
 const weatherEventResponses: Record<string, SendEventResponse> = {
   [JSON.stringify({
+    event: { eventType: "SetTemperature", payload: null },
+  })]: acceptedAgentEvent,
+  [JSON.stringify({
     event: { eventType: "LookupWeather", payload: { city: "Paris" } },
   })]: acceptedAgentEvent,
   [JSON.stringify({
     event: { eventType: "unknownEvent", payload: { raw: [1, null, "value"] } },
   })]: acceptedAgentEvent,
 };
+
+export const weatherAgentState: SessionStateAvailable & { type: "available" } =
+  {
+    type: "available",
+    arguments: { city: "London" },
+    status: { type: "live" },
+    consistencyKey: "weather-state",
+    agentState: { data: { temperature: 20 } },
+    contextItems: {
+      second: { contextItemType: "weather-result", data: "Sunny" },
+      first: { contextItemType: "weather-result", data: "Warm" },
+      unknown: {
+        contextItemType: "future-result",
+        data: { value: "Future" },
+      },
+    },
+    contextItemOrder: ["first", "second", "unknown"],
+  };

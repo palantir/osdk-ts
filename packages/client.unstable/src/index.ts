@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export type * as FunctionDiscovery from "./generated/functions-typescript-discovery/__components.js";
+
 export type {
   DirectedLinkTypeRid,
   FoundryObjectReference,
@@ -57,6 +59,9 @@ export type * from "./generated/ontology-metadata/api/blockdata/__components.ts"
 
 export type {
   GracePeriod,
+  InterfaceActionTypeConstraintReplacement,
+  InterfacePropertyTypeReplacement,
+  InterfaceTypeReplacement,
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransition,
   InterfaceTypeSchemaTransitionId,

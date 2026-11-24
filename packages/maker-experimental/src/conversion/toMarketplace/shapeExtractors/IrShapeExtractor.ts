@@ -19,6 +19,7 @@ import type {
   InterfaceActionTypeConstraint,
   InterfaceParameterConstraint,
   InterfaceTypeBlockDataV2,
+  InterfaceTypeReplacement,
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransition,
   KnownMarketplaceIdentifiers,
@@ -39,6 +40,7 @@ import type {
   InterfaceParameterConstraintShape,
   InterfacePropertyTypeOutputShape,
   InterfaceTypeOutputShape,
+  InterfaceTypeReplacement as MarketplaceInterfaceTypeReplacement,
   InterfaceTypeSchemaTransitionOutputShape,
   InterfaceTypeSchemaMigrationInstruction as MarketplaceInterfaceTypeSchemaMigrationInstruction,
   LocalizedTitleAndDescription,
@@ -419,6 +421,7 @@ function extractInterfaceType(
           knownMarketplaceIdentifiers,
           interfaceType,
           transition,
+          schemaMigrations?.interfaceStructFieldRidsToApiNames ?? {},
         ),
       },
     );
@@ -435,6 +438,7 @@ function getInterfaceSchemaTransitionOutputShape(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   interfaceType: MarketplaceInterfaceType,
   transition: InterfaceTypeSchemaTransition,
+  structFieldApiNames: StructFieldApiNames,
 ): InterfaceTypeSchemaTransitionOutputShape {
   return {
     transitionId: transition.id,
@@ -451,14 +455,19 @@ function getInterfaceSchemaTransitionOutputShape(
       toMarketplaceSchemaMigrationInstruction(
         instruction,
         knownMarketplaceIdentifiers,
+        structFieldApiNames,
       ),
     ),
   };
 }
 
+/** Interface property rid -> struct field rid -> struct field API name. */
+type StructFieldApiNames = Record<string, Record<string, string>>;
+
 function toMarketplaceSchemaMigrationInstruction(
   instruction: InterfaceTypeSchemaMigrationInstruction,
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  structFieldApiNames: StructFieldApiNames,
 ): MarketplaceInterfaceTypeSchemaMigrationInstruction {
   switch (instruction.type) {
     case "addRequiredProperty":
@@ -472,12 +481,125 @@ function toMarketplaceSchemaMigrationInstruction(
           ),
         },
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint":
+      return {
+        type: "addRequiredActionTypeConstraint",
+        addRequiredActionTypeConstraint: {
+          actionTypeConstraint: requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+            instruction.addRequiredActionTypeConstraint.actionTypeConstraintRid,
+            "interface action type constraint",
+          ),
+        },
+      };
+    case "replace":
+      return {
+        type: "replace",
+        replace: {
+          replacement: toMarketplaceInterfaceTypeReplacement(
+            instruction.replace.replacement,
+            knownMarketplaceIdentifiers,
+            structFieldApiNames,
+          ),
+        },
+      };
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceTypeSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
+}
+
+function toMarketplaceInterfaceTypeReplacement(
+  replacement: InterfaceTypeReplacement,
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  structFieldApiNames: StructFieldApiNames,
+): MarketplaceInterfaceTypeReplacement {
+  const toReferences = (
+    mappings: Record<string, string>,
+    identifiers: Record<string, string> | undefined,
+    kind: string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(mappings).map(([from, to]) => [
+        requireKnownIdentifier(identifiers, from, kind),
+        requireKnownIdentifier(identifiers, to, kind),
+      ]),
+    );
+  return {
+    interfaceType: requireKnownIdentifier(
+      knownMarketplaceIdentifiers.interfaceTypes,
+      replacement.interfaceTypeRid,
+      "interface type",
+    ),
+    propertyMappings: Object.fromEntries(
+      Object.entries(replacement.propertyMappings).map(
+        ([from, { interfacePropertyTypeRid, structFieldMappings }]) => [
+          requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfacePropertyTypes,
+            from,
+            "interface property type",
+          ),
+          {
+            interfaceProperty: requireKnownIdentifier(
+              knownMarketplaceIdentifiers.interfacePropertyTypes,
+              interfacePropertyTypeRid,
+              "interface property type",
+            ),
+            // Struct fields have no shapes of their own, so are referenced by API name
+            structFieldMappings: Object.fromEntries(
+              Object.entries(structFieldMappings).map(
+                ([fromField, toField]) => [
+                  requireKnownIdentifier(
+                    structFieldApiNames[from],
+                    fromField,
+                    "interface struct field",
+                  ),
+                  requireKnownIdentifier(
+                    structFieldApiNames[interfacePropertyTypeRid],
+                    toField,
+                    "interface struct field",
+                  ),
+                ],
+              ),
+            ),
+          },
+        ],
+      ),
+    ),
+    linkTypeConstraintMappings: toReferences(
+      replacement.linkTypeConstraintMappings,
+      knownMarketplaceIdentifiers.interfaceLinkTypes,
+      "interface link type",
+    ),
+    actionTypeConstraintMappings: Object.fromEntries(
+      Object.entries(replacement.actionTypeConstraintMappings).map(
+        ([from, { actionTypeConstraintRid, parameterMappings }]) => [
+          requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+            from,
+            "interface action type constraint",
+          ),
+          {
+            actionTypeConstraint: requireKnownIdentifier(
+              knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+              actionTypeConstraintRid,
+              "interface action type constraint",
+            ),
+            parameterMappings: toReferences(
+              parameterMappings,
+              knownMarketplaceIdentifiers.interfaceParameterConstraints,
+              "interface parameter constraint",
+            ),
+          },
+        ],
+      ),
+    ),
+  };
 }
 
 /**
@@ -1257,6 +1379,12 @@ function getMarkingShapes(
  * Consume (merge) block shapes into the target
  */
 function consumeBlockShapes(target: BlockShapes, source: BlockShapes): void {
+  if (source.inputPresets?.size) {
+    target.inputPresets ??= new Map();
+    for (const [key, value] of source.inputPresets) {
+      target.inputPresets.set(key, value);
+    }
+  }
   for (const [key, value] of source.inputShapes.entries()) {
     target.inputShapes.set(key, value);
   }

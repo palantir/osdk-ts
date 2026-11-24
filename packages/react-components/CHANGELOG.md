@@ -1,5 +1,71 @@
 # @osdk/react-components
 
+## 0.73.0
+
+### Minor Changes
+
+- 064d65c: Fix coerceFieldValue destroying array values for multiplicity parameters on submit
+
+### Patch Changes
+
+- Updated dependencies [4ca8bbe]
+- Updated dependencies [f5e52d1]
+  - @osdk/client@2.93.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/react@2.93.0
+  - @osdk/api@2.93.0
+
+## 0.72.0
+
+### Minor Changes
+
+- bccff2b: Stop rethrowing submission errors so they no longer appear on the submit button tooltip
+
+### Patch Changes
+
+- Updated dependencies [5fade0a]
+- Updated dependencies [a37fdfc]
+- Updated dependencies [5d80e0f]
+- Updated dependencies [0bcfdc9]
+- Updated dependencies [f1a74a8]
+- Updated dependencies [2e21fee]
+- Updated dependencies [a37fdfc]
+  - @osdk/client@2.91.0
+  - @osdk/react@2.91.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/api@2.91.0
+
+## 0.71.0
+
+### Minor Changes
+
+- 0899055: Fix ActionForm validation: change error message to match Foundry, fix stuck submit button after validation error, add debounced server-side validation on field change
+
+### Patch Changes
+
+- Updated dependencies [62ebddd]
+  - @osdk/client@2.89.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/react@2.89.0
+  - @osdk/api@2.89.0
+
+## 0.70.0
+
+### Minor Changes
+
+- 7b2dcff: Update PDF.js to the latest 4.x release to remove the optional `canvas` dependency from the published package tree.
+
+### Patch Changes
+
+- Updated dependencies [358fbfa]
+- Updated dependencies [1d0b110]
+- Updated dependencies [eb1fc8f]
+- Updated dependencies [e1ca298]
+  - @osdk/client@2.88.0
+  - @osdk/api@2.88.0
+  - @osdk/aip-core@0.13.0
+  - @osdk/react@2.88.0
+
 ## 0.69.0
 
 ### Minor Changes

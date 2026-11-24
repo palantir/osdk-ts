@@ -25,11 +25,13 @@ import {
 import type { SetupServer } from "@osdk/shared.test";
 import {
   FauxFoundry,
+  msw,
   ontologies,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
 import chalk from "chalk";
+import pDefer from "p-defer";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { Client } from "../../../Client.js";
@@ -1269,7 +1271,7 @@ describe("ListQuery pivotTo tests", () => {
   });
 });
 
-describe("ListQuery shared query autoFetchMore tests", () => {
+describe("ListQuery shared query tests", () => {
   let client: Client;
   let apiServer: SetupServer;
   let fauxFoundry: FauxFoundry;
@@ -1293,6 +1295,63 @@ describe("ListQuery shared query autoFetchMore tests", () => {
   beforeEach(() => {
     apiServer.resetHandlers();
     store = new Store(client);
+  });
+
+  it("keeps RDP results loading until their response arrives after a plain query", async () => {
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+    dataStore.registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Alice",
+      leadId: 1,
+    });
+    const rdpResponse = pDefer<void>();
+    apiServer.use(
+      msw.http.post("*/loadObjects", async ({ request }) => {
+        if ((await request.clone().text()).includes('"derivedName"')) {
+          await rdpResponse.promise;
+        }
+      }),
+    );
+
+    const plain = mockListSubCallback();
+    const rdp = mockListSubCallback();
+    defer(store.lists.observe({ type: Employee }, plain));
+    defer(
+      store.lists.observe(
+        {
+          type: Employee,
+          withProperties: {
+            derivedName: (base) =>
+              base.pivotTo("lead").selectProperty("fullName"),
+          },
+        },
+        rdp,
+      ),
+    );
+
+    let loaded;
+    try {
+      await waitForPayload(plain, (payload) => payload.status === "loaded");
+      expect(rdp.next).toHaveBeenCalled();
+      for (const [pending] of rdp.next.mock.calls) {
+        expect(pending?.status).toBe("loading");
+        expect(
+          pending?.resolvedList?.some((object) => object == null),
+        ).not.toBe(true);
+      }
+    } finally {
+      rdpResponse.resolve();
+      loaded = await waitForPayload(
+        rdp,
+        (payload) =>
+          payload.status === "loaded" && payload.resolvedList?.[0] != null,
+      );
+    }
+    expect(loaded.resolvedList).toMatchObject([
+      { employeeId: 1, derivedName: "Alice" },
+    ]);
   });
 
   it("shared query: plain subscriber first, autoFetchMore second", async () => {

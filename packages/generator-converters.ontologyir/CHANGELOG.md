@@ -1,5 +1,61 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.94.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.94.0
+
+## 2.93.0
+
+### Minor Changes
+
+- f1d12b0: Add spt mappings for non-interface object props
+
+### Patch Changes
+
+- @osdk/client.unstable@2.93.0
+
+## 2.92.0
+
+### Minor Changes
+
+- 3282ead: Support TSv2 query/FBA source importing for Preview
+
+### Patch Changes
+
+- @osdk/client.unstable@2.92.0
+
+## 2.91.0
+
+### Minor Changes
+
+- 1fd4023: Resolve interface API names for interface fields inside function struct types.
+- 406d3b6: Preserve markingType on marking properties when converting to full metadata.
+- d13bd9f: Support geo point and geo shape function inputs and outputs during local SDK generation, and use exhaustive discovery type conversion.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.91.0
+
+## 2.90.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.90.0
+
+## 2.89.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.89.0
+
+## 2.88.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.88.0
+
 ## 2.87.0
 
 ### Patch Changes

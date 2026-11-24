@@ -15,16 +15,19 @@
  */
 
 import type {
+  ActionTypeIsolationSettings,
   OntologyIrAddObjectRule,
   OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrParameterPrefill,
   OntologyIrStructFieldBaseParameterType,
   ParameterId,
 } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 
 import { convertConditionDefinition } from "../conversion/toMarketplace/convertConditionDefinition.js";
-import { getObject } from "../conversion/toMarketplace/convertLink.js";
+import {
+  createValidationIssueCollector,
+  type MakerValidationIssueCollector,
+} from "../validation.js";
 import type { ActionLevelValidationDefinition } from "./action/ActionLevelValidationDefinition.js";
 import { type ActionParameter } from "./action/ActionParameter.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
@@ -105,6 +108,7 @@ export type ActionTypeUserDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  isolationSettings?: ActionTypeIsolationSettings;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
   actionLevelValidation?: ActionLevelValidationDefinition;
@@ -128,6 +132,7 @@ export type InterfaceActionTypeUserDefinition = {
   displayName?: string;
   description?: string;
   status?: ActionStatus;
+  isolationSettings?: ActionTypeIsolationSettings;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
   actionLevelValidation?: ActionLevelValidationDefinition;
@@ -146,7 +151,11 @@ export type InterfaceActionTypeUserDefinition = {
 };
 
 export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
+  const collector: MakerValidationIssueCollector =
+    createValidationIssueCollector();
   const actionDef = cloneDefinition(actionDefInput);
+  // Namespace normalization rewrites nested rule values, which contain no entity references.
+  actionDef.rules = structuredClone(actionDef.rules);
   const apiName = namespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map((p) => p.id);
 
@@ -154,17 +163,18 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     ontologyDefinition[OntologyEntityTypeEnum.ACTION_TYPE][apiName] !==
     undefined
   ) {
-    throw new Error(
+    collector.check(
+      false,
       `Action type with apiName ${actionDef.apiName} is already defined`,
     );
   }
-  invariant(
+  collector.check(
     /^[a-z0-9]+(?:[-.][a-z0-9]+)*$/u.test(actionDef.apiName),
     `Action type apiName "${actionDef.apiName}" must contain lowercase alphanumeric segments separated by hyphens or dots`,
   );
 
   const parameterIdsSet = new Set(parameterIds);
-  invariant(
+  collector.check(
     parameterIdsSet.size === parameterIds.length,
     `Parameter ids must be unique`,
   );
@@ -172,7 +182,7 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
   const parameterIdsNotFound = Array.from(
     referencedParameterIds(actionDef),
   ).filter((p) => !parameterIdsSet.has(p));
-  invariant(
+  collector.check(
     parameterIdsNotFound.length === 0,
     `Parameters ${JSON.stringify(
       parameterIdsNotFound,
@@ -183,35 +193,34 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
   const undefinedSectionsInOrdering = (actionDef.formContentOrdering ?? [])
     .flatMap((s) => (s.type === "parameterId" ? [] : [s.sectionId]))
     .filter((sId) => !definedSectionIds.has(sId));
-  invariant(
+  collector.check(
     undefinedSectionsInOrdering.length === 0,
     `Sections [${undefinedSectionsInOrdering}] were referenced in content ordering but not defined`,
   );
 
-  invariant(
+  collector.check(
     actionDef.rules.length > 0,
     `Action type ${actionDef.apiName} must have at least one logic rule`,
   );
   actionDef.rules.forEach((rule) => {
     if (rule.type === "modifyObjectRule") {
-      invariant(
+      collector.check(
         parameterIds.some((id) => id === rule.modifyObjectRule.objectToModify),
         `Object to modify parameter must be defined in parameters`,
       );
     }
     if (rule.type === "deleteObjectRule") {
-      invariant(
+      collector.check(
         parameterIds.some((id) => id === rule.deleteObjectRule.objectToDelete),
         `Object to delete parameter must be defined in parameters`,
       );
     }
     if (rule.type === "modifyInterfaceRule") {
-      // The there must be a parameter for the interface, and the interface there must exist
-      const interfaceParam = actionDef.parameters!.find(
+      const interfaceParam = actionDef.parameters?.find(
         (p) =>
           p.id === rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
       );
-      invariant(
+      collector.assert(
         interfaceParam !== undefined &&
           typeof interfaceParam.type === "object" &&
           (interfaceParam.type.type === "interfaceReference" ||
@@ -222,18 +231,18 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
         interfaceParam.type.type === "interfaceReference"
           ? interfaceParam.type.interfaceReference.interfaceTypeRid
           : interfaceParam.type.interfaceReferenceList.interfaceTypeRid;
-      invariant(
-        ontologyDefinition.INTERFACE_TYPE[interfaceReference] !== undefined ||
-          importedTypes.INTERFACE_TYPE[interfaceReference] !== undefined,
+      const interfaceType =
+        ontologyDefinition.INTERFACE_TYPE[interfaceReference] ??
+        importedTypes.INTERFACE_TYPE[interfaceReference];
+      collector.assert(
+        interfaceType !== undefined,
         `Interface type ${interfaceReference} does not exist`,
       );
 
       // All referenced SPTs must exist on the interface
-      const interfaceType =
-        ontologyDefinition.INTERFACE_TYPE[interfaceReference];
       Object.keys(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
         (spt) => {
-          invariant(
+          collector.check(
             Object.keys(
               getFlattenedInterfaceProperties(interfaceType),
             ).includes(spt),
@@ -249,14 +258,14 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
           rule.addInterfaceRule.interfaceApiName
         ] ??
         importedTypes.INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName];
-      invariant(
+      collector.assert(
         interfaceType !== undefined,
         `Interface type ${rule.addInterfaceRule.interfaceApiName} does not exist`,
       );
 
       // All referenced SPTs must exist on the interface
       Object.keys(rule.addInterfaceRule.sharedPropertyValues).forEach((spt) => {
-        invariant(
+        collector.check(
           Object.keys(getFlattenedInterfaceProperties(interfaceType)).includes(
             spt,
           ),
@@ -269,11 +278,11 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
       const interfaceType =
         ontologyDefinition.INTERFACE_TYPE[ilr.interfaceTypeRid] ??
         importedTypes.INTERFACE_TYPE[ilr.interfaceTypeRid];
-      invariant(
+      collector.assert(
         interfaceType !== undefined,
         `Interface type ${ilr.interfaceTypeRid} does not exist`,
       );
-      invariant(
+      collector.check(
         interfaceType.links.some(
           (link) => link.metadata.apiName === ilr.interfaceLinkTypeRid,
         ),
@@ -293,11 +302,12 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     },
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
-  validateActionConfiguration(fullAction);
+  validateActionConfiguration(fullAction, collector);
   const context = `Action type "${apiName}"`;
   validateDisplayMetadataLengths(
     fullAction,
     context,
+    collector,
     ACTION_DISPLAY_NAME_LIMIT,
     ACTION_DESCRIPTION_LIMIT,
   );
@@ -305,6 +315,7 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     validateDisplayMetadataLengths(
       parameter,
       `${context}, parameter "${parameter.id}"`,
+      collector,
       ACTION_DISPLAY_NAME_LIMIT,
       ACTION_DESCRIPTION_LIMIT,
     );
@@ -313,10 +324,13 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
     validateDisplayMetadataLengths(
       section,
       `${context}, section "${id}"`,
+      collector,
       ACTION_DISPLAY_NAME_LIMIT,
       ACTION_DESCRIPTION_LIMIT,
     );
   }
+
+  collector.throwIfAnyIssues();
   updateOntology(fullAction);
   return fullAction;
 }
@@ -427,6 +441,8 @@ export function createStructFieldValues(
   def: ActionTypeUserDefinition,
   parameters: Array<ActionParameter>,
 ): OntologyIrAddObjectRule["structFieldValues"] {
+  const collector: MakerValidationIssueCollector =
+    createValidationIssueCollector();
   return Object.fromEntries(
     parameters.flatMap((parameter) => {
       const property = getProperty(def.objectType, parameter.id);
@@ -434,7 +450,9 @@ export function createStructFieldValues(
         return [];
       }
 
-      invariant(
+      // Convenience actions build mappings before defineAction runs, so reject
+      // incompatible struct parameters here rather than returning invalid mappings.
+      collector.assert(
         typeof parameter.type === "object" &&
           (parameter.type.type === "struct" ||
             parameter.type.type === "structList"),
@@ -1117,23 +1135,27 @@ export function convertValidationRule(
   });
 }
 
-function validateActionConfiguration(action: ActionType): void {
+function validateActionConfiguration(
+  action: ActionType,
+  collector: MakerValidationIssueCollector,
+): void {
   const seenParameterIds = new Set<ParameterId>();
-  const parameterMap: Record<string, ActionParameter> =
-    action.parameters?.reduce(
-      (acc, param) => {
-        acc[param.id] = param;
-        return acc;
-      },
-      {} as Record<string, ActionParameter>,
-    ) ?? {};
+  const parameterMap = new Map(
+    action.parameters?.map((param) => [param.id, param]),
+  );
   const orderedParameters =
-    action.parameterOrdering?.map((id) => parameterMap[id]) ??
-    action.parameters;
-  orderedParameters?.forEach((param) => {
+    action.parameterOrdering?.map((id) => parameterMap.get(id)) ??
+    action.parameters ??
+    [];
+  orderedParameters.forEach((param, index) => {
+    collector.assert(
+      param !== undefined,
+      `Action parameter ordering references unknown parameter ${action.parameterOrdering?.[index]}`,
+    );
     param.validation.conditionalOverrides?.forEach((override) => {
       validateParameterCondition(
         override.condition,
+        collector,
         param.id,
         seenParameterIds,
         action.parameters,
@@ -1141,6 +1163,7 @@ function validateActionConfiguration(action: ActionType): void {
     });
     validateParameterPrefill(
       param.id,
+      collector,
       seenParameterIds,
       action.parameters,
       param.defaultValue,
@@ -1151,6 +1174,7 @@ function validateActionConfiguration(action: ActionType): void {
     )) {
       validateStructFieldDefaultValue(
         param,
+        collector,
         fieldApiName,
         configuration.defaultValue,
         seenParameterIds,
@@ -1160,6 +1184,7 @@ function validateActionConfiguration(action: ActionType): void {
       for (const override of configuration.conditionalOverrides ?? []) {
         validateParameterCondition(
           override.condition,
+          collector,
           param.id,
           seenParameterIds,
           action.parameters,
@@ -1167,6 +1192,7 @@ function validateActionConfiguration(action: ActionType): void {
         if (override.type === "defaultValue") {
           validateStructFieldDefaultValue(
             param,
+            collector,
             fieldApiName,
             override.defaultValue,
             seenParameterIds,
@@ -1176,7 +1202,7 @@ function validateActionConfiguration(action: ActionType): void {
         }
       }
     }
-    invariant(
+    collector.check(
       structFieldDefaultSources.size <= 1,
       `Struct field defaults for parameter ${param.id} must reference the same source object parameter and property`,
     );
@@ -1186,6 +1212,7 @@ function validateActionConfiguration(action: ActionType): void {
 
 function validateStructFieldDefaultValue(
   parameter: ActionParameter,
+  collector: MakerValidationIssueCollector,
   fieldApiName: string,
   defaultValue: StructFieldDefaultValue | null | undefined,
   seenParameterIds: Set<ParameterId>,
@@ -1194,7 +1221,7 @@ function validateStructFieldDefaultValue(
 ): void {
   if (defaultValue == null) return;
   const context = `Default value for struct field ${parameter.id}.${fieldApiName}`;
-  invariant(
+  collector.assert(
     typeof parameter.type !== "string" &&
       (parameter.type.type === "struct" ||
         parameter.type.type === "structList"),
@@ -1205,7 +1232,7 @@ function validateStructFieldDefaultValue(
       ? parameter.type.struct.structFieldTypes
       : parameter.type.structList.structFieldTypes;
   const targetField = targetFields[fieldApiName];
-  invariant(
+  collector.assert(
     targetField != null,
     `${context} references an unknown target field`,
   );
@@ -1216,36 +1243,41 @@ function validateStructFieldDefaultValue(
   const sourceParameter = parameters?.find(
     (p) => p.id === reference.parameterId,
   );
-  invariant(
+  collector.assert(
     sourceParameter != null,
     `${context} is referencing unknown parameter ${reference.parameterId}`,
   );
-  invariant(
+  const isEarlier = collector.check(
     seenParameterIds.has(reference.parameterId),
     `${context} must reference an earlier parameter: ${reference.parameterId}`,
   );
-  invariant(
+  collector.assert(
     typeof sourceParameter.type !== "string" &&
       sourceParameter.type.type === "objectReference",
     `${context} must reference a single object parameter`,
   );
-  const sourceObject = getObject(
-    sourceParameter.type.objectReference.objectTypeId,
-  ).object;
+  const objectApiName = sourceParameter.type.objectReference.objectTypeId;
+  const sourceObject =
+    ontologyDefinition.OBJECT_TYPE[objectApiName] ??
+    importedTypes.OBJECT_TYPE[objectApiName];
+  collector.assert(
+    sourceObject !== undefined,
+    `Object ${objectApiName} is not defined`,
+  );
   const sourceProperty = getProperty(sourceObject, reference.propertyTypeId);
-  invariant(
+  collector.assert(
     sourceProperty != null && isStruct(sourceProperty.type),
     `${context} references unknown or non-struct property ${reference.propertyTypeId}`,
   );
   const isList = defaultValue.type === "objectParameterStructListFieldValue";
-  invariant(
+  const matchingCardinality = collector.check(
     (sourceProperty.array === true) === isList &&
       (parameter.type.type === "structList") === isList,
     `${context} must match the source and target struct cardinality`,
   );
   const sourceField =
     sourceProperty.type.structDefinition[reference.structFieldApiName];
-  invariant(
+  collector.assert(
     sourceField != null,
     `${context} references unknown source field ${reference.structFieldApiName}`,
   );
@@ -1254,17 +1286,20 @@ function validateStructFieldDefaultValue(
       ? sourceField.fieldType
       : sourceField,
   );
-  invariant(
+  const matchingType = collector.check(
     sourceFieldType.type === targetField.type,
     `${context} has an incompatible source field type`,
   );
-  defaultSources.add(
-    JSON.stringify([reference.parameterId, reference.propertyTypeId]),
-  );
+  if (isEarlier && matchingCardinality && matchingType) {
+    defaultSources.add(
+      JSON.stringify([reference.parameterId, reference.propertyTypeId]),
+    );
+  }
 }
 
 function validateParameterCondition(
   condition: ConditionDefinition,
+  collector: MakerValidationIssueCollector,
   currentParameterId: ParameterId,
   seenParameterIds: Set<ParameterId>,
   parameters?: ActionParameter[],
@@ -1272,15 +1307,15 @@ function validateParameterCondition(
   switch (condition.type) {
     case "parameter":
       const overrideParamId = condition.parameterId;
-      invariant(
+      collector.assert(
         parameters?.some((p) => p.id === overrideParamId),
         `Parameter condition on ${currentParameterId} is referencing unknown parameter ${overrideParamId}`,
       );
-      invariant(
+      collector.assert(
         overrideParamId !== currentParameterId,
         `Parameter condition on ${currentParameterId} is referencing itself`,
       );
-      invariant(
+      collector.check(
         seenParameterIds.has(overrideParamId),
         `Parameter condition on ${currentParameterId} is referencing later parameter ${overrideParamId}`,
       );
@@ -1291,6 +1326,7 @@ function validateParameterCondition(
         condition.conditions.forEach((c) =>
           validateParameterCondition(
             c,
+            collector,
             currentParameterId,
             seenParameterIds,
             parameters,
@@ -1303,6 +1339,7 @@ function validateParameterCondition(
         condition.conditions.forEach((c) =>
           validateParameterCondition(
             c,
+            collector,
             currentParameterId,
             seenParameterIds,
             parameters,
@@ -1327,6 +1364,7 @@ function validateParameterCondition(
 
 function validateParameterPrefill(
   currentParameterId: ParameterId,
+  collector: MakerValidationIssueCollector,
   seenParameterIds: Set<ParameterId>,
   parameters?: ActionParameter[],
   defaultValue?: OntologyIrParameterPrefill,
@@ -1334,13 +1372,13 @@ function validateParameterPrefill(
   if (!defaultValue) return;
   switch (defaultValue.type) {
     case "objectParameterPropertyValue":
-      invariant(
+      collector.assert(
         parameters?.some(
           (p) => p.id === defaultValue.objectParameterPropertyValue.parameterId,
         ),
         `Default value for parameter ${currentParameterId} is referencing unknown parameter ${defaultValue.objectParameterPropertyValue.parameterId}`,
       );
-      invariant(
+      collector.check(
         seenParameterIds.has(
           defaultValue.objectParameterPropertyValue.parameterId,
         ),
@@ -1348,7 +1386,7 @@ function validateParameterPrefill(
       );
       break;
     case "staticValue":
-      invariant(
+      collector.check(
         defaultValue.staticValue.type ===
           parameters?.find((p) => p.id === currentParameterId)?.type,
         `Default static value for parameter ${currentParameterId} does not match type`,
@@ -1373,9 +1411,10 @@ export function validateActionParameters(
   properties: Array<string>,
   name: string,
 ): void {
+  const collector = createValidationIssueCollector();
   // validates that parameters either exist as object properties or have a type defined
   [...Object.keys(def.parameterConfiguration ?? {})].forEach((id) => {
-    invariant(
+    collector.check(
       properties.includes(id) ||
         properties.includes(addNamespaceIfNone(id)) ||
         def.parameterConfiguration?.[id].customParameterType !== undefined ||
@@ -1387,13 +1426,16 @@ export function validateActionParameters(
     ...Object.keys(def.nonParameterMappings ?? {}),
     ...(def.excludedProperties ?? []),
   ].forEach((id) => {
-    invariant(
+    collector.check(
       properties.includes(id) ||
         properties.includes(addNamespaceIfNone(id)) ||
         properties.includes(withoutNamespace(id)),
       `Property ${id} does not exist as a property on ${name}`,
     );
   });
+  // Parameter construction assumes each configured ID has a property or explicit
+  // type. Reject invalid references before convenience actions perform those lookups.
+  collector.throwIfAnyIssues();
 }
 
 // Parameters with configurations will be ordered first in the order they were defined
@@ -1422,6 +1464,8 @@ export function validateParameterOrdering(
   parameterSet: Set<string>,
   actionApiName: string,
 ): void {
+  const collector: MakerValidationIssueCollector =
+    createValidationIssueCollector();
   const orderingSet = new Set(parameterOrdering);
   const missingParameters = [...parameterSet].filter(
     (param) => !orderingSet.has(param),
@@ -1429,7 +1473,9 @@ export function validateParameterOrdering(
   const extraneousParameters = parameterOrdering.filter(
     (param) => !parameterSet.has(param),
   );
-  invariant(
+  // Convenience actions validate ordering before defineAction, so this standalone
+  // prerequisite check throws here rather than sharing the later action pass.
+  collector.assert(
     extraneousParameters.length === 0 && missingParameters.length === 0,
     `Action parameter ordering for ${actionApiName} does not match expected parameters. Extraneous parameters in ordering: {${extraneousParameters}}, Missing parameters in ordering: {${missingParameters}}`,
   );
