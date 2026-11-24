@@ -45,6 +45,7 @@ import {
   ClientRef,
   ObjectDefRef,
   PropertySecuritiesRef,
+  UncastableProperties,
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
@@ -81,7 +82,14 @@ const basePropDefs = {
       const def = this[ObjectDefRef];
 
       if (update == null) {
-        return createOsdkObject(this[ClientRef], def, { ...rawObj });
+        return createOsdkObject(
+          this[ClientRef],
+          def,
+          { ...rawObj },
+          {},
+          undefined,
+          this[UncastableProperties],
+        );
       }
 
       if (
@@ -98,7 +106,14 @@ const basePropDefs = {
       }
 
       const newObject = { ...this[UnderlyingOsdkObject], ...update };
-      return createOsdkObject(this[ClientRef], this[ObjectDefRef], newObject);
+      return createOsdkObject(
+        this[ClientRef],
+        this[ObjectDefRef],
+        newObject,
+        {},
+        undefined,
+        this[UncastableProperties],
+      );
     },
   },
   $objectSpecifier: {
@@ -146,6 +161,9 @@ const basePropDefs = {
   },
 };
 
+/** @internal */
+export const NO_UNCASTABLE_PROPERTIES: readonly string[] = Object.freeze([]);
+
 /**
  * @internal
  * @param client
@@ -158,6 +176,7 @@ export function createOsdkObject(
   simpleOsdkProperties: SimpleOsdkProperties,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
   wirePropertySecurities: PropertySecurities[] | undefined = [],
+  uncastableProperties: readonly string[] = NO_UNCASTABLE_PROPERTIES,
 ): ObjectHolder {
   const { parsedObject, clientPropertySecurities } = parseWhenSecuritiesLoaded(
     wirePropertySecurities,
@@ -179,6 +198,7 @@ export function createOsdkObject(
     },
     [ObjectDefRef]: { value: objectDef, enumerable: false }, // TODO: Potentially update when GA metadata field
     [ClientRef]: { value: client, enumerable: false },
+    [UncastableProperties]: { value: uncastableProperties, enumerable: false },
     ...basePropDefs,
   } satisfies Record<keyof ObjectHolder, PropertyDescriptor>);
 

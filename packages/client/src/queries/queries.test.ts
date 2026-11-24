@@ -22,6 +22,7 @@ import type {
   ObjectSpecifier,
   Osdk,
   OsdkBase,
+  QueryDefinition,
 } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__executeStreamingFunction } from "@osdk/api/unstable";
 import {
@@ -46,6 +47,7 @@ import {
   threeDimensionalAggregationFunction,
   twoDimensionalAggregationFunction,
 } from "@osdk/client.test.ontology";
+import type { QueryTypeV2 } from "@osdk/foundry.ontologies";
 import {
   LegacyFauxFoundry,
   msw,
@@ -67,9 +69,11 @@ import { createClient } from "../createClient.js";
 describe("queries", () => {
   let client: Client;
   let apiServer: SetupServer;
+  let fauxFoundry: LegacyFauxFoundry;
 
   beforeAll(() => {
-    const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
+    fauxFoundry = new LegacyFauxFoundry();
+    const testSetup = startNodeApiServer(fauxFoundry, createClient);
     ({ client, apiServer } = testSetup);
     return () => {
       testSetup.apiServer.close();
@@ -219,6 +223,156 @@ describe("queries", () => {
         $title: undefined,
       },
     ]);
+  });
+
+  describe("interfaces and interface object sets in responses", () => {
+    const interfaceObjectSetRid = "ri.object-set.main.versioned-object-set.foo";
+
+    const returnsInterfaceObjectSetByRid: QueryDefinition = {
+      type: "query",
+      apiName: "returnsInterfaceObjectSetByRid",
+    };
+    const returnsStructWithInterfaces: QueryDefinition = {
+      type: "query",
+      apiName: "returnsStructWithInterfaces",
+    };
+
+    beforeAll(() => {
+      const ontology = fauxFoundry.getDefaultOntology();
+
+      const interfaceObjectSetQuery: QueryTypeV2 = {
+        apiName: returnsInterfaceObjectSetByRid.apiName,
+        displayName: "returnsInterfaceObjectSetByRid",
+        parameters: {},
+        output: {
+          type: "interfaceObjectSet",
+          interfaceTypeApiName: "FooInterface",
+        },
+        rid: "ri.function-registry.main.function.returnsInterfaceObjectSetByRid",
+        version: "0.0.1",
+        typeReferences: {},
+      };
+      ontology.registerQueryType(interfaceObjectSetQuery, (_req, ds) => {
+        ds.registerObjectSet(interfaceObjectSetRid, {
+          type: "interfaceBase",
+          interfaceType: "FooInterface",
+        });
+        return { value: interfaceObjectSetRid };
+      });
+
+      const structQuery: QueryTypeV2 = {
+        apiName: returnsStructWithInterfaces.apiName,
+        displayName: "returnsStructWithInterfaces",
+        parameters: {},
+        output: {
+          type: "array",
+          subType: {
+            type: "struct",
+            fields: [
+              { name: "label", fieldType: { type: "string" } },
+              {
+                name: "lists",
+                fieldType: {
+                  type: "interfaceObjectSet",
+                  interfaceTypeApiName: "FooInterface",
+                },
+              },
+              {
+                name: "interfaces",
+                fieldType: {
+                  type: "array",
+                  subType: {
+                    type: "interfaceObject",
+                    interfaceTypeApiName: "FooInterface",
+                  },
+                },
+              },
+              {
+                name: "objects",
+                fieldType: {
+                  type: "array",
+                  subType: {
+                    type: "object",
+                    objectApiName: "Employee",
+                    objectTypeApiName: "Employee",
+                  },
+                },
+              },
+            ],
+          },
+        },
+        rid: "ri.function-registry.main.function.returnsStructWithInterfaces",
+        version: "0.0.1",
+        typeReferences: {},
+      };
+      ontology.registerQueryType(structQuery, () => ({
+        value: [
+          {
+            label: "first",
+            lists: { type: "interfaceBase", interfaceType: "FooInterface" },
+            interfaces: [
+              { objectTypeApiName: "Employee", primaryKeyValue: 50030 },
+            ],
+            objects: [50030, 50031],
+          },
+        ],
+      }));
+    });
+
+    it("hydrates a top-level interfaceObjectSet returned by rid", async () => {
+      const result = (await client(
+        returnsInterfaceObjectSetByRid,
+      ).executeFunction()) as ObjectSet<FooInterface>;
+
+      const page = await result.fetchPage();
+      expect(page.data.length).toBeGreaterThan(0);
+      expect(page.data.map((o) => o.$apiName)).toEqual(
+        page.data.map(() => "FooInterface"),
+      );
+    });
+
+    it("hydrates interfaceObjectSet, array<interface>, and array<object> struct fields", async () => {
+      const [result] = (await client(
+        returnsStructWithInterfaces,
+      ).executeFunction()) as Array<{
+        label: string;
+        lists: ObjectSet<FooInterface>;
+        interfaces: OsdkBase<FooInterface>[];
+        objects: OsdkBase<Employee>[];
+      }>;
+
+      expect(result.label).toBe("first");
+
+      const page = await result.lists.fetchPage();
+      expect(page.data.length).toBeGreaterThan(0);
+      expect(page.data.every((o) => o.$apiName === "FooInterface")).toBe(true);
+
+      expect(result.interfaces).toEqual([
+        {
+          $apiName: "FooInterface",
+          $objectType: "Employee",
+          $primaryKey: 50030,
+          $objectSpecifier: "Employee:50030",
+          $title: undefined,
+        },
+      ]);
+      expect(result.objects).toEqual([
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50030,
+          $objectSpecifier: "Employee:50030",
+          $title: undefined,
+        },
+        {
+          $apiName: "Employee",
+          $objectType: "Employee",
+          $primaryKey: 50031,
+          $objectSpecifier: "Employee:50031",
+          $title: undefined,
+        },
+      ]);
+    });
   });
 
   it("no params work", async () => {

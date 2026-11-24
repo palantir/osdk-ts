@@ -47,6 +47,7 @@ const transformMetadata = (
   const interfaceTypeApiNames = new Set<string>(
     Object.keys(transformed.interfaceTypes),
   );
+  const excludedInterfaces = new Set<string>();
   const objectTypes: OntologyFullMetadata["objectTypes"] = Object.fromEntries(
     Object.entries(transformed.objectTypes).map(([key, value]) => {
       const implementsInterfaces = value.implementsInterfaces.filter((n) =>
@@ -57,18 +58,11 @@ const transformMetadata = (
           interfaceTypeApiNames.has(n),
         ),
       );
-      const excluded = [
-        ...value.implementsInterfaces.filter(
-          (n) => !interfaceTypeApiNames.has(n),
-        ),
-        ...Object.keys(value.implementsInterfaces2).filter(
-          ([n]) => !interfaceTypeApiNames.has(n),
-        ),
-      ];
-      if (excluded.length > 0) {
-        consola.warn(
-          `The following interface types were removed from the ontology metadata since they were not imported: ${excluded.join(", ")}`,
-        );
+      for (const n of value.implementsInterfaces) {
+        if (!interfaceTypeApiNames.has(n)) excludedInterfaces.add(n);
+      }
+      for (const n of Object.keys(value.implementsInterfaces2)) {
+        if (!interfaceTypeApiNames.has(n)) excludedInterfaces.add(n);
       }
       return [
         key,
@@ -80,6 +74,11 @@ const transformMetadata = (
       ];
     }),
   );
+  if (excludedInterfaces.size > 0) {
+    consola.warn(
+      `The following interface types were removed from the ontology metadata since they were not imported: ${[...excludedInterfaces].sort().join(", ")}`,
+    );
+  }
   return {
     ...transformed,
     objectTypes,

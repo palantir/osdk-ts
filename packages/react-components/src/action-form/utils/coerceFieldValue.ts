@@ -32,6 +32,13 @@ export function coerceFieldValue(
     return undefined;
   }
 
+  if (Array.isArray(rawValue)) {
+    const coerced = rawValue.map((element) =>
+      coerceFieldValue(parameterType, element),
+    );
+    return coerced.some((v) => v === undefined) ? undefined : coerced;
+  }
+
   if (parameterType == null) {
     return rawValue;
   }

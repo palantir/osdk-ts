@@ -1,6 +1,8 @@
 # SpreadsheetViewer
 
-A React component for rendering spreadsheets (.xlsx) as styled HTML tables with sheet tab navigation. Uses [SheetJS (xlsx)](https://github.com/SheetJS/sheetjs) for parsing.
+`SpreadsheetViewer` renders an `.xlsx` spreadsheet as styled HTML tables with a tab for each sheet.
+
+It parses files with [SheetJS (xlsx)](https://github.com/SheetJS/sheetjs).
 
 ## Import
 

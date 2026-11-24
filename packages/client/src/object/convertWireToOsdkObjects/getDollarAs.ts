@@ -23,7 +23,11 @@ import {
 import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import { InterfaceDefRef, UnderlyingOsdkObject } from "./InternalSymbols.js";
+import {
+  InterfaceDefRef,
+  UncastableProperties,
+  UnderlyingOsdkObject,
+} from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
@@ -51,24 +55,21 @@ const osdkObjectToInterfaceView = createSimpleCache(
 );
 
 function assertInterfaceToOtCastIsPermitted(
-  holder: { [InterfaceDefRef]?: unknown },
+  holder: { [InterfaceDefRef]?: unknown; [UnderlyingOsdkObject]: ObjectHolder },
   objDef: FetchedObjectTypeDefinition,
 ): void {
   const interfaceDef = holder[InterfaceDefRef] as
     | { apiName: string }
     | undefined;
   if (interfaceDef == null) return;
-  const implementations =
-    objDef.interfaceImplementations?.[interfaceDef.apiName];
-  if (implementations == null) return;
-
-  for (const [iptApiName, impl] of Object.entries(implementations)) {
-    if (impl.type === "localProperty") continue;
+  const uncastableProperties =
+    holder[UnderlyingOsdkObject][UncastableProperties];
+  if (uncastableProperties.length > 0) {
     throw new Error(
       `Cannot cast interface view of '${interfaceDef.apiName}' to ` +
-        `'${objDef.apiName}': property '${iptApiName}' has a non-local ` +
-        `implementation (${impl.type}), so the underlying object type cannot ` +
-        `be faithfully represented. Load the object type directly.`,
+        `'${objDef.apiName}': properties '${uncastableProperties.join("', '")}' ` +
+        `were not fully loaded through the interface, so the underlying ` +
+        `object type cannot be faithfully represented. Load the object type directly.`,
     );
   }
 }

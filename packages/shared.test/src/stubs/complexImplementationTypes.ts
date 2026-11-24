@@ -306,11 +306,65 @@ export const ComplexImplementationInterface: InterfaceType = {
   },
 };
 
+export const StructImplementationInterface: InterfaceType = {
+  apiName: "StructImplementationInterface",
+  displayName: "Struct Implementation Interface",
+  description:
+    "Interface implemented through local and struct field properties",
+  rid: "ri.interface.main.interface.struct-implementation",
+  extendsInterfaces: [],
+  allExtendsInterfaces: [],
+  implementedByObjectTypes: ["ComplexImplementationObject"],
+  links: {},
+  allLinks: {},
+  properties: {},
+  allProperties: {},
+  propertiesV2: {
+    sLocal: {
+      type: "interfaceDefinedPropertyType",
+      rid: "ri.interfacePropertyType.main.sLocal",
+      apiName: "sLocal",
+      displayName: "s Local",
+      dataType: { type: "string" },
+      requireImplementation: true,
+      typeClasses: [],
+    },
+    sStructField: {
+      type: "interfaceDefinedPropertyType",
+      rid: "ri.interfacePropertyType.main.sStructField",
+      apiName: "sStructField",
+      displayName: "s Struct Field",
+      dataType: { type: "string" },
+      requireImplementation: true,
+      typeClasses: [],
+    },
+  },
+  allPropertiesV2: {
+    sLocal: {
+      rid: "ri.interfacePropertyType.main.sLocal",
+      apiName: "sLocal",
+      displayName: "s Local",
+      dataType: { type: "string" },
+      requireImplementation: true,
+    },
+    sStructField: {
+      rid: "ri.interfacePropertyType.main.sStructField",
+      apiName: "sStructField",
+      displayName: "s Struct Field",
+      dataType: { type: "string" },
+      requireImplementation: true,
+    },
+  },
+};
+
 export const complexImplementationObjectTypeWithLinkTypes: ObjectTypeFullMetadata =
   {
     objectType: complexImplementationObjectType,
     linkTypes: [],
-    implementsInterfaces: ["ComplexImplementationInterface"],
+    implementsInterfaces: [
+      "ComplexImplementationInterface",
+      "StructImplementationInterface",
+    ],
     implementsInterfaces2: {
       ComplexImplementationInterface: {
         properties: {},
@@ -361,6 +415,24 @@ export const complexImplementationObjectTypeWithLinkTypes: ObjectTypeFullMetadat
             implementation: {
               type: "localPropertyImplementation",
               propertyApiName: "arrayValue",
+            },
+          },
+        },
+        links: {},
+        actionTypes: {},
+      },
+      StructImplementationInterface: {
+        properties: {},
+        propertiesV2: {
+          sLocal: {
+            type: "localPropertyImplementation",
+            propertyApiName: "localValue",
+          },
+          sStructField: {
+            type: "structFieldImplementation",
+            structFieldOfProperty: {
+              propertyApiName: "nestedStruct",
+              structFieldApiName: "label",
             },
           },
         },

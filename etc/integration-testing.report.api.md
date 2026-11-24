@@ -9,11 +9,11 @@ import type { LinkTargets } from '@osdk/seed-helpers';
 import type { LinkTypeApiNamesFor } from '@osdk/api';
 import type { MockClient } from '@osdk/unit-testing';
 import type { ObjectTypeDefinition } from '@osdk/client';
+import type { OntologySeedFunction } from '@osdk/seed-helpers';
+import type { OntologySeedOutput } from '@osdk/seed-helpers';
+import type { OntologySeedProps } from '@osdk/seed-helpers';
+import type { OntologySeedRef } from '@osdk/seed-helpers';
 import type { PrimaryKeyType } from '@osdk/api';
-import type { SeedFunction } from '@osdk/seed-helpers';
-import type { SeedOutput } from '@osdk/seed-helpers';
-import type { SeedProps } from '@osdk/seed-helpers';
-import type { SeedRef } from '@osdk/seed-helpers';
 
 // Warning: (ae-forgotten-export) The symbol "FoundryProbeResult" needs to be exported by the entry point index.d.ts
 //
@@ -65,42 +65,42 @@ export interface IntegrationServerConfig {
 
 // @public (undocumented)
 export type SeedClient = {
-    	<T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>
-    	ref<Q extends ObjectTypeDefinition>(o: Q, primaryKey: PrimaryKeyType<Q>): SeedRef<Q> | undefined
-    	set(seed?: SeedOutput): Promise<void>
-    	addAll(seed: SeedOutput): Promise<void>
-    	create<Q extends ObjectTypeDefinition>(o: Q, props: SeedProps<Q>): Promise<SeedRef<Q>>
-    	update<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>, props: Partial<Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>>): Promise<SeedRef<Q>>
-    	delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>
+    	<T = void>(seed: OntologySeedFunction<T> | OntologySeedOutput): Promise<T>
+    	ref<Q extends ObjectTypeDefinition>(o: Q, primaryKey: PrimaryKeyType<Q>): OntologySeedRef<Q> | undefined
+    	set(seed?: OntologySeedOutput): Promise<void>
+    	addAll(seed: OntologySeedOutput): Promise<void>
+    	create<Q extends ObjectTypeDefinition>(o: Q, props: OntologySeedProps<Q>): Promise<OntologySeedRef<Q>>
+    	update<Q extends ObjectTypeDefinition>(ref: OntologySeedRef<Q>, props: Partial<Omit<OntologySeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>>): Promise<OntologySeedRef<Q>>
+    	delete<Q extends ObjectTypeDefinition>(ref: OntologySeedRef<Q>): Promise<void>
     	link<
     		Q extends ObjectTypeDefinition,
     		A extends LinkTypeApiNamesFor<Q>
-    	>(source: SeedRef<Q>, apiName: A, target: LinkTargets<Q, A>): Promise<void>
+    	>(source: OntologySeedRef<Q>, apiName: A, target: LinkTargets<Q, A>): Promise<void>
     	unlink<
     		Q extends ObjectTypeDefinition,
     		A extends LinkTypeApiNamesFor<Q>
-    	>(source: SeedRef<Q>, apiName: A, target: LinkTargets<Q, A>): Promise<void>
+    	>(source: OntologySeedRef<Q>, apiName: A, target: LinkTargets<Q, A>): Promise<void>
 };
 
 // Warnings were encountered during analysis:
 //
 // src/types.ts:71:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:72:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:78:14 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:78:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:87:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:92:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:93:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/types.ts:95:19 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
 // src/types.ts:95:13 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/types.ts:100:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:100:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:113:22 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:123:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:124:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:125:5 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:131:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:131:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/types.ts:131:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:100:30 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:100:30 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:113:30 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:121:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:121:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:121:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:133:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:133:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/types.ts:133:6 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 
 // (No @packageDocumentation comment for this package)
 

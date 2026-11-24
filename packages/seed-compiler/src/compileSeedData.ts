@@ -18,14 +18,17 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
-import { SeedBuilder, type SeedOutput } from "@osdk/seed-helpers";
+import {
+  OntologySeedBuilder,
+  type OntologySeedOutput,
+} from "@osdk/seed-helpers";
 import { consola } from "consola";
 import { createJiti } from "jiti";
 
 /**
  * Merges one or more seed data files into a single JSON output.
  *
- * Pipeline: load each file -> feed into one {@link SeedBuilder} -> write JSON.
+ * Pipeline: load each file -> feed into one {@link OntologySeedBuilder} -> write JSON.
  *
  * @param seedFiles - Absolute paths to seed `.mts` / `.ts` files.
  * @param outputPath - Where to write the merged seed JSON.
@@ -40,7 +43,7 @@ export async function compileSeedData(
   metadata: OntologyFullMetadata,
 ): Promise<void> {
   consola.info(`Compiling seed data from ${seedFiles.length} file(s)...`);
-  const builder = new SeedBuilder(metadata);
+  const builder = new OntologySeedBuilder(metadata);
   for (const seedFile of seedFiles) {
     const output = await loadSeedFile(seedFile);
     try {
@@ -65,8 +68,8 @@ export async function compileSeedData(
   );
 }
 
-type LoadedSeedOutput = Pick<SeedOutput, "objects"> &
-  Partial<Pick<SeedOutput, "links">>;
+type LoadedSeedOutput = Pick<OntologySeedOutput, "objects"> &
+  Partial<Pick<OntologySeedOutput, "links">>;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value != null && !Array.isArray(value);
@@ -78,16 +81,16 @@ const isSeedResult = (value: unknown): value is { output: LoadedSeedOutput } =>
   isRecord(value) && isSeedOutput(value.output);
 
 /**
- * Loads a single seed file via jiti and extracts the {@link SeedOutput} from
+ * Loads a single seed file via jiti and extracts the {@link OntologySeedOutput} from
  * its default export.
  *
  * Both shapes a seed author naturally reaches for are accepted: the
  * `createSeed(...)` result (`{ output, context }`) and its `.output` (a bare
- * `SeedOutput`).
+ * `OntologySeedOutput`).
  *
  * @throws with a contextual message wrapping the original error and filename.
  */
-async function loadSeedFile(seedFile: string): Promise<SeedOutput> {
+async function loadSeedFile(seedFile: string): Promise<OntologySeedOutput> {
   consola.info(`Loading seed file: ${seedFile}`);
   const name = path.basename(seedFile);
   let seedModule: Record<string, unknown>;
@@ -106,7 +109,7 @@ async function loadSeedFile(seedFile: string): Promise<SeedOutput> {
   if (!isRecord(seedModule) || !Object.hasOwn(seedModule, "default")) {
     throw new Error(
       `Seed file '${name}' must have a default export. Export the result of ` +
-        `createSeed(), which wraps createSeedWithMetadata() from ` +
+        `createSeed(), which wraps createOntologySeedWithMetadata() from ` +
         `@osdk/seed-helpers.`,
     );
   }

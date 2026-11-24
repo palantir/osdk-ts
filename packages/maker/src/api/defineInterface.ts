@@ -15,7 +15,6 @@
  */
 
 import type { InterfaceTypeStatus } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 
 import {
   API_NAME_PATTERN,
@@ -23,7 +22,10 @@ import {
   isValidNamespacedApiName,
   NAMESPACED_API_NAME_PATTERN,
 } from "../util/ApiNameValidator.js";
-import { createValidationIssueCollector } from "../validation.js";
+import {
+  createValidationIssueCollector,
+  type MakerValidationIssueCollector,
+} from "../validation.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import type { EntityPermission } from "./common/EntityPermission.js";
@@ -82,13 +84,14 @@ export function defineInterface(
 ): InterfaceType {
   const interfaceDef = cloneDefinition(interfaceDefInput);
   const apiName = namespace + interfaceDef.apiName;
-  invariant(
+  const collector = createValidationIssueCollector();
+  collector.check(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName] ===
       undefined,
     `Interface ${apiName} already exists`,
   );
 
-  invariant(
+  collector.check(
     isValidNamespacedApiName(interfaceDef.apiName),
     `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${NAMESPACED_API_NAME_PATTERN}.`,
   );
@@ -130,6 +133,7 @@ export function defineInterface(
             namespace,
             propName,
             type.sharedPropertyType,
+            collector,
           ),
         },
       ];
@@ -140,7 +144,7 @@ export function defineInterface(
     Object.entries(interfaceDef.properties ?? {}).map<
       [string, InterfacePropertyType]
     >(([apiName, prop]) => {
-      invariant(
+      collector.check(
         isValidApiName(apiName),
         `Invalid API name ${apiName} for property on interface ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
       );
@@ -181,7 +185,7 @@ export function defineInterface(
     interfaceDef.status ?? { type: "active" },
   );
 
-  invariant(
+  collector.check(
     status.type !== "deprecated" ||
       (status.deprecated.message && status.deprecated.deadline),
     `Deprecated status must include message and deadline properties.`,
@@ -222,7 +226,6 @@ export function defineInterface(
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
 
-  const collector = createValidationIssueCollector();
   const context = `Interface "${apiName}"`;
   validateDisplayMetadataLengths(
     fullInterface.displayMetadata,
@@ -241,6 +244,7 @@ export function defineInterface(
     );
     validateStructFieldMetadata(property.type, propertyContext, collector);
   }
+  // Run the separate migration validators only after local validation succeeds.
   collector.throwIfAnyIssues();
 
   if (interfaceDef.schemaMigrations !== undefined) {
@@ -269,15 +273,16 @@ function verifyBasePropertyDefinition(
   namespace: string,
   apiName: string,
   type: SharedPropertyType,
+  collector: MakerValidationIssueCollector,
 ): SharedPropertyType {
   const unNamespacedTypeApiName = withoutNamespace(type.apiName);
-  invariant(
-    isPropertyTypeType(type.type) || isExotic(type.type),
+  collector.check(
+    type.type != null && (isPropertyTypeType(type.type) || isExotic(type.type)),
     `Invalid data type ${JSON.stringify(
       type,
     )} for property ${apiName} on InterfaceType ${apiName}`,
   );
-  invariant(
+  collector.check(
     namespace + apiName === type.apiName || apiName === unNamespacedTypeApiName,
     `property key and it's apiName must be identical. ${JSON.stringify({
       key: apiName,

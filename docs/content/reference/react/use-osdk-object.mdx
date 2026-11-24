@@ -1,0 +1,86 @@
+---
+title: useOsdkObject
+description: Load one object by primary key, or observe an object instance you already have, from the shared cache.
+---
+
+```ts
+import { useOsdkObject } from "@osdk/react";
+
+function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options?: UseOsdkObjectOptions<Q>,
+): UseOsdkObjectResult<Q>;
+
+function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+  enabled?: boolean,
+): UseOsdkObjectResult<Q>;
+
+function useOsdkObject<Q extends ObjectOrInterfaceDefinition>(
+  obj: Osdk.Instance<Q>,
+  enabled?: boolean,
+): UseOsdkObjectResult<Q>;
+```
+
+Pass a type and primary key to fetch the object, or pass an `Osdk.Instance` to observe it in the cache without a network request. The component re-renders when the cached object changes, for example after an action or an optimistic update.
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `type` | `Q` | | The object type or interface from your generated SDK. |
+| `primaryKey` | `PrimaryKeyType<Q>` | | The primary key of the object to load. |
+| `obj` | `Osdk.Instance<Q>` | | An object you already loaded. The hook reads it from the cache only and does not fetch. |
+| `enabled` | `boolean` | `true` | When `false`, the hook does not subscribe or fetch, and `object` is `undefined`. |
+| `options` | `UseOsdkObjectOptions<Q>` | | See below. |
+
+## Options
+
+The options type has little JSDoc, so this table is written by hand.
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `$select` | `readonly PropertyKeys<Q>[]` | All properties | Properties to load. |
+| `enabled` | `boolean` | `true` | When `false`, the hook does not subscribe or fetch, and `object` is `undefined`. |
+| `$loadPropertySecurityMetadata` | `boolean` | `false` | Loads per-property marking requirements into `$propertySecurities`. |
+| `$includeAllBaseObjectProperties` | `boolean` | `false` | For an interface, loads every property of the underlying object type. No effect for object types. |
+
+## Returns
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `object` | `Osdk.Instance<Q> \| undefined` | The object, or `undefined` before it loads, on error, or while disabled. |
+| `isLoading` | `boolean` | `true` while enabled and the object has not loaded. `false` once `error` is set. |
+| `error` | `Error \| undefined` | The error from the last load, if any. |
+| `isOptimistic` | `boolean` | `true` while the cached object reflects an optimistic update that the server has not confirmed. |
+| `forceUpdate` | `() => void` | Not implemented. Calling it throws. |
+
+## Example
+
+```tsx title="src/EmployeeCard.tsx"
+import { Employee } from "@my-app/sdk";
+import { useOsdkObject } from "@osdk/react";
+
+export function EmployeeCard({ employeeId }: { employeeId: number }) {
+  const { object: employee, isLoading, error } = useOsdkObject(
+    Employee,
+    employeeId,
+    { $select: ["fullName", "jobTitle"] },
+  );
+
+  return (
+    <article aria-busy={isLoading}>
+      {error && <p role="alert">{error.message}</p>}
+      <h2>{employee?.fullName}</h2>
+      <p>{employee?.jobTitle}</p>
+    </article>
+  );
+}
+```
+
+## See also
+
+- [Load objects](/react/objects)
+- [Osdk.Instance](../client/osdk-instance.mdx)
