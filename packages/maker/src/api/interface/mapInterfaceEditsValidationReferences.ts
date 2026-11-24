@@ -49,8 +49,6 @@ import type { InterfaceType } from "./InterfaceType.js";
 
 /**
  * Converts each entity an interface edit validation references into the ID it is packaged under.
- *
- * @internal
  */
 export interface InterfaceEditsValidationReferenceConverters {
   convertObject: (objectTypeApiName: string) => string;
@@ -65,8 +63,6 @@ export interface InterfaceEditsValidationReferenceConverters {
 /**
  * Rewrites the entities an interface edit validation references using `converters`, or returns
  * `undefined` if any reference can't be resolved.
- *
- * @internal
  */
 export function mapInterfaceEditsValidationReferences(
   validation: OntologyIrInterfaceActionTypeEditsValidation,

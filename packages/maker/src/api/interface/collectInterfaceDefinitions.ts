@@ -16,7 +16,6 @@
 
 import type { InterfaceType } from "./InterfaceType.js";
 
-/** @internal */
 export function collectInterfaceDefinitions(
   interfaces: InterfaceType[],
 ): Map<string, InterfaceType> {
