@@ -18,10 +18,10 @@ import type { LinkTypeApiNamesFor, PrimaryKeyType } from "@osdk/api";
 import type { Client, ObjectTypeDefinition } from "@osdk/client";
 import type {
   LinkTargets,
-  SeedFunction,
-  SeedOutput,
-  SeedProps,
-  SeedRef,
+  OntologySeedFunction,
+  OntologySeedOutput,
+  OntologySeedProps,
+  OntologySeedRef,
 } from "@osdk/seed-helpers";
 import type { MockClient } from "@osdk/unit-testing";
 
@@ -61,10 +61,10 @@ export interface IntegrationServer {
 
 export type SeedClient = {
   /**
-   * Transactional interface to SeedBuilder
-   * Applies changes if function is provided, calls .addAll(seed) if SeedOutput is provided.
+   * Transactional interface to OntologySeedBuilder
+   * Applies changes if function is provided, calls .addAll(seed) if OntologySeedOutput is provided.
    */
-  <T = void>(seed: SeedFunction<T> | SeedOutput): Promise<T>;
+  <T = void>(seed: OntologySeedFunction<T> | OntologySeedOutput): Promise<T>;
   /**
    * Returns a reference to an object already in the seed, or `undefined` if none
    * exists. Read-only: nothing is applied to the server.
@@ -75,18 +75,18 @@ export type SeedClient = {
   ref<Q extends ObjectTypeDefinition>(
     o: Q,
     primaryKey: PrimaryKeyType<Q>,
-  ): SeedRef<Q> | undefined;
+  ): OntologySeedRef<Q> | undefined;
   /**
    * Replaces the entire seed with `seed` and applies it, discarding everything
    * accumulated so far. Clears the seed when called with no argument.
    * @param seed Seed output to reset to, or `undefined` to clear
    */
-  set(seed?: SeedOutput): Promise<void>;
+  set(seed?: OntologySeedOutput): Promise<void>;
   /**
    * Merges an existing seed output into the current seed and applies it.
    * @param seed Seed output to merge in; must match the metadata the client was created with
    */
-  addAll(seed: SeedOutput): Promise<void>;
+  addAll(seed: OntologySeedOutput): Promise<void>;
   /**
    * Creates an object of the given type and applies the seed.
    * @param o Object type definition
@@ -96,8 +96,8 @@ export type SeedClient = {
    */
   create<Q extends ObjectTypeDefinition>(
     o: Q,
-    props: SeedProps<Q>,
-  ): Promise<SeedRef<Q>>;
+    props: OntologySeedProps<Q>,
+  ): Promise<OntologySeedRef<Q>>;
   /**
    * Merges `props` into the referenced object and applies the seed. Properties not
    * included are left unchanged; the object is created if it does not yet exist.
@@ -106,17 +106,19 @@ export type SeedClient = {
    * @returns The same reference passed in
    */
   update<Q extends ObjectTypeDefinition>(
-    ref: SeedRef<Q>,
+    ref: OntologySeedRef<Q>,
     props: Partial<
-      Omit<SeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
+      Omit<OntologySeedProps<Q>, Exclude<Q["primaryKeyApiName"], undefined>>
     >,
-  ): Promise<SeedRef<Q>>;
+  ): Promise<OntologySeedRef<Q>>;
   /**
    * Removes the referenced object from the seed and applies it. No-op if the object
    * does not exist.
    * @param ref Reference to the object to delete
    */
-  delete<Q extends ObjectTypeDefinition>(ref: SeedRef<Q>): Promise<void>;
+  delete<Q extends ObjectTypeDefinition>(
+    ref: OntologySeedRef<Q>,
+  ): Promise<void>;
   /**
    * Links the source object to one or more targets via the given link type and
    * applies the seed. Re-adding an existing link is a no-op.
@@ -125,7 +127,7 @@ export type SeedClient = {
    * @param target Reference (or references) to the target object(s)
    */
   link<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
+    source: OntologySeedRef<Q>,
     apiName: A,
     target: LinkTargets<Q, A>,
   ): Promise<void>;
@@ -137,7 +139,7 @@ export type SeedClient = {
    * @param target Reference (or references) to the target object(s)
    */
   unlink<Q extends ObjectTypeDefinition, A extends LinkTypeApiNamesFor<Q>>(
-    source: SeedRef<Q>,
+    source: OntologySeedRef<Q>,
     apiName: A,
     target: LinkTargets<Q, A>,
   ): Promise<void>;

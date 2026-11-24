@@ -16,9 +16,9 @@
 
 import type * as Ontology from "@osdk/foundry.ontologies";
 import {
-  SeedBuilder,
-  type SeedFunction,
-  type SeedOutput,
+  OntologySeedBuilder,
+  type OntologySeedFunction,
+  type OntologySeedOutput,
 } from "@osdk/seed-helpers";
 
 import { OntologySeedingService } from "./generated/cli/index.js";
@@ -35,9 +35,9 @@ type SeedClientProps = PropsOf<SeedClient>;
 
 export function createSeedClient(config: SeedClientConfig): SeedClient {
   const { baseUrl, metadata, fetchFn } = config;
-  const builder = new SeedBuilder(metadata);
+  const builder = new OntologySeedBuilder(metadata);
   const seedClientFunction = async <T = void>(
-    seed: SeedFunction<T> | SeedOutput,
+    seed: OntologySeedFunction<T> | OntologySeedOutput,
   ): Promise<T> => {
     let result;
     if (typeof seed === "function") {
@@ -48,7 +48,7 @@ export function createSeedClient(config: SeedClientConfig): SeedClient {
     await applySeed(builder.build());
     return result as T;
   };
-  const applySeed = async (seed: SeedOutput) => {
+  const applySeed = async (seed: OntologySeedOutput) => {
     const res = await OntologySeedingService.setSeed(
       {
         baseUrl,
