@@ -497,6 +497,37 @@ export const WithUnexpectedValues: Story = {
         story:
           "When a stored value has a shape the field component can't display, the field says what it expected in place of the component and offers to clear the value. These values don't block submit; they are submitted unchanged for server validation to report. Validation errors still show under such a field: the empty array in the required Availability field is both rejected by the date range field and empty to the required rule, so after a submit attempt it also shows the required error, which blocks submit.",
       },
+      source: {
+        code: `const formContent = [
+  field({ fieldKey: "name", fieldComponent: "TEXT_INPUT", label: "Name", fieldComponentProps: {} }),
+  field({ fieldKey: "quantity", fieldComponent: "NUMBER_INPUT", label: "Quantity", fieldComponentProps: {} }),
+  field({ fieldKey: "startDate", fieldComponent: "DATETIME_PICKER", label: "Start Date", fieldComponentProps: {} }),
+  field({ fieldKey: "isRemote", fieldComponent: "SWITCH", label: "Remote", fieldComponentProps: {} }),
+  field({ fieldKey: "availability", fieldComponent: "DATE_RANGE_INPUT", label: "Availability", isRequired: true, fieldComponentProps: {} }),
+];
+
+// Values these field components can't display
+const [formState, setFormState] = useState({
+  name: { first: "Ada" },
+  quantity: "42",
+  startDate: "2026-11-19",
+  isRemote: "false",
+  availability: [],
+});
+
+const handleFieldValueChange = (fieldKey, value) => {
+  setFormState((prev) => ({ ...prev, [fieldKey]: value }));
+};
+
+return (
+  <BaseForm
+    formContent={formContent}
+    formState={formState}
+    onFieldValueChange={handleFieldValueChange}
+    onSubmit={(state) => console.log("Submitted:", state)}
+  />
+);`,
+      },
     },
   },
   render: () => <UnexpectedValuesFormStory />,
