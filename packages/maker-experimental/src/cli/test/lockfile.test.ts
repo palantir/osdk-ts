@@ -302,7 +302,16 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
       interfaces: {
         LegacyPerson: {
           schema: {
-            properties: { fullName: { type: "string", required: true } },
+            properties: {
+              address: {
+                type: {
+                  type: "struct",
+                  structDefinition: { street: "string", zip: "string" },
+                },
+                required: true,
+              },
+              fullName: { type: "string", required: true },
+            },
           },
           transitions,
         },
@@ -318,7 +327,13 @@ describe("maker-experimental CLI ontology schema lockfile", () => {
             type: "replace",
             replacement: {
               interfaceType: "Person",
-              propertyMappings: { fullName: "firstName" },
+              propertyMappings: {
+                address: {
+                  property: "location",
+                  structFieldMappings: { street: "line1", zip: "postcode" },
+                },
+                fullName: "firstName",
+              },
             },
           },
         ],

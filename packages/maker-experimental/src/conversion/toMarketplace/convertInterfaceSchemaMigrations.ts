@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfacePropertyTypeReplacement as WireInterfacePropertyTypeReplacement,
   InterfaceTypeReplacement as WireInterfaceTypeReplacement,
   InterfaceTypeSchemaMigrationBlockData,
   InterfaceTypeSchemaMigrationInstruction,
@@ -27,6 +28,7 @@ import type {
   OntologyContext,
   ResolvedInterfaceMember,
   ResolvedInterfaceProperty,
+  ResolvedInterfacePropertyMapping,
   ResolvedInterfaceTypeReplacement,
 } from "@osdk/maker";
 import {
@@ -42,7 +44,10 @@ import {
 import invariant from "tiny-invariant";
 
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
-import { interfacePropertyWireRid } from "./convertInterfacePropertyType.js";
+import {
+  interfacePropertyWireRid,
+  interfaceStructFieldWireRid,
+} from "./convertInterfacePropertyType.js";
 
 export function convertInterfaceSchemaMigrations(
   interfaceType: InterfaceType,
@@ -110,6 +115,7 @@ class WireReferences {
     interfaceLinkTypeRidsToApiNames: {},
     interfaceParameterConstraintRidsToApiNames: {},
     interfacePropertyTypeRidsToApiNames: {},
+    interfaceStructFieldRidsToApiNames: {},
     interfaceTypeRidsToApiNames: {},
   };
 
@@ -128,6 +134,23 @@ class WireReferences {
       this.ridGenerator,
     );
     this.ridsToApiNames.interfacePropertyTypeRidsToApiNames[rid] = apiName;
+    return rid;
+  }
+
+  /** Struct field API names are scoped to `property`, whose rid keys their rids. */
+  structField(
+    property: ResolvedInterfaceProperty,
+    propertyRid: string,
+    apiName: string,
+  ): string {
+    const rid = interfaceStructFieldWireRid(
+      property.property,
+      property.authoredKey,
+      apiName,
+      this.ridGenerator,
+    );
+    (this.ridsToApiNames.interfaceStructFieldRidsToApiNames[propertyRid] ??=
+      {})[rid] = apiName;
     return rid;
   }
 
@@ -246,10 +269,9 @@ function convertReplacement(
   return {
     interfaceTypeRid: references.interfaceType(resolved.interfaceType.apiName),
     propertyMappings: Object.fromEntries(
-      resolved.propertyMappings.map(({ from, to }) => [
-        references.property(from),
-        references.property(to),
-      ]),
+      resolved.propertyMappings.map((mapping) =>
+        convertPropertyReplacement(mapping, references),
+      ),
     ),
     linkTypeConstraintMappings: Object.fromEntries(
       resolved.linkTypeConstraintMappings.map(({ from, to }) => [
@@ -276,6 +298,26 @@ function convertReplacement(
       ),
     ),
   };
+}
+
+function convertPropertyReplacement(
+  { from, to, structFieldMappings }: ResolvedInterfacePropertyMapping,
+  references: WireReferences,
+): [fromRid: string, WireInterfacePropertyTypeReplacement] {
+  const fromRid = references.property(from);
+  const toRid = references.property(to);
+  return [
+    fromRid,
+    {
+      interfacePropertyTypeRid: toRid,
+      structFieldMappings: Object.fromEntries(
+        Object.entries(structFieldMappings).map(([fromField, toField]) => [
+          references.structField(from, fromRid, fromField),
+          references.structField(to, toRid, toField),
+        ]),
+      ),
+    },
+  ];
 }
 
 function assertReplacementHasBlockShapes(

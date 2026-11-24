@@ -21,7 +21,11 @@ import type {
 
 import type { TypeClass } from "../common/TypeClass.js";
 import type { Nullability } from "../properties/Nullability.js";
-import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
+import {
+  isStruct,
+  type PropertyTypeType,
+  type PropertyTypeTypesWithoutStruct,
+} from "../properties/PropertyTypeType.js";
 import type {
   PropertyType,
   SharedPropertyType,
@@ -59,6 +63,44 @@ export function getInterfacePropertyTypeType(
   return isInterfaceSharedPropertyType(interfacePropertyType)
     ? interfacePropertyType.sharedPropertyType.type
     : interfacePropertyType.type;
+}
+
+/** A struct field of an interface property, as implementing object types must satisfy it. */
+export interface InterfaceStructField {
+  fieldType: PropertyTypeTypesWithoutStruct;
+  /** Whether implementing object types must provide this field. */
+  requireImplementation: boolean;
+}
+
+/**
+ * The struct fields of a struct (or struct array) property keyed by API name, or `undefined` if the
+ * property is not a struct.
+ */
+export function interfacePropertyStructFields(
+  interfacePropertyType: InterfacePropertyType,
+): Record<string, InterfaceStructField> | undefined {
+  const type = getInterfacePropertyTypeType(interfacePropertyType);
+  if (!isStruct(type)) {
+    return undefined;
+  }
+
+  const sptBacked = isInterfaceSharedPropertyType(interfacePropertyType);
+  return Object.fromEntries(
+    Object.entries(type.structDefinition).map(([apiName, definition]) => [
+      apiName,
+      typeof definition === "object" && "fieldType" in definition
+        ? {
+            fieldType: definition.fieldType,
+            requireImplementation:
+              // SPT-backed struct properties are mandated to all be required
+              sptBacked || (definition.requireImplementation ?? true),
+          }
+        : {
+            fieldType: definition,
+            requireImplementation: true,
+          },
+    ]),
+  );
 }
 
 /**

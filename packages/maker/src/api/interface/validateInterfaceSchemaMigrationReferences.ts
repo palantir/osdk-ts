@@ -30,23 +30,28 @@ import {
   type NormalizedPropertyType,
   normalizePropertyType,
 } from "../properties/normalizePropertyType.js";
+import { isStruct } from "../properties/PropertyTypeType.js";
 import type { OntologyContext } from "../validateOntology.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
+  interfacePropertyStructFields,
   isInterfacePropertyArray,
   isInterfacePropertyRequired,
 } from "./InterfacePropertyType.js";
 import type {
+  InterfacePropertyTypeReplacement,
   InterfaceSchemaMigrationInstruction,
   InterfaceTypeReplacement,
 } from "./InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "./InterfaceType.js";
 import type { ResolvedInterfaceMember } from "./ResolvedInterfaceMember.js";
 import {
+  asPropertyReplacement,
   type ResolvedInterfaceActionTypeConstraintMapping,
   type ResolvedInterfaceMemberMapping,
+  type ResolvedInterfacePropertyMapping,
   resolveInterfaceTypeReplacement,
 } from "./resolveInterfaceTypeReplacement.js";
 
@@ -176,12 +181,16 @@ function validateReplacement(
     `${prefix}, but one of ${interfaceType.apiName} and ${replacementType.apiName} extends the other. The replacement must be unrelated to the interface type it replaces.`,
   );
 
+  const authoredPropertyMappings = Object.entries(replacement.propertyMappings);
   validateMapping(
     context,
     interfaceType.apiName,
     replacementType.apiName,
     pairsOf(
-      Object.entries(replacement.propertyMappings),
+      authoredPropertyMappings.map(([from, to]) => [
+        from,
+        asPropertyReplacement(to).property,
+      ]),
       resolved.propertyMappings,
       ({ property }) => property,
       ({ authoredKey }) => authoredKey,
@@ -192,6 +201,15 @@ function validateReplacement(
       targets: flattenedPropertiesIncludingInherited(replacementType),
       isRequired: (property) => isInterfacePropertyRequired(property),
       mismatch: (from, to) => {
+        // Struct fields are checked by validateStructFieldMappings (since we have to compare field-by-field)
+        if (
+          isStruct(getInterfacePropertyTypeType(from)) &&
+          isStruct(getInterfacePropertyTypeType(to)) &&
+          isInterfacePropertyArray(from) === isInterfacePropertyArray(to)
+        ) {
+          return undefined;
+        }
+
         const sourceType = normalizedTypeOf(from);
         const targetType = normalizedTypeOf(to);
         return isDeepStrictEqual(sourceType, targetType)
@@ -200,6 +218,10 @@ function validateReplacement(
       },
     },
   );
+  resolved.propertyMappings.forEach((mapping, i) =>
+    validateStructFieldMappings(context, authoredPropertyMappings[i], mapping),
+  );
+
   validateMapping(
     context,
     interfaceType.apiName,
@@ -254,23 +276,102 @@ function validateReplacement(
   );
 }
 
+function validateStructFieldMappings(
+  context: ReferenceContext,
+  [authoredProperty, authoredMapping]: [
+    string,
+    string | InterfacePropertyTypeReplacement,
+  ],
+  { from, to, structFieldMappings }: ResolvedInterfacePropertyMapping,
+): void {
+  const field = `propertyMappings["${authoredProperty}"].structFieldMappings`;
+  const sources = interfacePropertyStructFields(from.property);
+  const targets = interfacePropertyStructFields(to.property);
+  if (sources === undefined || targets === undefined) {
+    invariant(
+      Object.keys(structFieldMappings).length === 0,
+      `${context.prefix}, whose ${field} maps struct fields, but property "${
+        sources === undefined ? from.apiName : to.apiName
+      }" is not a struct.`,
+    );
+    return;
+  }
+
+  invariant(
+    typeof authoredMapping !== "string",
+    `${context.prefix}, whose propertyMappings maps struct property "${authoredProperty}" to "${authoredMapping}", but struct properties must be mapped with \`{ property, structFieldMappings }\` to say which struct fields carry over.`,
+  );
+
+  validateScopedMapping(
+    context,
+    field,
+    "struct field",
+    `property "${from.apiName}"`,
+    `property "${to.apiName}"`,
+    sources,
+    targets,
+    structFieldMappings,
+    {
+      isRequired: (structField) => structField.requireImplementation,
+      mismatch: (source, target) => {
+        const sourceType = normalizePropertyType(source.fieldType, false);
+        const targetType = normalizePropertyType(target.fieldType, false);
+        return isDeepStrictEqual(sourceType, targetType)
+          ? undefined
+          : `type ${describePropertyType(sourceType)} does not match ${describePropertyType(targetType)}`;
+      },
+    },
+  );
+}
+
 function validateParameterMappings(
   context: ReferenceContext,
   authoredActionTypeConstraint: string,
   { from, to, parameterMappings }: ResolvedInterfaceActionTypeConstraintMapping,
 ): void {
-  const field = `actionTypeConstraintMappings["${authoredActionTypeConstraint}"].parameterMappings`;
-  const sources = from.actionTypeConstraint.parameters;
-  const targets = to.actionTypeConstraint.parameters;
-  const pairs = Object.entries(parameterMappings).map(
+  validateScopedMapping(
+    context,
+    `actionTypeConstraintMappings["${authoredActionTypeConstraint}"].parameterMappings`,
+    "parameter",
+    from.apiName,
+    to.apiName,
+    from.actionTypeConstraint.parameters,
+    to.actionTypeConstraint.parameters,
+    parameterMappings,
+    {
+      isRequired: (parameter) => parameter.requireImplementation,
+      mismatch: (source, target) =>
+        isDeepStrictEqual(source.type, target.type)
+          ? undefined
+          : `type ${JSON.stringify(source.type)} does not match ${JSON.stringify(target.type)}`,
+    },
+  );
+}
+
+/**
+ * Validates a mapping between members scoped to one side of a mapped pair, such as an action type
+ * constraint's parameters or a struct property's fields.
+ */
+function validateScopedMapping<T>(
+  context: ReferenceContext,
+  field: string,
+  noun: string,
+  sourceName: string,
+  targetName: string,
+  sources: Record<string, T>,
+  targets: Record<string, T>,
+  mappings: Record<string, string>,
+  { isRequired, mismatch }: Pick<MappingSpec<T>, "isRequired" | "mismatch">,
+): void {
+  const pairs = Object.entries(mappings).map(
     ([authoredSource, authoredTarget]) => {
       invariant(
         Object.hasOwn(sources, authoredSource),
-        `${context.prefix}, whose ${field} maps from parameter "${authoredSource}", but ${from.apiName} has no such parameter.`,
+        `${context.prefix}, whose ${field} maps from ${noun} "${authoredSource}", but ${sourceName} has no such ${noun}.`,
       );
       invariant(
         Object.hasOwn(targets, authoredTarget),
-        `${context.prefix}, whose ${field} maps to parameter "${authoredTarget}", but ${to.apiName} has no such parameter.`,
+        `${context.prefix}, whose ${field} maps to ${noun} "${authoredTarget}", but ${targetName} has no such ${noun}.`,
       );
       return {
         authoredSource,
@@ -282,15 +383,12 @@ function validateParameterMappings(
     },
   );
 
-  validateMapping(context, from.apiName, to.apiName, pairs, {
+  validateMapping(context, sourceName, targetName, pairs, {
     field,
-    noun: "parameter",
+    noun,
     targets: new Map(Object.entries(targets)),
-    isRequired: (parameter) => parameter.requireImplementation,
-    mismatch: (source, target) =>
-      isDeepStrictEqual(source.type, target.type)
-        ? undefined
-        : `type ${JSON.stringify(source.type)} does not match ${JSON.stringify(target.type)}`,
+    isRequired,
+    mismatch,
   });
 }
 

@@ -36,6 +36,7 @@ import type {
   LockedInterfaceTypeReplacement,
   LockedParameterConstraint,
   LockedProperty,
+  LockedPropertyReplacement,
   OntologySchemaLockfile,
 } from "../OntologySchemaLockfile.js";
 import {
@@ -82,6 +83,10 @@ const EVERY_REPLACEMENT_FIELD = {
   linkTypeConstraintMappings: true,
   actionTypeConstraintMappings: true,
 } satisfies Record<keyof LockedInterfaceTypeReplacement, true>;
+const EVERY_PROPERTY_REPLACEMENT_FIELD = {
+  property: true,
+  structFieldMappings: true,
+} satisfies Record<keyof LockedPropertyReplacement, true>;
 const EVERY_ACTION_TYPE_CONSTRAINT_REPLACEMENT_FIELD = {
   actionTypeConstraint: true,
   parameterMappings: true,
@@ -174,7 +179,12 @@ function lockEveryField(): OntologySchemaLockfile {
 
   const contactV2 = defineInterface({
     apiName: "ContactV2",
-    properties: { fullName: { type: "string" } },
+    properties: {
+      fullName: { type: "string" },
+      location: {
+        type: { type: "struct", structDefinition: { line1: "string" } },
+      },
+    },
   });
   defineInterfaceLinkConstraint({
     apiName: "supervisor",
@@ -184,7 +194,12 @@ function lockEveryField(): OntologySchemaLockfile {
   defineActionTypeConstraint(contactV2, "notify", ["title"]);
   const contact = defineInterface({
     apiName: "Contact",
-    properties: { name: { type: "string" } },
+    properties: {
+      name: { type: "string" },
+      address: {
+        type: { type: "struct", structDefinition: { street: "string" } },
+      },
+    },
     schemaMigrations: {
       transitions: [
         {
@@ -196,7 +211,13 @@ function lockEveryField(): OntologySchemaLockfile {
               type: "replace",
               replacement: {
                 interfaceType: contactV2,
-                propertyMappings: { name: "fullName" },
+                propertyMappings: {
+                  name: "fullName",
+                  address: {
+                    property: "location",
+                    structFieldMappings: { street: "line1" },
+                  },
+                },
                 linkTypeConstraintMappings: { manager: "supervisor" },
                 actionTypeConstraintMappings: {
                   sendMessage: {
@@ -281,6 +302,15 @@ describe("parseLockfile", () => {
       keysOf(EVERY_INSTRUCTION_TYPE),
     );
     expect(keysSeen(replacements)).toEqual(keysOf(EVERY_REPLACEMENT_FIELD));
+    expect(
+      keysSeen(
+        replacements.flatMap(({ propertyMappings }) =>
+          Object.values(propertyMappings ?? {}).filter(
+            (mapping) => typeof mapping !== "string",
+          ),
+        ),
+      ),
+    ).toEqual(keysOf(EVERY_PROPERTY_REPLACEMENT_FIELD));
     expect(
       keysSeen(
         replacements.flatMap(({ actionTypeConstraintMappings }) =>
@@ -482,6 +512,15 @@ describe("parseLockfile", () => {
       "an empty propertyMappings",
       withReplacement({ propertyMappings: {} }),
       /propertyMappings: Expected at least one property mapping, or no value at all/u,
+    ],
+    [
+      "an empty structFieldMappings",
+      withReplacement({
+        propertyMappings: {
+          address: { property: "location", structFieldMappings: {} },
+        },
+      }),
+      /structFieldMappings: Expected at least one struct field mapping, or no value at all/u,
     ],
     [
       "an empty linkTypeConstraintMappings",

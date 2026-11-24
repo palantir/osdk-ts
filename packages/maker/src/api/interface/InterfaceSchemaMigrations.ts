@@ -124,8 +124,11 @@ export interface InterfaceTypeReplacement {
    * Maps this interface type's property API names to the replacement's. Every property that is
    * required on the replacement must be a target, so that automatically-generated changes produce a
    * valid implementation.
+   *
+   * A struct property must be mapped with an `InterfacePropertyTypeReplacement`, to say how its
+   * struct fields carry over.
    */
-  propertyMappings: Record<string, string>;
+  propertyMappings: Record<string, string | InterfacePropertyTypeReplacement>;
   /**
    * Maps this interface type's link type constraint API names to the replacement's, with the same
    * semantics as `propertyMappings`.
@@ -139,6 +142,21 @@ export interface InterfaceTypeReplacement {
     string,
     InterfaceActionTypeConstraintReplacement
   >;
+}
+
+export interface InterfacePropertyTypeReplacement {
+  /**
+   * The API name of the replacement's property.
+   */
+  property: string;
+  /**
+   * Maps this struct property's field API names to the replacement property's.
+   *
+   * Every field that is `requireImplementation: true` on the replacement property's struct
+   * definition must be a target, and each mapped pair must be compatible types. Only mapped fields
+   * carry over.
+   */
+  structFieldMappings: Record<string, string>;
 }
 
 export interface InterfaceActionTypeConstraintReplacement {

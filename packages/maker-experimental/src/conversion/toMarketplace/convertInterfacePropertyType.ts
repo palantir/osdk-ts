@@ -17,6 +17,7 @@
 import type { MarketplaceInterfacePropertyType } from "@osdk/client.unstable";
 import type { InterfacePropertyType } from "@osdk/maker";
 import {
+  interfacePropertyWireApiName,
   isInterfacePropertyRequired,
   isInterfaceSharedPropertyType,
   shouldBeIndexedForSearch,
@@ -43,6 +44,19 @@ export function interfacePropertyWireRid(
         ridGenerator.generateSptRid(prop.sharedPropertyType.apiName),
       )
     : ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName);
+}
+
+/** The rid `convertInterfaceProperty` gives one of the property's struct fields. */
+export function interfaceStructFieldWireRid(
+  prop: InterfacePropertyType,
+  apiName: string,
+  structFieldApiName: string,
+  ridGenerator: OntologyRidGenerator,
+): string {
+  return ridGenerator.generateStructFieldRid(
+    interfacePropertyWireApiName(prop, apiName),
+    structFieldApiName,
+  );
 }
 
 export function convertInterfaceProperty(

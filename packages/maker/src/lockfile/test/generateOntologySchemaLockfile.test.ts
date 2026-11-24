@@ -827,6 +827,82 @@ describe("replacement", () => {
   });
 });
 
+describe("replacement of an interface with struct properties", () => {
+  it("records struct field mappings sorted, leaving other property mappings as api names", () => {
+    const personV2 = defineInterface({
+      apiName: "PersonV2",
+      properties: {
+        fullName: { type: "string" },
+        location: {
+          type: {
+            type: "struct",
+            structDefinition: { postcode: "string", line1: "string" },
+          },
+        },
+      },
+    });
+    defineInterface({
+      apiName: "Person",
+      properties: {
+        name: { type: "string" },
+        address: {
+          type: {
+            type: "struct",
+            structDefinition: { street: "string", zip: "string" },
+          },
+        },
+      },
+      schemaMigrations: {
+        transitions: [
+          {
+            id: "replace",
+            title: "Replace",
+            gracePeriod: { type: "afterInstall", days: 30 },
+            instructions: [
+              {
+                type: "replace",
+                replacement: {
+                  interfaceType: personV2,
+                  propertyMappings: {
+                    name: "fullName",
+                    address: {
+                      property: "location",
+                      structFieldMappings: { zip: "postcode", street: "line1" },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    const instructions =
+      generateOntologySchemaLockfile(definedContext()).interfaces[
+        "com.palantir.Person"
+      ].transitions[0].instructions;
+    // Compared as JSON so that key order, which the lockfile sorts to avoid churn, is checked too
+    expect(JSON.stringify(instructions)).toBe(
+      JSON.stringify([
+        {
+          type: "replace",
+          replacement: {
+            interfaceType: "com.palantir.PersonV2",
+            propertyMappings: {
+              address: {
+                property: "location",
+                structFieldMappings: { street: "line1", zip: "postcode" },
+              },
+              name: "fullName",
+            },
+          },
+        },
+      ]),
+    );
+  });
+});
+
 describe("replacement of an interface with inherited properties", () => {
   it("records a mapping from an inherited property under its published api name", () => {
     const email = defineSharedPropertyType({

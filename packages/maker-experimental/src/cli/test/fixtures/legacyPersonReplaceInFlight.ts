@@ -19,13 +19,29 @@ import { defineInterface } from "@osdk/maker";
 const person = defineInterface({
   apiName: "Person",
   displayName: "Person",
-  properties: { firstName: { type: "string" } },
+  properties: {
+    firstName: { type: "string" },
+    location: {
+      type: {
+        type: "struct",
+        structDefinition: { postcode: "string", line1: "string" },
+      },
+    },
+  },
 });
 
 defineInterface({
   apiName: "LegacyPerson",
   displayName: "Legacy person",
-  properties: { fullName: { type: "string" } },
+  properties: {
+    fullName: { type: "string" },
+    address: {
+      type: {
+        type: "struct",
+        structDefinition: { street: "string", zip: "string" },
+      },
+    },
+  },
   schemaMigrations: {
     transitions: [
       {
@@ -37,7 +53,13 @@ defineInterface({
             type: "replace",
             replacement: {
               interfaceType: person,
-              propertyMappings: { fullName: "firstName" },
+              propertyMappings: {
+                fullName: "firstName",
+                address: {
+                  property: "location",
+                  structFieldMappings: { street: "line1", zip: "postcode" },
+                },
+              },
             },
           },
         ],
