@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyTypeType } from "../api/properties/PropertyTypeType.js";
+import type { PropertyTypeType } from "./PropertyTypeType.js";
 
 /**
  * Keys that carry presentation-only values (e.g. descriptions, etc.). These are dropped wherever
@@ -28,14 +28,14 @@ function isPresentationKey(key: string): key is PresentationKey {
   return (PRESENTATION_KEYS as readonly string[]).includes(key);
 }
 
-/** A property's locked type, without fields that do not affect backwards-compatibility. */
-export type LockedPropertyType = LockedScalarType | LockedArrayType;
+/** A property's type, without fields that do not affect backwards-compatibility. */
+export type NormalizedPropertyType = NormalizedScalarType | NormalizedArrayType;
 
-type LockedScalarType = StripPresentation<PropertyTypeType>;
+type NormalizedScalarType = StripPresentation<PropertyTypeType>;
 
-interface LockedArrayType {
+interface NormalizedArrayType {
   type: "array";
-  subtype: LockedScalarType;
+  subtype: NormalizedScalarType;
 }
 
 type StripPresentation<T> =
@@ -57,19 +57,21 @@ type StripPresentation<T> =
 export function normalizePropertyType(
   type: PropertyTypeType,
   array: boolean,
-): LockedPropertyType {
-  const subtype = strip(type) as LockedScalarType;
+): NormalizedPropertyType {
+  const subtype = strip(type) as NormalizedScalarType;
   return array ? { type: "array", subtype } : subtype;
 }
 
 /** How a property's type is named in error messages and in the rendered lockfile diff. */
-export function describeType(type: LockedPropertyType): string {
+export function describePropertyType(type: NormalizedPropertyType): string {
   return isArrayType(type)
-    ? `${describeType(type.subtype)}[]`
+    ? `${describePropertyType(type.subtype)}[]`
     : JSON.stringify(type);
 }
 
-function isArrayType(type: LockedPropertyType): type is LockedArrayType {
+function isArrayType(
+  type: NormalizedPropertyType,
+): type is NormalizedArrayType {
   return typeof type === "object" && type.type === "array";
 }
 

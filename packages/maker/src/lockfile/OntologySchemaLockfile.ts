@@ -20,8 +20,8 @@ import type { TypeClass } from "../api/common/TypeClass.js";
 import { withoutNamespace } from "../api/defineOntology.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
 import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { NormalizedPropertyType } from "../api/properties/normalizePropertyType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
-import type { LockedPropertyType } from "./LockedPropertyType.js";
 
 export const ONTOLOGY_SCHEMA_LOCKFILE_VERSION = 1;
 export const DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME =
@@ -100,6 +100,8 @@ export interface LockedValueType {
   packageNamespace: string;
   apiName: string;
 }
+
+export type LockedPropertyType = NormalizedPropertyType;
 
 export interface LockedProperty {
   type: LockedPropertyType;
