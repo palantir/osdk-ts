@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { BarInterface } from "@osdk/client.test.ontology";
+import { addOne, BarInterface, createOffice } from "@osdk/client.test.ontology";
 import type { LoadObjectSetV2MultipleObjectTypesResponse } from "@osdk/foundry.ontologies";
 import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
+import { stubData } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -93,28 +94,74 @@ describe("withScenario", () => {
     );
   });
 
-  it("warns and ignores an active transaction, scoping to the scenario", () => {
-    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+  it("replaces the transaction scope without flushing or changing the parent", async () => {
+    const flushEdits = vi.fn(async () => {});
     const txClient = createClientWithTransaction(
       "ri.transactions..transaction.xyz",
-      async () => {},
+      flushEdits,
       "https://mock.com",
       ontologyRid,
       () => "Token",
-      {},
+      { UNSTABLE_DO_NOT_USE_BRANCH: "my-branch" },
       fetchFunction,
     );
     const scenario = withScenario(txClient, "ri.actions..scenario.abc");
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/transaction/u));
     expect(scenario.getScenarioReference()).toBe("ri.actions..scenario.abc");
-    warnSpy.mockRestore();
+    mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+    await scenario(BarInterface).fetchPage();
+    mockFetchResponse(fetchFunction, stubData.CreateOffice);
+    mockFetchResponse(fetchFunction, {});
+    await scenario(createOffice).applyAction({ officeId: "NYC" });
+    mockFetchResponse(fetchFunction, stubData.addOneQueryType);
+    mockFetchResponse(fetchFunction, { value: 3 });
+    expect(await scenario(addOne).executeFunction({ n: 2 })).toBe(3);
+    expect(flushEdits).not.toHaveBeenCalled();
+    for (const [input] of fetchFunction.mock.calls) {
+      const requestUrl = new URL(String(input));
+      expect(requestUrl.searchParams.has("transactionId")).toBe(false);
+      expect(requestUrl.searchParams.get("branch")).toBe("my-branch");
+      if (
+        requestUrl.pathname.endsWith("/apply") ||
+        requestUrl.pathname.endsWith("/execute")
+      ) {
+        expect(requestUrl.searchParams.get("scenarioRid")).toBe(
+          "ri.actions..scenario.abc",
+        );
+      }
+    }
+    const url = new URL(String(fetchFunction.mock.lastCall?.[0]));
+    expect(url.searchParams.get("scenarioRid")).toBe(
+      "ri.actions..scenario.abc",
+    );
+    expect(url.searchParams.has("transactionId")).toBe(false);
+    mockFetchResponse(fetchFunction, { data: [] });
+    await txClient(BarInterface).fetchPage();
+    expect(flushEdits).toHaveBeenCalledTimes(1);
+    expect(
+      new URL(String(fetchFunction.mock.lastCall?.[0])).searchParams.get(
+        "transactionId",
+      ),
+    ).toBe("ri.transactions..transaction.xyz");
   });
 
-  it("rejects a client already scoped to a scenario at runtime", () => {
-    const scenario = withScenario(client, "ri.actions..scenario.abc");
-    expect(() => withScenario(scenario, "ri.actions..scenario.def")).toThrow(
-      /scenario/u,
-    );
+  it("switches scenarios without changing the original client", async () => {
+    const original = withScenario(client, "ri.actions..scenario.abc");
+    const scenario = withScenario(original, "ri.actions..scenario.def");
+    expect(fetchFunction).not.toHaveBeenCalled();
+    mockInterfaceFetchPageResponse(fetchFunction, { data: [] });
+    await scenario(BarInterface).fetchPage();
+    expect(
+      new URL(String(fetchFunction.mock.lastCall?.[0])).searchParams.get(
+        "scenarioRid",
+      ),
+    ).toBe("ri.actions..scenario.def");
+    mockFetchResponse(fetchFunction, { data: [] });
+    await original(BarInterface).fetchPage();
+    expect(
+      new URL(String(fetchFunction.mock.lastCall?.[0])).searchParams.get(
+        "scenarioRid",
+      ),
+    ).toBe("ri.actions..scenario.abc");
   });
 
   it("surfaces API errors with the same shape as the base client", async () => {
