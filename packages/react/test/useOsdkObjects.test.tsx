@@ -226,7 +226,7 @@ describe("useOsdkObjects enabled option", () => {
     });
 
     expect(mockInvalidateObjectOrInterfaceType).toHaveBeenCalledWith(
-      "MockObject",
+      MockObjectType,
     );
   });
 

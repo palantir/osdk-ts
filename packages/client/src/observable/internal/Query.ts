@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Logger } from "@osdk/api";
+import type { Logger, ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   Connectable,
   Observable,
@@ -294,7 +294,7 @@ export abstract class Query<
   ) => Promise<void> | undefined;
 
   abstract invalidateObjectOrInterfaceType(
-    apiName: string,
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void>;
 }

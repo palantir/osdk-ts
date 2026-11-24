@@ -404,7 +404,7 @@ describe(useObjectSet, () => {
       });
 
       expect(mockInvalidateObjectOrInterfaceType).toHaveBeenCalledWith(
-        "MockObject",
+        MockObjectType,
       );
     });
   });

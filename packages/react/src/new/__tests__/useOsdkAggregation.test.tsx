@@ -309,7 +309,9 @@ describe("useOsdkAggregation", () => {
         await result.current.refetch();
       });
 
-      expect(invalidateObjectOrInterfaceType).toHaveBeenCalledTimes(1);
+      expect(invalidateObjectOrInterfaceType).toHaveBeenCalledExactlyOnceWith(
+        Employee,
+      );
     });
 
     it("does not invalidate the object type when enabled is false", async () => {

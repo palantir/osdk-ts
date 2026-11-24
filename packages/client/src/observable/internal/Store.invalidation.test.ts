@@ -15,6 +15,7 @@
  */
 
 import {
+  BarInterface,
   Employee,
   FooInterface,
   Office,
@@ -68,6 +69,7 @@ describe("Store Invalidation Type Isolation", () => {
   function setupOntology(fauxFoundry: FauxFoundry) {
     const fauxOntology = fauxFoundry.getDefaultOntology();
     ontologies.addEmployeeOntology(fauxOntology);
+    fauxOntology.registerInterfaceType(stubData.BarInterface);
 
     fauxFoundry
       .getDefaultOntology()
@@ -810,7 +812,7 @@ describe("Store Invalidation Type Isolation", () => {
     });
   });
 
-  describe("invalidateObjectOrInterfaceType with an interface API name", () => {
+  describe("invalidateObjectOrInterfaceType with an interface definition", () => {
     it("refreshes object queries observed through that interface", async () => {
       const subFn = mockSingleSubCallback();
       defer(
@@ -826,10 +828,7 @@ describe("Store Invalidation Type Isolation", () => {
       });
       subFn.next.mockClear();
 
-      await cache.invalidateObjectOrInterfaceType(
-        FooInterface.apiName,
-        undefined,
-      );
+      await cache.invalidateObjectOrInterfaceType(FooInterface, undefined);
 
       await vi.waitFor(() => {
         expect(subFn.next).toHaveBeenCalled();
@@ -854,12 +853,51 @@ describe("Store Invalidation Type Isolation", () => {
       });
       officeLinkSubFn.next.mockClear();
 
-      await cache.invalidateObjectOrInterfaceType(
-        FooInterface.apiName,
-        undefined,
-      );
+      await cache.invalidateObjectOrInterfaceType(FooInterface, undefined);
 
       expect(officeLinkSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("does not refresh interface lists for an unrelated interface", async () => {
+      const listSubFn = mockListSubCallback();
+      defer(
+        cache.lists.observe(
+          { type: FooInterface, where: {}, orderBy: {} },
+          listSubFn,
+        ),
+      );
+      await vi.waitFor(() => {
+        expect(listSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({ status: "loaded" }),
+        );
+      });
+      listSubFn.next.mockClear();
+
+      await cache.invalidateObjectOrInterfaceType(BarInterface, undefined);
+
+      expect(listSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("refreshes interface lists when an implementing object type is invalidated", async () => {
+      const listSubFn = mockListSubCallback();
+      defer(
+        cache.lists.observe(
+          { type: FooInterface, where: {}, orderBy: {} },
+          listSubFn,
+        ),
+      );
+      await vi.waitFor(() => {
+        expect(listSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({ status: "loaded" }),
+        );
+      });
+      listSubFn.next.mockClear();
+
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
+
+      await vi.waitFor(() => {
+        expect(listSubFn.next).toHaveBeenCalled();
+      });
     });
   });
 });

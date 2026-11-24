@@ -347,13 +347,13 @@ export function useObjectSet<
     previousCompletedPayloadRef.current = payload;
   }
 
-  const typeApiName = baseObjectSet?.$objectSetInternals.def.apiName;
+  const typeDef = baseObjectSet?.$objectSetInternals.def;
 
   const refetch = React.useCallback(async () => {
-    if (typeApiName) {
-      await observableClient.invalidateObjectOrInterfaceType(typeApiName);
+    if (typeDef) {
+      await observableClient.invalidateObjectOrInterfaceType(typeDef);
     }
-  }, [observableClient, typeApiName]);
+  }, [observableClient, typeDef]);
 
   return React.useMemo(() => {
     const lastLoaded = isPayloadCompleted(payload)

@@ -86,8 +86,11 @@ export class InterfaceListQuery extends ListQuery {
     return objectSet.where(this.canonicalWhere);
   }
 
-  async revalidateObjectType(objectType: string): Promise<boolean> {
-    if (await super.revalidateObjectType(objectType)) return true;
+  async revalidateObjectType(
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
+  ): Promise<boolean> {
+    if (await super.revalidateObjectType(objectOrInterfaceDef)) return true;
+    if (objectOrInterfaceDef.type !== "object") return false;
 
     // For interface queries: also check if the invalidated concrete type
     // implements this query's interface. e.g. invalidating "Employee"
@@ -95,7 +98,7 @@ export class InterfaceListQuery extends ListQuery {
     try {
       const objectMetadata = await this.store.client.fetchMetadata({
         type: "object",
-        apiName: objectType,
+        apiName: objectOrInterfaceDef.apiName,
       });
       return this.apiName in objectMetadata.interfaceMap;
     } catch {

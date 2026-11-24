@@ -379,12 +379,15 @@ export abstract class ListQuery extends BaseListQuery<
    * implementation checks).
    */
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
-  async revalidateObjectType(objectType: string): Promise<boolean> {
+  async revalidateObjectType(
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
+  ): Promise<boolean> {
+    const { apiName } = objectOrInterfaceDef;
     return (
-      this.apiName === objectType ||
+      this.apiName === apiName ||
       (this.#fetchedObjectType != null &&
-        this.#fetchedObjectType === objectType) ||
-      (this.#rdpInvalidationSet?.has(objectType) ?? false)
+        this.#fetchedObjectType === apiName) ||
+      (this.#rdpInvalidationSet?.has(apiName) ?? false)
     );
   }
 
@@ -396,10 +399,10 @@ export abstract class ListQuery extends BaseListQuery<
   ): Promise<Osdk.Instance<any>[]>;
 
   invalidateObjectOrInterfaceType = async (
-    apiName: string,
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (await this.revalidateObjectType(apiName)) {
+    if (await this.revalidateObjectType(objectOrInterfaceDef)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }

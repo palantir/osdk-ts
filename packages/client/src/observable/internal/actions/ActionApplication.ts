@@ -180,7 +180,10 @@ export class ActionApplication {
           continue;
         }
         promises.push(
-          query.invalidateObjectOrInterfaceType(apiName, undefined),
+          query.invalidateObjectOrInterfaceType(
+            { type: "object", apiName },
+            undefined,
+          ),
         );
       }
     }

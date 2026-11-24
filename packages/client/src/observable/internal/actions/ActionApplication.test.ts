@@ -328,7 +328,7 @@ describe("ActionApplication invalidation", () => {
 
     await vi.waitFor(() => {
       expect(invalidateObjectOrInterfaceType).toHaveBeenCalledWith(
-        Todo.apiName,
+        { type: "object", apiName: Todo.apiName },
         undefined,
       );
     });

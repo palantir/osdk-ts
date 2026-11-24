@@ -16,6 +16,7 @@
 
 import type {
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
 } from "@osdk/api";
@@ -202,14 +203,18 @@ export class ObjectQuery extends Query<
   }
 
   invalidateObjectOrInterfaceType = async (
-    apiName: string,
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.#apiName === apiName) {
+    const apiName = objectOrInterfaceDef.apiName;
+    if (
+      this.#defType === objectOrInterfaceDef.type &&
+      this.#apiName === apiName
+    ) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
-    if (this.#defType === "object") {
+    if (this.#defType === "object" || objectOrInterfaceDef.type !== "object") {
       return;
     }
 

@@ -63,6 +63,7 @@ import type {
 import type { Observer } from "../ObservableClient/common.js";
 import { runOptimisticJob } from "./actions/OptimisticJob.js";
 import type { CacheKeys } from "./CacheKeys.js";
+import { createChangedObjects } from "./Changes.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import { ObservableClientImpl } from "./ObservableClientImpl.js";
@@ -276,7 +277,6 @@ describe(Store, () => {
           "lead",
         );
 
-      const targetType = "Employee";
       const currentLinks: Osdk.Instance<any>[] = [objectLikeJohnDoe];
       const expectedLinks: Osdk.Instance<any>[] = [];
 
@@ -284,7 +284,7 @@ describe(Store, () => {
 
       // Invalidate the employee cache
       const invalidateEmployeePromise = cache.invalidateObjectOrInterfaceType(
-        targetType,
+        Employee,
         undefined,
       );
 
@@ -495,7 +495,7 @@ describe(Store, () => {
       });
 
       const invalidatePromise = cache.invalidateObjectOrInterfaceType(
-        "Employee",
+        Employee,
         undefined,
       );
 
@@ -829,6 +829,45 @@ describe(Store, () => {
       testStage(
         "Interface link invalidation via implementing object type verified",
       );
+    });
+
+    it("invalidateObjectOrInterfaceType refreshes interface link queries when the source interface is invalidated", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 1,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const fooInterfaceInstance = emp1.$as(FooInterface);
+      const linkSubFn = mockLinkSubCallback();
+
+      const subscription = cache.links.observe(
+        {
+          linkName: "toBar",
+          srcType: {
+            type: "interface",
+            apiName: fooInterfaceInstance.$apiName,
+          },
+          sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
+          pk: fooInterfaceInstance.$primaryKey,
+        },
+        linkSubFn,
+      );
+
+      await waitForCall(linkSubFn);
+
+      const changes = createChangedObjects();
+      await cache.invalidateObjectOrInterfaceType(FooInterface, changes);
+
+      expect(
+        [...changes.modified].some(
+          (cacheKey) => cacheKey.type === "specificLink",
+        ),
+      ).toBe(true);
+
+      subscription.unsubscribe();
     });
   });
 

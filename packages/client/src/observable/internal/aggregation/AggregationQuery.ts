@@ -66,6 +66,11 @@ export interface AggregationPayloadBase {
   error?: Error;
 }
 
+type InvalidationTypes = Record<
+  ObjectOrInterfaceDefinition["type"],
+  Set<string>
+>;
+
 export class AggregationQuery extends Query<
   AggregationCacheKey,
   AggregationPayloadBase,
@@ -76,8 +81,8 @@ export class AggregationQuery extends Query<
   #canonicalAggregate: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>;
   #rdpConfig: Canonical<Rdp> | undefined;
   #parsedWireObjectSet: WireObjectSet | undefined;
-  #invalidationTypes: Set<string> | undefined;
-  #invalidationTypesPromise: Promise<Set<string>> | undefined;
+  #invalidationTypes: InvalidationTypes | undefined;
+  #invalidationTypesPromise: Promise<InvalidationTypes> | undefined;
   #error: Error | undefined;
 
   constructor(
@@ -118,13 +123,16 @@ export class AggregationQuery extends Query<
       !this.#parsedWireObjectSet &&
       !this.#rdpConfig
     ) {
-      this.#invalidationTypes = new Set([this.#apiName]);
+      this.#invalidationTypes = {
+        object: new Set([this.#apiName]),
+        interface: new Set(),
+      };
     } else {
       void this.ensureInvalidationTypesReady().catch(() => undefined);
     }
   }
 
-  ensureInvalidationTypesReady(): Promise<Set<string>> {
+  ensureInvalidationTypesReady(): Promise<InvalidationTypes> {
     if (this.#invalidationTypes) {
       return Promise.resolve(this.#invalidationTypes);
     }
@@ -136,17 +144,17 @@ export class AggregationQuery extends Query<
     return this.#invalidationTypesPromise;
   }
 
-  async #computeInvalidationTypes(): Promise<Set<string>> {
+  async #computeInvalidationTypes(): Promise<InvalidationTypes> {
     try {
       const { objectInvalidationSet, interfaceInvalidationSet } =
         await getInvalidationSet(
           this.store.client[additionalContext],
           getWireObjectSet(this.#createObjectSet()),
         );
-      this.#invalidationTypes = new Set([
-        ...objectInvalidationSet,
-        ...interfaceInvalidationSet,
-      ]);
+      this.#invalidationTypes = {
+        object: objectInvalidationSet,
+        interface: interfaceInvalidationSet,
+      };
       return this.#invalidationTypes;
     } catch (cause) {
       throw new Error(
@@ -265,10 +273,10 @@ export class AggregationQuery extends Query<
   }
 
   invalidateObjectOrInterfaceType = async (
-    apiName: string,
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> => {
-    let invalidationTypes: Set<string>;
+    let invalidationTypes: InvalidationTypes;
     try {
       invalidationTypes = await this.ensureInvalidationTypesReady();
     } catch (error) {
@@ -277,7 +285,11 @@ export class AggregationQuery extends Query<
       return;
     }
 
-    if (invalidationTypes.has(apiName)) {
+    if (
+      invalidationTypes[objectOrInterfaceDef.type].has(
+        objectOrInterfaceDef.apiName,
+      )
+    ) {
       changes?.modified.add(this.cacheKey);
       if (this.pendingFetch) {
         await this.pendingFetch;

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
+  Osdk,
+  PageResult,
+} from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 
@@ -468,9 +473,10 @@ export class ObjectSetQuery extends BaseListQuery<
   // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
   invalidateObjectOrInterfaceType = async (
-    apiName: string,
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> => {
+    const { apiName } = objectOrInterfaceDef;
     if (
       this.#objectTypes.has(apiName) ||
       (this.#rdpInvalidationSet?.has(apiName) ?? false)

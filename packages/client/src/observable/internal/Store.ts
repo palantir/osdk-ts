@@ -397,7 +397,12 @@ export class Store {
       if (!query) {
         continue;
       }
-      promises.push(query.invalidateObjectOrInterfaceType(apiName, undefined));
+      promises.push(
+        query.invalidateObjectOrInterfaceType(
+          { type: "object", apiName },
+          undefined,
+        ),
+      );
     }
     return Promise.allSettled(promises).then(() => void 0);
   }
@@ -636,17 +641,14 @@ export class Store {
    * 2. All lists of the specified type
    * 3. All links where the source object is of the specified type
    *
-   * @param apiName - The API name of the object type to invalidate
+   * @param objectOrInterfaceDef - The object or interface type to invalidate
    * @param changes - Optional changes object to track what has been modified
    * @returns Promise that resolves when all invalidations are complete
    */
   public invalidateObjectOrInterfaceType(
-    apiName: ObjectOrInterfaceDefinition | string,
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "invalidateObjectOrInterfaceType" })
@@ -666,10 +668,10 @@ export class Store {
       (cacheKey) =>
         this.queries
           .peek(cacheKey)
-          ?.invalidateObjectOrInterfaceType(apiName, changes) ??
+          ?.invalidateObjectOrInterfaceType(objectOrInterfaceDef, changes) ??
         Promise.resolve(),
       changes,
-      apiName,
+      objectOrInterfaceDef.apiName,
     );
   }
 

@@ -18,7 +18,7 @@ Returns the `ObservableClient` that `OsdkProvider` builds from its `client`. Use
 | Method | Description |
 | --- | --- |
 | `invalidateObjects(objects)` | Reloads one object instance or an array of them. Interface instances refetch their backing object. |
-| `invalidateObjectType(type)` | Reloads every cached query for an object type, by definition or API name. |
+| `invalidateObjectOrInterfaceType(type)` | Reloads every cached query for an object or interface type, by definition. |
 | `invalidateFunction(queryDef, params?)` | Reloads a function's cached result for `params`, or every cached call when `params` is omitted. |
 | `invalidateAll()` | Reloads everything in the cache. |
 
