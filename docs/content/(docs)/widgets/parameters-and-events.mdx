@@ -71,7 +71,7 @@ TypeScript cannot check ID formats and lengths, so the Vite plugin validates the
 
 ## Parameter types
 
-Every parameter needs a `type` and a `displayName`, the label shown in the host's setup panel. Parameter IDs follow the same camelCase rule and 100-character limit as widget IDs.
+Every parameter needs a `type` and a `displayName`, the label shown in the host's setup panel. Parameter IDs follow the same camelCase rule and 100-character limit as widget IDs. `displayName` is at most 100 characters. A widget can have at most 50 parameters.
 
 | `type` | Extra fields | Value in the widget | Notes |
 | --- | --- | --- | --- |
@@ -109,8 +109,10 @@ An event tells the host to update one or more of the widget's parameters. Declar
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `displayName` | `string` | The event name shown in the host, where builders attach behavior to it. |
-| `parameterUpdateIds` | `string[]` | The parameter IDs the event sets. Each must be a parameter in the same config, and none can be a `mapTileLayer` parameter. |
+| `displayName` | `string` | The event name shown in the host, where builders attach behavior to it. At most 100 characters. |
+| `parameterUpdateIds` | `string[]` | The parameter IDs the event sets. Each must be a parameter in the same config and listed at most once, and none can be a `mapTileLayer` parameter. |
+
+Event IDs follow the same camelCase rule and 100-character limit as widget IDs. A widget can have at most 50 events.
 
 When you emit the event, `parameterUpdates` must contain a value for every ID in `parameterUpdateIds`, typed like the parameter's value:
 
