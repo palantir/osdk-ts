@@ -309,6 +309,72 @@ describe("parseLockfile", () => {
     );
   });
 
+  it("rejects an empty `actionTypeConstraints`", () => {
+    expect(() =>
+      parse(
+        withInterface({
+          schema: { properties: {}, actionTypeConstraints: {} },
+          transitions: [],
+        }),
+      ),
+    ).toThrowError(
+      /schema\.actionTypeConstraints: Expected at least one action type constraint/u,
+    );
+  });
+
+  /** A lockfile whose sole interface declares `sendEmail` with the given parameters. */
+  function withParameters(parameters: unknown) {
+    return withInterface({
+      schema: {
+        properties: {},
+        actionTypeConstraints: {
+          sendEmail: { requireImplementation: false, parameters },
+        },
+      },
+      transitions: [],
+    });
+  }
+
+  it("accepts parameter constraints", () => {
+    const parameters = {
+      body: { requireImplementation: false },
+      subject: {
+        requireImplementation: true,
+        isRequiredParameterOnConcreteAction: true,
+      },
+    };
+    const parsed = parse(withParameters(parameters));
+    expect(
+      parsed.interfaces.Person.schema.actionTypeConstraints?.sendEmail
+        .parameters,
+    ).toEqual(parameters);
+  });
+
+  it.each([
+    [
+      "an empty `parameters`",
+      {},
+      /parameters: Expected at least one parameter constraint/u,
+    ],
+    [
+      "a parameter not required on the concrete action recorded longhand",
+      {
+        subject: {
+          requireImplementation: true,
+          isRequiredParameterOnConcreteAction: false,
+        },
+      },
+      /subject\.isRequiredParameterOnConcreteAction: Expected `true`, or no value at all/u,
+    ],
+    [
+      "a parameter without `requireImplementation`",
+      { subject: {} },
+      /subject\.requireImplementation: Expected a boolean/u,
+    ],
+  ])("rejects %s", (_name, parameters, message) => {
+    expect(() => parse(withParameters(parameters))).toThrowError(message);
+  });
+
   it("accepts a property that records a value type", () => {
     const valueType = { packageNamespace: "com.example", apiName: "Ssn" };
     const parsed = parse(withPropertyDefinition({ ...property, valueType }));
@@ -465,6 +531,88 @@ describe("parseLockfile", () => {
       ),
     ).toThrowError(
       /instructions\[0\]\.property: Expected the api name of the property to require/u,
+    );
+  });
+
+  it.each([
+    [
+      "an addRequiredProperty",
+      { type: "addRequiredProperty", property: "lastName" },
+    ],
+    [
+      "an addRequiredActionTypeConstraint",
+      {
+        type: "addRequiredActionTypeConstraint",
+        actionTypeConstraint: "com.palantir.sendEmail",
+      },
+    ],
+    [
+      "a replace",
+      {
+        type: "replace",
+        replacement: {
+          interfaceType: "com.palantir.PersonV2",
+          propertyMappings: { name: "fullName" },
+          actionTypeConstraintMappings: {
+            "com.palantir.sendEmail": {
+              actionTypeConstraint: "com.palantir.notify",
+              parameterMappings: { subject: "title" },
+            },
+          },
+        },
+      },
+    ],
+  ])("accepts %s instruction", (_name, instruction) => {
+    const lockfile = withTransition({ instructions: [instruction] });
+    expect(parse(lockfile)).toStrictEqual(lockfile);
+  });
+
+  it("rejects an `addRequiredActionTypeConstraint` instruction that names no constraint", () => {
+    expect(() =>
+      parse(
+        withTransition({
+          instructions: [{ type: "addRequiredActionTypeConstraint" }],
+        }),
+      ),
+    ).toThrowError(
+      /instructions\[0\]\.actionTypeConstraint: Expected the api name of the action type constraint to require/u,
+    );
+  });
+
+  it("rejects a `replace` instruction that records no replacement", () => {
+    expect(() =>
+      parse(withTransition({ instructions: [{ type: "replace" }] })),
+    ).toThrowError(
+      /instructions\[0\]\.replacement: Expected an object recording the replacement interface/u,
+    );
+  });
+
+  it.each([
+    ["propertyMappings", { propertyMappings: {} }],
+    ["linkTypeConstraintMappings", { linkTypeConstraintMappings: {} }],
+    ["actionTypeConstraintMappings", { actionTypeConstraintMappings: {} }],
+    [
+      "parameterMappings",
+      {
+        actionTypeConstraintMappings: {
+          "com.palantir.sendEmail": {
+            actionTypeConstraint: "com.palantir.notify",
+            parameterMappings: {},
+          },
+        },
+      },
+    ],
+  ])("rejects a replacement that records an empty %s", (field, mappings) => {
+    const replacement = { interfaceType: "com.palantir.PersonV2", ...mappings };
+    expect(() =>
+      parse(
+        withTransition({ instructions: [{ type: "replace", replacement }] }),
+      ),
+    ).toThrowError(
+      new RegExp(
+        `${field}: Expected at least one .* mapping, or no value at all`,
+        "u",
+      ),
     );
   });
 

@@ -1,6 +1,6 @@
 # PdfViewer
 
-A React component for rendering PDF documents with text selection, custom annotations, sidebar navigation, and in-document search.
+`PdfViewer` renders a PDF from an OSDK `Media` object with text selection, custom annotations, sidebar navigation, and in-document search.
 
 ## Import
 
@@ -330,7 +330,7 @@ All colors and sizes are driven by CSS custom properties included in `@osdk/reac
   --osdk-pdf-viewer-toolbar-bg: #f5f5f5;
   --osdk-pdf-viewer-toolbar-border: #e0e0e0;
   --osdk-pdf-viewer-search-highlight: rgba(255, 200, 0, 0.4);
-  --osdk-pdf-viewer-search-selected: rgba(255, 150, 0, 0.6);
+  --osdk-pdf-viewer-search-active: rgba(255, 150, 0, 0.6);
   --osdk-pdf-viewer-annotation-highlight: rgba(255, 235, 59, 0.4);
   --osdk-pdf-viewer-annotation-underline: #1976d2;
   --osdk-pdf-viewer-annotation-comment: rgba(76, 175, 80, 0.6);

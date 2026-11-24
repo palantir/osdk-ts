@@ -21,7 +21,10 @@ import type { InterfaceSchemaGracePeriod } from "../../api/interface/InterfaceSc
 import type { Nullability } from "../../api/properties/Nullability.js";
 import type { SourceCensus } from "../generateOntologySchemaLockfile.js";
 import type {
+  LockedActionTypeConstraint,
+  LockedInterfaceSchema,
   LockedInterfaceType,
+  LockedParameterConstraint,
   LockedProperty,
   LockedTransition,
   LockedValueType,
@@ -268,7 +271,8 @@ describe("validateOntologySchemaLockfile", () => {
           transitionId: "requireLastName",
           targets: [
             {
-              propertyApiName: "lastName",
+              kind: "property",
+              apiName: "lastName",
               previous: OPTIONAL_STRING,
               next: undefined,
             },
@@ -999,6 +1003,20 @@ describe("validateOntologySchemaLockfile", () => {
           },
         }),
       },
+      {
+        name: "a required action type constraint",
+        unchanged: lockfile({
+          Person: {
+            schema: {
+              properties: { firstName: REQUIRED_STRING },
+              actionTypeConstraints: {
+                "com.palantir.sendEmail": { requireImplementation: true },
+              },
+            },
+            transitions: [],
+          },
+        }),
+      },
     ])("reports nothing about $name", ({ unchanged }) => {
       const result = validate(unchanged, unchanged);
       expect(result.breakingChanges).toEqual([]);
@@ -1057,6 +1075,414 @@ describe("validateOntologySchemaLockfile", () => {
           transitionId: "requireLastName",
           kind: "finalized",
         },
+      ]);
+    });
+  });
+
+  describe("action type constraints", () => {
+    const SEND_EMAIL = "com.palantir.sendEmail";
+    const OPTIONAL: LockedActionTypeConstraint = {
+      requireImplementation: false,
+    };
+    const REQUIRED: LockedActionTypeConstraint = {
+      requireImplementation: true,
+    };
+
+    const requireSendEmail: LockedTransition = {
+      id: "requireSendEmail",
+      gracePeriod: THIRTY_DAYS,
+      instructions: [
+        {
+          type: "addRequiredActionTypeConstraint",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ],
+    };
+
+    /** A single-interface lockfile whose interface declares the given constraints. */
+    function personConstrained(
+      actionTypeConstraints: Record<string, LockedActionTypeConstraint>,
+      transitions: LockedTransition[] = [],
+    ): OntologySchemaLockfile {
+      return lockfile({
+        Person: {
+          schema: {
+            properties: { firstName: REQUIRED_STRING },
+            ...(Object.keys(actionTypeConstraints).length > 0 && {
+              actionTypeConstraints,
+            }),
+          },
+          transitions,
+        },
+      });
+    }
+
+    const sendEmailInFlight = personConstrained({ [SEND_EMAIL]: OPTIONAL }, [
+      requireSendEmail,
+    ]);
+
+    it("reads the constraint becoming required as a finalization", () => {
+      const result = validate(
+        sendEmailInFlight,
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "finalized",
+        },
+      ]);
+    });
+
+    it("still checks the target constraint's parameters across a finalization", () => {
+      const subject = { requireImplementation: false };
+      const result = validate(
+        personConstrained(
+          { [SEND_EMAIL]: { ...OPTIONAL, parameters: { subject } } },
+          [requireSendEmail],
+        ),
+        personConstrained({
+          [SEND_EMAIL]: {
+            ...REQUIRED,
+            parameters: {
+              subject: {
+                ...subject,
+                isRequiredParameterOnConcreteAction: true,
+              },
+            },
+          },
+        }),
+      );
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "finalized",
+        },
+      ]);
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "parameterBecameRequiredOnConcreteAction",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+          parameter: "subject",
+        },
+      ]);
+    });
+
+    it("reads the constraint staying optional as a deletion", () => {
+      const result = validate(
+        sendEmailInFlight,
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([
+        {
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          kind: "deleted",
+        },
+      ]);
+    });
+
+    it("rejects a disappearance that removes the target constraint", () => {
+      const result = validate(sendEmailInFlight, personConstrained({}));
+      expect(result.warnings).toEqual([]);
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "ambiguousDisappearance",
+          interfaceApiName: "Person",
+          transitionId: "requireSendEmail",
+          targets: [
+            {
+              kind: "actionTypeConstraint",
+              apiName: SEND_EMAIL,
+              previous: OPTIONAL,
+              next: undefined,
+            },
+          ],
+          instructions: requireSendEmail.instructions,
+        },
+      ]);
+    });
+
+    it("rejects making an existing constraint required without a migration", () => {
+      const result = validate(
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "actionTypeConstraintBecameRequired",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it("rejects adding a required constraint", () => {
+      const result = validate(
+        personConstrained({}),
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "requiredActionTypeConstraintAdded",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it("accepts adding an optional constraint", () => {
+      const result = validate(
+        personConstrained({}),
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result).toEqual({
+        breakingChanges: [],
+        checkpoints: [],
+        warnings: [],
+      });
+    });
+
+    it("warns when a constraint stops being required", () => {
+      const result = validate(
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([
+        {
+          code: "actionTypeConstraintRequirementRelaxed",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it.each([
+      ["optional", OPTIONAL],
+      ["required", REQUIRED],
+    ] as const)(
+      "warns when a %s constraint is removed",
+      (_name, constraint) => {
+        const result = validate(
+          personConstrained({ [SEND_EMAIL]: constraint }),
+          personConstrained({}),
+        );
+        expect(result.breakingChanges).toEqual([]);
+        expect(result.warnings).toEqual([
+          {
+            code: "actionTypeConstraintRemoved",
+            interfaceApiName: "Person",
+            actionTypeConstraint: SEND_EMAIL,
+          },
+        ]);
+      },
+    );
+
+    describe("parameters", () => {
+      const OPTIONAL_PARAMETER: LockedParameterConstraint = {
+        requireImplementation: false,
+      };
+      const REQUIRED_PARAMETER: LockedParameterConstraint = {
+        requireImplementation: true,
+      };
+      const REQUIRED_ON_CONCRETE_ACTION: LockedParameterConstraint = {
+        requireImplementation: false,
+        isRequiredParameterOnConcreteAction: true,
+      };
+      const where = {
+        interfaceApiName: "Person",
+        actionTypeConstraint: SEND_EMAIL,
+        parameter: "subject",
+      };
+
+      /** `sendEmail`, with the given requirement and parameters. */
+      function personWithParameters(
+        parameters: Record<string, LockedParameterConstraint>,
+        constraint: LockedActionTypeConstraint = OPTIONAL,
+      ): OntologySchemaLockfile {
+        return personConstrained({
+          [SEND_EMAIL]: {
+            ...constraint,
+            ...(Object.keys(parameters).length > 0 && { parameters }),
+          },
+        });
+      }
+
+      it.each([
+        ["optional", OPTIONAL],
+        ["required", REQUIRED],
+      ] as const)(
+        "rejects tightening a parameter of an %s constraint",
+        (_name, constraint) => {
+          const result = validate(
+            personWithParameters({ subject: OPTIONAL_PARAMETER }, constraint),
+            personWithParameters(
+              {
+                subject: {
+                  requireImplementation: true,
+                  isRequiredParameterOnConcreteAction: true,
+                },
+              },
+              constraint,
+            ),
+          );
+          expect(result.breakingChanges).toEqual([
+            { code: "parameterBecameRequired", ...where },
+            { code: "parameterBecameRequiredOnConcreteAction", ...where },
+          ]);
+          expect(result.warnings).toEqual([]);
+        },
+      );
+
+      it("rejects adding a required parameter to an existing constraint", () => {
+        const result = validate(
+          personWithParameters({}),
+          personWithParameters({ subject: REQUIRED_PARAMETER }),
+        );
+        expect(result.breakingChanges).toEqual([
+          { code: "requiredParameterAdded", ...where },
+        ]);
+      });
+
+      it.each([
+        ["optional", OPTIONAL_PARAMETER],
+        ["required on the concrete action", REQUIRED_ON_CONCRETE_ACTION],
+      ] as const)(
+        "accepts adding a parameter that is %s to an existing constraint",
+        (_name, parameter) => {
+          const result = validate(
+            personWithParameters({}),
+            personWithParameters({ subject: parameter }),
+          );
+          expect(result).toEqual({
+            breakingChanges: [],
+            checkpoints: [],
+            warnings: [],
+          });
+        },
+      );
+
+      it("accepts a new constraint whose parameters are required", () => {
+        const result = validate(
+          personConstrained({}),
+          personWithParameters({
+            subject: {
+              requireImplementation: true,
+              isRequiredParameterOnConcreteAction: true,
+            },
+          }),
+        );
+        expect(result).toEqual({
+          breakingChanges: [],
+          checkpoints: [],
+          warnings: [],
+        });
+      });
+
+      it("warns when a parameter is relaxed", () => {
+        const result = validate(
+          personWithParameters({
+            subject: {
+              requireImplementation: true,
+              isRequiredParameterOnConcreteAction: true,
+            },
+          }),
+          personWithParameters({ subject: OPTIONAL_PARAMETER }),
+        );
+        expect(result.breakingChanges).toEqual([]);
+        expect(result.warnings).toEqual([
+          { code: "parameterRequirementRelaxed", ...where },
+          { code: "parameterNoLongerRequiredOnConcreteAction", ...where },
+        ]);
+      });
+    });
+  });
+
+  describe("replacement", () => {
+    const replace: LockedTransition = {
+      id: "replace",
+      gracePeriod: THIRTY_DAYS,
+      instructions: [
+        {
+          type: "replace",
+          replacement: { interfaceType: "PersonV2" },
+        },
+      ],
+    };
+
+    const PERSON_PROPERTIES: LockedInterfaceSchema["properties"] = {
+      firstName: REQUIRED_STRING,
+      lastName: OPTIONAL_STRING,
+    };
+
+    function lockedPerson(
+      transitions: LockedTransition[] = [],
+      properties = PERSON_PROPERTIES,
+    ): OntologySchemaLockfile {
+      return lockfile({ Person: { schema: { properties }, transitions } });
+    }
+
+    const replacementInFlight = lockedPerson([replace]);
+    const deleted = {
+      interfaceApiName: "Person",
+      transitionId: "replace",
+      kind: "deleted",
+    };
+
+    it("reads a vanished replace as a deletion, since it is never finalized", () => {
+      const result = validate(replacementInFlight, lockedPerson());
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([]);
+      expect(result.checkpoints).toEqual([deleted]);
+    });
+
+    it("still reports schema breaks made alongside deleting a replace", () => {
+      const result = validate(
+        replacementInFlight,
+        lockedPerson([], {
+          firstName: REQUIRED_STRING,
+          lastName: REQUIRED_STRING,
+        }),
+      );
+      expect(result.checkpoints).toEqual([deleted]);
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "propertyBecameRequired",
+          interfaceApiName: "Person",
+          property: "lastName",
+        },
+      ]);
+    });
+
+    it("accepts declaring another migration once the replace is deleted", () => {
+      const result = validate(
+        replacementInFlight,
+        lockedPerson([requireLastName]),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.checkpoints).toEqual([deleted]);
+    });
+
+    it("rejects a changed replacement on an in-flight replace", () => {
+      const result = validate(
+        replacementInFlight,
+        lockedPerson([
+          {
+            ...replace,
+            instructions: [
+              { type: "replace", replacement: { interfaceType: "PersonV3" } },
+            ],
+          },
+        ]),
+      );
+      expect(result.breakingChanges.map(({ code }) => code)).toEqual([
+        "instructionsChanged",
       ]);
     });
   });

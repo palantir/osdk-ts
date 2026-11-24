@@ -18,13 +18,17 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import type { TypeClass } from "../../api/common/TypeClass.js";
 import { defineInterface } from "../../api/defineInterface.js";
+import { defineInterfaceActionTypeConstraint } from "../../api/defineInterfaceActionTypeConstraint.js";
 import {
   defineOntology,
+  getImportedTypes,
   getOntologyDefinition,
 } from "../../api/defineOntology.js";
 import { defineSharedPropertyType } from "../../api/defineSpt.js";
+import type { InterfaceSchemaTransition } from "../../api/interface/InterfaceSchemaMigrations.js";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import { defaultTypeClasses } from "../../api/propertyConversionUtils.js";
+import type { OntologyValidationContext } from "../../api/validateOntology.js";
 import {
   censusOfSource,
   generateOntologySchemaLockfile,
@@ -53,7 +57,7 @@ async function lockAddressStruct(
     },
     schemaMigrations: { transitions: [] },
   });
-  return generateOntologySchemaLockfile(getOntologyDefinition());
+  return generateOntologySchemaLockfile(definedContext());
 }
 
 async function lockNameProperty(
@@ -71,7 +75,7 @@ async function lockNameProperty(
     },
     schemaMigrations: { transitions: [] },
   });
-  return generateOntologySchemaLockfile(getOntologyDefinition());
+  return generateOntologySchemaLockfile(definedContext());
 }
 
 /** How the lockfile records `apiName` on the `Person` the test just defined. */
@@ -80,9 +84,17 @@ function lockedProperty(apiName: string): LockedProperty {
 }
 
 function lockedSchema(): LockedInterfaceSchema {
-  return generateOntologySchemaLockfile(getOntologyDefinition()).interfaces[
+  return generateOntologySchemaLockfile(definedContext()).interfaces[
     "com.palantir.Person"
   ].schema;
+}
+
+/** What the DSL has registered since the last `defineOntology`. */
+function definedContext(): OntologyValidationContext {
+  return {
+    ontology: getOntologyDefinition(),
+    importedTypes: getImportedTypes(),
+  };
 }
 
 beforeEach(async () => {
@@ -525,6 +537,350 @@ describe("generateOntologySchemaLockfile", () => {
   });
 });
 
+describe("action type constraints", () => {
+  function constrain(
+    interfaceType: InterfaceType,
+    apiName: string,
+    requireImplementation: boolean,
+  ): void {
+    defineInterfaceActionTypeConstraint({
+      interfaceType,
+      apiName,
+      displayName: apiName,
+      description: apiName,
+      requireImplementation,
+      parameters: [],
+    });
+  }
+
+  it("records each directly-declared constraint by api name", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(person, "sendEmail", false);
+    constrain(person, "archive", true);
+
+    expect(lockedSchema().actionTypeConstraints).toEqual({
+      "com.palantir.archive": { requireImplementation: true },
+      "com.palantir.sendEmail": { requireImplementation: false },
+    });
+    // NB: should be sorted for lockfile stability
+    expect(
+      Object.keys(lockedSchema().actionTypeConstraints ?? {}),
+    ).toStrictEqual(["com.palantir.archive", "com.palantir.sendEmail"]);
+  });
+
+  it("does not record the constraints an extended interface declares", () => {
+    const named = defineInterface({
+      apiName: "Named",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(named, "rename", true);
+    defineInterface({
+      apiName: "Person",
+      extends: [named],
+      schemaMigrations: { transitions: [] },
+    });
+
+    expect(Object.keys(lockedSchema())).toEqual([
+      "properties",
+      "extendsInterfaces",
+    ]);
+  });
+
+  it("records whether each parameter is required, and on the concrete action only when set", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    defineInterfaceActionTypeConstraint({
+      interfaceType: person,
+      apiName: "sendEmail",
+      displayName: "Send email",
+      description: "Sends the person an email",
+      requireImplementation: false,
+      parameters: [
+        {
+          apiName: "subject",
+          displayName: "Subject",
+          type: { type: "string", string: {} },
+          requireImplementation: true,
+          isRequiredParameterOnConcreteAction: true,
+        },
+        {
+          apiName: "body",
+          displayName: "Body",
+          type: { type: "string", string: {} },
+          requireImplementation: false,
+          isRequiredParameterOnConcreteAction: false,
+        },
+        {
+          apiName: "cc",
+          displayName: "CC",
+          type: { type: "string", string: {} },
+          requireImplementation: false,
+        },
+      ],
+    });
+
+    const parameters =
+      lockedSchema().actionTypeConstraints?.["com.palantir.sendEmail"]
+        ?.parameters ?? {};
+    expect(parameters).toEqual({
+      body: { requireImplementation: false },
+      cc: { requireImplementation: false },
+      subject: {
+        requireImplementation: true,
+        isRequiredParameterOnConcreteAction: true,
+      },
+    });
+    // NB: should be sorted for lockfile stability, and `false` recorded the same as absent
+    expect(Object.keys(parameters)).toStrictEqual(["body", "cc", "subject"]);
+    expect(Object.keys(parameters.body)).toStrictEqual([
+      "requireImplementation",
+    ]);
+  });
+
+  it("omits parameters for a constraint that declares none", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: { transitions: [] },
+    });
+    constrain(person, "archive", true);
+
+    expect(
+      Object.keys(
+        lockedSchema().actionTypeConstraints?.["com.palantir.archive"] ?? {},
+      ),
+    ).toStrictEqual(["requireImplementation"]);
+  });
+
+  it("records an addRequiredActionTypeConstraint instruction by fully-qualified api name", () => {
+    const person = defineInterface({
+      apiName: "Person",
+      schemaMigrations: {
+        transitions: [
+          {
+            id: "requireSendEmail",
+            title: "Require send email",
+            gracePeriod: { type: "afterInstall", days: 30 },
+            instructions: [
+              {
+                type: "addRequiredActionTypeConstraint",
+                actionTypeConstraint: "sendEmail",
+              },
+            ],
+          },
+        ],
+      },
+    });
+    constrain(person, "sendEmail", false);
+
+    expect(
+      generateOntologySchemaLockfile(definedContext()).interfaces[
+        "com.palantir.Person"
+      ].transitions,
+    ).toEqual([
+      {
+        id: "requireSendEmail",
+        gracePeriod: { type: "afterInstall", days: 30 },
+        instructions: [
+          {
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "com.palantir.sendEmail",
+          },
+        ],
+      },
+    ]);
+  });
+});
+
+describe("replacement", () => {
+  function replaceWith(replacement: InterfaceType): InterfaceSchemaTransition {
+    return {
+      id: "replace",
+      title: "Replace",
+      gracePeriod: { type: "afterInstall", days: 30 },
+      instructions: [
+        {
+          type: "replace",
+          replacement: {
+            interfaceType: replacement,
+            propertyMappings: { name: "fullName" },
+          },
+        },
+      ],
+    };
+  }
+
+  function defineActionTypeConstraint(
+    interfaceType: InterfaceType,
+    apiName: string,
+    parameters: string[],
+  ): void {
+    defineInterfaceActionTypeConstraint({
+      interfaceType,
+      apiName,
+      displayName: apiName,
+      description: apiName,
+      requireImplementation: false,
+      parameters: parameters.map((parameter) => ({
+        apiName: parameter,
+        displayName: parameter,
+        type: { type: "string", string: {} },
+        requireImplementation: false,
+      })),
+    });
+  }
+
+  function definePersonV2(): InterfaceType {
+    return defineInterface({
+      apiName: "PersonV2",
+      properties: { fullName: { type: "string" } },
+    });
+  }
+
+  it("records the replacement by api name, omitting empty mappings", () => {
+    const personV2 = definePersonV2();
+    defineInterface({
+      apiName: "Person",
+      properties: { name: { type: "string" } },
+      schemaMigrations: { transitions: [replaceWith(personV2)] },
+    });
+
+    expect(
+      generateOntologySchemaLockfile(definedContext()).interfaces[
+        "com.palantir.Person"
+      ].transitions[0].instructions,
+    ).toStrictEqual([
+      {
+        type: "replace",
+        replacement: {
+          interfaceType: "com.palantir.PersonV2",
+          propertyMappings: { name: "fullName" },
+        },
+      },
+    ]);
+  });
+
+  it("records action type constraint mappings with sorted parameter mappings, omitting empty ones", () => {
+    const personV2 = definePersonV2();
+    defineActionTypeConstraint(personV2, "notify", ["title", "message"]);
+    defineActionTypeConstraint(personV2, "retire", []);
+    const person = defineInterface({
+      apiName: "Person",
+      properties: { name: { type: "string" } },
+      schemaMigrations: {
+        transitions: [
+          {
+            ...replaceWith(personV2),
+            instructions: [
+              {
+                type: "replace",
+                replacement: {
+                  interfaceType: personV2,
+                  propertyMappings: { name: "fullName" },
+                  actionTypeConstraintMappings: {
+                    sendEmail: {
+                      actionTypeConstraint: "notify",
+                      parameterMappings: { subject: "title", body: "message" },
+                    },
+                    archive: { actionTypeConstraint: "retire" },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    defineActionTypeConstraint(person, "sendEmail", ["subject", "body"]);
+    defineActionTypeConstraint(person, "archive", []);
+
+    const instructions =
+      generateOntologySchemaLockfile(definedContext()).interfaces[
+        "com.palantir.Person"
+      ].transitions[0].instructions;
+    // Compared as JSON so that key order, which the lockfile sorts to avoid churn, is checked too
+    expect(JSON.stringify(instructions)).toBe(
+      JSON.stringify([
+        {
+          type: "replace",
+          replacement: {
+            interfaceType: "com.palantir.PersonV2",
+            propertyMappings: { name: "fullName" },
+            actionTypeConstraintMappings: {
+              "com.palantir.archive": {
+                actionTypeConstraint: "com.palantir.retire",
+              },
+              "com.palantir.sendEmail": {
+                actionTypeConstraint: "com.palantir.notify",
+                parameterMappings: { body: "message", subject: "title" },
+              },
+            },
+          },
+        },
+      ]),
+    );
+  });
+});
+
+describe("replacement of an interface with inherited properties", () => {
+  it("records a mapping from an inherited property under its published api name", () => {
+    const email = defineSharedPropertyType({
+      apiName: "email",
+      type: "string",
+    });
+    const contactable = defineInterface({
+      apiName: "Contactable",
+      properties: { email: { sharedPropertyType: email, required: true } },
+      schemaMigrations: { transitions: [] },
+    });
+    const personV2 = defineInterface({
+      apiName: "PersonV2",
+      properties: { emailAddress: { type: "string" } },
+    });
+    defineInterface({
+      apiName: "Person",
+      extends: [contactable],
+      schemaMigrations: {
+        transitions: [
+          {
+            id: "replace",
+            title: "Replace",
+            gracePeriod: { type: "afterInstall", days: 30 },
+            instructions: [
+              {
+                type: "replace",
+                replacement: {
+                  interfaceType: personV2,
+                  propertyMappings: { email: "emailAddress" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    });
+
+    expect(
+      generateOntologySchemaLockfile(definedContext()).interfaces[
+        "com.palantir.Person"
+      ].transitions[0].instructions,
+    ).toStrictEqual([
+      {
+        type: "replace",
+        replacement: {
+          interfaceType: "com.palantir.PersonV2",
+          propertyMappings: { "com.palantir.email": "emailAddress" },
+        },
+      },
+    ]);
+  });
+});
+
 describe("censusOfSource", () => {
   it("counts an interface that never opted in", () => {
     defineInterface({ apiName: "Unenrolled" });
@@ -539,7 +895,7 @@ describe("censusOfSource", () => {
       "com.palantir.Unenrolled",
     ]);
     expect(
-      Object.keys(generateOntologySchemaLockfile(ontology).interfaces),
+      Object.keys(generateOntologySchemaLockfile(definedContext()).interfaces),
     ).toEqual(["com.palantir.Enrolled"]);
   });
 

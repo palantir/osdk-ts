@@ -256,17 +256,15 @@ export function getAgentDataType(
     getAgentDataType(ontology, dataType, type);
   switch (input.type) {
     case "boolean":
-      return "boolean";
     case "date":
-    case "timestamp":
-    case "string":
-      return "string";
     case "double":
     case "float":
     case "integer":
     case "long":
     case "short":
-      return "number";
+    case "string":
+    case "timestamp":
+      return `$Agent${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
     case "nullable":
       return `(${recurse(input.wrappedType)}) | null`;
     case "list":

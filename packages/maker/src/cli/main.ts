@@ -24,8 +24,8 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
-import type { OntologyDefinition } from "../api/common/OntologyDefinition.js";
 import { defineOntology } from "../api/defineOntology.js";
+import type { OntologyValidationContext } from "../api/validateOntology.js";
 import { DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME } from "../lockfile/OntologySchemaLockfile.js";
 import { reconcileOntologySchemaLockfile } from "../lockfile/reconcileOntologySchemaLockfile.js";
 
@@ -217,9 +217,9 @@ export default async function main(
     commandLineOpts.randomnessKey,
     // An ontology that fails lockfile checks would fail at installation-time, so the ontology-ir
     // should never reach disk at all.
-    async (ontology) =>
+    async (context) =>
       await reconcileOntologySchemaLockfile({
-        ontology,
+        context,
         lockfilePath,
         writeLocks: commandLineOpts.writeLocks ?? false,
         assumeYes: commandLineOpts.yes ?? false,
@@ -262,7 +262,7 @@ async function loadOntology(
   snippetPackageName: string,
   codeSnippetDir: string,
   randomnessKey: string | undefined,
-  beforeWrite: (ontology: OntologyDefinition) => Promise<void>,
+  beforeWrite: (context: OntologyValidationContext) => Promise<void>,
 ) {
   const q = await defineOntology(
     apiNamespace,

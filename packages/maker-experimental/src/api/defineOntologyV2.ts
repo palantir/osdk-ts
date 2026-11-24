@@ -19,7 +19,12 @@ import * as fs from "fs";
 import type { MarkingType } from "@osdk/client.unstable";
 import type { InputPreset } from "@osdk/client.unstable/api";
 import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
-import type { LinkType, ObjectType, OntologyDefinition } from "@osdk/maker";
+import type {
+  LinkType,
+  ObjectType,
+  OntologyDefinition,
+  OntologyValidationContext,
+} from "@osdk/maker";
 import {
   getFolderDefinitions,
   getImportedTypes,
@@ -89,7 +94,7 @@ export async function defineOntologyV2(
   externalImportedMetadata?: ExternalImportedOntologyMetadata,
   packagingOptions: OntologyPackagingOptions = {},
   /** Runs once the ontology is fully converted, but before any block data is written to disk. */
-  beforeWrite?: (ontology: OntologyDefinition) => void | Promise<void>,
+  beforeWrite?: (context: OntologyValidationContext) => void | Promise<void>,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
@@ -122,6 +127,8 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
   const importedTypes = getImportedTypes();
+  const validationContext = { ontology: ontologyDefinition, importedTypes };
+
   const folderDefinitions = resolveFolderDefinitions(
     getFolderDefinitions(),
     ontologyDefinition,
@@ -292,7 +299,7 @@ export async function defineOntologyV2(
   }
 
   // Runs last so that an ontology which fails conversion can't have already updated the lockfile.
-  await beforeWrite?.(ontologyDefinition);
+  await beforeWrite?.(validationContext);
 
   if (outputDir) {
     writeStaticObjects(outputDir);

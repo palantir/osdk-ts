@@ -117,12 +117,26 @@ export {
 } from "./api/interface/InterfacePropertyType.js";
 export { getFlattenedInterfaceProperties } from "./api/interface/getFlattenedInterfaceProperties.js";
 export type {
+  InterfaceActionTypeConstraintReplacement,
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaMigrations,
   InterfaceSchemaTransition,
+  InterfaceTypeReplacement,
 } from "./api/interface/InterfaceSchemaMigrations.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
+export type {
+  ResolvedInterfaceActionTypeConstraint,
+  ResolvedInterfaceLinkTypeConstraint,
+  ResolvedInterfaceMember,
+  ResolvedInterfaceProperty,
+} from "./api/interface/ResolvedInterfaceMember.js";
+export type {
+  ResolvedInterfaceActionTypeConstraintMapping,
+  ResolvedInterfaceMemberMapping,
+  ResolvedInterfaceTypeReplacement,
+} from "./api/interface/resolveInterfaceTypeReplacement.js";
+export { resolveInterfaceTypeReplacement } from "./api/interface/resolveInterfaceTypeReplacement.js";
 export type {
   LinkType,
   OneToManyLinkTypeDefinition,
@@ -164,6 +178,10 @@ export {
   shouldNotHaveRenderHints,
   validateVectorProperty,
 } from "./api/propertyConversionUtils.js";
+export {
+  type OntologyValidationContext,
+  validateOntology,
+} from "./api/validateOntology.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export type {
   AuthoringDataConstraint,

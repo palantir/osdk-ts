@@ -16,14 +16,14 @@
 
 import { z } from "zod";
 
-import type {
-  InterfaceSchemaGracePeriod,
-  InterfaceSchemaMigrationInstruction,
-} from "../api/interface/InterfaceSchemaMigrations.js";
+import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
 import { isCanonicalIsoUtcDatetime } from "../api/interface/validateInterfaceSchemaMigrations.js";
 import type { CoversEveryVariant } from "../util/CoversEveryVariant.js";
-import type { LockedPropertyType } from "./LockedPropertyType.js";
-import type { OntologySchemaLockfile } from "./OntologySchemaLockfile.js";
+import type {
+  LockedInstruction,
+  LockedPropertyType,
+  OntologySchemaLockfile,
+} from "./OntologySchemaLockfile.js";
 import {
   LOCKFILE_HEADER_KEY,
   ONTOLOGY_SCHEMA_LOCKFILE_VERSION,
@@ -87,6 +87,58 @@ const gracePeriodSchema = z.discriminatedUnion(
   appendRestoreAdviceFor("grace period"),
 );
 
+function mappingsSchema(what: string) {
+  return nonEmptyMappingsSchema(
+    what,
+    z.string({ message: `Expected the ${what} api name to map to.` }),
+  );
+}
+
+function nonEmptyMappingsSchema<T extends z.ZodTypeAny>(
+  what: string,
+  target: T,
+) {
+  return z
+    .record(z.string(), target, {
+      message: `Expected an object mapping ${what} api names.`,
+    })
+    .refine((mappings) => Object.keys(mappings).length > 0, {
+      message: `Expected at least one ${what} mapping, or no value at all for none.`,
+    })
+    .optional();
+}
+
+const replacementSchema = z
+  .object(
+    {
+      interfaceType: z.string({
+        message: "Expected the api name of the replacement interface.",
+      }),
+      propertyMappings: mappingsSchema("property"),
+      linkTypeConstraintMappings: mappingsSchema("link type constraint"),
+      actionTypeConstraintMappings: nonEmptyMappingsSchema(
+        "action type constraint",
+        z
+          .object(
+            {
+              actionTypeConstraint: z.string({
+                message:
+                  "Expected the api name of the action type constraint to map to.",
+              }),
+              parameterMappings: mappingsSchema("parameter"),
+            },
+            {
+              message:
+                "Expected an object recording the replacement action type constraint.",
+            },
+          )
+          .passthrough(),
+      ),
+    },
+    { message: "Expected an object recording the replacement interface." },
+  )
+  .passthrough();
+
 const instructionSchema = z.discriminatedUnion(
   "type",
   [
@@ -96,6 +148,21 @@ const instructionSchema = z.discriminatedUnion(
         property: z.string({
           message: "Expected the api name of the property to require.",
         }),
+      })
+      .passthrough(),
+    z
+      .object({
+        type: z.literal("addRequiredActionTypeConstraint"),
+        actionTypeConstraint: z.string({
+          message:
+            "Expected the api name of the action type constraint to require.",
+        }),
+      })
+      .passthrough(),
+    z
+      .object({
+        type: z.literal("replace"),
+        replacement: replacementSchema,
       })
       .passthrough(),
   ],
@@ -206,6 +273,28 @@ const propertySchema = z
   )
   .passthrough();
 
+const parameterConstraintSchema = z
+  .object(
+    {
+      requireImplementation: z.boolean({ message: "Expected a boolean." }),
+      // `false` is the absent/default case, so we don't record it in the lockfile
+      isRequiredParameterOnConcreteAction: z
+        .literal(true, {
+          errorMap: () => ({
+            message:
+              `Expected \`true\`, or no value at all for a parameter the implementing action ` +
+              `may declare optional.`,
+          }),
+        })
+        .optional(),
+    },
+    {
+      message:
+        "Expected an object recording whether the parameter constraint is required.",
+    },
+  )
+  .passthrough();
+
 const interfaceSchema = z
   .object(
     {
@@ -231,6 +320,49 @@ const interfaceSchema = z
                 message:
                   `Expected a non-empty array of extended interface api names, or no value at ` +
                   `all for an interface that extends none.`,
+              })
+              .optional(),
+            actionTypeConstraints: z
+              .record(
+                z.string(),
+                z
+                  .object(
+                    {
+                      requireImplementation: z.boolean({
+                        message: "Expected a boolean.",
+                      }),
+                      parameters: z
+                        .record(z.string(), parameterConstraintSchema, {
+                          message:
+                            "Expected an object keyed by parameter constraint api name.",
+                        })
+                        // Absent means "declares none"
+                        .refine(
+                          (parameters) => Object.keys(parameters).length > 0,
+                          {
+                            message:
+                              `Expected at least one parameter constraint, or no value at all ` +
+                              `for an action type constraint that declares none.`,
+                          },
+                        )
+                        .optional(),
+                    },
+                    {
+                      message:
+                        "Expected an object recording whether the action type constraint is required.",
+                    },
+                  )
+                  .passthrough(),
+                {
+                  message:
+                    "Expected an object keyed by action type constraint api name.",
+                },
+              )
+              // Absent means "declares none"
+              .refine((constraints) => Object.keys(constraints).length > 0, {
+                message:
+                  `Expected at least one action type constraint, or no value at all for an ` +
+                  `interface that declares none.`,
               })
               .optional(),
           },
@@ -278,7 +410,7 @@ const _COVERS_EVERY_GRACE_PERIOD: CoversEveryVariant<
   z.infer<typeof gracePeriodSchema>
 > = true;
 const _COVERS_EVERY_INSTRUCTION: CoversEveryVariant<
-  InterfaceSchemaMigrationInstruction,
+  LockedInstruction,
   z.infer<typeof instructionSchema>
 > = true;
 

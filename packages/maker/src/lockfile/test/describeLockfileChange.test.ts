@@ -16,23 +16,25 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { InterfaceSchemaMigrationInstruction } from "../../api/interface/InterfaceSchemaMigrations.js";
 import {
   describeBreakingChange,
   describeWarning,
 } from "../describeLockfileChange.js";
-import type { LockedProperty } from "../OntologySchemaLockfile.js";
+import type {
+  LockedInstruction,
+  LockedProperty,
+} from "../OntologySchemaLockfile.js";
 import type {
   LockfileBreakingChange,
-  TargetPropertyState,
+  TargetState,
 } from "../validateOntologySchemaLockfile.js";
 
 const OPTIONAL_STRING: LockedProperty = { type: "string", required: false };
 
 describe("describeBreakingChange", () => {
   function ambiguous(
-    instructions: InterfaceSchemaMigrationInstruction[],
-    targets: TargetPropertyState[],
+    instructions: LockedInstruction[],
+    targets: TargetState[],
   ): string {
     return describeBreakingChange({
       code: "ambiguousDisappearance",
@@ -52,12 +54,14 @@ describe("describeBreakingChange", () => {
         ],
         [
           {
-            propertyApiName: "lastName",
+            kind: "property",
+            apiName: "lastName",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
           {
-            propertyApiName: "email",
+            kind: "property",
+            apiName: "email",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
@@ -75,7 +79,8 @@ describe("describeBreakingChange", () => {
         [{ type: "addRequiredProperty", property: "lastName" }],
         [
           {
-            propertyApiName: "lastName",
+            kind: "property",
+            apiName: "lastName",
             previous: OPTIONAL_STRING,
             next: undefined,
           },
@@ -322,6 +327,118 @@ describe("describeBreakingChange", () => {
     });
   });
 
+  describe("action type constraints", () => {
+    const SUGGESTED =
+      '{ id: "require-sendEmail", title: "Require sendEmail", ' +
+      'gracePeriod: { type: "afterInstall", days: 30 }, ' +
+      'instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "sendEmail" }] }';
+
+    it.each<LockfileBreakingChange>([
+      {
+        code: "actionTypeConstraintBecameRequired",
+        interfaceApiName: "Person",
+        actionTypeConstraint: "com.example.sendEmail",
+      },
+      {
+        code: "requiredActionTypeConstraintAdded",
+        interfaceApiName: "Person",
+        actionTypeConstraint: "com.example.sendEmail",
+      },
+    ])("suggests the transition to declare for $code", (breakingChange) => {
+      const message = describeBreakingChange(breakingChange);
+      expect(message).toContain(SUGGESTED);
+      expect(message).toContain("`requireImplementation: false`");
+      expect(message).not.toContain("com.example.sendEmail");
+    });
+
+    const subject = {
+      interfaceApiName: "Person",
+      actionTypeConstraint: "com.example.sendEmail",
+      parameter: "subject",
+    };
+
+    it.each<[LockfileBreakingChange, string]>([
+      [
+        { code: "parameterBecameRequired", ...subject },
+        "`requireImplementation: false`",
+      ],
+      [
+        { code: "requiredParameterAdded", ...subject },
+        "`requireImplementation: false`",
+      ],
+      [
+        { code: "parameterBecameRequiredOnConcreteAction", ...subject },
+        "`isRequiredParameterOnConcreteAction: false`",
+      ],
+    ])(
+      "names the parameter and authored constraint for $0.code, with no migration to suggest",
+      (breakingChange, fix) => {
+        const message = describeBreakingChange(breakingChange);
+        expect(message).toContain('parameter "subject"');
+        expect(message).toContain('action type constraint "sendEmail"');
+        expect(message).toContain(
+          "no currently-supported interface schema migration can phase that in",
+        );
+        expect(message).toContain(fix);
+        expect(message).not.toContain("com.example.sendEmail");
+      },
+    );
+
+    it("explains an ambiguous disappearance over the target constraint", () => {
+      const message = ambiguous(
+        [
+          {
+            type: "addRequiredActionTypeConstraint",
+            actionTypeConstraint: "com.example.sendEmail",
+          },
+        ],
+        [
+          {
+            kind: "actionTypeConstraint",
+            apiName: "com.example.sendEmail",
+            previous: { requireImplementation: false },
+            next: undefined,
+          },
+        ],
+      );
+      expect(message).toContain(
+        'Instead, action type constraint "sendEmail" was removed from the interface.',
+      );
+      expect(message).toContain(
+        'To finalize it, set "sendEmail" to `requireImplementation: true`.',
+      );
+      expect(message).toContain(
+        'To delete it, leave "sendEmail" exactly as the lockfile records it.',
+      );
+    });
+  });
+
+  describe("replacement", () => {
+    it("names the replacement of a changed replace instruction", () => {
+      expect(
+        describeBreakingChange({
+          code: "instructionsChanged",
+          interfaceApiName: "Person",
+          transitionId: "replace",
+          previousInstructions: [
+            {
+              type: "replace",
+              replacement: { interfaceType: "com.example.PersonV2" },
+            },
+          ],
+          nextInstructions: [
+            {
+              type: "replace",
+              replacement: { interfaceType: "com.example.PersonV3" },
+            },
+          ],
+        }),
+      ).toContain(
+        'from [replace("com.example.PersonV2")] to [replace("com.example.PersonV3")]',
+      );
+    });
+  });
+
   describe("authored names", () => {
     // A shared property type publishes under a namespaced api name, which the lockfile records
     // verbatim, but the author keys it by the un-namespaced name.
@@ -360,7 +477,8 @@ describe("describeBreakingChange", () => {
           transitionId: "requireLastName",
           targets: [
             {
-              propertyApiName: NAMESPACED,
+              kind: "property",
+              apiName: NAMESPACED,
               previous: OPTIONAL_STRING,
               next: undefined,
             },
@@ -455,6 +573,50 @@ describe("describeWarning", () => {
     previousConstraint: "MUST_BE_PK",
   });
 
+  const actionTypeConstraintRequirementRelaxed = describeWarning({
+    code: "actionTypeConstraintRequirementRelaxed",
+    interfaceApiName: "Person",
+    actionTypeConstraint: "com.example.sendEmail",
+  });
+
+  const actionTypeConstraintRemoved = describeWarning({
+    code: "actionTypeConstraintRemoved",
+    interfaceApiName: "Person",
+    actionTypeConstraint: "com.example.sendEmail",
+  });
+
+  const parameterRequirementRelaxed = describeWarning({
+    code: "parameterRequirementRelaxed",
+    interfaceApiName: "Person",
+    actionTypeConstraint: "com.example.sendEmail",
+    parameter: "subject",
+  });
+
+  const parameterNoLongerRequiredOnConcreteAction = describeWarning({
+    code: "parameterNoLongerRequiredOnConcreteAction",
+    interfaceApiName: "Person",
+    actionTypeConstraint: "com.example.sendEmail",
+    parameter: "subject",
+  });
+
+  it("names the parameter and authored constraint that were relaxed", () => {
+    expect(parameterRequirementRelaxed).toContain(
+      'parameter "subject" of action type constraint "sendEmail" no longer requires implementation',
+    );
+    expect(parameterNoLongerRequiredOnConcreteAction).toContain(
+      'parameter "subject" of action type constraint "sendEmail" no longer has to be required',
+    );
+  });
+
+  it("names the authored constraint that no longer requires implementation", () => {
+    expect(actionTypeConstraintRequirementRelaxed).toContain(
+      'action type constraint "sendEmail" no longer requires implementation',
+    );
+    expect(actionTypeConstraintRemoved).toContain(
+      'action type constraint "sendEmail" was removed',
+    );
+  });
+
   it("names the key the author wrote for a relaxed requirement", () => {
     expect(requirementRelaxed).toContain(
       'property "lastName" is no longer required',
@@ -518,6 +680,26 @@ describe("describeWarning", () => {
       name: "a dropped primary key constraint",
       message: primaryKeyConstraintRelaxed,
       affected: "free to map it either way",
+    },
+    {
+      name: "a constraint no longer required",
+      message: actionTypeConstraintRequirementRelaxed,
+      affected: "will start finding it missing",
+    },
+    {
+      name: "a removed constraint",
+      message: actionTypeConstraintRemoved,
+      affected: "will stop finding it",
+    },
+    {
+      name: "a parameter no longer required",
+      message: parameterRequirementRelaxed,
+      affected: "may not reach the action",
+    },
+    {
+      name: "a parameter no longer required on the concrete action",
+      message: parameterNoLongerRequiredOnConcreteAction,
+      affected: "will start finding it missing",
     },
   ])(
     "says who is affected by $name without demanding a fix",

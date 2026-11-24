@@ -1,0 +1,213 @@
+---
+title: The Ontology and your SDK
+description: How object types, links, actions, functions, interfaces, and object sets map to the generated SDK and to Osdk.Instance values in TypeScript.
+foundryDocs:
+  - title: Ontology
+    path: ontology/overview
+  - title: Object types
+    path: object-link-types/object-types-overview
+---
+
+Your generated SDK is a typed description of part of a Foundry Ontology. This page explains what each Ontology concept becomes in TypeScript, so you can read the SDK and the values it returns.
+
+## Ontology concepts
+
+| Concept | What it is | In the generated SDK | How you use it |
+| --- | --- | --- | --- |
+| Object type | A schema for real-world entities, such as employees. | A definition, `Employee`, plus the namespace types `Employee.Props` and `Employee.OsdkInstance`. | `client(Employee)` returns an object set of every `Employee`. |
+| Property | A typed field on an object type. | A key in `Employee.Props`, typed from the property's base type. | Read it on an instance: `employee.fullName`. |
+| Primary key | The property that uniquely identifies an object. | `primaryKeyApiName` and `primaryKeyType` on the definition. | `client(Employee).fetchOne(12345)`, or `employee.$primaryKey`. |
+| Link type | A relationship between two object types. | Entries in `Employee.Links`. | `employee.$link.lead` for a single link, `employee.$link.reports` for many. |
+| Action type | A transaction that edits objects. | A definition, `modifyEmployee`. | `client(modifyEmployee).applyAction({ ... })`. |
+| Function (query) | Server-side logic that reads the Ontology and returns a value. | A definition, such as `getEmployeeMetrics`. | `client(getEmployeeMetrics).executeFunction({ ... })`. |
+| Interface | A shared shape that several object types implement. | A definition with its own properties. | `client(MyInterface).fetchPage()`, then `instance.$as(Employee)`. |
+| Object set | A lazy, composable query over objects. | `Employee.ObjectSet`. | `client(Employee).where({ ... }).pivotTo("lead")`. |
+
+The generated package does not contain a client. It exports definitions, which are plain metadata. You pass a definition to a client created with `createClient` from `@osdk/client`, and the client does the work:
+
+```ts title="src/example.ts"
+import { Employee, getEmployeeMetrics, modifyEmployee } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client(Employee)
+  .where({ department: "Engineering" })
+  .fetchPage({ $pageSize: 20 });
+
+const employee = await client(Employee).fetchOne(12345);
+
+await client(modifyEmployee).applyAction({
+  employee,
+  primary_office_id: "nyc-1",
+});
+
+const metrics = await client(getEmployeeMetrics).executeFunction({
+  departmentId: "engineering",
+});
+```
+
+See [Create a client](../client.mdx) to set up `client`.
+
+## Why `client(Employee)`
+
+The SDK separates the code that knows your Ontology (the generated package) from the code that talks to Foundry (`@osdk/client`). That design has practical effects:
+
+- **Smaller bundles.** Each definition is a small named export. Bundlers drop the ones you do not import, so the SDK's cost scales with what you use, not with the size of the Ontology.
+- **One runtime.** Several generated SDKs share the same `@osdk/client` code instead of each shipping its own.
+- **Fixes without regenerating.** A bug fix in `@osdk/client` reaches you through a dependency update. You do not need to regenerate the SDK.
+
+If you want autocomplete across the whole Ontology, import the namespace exports. Tree-shaking still removes what you do not reference:
+
+```ts
+import { $Objects } from "@my-app/sdk";
+import { client } from "./client";
+
+const page = await client($Objects.Employee).fetchPage();
+```
+
+The generated package also exports `$Actions`, `$Queries`, and `$Interfaces`, and `$ontologyRid` when the SDK was generated for a single Foundry environment.
+
+## Object instances
+
+Every object you fetch, from `@osdk/client` or from `@osdk/react` hooks, is an `Osdk.Instance`. The generated alias `Employee.OsdkInstance` is the same type:
+
+```ts
+import type { Employee } from "@my-app/sdk";
+import type { Osdk } from "@osdk/client";
+
+type A = Employee.OsdkInstance;
+type B = Osdk.Instance<Employee>;
+```
+
+### Metadata fields
+
+Fields that start with `$` describe the object rather than hold Ontology data:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `$apiName` | `string` | API name of the type you queried. For an interface query, this is the interface's API name. |
+| `$objectType` | `string` | API name of the concrete object type, even when you queried an interface. |
+| `$primaryKey` | Primary key type | The object's primary key value. Use it as a React `key`. |
+| `$title` | `string \| undefined` | Value of the object type's title property. |
+| `$objectSpecifier` | `ObjectSpecifier` | A string that identifies the object by type and primary key. |
+| `$link` | Links object | Accessors for the object's links. |
+| `$as` | Function | Converts between an interface and an object type that implements it. |
+| `$clone` | Function | Returns a copy of the instance with updated properties. |
+| `$rid` | `string` | The object's RID. Present only when you request it with `$includeRid: true`. |
+
+### Instances are immutable
+
+Instances are frozen, and their properties are `readonly`. To get a changed copy, call `$clone`:
+
+```ts
+const renamed = employee.$clone({ fullName: "Ada Lovelace" });
+```
+
+`$clone` throws if the update changes the primary key. It does not write anything to Foundry. Use it to build optimistic state for an action, as shown in [Optimistic updates](/react/optimistic-updates). To change data, apply an action.
+
+### Links
+
+A single-valued link returns an accessor with `fetchOne`. A many-valued link returns an object set:
+
+```ts
+const lead = await employee.$link.lead.fetchOne();
+const reports = await employee.$link.reports.fetchPage({ $pageSize: 50 });
+```
+
+In React, use [`useLinks`](/react/links) instead so linked objects share the cache.
+
+## Property value types
+
+Most properties are optional on the instance (`T | undefined`). Only the primary key and properties the Ontology marks as required are always present.
+
+| Ontology type | TypeScript value | Notes |
+| --- | --- | --- |
+| `string` | `string` | |
+| `boolean` | `boolean` | |
+| `integer`, `short`, `byte`, `float`, `double` | `number` | |
+| `long` | `string` | Strings keep 64-bit precision that `number` cannot hold. |
+| `decimal` | `string` | Strings keep arbitrary precision. |
+| `date` | `string` | ISO 8601 date, such as `"2024-03-15"`. |
+| `timestamp` | `string` | ISO 8601 date and time, such as `"2024-03-15T09:30:00Z"`. |
+| `geopoint` | `GeoJSON.Point` | |
+| `geoshape` | `GeoJSON.GeoJSON` | |
+| `attachment` | `Attachment` | Has `rid`, `fetchMetadata()`, and `fetchContents()`, which resolves to a `Response`. |
+| `mediaReference` | `Media` | Has `fetchMetadata()`, `fetchContents()`, and `getMediaReference()`. |
+| `cipherText` | `CipherText` | Call `decrypt()` to get the plaintext. |
+| `marking` | `string` | |
+| `vector` | `number[]` | |
+| Numeric, string, and sensor time series | `TimeSeriesProperty` | Has `getFirstPoint()`, `getLastPoint()`, and `getAllPoints()`. |
+| `geotimeSeriesReference` | `GeotimeSeriesProperty` | |
+
+### Dates and timestamps
+
+The SDK returns dates and timestamps as ISO 8601 strings instead of `Date` objects or a date library's types. This keeps a large date library out of your bundle, lets you use the date library you already have, and avoids parsing values you never read.
+
+Parse a value when you need date math:
+
+```ts
+const startDate =
+  employee.startDate != null ? new Date(employee.startDate) : undefined;
+```
+
+To send a date-only value, `@osdk/client` exports helpers that format a `Date` as `YYYY-MM-DD`:
+
+```ts
+import { extractDateInLocalTime, extractDateInUTC } from "@osdk/client";
+
+extractDateInLocalTime(new Date()); // "2024-03-15" in the user's time zone
+extractDateInUTC(new Date()); // "2024-03-15" in UTC
+```
+
+`extractDate` returns the date part of an ISO 8601 timestamp string.
+
+## Object sets
+
+An object set describes which objects you want. Building one does not send a request; only fetching does:
+
+```ts
+import { Employee } from "@my-app/sdk";
+import { client } from "./client";
+
+const engineers = client(Employee).where({ department: "Engineering" });
+const theirLeads = engineers.pivotTo("lead");
+
+const page = await theirLeads.fetchPage({ $pageSize: 20 });
+```
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `where(clause)` | Object set | Filters the set. |
+| `union(...sets)`, `intersect(...sets)`, `subtract(...sets)` | Object set | Combines sets of the same type. |
+| `pivotTo(link)` | Object set | Follows a link to the linked type. |
+| `withProperties(...)` | Object set | Adds derived properties computed on the server. |
+| `fetchPage(options)` | `Promise` of a page | Fetches one page: `data`, `nextPageToken`, and `totalCount`. |
+| `fetchOne(primaryKey)` | `Promise` of an instance | Fetches one object. Object types only. |
+| `asyncIter()` | Async iterator | Iterates over every object across pages. |
+| `aggregate(options)` | `Promise` of results | Runs an aggregation on the server. |
+| `subscribe(listener)` | Subscription | Receives changes to the set over a WebSocket. |
+
+In React, pass the same filters to [`useOsdkObjects`](/react/objects) or build a set with [`useObjectSet`](/react/object-sets).
+
+## Interfaces
+
+An interface lets you query several object types through one shape. Instances from an interface query expose the interface's properties. `$objectType` tells you the concrete type, and `$as` converts to it:
+
+```ts
+import { Employee, Worker } from "@my-app/sdk";
+import { client } from "./client";
+
+const { data } = await client(Worker).fetchPage();
+
+for (const worker of data) {
+  if (worker.$objectType === "Employee") {
+    const employee = worker.$as(Employee);
+    console.log(employee.fullName);
+  }
+}
+```
+
+## Related
+
+- [Caching and reactivity](./caching.mdx): how `@osdk/react` stores these instances.
+- [Objects](/react/objects): query objects in React.
+- [Actions](/react/actions): edit objects.

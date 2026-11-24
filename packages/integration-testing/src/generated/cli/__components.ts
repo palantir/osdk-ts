@@ -86,12 +86,12 @@ export type InstallMode = "PRODUCTION" | "BOOTSTRAP" | "SINGLETON";
 /**
  * A single seed object's property bag: keys are property API names,
  * values are the corresponding property values. Serializes to
- * `Record<string, unknown>` in the OSDK `SeedOutput`.
+ * `Record<string, unknown>` in the OSDK `OntologySeedOutput`.
  */
 export type ObjectSeed = Record<string, SeedPropertyValue>;
 
 /**
- * The seed state of a local ontology. Mirrors the `SeedOutput`
+ * The seed state of a local ontology. Mirrors the `OntologySeedOutput`
  * shape produced by the OSDK seed helpers (palantir/osdk-ts,
  * `packages/seed-helpers/src/types.ts`): the seed objects keyed by
  * object-type API name, plus the links between them.
