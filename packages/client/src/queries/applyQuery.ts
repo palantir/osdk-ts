@@ -217,6 +217,26 @@ export async function remapQueryResponse<
       >;
     }
 
+    case "interfaceObjectSet": {
+      const def = definitions.get(responseDataType.objectSet);
+      if (!def || def.type !== "interface") {
+        throw new Error(`Missing definition for ${responseDataType.objectSet}`);
+      }
+      if (typeof responseValue === "string") {
+        return createObjectSet(def, client, {
+          type: "intersect",
+          objectSets: [
+            { type: "interfaceBase", interfaceType: def.apiName },
+            { type: "reference", reference: responseValue },
+          ],
+        }) as QueryReturnType<typeof responseDataType>;
+      }
+
+      return createObjectSet(def, client, responseValue) as QueryReturnType<
+        typeof responseDataType
+      >;
+    }
+
     case "struct": {
       // figure out what keys need to be fixed up
       for (const [key, subtype] of Object.entries(responseDataType.struct)) {
@@ -388,7 +408,7 @@ export async function getRequiredDefinitions(
 
   return result;
 }
-function requiresConversion(dataType: QueryDataTypeDefinition) {
+function requiresConversion(dataType: QueryDataTypeDefinition): boolean {
   switch (dataType.type) {
     case "boolean":
     case "date":
@@ -399,6 +419,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
     case "long":
     case "string":
     case "timestamp":
+    case "typeReference":
       return false;
 
     case "union":
@@ -410,16 +431,25 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
     case "set":
       return requiresConversion(dataType.set);
 
+    case "array":
+      return requiresConversion(dataType.array);
+
+    // maps are always converted from an entry array into a record
+    case "map":
     case "attachment":
     case "mediaReference":
     case "objectSet":
+    case "interfaceObjectSet":
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":
     case "object":
+    case "interface":
       return true;
 
-    default:
+    default: {
+      const _: never = dataType;
       return false;
+    }
   }
 }
 

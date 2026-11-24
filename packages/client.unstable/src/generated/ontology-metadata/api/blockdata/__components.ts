@@ -225,13 +225,33 @@ export interface InterfaceTypeRestrictionStatus {
   publicProject?: boolean | null | undefined;
 }
 export interface InterfaceTypeSchemaMigrationBlockData {
+  interfaceActionTypeConstraintRidsToApiNames: Record<
+    _api_InterfaceActionTypeConstraintRid,
+    _api_InterfaceActionTypeConstraintApiName
+  >;
+  interfaceLinkTypeRidsToApiNames: Record<
+    _api_InterfaceLinkTypeRid,
+    _api_InterfaceLinkTypeApiName
+  >;
+  interfaceParameterConstraintRidsToApiNames: Record<
+    _api_InterfaceParameterConstraintRid,
+    _api_InterfaceParameterConstraintApiName
+  >;
   interfacePropertyTypeRidsToApiNames: Record<
     _api_InterfacePropertyTypeRid,
     _api_InterfacePropertyTypeApiName
   >;
+  interfaceStructFieldRidsToApiNames: Record<
+    _api_InterfacePropertyTypeRid,
+    Record<_api_StructFieldRid, _api_ObjectTypeFieldApiName>
+  >;
   schemaTransitions: Record<
     _api_InterfaceTypeSchemaTransitionRid,
     _api_schemamigrations_InterfaceTypeSchemaTransition
+  >;
+  interfaceTypeRidsToApiNames: Record<
+    _api_InterfaceTypeRid,
+    _api_InterfaceTypeApiName
   >;
 }
 /**

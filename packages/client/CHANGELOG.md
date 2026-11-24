@@ -1,5 +1,40 @@
 # @osdk/client
 
+## 2.94.0
+
+### Minor Changes
+
+- 4ebde4f: Hydrate interface object sets, interfaces, and arrays nested in query struct responses.
+
+### Patch Changes
+
+- @osdk/api@2.94.0
+- @osdk/client.unstable@2.94.0
+- @osdk/generator-converters@2.94.0
+
+## 2.93.0
+
+### Minor Changes
+
+- 4ca8bbe: Allow casting interface instances with non-local property implementations back to their object type unless a selected property has a reduced implementation, or a struct implementation loaded without `$includeAllBaseObjectProperties: true`.
+- f5e52d1: Reject interface to object type `$as` casts when struct-backed properties were loaded with `$select`, since the server ignores `$includeAllBaseObjectProperties` for selected loads and returns partial structs
+
+### Patch Changes
+
+- @osdk/api@2.93.0
+- @osdk/client.unstable@2.93.0
+- @osdk/generator-converters@2.93.0
+
+## 2.92.0
+
+### Patch Changes
+
+- Updated dependencies [749af7f]
+  - @osdk/api@2.92.0
+  - @osdk/client.unstable@2.92.0
+  - @osdk/generator-converters@2.92.0
+  - @osdk/shared.test@2.64.0
+
 ## 2.91.0
 
 ### Minor Changes

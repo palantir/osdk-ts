@@ -16,6 +16,7 @@
 
 import invariant from "tiny-invariant";
 
+import { addNamespaceIfNone } from "../defineOntology.js";
 import { describeInstruction } from "./describeInterfaceSchemaMigrationInstruction.js";
 import {
   type InterfacePropertyType,
@@ -25,7 +26,10 @@ import type {
   InterfaceSchemaGracePeriod,
   InterfaceSchemaMigrationInstruction,
   InterfaceSchemaMigrations,
+  InterfaceSchemaTransition,
+  InterfaceTypeReplacement,
 } from "./InterfaceSchemaMigrations.js";
+import { asPropertyReplacement } from "./resolveInterfaceTypeReplacement.js";
 
 // Constants enforced by OMS at installation-time.
 const MAX_TRANSITIONS = 20;
@@ -101,20 +105,23 @@ export function validateInterfaceSchemaMigrations(
     validateGracePeriod(interfaceApiName, id, gracePeriod);
 
     for (const instruction of instructions) {
+      validateInstruction(interfaceApiName, transition, instruction, {
+        transitionCount: transitions.length,
+        propertiesV3,
+      });
+
       const instructionDescription = describeInstruction(instruction);
       for (const claim of getClaims(instruction)) {
         const conflict = claimedBy.get(claim);
         invariant(
           conflict === undefined,
-          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". A property may be migrated by at most one in-flight transition.`,
+          `Schema migration transition "${id}" on interface ${interfaceApiName} declares ${instructionDescription}, which conflicts with ${conflict?.description} already declared by transition "${conflict?.transitionId}". Each element of an interface schema may be migrated by at most one in-flight transition.`,
         );
         claimedBy.set(claim, {
           transitionId: id,
           description: instructionDescription,
         });
       }
-
-      validateInstruction(interfaceApiName, id, instruction, propertiesV3);
     }
   }
 }
@@ -167,30 +174,134 @@ function validateGracePeriod(
   }
 }
 
+interface InstructionContext {
+  transitionCount: number;
+  // The interface type's locally-defined properties
+  propertiesV3: Record<string, InterfacePropertyType>;
+}
+
+/**
+ * Checks that need only the declaring interface type.
+ *
+ * Checks against other entities (action type constraints, link constraints, the replacement
+ * interface type, etc.) are deferred to `validateInterfaceSchemaMigrationReferences`, since
+ * the other entities are not necessarily available at this time.
+ */
 function validateInstruction(
   interfaceApiName: string,
-  transitionId: string,
+  transition: InterfaceSchemaTransition,
   instruction: InterfaceSchemaMigrationInstruction,
-  propertiesV3: Record<string, InterfacePropertyType>,
+  { transitionCount, propertiesV3 }: InstructionContext,
 ): void {
+  const transitionId = transition.id;
   switch (instruction.type) {
     case "addRequiredProperty": {
       const { property: propertyApiName } = instruction;
+      const prefix = `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${describeInstruction(instruction)}`;
       invariant(
         Object.hasOwn(propertiesV3, propertyApiName),
-        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} references property "${propertyApiName}" via ${instruction.type}, but interface ${interfaceApiName} does not declare that property. Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
+        `${prefix}, but interface ${interfaceApiName} does not declare property "${propertyApiName}". Properties inherited from an extended interface must be migrated by a transition on the interface that declares them.`,
       );
       invariant(
         !isInterfacePropertyRequired(propertiesV3[propertyApiName]),
-        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} targets property "${propertyApiName}" via ${instruction.type}, but that property is required. Only properties declared required: false may be targeted.`,
+        `${prefix}, but property "${propertyApiName}" is required. Only properties declared \`required: false\` may be targeted.`,
       );
       return;
     }
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
-      throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+    case "addRequiredActionTypeConstraint":
+      // action type constraints aren't defined by defineInterface, so these are checked post-facto
+      // once the ontology is fully-defined
+      return;
+    case "replace": {
+      const description = describeInstruction(instruction);
+      // A replace is never finalized, so this also keeps any further migration off the interface
+      invariant(
+        transition.instructions.length === 1 && transitionCount === 1,
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${description}, but ${
+          transitionCount === 1
+            ? `the transition has ${transition.instructions.length} instructions`
+            : `interface ${interfaceApiName} has ${transitionCount} transitions`
+        }. A replacement must be the only instruction of the only transition on its interface, and stays declared as a tombstone; finalize or remove the other migrations first.`,
       );
+
+      validateReplacementMappings(
+        interfaceApiName,
+        transitionId,
+        description,
+        instruction.replacement,
+      );
+      return;
+    }
+    default: {
+      const unhandled: never = instruction;
+      throw new Error(
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
+      );
+    }
+  }
+}
+
+/** Rejects mappings that send two of this interface type's entities to the same target. */
+function validateReplacementMappings(
+  interfaceApiName: string,
+  transitionId: string,
+  description: string,
+  replacement: InterfaceTypeReplacement,
+): void {
+  const propertyMappings = Object.entries(replacement.propertyMappings).map(
+    ([source, mapping]) => [source, asPropertyReplacement(mapping)] as const,
+  );
+  const actionTypeConstraintMappings = Object.entries(
+    replacement.actionTypeConstraintMappings ?? {},
+  );
+  const mappings: Array<[field: string, mapping: Record<string, string>]> = [
+    [
+      "propertyMappings",
+      Object.fromEntries(
+        propertyMappings.map(([source, { property }]) => [source, property]),
+      ),
+    ],
+    ...propertyMappings.map(
+      ([source, { structFieldMappings }]): [string, Record<string, string>] => [
+        `propertyMappings["${source}"].structFieldMappings`,
+        structFieldMappings,
+      ],
+    ),
+    [
+      "linkTypeConstraintMappings",
+      replacement.linkTypeConstraintMappings ?? {},
+    ],
+    [
+      "actionTypeConstraintMappings",
+      Object.fromEntries(
+        actionTypeConstraintMappings.map(
+          ([source, { actionTypeConstraint }]) => [
+            source,
+            actionTypeConstraint,
+          ],
+        ),
+      ),
+    ],
+    ...actionTypeConstraintMappings.map(
+      ([source, { parameterMappings }]): [string, Record<string, string>] => [
+        `actionTypeConstraintMappings["${source}"].parameterMappings`,
+        parameterMappings ?? {},
+      ],
+    ),
+  ];
+
+  for (const [field, mapping] of mappings) {
+    const sourceByTarget = new Map<string, string>();
+    for (const [source, target] of Object.entries(mapping)) {
+      const previous = sourceByTarget.get(target);
+      invariant(
+        previous === undefined,
+        `Schema migration transition "${transitionId}" on interface ${interfaceApiName} declares ${description}, whose ${field} maps both "${previous}" and "${source}" to "${target}". Each target may be mapped from at most one source.`,
+      );
+      sourceByTarget.set(target, source);
+    }
   }
 }
 
@@ -198,7 +309,7 @@ function validateInstruction(
  * What an instruction claims exclusive use of for the duration of its transition.
  *
  * Stacked migrations (i.e. those which operate against the same property, etc.) are not allowed today,
- * so we reject any conflicting migrations that try to claim the same thing,
+ * so we reject any conflicting migrations that try to claim the same thing.
  */
 function getClaims(
   instruction: InterfaceSchemaMigrationInstruction,
@@ -206,10 +317,20 @@ function getClaims(
   switch (instruction.type) {
     case "addRequiredProperty":
       return [`property:${instruction.property}`];
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint":
+      return [
+        `actionTypeConstraint:${addNamespaceIfNone(instruction.actionTypeConstraint)}`,
+      ];
+    case "replace":
+      // Always the only instruction of the only transition, so it can never conflict
+      return [];
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
 }

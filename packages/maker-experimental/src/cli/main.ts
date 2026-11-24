@@ -27,7 +27,7 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
-import type { OntologyDefinition } from "@osdk/maker";
+import type { OntologyContext } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
   DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME,
@@ -63,6 +63,7 @@ import {
 } from "./generateValueTypeBlockResults.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
+import { writeOntologyBuildMetadata } from "./writeOntologyBuildMetadata.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/u;
 const uuidRegex =
@@ -86,6 +87,7 @@ export default async function main(
     functionsIrOutputFile?: string;
     randomnessKey?: string;
     importJson?: string;
+    importedBlockDataOutput?: string;
     targetEnvironment: "CLOUD" | "EDGE";
     lockfile?: string;
     writeLocks?: boolean;
@@ -169,6 +171,13 @@ export default async function main(
           "Path to imported ontology metadata produced by 'foundry import ontology'",
         type: "string",
         coerce: path.resolve,
+      },
+      importedBlockDataOutput: {
+        describe:
+          "Output file for a versioned snapshot of native imported ontology build metadata",
+        type: "string",
+        coerce: path.resolve,
+        requiresArg: true,
       },
       lockfile: {
         describe: `Ontology schema lockfile path (default: ${DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME} beside --input)`,
@@ -317,6 +326,7 @@ export default async function main(
     backingDatasourceApiNames,
     backingDatasourceLinkApiNames,
     backingMediaSetNames,
+    backingMediaSetMarkings,
     folders,
   } = await loadOntology(
     commandLineOpts.input,
@@ -330,9 +340,9 @@ export default async function main(
     { targetEnvironment: commandLineOpts.targetEnvironment },
     // An ontology that fails lockfile checks would fail at installation-time, so its block data
     // should never reach disk at all.
-    (ontology) =>
+    (context) =>
       reconcileOntologySchemaLockfile({
-        ontology,
+        context,
         lockfilePath,
         writeLocks: commandLineOpts.writeLocks ?? false,
         assumeYes: commandLineOpts.yes ?? false,
@@ -576,6 +586,7 @@ export default async function main(
         mediaSetName,
         commandLineOpts.buildDir,
         commandLineOpts.randomnessKey,
+        backingMediaSetMarkings[mediaSetName],
       );
     }),
   );
@@ -629,6 +640,17 @@ export default async function main(
       `Value type BlockGeneratorResult written to ${commandLineOpts.valueTypesOutput}`,
     );
   }
+
+  // Publish only after conversion, lockfile validation, and all other outputs succeed.
+  if (commandLineOpts.importedBlockDataOutput !== undefined) {
+    await writeOntologyBuildMetadata(
+      commandLineOpts.importedBlockDataOutput,
+      ontologyIr,
+    );
+    consola.success(
+      `Ontology build metadata written to ${commandLineOpts.importedBlockDataOutput}`,
+    );
+  }
 }
 
 function logLevelFor(verbosity: number): LogLevel {
@@ -647,7 +669,7 @@ async function loadOntology(
   importedLinkTypeIdsByApiName: LinkTypeIdsByApiName | undefined,
   externalImportedMetadata: ExternalImportedOntologyMetadata | undefined,
   packagingOptions: OntologyPackagingOptions,
-  beforeWrite: (ontology: OntologyDefinition) => Promise<void>,
+  beforeWrite: (context: OntologyContext) => Promise<void>,
 ) {
   const result = await defineOntologyV2(
     apiNamespace,

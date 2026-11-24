@@ -21,32 +21,10 @@ interface InstructionProse {
   describe: string;
   /**
    * The action an author must take for the migration to be finalized, phrased as an imperative
-   * clause to be embedded in a sentence, e.g. set "lastName" to `required: true`.
+   * clause to be embedded in a sentence, e.g. set "lastName" to `required: true`. Absent for an
+   * instruction that is never finalized.
    */
-  finalization: string;
-  /** The transition an author should declare to phase the change in, as a DSL literal they can paste. */
-  suggestedTransition: string;
-}
-
-/**
- * The instruction with every property it references renamed by `rename`.
- */
-export function mapPropertyNames(
-  instruction: InterfaceSchemaMigrationInstruction,
-  rename: (propertyApiName: string) => string,
-): InterfaceSchemaMigrationInstruction {
-  switch (instruction.type) {
-    case "addRequiredProperty":
-      return {
-        type: "addRequiredProperty",
-        property: rename(instruction.property),
-      };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
-      throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
-      );
-  }
+  finalization: string | undefined;
 }
 
 /** How each instruction variant is worded in messages to users. */
@@ -59,17 +37,35 @@ function proseFor(
       return {
         describe: `addRequiredProperty("${propertyApiName}")`,
         finalization: `set "${propertyApiName}" to \`required: true\``,
-        suggestedTransition:
-          `{ id: "require-${propertyApiName}", title: "Require ${propertyApiName}", ` +
-          `gracePeriod: { type: "afterInstall", days: 30 }, ` +
-          `instructions: [{ type: "addRequiredProperty", property: "${propertyApiName}" }] }`,
       };
     }
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "addRequiredActionTypeConstraint": {
+      const { actionTypeConstraint } = instruction;
+      return {
+        describe: `addRequiredActionTypeConstraint("${actionTypeConstraint}")`,
+        finalization: `set "${actionTypeConstraint}" to \`requireImplementation: true\``,
+      };
+    }
+    case "replace": {
+      const { interfaceType } = instruction.replacement;
+      const replacementApiName =
+        typeof interfaceType === "string"
+          ? interfaceType
+          : interfaceType.apiName;
+      return {
+        describe: `replace("${replacementApiName}")`,
+        // replace sits as a tombstone, never finalizing (short of deleting the interface type)
+        finalization: undefined,
+      };
+    }
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
 }
 
@@ -81,12 +77,47 @@ export function describeInstruction(
 
 export function describeFinalization(
   instruction: InterfaceSchemaMigrationInstruction,
-): string {
+): string | undefined {
   return proseFor(instruction).finalization;
 }
 
+/** Every instruction except `replace`, which has no phase-in: it is a permanent tombstone. */
+type PhaseInInstruction = Exclude<
+  InterfaceSchemaMigrationInstruction,
+  { type: "replace" }
+>;
+
+/**
+ * The transition an author should declare to phase a newly-required entity in, as a DSL literal
+ * they can paste.
+ */
 export function describeSuggestedTransition(
-  instruction: InterfaceSchemaMigrationInstruction,
+  instruction: PhaseInInstruction,
 ): string {
-  return proseFor(instruction).suggestedTransition;
+  switch (instruction.type) {
+    case "addRequiredProperty": {
+      const { property: propertyApiName } = instruction;
+      return (
+        `{ id: "require-${propertyApiName}", title: "Require ${propertyApiName}", ` +
+        `gracePeriod: { type: "afterInstall", days: 30 }, ` +
+        `instructions: [{ type: "addRequiredProperty", property: "${propertyApiName}" }] }`
+      );
+    }
+    case "addRequiredActionTypeConstraint": {
+      const { actionTypeConstraint } = instruction;
+      return (
+        `{ id: "require-${actionTypeConstraint}", title: "Require ${actionTypeConstraint}", ` +
+        `gracePeriod: { type: "afterInstall", days: 30 }, ` +
+        `instructions: [{ type: "addRequiredActionTypeConstraint", actionTypeConstraint: "${actionTypeConstraint}" }] }`
+      );
+    }
+    default: {
+      const unhandled: never = instruction;
+      throw new Error(
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceSchemaMigrationInstruction).type
+        }`,
+      );
+    }
+  }
 }

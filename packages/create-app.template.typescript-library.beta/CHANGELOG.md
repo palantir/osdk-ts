@@ -1,5 +1,11 @@
 # @osdk/create-app.template.typescript-library.beta
 
+## 2.94.0
+
+## 2.93.0
+
+## 2.92.0
+
 ## 2.91.0
 
 ## 2.90.0

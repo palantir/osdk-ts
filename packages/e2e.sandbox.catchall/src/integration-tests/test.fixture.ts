@@ -7,9 +7,9 @@ import {
   createIntegrationServer,
 } from "@osdk/integration-testing";
 import {
-  type SeedOutput,
-  type SeedFunction,
-  createSeedWithMetadata,
+  type OntologySeedOutput,
+  type OntologySeedFunction,
+  createOntologySeedWithMetadata,
 } from "@osdk/seed-helpers";
 import { test as baseTest } from "vitest";
 
@@ -75,8 +75,8 @@ export const test = baseTest.extend<IntegrationFixtures>({
   ],
 });
 
-export const createSeed: <T>(fn: SeedFunction<T>) => {
-  output: SeedOutput;
+export const createSeed: <T>(fn: OntologySeedFunction<T>) => {
+  output: OntologySeedOutput;
   context: T;
-} = <T>(seed: SeedFunction<T>) =>
-  createSeedWithMetadata(modifiedMetadata, seed);
+} = <T>(seed: OntologySeedFunction<T>) =>
+  createOntologySeedWithMetadata(modifiedMetadata, seed);

@@ -19,12 +19,9 @@ import { isDeepStrictEqual } from "node:util";
 import type { TypeClass } from "../api/common/TypeClass.js";
 import { withoutNamespace } from "../api/defineOntology.js";
 import type { PrimaryKeyConstraint } from "../api/interface/InterfacePropertyType.js";
-import type {
-  InterfaceSchemaGracePeriod,
-  InterfaceSchemaMigrationInstruction,
-} from "../api/interface/InterfaceSchemaMigrations.js";
+import type { InterfaceSchemaGracePeriod } from "../api/interface/InterfaceSchemaMigrations.js";
+import type { NormalizedPropertyType } from "../api/properties/normalizePropertyType.js";
 import type { Nullability } from "../api/properties/Nullability.js";
-import type { LockedPropertyType } from "./LockedPropertyType.js";
 
 export const ONTOLOGY_SCHEMA_LOCKFILE_VERSION = 1;
 export const DEFAULT_ONTOLOGY_SCHEMA_LOCKFILE_NAME =
@@ -77,6 +74,23 @@ export interface LockedInterfaceSchema {
    * property it contributed.
    */
   extendsInterfaces?: string[];
+  /**
+   * The action type constraints the interface declares directly (i.e. non-inherited), keyed by
+   * fully-qualified api name. Absent when it declares none.
+   */
+  actionTypeConstraints?: Record<string, LockedActionTypeConstraint>;
+}
+
+export interface LockedActionTypeConstraint {
+  requireImplementation: boolean;
+  /** The constraint's parameters, keyed by api name. Absent when it declares none. */
+  parameters?: Record<string, LockedParameterConstraint>;
+}
+
+export interface LockedParameterConstraint {
+  requireImplementation: boolean;
+  /** Present when the implementing action must declare its mapped parameter required. */
+  isRequiredParameterOnConcreteAction?: true;
 }
 
 /** Where a property's definition comes from. */
@@ -86,6 +100,8 @@ export interface LockedValueType {
   packageNamespace: string;
   apiName: string;
 }
+
+export type LockedPropertyType = NormalizedPropertyType;
 
 export interface LockedProperty {
   type: LockedPropertyType;
@@ -111,7 +127,43 @@ export interface LockedProperty {
 export interface LockedTransition {
   id: string;
   gracePeriod: InterfaceSchemaGracePeriod;
-  instructions: InterfaceSchemaMigrationInstruction[];
+  instructions: LockedInstruction[];
+}
+
+export type LockedInstruction =
+  | { type: "addRequiredProperty"; property: string }
+  | { type: "addRequiredActionTypeConstraint"; actionTypeConstraint: string }
+  | { type: "replace"; replacement: LockedInterfaceTypeReplacement };
+
+export interface LockedInterfaceTypeReplacement {
+  /** The replacement's fully-qualified api name. */
+  interfaceType: string;
+  /**
+   * Replaced interface's property api name -> replacement's, or the replacement and its struct field
+   * mappings when it has any. Absent when empty.
+   */
+  propertyMappings?: Record<string, string | LockedPropertyReplacement>;
+  /** Same as `propertyMappings`, for link type constraints. Absent when empty. */
+  linkTypeConstraintMappings?: Record<string, string>;
+  /** Replaced interface's action type constraint api name -> replacement's. Absent when empty. */
+  actionTypeConstraintMappings?: Record<
+    string,
+    LockedActionTypeConstraintReplacement
+  >;
+}
+
+export interface LockedPropertyReplacement {
+  /** The replacement's property api name. */
+  property: string;
+  /** Replaced struct property's field api name -> replacement's. Never empty. */
+  structFieldMappings: Record<string, string>;
+}
+
+export interface LockedActionTypeConstraintReplacement {
+  /** The replacement's action type constraint api name. */
+  actionTypeConstraint: string;
+  /** Replaced constraint's parameter api name -> replacement's. Absent when empty. */
+  parameterMappings?: Record<string, string>;
 }
 
 export function declarationOf(property: LockedProperty): PropertyDeclaration {
@@ -120,6 +172,18 @@ export function declarationOf(property: LockedProperty): PropertyDeclaration {
 
 export function extensionsOf(schema: LockedInterfaceSchema): readonly string[] {
   return schema.extendsInterfaces ?? [];
+}
+
+export function actionTypeConstraintsOf(
+  schema: LockedInterfaceSchema,
+): Record<string, LockedActionTypeConstraint> {
+  return schema.actionTypeConstraints ?? {};
+}
+
+export function parametersOf(
+  constraint: LockedActionTypeConstraint,
+): Record<string, LockedParameterConstraint> {
+  return constraint.parameters ?? {};
 }
 
 export function primaryKeyConstraintOf(

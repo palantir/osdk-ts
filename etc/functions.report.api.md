@@ -180,8 +180,6 @@ export interface FunctionConfig {
     	// (undocumented)
     apiName?: string;
     	// Warning: (ae-forgotten-export) The symbol "Scope" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     scope?: Scope;
     	// (undocumented)
     sources?: string[];

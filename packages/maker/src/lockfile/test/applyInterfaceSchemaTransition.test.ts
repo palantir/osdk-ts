@@ -18,7 +18,7 @@ import { describe, expect, it } from "vitest";
 
 import type { PropertyEdit } from "../applyInterfaceSchemaTransition.js";
 import {
-  applyEdit,
+  applyPropertyEdit,
   applyTransition,
   reproduces,
 } from "../applyInterfaceSchemaTransition.js";
@@ -54,7 +54,7 @@ describe("applyTransition", () => {
   it("reports the properties it changed", () => {
     expect(
       applyTransition(requireLastName, previousSchema, "strict")?.touched,
-    ).toStrictEqual(["lastName"]);
+    ).toStrictEqual([{ kind: "property", apiName: "lastName" }]);
   });
 
   it("is inapplicable to a schema missing the target property", () => {
@@ -92,6 +92,123 @@ describe("applyTransition", () => {
         applyTransition(requireLastName, previousSchema, "strict")?.schema,
       ).toStrictEqual(sourceSchema({ required: true }));
     });
+  });
+
+  describe("addRequiredActionTypeConstraint", () => {
+    const requireSendEmail: LockedTransition = {
+      id: "requireSendEmail",
+      gracePeriod: { type: "afterInstall", days: 30 },
+      instructions: [
+        {
+          type: "addRequiredActionTypeConstraint",
+          actionTypeConstraint: "com.example.sendEmail",
+        },
+      ],
+    };
+
+    function withSendEmail(
+      requireImplementation: boolean,
+    ): LockedInterfaceSchema {
+      return {
+        ...previousSchema,
+        actionTypeConstraints: {
+          "com.example.archive": { requireImplementation: true },
+          "com.example.sendEmail": { requireImplementation },
+        },
+      };
+    }
+
+    it("leaves the target constraint optional when applied leniently", () => {
+      expect(
+        applyTransition(requireSendEmail, withSendEmail(false), "lenient"),
+      ).toStrictEqual({
+        schema: withSendEmail(false),
+        touched: [
+          { kind: "actionTypeConstraint", apiName: "com.example.sendEmail" },
+        ],
+      });
+    });
+
+    it("requires the target constraint when applied strictly", () => {
+      expect(
+        applyTransition(requireSendEmail, withSendEmail(false), "strict")
+          ?.schema,
+      ).toStrictEqual(withSendEmail(true));
+    });
+
+    it("is inapplicable to a schema missing the target constraint", () => {
+      expect(
+        applyTransition(requireSendEmail, previousSchema, "strict"),
+      ).toBeUndefined();
+      expect(
+        applyTransition(requireSendEmail, previousSchema, "lenient"),
+      ).toBeUndefined();
+    });
+
+    it("reproduces only the mode matching whether the constraint is required", () => {
+      const strict = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "strict",
+      );
+      const lenient = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "lenient",
+      );
+
+      expect(reproduces(strict, withSendEmail(true))).toBe(true);
+      expect(reproduces(strict, withSendEmail(false))).toBe(false);
+      expect(reproduces(lenient, withSendEmail(false))).toBe(true);
+      expect(reproduces(lenient, withSendEmail(true))).toBe(false);
+    });
+
+    it("ignores the target constraint's parameters when reproducing", () => {
+      const strict = applyTransition(
+        requireSendEmail,
+        withSendEmail(false),
+        "strict",
+      );
+      const required = withSendEmail(true);
+      expect(
+        reproduces(strict, {
+          ...required,
+          actionTypeConstraints: {
+            ...required.actionTypeConstraints,
+            "com.example.sendEmail": {
+              requireImplementation: true,
+              parameters: { subject: { requireImplementation: true } },
+            },
+          },
+        }),
+      ).toBe(true);
+    });
+  });
+
+  describe("replace", () => {
+    const replace: LockedTransition = {
+      id: "replace",
+      gracePeriod: { type: "afterInstall", days: 30 },
+      instructions: [
+        {
+          type: "replace",
+          replacement: {
+            interfaceType: "com.example.PersonV2",
+            propertyMappings: { lastName: "surname" },
+          },
+        },
+      ],
+    };
+
+    it.each(["lenient", "strict"] as const)(
+      "leaves the interface's schema untouched when applied %sly",
+      (mode) => {
+        expect(applyTransition(replace, previousSchema, mode)).toStrictEqual({
+          schema: previousSchema,
+          touched: [],
+        });
+      },
+    );
   });
 });
 
@@ -133,14 +250,16 @@ describe("reproduces", () => {
   });
 });
 
-describe("applyEdit", () => {
+describe("applyPropertyEdit", () => {
   const lastName: LockedProperty = { type: "string", required: false };
 
   function edit(
     properties: Record<string, LockedProperty>,
     op: PropertyEdit,
   ): Record<string, LockedProperty> | "inapplicable" {
-    return applyEdit(properties, "lastName", op) ? properties : "inapplicable";
+    return applyPropertyEdit(properties, "lastName", op)
+      ? properties
+      : "inapplicable";
   }
 
   describe("patch", () => {
@@ -191,17 +310,17 @@ describe("applyEdit", () => {
         const properties: Record<string, LockedProperty> = {};
 
         expect(
-          applyEdit(properties, propertyApiName, {
+          applyPropertyEdit(properties, propertyApiName, {
             op: "patch",
             required: true,
           }),
         ).toBe(false);
-        expect(applyEdit(properties, propertyApiName, { op: "remove" })).toBe(
-          false,
-        );
+        expect(
+          applyPropertyEdit(properties, propertyApiName, { op: "remove" }),
+        ).toBe(false);
 
         expect(
-          applyEdit(properties, propertyApiName, {
+          applyPropertyEdit(properties, propertyApiName, {
             op: "add",
             property: lastName,
           }),
@@ -213,12 +332,20 @@ describe("applyEdit", () => {
 
     it("still records one it has already added", () => {
       const properties: Record<string, LockedProperty> = {};
-      applyEdit(properties, "toString", { op: "add", property: lastName });
+      applyPropertyEdit(properties, "toString", {
+        op: "add",
+        property: lastName,
+      });
 
       expect(
-        applyEdit(properties, "toString", { op: "add", property: lastName }),
+        applyPropertyEdit(properties, "toString", {
+          op: "add",
+          property: lastName,
+        }),
       ).toBe(false);
-      expect(applyEdit(properties, "toString", { op: "remove" })).toBe(true);
+      expect(applyPropertyEdit(properties, "toString", { op: "remove" })).toBe(
+        true,
+      );
       expect(Object.hasOwn(properties, "toString")).toBe(false);
     });
   });
