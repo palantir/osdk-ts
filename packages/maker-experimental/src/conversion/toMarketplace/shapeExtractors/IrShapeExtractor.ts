@@ -19,6 +19,7 @@ import type {
   InterfaceActionTypeConstraint,
   InterfaceParameterConstraint,
   InterfaceTypeBlockDataV2,
+  InterfaceTypeReplacement,
   InterfaceTypeSchemaMigrationInstruction,
   InterfaceTypeSchemaTransition,
   KnownMarketplaceIdentifiers,
@@ -39,6 +40,7 @@ import type {
   InterfaceParameterConstraintShape,
   InterfacePropertyTypeOutputShape,
   InterfaceTypeOutputShape,
+  InterfaceTypeReplacement as MarketplaceInterfaceTypeReplacement,
   InterfaceTypeSchemaTransitionOutputShape,
   InterfaceTypeSchemaMigrationInstruction as MarketplaceInterfaceTypeSchemaMigrationInstruction,
   LocalizedTitleAndDescription,
@@ -483,12 +485,82 @@ function toMarketplaceSchemaMigrationInstruction(
           ),
         },
       };
-    default:
-      // TODO: add a never exhaustiveness check once there's more than one instruction type
+    case "replace":
+      return {
+        type: "replace",
+        replace: {
+          replacement: toMarketplaceInterfaceTypeReplacement(
+            instruction.replace.replacement,
+            knownMarketplaceIdentifiers,
+          ),
+        },
+      };
+    default: {
+      const unhandled: never = instruction;
       throw new Error(
-        `Unknown schema migration instruction type: ${instruction.type}`,
+        `Unknown schema migration instruction type: ${
+          (unhandled as InterfaceTypeSchemaMigrationInstruction).type
+        }`,
       );
+    }
   }
+}
+
+function toMarketplaceInterfaceTypeReplacement(
+  replacement: InterfaceTypeReplacement,
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+): MarketplaceInterfaceTypeReplacement {
+  const toReferences = (
+    mappings: Record<string, string>,
+    identifiers: Record<string, string> | undefined,
+    kind: string,
+  ) =>
+    Object.fromEntries(
+      Object.entries(mappings).map(([from, to]) => [
+        requireKnownIdentifier(identifiers, from, kind),
+        requireKnownIdentifier(identifiers, to, kind),
+      ]),
+    );
+  return {
+    interfaceType: requireKnownIdentifier(
+      knownMarketplaceIdentifiers.interfaceTypes,
+      replacement.interfaceTypeRid,
+      "interface type",
+    ),
+    propertyMappings: toReferences(
+      replacement.propertyMappings,
+      knownMarketplaceIdentifiers.interfacePropertyTypes,
+      "interface property type",
+    ),
+    linkTypeConstraintMappings: toReferences(
+      replacement.linkTypeConstraintMappings,
+      knownMarketplaceIdentifiers.interfaceLinkTypes,
+      "interface link type",
+    ),
+    actionTypeConstraintMappings: Object.fromEntries(
+      Object.entries(replacement.actionTypeConstraintMappings).map(
+        ([from, { actionTypeConstraintRid, parameterMappings }]) => [
+          requireKnownIdentifier(
+            knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+            from,
+            "interface action type constraint",
+          ),
+          {
+            actionTypeConstraint: requireKnownIdentifier(
+              knownMarketplaceIdentifiers.interfaceActionTypeConstraints,
+              actionTypeConstraintRid,
+              "interface action type constraint",
+            ),
+            parameterMappings: toReferences(
+              parameterMappings,
+              knownMarketplaceIdentifiers.interfaceParameterConstraints,
+              "interface parameter constraint",
+            ),
+          },
+        ],
+      ),
+    ),
+  };
 }
 
 /**
