@@ -21,7 +21,9 @@ import type { InterfaceSchemaGracePeriod } from "../../api/interface/InterfaceSc
 import type { Nullability } from "../../api/properties/Nullability.js";
 import type { SourceCensus } from "../generateOntologySchemaLockfile.js";
 import type {
+  LockedActionTypeConstraint,
   LockedInterfaceType,
+  LockedParameterConstraint,
   LockedProperty,
   LockedTransition,
   LockedValueType,
@@ -999,6 +1001,20 @@ describe("validateOntologySchemaLockfile", () => {
           },
         }),
       },
+      {
+        name: "a required action type constraint",
+        unchanged: lockfile({
+          Person: {
+            schema: {
+              properties: { firstName: REQUIRED_STRING },
+              actionTypeConstraints: {
+                "com.palantir.sendEmail": { requireImplementation: true },
+              },
+            },
+            transitions: [],
+          },
+        }),
+      },
     ])("reports nothing about $name", ({ unchanged }) => {
       const result = validate(unchanged, unchanged);
       expect(result.breakingChanges).toEqual([]);
@@ -1058,6 +1074,229 @@ describe("validateOntologySchemaLockfile", () => {
           kind: "finalized",
         },
       ]);
+    });
+  });
+
+  describe("action type constraints", () => {
+    const SEND_EMAIL = "com.palantir.sendEmail";
+    const OPTIONAL: LockedActionTypeConstraint = {
+      requireImplementation: false,
+    };
+    const REQUIRED: LockedActionTypeConstraint = {
+      requireImplementation: true,
+    };
+
+    /** A single-interface lockfile whose interface declares the given constraints. */
+    function personConstrained(
+      actionTypeConstraints: Record<string, LockedActionTypeConstraint>,
+      transitions: LockedTransition[] = [],
+    ): OntologySchemaLockfile {
+      return lockfile({
+        Person: {
+          schema: {
+            properties: { firstName: REQUIRED_STRING },
+            ...(Object.keys(actionTypeConstraints).length > 0 && {
+              actionTypeConstraints,
+            }),
+          },
+          transitions,
+        },
+      });
+    }
+
+    it("rejects making an existing constraint required without a migration", () => {
+      const result = validate(
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "actionTypeConstraintBecameRequired",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it("rejects adding a required constraint", () => {
+      const result = validate(
+        personConstrained({}),
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+      );
+      expect(result.breakingChanges).toEqual([
+        {
+          code: "requiredActionTypeConstraintAdded",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it("accepts adding an optional constraint", () => {
+      const result = validate(
+        personConstrained({}),
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result).toEqual({
+        breakingChanges: [],
+        checkpoints: [],
+        warnings: [],
+      });
+    });
+
+    it("warns when a constraint stops being required", () => {
+      const result = validate(
+        personConstrained({ [SEND_EMAIL]: REQUIRED }),
+        personConstrained({ [SEND_EMAIL]: OPTIONAL }),
+      );
+      expect(result.breakingChanges).toEqual([]);
+      expect(result.warnings).toEqual([
+        {
+          code: "actionTypeConstraintRequirementRelaxed",
+          interfaceApiName: "Person",
+          actionTypeConstraint: SEND_EMAIL,
+        },
+      ]);
+    });
+
+    it.each([
+      ["optional", OPTIONAL],
+      ["required", REQUIRED],
+    ] as const)(
+      "warns when a %s constraint is removed",
+      (_name, constraint) => {
+        const result = validate(
+          personConstrained({ [SEND_EMAIL]: constraint }),
+          personConstrained({}),
+        );
+        expect(result.breakingChanges).toEqual([]);
+        expect(result.warnings).toEqual([
+          {
+            code: "actionTypeConstraintRemoved",
+            interfaceApiName: "Person",
+            actionTypeConstraint: SEND_EMAIL,
+          },
+        ]);
+      },
+    );
+
+    describe("parameters", () => {
+      const OPTIONAL_PARAMETER: LockedParameterConstraint = {
+        requireImplementation: false,
+      };
+      const REQUIRED_PARAMETER: LockedParameterConstraint = {
+        requireImplementation: true,
+      };
+      const REQUIRED_ON_CONCRETE_ACTION: LockedParameterConstraint = {
+        requireImplementation: false,
+        isRequiredParameterOnConcreteAction: true,
+      };
+      const where = {
+        interfaceApiName: "Person",
+        actionTypeConstraint: SEND_EMAIL,
+        parameter: "subject",
+      };
+
+      /** `sendEmail`, with the given requirement and parameters. */
+      function personWithParameters(
+        parameters: Record<string, LockedParameterConstraint>,
+        constraint: LockedActionTypeConstraint = OPTIONAL,
+      ): OntologySchemaLockfile {
+        return personConstrained({
+          [SEND_EMAIL]: {
+            ...constraint,
+            ...(Object.keys(parameters).length > 0 && { parameters }),
+          },
+        });
+      }
+
+      it.each([
+        ["optional", OPTIONAL],
+        ["required", REQUIRED],
+      ] as const)(
+        "rejects tightening a parameter of an %s constraint",
+        (_name, constraint) => {
+          const result = validate(
+            personWithParameters({ subject: OPTIONAL_PARAMETER }, constraint),
+            personWithParameters(
+              {
+                subject: {
+                  requireImplementation: true,
+                  isRequiredParameterOnConcreteAction: true,
+                },
+              },
+              constraint,
+            ),
+          );
+          expect(result.breakingChanges).toEqual([
+            { code: "parameterBecameRequired", ...where },
+            { code: "parameterBecameRequiredOnConcreteAction", ...where },
+          ]);
+          expect(result.warnings).toEqual([]);
+        },
+      );
+
+      it("rejects adding a required parameter to an existing constraint", () => {
+        const result = validate(
+          personWithParameters({}),
+          personWithParameters({ subject: REQUIRED_PARAMETER }),
+        );
+        expect(result.breakingChanges).toEqual([
+          { code: "requiredParameterAdded", ...where },
+        ]);
+      });
+
+      it.each([
+        ["optional", OPTIONAL_PARAMETER],
+        ["required on the concrete action", REQUIRED_ON_CONCRETE_ACTION],
+      ] as const)(
+        "accepts adding a parameter that is %s to an existing constraint",
+        (_name, parameter) => {
+          const result = validate(
+            personWithParameters({}),
+            personWithParameters({ subject: parameter }),
+          );
+          expect(result).toEqual({
+            breakingChanges: [],
+            checkpoints: [],
+            warnings: [],
+          });
+        },
+      );
+
+      it("accepts a new constraint whose parameters are required", () => {
+        const result = validate(
+          personConstrained({}),
+          personWithParameters({
+            subject: {
+              requireImplementation: true,
+              isRequiredParameterOnConcreteAction: true,
+            },
+          }),
+        );
+        expect(result).toEqual({
+          breakingChanges: [],
+          checkpoints: [],
+          warnings: [],
+        });
+      });
+
+      it("warns when a parameter is relaxed", () => {
+        const result = validate(
+          personWithParameters({
+            subject: {
+              requireImplementation: true,
+              isRequiredParameterOnConcreteAction: true,
+            },
+          }),
+          personWithParameters({ subject: OPTIONAL_PARAMETER }),
+        );
+        expect(result.breakingChanges).toEqual([]);
+        expect(result.warnings).toEqual([
+          { code: "parameterRequirementRelaxed", ...where },
+          { code: "parameterNoLongerRequiredOnConcreteAction", ...where },
+        ]);
+      });
     });
   });
 
