@@ -35,6 +35,7 @@ const MockInterface = {
 describe("useOsdkObjects enabled option", () => {
   const mockObserveList = vitest.fn();
   const mockInvalidateObjectType = vitest.fn().mockResolvedValue(undefined);
+  const mockRevalidate = vitest.fn().mockResolvedValue(undefined);
 
   const createWrapper = () => {
     const observableClient = {
@@ -54,7 +55,12 @@ describe("useOsdkObjects enabled option", () => {
 
   beforeEach(() => {
     mockObserveList.mockClear();
-    mockObserveList.mockReturnValue({ unsubscribe: vitest.fn() });
+    mockInvalidateObjectType.mockClear();
+    mockRevalidate.mockClear();
+    mockObserveList.mockReturnValue({
+      unsubscribe: vitest.fn(),
+      revalidate: mockRevalidate,
+    });
   });
 
   it("should NOT call observeList when enabled is false", () => {
@@ -212,7 +218,7 @@ describe("useOsdkObjects enabled option", () => {
     expect(result.current.objectSet).toBe(mockObjectSet);
   });
 
-  it("should call invalidateObjectType when refetch is called", async () => {
+  it("should revalidate only the calling query by default when refetch is called", async () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
@@ -223,7 +229,38 @@ describe("useOsdkObjects enabled option", () => {
       await result.current.refetch();
     });
 
+    expect(mockRevalidate).toHaveBeenCalledTimes(1);
+    expect(mockInvalidateObjectType).not.toHaveBeenCalled();
+  });
+
+  it("should revalidate only the calling query when refetch({ scope: 'query' }) is called", async () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
+
+    await act(async () => {
+      await result.current.refetch({ scope: "query" });
+    });
+
+    expect(mockRevalidate).toHaveBeenCalledTimes(1);
+    expect(mockInvalidateObjectType).not.toHaveBeenCalled();
+  });
+
+  it("should call invalidateObjectType when refetch({ scope: 'type' }) is called", async () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(() => useOsdkObjects(MockObjectType), {
+      wrapper,
+    });
+
+    await act(async () => {
+      await result.current.refetch({ scope: "type" });
+    });
+
     expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
+    expect(mockRevalidate).not.toHaveBeenCalled();
   });
 
   it("should pass $includeAllBaseObjectProperties to observeList when true", () => {

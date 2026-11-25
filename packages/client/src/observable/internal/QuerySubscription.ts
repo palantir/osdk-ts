@@ -56,4 +56,13 @@ export class QuerySubscription<
       subscriptionId: { enumerable: false },
     });
   }
+
+  /**
+   * Revalidates only this query.
+   *
+   * @param force - If true (default), forces revalidation bypassing dedupeInterval.
+   */
+  revalidate(force: boolean = true): Promise<void> {
+    return this.query.revalidate(force);
+  }
 }

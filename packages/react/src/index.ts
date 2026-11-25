@@ -21,9 +21,18 @@
 export { useStableObjectSet } from "./new/core/useStableObjectSet.js";
 export { OsdkProvider } from "./new/OsdkProvider.js";
 export { useLinks } from "./new/useLinks.js";
+export type { RefetchOptions } from "./new/RefetchOptions.js";
+export type {
+  UseObjectSetOptions,
+  UseObjectSetResult,
+} from "./new/useObjectSet.js";
 export { useObjectSet } from "./new/useObjectSet.js";
 export { useOsdkAction } from "./new/useOsdkAction.js";
-export type { UseOsdkAggregationResult } from "./new/useOsdkAggregation.js";
+export type {
+  UseOsdkAggregationOptions,
+  UseOsdkAggregationOptionsWithObjectSet,
+  UseOsdkAggregationResult,
+} from "./new/useOsdkAggregation.js";
 export { useOsdkAggregation } from "./new/useOsdkAggregation.js";
 export type {
   UseOsdkFunctionOptions,

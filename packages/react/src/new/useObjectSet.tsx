@@ -35,6 +35,9 @@ import {
   type Snapshot,
 } from "./makeExternalStore.js";
 import { OsdkContext } from "./OsdkContext.js";
+import type { RefetchOptions } from "./RefetchOptions.js";
+
+export type { RefetchOptions } from "./RefetchOptions.js";
 
 export interface UseObjectSetOptions<
   Q extends ObjectOrInterfaceDefinition,
@@ -182,7 +185,7 @@ export interface UseObjectSetResult<
    */
   totalCount?: string;
 
-  refetch: () => Promise<void>;
+  refetch: (options?: RefetchOptions) => Promise<void>;
 }
 
 const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
@@ -277,7 +280,7 @@ export function useObjectSet<
   const baseObjectSetRef = React.useRef(baseObjectSet);
   baseObjectSetRef.current = baseObjectSet;
 
-  const { subscribe, getSnapShot } = React.useMemo(() => {
+  const { subscribe, getSnapShot, revalidate } = React.useMemo(() => {
     if (!enabled) {
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
         () => ({ unsubscribe: () => {} }),
@@ -349,11 +352,21 @@ export function useObjectSet<
 
   const typeApiName = baseObjectSet?.$objectSetInternals.def.apiName;
 
-  const refetch = React.useCallback(async () => {
-    if (typeApiName) {
-      await observableClient.invalidateObjectType(typeApiName);
-    }
-  }, [observableClient, typeApiName]);
+  const refetch = React.useCallback(
+    async (refetchOptions?: RefetchOptions) => {
+      if (!enabled) {
+        return;
+      }
+      if (refetchOptions?.scope === "type") {
+        if (typeApiName) {
+          await observableClient.invalidateObjectType(typeApiName);
+        }
+      } else {
+        await revalidate();
+      }
+    },
+    [enabled, observableClient, typeApiName, revalidate],
+  );
 
   return React.useMemo(() => {
     const lastLoaded = isPayloadCompleted(payload)
