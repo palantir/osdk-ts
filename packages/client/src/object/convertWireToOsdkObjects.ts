@@ -33,6 +33,7 @@ import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derive
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { type FetchedObjectTypeDefinition } from "../ontology/OntologyProvider.js";
+import { getBackingProperties } from "./convertWireToOsdkObjects/createOsdkInterface.js";
 import {
   createOsdkObject,
   NO_UNCASTABLE_PROPERTIES,
@@ -267,22 +268,6 @@ function getUncastableProperties(
   return uncastableProperties.size > 0
     ? [...uncastableProperties]
     : NO_UNCASTABLE_PROPERTIES;
-}
-
-function getBackingProperties(
-  implementation: ObjectMetadata.InterfacePropertyImplementation,
-): string[] {
-  switch (implementation.type) {
-    case "localProperty":
-    case "structField":
-      return [implementation.propertyApiName];
-    case "struct":
-      return Object.values(implementation.mapping).map(
-        (field) => field.propertyApiName,
-      );
-    case "reduced":
-      return getBackingProperties(implementation.implementation);
-  }
 }
 
 function isConforming(
