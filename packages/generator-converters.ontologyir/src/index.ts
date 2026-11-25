@@ -29,3 +29,7 @@ export {
   OntologyIrToFullMetadataConverter,
 } from "./OntologyIrToFullMetadataConverter.js";
 export { toStructFieldRid, toUuid } from "./ridUtils.js";
+export {
+  buildSemanticManifest,
+  type SemanticManifest,
+} from "./semanticManifest.js";
