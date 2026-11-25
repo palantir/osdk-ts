@@ -34,11 +34,18 @@ type ServiceLifecycle =
 type StatusLevel = "INFO" | "WARN" | "ERROR";
 interface ServiceEvent {
   service: ServiceName;
+  componentId?: string;
   status: ServiceLifecycle;
   level: StatusLevel;
   message?: string;
   timestamp: string;
 }
+
+/**
+ * `foundry start` sets this to the APP's `id` in foundry.yml, so the status
+ * server can tell a product's APPs apart.
+ */
+const COMPONENT_ID_ENV = "FOUNDRY_COMPONENT_ID";
 
 export interface StatusReporterConfig {
   /** Service name reported in status payloads (e.g. "APP"). */
@@ -55,6 +62,7 @@ export interface StatusReporterConfig {
  */
 export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
   const { service, heartbeatInterval = 30_000 } = config;
+  const componentId = process.env[COMPONENT_ID_ENV];
 
   let viteRoot: string;
   let logger: Logger;
@@ -86,6 +94,7 @@ export function statusReporterPlugin(config: StatusReporterConfig): Plugin {
 
     const event: ServiceEvent = {
       service,
+      ...(componentId != null ? { componentId } : {}),
       status,
       level,
       timestamp: new Date().toISOString(),

@@ -20,7 +20,7 @@ import type { AddressInfo } from "node:net";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 import { statusReporterPlugin } from "./statusReporterPlugin.js";
 
@@ -31,6 +31,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   fs.rmSync(workDir, { recursive: true, force: true });
+  vi.unstubAllEnvs();
 });
 
 it("publishes PREPARING through the discovered status server URL", async () => {
@@ -68,6 +69,7 @@ it("publishes PREPARING through the discovered status server URL", async () => {
       }),
     );
 
+    vi.stubEnv("FOUNDRY_COMPONENT_ID", "admin");
     const plugin = statusReporterPlugin({ service: "APP" });
     const configResolved =
       typeof plugin.configResolved === "function"
@@ -96,6 +98,7 @@ it("publishes PREPARING through the discovered status server URL", async () => {
     ]);
     expect(first).toMatchObject({
       service: "APP",
+      componentId: "admin",
       status: "PREPARING",
       level: "INFO",
     });
