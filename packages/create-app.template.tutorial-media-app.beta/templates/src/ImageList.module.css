@@ -1,0 +1,9 @@
+.imageList {
+    margin: 2em;
+  }
+  
+.imageListGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2em;
+} 
