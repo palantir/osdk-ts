@@ -18,29 +18,49 @@ import { describe, expect, it } from "vitest";
 import { stringify } from "./stringify.js";
 
 describe("stringify", () => {
-  it.each(["toString", "constructor", "__proto__"])(
-    "uses the default formatter for %s",
-    name => {
-      const result = stringify({ [name]: 1 });
-      expect(result).toBe(`${JSON.stringify(name)}: 1`);
+  it.each(["constructor", "toString", "__proto__"])(
+    "formats %s with the default formatter",
+    key => {
+      const input = { [key]: "value" };
+
+      const result = stringify(input);
+
+      expect(result).toBe(`${JSON.stringify(key)}: "value"`);
     },
   );
 
-  it.each(["toString", "constructor", "__proto__"])(
-    "uses the wildcard customizer for %s",
-    name => {
-      const result = stringify({ [name]: 1 }, {
-        "*": () => "number",
-      });
-      expect(result).toBe(`${JSON.stringify(name)}: number`);
+  it.each(["constructor", "toString", "__proto__"])(
+    "formats %s with the wildcard customizer",
+    key => {
+      const input = { [key]: "value" };
+
+      const result = stringify(input, { "*": () => "string" });
+
+      expect(result).toBe(`${JSON.stringify(key)}: string`);
     },
   );
 
-  it("prefers an own customizer over the wildcard", () => {
-    const result = stringify({ toString: 1 }, {
-      toString: () => "number",
-      "*": () => "unknown",
+  it.each(["constructor", "toString", "__proto__"])(
+    "prefers the own customizer for %s",
+    key => {
+      const input = { [key]: "value" };
+      const customizer = { [key]: () => "number", "*": () => "string" };
+
+      const result = stringify(input, customizer);
+
+      expect(result).toBe(`${JSON.stringify(key)}: number`);
+    },
+  );
+
+  it("ignores inherited named and wildcard formatting", () => {
+    const input = { field: "value" };
+    const customizer = Object.create({
+      field: () => "number",
+      "*": () => "string",
     });
-    expect(result).toBe("\"toString\": number");
+
+    const result = stringify(input, customizer);
+
+    expect(result).toBe("\"field\": \"value\"");
   });
 });

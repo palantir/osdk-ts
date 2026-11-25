@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { AgentSession } from "@osdk/api/unstable";
-import type { AgentDefinitionVersion } from "@osdk/foundry.agents";
+import type { AgentMetadata, AgentSession } from "@osdk/api/unstable";
 
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { getAgentSessionState } from "./getAgentSessionState.js";
@@ -24,7 +23,7 @@ import { sendEventToAgentSession } from "./sendEventToAgentSession.js";
 export function createAgentSessionHandle(
   client: MinimalClient,
   id: string,
-  sessionAgentDefinition: AgentDefinitionVersion,
+  sessionAgentDefinition: AgentMetadata,
 ): AgentSession {
   let consistencyKey: string | undefined;
 
@@ -37,7 +36,7 @@ export function createAgentSessionHandle(
       consistencyKey = await sendEventToAgentSession(
         client,
         id,
-        sessionAgentDefinition.eventDefinitions,
+        sessionAgentDefinition.events,
         event,
         options,
       );

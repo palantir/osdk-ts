@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DataType, StructField } from "@osdk/foundry.agents";
+import type { AgentDataTypeDefinition } from "@osdk/api/unstable";
 import * as Ontologies from "@osdk/foundry.ontologies/OntologyV2";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 
@@ -41,20 +41,21 @@ export function wrapConversionError(message: string, cause: unknown): Error {
 export async function remapFields(
   value: Record<string, unknown>,
   client: MinimalClient,
-  fields: ReadonlyArray<StructField>,
+  fields: Record<string, AgentDataTypeDefinition>,
   path: string,
   convertValue: (
     value: unknown,
     client: MinimalClient,
-    desiredType: DataType,
+    desiredType: AgentDataTypeDefinition,
     path: string,
   ) => Promise<unknown>,
 ): Promise<Record<string, unknown>> {
-  const types = new Map(fields.map((field) => [field.name, field.dataType]));
   return Object.fromEntries(
     await Promise.all(
       Object.entries(value).map(async ([key, entry]) => {
-        const desiredType = types.get(key);
+        const desiredType = Object.hasOwn(fields, key)
+          ? fields[key]
+          : undefined;
         if (desiredType === undefined) {
           return [key, entry];
         }

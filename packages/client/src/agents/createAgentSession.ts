@@ -38,7 +38,7 @@ export async function createAgentSession<D extends AgentDefinition<unknown>>(
   );
   const convertedArguments = await toDataValueAgents(args ?? {}, client, {
     type: "struct",
-    fields: agentDefinition.argumentDefinitions,
+    struct: agentDefinition.arguments,
   });
   const response = await Sessions.create(
     clientWithHeaders,

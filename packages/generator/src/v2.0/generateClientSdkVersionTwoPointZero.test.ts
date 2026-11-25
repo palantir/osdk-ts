@@ -1079,6 +1079,18 @@ describe("generator", () => {
 
         /** @beta */
         export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
+            apiName: 'weatherAgent';
+            createdBy: 'user';
+            createdTime: '2026-01-01T00:00:00Z';
+            type: 'agent';
+            version: '1.2.3';
+            arguments: { city: { nullable: false; type: 'string' } };
+            events: {};
+            agentState: { nullable: false; struct: {}; type: 'struct' };
+            contextItems: {};
+            signatures: weatherAgent.Signatures;
+          };
           type: 'agent';
           apiName: 'weatherAgent';
           version: '1.2.3';
@@ -1847,6 +1859,18 @@ describe("generator", () => {
 
         /** @beta */
         export interface weatherAgent extends $AgentDefinition<weatherAgent.Signatures>, $VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
+            apiName: 'foo.bar.weatherAgent';
+            createdBy: 'user';
+            createdTime: '2026-01-01T00:00:00Z';
+            type: 'agent';
+            version: '1.2.3';
+            arguments: { city: { nullable: false; type: 'string' } };
+            events: {};
+            agentState: { nullable: false; struct: {}; type: 'struct' };
+            contextItems: {};
+            signatures: weatherAgent.Signatures;
+          };
           type: 'agent';
           apiName: 'foo.bar.weatherAgent';
           version: '1.2.3';
@@ -2763,6 +2787,42 @@ describe("generator", () => {
           };
           "
         `);
+    });
+  });
+
+  describe("agents with versions", () => {
+    it("can generate agents with requested and resolved versions", async () => {
+      const agent = TodoWireOntology.agents!.weatherAgent;
+      const ontology: WireOntologyDefinition = {
+        ...TodoWireOntology,
+        agents: {
+          weatherAgent: agent,
+          otherAgent: { ...agent, apiName: "otherAgent", version: "2.3.4" },
+        },
+      };
+
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        [],
+        false,
+        new Map(),
+        new Map([["weatherAgent", "1.x"]]),
+      );
+      const files = helper.getFiles();
+      const agents = {
+        weatherAgent: files[`${BASE_PATH}/ontology/agents/weatherAgent.ts`],
+        otherAgent: files[`${BASE_PATH}/ontology/agents/otherAgent.ts`],
+      };
+
+      expect(agents).toMatchSnapshot();
     });
   });
 
