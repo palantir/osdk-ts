@@ -36,6 +36,14 @@ const MOCK_WIDGET_CONFIG: WidgetConfig<ParameterConfig> = {
   parameters: {
     stringParam: { type: "string", displayName: "String Parameter" },
     tileLayer: { type: "mapTileLayer", displayName: "Tile Layer" },
+    structParam: {
+      type: "struct",
+      displayName: "Struct Parameter",
+      fields: {
+        name: { type: "string", displayName: "Name" },
+        startDate: { type: "date", displayName: "Start Date" },
+      },
+    },
   },
   events: {
     updateParameters: {
@@ -72,6 +80,14 @@ describe("buildWidgetManifestConfig", () => {
       parameters: {
         stringParam: { type: "string", displayName: "String Parameter" },
         tileLayer: { type: "mapTileLayer", displayName: "Tile Layer" },
+        structParam: {
+          type: "struct",
+          displayName: "Struct Parameter",
+          fields: {
+            name: { type: "string", displayName: "Name" },
+            startDate: { type: "date", displayName: "Start Date" },
+          },
+        },
       },
       events: {
         updateParameters: {
