@@ -112,6 +112,112 @@ describe("validateWidgetConfig", () => {
     );
   });
 
+  test("throws for parameter display name that exceeds max length", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.parameters.paramOne.displayName = "A".repeat(101);
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      'Parameter "paramOne" display name length can be at most 100 characters',
+    );
+  });
+
+  test("accepts up to 50 parameters", () => {
+    const validConfig = getValidConfig();
+    validConfig.parameters = getStringParameters(50);
+    validConfig.events = {};
+
+    expect(() => validateWidgetConfig(validConfig)).not.toThrow();
+  });
+
+  test("throws for more than 50 parameters", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.parameters = getStringParameters(51);
+    invalidConfig.events = {};
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      "Widget can have at most 50 parameters",
+    );
+  });
+
+  test("throws for event id that is not camelCase", () => {
+    const testCases = [
+      "UpdateParameters",
+      "update-parameters",
+      "update_parameters",
+      "1update",
+    ];
+
+    for (const eventId of testCases) {
+      const invalidConfig = getValidConfig();
+      invalidConfig.events[eventId] = {
+        displayName: "Invalid Event",
+        parameterUpdateIds: [],
+      };
+      expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+        `Event id "${eventId}" does not match allowed pattern (must be camelCase)`,
+      );
+    }
+  });
+
+  test("throws for event id that exceeds max length", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.events["event" + "a".repeat(96)] = {
+      displayName: "Long Event",
+      parameterUpdateIds: [],
+    };
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      "Event id length can be at most 100 characters",
+    );
+  });
+
+  test("throws for event display name that exceeds max length", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.events.mapClicked.displayName = "A".repeat(101);
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      'Event "mapClicked" display name length can be at most 100 characters',
+    );
+  });
+
+  test("accepts up to 50 events", () => {
+    const validConfig = getValidConfig();
+    validConfig.events = getEvents(50);
+
+    expect(() => validateWidgetConfig(validConfig)).not.toThrow();
+  });
+
+  test("throws for more than 50 events", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.events = getEvents(51);
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      "Widget can have at most 50 events",
+    );
+  });
+
+  test("throws for duplicate event parameter update ids", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.events.updateParameters.parameterUpdateIds.push("paramOne");
+
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      'Event "updateParameters" lists parameter "paramOne" more than once',
+    );
+  });
+
+  test("throws for event parameter update id that is not a parameter", () => {
+    for (const parameterId of ["missingParam", "constructor"]) {
+      const invalidConfig = getValidConfig();
+      invalidConfig.events.updateParameters.parameterUpdateIds.push(
+        parameterId,
+      );
+
+      expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+        `Event "updateParameters" updates unknown parameter "${parameterId}"`,
+      );
+    }
+  });
+
   test("accepts valid object set parameter using object types", () => {
     const validConfig = getValidConfig();
     validConfig.parameters.myObjectSet = {
@@ -187,4 +293,22 @@ function getValidConfig(): WidgetConfig<ParameterConfig> {
       },
     },
   };
+}
+
+function getStringParameters(count: number): ParameterConfig {
+  return Object.fromEntries(
+    Array.from({ length: count }, (_, i) => [
+      `param${i}`,
+      { displayName: `Parameter ${i}`, type: "string" },
+    ]),
+  );
+}
+
+function getEvents(count: number): WidgetConfig<ParameterConfig>["events"] {
+  return Object.fromEntries(
+    Array.from({ length: count }, (_, i) => [
+      `event${i}`,
+      { displayName: `Event ${i}`, parameterUpdateIds: [] },
+    ]),
+  );
 }
