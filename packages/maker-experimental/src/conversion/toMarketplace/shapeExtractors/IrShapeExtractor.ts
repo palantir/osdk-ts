@@ -99,9 +99,9 @@ function createLocalizedAbout(
 export async function getShapes(
   ontologyBlockDataV2: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
-  functionsIr?: FunctionsIr,
-  randomnessKey?: string,
-  packageSchemaMigrationInputs = true,
+  functionsIr: FunctionsIr | undefined,
+  randomnessKey: string | undefined,
+  packageSchemaMigrationInputs: boolean,
 ): Promise<BlockShapes> {
   const allBlockShapes: BlockShapes = {
     inputShapes: new Map(),

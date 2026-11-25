@@ -227,35 +227,25 @@ describe("schema migration candidates", () => {
     );
   });
 
-  it("emits no shape when packaging for edge", async () => {
+  it("emits no shape when packaging for edge, even for a stream object whose edge remapping supports backfilling", async () => {
     const { inputShape, knownIdentifiers } = await build(
-      { name: { type: "string", nullability: NON_NULL } },
-      { packagingOptions: { targetEnvironment: "EDGE" } },
-    );
-
-    expect(inputShape).toBeUndefined();
-    expect(knownIdentifiers.shapeIdForOntologySchemaMigrationInputs).toBe(
-      toBlockShapeId(SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID, RANDOMNESS_KEY),
-    );
-  });
-
-  it("emits a candidate for a stream object whose edge remapping supports backfilling when opted in for edge", async () => {
-    const { inputShape, propertyBlockInternalId } = await build(
       { name: { type: "string", displayName: "name", nullability: NON_NULL } },
       {
         datasources: [{ type: "stream" }],
-        packagingOptions: {
-          targetEnvironment: "EDGE",
-          packageSchemaMigrationInputsForEdge: true,
-        },
+        packagingOptions: { targetEnvironment: "EDGE" },
       },
     );
 
-    const nameId = propertyBlockInternalId("name");
-    expect(inputShape).toEqual(
-      schemaMigrationInputsShape({
-        [candidateIdFor(nameId)]: literalCandidate(nameId, "name"),
-      }),
+    // Once EDGE is supported, this becomes:
+    // expect(inputShape).toEqual(
+    //   schemaMigrationInputsShape({
+    //     [candidateIdFor(nameId)]: literalCandidate(nameId, "name"),
+    //   }),
+    // );
+    // where nameId = propertyBlockInternalId("name").
+    expect(inputShape).toBeUndefined();
+    expect(knownIdentifiers.shapeIdForOntologySchemaMigrationInputs).toBe(
+      toBlockShapeId(SCHEMA_MIGRATION_INPUTS_SHAPE_READABLE_ID, RANDOMNESS_KEY),
     );
   });
 
