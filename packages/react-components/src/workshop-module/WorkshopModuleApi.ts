@@ -32,12 +32,10 @@ export interface WorkshopModuleProps<
 
   /** Controlled scalar values keyed by module-interface external ID. Pair with onVariablesChanged to retain Workshop edits.
    * Omitted variables are unchanged; null represents a cleared value.
-   * Currently accepted for type checking only; variable synchronization is not implemented.
    * @default undefined */
   variables?: WorkshopVariableValues<TVariables>;
 
   /** Callback for partial updates to the controlled variables. Merge the changes into variables to retain Workshop edits.
-   * Currently accepted for type checking only; the callback is not invoked.
    * @param changes Changed values; null represents a cleared variable.
    * @default undefined */
   onVariablesChanged?: (changes: WorkshopVariableValues<TVariables>) => void;

@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import type { BaseWorkshopModuleProps } from "@osdk/react-components/experimental/workshop-module";
+import type {
+  BaseWorkshopModuleProps,
+  WorkshopVariableValues,
+} from "@osdk/react-components/experimental/workshop-module";
 import { BaseWorkshopModule } from "@osdk/react-components/experimental/workshop-module";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useCallback } from "react";
+import { useArgs } from "storybook/preview-api";
 
 function isFoundryUrl(value: string): boolean {
   try {
@@ -36,19 +41,33 @@ const meta: Meta<BaseWorkshopModuleProps> = {
     moduleVersion: "published",
     title: "Workshop module preview",
   },
-  render: (args: BaseWorkshopModuleProps) => (
-    <div style={{ height: "24rem" }}>
-      {isFoundryUrl(args.foundryUrl) ? (
-        <BaseWorkshopModule key={args.defaultTheme} {...args} />
-      ) : (
-        <p>
-          Set foundryUrl to your Foundry URL and moduleRid to a module you can
-          access in the controls below. Rendering requires a signed-in Foundry
-          session.
-        </p>
-      )}
-    </div>
-  ),
+  render: function Render(args: BaseWorkshopModuleProps) {
+    const [, updateArgs] = useArgs<BaseWorkshopModuleProps>();
+    const onVariablesChanged = useCallback(
+      (changes: WorkshopVariableValues) => {
+        updateArgs({ variables: { ...args.variables, ...changes } });
+      },
+      [args.variables, updateArgs],
+    );
+
+    return (
+      <div style={{ height: "24rem" }}>
+        {isFoundryUrl(args.foundryUrl) ? (
+          <BaseWorkshopModule
+            key={args.defaultTheme}
+            {...args}
+            onVariablesChanged={onVariablesChanged}
+          />
+        ) : (
+          <p>
+            Set foundryUrl to your Foundry URL and moduleRid to a module you can
+            access in the controls below. Rendering requires a signed-in Foundry
+            session.
+          </p>
+        )}
+      </div>
+    );
+  },
   parameters: {
     controls: { expanded: true },
     docs: {
@@ -74,6 +93,12 @@ const meta: Meta<BaseWorkshopModuleProps> = {
         "latest for the latest saved version, or published for the published version. Defaults to published.",
     },
     title: { control: "text" },
+    variables: {
+      control: "object",
+      description:
+        "Scalar values keyed by module-interface external ID. Workshop edits update these controls.",
+    },
+    onVariablesChanged: { control: false },
     branchRid: {
       control: "text",
       description:
@@ -100,6 +125,33 @@ export const Default: Story = {
         code: `<BaseWorkshopModule
   foundryUrl="https://example.palantirfoundry.com"
   moduleRid="ri.workshop.main.module.example"
+  style={{ height: "24rem" }}
+/>`,
+      },
+    },
+  },
+};
+
+export const Variables: Story = {
+  args: {
+    variables: { count: 25, searchText: "Ada", includeArchived: false },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Use the external IDs of your module's scalar interface variables. Inputs update live, and Workshop edits are merged into the variables control. Requires a Foundry deployment with the Workshop embed integration.",
+      },
+      source: {
+        code: `const [variables, setVariables] = useState<WorkshopVariableValues>({ count: 25 });
+
+<BaseWorkshopModule
+  foundryUrl="https://example.palantirfoundry.com"
+  moduleRid="ri.workshop.main.module.example"
+  variables={variables}
+  onVariablesChanged={(changes) =>
+    setVariables((previous) => ({ ...previous, ...changes }))
+  }
   style={{ height: "24rem" }}
 />`,
       },
