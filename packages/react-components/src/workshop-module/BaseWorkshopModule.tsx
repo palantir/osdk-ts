@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { WorkshopVariableMap } from "@osdk/workshop-embed";
 import classnames from "classnames";
 import React from "react";
 
@@ -23,13 +24,15 @@ import type { BaseWorkshopModuleProps } from "./WorkshopModuleApi.js";
 
 import styles from "./BaseWorkshopModule.module.css";
 
-export function BaseWorkshopModule({
+export function BaseWorkshopModule<
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
+>({
   defaultTheme,
   title = "Workshop module",
   className,
   style,
   ...props
-}: BaseWorkshopModuleProps): React.ReactElement {
+}: BaseWorkshopModuleProps<TVariables>): React.ReactElement {
   const { theme, isLoading } = useInitialTheme(defaultTheme);
   const src = getWorkshopModuleUrl({ ...props, theme });
 

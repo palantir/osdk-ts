@@ -14,15 +14,33 @@
  * limitations under the License.
  */
 
+import type {
+  WorkshopVariableMap,
+  WorkshopVariableValues,
+} from "@osdk/workshop-embed";
 import type { CSSProperties } from "react";
 
-export interface WorkshopModuleProps {
+export interface WorkshopModuleProps<
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
+> {
   /** RID of the Workshop module to render. */
   moduleRid: string;
 
   /** Module version: `latest` for the latest saved version, or `published` for the published version (falling back to the latest saved version if none is published).
    * @default "published" */
   moduleVersion?: "latest" | "published";
+
+  /** Controlled scalar values keyed by module-interface external ID. Pair with onVariablesChanged to retain Workshop edits.
+   * Omitted variables are unchanged; null represents a cleared value.
+   * Currently accepted for type checking only; variable synchronization is not implemented.
+   * @default undefined */
+  variables?: WorkshopVariableValues<TVariables>;
+
+  /** Callback for partial updates to the controlled variables. Merge the changes into variables to retain Workshop edits.
+   * Currently accepted for type checking only; the callback is not invoked.
+   * @param changes Changed values; null represents a cleared variable.
+   * @default undefined */
+  onVariablesChanged?: (changes: WorkshopVariableValues<TVariables>) => void;
 
   /** Accessible title for the iframe.
    * @default "Workshop module" */
@@ -37,7 +55,9 @@ export interface WorkshopModuleProps {
   style?: CSSProperties;
 }
 
-export interface BaseWorkshopModuleProps extends WorkshopModuleProps {
+export interface BaseWorkshopModuleProps<
+  TVariables extends WorkshopVariableMap = WorkshopVariableMap,
+> extends WorkshopModuleProps<TVariables> {
   /** HTTP or HTTPS Foundry base URL, for example `https://example.palantirfoundry.com`. */
   foundryUrl: string;
 
