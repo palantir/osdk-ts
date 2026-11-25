@@ -30,7 +30,6 @@ import type {
   OntologySchemaMigrationCandidate,
   OntologySchemaMigrationCandidateId,
 } from "@osdk/client.unstable/api";
-import invariant from "tiny-invariant";
 
 import type {
   OntologyRidGenerator,
@@ -53,6 +52,7 @@ export function getSchemaMigrationCandidates(
   objectTypes: Record<string, ObjectTypeBlockDataV2>,
   ridGenerator: OntologyRidGenerator,
 ): SchemaMigrationCandidates {
+  const objectReadableIdsByRid = ridGenerator.getObjectTypeRids().inverse();
   const propertyReadableIdsByRid = ridGenerator.getPropertyTypeRids().inverse();
   const result: SchemaMigrationCandidates = {
     candidates: {},
@@ -61,6 +61,9 @@ export function getSchemaMigrationCandidates(
 
   for (const block of Object.values(objectTypes)) {
     const { objectType } = block;
+    if (objectReadableIdsByRid.get(objectType.rid) == null) {
+      continue;
+    }
     const propertiesSupportingBackfill = new Set(
       [
         ...block.datasources,
@@ -73,7 +76,9 @@ export function getSchemaMigrationCandidates(
     for (const [propertyRid, propertyType] of Object.entries(
       objectType.propertyTypes,
     )) {
+      const propertyReadableId = propertyReadableIdsByRid.get(propertyRid);
       if (
+        propertyReadableId == null ||
         objectType.primaryKeys.includes(propertyRid) ||
         !isSupportedType(propertyType.type) ||
         isNullable(propertyType) ||
@@ -82,11 +87,6 @@ export function getSchemaMigrationCandidates(
         continue;
       }
 
-      const propertyReadableId = propertyReadableIdsByRid.get(propertyRid);
-      invariant(
-        propertyReadableId != null,
-        `Missing readable id for property ${propertyRid}`,
-      );
       const propertyBlockInternalId =
         ridGenerator.toBlockInternalId(propertyReadableId);
       const candidateId: OntologySchemaMigrationCandidateId = `property//${propertyBlockInternalId}//set-property-value-if-unset`;
