@@ -67,16 +67,24 @@ export {
   MODIFY_OBJECT_PARAMETER,
 } from "./api/defineAction.js";
 export { defineCreateInterfaceLinkAction } from "./api/defineCreateInterfaceLinkAction.js";
+export type { CreateInterfaceLinkActionUserDefinition } from "./api/defineCreateInterfaceLinkAction.js";
 export { defineCreateInterfaceObjectAction } from "./api/defineCreateInterfaceObjectAction.js";
 export { defineCreateObjectAction } from "./api/defineCreateObjectAction.js";
+export type {
+  ActionTypeUserDefinition,
+  InterfaceActionTypeUserDefinition,
+} from "./api/defineAction.js";
 export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObjectAction.js";
 export { defineDeleteInterfaceLinkAction } from "./api/defineDeleteInterfaceLinkAction.js";
+export type { DeleteInterfaceLinkActionUserDefinition } from "./api/defineDeleteInterfaceLinkAction.js";
 export { defineDeleteInterfaceObjectAction } from "./api/defineDeleteInterfaceObjectAction.js";
 export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
 export { defineFolder, type FolderDefinition } from "./api/defineFolder.js";
 export { defineInterface } from "./api/defineInterface.js";
+export type { InterfaceTypeDefinition } from "./api/defineInterface.js";
 export { defineInterfaceActionTypeConstraint } from "./api/defineInterfaceActionTypeConstraint.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
+export type { InterfaceLinkConstraintDefinition } from "./api/defineInterfaceLinkConstraint.js";
 export { defineLink } from "./api/defineLink.js";
 export { defineModifyInterfaceObjectAction } from "./api/defineModifyInterfaceObjectAction.js";
 export { defineModifyObjectAction } from "./api/defineModifyObjectAction.js";
@@ -106,6 +114,7 @@ export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export { importSharedPropertyType } from "./api/importSharedPropertyType.js";
+export type { InterfaceActionTypeConstraintDefinition } from "./api/InterfaceActionTypeConstraintDefinition.js";
 export type {
   InterfaceDefinedProperty,
   InterfacePropertyType,
@@ -144,6 +153,7 @@ export {
 } from "./api/interface/resolveInterfaceTypeReplacement.js";
 export type {
   LinkType,
+  LinkTypeDefinition,
   OneToManyLinkTypeDefinition,
   UserLinkTypeStatus,
 } from "./api/links/LinkType.js";
