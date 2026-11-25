@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { AggregationClause } from "@osdk/api";
+import type { AggregationClause, ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregationV2 } from "@osdk/foundry.ontologies";
+
+import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
 
 const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
   dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;
@@ -32,7 +34,11 @@ export function splitAggregationKey(key: string): {
 /** @internal */
 export function modernToLegacyAggregationClause<
   AC extends AggregationClause<any>,
->(select: AC) {
+>(
+  select: AC,
+  objectOrInterface?: ObjectOrInterfaceDefinition,
+  derivedPropertyNames?: ReadonlySet<string>,
+) {
   return Object.entries(select).flatMap<AggregationV2>(
     ([propAndMetric, aggregationType]) => {
       if (propAndMetric === "$count") {
@@ -44,6 +50,11 @@ export function modernToLegacyAggregationClause<
       }
 
       const { property, metric } = splitAggregationKey(propAndMetric);
+
+      const qualifiedProperty =
+        objectOrInterface && !derivedPropertyNames?.has(property)
+          ? fullyQualifyPropName(property, objectOrInterface)
+          : property;
 
       return [
         {
@@ -58,7 +69,7 @@ export function modernToLegacyAggregationClause<
             | "exactDistinct",
           name: `${property}.${metric}`,
           direction: directionFieldMap(aggregationType),
-          field: property,
+          field: qualifiedProperty,
         },
       ];
     },
