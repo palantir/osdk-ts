@@ -59,6 +59,7 @@ export class ContextValidator {
     "hasAttachmentUpload",
     "hasAttachmentProperty",
     "hasParameters",
+    "hasTypedParameters",
     "actionParameterSampleValuesV2",
     "last",
     "needsImports",
@@ -114,6 +115,7 @@ export class ContextValidator {
     hasAttachmentUpload: "boolean",
     hasAttachmentProperty: "boolean",
     hasParameters: "boolean",
+    hasTypedParameters: "boolean",
     actionParameterSampleValuesV2: "string", // Can be string or array
     last: "boolean",
     needsImports: "boolean",

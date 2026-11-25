@@ -303,6 +303,7 @@ export class TemplateAnalyzer {
       "hasAttachmentUpload",
       "hasAttachmentProperty",
       "hasParameters",
+      "hasTypedParameters",
       "last",
       "needsImports",
       "isUnary",

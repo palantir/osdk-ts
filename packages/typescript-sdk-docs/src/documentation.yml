@@ -1278,15 +1278,15 @@ versions:
             - propertyValueV2
             - propertyValueIncrementedV2
       applyAction:
-        # Simplified template supporting 4 cases:
+        # Simplified template driven by three flags:
         # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
         # - hasMediaParameter: Whether action has media parameters (true/false)
-        # This creates 4 combinations: none, attachment only, media only, both
+        # - hasTypedParameters: Whether the example takes the SDK's typed Params instead of sample values (true/false)
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
+            import type { AttachmentUpload{{#hasMediaParameter}}, MediaReference, MediaUpload{{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
             {{^hasAttachmentProperty}}{{#hasMediaParameter}}
             import type { MediaReference, MediaUpload } from "@osdk/api";
@@ -1294,9 +1294,9 @@ versions:
             {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
             {{/hasAttachmentProperty}}
-            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
+            import { {{actionApiName}}{{#hasMediaParameter}}, {{objectType}}{{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            async function callAction() {
+            async function callAction({{#hasTypedParameters}}parameters: {{actionApiName}}.Params{{/hasTypedParameters}}) {
             {{#hasAttachmentProperty}}
                 // Create attachment upload
                 const attachmentFile = await fetch("file.json");
@@ -1317,11 +1317,16 @@ versions:
 
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
+            {{#hasTypedParameters}}
+                    parameters,
+            {{/hasTypedParameters}}
+            {{^hasTypedParameters}}
                     {
                         {{#actionParameterSampleValuesV2}}
                         "{{key}}": {{{value}}},
                         {{/actionParameterSampleValuesV2}}
                     },
+            {{/hasTypedParameters}}
                     {
                         $returnEdits: true,
                     }
@@ -1335,15 +1340,15 @@ versions:
           computedVariables:
             - actionParameterSampleValuesV2
       batchApplyAction:
-        # Simplified template supporting 4 cases (same as applyAction):
+        # Simplified template driven by the same three flags as applyAction:
         # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
         # - hasMediaParameter: Whether action has media parameters (true/false)
-        # This creates 4 combinations: none, attachment only, media only, both
+        # - hasTypedParameters: Whether the example takes a list of the SDK's typed Params instead of sample values (true/false)
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
+            import type { AttachmentUpload{{#hasMediaParameter}}, MediaReference, MediaUpload{{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
             {{^hasAttachmentProperty}}{{#hasMediaParameter}}
             import type { MediaReference, MediaUpload } from "@osdk/api";
@@ -1351,9 +1356,9 @@ versions:
             {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
             {{/hasAttachmentProperty}}
-            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
+            import { {{actionApiName}}{{#hasMediaParameter}}, {{objectType}}{{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            async function callBatchAction() {
+            async function callBatchAction({{#hasTypedParameters}}parameters: ReadonlyArray<{{actionApiName}}.Params>{{/hasTypedParameters}}) {
             {{#hasAttachmentProperty}}
                 // Create attachment upload
                 const attachmentFile = await fetch("file.json");
@@ -1371,7 +1376,12 @@ versions:
                 const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
 
             {{/hasMediaParameter}}
-                const result = await client({{actionApiName}}).batchApplyAction([
+                const result = await client({{actionApiName}}).batchApplyAction(
+            {{#hasTypedParameters}}
+                    parameters,
+            {{/hasTypedParameters}}
+            {{^hasTypedParameters}}
+                    [
                         {
                             {{#actionParameterSampleValuesV2}}
                             "{{key}}": {{{value}}},
@@ -1383,6 +1393,7 @@ versions:
                             {{/actionParameterSampleValuesV2}}
                         },
                     ],
+            {{/hasTypedParameters}}
                     {
                         $returnEdits: true,
                     }
@@ -2228,15 +2239,15 @@ versions:
             // To stop receiving updates, call unsubscribe
             subscription.unsubscribe();
       applyAction:
-        # Simplified template supporting 4 cases:
+        # Simplified template driven by three flags:
         # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
         # - hasMediaParameter: Whether action has media parameters (true/false)
-        # This creates 4 combinations: none, attachment only, media only, both
+        # - hasTypedParameters: Whether the example takes the SDK's typed Params instead of sample values (true/false)
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
+            import type { AttachmentUpload{{#hasMediaParameter}}, MediaReference, MediaUpload{{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
             {{^hasAttachmentProperty}}{{#hasMediaParameter}}
             import type { MediaReference, MediaUpload } from "@osdk/api";
@@ -2244,9 +2255,9 @@ versions:
             {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
             {{/hasAttachmentProperty}}
-            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
+            import { {{actionApiName}}{{#hasMediaParameter}}, {{objectType}}{{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            async function callAction() {
+            async function callAction({{#hasTypedParameters}}parameters: {{actionApiName}}.Params{{/hasTypedParameters}}) {
             {{#hasAttachmentProperty}}
                 // Create attachment upload
                 const attachmentFile = await fetch("file.json");
@@ -2268,11 +2279,16 @@ versions:
 
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
+            {{#hasTypedParameters}}
+                    parameters,
+            {{/hasTypedParameters}}
+            {{^hasTypedParameters}}
                     {
                         {{#actionParameterSampleValuesV2}}
                         "{{key}}": {{{value}}},
                         {{/actionParameterSampleValuesV2}}
                     },
+            {{/hasTypedParameters}}
                     {
                         $returnEdits: true,
                     }
@@ -2286,15 +2302,15 @@ versions:
           computedVariables:
             - actionParameterSampleValuesV2
       batchApplyAction:
-        # Simplified template supporting 4 cases (same as applyAction):
+        # Simplified template driven by the same three flags as applyAction:
         # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
         # - hasMediaParameter: Whether action has media parameters (true/false)
-        # This creates 4 combinations: none, attachment only, media only, both
+        # - hasTypedParameters: Whether the example takes a list of the SDK's typed Params instead of sample values (true/false)
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
+            import type { AttachmentUpload{{#hasMediaParameter}}, MediaReference, MediaUpload{{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
             {{^hasAttachmentProperty}}{{#hasMediaParameter}}
             import type { MediaReference, MediaUpload } from "@osdk/api";
@@ -2302,9 +2318,9 @@ versions:
             {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
             {{/hasAttachmentProperty}}
-            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
+            import { {{actionApiName}}{{#hasMediaParameter}}, {{objectType}}{{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            async function callBatchAction() {
+            async function callBatchAction({{#hasTypedParameters}}parameters: ReadonlyArray<{{actionApiName}}.Params>{{/hasTypedParameters}}) {
             {{#hasAttachmentProperty}}
                 // Create attachment upload
                 const attachmentFile = await fetch("file.json");
@@ -2323,7 +2339,12 @@ versions:
                 const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
 
             {{/hasMediaParameter}}
-                const result = await client({{actionApiName}}).batchApplyAction([
+                const result = await client({{actionApiName}}).batchApplyAction(
+            {{#hasTypedParameters}}
+                    parameters,
+            {{/hasTypedParameters}}
+            {{^hasTypedParameters}}
+                    [
                         {
                             {{#actionParameterSampleValuesV2}}
                             "{{key}}": {{{value}}},
@@ -2335,6 +2356,7 @@ versions:
                             {{/actionParameterSampleValuesV2}}
                         },
                     ],
+            {{/hasTypedParameters}}
                     {
                         $returnEdits: true,
                     }
