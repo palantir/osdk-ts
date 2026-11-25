@@ -90,16 +90,11 @@ describe("LinkSubscriptionWebsocket", () => {
       objects: [3],
     });
 
-    // Concurrent subscribes each race to build a connection and the loser is
-    // closed without ever being used, so only one socket goes live. This is
-    // inherited from ObjectSetListenerWebsocket.
+    // Concurrent subscribes share one connection attempt, including token acquisition.
     const webSocket = await vi.waitFor((): MockedWebSocket => {
-      expect(MockedWebSocket).toHaveBeenCalledTimes(2);
+      expect(MockedWebSocket).toHaveBeenCalledTimes(1);
       return MockedWebSocket.mock.results[0].value;
     });
-    const discardedWebSocket = MockedWebSocket.mock.results[1].value;
-    expect(discardedWebSocket.close).toHaveBeenCalledOnce();
-    expect(discardedWebSocket.send).not.toHaveBeenCalled();
 
     expect(String(MockedWebSocket.mock.calls[0][0])).toBe(
       "wss://example.com/base/api/v2/ontologySubscriptions/ontologies/ri.ontology.main.ontology.example/linkTypeSubscriptions",

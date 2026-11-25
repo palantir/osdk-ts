@@ -73,7 +73,9 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
 
   #backoff: ExponentialBackoff;
   #isFirstConnection = true;
-  #lastWsConnect = 0;
+  #connecting: Promise<void> | undefined;
+  #connectionAbort: AbortController | undefined;
+  #removeConnectionListeners: (() => void) | undefined;
   #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
 
@@ -193,49 +195,77 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
   }
 
   protected async ensureWebsocket(): Promise<void> {
-    if (this.ws == null) {
-      // The connection factory (token fetch, url construction) is async, so there could be a
-      // race to create the websocket. Only the first call to reach the construction below will
-      // find a null this.ws; the rest bail out.
-      if (this.ws == null) {
-        // Only apply exponential backoff delay on reconnection attempts, not the first connection
-        if (!this.#isFirstConnection) {
-          const delay = this.#backoff.calculateDelay();
-          if (process.env.NODE_ENV !== "production") {
-            this.logger?.debug(
-              { delay, attempt: this.#backoff.getAttempt() },
-              "Waiting before reconnect",
-            );
-          }
-          await new Promise((resolve) => {
-            setTimeout(resolve, delay);
-          });
-        }
+    if (this.#connecting != null) return this.#connecting;
+    if (this.ws != null || this.subscriptions.size === 0) return;
 
-        this.#lastWsConnect = Date.now();
+    const controller = new AbortController();
+    this.#connectionAbort = controller;
+    // Share the whole attempt, including backoff and token acquisition. A check
+    // after the factory resolves is too late to prevent duplicate connections.
+    const connecting = Promise.resolve()
+      .then(() => this.#connect(controller.signal))
+      .catch((error) => {
+        if (!controller.signal.aborted) throw error;
+      });
+    this.#connecting = connecting;
+    try {
+      await connecting;
+    } finally {
+      if (this.#connecting === connecting) this.#connecting = undefined;
+    }
+  }
 
-        // we again may have lost the race after our minimum backoff time
-        if (this.ws == null) {
-          if (process.env.NODE_ENV !== "production") {
-            this.logger?.debug("Creating websocket");
-          }
-          const connection = await this.createConnection();
-          // awaiting the factory (token/url) is another chance to lose the race
-          if (this.ws == null) {
-            this.ws = connection;
-            this.ws.addEventListener("close", this.#onClose);
-            this.ws.addEventListener("message", this.#onMessage);
-            this.ws.addEventListener("open", this.#onOpen);
-          } else {
-            connection.close();
-          }
-        }
+  async #connect(signal: AbortSignal): Promise<void> {
+    if (signal.aborted) return;
+    if (!this.#isFirstConnection) {
+      const delay = this.#backoff.calculateDelay();
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.debug(
+          { delay, attempt: this.#backoff.getAttempt() },
+          "Waiting before reconnect",
+        );
       }
-      // Allow await-ing the websocket open event if it isn't open already.
-      // This needs to happen even for callers that didn't just create this.ws
-      if (this.ws!.readyState === WebSocket.CONNECTING) {
-        return awaitWebsocketOpen(this.ws!);
-      }
+      await new Promise<void>((resolve) => {
+        const finish = () => {
+          clearTimeout(timeout);
+          signal.removeEventListener("abort", finish);
+          // eslint-disable-next-line promise/no-multiple-resolved -- clearTimeout cancels the callback; it does not resolve the promise.
+          resolve();
+        };
+        const timeout = setTimeout(finish, delay);
+        signal.addEventListener("abort", finish, { once: true });
+      });
+    }
+    if (signal.aborted || this.subscriptions.size === 0) return;
+
+    const connection = await this.createConnection();
+    if (signal.aborted || this.subscriptions.size === 0) {
+      connection.close();
+      return;
+    }
+    this.ws = connection;
+    const isCurrent = () => !signal.aborted && this.ws === connection;
+    const onClose = (event: WebSocket.CloseEvent) => {
+      if (isCurrent()) this.#onClose(event);
+    };
+    const onMessage = (event: WebSocket.MessageEvent) => {
+      if (isCurrent()) return this.#onMessage(event);
+    };
+    const onOpen = () => {
+      if (isCurrent()) this.#onOpen();
+    };
+    connection.addEventListener("close", onClose);
+    connection.addEventListener("message", onMessage);
+    connection.addEventListener("open", onOpen);
+    this.#removeConnectionListeners = () => {
+      connection.removeEventListener("close", onClose);
+      connection.removeEventListener("message", onMessage);
+      connection.removeEventListener("open", onOpen);
+    };
+    if (connection.readyState === WebSocket.CONNECTING) {
+      await awaitWebsocketOpen(connection, signal);
+    } else if (connection.readyState === WebSocket.OPEN) {
+      onOpen();
     }
   }
 
@@ -245,7 +275,12 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
     void this.ensureWebsocket();
   }
 
-  protected cycleWebsocket(): void {
+  protected disconnectWebsocket(): void {
+    this.#connectionAbort?.abort();
+    this.#connectionAbort = undefined;
+    this.#connecting = undefined;
+    this.pendingSubscriptions.clear();
+    this.cancelIdleDisconnect();
     // Clear heartbeat interval
     if (this.#heartbeatInterval) {
       clearInterval(this.#heartbeatInterval);
@@ -253,9 +288,8 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
     }
 
     if (this.ws) {
-      this.ws.removeEventListener("open", this.#onOpen);
-      this.ws.removeEventListener("message", this.#onMessage);
-      this.ws.removeEventListener("close", this.#onClose);
+      this.#removeConnectionListeners?.();
+      this.#removeConnectionListeners = undefined;
 
       if (
         this.ws.readyState !== WebSocket.CLOSING &&
@@ -265,6 +299,21 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
       }
       this.ws = undefined;
     }
+  }
+
+  protected cycleWebsocket(): void {
+    for (const subscription of this.subscriptions.values()) {
+      if (subscription.status === "subscribed")
+        subscription.status = "reconnecting";
+    }
+    if (
+      this.ws == null &&
+      this.#connecting != null &&
+      this.subscriptions.size > 0
+    ) {
+      return;
+    }
+    this.disconnectWebsocket();
 
     // if we have any listeners that are still depending on us, go ahead and reopen the websocket
     if (this.subscriptions.size > 0) {
@@ -275,10 +324,6 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
             "should not have done/error subscriptions still",
           );
         }
-      }
-
-      for (const s of this.subscriptions.values()) {
-        if (s.status === "subscribed") s.status = "reconnecting";
       }
 
       this.reconnect();
@@ -320,12 +365,16 @@ export abstract class SubscriptionWebsocket<S extends BaseSubscription, M> {
   };
 }
 
-function awaitWebsocketOpen(ws: SubscriptionConnection): Promise<void> {
+function awaitWebsocketOpen(
+  ws: SubscriptionConnection,
+  signal: AbortSignal,
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     function cleanup() {
       ws.removeEventListener("open", open);
       ws.removeEventListener("error", error);
-      ws.removeEventListener("close", cleanup);
+      ws.removeEventListener("close", open);
+      signal.removeEventListener("abort", open);
     }
     function open() {
       cleanup();
@@ -337,6 +386,9 @@ function awaitWebsocketOpen(ws: SubscriptionConnection): Promise<void> {
     }
     ws.addEventListener("open", open);
     ws.addEventListener("error", error);
-    ws.addEventListener("close", cleanup);
+    // A replaced/closed connection must release callers awaiting its opening.
+    // The current connection's lifecycle owns any subsequent reconnect.
+    ws.addEventListener("close", open);
+    signal.addEventListener("abort", open, { once: true });
   });
 }
