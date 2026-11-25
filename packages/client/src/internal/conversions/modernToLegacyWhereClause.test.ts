@@ -353,7 +353,7 @@ describe(modernToLegacyWhereClause, () => {
           modernToLegacyWhereClause<ObjAllProps>(
             {
               geoPoint: {
-                $within: { $distance: [5, "km"], $of: [-5, 5] },
+                $within: { $distance: [5, "KILOMETERS"], $of: [-5, 5] },
               },
             },
             objectTypeWithAllPropertyTypes,
@@ -390,7 +390,10 @@ describe(modernToLegacyWhereClause, () => {
           modernToLegacyWhereClause<ObjAllProps>(
             {
               geoPoint: {
-                $within: { $distance: [5, "km"], $of: pointAsGeoJsonPoint },
+                $within: {
+                  $distance: [5, "KILOMETERS"],
+                  $of: pointAsGeoJsonPoint,
+                },
               },
             },
             objectTypeWithAllPropertyTypes,
@@ -515,7 +518,17 @@ describe(modernToLegacyWhereClause, () => {
 
         expectType<WhereClause<ObjAllProps>>({
           geoPoint: {
-            $within: { $distance: [2, "centimeter"], $of: [2, 2] },
+            $within: { $distance: [2, "CENTIMETERS"], $of: [2, 2] },
+          },
+        });
+
+        expectType<WhereClause<ObjAllProps>>({
+          geoPoint: {
+            $within: {
+              // @ts-expect-error - "centimeter" is not a valid DistanceUnit
+              $distance: [2, "centimeter"],
+              $of: [2, 2],
+            },
           },
         });
 
@@ -559,7 +572,7 @@ describe(modernToLegacyWhereClause, () => {
             $within: {
               $bbox: [-5, 5, -10, 10],
               // @ts-expect-error
-              $distance: [2, "centimeter"],
+              $distance: [2, "CENTIMETERS"],
               // @ts-expect-error
               $of: [2, 2],
             },

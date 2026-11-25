@@ -34,6 +34,7 @@ export type { IntervalRule } from "./aggregate/IntervalRule.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
   AndWhereClause,
+  DistanceUnit,
   GeoFilter_Intersects,
   GeoFilter_Within,
   NotWhereClause,
