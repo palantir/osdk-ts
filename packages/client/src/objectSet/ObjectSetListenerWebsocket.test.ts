@@ -329,6 +329,21 @@ describe("ObjectSetListenerWebsocket", () => {
         });
       });
 
+      it("ignores a success ack for a subscription cancelled before the ack", async () => {
+        unsubscribe();
+        await expectSubscribeMessages(ws);
+        respondSuccessToSubscribe(ws, subReq1);
+
+        const unsubscribe2 = await client.subscribe(
+          { type: "object", apiName: "Employee" },
+          { type: "base", objectType: Employee.apiName },
+          listener,
+        );
+        const subReq2 = await expectSubscribeMessages(ws);
+        expect(subReq2.requests).toHaveLength(1);
+        unsubscribe2();
+      });
+
       describe("correctly try catches errors in handlers", () => {
         beforeEach(() => {
           listener.onSuccessfulSubscription.mockImplementationOnce(() => {
@@ -355,6 +370,15 @@ describe("ObjectSetListenerWebsocket", () => {
 
         it("should call onSuccessfulSubscription", () => {
           expect(listener.onSuccessfulSubscription).toHaveBeenCalled();
+        });
+
+        it("does not call onSuccessfulSubscription again on heartbeat", async () => {
+          // what the heartbeat interval calls
+          client["sendSubscribeMessage"]();
+          respondSuccessToSubscribe(ws, await expectSubscribeMessages(ws));
+
+          expect(listener.onSuccessfulSubscription).toHaveBeenCalledTimes(1);
+          expect(listener.onOutOfDate).not.toHaveBeenCalled();
         });
 
         it("should correctly return regular updates", async () => {
