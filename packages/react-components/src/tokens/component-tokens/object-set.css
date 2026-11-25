@@ -3,7 +3,9 @@
   --osdk-object-set-min-height: 30px;
   --osdk-object-set-padding: calc(var(--osdk-surface-spacing) * 1.5) 0;
   --osdk-object-set-color: var(--osdk-typography-color-default-rest);
-  --osdk-object-set-icon-default-color: var(--bp-palette-blue-4);
+  --osdk-object-set-icon-default-color: var(
+    --bp-typography-color-intent-primary
+  );
   --osdk-object-set-placeholder-color: var(--osdk-typography-color-muted);
   --osdk-object-set-font-family: var(--osdk-typography-family-default);
   --osdk-object-set-font-size: var(--osdk-typography-size-body-medium);

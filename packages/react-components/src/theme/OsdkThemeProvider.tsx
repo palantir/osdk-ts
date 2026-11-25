@@ -61,7 +61,7 @@ export interface OsdkThemeProviderProps {
 /**
  * Provides OSDK theme state to descendants and writes a
  * `data-bp-color-scheme` attribute onto the document so the CSS in
- * `tokens/base-tokens/dark.css` activates the right theme.
+ * Blueprint's next-token dark selector activates the right theme.
  *
  * `defaultTheme="system"` (default) follows the OS `prefers-color-scheme`
  * setting and re-renders when it changes. `defaultTheme="light"` /
