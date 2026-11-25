@@ -64,6 +64,7 @@ export function getSchemaMigrationCandidates(
     if (objectReadableIdsByRid.get(objectType.rid) == null) {
       continue;
     }
+
     const propertiesSupportingBackfill = new Set(
       [
         ...block.datasources,
@@ -146,6 +147,7 @@ export function getMarkingType(type: Type): MarkingType | undefined {
   if (type.type === "array") {
     return getMarkingType(type.array.subtype);
   }
+
   return type.type === "marking" ? type.marking.markingType : undefined;
 }
 

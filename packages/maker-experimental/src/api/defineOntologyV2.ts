@@ -134,7 +134,9 @@ export async function defineOntologyV2(
     ridGenerator,
     functionsIr,
     randomnessKey,
-    // Edge stacks can lag far behind and may not support OntologySchemaMigrationInputs yet.
+    // Edge stacks can lag far behind and may not support OntologySchemaMigrationInputs yet,
+    // so we'll avoid packaging until the fleet upgrades or we have a use case to pipe the flag
+    // through SuperRepo
     packagingOptions.targetEnvironment !== "EDGE",
   );
 
