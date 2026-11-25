@@ -30,7 +30,7 @@ export interface WorkshopModuleProps<
    * @default "published" */
   moduleVersion?: "latest" | "published";
 
-  /** Controlled scalar or array values keyed by module-interface external ID. Pair with onVariablesChanged to retain Workshop edits.
+  /** Controlled variable values keyed by module-interface external ID. Pair with onVariablesChanged to retain Workshop edits.
    * Omitted variables are unchanged; null represents a cleared value.
    * @default undefined */
   variables?: WorkshopVariableValues<TVariables>;

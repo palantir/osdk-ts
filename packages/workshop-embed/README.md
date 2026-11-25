@@ -43,7 +43,7 @@ connection.setModuleSchema({
 });
 ```
 
-Workshop must derive this schema from the loaded module's exposed variable definitions. Publish it on each connection and again if the interface changes, before sending values for the new interface. Schemas support strings, numbers, and booleans, with `isList: true` for arrays. Validation checks each element against the declared type, including distinguishing an empty list from a scalar. Unsupported or excluded variables must not be advertised.
+Workshop must derive this schema from the loaded module's exposed variable definitions. Publish it on each connection and again if the interface changes, before sending values for the new interface. Schemas support strings, numbers, and booleans, with `isList: true` for arrays. Validation checks each element against the declared type, including distinguishing an empty list from a scalar. Object sets use `{ type: "objectSet", isList: false }`; object-set lists are not supported. Unsupported or excluded variables must not be advertised.
 
 `setModuleSchema` installs validation on Workshop's connection and sends a `moduleSchema` message to the parent. Only Workshop can publish schemas; schemas sent by the parent are ignored. Until a schema is available, sending variables throws and incoming updates are ignored. Invalid schema messages and messages for other sessions are ignored. Disconnecting clears the schema.
 
@@ -61,7 +61,7 @@ connection.setVariables({
 });
 ```
 
-Values may be strings, finite numbers, booleans, homogeneous arrays of those values, or `null` to request clearing a variable. Arrays replace the whole list: `[]` sets an empty list, while `null` clears the variable. Mixed types, nested arrays, sparse arrays, and null or undefined array elements are rejected. Each message is a partial update; omitted variables remain unchanged. Object-set values are not supported yet.
+Values may be strings, finite numbers, booleans, homogeneous arrays of those primitives, object-set references, or `null` to request clearing a variable. Arrays replace the whole list: `[]` sets an empty list, while `null` clears the variable. Mixed types, nested arrays, sparse arrays, and null or undefined array elements are rejected. Each message is a partial update; omitted variables remain unchanged. Object-set arrays are not supported.
 
 `WorkshopSingleVariableValue` represents one non-null value; `WorkshopVariableValue` also accepts homogeneous arrays and `null`. Declare a specific element type, such as `readonly string[]`, to constrain each variable to its expected type.
 
@@ -72,6 +72,22 @@ Array inputs and outputs require a Workshop integration that publishes list-vari
 This API provides the messaging layer and schema validation. Applying inputs requires a Workshop integration that publishes the authoritative schema and checks whether each variable can be set. A successful `setVariables` call does not acknowledge that Workshop received or applied the update.
 
 Both ends use `setVariables(values)` to send and `onVariablesSet((values) => ...)` to receive validated updates for the current session. Every update uses the same `setVariables` message type; the receiver decides how to apply it.
+
+## Object-set variables
+
+Use `WorkshopObjectSetValue` to declare an object-set variable. Send and receive the same `{ objectSetRid: string }` reference shape used by custom widgets:
+
+```ts
+connection.setVariables({
+  employees: {
+    objectSetRid: "ri.object-set.main.temporary-object-set.example",
+  },
+});
+```
+
+Use `null` to clear the variable. The transport validates the object-set RID format; it does not fetch the set, check access, or convert OSDK `ObjectSet` instances. The receiving application must have access to the referenced set. Object-set arrays are not supported.
+
+Object-set inputs and outputs require object-set support in the Workshop embed integration. Older peers reject messages containing object-set references.
 
 ## Receiving Workshop variable changes
 

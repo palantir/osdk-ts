@@ -225,7 +225,12 @@ describe("BaseWorkshopModule", () => {
       vi.mocked(connectToWorkshopModule).mockResolvedValueOnce(connection);
       const originalCallback = vi.fn();
       const currentCallback = vi.fn();
-      const variables = { count: 1, searchText: "Ada", names: ["Ada"] };
+      const variables = {
+        count: 1,
+        searchText: "Ada",
+        names: ["Ada"],
+        employees: { objectSetRid: "ri.object-set.main.object-set.initial" },
+      };
       const { rerender } = render(
         <BaseWorkshopModule
           {...props}
@@ -243,15 +248,22 @@ describe("BaseWorkshopModule", () => {
         />,
       );
       const receive = vi.mocked(connection.onVariablesSet).mock.calls[0][0];
-      act(() => receive({ count: 3, names: [] }));
-      expect(currentCallback).toHaveBeenCalledWith({ count: 3, names: [] });
+      const employees = {
+        objectSetRid: "ri.object-set.main.object-set.updated",
+      };
+      act(() => receive({ count: 3, names: [], employees }));
+      expect(currentCallback).toHaveBeenCalledWith({
+        count: 3,
+        names: [],
+        employees,
+      });
       expect(originalCallback).not.toHaveBeenCalled();
       expect(connection.setVariables).toHaveBeenCalledTimes(1);
 
       rerender(
         <BaseWorkshopModule
           {...props}
-          variables={{ ...variables, count: 3, names: [] }}
+          variables={{ ...variables, count: 3, names: [], employees }}
           onVariablesChanged={currentCallback}
         />,
       );
@@ -259,6 +271,7 @@ describe("BaseWorkshopModule", () => {
         count: 3,
         searchText: "Ada",
         names: [],
+        employees,
       });
       expect(connectToWorkshopModule).toHaveBeenCalledTimes(1);
     });
