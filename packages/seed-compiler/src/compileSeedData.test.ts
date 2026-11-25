@@ -20,12 +20,13 @@ import * as path from "node:path";
 
 import type * as Ontology from "@osdk/foundry.ontologies";
 import {
+  createFoundrySeed,
   createOntologySeedWithMetadata,
   type OntologySeedOutput,
 } from "@osdk/seed-helpers";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { compileSeedData } from "./compileSeedData.js";
+import { compileSeedData, mergeSeedData } from "./compileSeedData.js";
 
 type WireType = Ontology.ObjectPropertyType["type"];
 
@@ -79,6 +80,20 @@ const metadata = {
   valueTypes: {},
 } as Ontology.OntologyFullMetadata;
 
+const alice = {
+  id: "alice",
+  username: "alice",
+  realm: "test",
+  status: "ACTIVE" as const,
+  attributes: {},
+};
+const foundry = createFoundrySeed(metadata, ({ ontologySeed, adminSeed }) => {
+  const employee = ontologySeed.create(Employee, { employeeId: "emp-001" });
+  const office = ontologySeed.create(Office, { officeId: "NYC" });
+  ontologySeed.link(employee as never, "officeLink" as never, office as never);
+  return adminSeed.createUser(alice);
+});
+
 let dir: string;
 
 beforeEach(() => {
@@ -94,6 +109,10 @@ function writeSeedFile(name: string, source: string): string {
   const file = path.join(dir, name);
   fs.writeFileSync(file, source);
   return file;
+}
+
+function writeExport(name: string, value: unknown): string {
+  return writeSeedFile(name, `export default ${JSON.stringify(value)};`);
 }
 
 /**
@@ -353,6 +372,83 @@ describe("compileSeedData", () => {
       compileSeedData([file], path.join(dir, "seed.json"), metadata),
     ).rejects.toThrow(
       /Seed file '01-boom\.mts' failed to compile:\n {2}kaboom/u,
+    );
+  });
+
+  it.each([undefined, "ontology", "foundry"] as const)(
+    "writes the requested JSON shape for outputFormat %s",
+    async (format) => {
+      const file = writeExport("foundry.mts", foundry);
+      const outputPath = path.join(dir, "out", "seed.json");
+      await compileSeedData([file], outputPath, metadata, format);
+
+      const ontology = foundry.output.ontology;
+      const written = JSON.parse(fs.readFileSync(outputPath, "utf-8"));
+      expect(written).toStrictEqual(
+        format === "foundry"
+          ? { ontology, admin: { users: [alice] } }
+          : ontology,
+      );
+    },
+  );
+});
+
+describe("mergeSeedData", () => {
+  it("merges ontology and Foundry files and selects a previously loaded user", async () => {
+    const bob = { ...alice, id: "bob", username: "bob" };
+    const legacy = writeSeed("legacy.mts", (seed) =>
+      seed.create(Office, { officeId: "SF" }),
+    );
+    const wrapped = writeExport("foundry.mts", foundry);
+    const bare = writeExport("admin.mts", {
+      ontology: { objects: {}, links: [] },
+      admin: { users: [bob], currentUserId: alice.id },
+    });
+
+    await expect(
+      mergeSeedData([legacy, wrapped, bare], metadata),
+    ).resolves.toStrictEqual({
+      ontology: {
+        objects: {
+          Office: [{ officeId: "SF" }, { officeId: "NYC" }],
+          Employee: [{ employeeId: "emp-001" }],
+        },
+        links: foundry.output.ontology.links,
+      },
+      admin: { users: [alice, bob], currentUserId: alice.id },
+    });
+    await expect(mergeSeedData([bare, wrapped], metadata)).rejects.toThrow(
+      /Seed file 'admin\.mts': .*User with ID alice does not exist/u,
+    );
+  });
+
+  it("returns an empty admin section for legacy-only input", async () => {
+    const objects = { Office: [{ officeId: "NYC" }] };
+    const file = writeExport("legacy.mts", { objects });
+    await expect(mergeSeedData([file], metadata)).resolves.toStrictEqual({
+      ontology: { objects, links: [] },
+      admin: { users: [], currentUserId: undefined },
+    });
+  });
+
+  it("names the file that introduces a duplicate user", async () => {
+    const first = writeExport("first.mts", foundry);
+    const duplicate = writeExport("duplicate.mts", {
+      ontology: { objects: {} },
+      admin: { users: [alice] },
+    });
+    await expect(mergeSeedData([first, duplicate], metadata)).rejects.toThrow(
+      /Seed file 'duplicate\.mts': .*User with ID alice already exists/u,
+    );
+  });
+
+  it("names the file with a malformed admin section", async () => {
+    const file = writeExport("invalid.mts", {
+      ontology: { objects: {} },
+      admin: { users: "bad" },
+    });
+    await expect(mergeSeedData([file], metadata)).rejects.toThrow(
+      /invalid\.mts.*'users' array/u,
     );
   });
 });

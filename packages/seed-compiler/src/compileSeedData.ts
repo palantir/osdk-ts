@@ -19,6 +19,8 @@ import * as path from "node:path";
 
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import {
+  AdminSeedBuilder,
+  type FoundrySeedOutput,
   OntologySeedBuilder,
   type OntologySeedOutput,
 } from "@osdk/seed-helpers";
@@ -26,46 +28,74 @@ import { consola } from "consola";
 import { createJiti } from "jiti";
 
 /**
- * Merges one or more seed data files into a single JSON output.
- *
- * Pipeline: load each file -> feed into one {@link OntologySeedBuilder} -> write JSON.
+ * Merges ontology and Foundry seed files into a single JSON output.
  *
  * @param seedFiles - Absolute paths to seed `.mts` / `.ts` files.
  * @param outputPath - Where to write the merged seed JSON.
  * @param metadata - Ontology metadata, typically parsed from the
  *                   `ontology-metadata.json` written by the SDK generator.
+ * @param outputFormat - JSON file format. Defaults to `"ontology"` (objects and
+ *                       links). Use `"foundry"` to all Foundry seed data.
  * @throws if any seed file fails to compile or has an invalid default export,
- *         or if the builder rejects any object or link it is given.
+ *         or if a builder rejects an object, link, or admin user.
  */
 export async function compileSeedData(
   seedFiles: string[],
   outputPath: string,
   metadata: OntologyFullMetadata,
+  outputFormat: "ontology" | "foundry" = "ontology",
 ): Promise<void> {
   consola.info(`Compiling seed data from ${seedFiles.length} file(s)...`);
-  const builder = new OntologySeedBuilder(metadata);
-  for (const seedFile of seedFiles) {
-    const output = await loadSeedFile(seedFile);
-    try {
-      builder.addAll(output);
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      throw new Error(`Seed file '${path.basename(seedFile)}': ${message}`);
-    }
-  }
-  const merged = builder.build();
-  const totalObjects = Object.values(merged.objects).reduce(
+
+  const merged = await mergeSeedData(seedFiles, metadata);
+
+  const output = outputFormat === "foundry" ? merged : merged.ontology;
+
+  const totalObjects = Object.values(merged.ontology.objects).reduce(
     (sum, arr) => sum + arr.length,
     0,
   );
 
   const outputDir = path.dirname(outputPath);
   await fs.promises.mkdir(outputDir, { recursive: true });
-  await fs.promises.writeFile(outputPath, JSON.stringify(merged, null, 2));
+  await fs.promises.writeFile(outputPath, JSON.stringify(output, null, 2));
 
   consola.success(
-    `Seed data compiled successfully (${totalObjects} objects, ${merged.links.length} links)`,
+    `Seed data compiled successfully (${totalObjects} objects, ${merged.ontology.links.length} links, ${"admin" in output ? output.admin.users.length : 0} users)`,
   );
+}
+
+/**
+ * Merges ontology and Foundry seed files
+ *
+ * @param seedFiles - Absolute paths to seed `.mts` / `.ts` files.
+ * @param metadata - Ontology metadata, typically parsed from the
+ *                   `ontology-metadata.json` written by the SDK generator.
+ * @returns The merged Foundry seed output
+ * @throws if any seed file fails to compile or has an invalid default export,
+ *         or if a builder rejects an object, link, or admin user.
+ */
+export async function mergeSeedData(
+  seedFiles: string[],
+  metadata: OntologyFullMetadata,
+): Promise<FoundrySeedOutput> {
+  const builder = new OntologySeedBuilder(metadata);
+  const admin = new AdminSeedBuilder();
+
+  for (const seedFile of seedFiles) {
+    const output = await loadSeedFile(seedFile);
+    try {
+      builder.addAll(output.ontology);
+      admin.addAll(output.admin);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      throw new Error(`Seed file '${path.basename(seedFile)}': ${message}`);
+    }
+  }
+
+  const merged = { ontology: builder.build(), admin: admin.build() };
+
+  return merged;
 }
 
 type LoadedSeedOutput = Pick<OntologySeedOutput, "objects"> &
@@ -77,20 +107,17 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const isSeedOutput = (value: unknown): value is LoadedSeedOutput =>
   isRecord(value) && isRecord(value.objects);
 
-const isSeedResult = (value: unknown): value is { output: LoadedSeedOutput } =>
-  isRecord(value) && isSeedOutput(value.output);
+function getSeedSections(value: unknown) {
+  if (isSeedOutput(value)) {
+    return { ontology: value, admin: { users: [], currentUserId: undefined } };
+  }
+  if (isRecord(value) && ("ontology" in value || "admin" in value)) {
+    return value;
+  }
+}
 
-/**
- * Loads a single seed file via jiti and extracts the {@link OntologySeedOutput} from
- * its default export.
- *
- * Both shapes a seed author naturally reaches for are accepted: the
- * `createSeed(...)` result (`{ output, context }`) and its `.output` (a bare
- * `OntologySeedOutput`).
- *
- * @throws with a contextual message wrapping the original error and filename.
- */
-async function loadSeedFile(seedFile: string): Promise<OntologySeedOutput> {
+/** Loads the default-exported seed helper result or its bare output. */
+async function loadSeedFile(seedFile: string): Promise<FoundrySeedOutput> {
   consola.info(`Loading seed file: ${seedFile}`);
   const name = path.basename(seedFile);
   let seedModule: Record<string, unknown>;
@@ -107,29 +134,27 @@ async function loadSeedFile(seedFile: string): Promise<OntologySeedOutput> {
   }
 
   if (!isRecord(seedModule) || !Object.hasOwn(seedModule, "default")) {
-    throw new Error(
-      `Seed file '${name}' must have a default export. Export the result of ` +
-        `createSeed(), which wraps createOntologySeedWithMetadata() from ` +
-        `@osdk/seed-helpers.`,
-    );
+    throw new Error(`Seed file '${name}' must have a default export.`);
   }
 
   const defaultExport = seedModule.default;
-  const output = isSeedResult(defaultExport)
-    ? defaultExport.output
-    : isSeedOutput(defaultExport)
-      ? defaultExport
-      : undefined;
-
-  if (!output) {
+  const seed = isRecord(defaultExport)
+    ? (getSeedSections(defaultExport.output) ?? getSeedSections(defaultExport))
+    : undefined;
+  if (!seed) {
     throw new Error(
-      `Seed file '${name}' default export is not a createSeed() result.\n` +
-        `Export either createSeed(...) — an object with an 'output' property\n ` +
-        `or createSeed(...).output — an object with an 'objects' property`,
+      `Seed file '${name}' default export is not a createSeed() result or a supported seed output.\n` +
+        `Export the seed helper's { output, context } result or its .output.`,
     );
   }
 
-  for (const [apiName, objects] of Object.entries(output.objects)) {
+  const { ontology, admin } = seed;
+  if (!isSeedOutput(ontology)) {
+    throw new TypeError(
+      `Seed file '${name}' must have an 'ontology' section with an 'objects' property`,
+    );
+  }
+  for (const [apiName, objects] of Object.entries(ontology.objects)) {
     if (!Array.isArray(objects)) {
       throw new TypeError(
         `Seed file '${name}' has a non-array entry for object type ` +
@@ -138,11 +163,25 @@ async function loadSeedFile(seedFile: string): Promise<OntologySeedOutput> {
     }
   }
 
-  if (output.links !== undefined && !Array.isArray(output.links)) {
+  if (ontology.links !== undefined && !Array.isArray(ontology.links)) {
     throw new TypeError(
       `Seed file '${name}' has a non-array 'links': expected an array of link entries`,
     );
   }
 
-  return { objects: output.objects, links: output.links ?? [] };
+  if (!isRecord(admin) || !Array.isArray(admin.users)) {
+    throw new TypeError(
+      `Seed file '${name}' must have an 'admin' section with a 'users' array`,
+    );
+  }
+  if (
+    admin.currentUserId !== undefined &&
+    typeof admin.currentUserId !== "string"
+  ) {
+    throw new TypeError(`Seed file '${name}' has a non-string 'currentUserId'`);
+  }
+  return {
+    ontology: { objects: ontology.objects, links: ontology.links ?? [] },
+    admin: { users: admin.users, currentUserId: admin.currentUserId },
+  };
 }

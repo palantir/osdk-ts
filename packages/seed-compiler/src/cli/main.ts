@@ -32,6 +32,7 @@ export default async function main(
     metadata: string;
     seedDir: string;
     output: string;
+    format: "ontology" | "foundry";
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(120, yargs().terminalWidth()))
@@ -61,6 +62,13 @@ export default async function main(
         demandOption: true,
         coerce: path.resolve,
       },
+      format: {
+        describe: "Seed output format. Use foundry to include admin users.",
+        type: "string" as const,
+        choices: ["ontology", "foundry"] as const,
+        default: "ontology" as const,
+        requiresArg: true,
+      },
     })
     .parseAsync();
 
@@ -89,5 +97,5 @@ export default async function main(
     return;
   }
 
-  await compileSeedData(seedFiles, opts.output, metadata);
+  await compileSeedData(seedFiles, opts.output, metadata, opts.format);
 }
