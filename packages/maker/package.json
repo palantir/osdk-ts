@@ -30,7 +30,9 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "fetch-declarative-ir": "bash ../../scripts/getDeclarativeIr.sh",
     "fix-lint": "oxlint -c ./oxlint.config.ts --fix . && oxfmt -c ../../oxfmt.config.ts .",
+    "generate-zod": "jiti src/generateZod/cli.ts ../../tmp/api-gateway-ir/omniapi-declarative-ir.json && oxfmt -c ../../oxfmt.config.ts src/generated",
     "lint": "oxlint -c ./oxlint.config.ts . && oxfmt -c ../../oxfmt.config.ts --check .",
     "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
@@ -55,6 +57,7 @@
   },
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
+    "@osdk/docs-spec-platform": "^0.4.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/mustache": "^4.2.6",
