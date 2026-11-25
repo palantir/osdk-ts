@@ -53,6 +53,7 @@ interface AssignManagerAction extends ActionDefinition<unknown> {
 const objectTypeOnly: ObjectSelectFieldProps<typeof EMPLOYEE_TYPE> = {
   objectType: EMPLOYEE_TYPE,
   value: null,
+  itemToStringLabel: (employee) => String(employee.$primaryKey),
 };
 objectTypeOnly satisfies ObjectSelectFieldProps<typeof EMPLOYEE_TYPE>;
 
@@ -80,7 +81,10 @@ const formFieldObjectTypeOnly: FormFieldDefinition<AssignManagerAction> = {
   fieldKey: "manager",
   fieldComponent: "OBJECT_SELECT",
   label: "Manager",
-  fieldComponentProps: { objectType: EMPLOYEE_TYPE },
+  fieldComponentProps: {
+    objectType: EMPLOYEE_TYPE,
+    itemToStringLabel: (employee) => String(employee.$primaryKey),
+  },
 };
 formFieldObjectTypeOnly satisfies FormFieldDefinition<AssignManagerAction>;
 
