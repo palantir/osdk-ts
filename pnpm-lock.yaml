@@ -4779,8 +4779,8 @@ importers:
         specifier: workspace:~
         version: link:../generator-converters.ontologyir
       '@osdk/typescript-sdk-docs':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: workspace:~
+        version: link:../typescript-sdk-docs
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -8761,7 +8761,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.22.26':
     resolution: {integrity: sha512-I689wc8Fn/AX7aUGiwrh3HnssiORMJtR2fpksX+JIe8Cj/EDleblYMSwRPd0025wrwOV9UN1KM/RuEt/QjCS3Q==}
@@ -9716,14 +9716,8 @@ packages:
   '@osdk/client@2.7.5':
     resolution: {integrity: sha512-E60AdqmpdsYc2w9rfFdxMfjdJURUyS18l6z8xqtsyxU0L+BRsQRExfjWPgEbCkarga8Wr3w0kD3fky7UGFQfRg==}
 
-  '@osdk/docs-spec-core@0.5.0':
-    resolution: {integrity: sha512-sHkNoGV5MdcZWfjIslZWWqmJlgSJfWJbnM4vC1RcGyyzKDpZXRMJ4AjSpKr9VqtuTlNHGmD2Y3bQUO/wpSQBbw==}
-
   '@osdk/docs-spec-core@0.7.0':
     resolution: {integrity: sha512-4PhFvnflrdOSum5+XO/EsRO95moUU7dsQ6Jjv+5fOT24yHtvk+8AZUfRWObbe2zChKRzZwfZLvWVuV5UXAvaIw==}
-
-  '@osdk/docs-spec-sdk@0.1.0':
-    resolution: {integrity: sha512-xGW/bBjlQvyg4YdRaEC+GdaKoh6qoWmyp7uLEfH2h4XCWDKpDGaQD5dLgkGjNqao1jk2mTZb6YrTjkz0CB+9JA==}
 
   '@osdk/docs-spec-sdk@0.23.0':
     resolution: {integrity: sha512-Bw2RidqN0Lu/759qiB5ajdShZ4eLXVQEvny5ANDM6wPOw3kLmqjCj+ObDyjR9kIrxpBo66hx68yFHjXx3Co5sw==}
@@ -10039,9 +10033,6 @@ packages:
 
   '@osdk/shared.net@1.12.3':
     resolution: {integrity: sha512-LjUKKNMzfzqM6m9WdxpW+51GhEcMPYZ/KBlwuCf2P8leJ9R4vbZgGiSoKubc0r90icwbgoEp22D72CE1dwEeJg==}
-
-  '@osdk/typescript-sdk-docs@0.2.0':
-    resolution: {integrity: sha512-6x1s2d9ifTljWouSe/gDxVZEl6ihuULmd1UAWdyLoVIQ8T0TBrV3DygR0CRme4M0C/xsuRSfrO7GFrxPCJSdXw==}
 
   '@oxc-project/types@0.124.0':
     resolution: {integrity: sha512-VBFWMTBvHxS11Z5Lvlr3IWgrwhMTXV+Md+EQF0Xf60+wAdsGFTBx7X7K/hP4pi8N7dcm1RvcHwDxZ16Qx8keUg==}
@@ -26492,13 +26483,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@osdk/docs-spec-core@0.5.0': {}
-
   '@osdk/docs-spec-core@0.7.0': {}
-
-  '@osdk/docs-spec-sdk@0.1.0':
-    dependencies:
-      '@osdk/docs-spec-core': 0.5.0
 
   '@osdk/docs-spec-sdk@0.23.0':
     dependencies:
@@ -27329,12 +27314,6 @@ snapshots:
       '@osdk/shared.client.impl': 0.1.1
       '@osdk/shared.net.errors': 1.1.1
       '@osdk/shared.net.fetch': 0.1.1
-
-  '@osdk/typescript-sdk-docs@0.2.0':
-    dependencies:
-      '@osdk/docs-spec-core': 0.5.0
-      '@osdk/docs-spec-sdk': 0.1.0
-      outdent: 0.8.0
 
   '@oxc-project/types@0.124.0': {}
 

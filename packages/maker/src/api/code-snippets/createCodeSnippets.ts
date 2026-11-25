@@ -21,10 +21,12 @@ import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import { consola } from "consola";
 import Mustache from "mustache";
 
+import { API_NAME_PATTERN } from "../../util/ApiNameValidator.js";
 import type { ActionType } from "../action/ActionType.js";
 import type { OntologyDefinition } from "../common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { withoutNamespace } from "../defineOntology.js";
+import { getFlattenedInterfaceProperties } from "../interface/getFlattenedInterfaceProperties.js";
 import type { InterfaceType } from "../interface/InterfaceType.js";
 import type { ObjectType } from "../object/ObjectType.js";
 import {
@@ -84,10 +86,28 @@ function generateInterfaceSnippet(
     packageName: packageName,
     objectOrInterfaceApiName: identifier,
     propertyNames: Object.keys(interfaceType.propertiesV3),
+    property: interfacePropertyKey(interfaceType),
     interfaceName: interfaceType.displayMetadata.displayName,
   };
 
   return getSnippets(interfaceSnippets, interfaceContext);
+}
+
+// Examples write the property key bare and HTML escape it, so a namespaced key
+// can't be quoted. The SDK drops the interface's own namespace from property
+// keys but keeps any other namespace, so this picks a plain identifier.
+function interfacePropertyKey(interfaceType: InterfaceType): string {
+  const namespacePrefix = interfaceType.apiName.slice(
+    0,
+    interfaceType.apiName.lastIndexOf(".") + 1,
+  );
+  const keys = Object.keys(getFlattenedInterfaceProperties(interfaceType)).map(
+    (apiName) =>
+      apiName.startsWith(namespacePrefix)
+        ? apiName.slice(namespacePrefix.length)
+        : apiName,
+  );
+  return keys.find((key) => API_NAME_PATTERN.test(key)) ?? "propertyName";
 }
 
 function generateObjectSnippet(objectType: ObjectType, packageName: string) {
@@ -96,14 +116,41 @@ function generateObjectSnippet(objectType: ObjectType, packageName: string) {
     objectType: identifier,
     packageName: packageName,
     objectOrInterfaceApiName: identifier,
+    // Objects also render the interface ordering example, which reads the type
+    // name from the interface key.
+    interfaceApiName: identifier,
+    property: objectType.titlePropertyApiName,
+    titleProperty: objectType.titlePropertyApiName,
+    primaryKeyPropertyValueV2: primaryKeySampleValue(objectType),
   };
   return getSnippets(objectSnippets, objectContext);
+}
+
+// The SDK types long primary keys as strings, so only these take a number.
+const NUMERIC_PRIMARY_KEY_TYPES = new Set([
+  "byte",
+  "double",
+  "float",
+  "integer",
+  "short",
+]);
+
+function primaryKeySampleValue(objectType: ObjectType): string {
+  const type = objectType.properties?.find(
+    (property) => property.apiName === objectType.primaryKeyPropertyApiName,
+  )?.type;
+  return typeof type === "string" && NUMERIC_PRIMARY_KEY_TYPES.has(type)
+    ? "0"
+    : `"primaryKeyValue"`;
 }
 
 function generateActionSnippet(actionType: ActionType, packageName: string) {
   const actionContext = {
     actionApiName: actionIdentifier(actionType.apiName),
     packageName: packageName,
+    // Maker has no sample values to fill in, and an empty parameter object
+    // doesn't compile when the action has required parameters.
+    hasTypedParameters: (actionType.parameters?.length ?? 0) > 0,
   };
   return getSnippets(actionSnippets, actionContext);
 }
@@ -124,7 +171,7 @@ function getSnippets(
     | typeof objectSnippets,
   context: {},
 ) {
-  const allSnippets = {};
+  const allSnippets: Record<string, string> = {};
   for (const templateName of Object.keys(snippetType).filter((key) =>
     isNaN(Number(key)),
   )) {
@@ -138,7 +185,7 @@ function getSnippets(
     const renderedTemplate = Mustache.render(latestTemplate, context);
     const snippetName = snippetNameMapping.get(templateName);
 
-    (allSnippets as any)[
+    allSnippets[
       snippetName !== undefined
         ? Mustache.render(snippetName, context)
         : templateName
