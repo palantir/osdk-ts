@@ -85,6 +85,7 @@ const baseContext: BaseTemplateContext = {
   hasAttachmentUpload: false,
   hasAttachmentProperty: false,
   hasParameters: false,
+  hasTypedParameters: false,
   actionParameterSampleValuesV2: [
     { key: "primaryKey", value: `"some-pk-of-the-object"` },
   ],
@@ -543,6 +544,21 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
 
   // === COMPLEX NESTED HIERARCHIES ===
   "applyAction": {
+    "#hasTypedParameters": {
+      context: {
+        hasTypedParameters: true,
+        actionApiName: "documentEquipment",
+      },
+    },
+    "^hasTypedParameters": {
+      context: {
+        hasTypedParameters: false,
+        actionApiName: "documentEquipment",
+        actionParameterSampleValuesV2: [
+          { key: "equipmentId", value: `"mac-1234"` },
+        ],
+      },
+    },
     "#actionParameterSampleValuesV2": {
       context: {
         objectType: "Equipment",
