@@ -33,6 +33,7 @@ NITF
 objectset
 OPTBSV
 OPTENF
+packageable
 pttml
 Rdps
 restrictedview

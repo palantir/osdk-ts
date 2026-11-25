@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/maker";
+import type { InterfaceType } from "./InterfaceType.js";
 
 export function collectInterfaceDefinitions(
   interfaces: InterfaceType[],

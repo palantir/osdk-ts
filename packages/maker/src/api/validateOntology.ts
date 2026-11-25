@@ -15,7 +15,9 @@
  */
 
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
+import { validateInterfaceEditsValidations } from "./interface/validateInterfaceEditsValidations.js";
 import { validateInterfaceSchemaMigrationReferences } from "./interface/validateInterfaceSchemaMigrationReferences.js";
+import { validateActionTypeImplementationReferences } from "./object/validateActionTypeImplementationReferences.js";
 
 export interface OntologyContext {
   /** Every entity defined in this ontology. */
@@ -32,4 +34,6 @@ export interface OntologyContext {
  */
 export function validateOntology(context: OntologyContext): void {
   validateInterfaceSchemaMigrationReferences(context);
+  validateInterfaceEditsValidations(context);
+  validateActionTypeImplementationReferences(context);
 }
