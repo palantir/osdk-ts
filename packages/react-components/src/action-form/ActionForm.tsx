@@ -95,17 +95,6 @@ function getParameterErrorMessage(
   return "The parameter value is invalid";
 }
 
-function toSubmittedFormState(
-  formState: Record<string, unknown>,
-): Record<string, unknown> {
-  return Object.fromEntries(
-    Object.entries(formState).map(([key, value]) => [
-      key,
-      toSubmittedValue(value),
-    ]),
-  );
-}
-
 function toRendererDef<Q extends ActionDefinition<unknown>>(
   def: FormFieldDefinition<Q>,
   parameters: ActionMetadata["parameters"] | undefined,
@@ -221,6 +210,17 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   const formContent =
     customFieldDefinitions ?? rendererFieldDefinitions ?? EMPTY_FORM_CONTENT;
 
+  const toSubmittedFormState = useCallback(
+    (formState: Record<string, unknown>): Record<string, unknown> =>
+      Object.fromEntries(
+        Object.entries(formState).map(([key, value]) => [
+          key,
+          toSubmittedValue(value, parameters?.[key]?.type),
+        ]),
+      ),
+    [parameters],
+  );
+
   const formStateRef = useRef<Record<string, unknown>>(
     controlledFormState != null
       ? (controlledFormState as Record<string, unknown>)
@@ -275,6 +275,7 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
       }
     },
     [
+      toSubmittedFormState,
       osdkValidateAction,
       onValidationResponse,
       onSubmit,

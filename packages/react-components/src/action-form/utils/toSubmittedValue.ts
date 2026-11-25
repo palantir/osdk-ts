@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import type { ActionMetadata } from "@osdk/api";
+import { formatISO } from "date-fns";
+
 /**
  * Turns a stored parameter value into the value ActionForm submits.
  *
- * The date picker stores a `Date`, but the backend accepts dates as ISO
- * strings. Storing strings instead would be a breaking change for BaseForm
+ * The date picker stores a `Date`, but the backend accepts date-only values
+ * as local YYYY-MM-DD strings and timestamps as ISO strings. Storing strings
+ * instead would be a breaking change for BaseForm
  * and controlled `formState` consumers, so the conversion happens here, at
  * submit. Every other value, including user-provided strings, is submitted
  * unchanged; invalid values are left for validation to flag.
@@ -26,17 +30,25 @@
  * TODO: Store submit-ready values (e.g. ISO date strings) so this conversion
  * can be dropped, as a breaking change before v1.x.
  */
-export function toSubmittedValue(value: unknown): unknown {
+export function toSubmittedValue(
+  value: unknown,
+  fieldType?: ActionMetadata.Parameter["type"],
+): unknown {
   if (value == null) {
     return undefined;
   }
   if (value instanceof Date) {
+    if (fieldType === "datetime") {
+      return formatISO(value, { representation: "date" });
+    }
     return value.toISOString();
   }
   if (Array.isArray(value)) {
     // TODO: Revisit omitting the whole parameter when any item is nullish.
     // This preserves the previous behavior.
-    const submittedValues = value.map(toSubmittedValue);
+    const submittedValues = value.map((member) =>
+      toSubmittedValue(member, fieldType),
+    );
     return submittedValues.some((member) => member === undefined)
       ? undefined
       : submittedValues;

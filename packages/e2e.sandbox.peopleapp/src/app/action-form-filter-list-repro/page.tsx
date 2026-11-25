@@ -1,12 +1,5 @@
 import type { ObjectSet } from "@osdk/api";
 import type {
-  ActionDefinition,
-  ActionParam,
-  ActionReturnTypeForOptions,
-  ApplyActionOptions,
-  ApplyBatchActionOptions,
-} from "@osdk/client";
-import type {
   FormError,
   FormFieldDefinition,
 } from "@osdk/react-components/action-form";
@@ -26,36 +19,6 @@ import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
 import { useFilterStatesContext } from "../filterStatesContext.js";
 
 import "./page.css";
-
-interface ModifyEmployeeDepartmentAction extends ActionDefinition<ModifyEmployeeDepartmentSignatures> {
-  apiName: "modifyEmployee";
-  type: "action";
-  unsanitizedApiName: "modify-employee";
-  osdkMetadata: typeof modifyEmployee.osdkMetadata;
-}
-
-interface ModifyEmployeeDepartmentParams {
-  readonly employee: ActionParam.ObjectType<Employee>;
-  readonly department: ActionParam.PrimitiveType<"string">;
-}
-
-interface ModifyEmployeeDepartmentSignatures {
-  applyAction<OP extends ApplyActionOptions>(
-    args: ModifyEmployeeDepartmentParams,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
-
-  batchApplyAction<OP extends ApplyBatchActionOptions>(
-    args: ReadonlyArray<ModifyEmployeeDepartmentParams>,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
-}
-
-// Local repro only: the generated sandbox SDK still models modifyEmployee with
-// primary_office_id. This wrapper lets the ActionForm exercise the department
-// parameter shape while the real sandbox action metadata catches up.
-const modifyEmployeeDepartment =
-  modifyEmployee as unknown as ModifyEmployeeDepartmentAction;
 
 const EMPLOYEE_FILTERS: Array<FilterDefinitionUnion<Employee>> = [
   {
@@ -200,7 +163,43 @@ const MODIFY_EMPLOYEE_FIELDS = [
     helperTextPlacement: "bottom",
     fieldComponentProps: {},
   },
-] satisfies ReadonlyArray<FormFieldDefinition<typeof modifyEmployeeDepartment>>;
+  {
+    fieldKey: "firstFullTimeStartDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "First full-time start date",
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "firstInternStartDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "First intern start date",
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "leadEmployeeNumber",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Lead employee number",
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "mentorEmployeeNumber",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Mentor employee number",
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "stockOptions",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Stock options",
+    fieldComponentProps: {},
+  },
+  {
+    fieldKey: "workerType",
+    fieldComponent: "TEXT_INPUT",
+    label: "Worker type",
+    fieldComponentProps: {},
+  },
+] satisfies ReadonlyArray<FormFieldDefinition<typeof modifyEmployee>>;
 
 interface StatusMessage {
   kind: "success" | "error";
@@ -339,7 +338,7 @@ export const EmployeeActionFormFilterListReproPage = React.memo(
               </div>
 
               <ActionForm
-                actionDefinition={modifyEmployeeDepartment}
+                actionDefinition={modifyEmployee}
                 formFieldDefinitions={MODIFY_EMPLOYEE_FIELDS}
                 onSuccess={handleActionSuccess}
                 onError={handleActionError}

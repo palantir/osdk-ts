@@ -30,6 +30,58 @@ describe("toSubmittedValue", () => {
     );
   });
 
+  it.each([
+    [0, "2026-01-15"],
+    [5, "2026-06-15"],
+    [10, "2026-11-15"],
+  ] as const)(
+    "preserves the local calendar date for a date-only parameter in month %s",
+    (month, expected) => {
+      const date = new Date(2026, month, 15);
+      expect(toSubmittedValue(date, "datetime")).toBe(expected);
+      expect(date.getHours()).toBe(0);
+    },
+  );
+
+  it("preserves the instant for a timestamp parameter", () => {
+    const date = new Date("2026-11-15T14:30:00+09:00");
+    expect(toSubmittedValue(date, "timestamp")).toBe(
+      "2026-11-15T05:30:00.000Z",
+    );
+  });
+
+  it.each([undefined, "datetime", "timestamp"] as const)(
+    "keeps rejecting invalid Dates for parameter type %s",
+    (type) => {
+      expect(() => toSubmittedValue(new Date("invalid"), type)).toThrow(
+        RangeError,
+      );
+    },
+  );
+
+  it("passes strings and invalid values through for date parameters", () => {
+    for (const type of ["datetime", "timestamp"] as const) {
+      expect(toSubmittedValue("2026-11-15", type)).toBe("2026-11-15");
+      expect(toSubmittedValue("not-a-date", type)).toBe("not-a-date");
+      expect(toSubmittedValue(42, type)).toBe(42);
+    }
+  });
+
+  it("uses the parameter type for each Date in arrays", () => {
+    const dates = [new Date(2026, 0, 15), new Date(2026, 5, 15)];
+    expect(toSubmittedValue(dates, "datetime")).toEqual([
+      "2026-01-15",
+      "2026-06-15",
+    ]);
+    expect(toSubmittedValue(dates, "timestamp")).toEqual(
+      dates.map((date) => date.toISOString()),
+    );
+    expect(toSubmittedValue([dates], "datetime")).toEqual([
+      ["2026-01-15", "2026-06-15"],
+    ]);
+    expect(toSubmittedValue([dates[0], null], "datetime")).toBeUndefined();
+  });
+
   it("converts each Date in an array", () => {
     expect(
       toSubmittedValue([
