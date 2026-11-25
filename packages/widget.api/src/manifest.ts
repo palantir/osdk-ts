@@ -83,7 +83,7 @@ export interface WidgetManifestConfigV1 {
   }>;
 
   /**
-   * Any CSS files to be loaded, in order.
+   * Any CSS files to be loaded, in order. Entrypoint CSS count can be at most 10.
    * @optional
    */
   entrypointCss?: Array<{

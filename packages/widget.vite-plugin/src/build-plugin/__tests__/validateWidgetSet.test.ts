@@ -43,9 +43,38 @@ describe("validateWidgetSet", () => {
       );
     });
   });
+
+  describe("validateEntrypointCssCount", () => {
+    it("should not throw when entrypoint CSS count is at or below limit", () => {
+      const widgetBuilds: WidgetBuildOutputs[] = [
+        createWidgetBuild(
+          "widget1",
+          Array.from({ length: 10 }, (_, i) => `style${i}.css`),
+        ),
+      ];
+
+      expect(() => validateWidgetSet(widgetBuilds)).not.toThrow();
+    });
+
+    it("should throw when entrypoint CSS count exceeds limit", () => {
+      const widgetBuilds: WidgetBuildOutputs[] = [
+        createWidgetBuild(
+          "widget1",
+          Array.from({ length: 11 }, (_, i) => `style${i}.css`),
+        ),
+      ];
+
+      expect(() => validateWidgetSet(widgetBuilds)).toThrow(
+        "Entrypoint CSS count can be at most 10. Widget 'widget1' has 11 CSS files. Consider setting 'build.cssCodeSplit: false' in your Vite config to combine CSS into a single stylesheet.",
+      );
+    });
+  });
 });
 
-function createWidgetBuild(id: string): WidgetBuildOutputs {
+function createWidgetBuild(
+  id: string,
+  stylesheets: string[] = [],
+): WidgetBuildOutputs {
   return {
     widgetConfig: {
       id,
@@ -55,6 +84,6 @@ function createWidgetBuild(id: string): WidgetBuildOutputs {
       events: {},
     },
     scripts: [],
-    stylesheets: [],
+    stylesheets,
   };
 }
