@@ -114,7 +114,8 @@
   }
 }
 
-.osdkHeaderMenuItem .osdkHeaderActiveMenuItem {
+/* Compound, not descendant: both classes land on the same menu item element. */
+.osdkHeaderMenuItem.osdkHeaderActiveMenuItem {
   background-color: var(--osdk-intent-primary-rest);
   color: var(--osdk-intent-primary-foreground);
 
