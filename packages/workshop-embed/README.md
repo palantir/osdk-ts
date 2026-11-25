@@ -43,11 +43,11 @@ connection.setModuleSchema({
 });
 ```
 
-Workshop must derive this schema from the loaded module's exposed variable definitions. Publish it on each connection and again if the interface changes, before sending values for the new interface. Schemas currently support scalar strings, numbers, and booleans. Unsupported or excluded variables must not be advertised.
+Workshop must derive this schema from the loaded module's exposed variable definitions. Publish it on each connection and again if the interface changes, before sending values for the new interface. Schemas support strings, numbers, and booleans, with `isList: true` for arrays. Validation checks each element against the declared type, including distinguishing an empty list from a scalar. Unsupported or excluded variables must not be advertised.
 
 `setModuleSchema` installs validation on Workshop's connection and sends a `moduleSchema` message to the parent. Only Workshop can publish schemas; schemas sent by the parent are ignored. Until a schema is available, sending variables throws and incoming updates are ignored. Invalid schema messages and messages for other sessions are ignored. Disconnecting clears the schema.
 
-## Sending scalar variable inputs
+## Sending variable inputs
 
 The connection can send inputs keyed by a module variable's external ID:
 
@@ -56,13 +56,18 @@ connection.setVariables({
   searchText: "Ada",
   maxResults: 25,
   includeArchived: false,
+  selectedNames: ["Ada", "Grace"],
   selectedName: null,
 });
 ```
 
-Values may be strings, finite numbers, booleans, or `null` to request clearing a variable. Each message is a partial update; omitted variables remain unchanged. Arrays and object-set values are not supported yet.
+Values may be strings, finite numbers, booleans, homogeneous arrays of those values, or `null` to request clearing a variable. Arrays replace the whole list: `[]` sets an empty list, while `null` clears the variable. Mixed types, nested arrays, sparse arrays, and null or undefined array elements are rejected. Each message is a partial update; omitted variables remain unchanged. Object-set values are not supported yet.
+
+`WorkshopSingleVariableValue` represents one non-null value; `WorkshopVariableValue` also accepts homogeneous arrays and `null`. Declare a specific element type, such as `readonly string[]`, to constrain each variable to its expected type.
 
 External IDs must be non-empty and unique ignoring case within each update. `_open_rebase_dialog` and `_kiosk_mode_session_id` are reserved, including capitalization variants. Original key capitalization is preserved. Invalid updates throw a `TypeError` before sending; malformed incoming updates are ignored.
+
+Array inputs and outputs require a Workshop integration that publishes list-variable schemas.
 
 This API provides the messaging layer and schema validation. Applying inputs requires a Workshop integration that publishes the authoritative schema and checks whether each variable can be set. A successful `setVariables` call does not acknowledge that Workshop received or applied the update.
 
@@ -96,6 +101,7 @@ type ModuleVariables = {
   searchText: string;
   maxResults: number;
   includeArchived: boolean;
+  selectedNames: readonly string[];
 };
 
 const connection = await connectToWorkshopModule<ModuleVariables>({
@@ -111,7 +117,7 @@ connection.setVariables({ searchText: null }); // Request clearing a value.
 // connection.setVariables({ unknownVariable: true });
 ```
 
-The type determines the values sent by `setVariables` and received by `onVariablesSet` in either direction. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, TypeScript allows any valid external ID with a supported scalar value; runtime validation still checks the actual module schema.
+The type determines the values sent by `setVariables` and received by `onVariablesSet` in either direction. Updates are partial, so a received field may be omitted (`undefined`) or cleared (`null`). Use `WorkshopVariableValues<ModuleVariables>` to refer to the update type. Without a type argument, TypeScript allows any valid external ID with a supported variable value; runtime validation still checks the actual module schema.
 
 This declaration provides compile-time checking only. Runtime validation uses the actual schema supplied by Workshop; it cannot verify the caller's erased TypeScript declaration. Incoming values are typed using that declaration, so it must match the module interface.
 

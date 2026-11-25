@@ -165,7 +165,7 @@ describe("connectToWorkshopModule", () => {
     dispatchMessage(channel.port1, createModuleSchemaMessage("stale", {}));
     dispatchMessage(channel.port1, {
       ...createModuleSchemaMessage(sessionId(), {}),
-      variables: { count: { type: "number", isList: true } },
+      variables: { count: { type: "number", isList: "true" } },
     });
     await Promise.resolve();
     expect(resolved).not.toHaveBeenCalled();
