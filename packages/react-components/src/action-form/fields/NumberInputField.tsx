@@ -17,7 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import { ChevronDown, ChevronUp } from "@blueprintjs/icons";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import type { NumberInputFieldProps } from "../FormFieldApi.js";
 
@@ -44,6 +44,7 @@ export function NumberInputField({
   id,
   value,
   onChange,
+  onBlur,
   error,
   placeholder,
   min,
@@ -55,11 +56,11 @@ export function NumberInputField({
     formatNumberForDisplay(value),
   );
 
-  const prevValueRef = useRef(value);
+  const [previousValue, setPreviousValue] = useState(value);
 
   // Sync external value → internal display string
-  if (prevValueRef.current !== value) {
-    prevValueRef.current = value;
+  if (previousValue !== value) {
+    setPreviousValue(value);
     const currentParsed = parseNumericValue(displayValue);
 
     if (value !== currentParsed) {
@@ -114,6 +115,7 @@ export function NumberInputField({
     <div
       className={styles.osdkNumberInputWrapper}
       aria-invalid={error != null || undefined}
+      onBlur={onBlur}
     >
       <Input
         id={id}

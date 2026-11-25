@@ -227,7 +227,76 @@ describe("BaseForm", () => {
     });
   });
 
-  // TODO: expand this test to cover all field types
+  describe("number field", () => {
+    it.each([
+      { fieldType: "integer", expected: -3 },
+      { fieldType: "long", expected: -3 },
+      { fieldType: "double", expected: -3.7 },
+      { fieldType: undefined, expected: -3.7 },
+    ] as const)(
+      "$fieldType: keeps decimals while editing, then submits $expected after blur",
+      async ({ fieldType, expected }) => {
+        const onSubmit = vi.fn();
+        render(
+          <BaseForm
+            formContent={[
+              field({
+                fieldKey: "count",
+                fieldComponent: "NUMBER_INPUT",
+                fieldType,
+                label: "count",
+                fieldComponentProps: {},
+              }),
+            ]}
+            onSubmit={onSubmit}
+          />,
+        );
+        const input = screen.getByRole("textbox", {
+          name: "count",
+        }) as HTMLInputElement;
+
+        fireEvent.focus(input);
+        fireEvent.change(input, { target: { value: "-3.7" } });
+        expect(input.value).toBe("-3.7");
+        fireEvent.blur(input);
+        expect(input.value).toBe(String(expected));
+
+        fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+        await waitFor(() =>
+          expect(onSubmit).toHaveBeenCalledWith({ count: expected }),
+        );
+      },
+    );
+
+    it("preserves fractions when focus moves from the input to its stepper", () => {
+      const onFieldValueChange = vi.fn();
+      render(
+        <BaseForm
+          formContent={[
+            field({
+              fieldKey: "count",
+              fieldComponent: "NUMBER_INPUT",
+              fieldType: "integer",
+              label: "count",
+              fieldComponentProps: {},
+            }),
+          ]}
+          onFieldValueChange={onFieldValueChange}
+          onSubmit={vi.fn()}
+        />,
+      );
+      const input = screen.getByRole("textbox", { name: "count" });
+      const increment = screen.getByRole("button", { name: "Increment" });
+
+      fireEvent.change(input, { target: { value: "3.7" } });
+      fireEvent.blur(input, { relatedTarget: increment });
+      expect(onFieldValueChange).toHaveBeenCalledTimes(1);
+      expect(onFieldValueChange).toHaveBeenLastCalledWith("count", 3.7);
+      fireEvent.blur(increment);
+      expect(onFieldValueChange).toHaveBeenLastCalledWith("count", 3);
+    });
+  });
+
   describe("dropdown field", () => {
     it("renders dropdown from formContent", () => {
       render(

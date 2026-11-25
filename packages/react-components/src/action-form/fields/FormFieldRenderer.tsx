@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import React, { memo } from "react";
 
-import {
-  DatePicker,
-  type DateRange,
-  DateRangePicker,
-  EMPTY_RANGE,
-} from "../../shared/calendar/index.js";
 import { FormField } from "../FormField.js";
 import {
   type PortalContainer,
   type RendererFieldDefinition,
 } from "../FormFieldApi.js";
-import { CustomField } from "./CustomField.js";
-import { DropdownField } from "./DropdownField.js";
-import { FilePickerField } from "./FilePickerField.js";
-import { NumberInputField } from "./NumberInputField.js";
-import { ObjectSelectField } from "./ObjectSelectField.js";
-import { ObjectSetField } from "./ObjectSetField.js";
-import { RadioButtonsField } from "./RadioButtonsField.js";
-import { SwitchField } from "./SwitchField.js";
-import { TextAreaField } from "./TextAreaField.js";
+import { CustomFieldAdapter } from "./adapters/CustomFieldAdapter.js";
+import { DatePickerAdapter } from "./adapters/DatePickerAdapter.js";
+import { DateRangePickerAdapter } from "./adapters/DateRangePickerAdapter.js";
+import { DropdownFieldAdapter } from "./adapters/DropdownFieldAdapter.js";
+import { FilePickerFieldAdapter } from "./adapters/FilePickerFieldAdapter.js";
+import { NumberInputFieldAdapter } from "./adapters/NumberInputFieldAdapter.js";
+import { ObjectSelectFieldAdapter } from "./adapters/ObjectSelectFieldAdapter.js";
+import { ObjectSetFieldAdapter } from "./adapters/ObjectSetFieldAdapter.js";
+import { RadioButtonsFieldAdapter } from "./adapters/RadioButtonsFieldAdapter.js";
+import { SwitchFieldAdapter } from "./adapters/SwitchFieldAdapter.js";
+import { TextAreaFieldAdapter } from "./adapters/TextAreaFieldAdapter.js";
+import { TextInputFieldAdapter } from "./adapters/TextInputFieldAdapter.js";
 import { TextInputField } from "./TextInputField.js";
 
 const UNSUPPORTED_FIELD_MESSAGE =
@@ -100,17 +96,14 @@ function renderFieldComponent(
   portalContainer: PortalContainer | undefined,
   onFieldBlur: (() => void) | undefined,
 ): React.ReactElement {
-  const disabled = fieldDefinition.disabled === true;
   switch (fieldDefinition.fieldComponent) {
     case "DATE_RANGE_INPUT":
       return (
-        <DateRangePicker
-          id={fieldDefinition.fieldKey}
-          value={coerceToDateRange(value)}
+        <DateRangePickerAdapter
+          fieldDefinition={fieldDefinition}
+          value={value}
           onChange={onChange}
-          placeholderStart={fieldDefinition.placeholder}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
+          error={error}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -119,14 +112,11 @@ function renderFieldComponent(
       );
     case "TEXT_INPUT":
       return (
-        <TextInputField
-          id={fieldDefinition.fieldKey}
-          value={value != null ? String(value) : ""}
+        <TextInputFieldAdapter
+          fieldDefinition={fieldDefinition}
+          value={value}
           onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
         />
       );
     case "UNSUPPORTED":
@@ -141,26 +131,20 @@ function renderFieldComponent(
       );
     case "TEXT_AREA":
       return (
-        <TextAreaField
-          id={fieldDefinition.fieldKey}
-          value={value != null ? String(value) : ""}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
-        />
-      );
-    case "DROPDOWN": {
-      return (
-        <DropdownField
-          id={fieldDefinition.fieldKey}
+        <TextAreaFieldAdapter
+          fieldDefinition={fieldDefinition}
           value={value}
           onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
+        />
+      );
+    case "DROPDOWN":
+      return (
+        <DropdownFieldAdapter
+          fieldDefinition={fieldDefinition}
+          value={value}
+          onChange={onChange}
+          error={error}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -168,18 +152,13 @@ function renderFieldComponent(
           onBlur={onFieldBlur}
         />
       );
-    }
     case "DATETIME_PICKER":
       return (
-        <DatePicker
-          id={fieldDefinition.fieldKey}
-          placeholder={fieldDefinition.placeholder}
-          // TODO: Use coerceFieldValue
-          value={value instanceof Date ? value : null}
+        <DatePickerAdapter
+          fieldDefinition={fieldDefinition}
+          value={value}
           onChange={onChange}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -188,72 +167,56 @@ function renderFieldComponent(
       );
     case "RADIO_BUTTONS":
       return (
-        <RadioButtonsField
-          id={fieldDefinition.fieldKey}
+        <RadioButtonsFieldAdapter
+          fieldDefinition={fieldDefinition}
           value={value}
           onChange={onChange}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
         />
       );
     case "SWITCH":
       return (
-        <SwitchField
-          id={fieldDefinition.fieldKey}
-          label={fieldDefinition.label}
-          value={!!value}
+        <SwitchFieldAdapter
+          fieldDefinition={fieldDefinition}
+          value={value}
           onChange={onChange}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
         />
       );
     case "CUSTOM":
       return (
-        <CustomField
-          id={fieldDefinition.fieldKey}
+        <CustomFieldAdapter
+          fieldDefinition={fieldDefinition}
           value={value}
           onChange={onChange}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
         />
       );
     case "NUMBER_INPUT":
-      // TODO: Use coerceFieldValue
       return (
-        <NumberInputField
-          id={fieldDefinition.fieldKey}
-          value={typeof value === "number" ? value : null}
+        <NumberInputFieldAdapter
+          fieldDefinition={fieldDefinition}
+          value={value}
           onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
         />
       );
     case "FILE_PICKER":
       return (
-        <FilePickerField
-          id={fieldDefinition.fieldKey}
-          value={coerceToFileValue(value)}
+        <FilePickerFieldAdapter
+          fieldDefinition={fieldDefinition}
+          value={value}
           onChange={onChange}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
         />
       );
     case "OBJECT_SELECT":
       return (
-        <ObjectSelectField
-          id={fieldDefinition.fieldKey}
-          value={narrowToOsdkObject(value)}
+        <ObjectSelectFieldAdapter
+          fieldDefinition={fieldDefinition}
+          value={value}
           onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
           error={error}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
           portalContainer={resolvePortalContainer(
             fieldDefinition.fieldComponentProps,
             portalContainer,
@@ -261,13 +224,7 @@ function renderFieldComponent(
         />
       );
     case "OBJECT_SET":
-      return (
-        <ObjectSetField
-          id={fieldDefinition.fieldKey}
-          {...fieldDefinition.fieldComponentProps}
-          disabled={disabled}
-        />
-      );
+      return <ObjectSetFieldAdapter fieldDefinition={fieldDefinition} />;
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
@@ -282,39 +239,6 @@ function resolvePortalContainer(
   return Object.hasOwn(fieldComponentProps, "portalContainer")
     ? fieldComponentProps.portalContainer
     : formPortalContainer;
-}
-
-function coerceToDateRange(value: unknown): DateRange {
-  if (!Array.isArray(value) || value.length !== 2) return EMPTY_RANGE;
-  const start = value[0] instanceof Date ? value[0] : null;
-  const end = value[1] instanceof Date ? value[1] : null;
-  if (start == null && end == null) return EMPTY_RANGE;
-  return [start, end];
-}
-
-// TODO: Move and share with `coerceFieldValue`
-function isFileArray(value: unknown[]): value is File[] {
-  return value.every((v) => v instanceof File);
-}
-
-function coerceToFileValue(value: unknown): File | File[] | null {
-  if (value instanceof File) {
-    return value;
-  }
-  if (Array.isArray(value) && isFileArray(value)) {
-    return value;
-  }
-  return null;
-}
-
-/** Narrows the untyped form value to an OsdkObject by checking for $primaryKey. */
-function narrowToOsdkObject(
-  value: unknown,
-): Osdk.Instance<ObjectTypeDefinition> | null {
-  if (value != null && typeof value === "object" && "$primaryKey" in value) {
-    return value as Osdk.Instance<ObjectTypeDefinition>;
-  }
-  return null;
 }
 
 function assertUnreachableFieldComponent(value: never): never {

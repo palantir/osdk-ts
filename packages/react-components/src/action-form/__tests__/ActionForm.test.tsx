@@ -17,7 +17,7 @@
 import type { ActionDefinition, ActionMetadata } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { useState } from "react";
+import { StrictMode, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ActionForm } from "../ActionForm.js";
@@ -64,6 +64,21 @@ interface BooleanActionDef extends ActionDefinition<unknown> {
     rid: string;
   };
 }
+
+interface NumericActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: { count: { type: "integer" } };
+    type: "action";
+    apiName: "NumericAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+const NumericAction = {
+  type: "action",
+  apiName: "NumericAction",
+} as NumericActionDef;
 
 const TestAction: TestActionDef = {
   type: "action",
@@ -133,6 +148,320 @@ describe("ActionForm", () => {
       result: "VALID",
       submissionCriteria: [],
       parameters: {},
+    });
+  });
+
+  describe("date serialization", () => {
+    it("submits a selected calendar date without a time component", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: {
+            name: {
+              type: "datetime",
+              displayName: "Start date",
+              nullable: true,
+            },
+          },
+        },
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+      const input = screen.getByRole("combobox", { name: "Start date" });
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "2026-11-15" } });
+      fireEvent.blur(input);
+      fireEvent.keyDown(input, { key: "Escape" });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(mockValidateAction).toHaveBeenCalledWith({ name: "2026-11-15" });
+        expect(mockApplyAction).toHaveBeenCalledWith({ name: "2026-11-15" });
+      });
+    });
+
+    it("validates local dates on edit and uses updated parameter metadata on submit", async () => {
+      const dateMetadata: ActionMetadata = {
+        ...mockMetadata,
+        parameters: {
+          name: {
+            type: "datetime",
+            displayName: "Start date",
+            nullable: true,
+          },
+        },
+      };
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: dateMetadata,
+      });
+      const onFormStateChange = vi.fn();
+      const { rerender } = render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formTitle="Date form"
+          onFormStateChange={onFormStateChange}
+        />,
+      );
+      const input = screen.getByRole("combobox", { name: "Start date" });
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "2026-11-15" } });
+      fireEvent.blur(input);
+      fireEvent.keyDown(input, { key: "Escape" });
+
+      await vi.waitFor(() => {
+        expect(mockValidateAction).toHaveBeenCalledWith({ name: "2026-11-15" });
+      });
+      expect(mockApplyAction).not.toHaveBeenCalled();
+      const update = onFormStateChange.mock.calls.at(-1)?.[0] as (
+        state: Record<string, unknown>,
+      ) => Record<string, unknown>;
+      expect(update({})).toEqual({ name: new Date(2026, 10, 15) });
+
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...dateMetadata,
+          parameters: {
+            name: { ...dateMetadata.parameters.name, type: "timestamp" },
+          },
+        },
+      });
+      rerender(
+        <ActionForm
+          actionDefinition={TestAction}
+          formTitle="Timestamp form"
+          onFormStateChange={onFormStateChange}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        const submitted = { name: new Date(2026, 10, 15).toISOString() };
+        expect(mockValidateAction).toHaveBeenLastCalledWith(submitted);
+        expect(mockApplyAction).toHaveBeenCalledWith(submitted);
+      });
+    });
+
+    it("serializes dates for a custom submit handler", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: {
+            name: {
+              type: "datetime",
+              displayName: "Start date",
+              nullable: true,
+            },
+          },
+        },
+      });
+      const onSubmit = vi.fn();
+      render(<ActionForm actionDefinition={TestAction} onSubmit={onSubmit} />);
+      const input = screen.getByRole("combobox", { name: "Start date" });
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "2026-11-15" } });
+      fireEvent.blur(input);
+      fireEvent.keyDown(input, { key: "Escape" });
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+
+      await vi.waitFor(() => {
+        expect(onSubmit).toHaveBeenCalledWith(
+          { name: "2026-11-15" },
+          mockApplyAction,
+        );
+      });
+      expect(mockValidateAction).not.toHaveBeenCalled();
+      expect(mockApplyAction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("number parsing", () => {
+    it.each([
+      ["integer", "1.2345", 1],
+      ["integer", "3.7", 3],
+      ["integer", "-3.7", -3],
+      ["long", "9.9", 9],
+      ["long", "-9.9", -9],
+      ["double", "3.7", 3.7],
+    ] as const)("truncates %s %s on blur", async (type, text, parsed) => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type, nullable: true } },
+        },
+      });
+      const onFormStateChange = vi.fn();
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          onFormStateChange={onFormStateChange}
+        />,
+        { wrapper: StrictMode },
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: text } });
+      expect(input.value).toBe(text);
+      const update = onFormStateChange.mock.calls.at(-1)?.[0] as (
+        state: Record<string, unknown>,
+      ) => Record<string, unknown>;
+      expect(update({})).toEqual({ count: Number(text) });
+      fireEvent.blur(input);
+      expect(input.value).toBe(String(parsed));
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: parsed }),
+      );
+    });
+
+    it("preserves CUSTOM numeric edits through blur and submission", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formFieldDefinitions={[
+            {
+              fieldKey: "count",
+              label: "count",
+              fieldComponent: "CUSTOM",
+              fieldComponentProps: {
+                customRenderer: ({ id, onChange }) => (
+                  <input
+                    id={id}
+                    onChange={(event) => onChange?.(Number(event.target.value))}
+                  />
+                ),
+              },
+            },
+          ]}
+        />,
+      );
+      const input = screen.getByRole("textbox");
+      fireEvent.change(input, { target: { value: "3.7" } });
+      fireEvent.blur(input);
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
+    });
+
+    it("submits controlled values without metadata coercion", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formState={{ count: 3.7 }}
+          onFormStateChange={vi.fn()}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
+    });
+
+    it("keeps a fractional controlled value when the field is focused and blurred without edits", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      const onFormStateChange = vi.fn();
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formState={{ count: 3.7 }}
+          onFormStateChange={onFormStateChange}
+        />,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+      expect(input.value).toBe("3.7");
+      expect(onFormStateChange).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
+    });
+
+    it("keeps a fractional default value when the field is focused and blurred without edits", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formFieldDefinitions={[
+            {
+              fieldKey: "count",
+              label: "count",
+              fieldComponent: "NUMBER_INPUT",
+              defaultValue: 3.7,
+              fieldComponentProps: {},
+            },
+          ]}
+        />,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+      expect(input.value).toBe("3.7");
+      expect(screen.queryByText("Edited")).toBeNull();
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
+    });
+
+    it("submits untouched default values without metadata coercion", async () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          parameters: { count: { type: "integer", nullable: true } },
+        },
+      });
+      render(
+        <ActionForm
+          actionDefinition={NumericAction}
+          formFieldDefinitions={[
+            {
+              fieldKey: "count",
+              label: "count",
+              fieldComponent: "NUMBER_INPUT",
+              defaultValue: 3.7,
+              fieldComponentProps: {},
+            },
+          ]}
+        />,
+      );
+      fireEvent.click(screen.getByRole("button", { name: /submit/iu }));
+      await vi.waitFor(() =>
+        expect(mockApplyAction).toHaveBeenCalledWith({ count: 3.7 }),
+      );
     });
   });
 

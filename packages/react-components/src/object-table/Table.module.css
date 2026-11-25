@@ -41,3 +41,7 @@
   width: max-content;
   min-width: 100%;
 }
+
+.osdkTableNonIdealState {
+  padding: calc(var(--osdk-surface-spacing) * 5);
+}

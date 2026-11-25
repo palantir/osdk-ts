@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+import React from "react";
 
-.message {
-  padding: calc(var(--osdk-surface-spacing) * 5);
-  color: var(--osdk-typography-color-muted);
-  font-style: italic;
+import { ObjectSetField } from "../ObjectSetField.js";
+import type { FieldAdapterProps } from "./FieldAdapterProps.js";
+
+export function ObjectSetFieldAdapter({
+  fieldDefinition,
+}: Pick<
+  FieldAdapterProps<"OBJECT_SET">,
+  "fieldDefinition"
+>): React.ReactElement {
+  return (
+    <ObjectSetField
+      id={fieldDefinition.fieldKey}
+      {...fieldDefinition.fieldComponentProps}
+      disabled={fieldDefinition.disabled === true}
+    />
+  );
 }
