@@ -703,9 +703,22 @@ export class OntologyBlockDataToFullMetadataConverter {
           };
           break;
         case "decimal":
-          throw new Error("Decimal type not supported");
+          dataType = {
+            type: "decimal",
+            precision: irParameter.type.decimal.precision ?? undefined,
+            scale: irParameter.type.decimal.scale ?? undefined,
+          };
+          break;
         case "decimalList":
-          throw new Error("Decimal list type not supported");
+          dataType = {
+            type: "array",
+            subType: {
+              type: "decimal",
+              precision: irParameter.type.decimalList.precision ?? undefined,
+              scale: irParameter.type.decimalList.scale ?? undefined,
+            },
+          };
+          break;
         case "double":
           dataType = { type: "double" };
           break;
@@ -733,10 +746,11 @@ export class OntologyBlockDataToFullMetadataConverter {
             subType: { type: "geoshape" },
           };
           break;
+        // OSDK has no geotime series action parameter type. The Ontology API
+        // omits these parameters too, so the action stays usable without them.
         case "geotimeSeriesReference":
-          throw new Error("Geotime series reference type not supported");
         case "geotimeSeriesReferenceList":
-          throw new Error("Geotime series reference list type not supported");
+          continue;
         case "integer":
           dataType = { type: "integer" };
           break;
@@ -874,7 +888,8 @@ export class OntologyBlockDataToFullMetadataConverter {
           break;
         }
         case "timeSeriesReference":
-          throw new Error("Time series reference type not supported");
+          dataType = { type: "timeSeriesReference" };
+          break;
         case "timestamp":
           dataType = { type: "timestamp" };
           break;

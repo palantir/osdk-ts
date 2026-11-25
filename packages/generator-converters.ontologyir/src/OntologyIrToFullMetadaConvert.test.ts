@@ -3846,6 +3846,98 @@ describe(OntologyIrToFullMetadataConverter, () => {
     });
   });
 
+  it("converts decimal and time series action parameters and omits geotime series ones", () => {
+    const parameters: Record<string, OntologyIrParameter["type"]> = {
+      amount: { type: "decimal", decimal: { precision: 10, scale: 2 } },
+      amounts: { type: "decimalList", decimalList: {} },
+      series: { type: "timeSeriesReference", timeSeriesReference: {} },
+      track: { type: "geotimeSeriesReference", geotimeSeriesReference: {} },
+      tracks: {
+        type: "geotimeSeriesReferenceList",
+        geotimeSeriesReferenceList: {},
+      },
+    };
+    const action: OntologyIrActionTypeBlockDataV2 = {
+      actionType: {
+        metadata: {
+          apiName: "recordReading",
+          displayMetadata: {
+            displayName: "Record reading",
+            description: "",
+            applyingMessage: [],
+            successMessage: [],
+            typeClasses: [],
+          },
+          status: { type: "active", active: {} },
+          parameters: Object.fromEntries(
+            Object.entries(parameters).map(([id, type]) => [id, {
+              id,
+              displayMetadata: {
+                displayName: id,
+                description: "",
+                typeClasses: [],
+              },
+              type,
+            }]),
+          ),
+          parameterOrdering: Object.keys(parameters),
+          formContentOrdering: [],
+          sections: {},
+        },
+        actionTypeLogic: {
+          logic: { rules: [] },
+          validation: {
+            actionTypeLevelValidation: { rules: {} },
+            parameterValidations: Object.fromEntries(
+              Object.keys(parameters).map((id) => [id, {
+                conditionalOverrides: [],
+                defaultValidation: {
+                  display: {
+                    renderHint: { type: "dropdown", dropdown: {} },
+                    visibility: { type: "editable", editable: {} },
+                  },
+                  validation: {
+                    required: { type: "required", required: {} },
+                    allowedValues: { type: "redacted", redacted: {} },
+                  },
+                },
+              }]),
+            ),
+            sectionValidations: {},
+          },
+        },
+      },
+    };
+
+    const result = OntologyIrToFullMetadataConverter.getOsdkActionParameters(
+      action,
+    );
+
+    expect(result).toEqual({
+      amount: {
+        displayName: "amount",
+        description: "",
+        required: true,
+        dataType: { type: "decimal", precision: 10, scale: 2 },
+        typeClasses: [],
+      },
+      amounts: {
+        displayName: "amounts",
+        description: "",
+        required: true,
+        dataType: { type: "array", subType: { type: "decimal" } },
+        typeClasses: [],
+      },
+      series: {
+        displayName: "series",
+        description: "",
+        required: true,
+        dataType: { type: "timeSeriesReference" },
+        typeClasses: [],
+      },
+    });
+  });
+
   describe(isInjectedRuntimeInput, () => {
     it("identifies injected runtime function inputs", () => {
       expect(isInjectedRuntimeInput({
