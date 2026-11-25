@@ -24,7 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-Create the client once, outside any component. A new client creates a new, empty cache.
+Create the client once, outside any component. A new client creates a new, empty cache. To share one cache with code outside React or across several providers, pass an `ObservableClient` to `OsdkProvider` instead; see [Share an observable client](../../reference/react/osdk-provider.mdx#share-an-observable-client).
 
 ## Objects are stored once
 
