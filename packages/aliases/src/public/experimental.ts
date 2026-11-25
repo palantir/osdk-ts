@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Custom } from "../types.js";
+import type { Custom, Workshop } from "../types.js";
 
 declare const process: {
   env: { TARGET: "browser" | "node" | undefined };
@@ -29,13 +29,24 @@ declare const process: {
 const custom: (alias: string) => Promise<Custom> =
   process.env.TARGET === "browser"
     ? async (alias) => {
-        const { customForBrowser } = await import("../customForBrowser.js");
+        const { customForBrowser } = await import("../aliasesForBrowser.js");
         return await customForBrowser(alias);
       }
     : async (alias) => {
         const { customForNode } = await import("../customForNode.js");
         return customForNode(alias);
       };
+
+const workshop: (alias: string) => Promise<Workshop> =
+  process.env.TARGET === "browser"
+    ? async (alias) => {
+        const { workshopForBrowser } = await import("../aliasesForBrowser.js");
+        return await workshopForBrowser(alias);
+      }
+    : () =>
+        Promise.reject(
+          new Error("Workshop aliases are only supported in browser builds."),
+        );
 
 export const Aliases: {
   /**
@@ -45,8 +56,17 @@ export const Aliases: {
    * may change.
    */
   readonly custom: typeof custom;
+  /**
+   * Returns the Workshop module RID from the website's `aliases.workshops`
+   * declarations. Supported in browser builds only.
+   *
+   * @experimental Workshop aliases and the shape of this API are provisional
+   * and may change.
+   */
+  readonly workshop: typeof workshop;
 } = {
   custom,
+  workshop,
 };
 
-export type { Custom } from "../types.js";
+export type { Custom, Workshop } from "../types.js";

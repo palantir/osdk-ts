@@ -1,6 +1,6 @@
 # `@osdk/aliases`
 
-This package provides named string configuration values for websites. Its browser API is experimental.
+This package provides named string configuration values and Workshop module references for websites. Its browser API is experimental.
 
 ## Install
 
@@ -43,3 +43,32 @@ const welcomeMessage = await Aliases.custom("welcomeMessage");
 ```
 
 Alias values are public because they are served with the website. Do not put secrets in them.
+
+## Read a Workshop module alias
+
+Add Workshop module references as an array under `aliases.workshops` in your website's `resources.json`:
+
+```json
+{
+  "aliases": {
+    "workshops": [
+      {
+        "alias": "orderDetails",
+        "rid": "ri.workshop.main.module.example"
+      }
+    ]
+  }
+}
+```
+
+Replace the example RID with your module's RID. Alias names must be unique, contain 1–50 ASCII letters or digits, and start with a lowercase letter.
+
+```ts
+import { Aliases } from "@osdk/aliases/experimental";
+
+const { rid: moduleRid } = await Aliases.workshop("orderDetails");
+```
+
+Use `moduleRid` when rendering the module. The browser reads the RID served in `resources.json`, so it uses the installation-specific value when Marketplace remaps the reference. Packaging Workshop dependencies requires a Foundry version that supports `aliases.workshops`.
+
+`Aliases.workshop` is available in browser builds only. Custom and Workshop aliases share one cached request; a failed load can be retried on a later call. A missing alias, malformed declaration, or duplicate Workshop alias rejects the promise.

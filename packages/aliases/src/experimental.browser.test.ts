@@ -22,13 +22,16 @@ const { originalTarget } = vi.hoisted(() => {
   return { originalTarget: previousTarget };
 });
 
-import { resetAliasesCache } from "./customForBrowser.js";
+import { resetAliasesCache } from "./aliasesForBrowser.js";
 import * as experimental from "./public/experimental.js";
 import { Aliases } from "./public/experimental.js";
 
 const RESOURCES_JSON = {
   aliases: {
     custom: { apiBaseUrl: { value: "https://api.example.com" } },
+    workshops: [
+      { alias: "orderDetails", rid: "ri.workshop.main.module.example" },
+    ],
   },
 };
 
@@ -70,14 +73,20 @@ describe("experimental browser entry point", () => {
     const fetchImpl = mockFetch();
     vi.stubGlobal("fetch", fetchImpl);
 
-    const [first, second] = await Promise.all([
+    const [first, second, resolvedWorkshop] = await Promise.all([
       Aliases.custom("apiBaseUrl"),
       Aliases.custom("apiBaseUrl"),
+      Aliases.workshop("orderDetails"),
     ]);
     const third = await Aliases.custom("apiBaseUrl");
+    const repeatedWorkshop = await Aliases.workshop("orderDetails");
 
     expect(first).toBe(second);
     expect(first).toBe(third);
+    expect(resolvedWorkshop).toEqual({
+      rid: "ri.workshop.main.module.example",
+    });
+    expect(repeatedWorkshop).toBe(resolvedWorkshop);
     expect(fetchImpl).toHaveBeenCalledOnce();
   });
 
@@ -88,20 +97,23 @@ describe("experimental browser entry point", () => {
     );
     vi.stubGlobal("fetch", fetchImpl);
 
-    const reads = [Aliases.custom("apiBaseUrl"), Aliases.custom("apiBaseUrl")];
+    const reads = [
+      Aliases.custom("apiBaseUrl"),
+      Aliases.workshop("orderDetails"),
+    ];
     await Promise.all(
       reads.map((read) => expect(read).rejects.toThrow("Failed to fetch")),
     );
     expect(fetchImpl).toHaveBeenCalledOnce();
 
-    await expect(Aliases.custom("apiBaseUrl")).resolves.toBe(
-      "https://api.example.com",
-    );
+    await expect(Aliases.workshop("orderDetails")).resolves.toEqual({
+      rid: "ri.workshop.main.module.example",
+    });
     expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 
-  it("exposes custom only through the Aliases namespace", () => {
+  it("exposes aliases only through the Aliases namespace", () => {
     expect(Object.keys(experimental)).toEqual(["Aliases"]);
-    expect(Object.keys(Aliases)).toEqual(["custom"]);
+    expect(Object.keys(Aliases)).toEqual(["custom", "workshop"]);
   });
 });

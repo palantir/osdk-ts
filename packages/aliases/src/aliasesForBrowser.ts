@@ -15,7 +15,7 @@
  */
 
 import { getAlias } from "./getAlias.js";
-import type { Custom } from "./types.js";
+import type { Custom, Workshop } from "./types.js";
 
 export type { Custom } from "./types.js";
 
@@ -41,7 +41,12 @@ interface InitAliasesOptions {
   fetch?: typeof globalThis.fetch;
 }
 
-let cachedCustomAliases: Record<string, string> | undefined;
+interface BrowserAliases {
+  custom: Record<string, string>;
+  workshops: Record<string, Workshop>;
+}
+
+let cachedAliases: BrowserAliases | undefined;
 let inFlight: Promise<void> | undefined;
 
 /**
@@ -51,17 +56,28 @@ let inFlight: Promise<void> | undefined;
  */
 export async function customForBrowser(alias: string): Promise<Custom> {
   await initAliases();
-  const aliases = cachedCustomAliases;
+  const aliases = cachedAliases;
   if (aliases === undefined) {
     throw new Error("Aliases failed to initialize.");
   }
 
-  return getAlias(aliases, alias, "Custom") as Custom;
+  return getAlias(aliases.custom, alias, "Custom") as Custom;
+}
+
+/** Returns the Workshop module RID declared in the website's resources.json. */
+export async function workshopForBrowser(alias: string): Promise<Workshop> {
+  await initAliases();
+  const aliases = cachedAliases;
+  if (aliases === undefined) {
+    throw new Error("Aliases failed to initialize.");
+  }
+
+  return getAlias(aliases.workshops, alias, "Workshop");
 }
 
 /** Deduplicates concurrent loads; a later call can retry if failure occurs. */
 export async function initAliases(options?: InitAliasesOptions): Promise<void> {
-  if (cachedCustomAliases !== undefined) {
+  if (cachedAliases !== undefined) {
     return;
   }
   if (inFlight === undefined) {
@@ -76,10 +92,10 @@ export async function initAliases(options?: InitAliasesOptions): Promise<void> {
 async function loadAliases(options?: InitAliasesOptions): Promise<void> {
   const fetchImpl = options?.fetch ?? globalThis.fetch;
   const declarations = await fetchJson(fetchImpl, DEFAULT_RESOURCES_PATH);
-  cachedCustomAliases =
+  cachedAliases =
     declarations === undefined
-      ? {}
-      : extractCustomAliases(declarations.value, declarations.url);
+      ? { custom: {}, workshops: {} }
+      : extractAliases(declarations.value, declarations.url);
 }
 
 interface FetchedJson {
@@ -143,22 +159,27 @@ function parseJson(body: string, url: string): unknown {
   }
 }
 
-function extractCustomAliases(
-  config: unknown,
-  url: string,
-): Record<string, string> {
+function extractAliases(config: unknown, url: string): BrowserAliases {
   const aliases = getAliasesField(config, url);
   if (aliases == null) {
-    return {};
+    return { custom: {}, workshops: {} };
   }
   if (!isJsonObject(aliases)) {
     throw new TypeError(
-      `Failed to read aliases from ${url}: expected 'aliases' to look like ` +
-        `{ "custom": { "myAlias": { "value": "..." } } } in resources.json.`,
+      `Failed to read aliases from ${url}: expected 'aliases' to be a JSON object.`,
     );
   }
 
-  const declarations = aliases.custom;
+  return {
+    custom: extractCustomAliases(aliases.custom, url),
+    workshops: extractWorkshopAliases(aliases.workshops, url),
+  };
+}
+
+function extractCustomAliases(
+  declarations: unknown,
+  url: string,
+): Record<string, string> {
   if (declarations == null) {
     return {};
   }
@@ -196,6 +217,42 @@ function extractCustomAliases(
   return result;
 }
 
+function extractWorkshopAliases(
+  declarations: unknown,
+  url: string,
+): Record<string, Workshop> {
+  if (declarations === undefined) {
+    return {};
+  }
+  if (!Array.isArray(declarations)) {
+    throw new TypeError(
+      `Failed to read aliases from ${url}: expected 'aliases.workshops' to be an array.`,
+    );
+  }
+
+  const result = Object.create(null) as Record<string, Workshop>;
+  for (const declaration of declarations) {
+    if (
+      !isJsonObject(declaration) ||
+      typeof declaration.alias !== "string" ||
+      declaration.alias.length === 0 ||
+      typeof declaration.rid !== "string" ||
+      declaration.rid.length === 0
+    ) {
+      throw new TypeError(
+        `Failed to read aliases from ${url}: expected each entry in ` +
+          `'aliases.workshops' to contain non-empty string 'alias' and 'rid' fields.`,
+      );
+    }
+    const { alias, rid } = declaration;
+    if (Object.hasOwn(result, alias)) {
+      throw new TypeError(`Duplicate Workshop alias '${alias}' in ${url}.`);
+    }
+    result[alias] = { rid };
+  }
+  return result;
+}
+
 function getAliasesField(config: unknown, url: string): unknown {
   if (!isJsonObject(config)) {
     throw new TypeError(
@@ -210,6 +267,6 @@ function isJsonObject(value: unknown): value is Record<string, unknown> {
 }
 
 export function resetAliasesCache(): void {
-  cachedCustomAliases = undefined;
+  cachedAliases = undefined;
   inFlight = undefined;
 }
