@@ -860,6 +860,30 @@ describe("ExtractOptions", () => {
   });
 
   describe("$as from interface to OT", () => {
+    type EmployeeMetadata = NonNullable<
+      EmployeeApiTest["__DefinitionMetadata"]
+    >;
+    type EmployeeWithStructImplementation = Omit<
+      EmployeeApiTest,
+      "__DefinitionMetadata"
+    > & {
+      __DefinitionMetadata?: Omit<
+        EmployeeMetadata,
+        "interfaceImplementations" | "interfaceMap"
+      > & {
+        interfaceMap: { FooInterface: { fooSpt: "addressStruct" } };
+        interfaceImplementations: {
+          FooInterface: {
+            fooSpt: {
+              type: "structField";
+              propertyApiName: "addressStruct";
+              structFieldApiName: "city";
+            };
+          };
+        };
+      };
+    };
+
     it("all localProperty implementations is always allowed and yields the plain OT type", async () => {
       const ifaceObj = (
         await createMockObjectSet<FooInterfaceApiTest>().fetchPage()
@@ -869,7 +893,7 @@ describe("ExtractOptions", () => {
       expectTypeOf(result.fullName).toEqualTypeOf<string | undefined>();
     });
 
-    it("interface → OT: any non-local impl rejects the cast", async () => {
+    it("rejects reduced implementations even with all base properties", async () => {
       const ifaceObj = (
         await createMockObjectSet<ReducerInterfaceApiTest>().fetchPage()
       ).data[0];
@@ -877,6 +901,78 @@ describe("ExtractOptions", () => {
       // @ts-expect-error — ReducerInterface has structField / reduced
       // implementations on Employee.
       ifaceObj.$as({} as EmployeeApiTest);
+
+      const withBaseProperties = (
+        await createMockObjectSet<ReducerInterfaceApiTest>().fetchPage({
+          $includeAllBaseObjectProperties: true,
+        })
+      ).data[0];
+
+      // @ts-expect-error
+      withBaseProperties.$as({} as EmployeeApiTest);
+      // @ts-expect-error
+      withBaseProperties.$as<EmployeeApiTest>("Employee");
+    });
+
+    it("requires all base properties for struct implementations", async () => {
+      const ifaceObj = (
+        await createMockObjectSet<FooInterfaceApiTest>().fetchPage()
+      ).data[0];
+
+      // @ts-expect-error
+      ifaceObj.$as({} as EmployeeWithStructImplementation);
+
+      const withoutBaseProperties = (
+        await createMockObjectSet<FooInterfaceApiTest>().fetchPage({
+          $includeAllBaseObjectProperties: false,
+        })
+      ).data[0];
+
+      // @ts-expect-error
+      withoutBaseProperties.$as({} as EmployeeWithStructImplementation);
+
+      const maybeBaseProperties = (
+        await createMockObjectSet<FooInterfaceApiTest>().fetchPage({
+          $includeAllBaseObjectProperties: true as boolean,
+        })
+      ).data[0];
+
+      // @ts-expect-error
+      maybeBaseProperties.$as({} as EmployeeWithStructImplementation);
+    });
+
+    it("allows struct implementations with all base properties and preserves the full object type", async () => {
+      const objectSet = createMockObjectSet<FooInterfaceApiTest>();
+      const ifaceObj = (
+        await objectSet.fetchPage({
+          $includeAllBaseObjectProperties: true,
+        })
+      ).data[0];
+
+      const result = ifaceObj.$as({} as EmployeeWithStructImplementation);
+      expectTypeOf(result).toEqualTypeOf<
+        Osdk.Instance<EmployeeWithStructImplementation, "$allBaseProperties">
+      >();
+      expectTypeOf(result.addressStruct).toEqualTypeOf<
+        { street: string; city: string; zipCode: string } | undefined
+      >();
+      expectTypeOf(result.salaryHistory).toEqualTypeOf<number[] | undefined>();
+
+      const byName = ifaceObj.$as<EmployeeWithStructImplementation>("Employee");
+      expectTypeOf(byName).toEqualTypeOf(result);
+
+      const withRid = (
+        await objectSet.fetchPage({
+          $includeAllBaseObjectProperties: true,
+          $includeRid: true,
+        })
+      ).data[0].$as({} as EmployeeWithStructImplementation);
+      expectTypeOf(withRid).toEqualTypeOf<
+        Osdk.Instance<
+          EmployeeWithStructImplementation,
+          "$allBaseProperties" | "$rid"
+        >
+      >();
     });
   });
 
