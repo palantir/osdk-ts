@@ -4809,6 +4809,9 @@ importers:
       '@osdk/client.unstable':
         specifier: workspace:~
         version: link:../client.unstable
+      '@osdk/docs-spec-platform':
+        specifier: ^0.4.0
+        version: 0.4.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -9721,6 +9724,9 @@ packages:
 
   '@osdk/docs-spec-core@0.7.0':
     resolution: {integrity: sha512-4PhFvnflrdOSum5+XO/EsRO95moUU7dsQ6Jjv+5fOT24yHtvk+8AZUfRWObbe2zChKRzZwfZLvWVuV5UXAvaIw==}
+
+  '@osdk/docs-spec-platform@0.4.0':
+    resolution: {integrity: sha512-HQiUnvxOFrNnrLKBSuPEzRC9pe8H5L4gLM0xB85TUJ4G+WJ2VjfxMP9M/lVtCFfMIBDoNnVSZZcwtb1SHBvSXQ==}
 
   '@osdk/docs-spec-sdk@0.1.0':
     resolution: {integrity: sha512-xGW/bBjlQvyg4YdRaEC+GdaKoh6qoWmyp7uLEfH2h4XCWDKpDGaQD5dLgkGjNqao1jk2mTZb6YrTjkz0CB+9JA==}
@@ -26495,6 +26501,10 @@ snapshots:
   '@osdk/docs-spec-core@0.5.0': {}
 
   '@osdk/docs-spec-core@0.7.0': {}
+
+  '@osdk/docs-spec-platform@0.4.0':
+    dependencies:
+      '@osdk/docs-spec-core': 0.7.0
 
   '@osdk/docs-spec-sdk@0.1.0':
     dependencies:

@@ -31,6 +31,7 @@ mediasets
 mediasetview
 NITF
 objectset
+omniapi
 OPTBSV
 OPTENF
 packageable
