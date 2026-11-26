@@ -88,7 +88,7 @@
     "packages/vite-plugin-status-reporter/",
     "packages/widget.vite-plugin/",
     "packages/ontology-explorer-app/",
-    "packages/ontology-explorer-server/",
+    "packages/ontology-explorer/",
     "packages/shared.test/",
     "packages/shared.test.intellisense/",
     "packages/e2e.test.foundry-sdk-generator/",

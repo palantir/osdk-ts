@@ -43,7 +43,7 @@
     "@osdk/e2e.generated.*",
     "@osdk/e2e.sandbox.*",
     "@osdk/ontology-explorer-app",
-    "@osdk/ontology-explorer-server"
+    "@osdk/ontology-explorer"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {
