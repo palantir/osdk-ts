@@ -61,7 +61,7 @@ export function createCollectionConnectable<
               : combineLatest(
                   listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
                     subjects.get(cacheKey).pipe(
-                      map((objectEntry) => objectEntry?.value!),
+                      map((objectEntry) => objectEntry?.value),
                       distinctUntilChanged(),
                     ),
                   ),
@@ -81,7 +81,9 @@ export function createCollectionConnectable<
                   params.resolvedData === undefined
                     ? undefined
                     : Array.isArray(params.resolvedData)
-                      ? params.resolvedData
+                      ? params.resolvedData.filter(
+                          (object) => object !== undefined,
+                        )
                       : [],
                 isOptimistic: params.isOptimistic,
                 status: params.status,
