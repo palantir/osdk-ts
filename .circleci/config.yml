@@ -14,6 +14,7 @@ aliases:
     --filter=!@psdk/examples.*
     --filter=!@osdk/e2e.sandbox.todowidget
     --filter=!@osdk/ontology-explorer-app
+    --filter=!@osdk/ontology-explorer-server
     --filter=!@osdk/react-components-storybook
     --filter=!@osdk/e2e.sandbox.catchall
 
