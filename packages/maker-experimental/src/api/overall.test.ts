@@ -283,6 +283,132 @@ describe("Experimental Test Suite", () => {
     });
   });
 
+  describe("Function-backed action input configuration", () => {
+    const defineTaggedObject = () =>
+      defineObject({
+        apiName: "TaggedObject",
+        displayName: "Tagged object",
+        pluralDisplayName: "Tagged objects",
+        titlePropertyApiName: "id",
+        primaryKeyPropertyApiName: "id",
+        properties: { id: { type: "string" } },
+      });
+    const inputs: FunctionsIr["discoveredFunctions"][number]["inputs"] = [
+      { name: "tag", dataType: { type: "string", string: {} } },
+      { name: "note", dataType: { type: "string", string: {} } },
+      { name: "editor", dataType: { type: "string", string: {} } },
+    ];
+
+    it("applies parameter, mapping, form and validation settings", async () => {
+      const result = await withFunctionsIr(inputs, (functionsIrFile) =>
+        defineOntologyV2(
+          "com.palantir.",
+          () => {
+            defineTaggedObject();
+            defineFunctionBackedAction({
+              functionApiName: "updateTags",
+              parameterConfiguration: {
+                tag: {
+                  displayName: "Tag name",
+                  description: "The tag to apply",
+                  required: false,
+                },
+              },
+              nonParameterMappings: { editor: { type: "currentUser" } },
+              parameterOrdering: ["note", "tag"],
+              sections: [
+                { id: "details", displayName: "Details", parameters: ["tag"] },
+              ],
+              actionLevelValidation: [
+                {
+                  condition: {
+                    type: "parameter",
+                    parameterId: "tag",
+                    matches: {
+                      type: "staticValue",
+                      staticValue: { type: "string", string: "valid" },
+                    },
+                  },
+                  displayMetadata: {
+                    failureMessage: "Tag must be valid",
+                    typeClasses: [],
+                  },
+                },
+              ],
+            });
+          },
+          undefined,
+          undefined,
+          functionsIrFile,
+        ),
+      );
+      const [{ actionType }] = Object.values(
+        result.ontologyIr.ontology.actionTypes,
+      );
+      const rule = actionType.actionTypeLogic.logic.rules[0];
+      expect(
+        rule.type === "functionRule" && rule.functionRule.functionInputValues,
+      ).toEqual({
+        tag: { type: "parameterId", parameterId: "tag" },
+        note: { type: "parameterId", parameterId: "note" },
+        editor: { type: "currentUser", currentUser: {} },
+      });
+      expect(Object.keys(actionType.metadata.parameters)).toEqual([
+        "tag",
+        "note",
+      ]);
+      expect(actionType.metadata.parameterOrdering).toEqual(["note", "tag"]);
+      expect(actionType.metadata.parameters.tag.displayMetadata).toMatchObject({
+        displayName: "Tag name",
+        description: "The tag to apply",
+      });
+      expect(
+        actionType.actionTypeLogic.validation.parameterValidations.tag
+          .defaultValidation.validation.required,
+      ).toEqual({ type: "notRequired", notRequired: {} });
+      expect(Object.keys(actionType.metadata.sections)).toEqual(["details"]);
+      expect(JSON.stringify(actionType.actionTypeLogic.validation)).toContain(
+        "Tag must be valid",
+      );
+    });
+
+    it("rejects settings for inputs the function does not have", async () => {
+      await expect(
+        withFunctionsIr(inputs, (functionsIrFile) =>
+          defineOntologyV2(
+            "com.palantir.",
+            () => {
+              defineTaggedObject();
+              defineFunctionBackedAction({
+                functionApiName: "updateTags",
+                parameterConfiguration: { missing: { displayName: "Missing" } },
+              });
+            },
+            undefined,
+            undefined,
+            functionsIrFile,
+          ),
+        ),
+      ).rejects.toThrow(
+        "missing, which is not an input of function updateTags",
+      );
+    });
+
+    it("ignores input settings before functions are discovered", async () => {
+      const result = await defineOntologyV2("com.palantir.", () => {
+        defineTaggedObject();
+        defineFunctionBackedAction({
+          functionApiName: "updateTags",
+          parameterConfiguration: { tag: { displayName: "Tag name" } },
+          sections: [
+            { id: "details", displayName: "Details", parameters: ["tag"] },
+          ],
+        });
+      });
+      expect(result.ontologyIr.ontology.actionTypes).toEqual({});
+    });
+  });
+
   describe("Empty backing Media Sets", () => {
     it("requires opted-in Media Sets to exist before reconciliation", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {

@@ -83,6 +83,16 @@ export interface FunctionsIr {
   discoveredFunctions: Array<IDiscoveredFunction>;
 }
 
+let currentFunctionsIr: FunctionsIr | undefined;
+
+export function getFunctionsIr(): FunctionsIr | undefined {
+  return currentFunctionsIr;
+}
+
+export function setFunctionsIr(functionsIr: FunctionsIr | undefined): void {
+  currentFunctionsIr = functionsIr;
+}
+
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
@@ -97,6 +107,10 @@ export async function defineOntologyV2(
   beforeWrite?: (context: OntologyContext) => void | Promise<void>,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
+  const functionsIr: FunctionsIr | undefined = functionsIrFile
+    ? JSON.parse(fs.readFileSync(functionsIrFile, "utf-8"))
+    : undefined;
+  setFunctionsIr(functionsIr);
 
   try {
     await body();
@@ -107,6 +121,8 @@ export async function defineOntologyV2(
       e,
     );
     throw e;
+  } finally {
+    setFunctionsIr(undefined);
   }
 
   if (externalImportedMetadata) {
@@ -133,11 +149,6 @@ export async function defineOntologyV2(
     getFolderDefinitions(),
     ontologyDefinition,
   );
-
-  let functionsIr: FunctionsIr | undefined;
-  if (functionsIrFile) {
-    functionsIr = JSON.parse(fs.readFileSync(functionsIrFile, "utf-8"));
-  }
 
   const ridGenerator = new OntologyRidGeneratorImpl(
     importedTypes,

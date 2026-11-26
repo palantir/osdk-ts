@@ -28,6 +28,7 @@ import type {
   Section,
   SectionId,
 } from "@osdk/client.unstable";
+import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import { isInjectedRuntimeInput } from "@osdk/generator-converters.ontologyir";
 import type {
   ActionParameter,
@@ -345,13 +346,10 @@ export function convertAction(
 }
 
 function convertFunctionBackedAction(
-  actionInput: ActionType,
+  action: ActionType,
   ridGenerator: OntologyRidGenerator,
   functionsIr: FunctionsIr,
 ): ActionTypeBlockDataV2 {
-  let action: ActionType = actionInput;
-
-  // The placeholder functionRid holds the function's API name
   const rule = action.rules[0];
   invariant(
     rule.type === "functionRule",
@@ -367,94 +365,12 @@ function convertFunctionBackedAction(
     `Function "${functionName}" not found in functions IR`,
   );
 
-  const functionInputValues: Record<
-    string,
-    { type: "parameterId"; parameterId: string }
-  > = {};
-  const parameterOrdering: string[] = [];
-  const syntheticParameters: ActionParameter[] = [];
-
-  for (const input of discoveredFunction.inputs) {
-    if (
-      input.dataType.type === "ontologyEdit" ||
-      isInjectedRuntimeInput(input.dataType)
-    )
-      continue;
-
-    const paramId = input.name;
-    parameterOrdering.push(paramId);
-    functionInputValues[paramId] = {
-      type: "parameterId",
-      parameterId: paramId,
-    };
-
-    const paramType = dataTypeToActionParameterType(
-      input.dataType,
-      discoveredFunction.customTypes,
-    );
-    const structFieldValidations = dataTypeToActionStructFieldValidations(
-      input.dataType,
-      discoveredFunction.customTypes,
-    );
-    const listTypes = [
-      ...Object.values(PRIMITIVE_LIST_TYPES),
-      "geohashList",
-      "objectReferenceList",
-      "interfaceReferenceList",
-      "structList",
-    ];
-
-    const parameterTypeName =
-      typeof paramType === "string" ? paramType : paramType.type;
-
-    syntheticParameters.push({
-      id: paramId,
-      displayName: uppercaseFirstLetter(paramId),
-      type: paramType,
-      validation: {
-        required: listTypes.includes(parameterTypeName)
-          ? {
-              listLength: {},
-            }
-          : (input.required ?? true),
-        defaultVisibility: "editable",
-        allowedValues: dataTypeToActionParameterAllowedValues(
-          input.dataType,
-          paramType,
-        ),
-        ...(structFieldValidations == null ? {} : { structFieldValidations }),
-      },
-    });
-  }
-
-  action = {
-    ...action,
-    parameters: syntheticParameters,
-    entities: {
-      affectedObjectTypes: Object.keys(
-        discoveredFunction.ontologyProvenance?.editedObjects ?? {},
-      ),
-      affectedLinkTypes: [],
-      affectedInterfaceTypes: Object.keys(
-        discoveredFunction.ontologyProvenance?.editedInterfaces ?? {},
-      ),
-      typeGroups: [],
-    },
-  };
-
   const actionParameters = convertActionParameters(action, ridGenerator);
-  const functionNameToExternalMetadata = Object.fromEntries(
-    functionsIr.discoveredFunctions.flatMap((f) => {
-      const fName = f.locator.typescript?.functionName;
-      if (fName && f.externalMetadata) {
-        return [[fName, f.externalMetadata]];
-      } else {
-        return [];
-      }
-    }),
-  );
+  const actionSections = convertActionSections(action, ridGenerator);
+  const parameterOrdering =
+    action.parameterOrdering ?? (action.parameters ?? []).map((p) => p.id);
   const functionRid =
-    functionNameToExternalMetadata[functionName]?.functionRid ??
+    discoveredFunction.externalMetadata?.functionRid ??
     `ri.function-registry.main.function.${functionName}`;
 
   return {
@@ -467,9 +383,9 @@ function convertFunctionBackedAction(
               functionRule: {
                 functionRid,
                 functionVersion:
-                  functionNameToExternalMetadata[functionName]
-                    ?.functionVersion ?? "0.1.0",
-                functionInputValues,
+                  discoveredFunction.externalMetadata?.functionVersion ??
+                  "0.1.0",
+                functionInputValues: rule.functionRule.functionInputValues,
                 customExecutionMode: null,
                 experimentalDeclarativeEditInformation: null,
               },
@@ -497,10 +413,53 @@ function convertFunctionBackedAction(
         ridGenerator,
         parameterOrdering,
         actionParameters,
-        {},
+        actionSections,
       ),
     },
     parameterIds: {},
+  };
+}
+
+export function isFunctionBackedActionInput(
+  dataType: FunctionDiscovery.DataType,
+): boolean {
+  return dataType.type !== "ontologyEdit" && !isInjectedRuntimeInput(dataType);
+}
+
+export function createFunctionBackedActionParameter(
+  input: IDiscoveredFunction["inputs"][number],
+  customTypes: Record<string, unknown>,
+): ActionParameter {
+  const paramType = dataTypeToActionParameterType(input.dataType, customTypes);
+  const structFieldValidations = dataTypeToActionStructFieldValidations(
+    input.dataType,
+    customTypes,
+  );
+  const listTypes = [
+    ...Object.values(PRIMITIVE_LIST_TYPES),
+    "geohashList",
+    "objectReferenceList",
+    "interfaceReferenceList",
+    "structList",
+  ];
+  const parameterTypeName =
+    typeof paramType === "string" ? paramType : paramType.type;
+
+  return {
+    id: input.name,
+    displayName: uppercaseFirstLetter(input.name),
+    type: paramType,
+    validation: {
+      required: listTypes.includes(parameterTypeName)
+        ? { listLength: {} }
+        : (input.required ?? true),
+      defaultVisibility: "editable",
+      allowedValues: dataTypeToActionParameterAllowedValues(
+        input.dataType,
+        paramType,
+      ),
+      ...(structFieldValidations == null ? {} : { structFieldValidations }),
+    },
   };
 }
 

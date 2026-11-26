@@ -57,6 +57,7 @@ export type { Folder } from "./api/common/Folder.js";
 export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
 export {
+  convertValidationRule,
   CREATE_INTERFACE_OBJECT_PARAMETER,
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
@@ -65,6 +66,7 @@ export {
   kebab,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
+  validateParameterOrdering,
 } from "./api/defineAction.js";
 export { defineCreateInterfaceLinkAction } from "./api/defineCreateInterfaceLinkAction.js";
 export { defineCreateInterfaceObjectAction } from "./api/defineCreateInterfaceObjectAction.js";
@@ -195,6 +197,7 @@ export type {
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { default } from "./cli/main.js";
 export { convertInterfaceSchemaGracePeriod } from "./conversion/toMarketplace/convertInterfaceSchemaMigrations.js";
+export { convertMappingValue } from "./conversion/toMarketplace/convertMappingValue.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
 export {
   createValidationIssueCollector,
