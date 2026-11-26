@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AddressInfo } from "net";
+import { type AddressInfo, isIPv6 } from "net";
 
 import consola from "consola";
 import yargs from "yargs";
@@ -50,7 +50,9 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     const server = app
       .listen(argv.port, argv.host, () => {
         const { address, port } = server.address() as AddressInfo;
-        consola.log(`Ontology Explorer listening on http://${address}:${port}`);
+        consola.log(
+          `Ontology Explorer listening on http://${urlHost(address)}:${port}`,
+        );
       })
       .on("error", (err: NodeJS.ErrnoException) => {
         if (err.code === "EADDRINUSE") {
@@ -67,4 +69,16 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     consola.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
+}
+
+/**
+ * The host to print in the startup URL for `address`: `localhost` for a
+ * loopback address, whether IPv4 or IPv6, and brackets around any other IPv6
+ * address.
+ */
+function urlHost(address: string): string {
+  if (address === "::1" || address.startsWith("127.")) {
+    return "localhost";
+  }
+  return isIPv6(address) ? `[${address}]` : address;
 }

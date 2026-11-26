@@ -40,6 +40,8 @@ const STARTUP_LINE = /Ontology Explorer listening on http:\/\/(.+):(\d+)$/u;
 // The no-flags case needs the default port; skip it rather than fail when
 // something else on the machine holds it.
 const isDefaultPortFree = await isPortFree(DEFAULT_PORT);
+// Some CI containers have no IPv6, not even on loopback.
+const isIpv6LoopbackAvailable = await isPortFree(0, "::1");
 
 // Launch as the Foundry CLI would, outside vitest's test environment.
 const launchEnv: NodeJS.ProcessEnv = {
@@ -100,7 +102,7 @@ describe("ontology-explorer bin", { timeout: 2 * STARTUP_TIMEOUT_MS }, () => {
         ),
       );
 
-      expect(explorer.host).toBe("127.0.0.1");
+      expect(explorer.host).toBe("localhost");
       expect(explorer.port).toBe(DEFAULT_PORT);
       expect(root.status).toBe(200);
       expect(html).toContain("<title>Ontology Explorer</title>");
@@ -113,8 +115,9 @@ describe("ontology-explorer bin", { timeout: 2 * STARTUP_TIMEOUT_MS }, () => {
   );
 
   it("accepts the Foundry CLI's launch flags and ignores unknown ones", async () => {
-    // Contract 1 is --port, --host and --project-root. A host other than the
-    // default shows that --host is read; --port 0 lets the OS pick a port.
+    // The Foundry CLI passes --port, --host and --project-root. A host other
+    // than the default shows that --host is read; --port 0 lets the OS pick a
+    // port.
     const explorer = await start(
       [
         "--port",
@@ -150,6 +153,40 @@ describe("ontology-explorer bin", { timeout: 2 * STARTUP_TIMEOUT_MS }, () => {
     expect(explorer.port).toBeGreaterThan(0);
     expect(root.status).toBe(200);
   });
+
+  it.skipIf(!isIpv6LoopbackAvailable)(
+    "prints a localhost URL that opens the app when bound to ::1",
+    async () => {
+      // The Foundry CLI passes the address localhost resolves to first, which
+      // is ::1 on macOS.
+      const explorer = await start(
+        ["--port", "0", "--host", "::1"],
+        workDir,
+        running,
+      );
+      const url = new URL(
+        explorer.startupLine.slice(explorer.startupLine.indexOf("http://")),
+      );
+      const root = await fetch(url);
+      writeArtifact(
+        "ipv6-host.json",
+        JSON.stringify(
+          {
+            startupLine: explorer.startupLine.replace(
+              String(explorer.port),
+              "<port>",
+            ),
+            "GET /": root.status,
+          },
+          undefined,
+          2,
+        ),
+      );
+
+      expect(url.hostname).toBe("localhost");
+      expect(root.status).toBe(200);
+    },
+  );
 
   it("exits with an error when the port is taken", async () => {
     const blocker = net.createServer();
@@ -254,11 +291,11 @@ function writeArtifact(name: string, contents: string): void {
   writeFileSync(path.join(artifactsDir, name), `${contents}\n`);
 }
 
-function isPortFree(port: number): Promise<boolean> {
+function isPortFree(port: number, host = "127.0.0.1"): Promise<boolean> {
   const server = net.createServer();
   return new Promise((resolve) => {
     server.once("error", () => resolve(false));
-    server.listen(port, "127.0.0.1", () => server.close(() => resolve(true)));
+    server.listen(port, host, () => server.close(() => resolve(true)));
   });
 }
 
