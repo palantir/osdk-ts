@@ -23,6 +23,7 @@ import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import { extractRdpDefinition } from "../../../util/extractRdpDefinition.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
+import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import {
   getListMembershipChanges,
@@ -482,13 +483,9 @@ export class ObjectSetQuery extends BaseListQuery<
     return Promise.resolve();
   };
 
-  protected createPayload(params: {
-    resolvedData: any[] | undefined;
-    isOptimistic: boolean;
-    status: Status;
-    lastUpdated: number;
-    totalCount?: string;
-  }): ObjectSetPayload {
+  protected createPayload(
+    params: CollectionConnectableParams,
+  ): ObjectSetPayload {
     return {
       resolvedList: params.resolvedData,
       isOptimistic: params.isOptimistic,

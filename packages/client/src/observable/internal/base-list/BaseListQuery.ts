@@ -28,7 +28,7 @@ import type {
   Status,
 } from "../../ObservableClient/common.js";
 import type { BatchContext } from "../BatchContext.js";
-import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
+import { DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
@@ -42,6 +42,7 @@ import type { ObjectUpdate } from "../types/ObjectUpdate.js";
 import { EMPTY_RDP_SET } from "../utils/rdpFieldOperations.js";
 import type {
   CollectionConnectableParams,
+  CollectionCacheKey,
   CollectionStorageData,
 } from "./BaseCollectionQuery.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
@@ -75,7 +76,7 @@ export interface BaseListQueryOptions extends CommonObserveOptions {
  * Provides common functionality for working with collections of objects
  */
 export abstract class BaseListQuery<
-  KEY extends CacheKey<any, CollectionStorageData, any, any>,
+  KEY extends CollectionCacheKey,
   PAYLOAD extends BaseListPayloadShape,
   O extends BaseListQueryOptions,
 > extends Query<KEY, PAYLOAD, O> {
