@@ -82,7 +82,9 @@ export function generateZodSchemas(
       const name = key(type.reference.locator);
       if (seen.has(name)) throw new Error(`Cyclic component alias: ${name}`);
       seen.add(name);
-      type = index.get(name)!.type;
+      const component = index.get(name);
+      if (!component) throw new Error(`Unresolved component: ${name}`);
+      type = component.type;
     }
     return type;
   }
@@ -125,20 +127,32 @@ export function generateZodSchemas(
         return schema
           ? `${emit(type.optional.subType, mode)}.optional()`
           : `(${emit(type.optional.subType, mode)}) | undefined`;
-      case "list":
-        return schema
-          ? `z.array(${emit(type.list.subType, mode)})`
-          : `Array<${emit(type.list.subType, mode)}>`;
+      case "list": {
+        if (!schema) return `Array<${emit(type.list.subType, mode)}>`;
+        let listSchema = `z.array(${emit(type.list.subType, mode)})`;
+        if (type.list.minItems !== undefined) {
+          listSchema += `.min(${type.list.minItems})`;
+        }
+        if (type.list.maxItems !== undefined) {
+          listSchema += `.max(${type.list.maxItems})`;
+        }
+        return listSchema;
+      }
       case "map": {
         const keyType = resolve(type.map.keyType);
+        const value = emit(type.map.valueType, mode);
+        if (!schema) {
+          const record = `Record<${emit(type.map.keyType, mode)}, ${value}>`;
+          return keyType.type === "enum" ? `Partial<${record}>` : record;
+        }
         // JSON object keys remain strings; validate integer keys without transforming the parsed record.
         const keySchema =
           keyType.type === "builtin" && keyType.builtin.type === "integer"
             ? "z.string().regex(/^(0|-?[1-9][0-9]*)$/).refine(value => z.int32().safeParse(Number(value)).success)"
-            : emit(type.map.keyType, mode);
-        return schema
-          ? `z.record(${keySchema}, ${emit(type.map.valueType, mode)})`
-          : `Record<${emit(type.map.keyType, mode)}, ${emit(type.map.valueType, mode)}>`;
+            : emit(keyType, mode);
+        const recordFn =
+          keyType.type === "enum" ? "z.partialRecord" : "z.record";
+        return `${recordFn}(${keySchema}, ${value})`;
       }
       case "enum":
         return schema

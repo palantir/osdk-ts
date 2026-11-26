@@ -343,6 +343,58 @@ describe("Zod schema generator", () => {
     }
   });
 
+  it("enforces minItems and maxItems on list schemas", async () => {
+    const schemas = await loadModules(
+      generateZodSchemas(
+        fixture([
+          component("BoundedList", {
+            type: "list",
+            list: { subType: integer, minItems: 1, maxItems: 2 },
+          }),
+        ]),
+      ),
+    );
+    expect(schemas.TestBoundedListSchema.parse([1])).toEqual([1]);
+    expect(schemas.TestBoundedListSchema.parse([1, 2])).toEqual([1, 2]);
+    expect(schemas.TestBoundedListSchema.safeParse([]).success).toBe(false);
+    expect(schemas.TestBoundedListSchema.safeParse([1, 2, 3]).success).toBe(
+      false,
+    );
+  });
+
+  it("supports alias-keyed and enum-keyed maps with partial enum keys", async () => {
+    const files = generateZodSchemas(
+      fixture([
+        component("Name", {
+          type: "builtin",
+          builtin: { type: "string", string: {} },
+        }),
+        component("Color", { type: "enum", enum: { values: ["RED", "BLUE"] } }),
+        component("ByName", {
+          type: "map",
+          map: { keyType: reference("Name"), valueType: integer },
+        }),
+        component("ByColor", {
+          type: "map",
+          map: { keyType: reference("Color"), valueType: integer },
+        }),
+      ]),
+    );
+    const source = files.get("test.ts")!;
+    expect(source).toContain("z.record(z.string(), z.int32())");
+    expect(source).toContain("Partial<Record<TestColor, number>>");
+    expect(source).toContain(
+      'z.partialRecord(z.enum(["RED","BLUE"]), z.int32())',
+    );
+    const schemas = await loadModules(files);
+    expect(schemas.TestByNameSchema.parse({ alice: 1 })).toEqual({ alice: 1 });
+    expect(schemas.TestByColorSchema.parse({})).toEqual({});
+    expect(schemas.TestByColorSchema.parse({ RED: 1 })).toEqual({ RED: 1 });
+    expect(schemas.TestByColorSchema.safeParse({ GREEN: 1 }).success).toBe(
+      false,
+    );
+  });
+
   it("validates integer map keys without coercing or losing values", async () => {
     const schemas = await loadModules(
       generateZodSchemas(
