@@ -23,8 +23,8 @@ import { hideBin } from "yargs/helpers";
 import { createServer } from "./server.js";
 
 export async function cli(args: string[] = process.argv): Promise<void> {
-  // Not strict: the Foundry CLI may pass flags from a newer launch contract,
-  // which this version must ignore rather than fail on.
+  // Not strict: a newer Foundry CLI may pass flags this version doesn't know,
+  // which it must ignore rather than fail on.
   const argv = await yargs(hideBin(args))
     .option("port", {
       alias: "p",

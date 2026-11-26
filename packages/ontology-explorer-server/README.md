@@ -21,10 +21,3 @@ pnpm exec ontology-explorer
 | `--project-root` |             | Root of the SuperRepo, the directory holding `foundry.yml`. Not used yet |
 
 Unknown flags are ignored, so a newer Foundry CLI can pass flags this version doesn't know.
-
-## Launch contract
-
-`foundryCli.launchContracts` in `package.json` lists the Foundry CLI launch contracts this version
-supports. The CLI only launches a version that supports its contract.
-
-- **Contract 1:** the CLI passes `--port`, `--host` and `--project-root`.
