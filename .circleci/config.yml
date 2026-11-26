@@ -502,6 +502,62 @@ jobs:
           path: /tmp/test-results
       - verify-working-tree-clean
 
+  release-dry-run:
+    executor:
+      name: node
+      resource-class: xlarge
+    environment:
+      # Safety net, so we never really publish even if `--dry-run` gets dropped
+      npm_config_dry_run: "true"
+    steps:
+      - prepare
+      # prePublish runs a full build + lint, these 3 caches cover all of it
+      - restore-turbo-cache:
+          scope: apps
+      - restore-turbo-cache:
+          scope: storybook
+      - restore-turbo-cache:
+          scope: lint
+      - run:
+          name: Publish packages (dry run)
+          command: pnpm ci:publish --dry-run
+      - store_artifacts:
+          path: pnpm-publish-summary.json
+
+  # `changeset publish` has no dry run, so we use `pnpm publish -r`. Same flags
+  # here as every publishable package sets `publishConfig.access`
+  snapshot-dry-run:
+    executor:
+      name: node
+      resource-class: xlarge
+    environment:
+      npm_config_dry_run: "true"
+    steps:
+      - prepare
+      - restore-turbo-cache:
+          scope: apps
+      # `circleci-` so GHA hasn't already published these versions, otherwise
+      # pnpm skips them. Remove once we publish from CircleCI
+      - run:
+          name: Update versions for snapshots
+          command: pnpm exec changeset version --snapshot "circleci-${CIRCLE_BRANCH//\//-}"
+      - run:
+          name: Make sure code is up to date
+          command: pnpm exec turbo run postVersioning
+      - run:
+          name: Build publishable packages
+          command: |
+            filters="$(pnpm m ls --depth -1 --json \
+              | jq -r '.[] | select(.private != true) | "--filter=\(.name)"')"
+            pnpm exec turbo run build $filters
+      - run:
+          name: Publish snapshots (dry run)
+          command: |
+            pnpm publish -r --dry-run --no-git-checks --report-summary \
+              --tag "next-${CIRCLE_BRANCH//\//__}"
+      - store_artifacts:
+          path: pnpm-publish-summary.json
+
   ci-all:
     executor:
       name: node
@@ -556,3 +612,20 @@ workflows:
             - test
             - e2e
             - storybook-interaction-tests
+      - release-dry-run:
+          requires: [ci-all]
+          serial-group: << pipeline.project.slug >>/release-<< pipeline.git.branch >>
+          filters:
+            branches:
+              only:
+                - main
+                - /release\/.*/
+      - snapshot-dry-run:
+          requires: [ci-all]
+          serial-group: << pipeline.project.slug >>/snapshot-<< pipeline.git.branch >>
+          filters:
+            branches:
+              only:
+                - main
+                - next
+                - /release\/.*/
