@@ -29,6 +29,7 @@ import type {
   EntityPermission,
   MakerValidationIssueCollector,
   MappingValue,
+  StructFieldValidationConfiguration,
   SubmissionMetadata,
   TableConfiguration,
 } from "@osdk/maker";
@@ -227,14 +228,40 @@ function applyParameterConfiguration(
   if (configuration == null) {
     return parameter;
   }
-  const { displayName, description, defaultValue, renderHint, ...validation } =
-    configuration;
+  const {
+    displayName,
+    description,
+    defaultValue,
+    renderHint,
+    structFieldValidations,
+    ...validation
+  } = configuration;
   return {
     ...parameter,
     displayName: displayName ?? parameter.displayName,
     ...(description !== undefined && { description }),
     ...(defaultValue !== undefined && { defaultValue }),
     ...(renderHint !== undefined && { renderHint }),
-    validation: { ...parameter.validation, ...validation },
+    validation: {
+      ...parameter.validation,
+      ...validation,
+      ...(structFieldValidations !== undefined && {
+        structFieldValidations: mergeStructFieldValidations(
+          parameter.validation.structFieldValidations,
+          structFieldValidations,
+        ),
+      }),
+    },
   };
+}
+
+function mergeStructFieldValidations(
+  generated: Record<string, StructFieldValidationConfiguration> | undefined,
+  configured: Record<string, StructFieldValidationConfiguration>,
+): Record<string, StructFieldValidationConfiguration> {
+  const merged = { ...generated };
+  for (const [fieldApiName, configuration] of Object.entries(configured)) {
+    merged[fieldApiName] = { ...generated?.[fieldApiName], ...configuration };
+  }
+  return merged;
 }

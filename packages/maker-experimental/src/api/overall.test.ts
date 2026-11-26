@@ -394,6 +394,83 @@ describe("Experimental Test Suite", () => {
       );
     });
 
+    it("keeps generated validations for struct fields left out of the configuration", async () => {
+      const result = await withFunctionsIr(
+        [
+          {
+            name: "address",
+            dataType: {
+              type: "anonymousCustomType",
+              anonymousCustomType: {
+                fields: {
+                  street: { type: "string", string: {} },
+                  city: { type: "string", string: {} },
+                },
+              },
+            },
+          },
+        ],
+        (functionsIrFile) =>
+          defineOntologyV2(
+            "com.palantir.",
+            () => {
+              defineTaggedObject();
+              defineFunctionBackedAction({
+                functionApiName: "updateTags",
+                parameterConfiguration: {
+                  address: {
+                    structFieldValidations: {
+                      street: { defaultVisibility: "hidden" },
+                    },
+                  },
+                },
+              });
+            },
+            undefined,
+            undefined,
+            functionsIrFile,
+          ),
+      );
+      const [{ actionType }] = Object.values(
+        result.ontologyIr.ontology.actionTypes,
+      );
+      const fields =
+        actionType.actionTypeLogic.validation.parameterValidations.address
+          .structFieldValidations;
+      expect(fields.street.defaultValidation).toMatchObject({
+        display: { visibility: { type: "hidden", hidden: {} } },
+        validation: { required: { type: "required", required: {} } },
+      });
+      expect(fields.city.defaultValidation.validation.required).toEqual({
+        type: "required",
+        required: {},
+      });
+    });
+
+    it("rejects mappings that reference undefined parameters", async () => {
+      await expect(
+        withFunctionsIr(inputs, (functionsIrFile) =>
+          defineOntologyV2(
+            "com.palantir.",
+            () => {
+              defineTaggedObject();
+              defineFunctionBackedAction({
+                functionApiName: "updateTags",
+                nonParameterMappings: {
+                  note: { type: "parameterId", parameterId: "missing" },
+                },
+              });
+            },
+            undefined,
+            undefined,
+            functionsIrFile,
+          ),
+        ),
+      ).rejects.toThrow(
+        'Parameters ["missing"] were referenced but not defined',
+      );
+    });
+
     it("ignores input settings before functions are discovered", async () => {
       const result = await defineOntologyV2("com.palantir.", () => {
         defineTaggedObject();

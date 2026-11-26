@@ -857,6 +857,21 @@ function referencedParameterIds(
         parameterIds.add(rule.deleteInterfaceLinkRule.sourceObject);
         parameterIds.add(rule.deleteInterfaceLinkRule.targetObject);
         break;
+      case "functionRule":
+        Object.values(rule.functionRule.functionInputValues).forEach((v) => {
+          switch (v.type) {
+            case "parameterId":
+              parameterIds.add(v.parameterId);
+              break;
+            case "objectParameterPropertyValue":
+              parameterIds.add(v.objectParameterPropertyValue.parameterId);
+              break;
+            case "interfaceParameterPropertyValue":
+              parameterIds.add(v.interfaceParameterPropertyValue.parameterId);
+              break;
+          }
+        });
+        break;
     }
   });
   return parameterIds;
