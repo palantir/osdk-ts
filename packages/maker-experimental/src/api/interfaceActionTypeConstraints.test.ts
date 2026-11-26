@@ -36,7 +36,7 @@ import {
 import { defineFunctionBackedAction } from "./defineFunctionBackedAction.js";
 import { defineInterfaceImplementation } from "./defineInterfaceImplementation.js";
 import type { FunctionsIr } from "./defineOntologyV2.js";
-import { defineOntologyV2 } from "./defineOntologyV2.js";
+import { defineOntologyV2, setFunctionsIr } from "./defineOntologyV2.js";
 
 const NAMESPACE = "com.palantir.";
 const ACTION_NAME = "create-task";
@@ -612,11 +612,6 @@ function convertFunctionWithParameterRequirement({
 }: {
   required: boolean;
 }) {
-  initializeOntologyState(NAMESPACE);
-  defineTaskImplementation({
-    isRequiredParameterOnConcreteAction: true,
-    functionBacked: true,
-  });
   const functionsIr: FunctionsIr = {
     discoveredFunctions: [
       {
@@ -637,9 +632,19 @@ function convertFunctionWithParameterRequirement({
       },
     ],
   };
-  return convertOntologyDefinition(
-    getOntologyDefinition(),
-    new OntologyRidGeneratorImpl(getImportedTypes()),
-    functionsIr,
-  );
+  initializeOntologyState(NAMESPACE);
+  setFunctionsIr(functionsIr);
+  try {
+    defineTaskImplementation({
+      isRequiredParameterOnConcreteAction: true,
+      functionBacked: true,
+    });
+    return convertOntologyDefinition(
+      getOntologyDefinition(),
+      new OntologyRidGeneratorImpl(getImportedTypes()),
+      functionsIr,
+    );
+  } finally {
+    setFunctionsIr(undefined);
+  }
 }
