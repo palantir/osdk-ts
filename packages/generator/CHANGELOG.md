@@ -1,5 +1,17 @@
 # @osdk/generator
 
+## 2.95.0
+
+### Minor Changes
+
+- a5bdff2: Add primitive type helpers for agent parameters and results.
+
+### Patch Changes
+
+- Updated dependencies [a5bdff2]
+  - @osdk/api@2.95.0
+  - @osdk/generator-converters@2.95.0
+
 ## 2.94.0
 
 ### Patch Changes

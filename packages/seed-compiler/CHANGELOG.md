@@ -1,5 +1,25 @@
 # @osdk/seed-compiler
 
+## 0.18.0
+
+### Minor Changes
+
+- 1fb1034: Add admin user seeding through `AdminSeedBuilder` and `createFoundrySeed`, including selection of the current user.
+
+  Rename the ontology seed helpers to `createOntologySeedWithMetadata` and `OntologySeed*`. The original exports remain available as deprecated aliases.
+
+  Use the new ontology seed exports in the seed compiler and integration-testing client. The integration-testing client now requires `@osdk/seed-helpers` 0.34.0 or later within 0.x.
+
+### Patch Changes
+
+- Updated dependencies [a5bdff2]
+- Updated dependencies [9a1c66b]
+- Updated dependencies [7a3917d]
+- Updated dependencies [1fb1034]
+  - @osdk/api@2.95.0
+  - @osdk/client@2.95.0
+  - @osdk/seed-helpers@0.34.0
+
 ## 0.17.0
 
 ### Minor Changes

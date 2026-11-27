@@ -1,5 +1,42 @@
 # @osdk/maker-experimental
 
+## 0.91.0
+
+### Minor Changes
+
+- f7e7797: Move interface edit validation and action type implementation reference checks into `validateOntology`.
+- 0f1892a: Update the interface schema migration API bindings.
+- 2a61bb4: Clean ups to the interface schema migration code paths.
+- 7b5ed14: End to end test the `addRequiredActionTypeConstraint` and `replace` migrations through the CLI's `--write-locks` flow.
+- c0c2712: Convert `addRequiredActionTypeConstraint` interface schema migrations to Marketplace block data.
+- 2e9c64b: Add validation for the `addRequiredActionTypeConstraint` interface schema migration.
+- 8f5182b: Convert `replace` interface schema migrations to block data.
+- 5c5709f: Map struct fields in `replace` interface schema migrations.
+- 468e9ad: Support parameterConfiguration, nonParameterMappings, sections, parameterOrdering, actionLevelValidation and tableConfiguration on function-backed actions
+
+### Patch Changes
+
+- Updated dependencies [f7e7797]
+- Updated dependencies [6df3a72]
+- Updated dependencies [0f1892a]
+- Updated dependencies [2a61bb4]
+- Updated dependencies [cf66559]
+- Updated dependencies [c0c2712]
+- Updated dependencies [2e9c64b]
+- Updated dependencies [8e0c9b1]
+- Updated dependencies [1cb70cb]
+- Updated dependencies [cb205d9]
+- Updated dependencies [5c5709f]
+- Updated dependencies [e2ed62d]
+- Updated dependencies [a5bdff2]
+- Updated dependencies [468e9ad]
+  - @osdk/maker@0.94.0
+  - @osdk/client.unstable@2.95.0
+  - @osdk/api@2.95.0
+  - @osdk/maker-import@0.59.0
+  - @osdk/generator-converters.ontologyir@2.95.0
+  - @osdk/generator-converters.preview@0.67.0
+
 ## 0.90.0
 
 ### Minor Changes

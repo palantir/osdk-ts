@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.95.0
+
+### Minor Changes
+
+- 9a1c66b: Omit unresolved and deleted objects from observable lists before emitting them.
+- 7a3917d: Allow OsdkProvider's client prop to accept an existing ObservableClient so React and non-React consumers can share a cache. Allow creation options only with a plain client. Add ObservableClient.getClient() to access the store's underlying client and registerUserAgent() to preserve request attribution.
+
+### Patch Changes
+
+- Updated dependencies [0f1892a]
+- Updated dependencies [5c5709f]
+- Updated dependencies [a5bdff2]
+  - @osdk/client.unstable@2.95.0
+  - @osdk/api@2.95.0
+  - @osdk/generator-converters@2.95.0
+  - @osdk/shared.test@2.65.0
+
 ## 2.94.0
 
 ### Minor Changes

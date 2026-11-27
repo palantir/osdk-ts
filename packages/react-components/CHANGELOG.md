@@ -1,5 +1,26 @@
 # @osdk/react-components
 
+## 0.74.0
+
+### Minor Changes
+
+- bbd337b: ActionForm no longer converts values to match parameter types on submit, so pass correctly typed defaults and controlled values. A field that can't display its stored value shows a message such as "Expected a number, received: string" with a Clear button; these values don't block submit. Integer and long fields still truncate the user's edits on blur.
+
+  Serialize date-only action parameters as the selected local calendar date (YYYY-MM-DD), while preserving ISO timestamps for timestamp parameters.
+
+- 718be7c: Rebuild the docs site with Markdown versions of every page for AI tools, correct hook and OAuth doc comments, and ship the rewritten React guides in the @osdk/react package
+
+### Patch Changes
+
+- Updated dependencies [718be7c]
+- Updated dependencies [a5bdff2]
+- Updated dependencies [9a1c66b]
+- Updated dependencies [7a3917d]
+  - @osdk/react@2.95.0
+  - @osdk/api@2.95.0
+  - @osdk/client@2.95.0
+  - @osdk/aip-core@0.13.0
+
 ## 0.73.0
 
 ### Minor Changes

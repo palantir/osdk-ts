@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.react-public.beta",
   "private": true,
-  "version": "2.94.0",
+  "version": "2.95.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
