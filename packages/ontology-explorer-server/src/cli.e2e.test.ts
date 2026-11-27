@@ -157,8 +157,7 @@ describe("ontology-explorer bin", { timeout: 2 * STARTUP_TIMEOUT_MS }, () => {
   it.skipIf(!isIpv6LoopbackAvailable)(
     "prints a localhost URL that opens the app when bound to ::1",
     async () => {
-      // The Foundry CLI passes the address localhost resolves to first, which
-      // is ::1 on macOS.
+      // An IPv6 loopback address also prints as localhost.
       const explorer = await start(
         ["--port", "0", "--host", "::1"],
         workDir,
