@@ -60,12 +60,27 @@ function observeListView(
 }
 
 describe("ListQueryView manual fetchMore with page size 20", () => {
-  it("fetches when the cache has only the first page", async () => {
-    const { firstPayload, fetchMore, subscription } = observeListView(20, 20);
+  it.each([
+    {
+      name: "fetches when the cache has only the first page",
+      hasMorePages: true,
+      shouldFetch: true,
+    },
+    {
+      name: "does not fetchMore when there is only one page",
+      hasMorePages: false,
+      shouldFetch: false,
+    },
+  ])("$name", async ({ hasMorePages, shouldFetch }) => {
+    const { firstPayload, fetchMore, subscription } = observeListView(
+      20,
+      20,
+      hasMorePages,
+    );
 
     await firstPayload.fetchMore();
 
-    expect(fetchMore).toHaveBeenCalledOnce();
+    expect(fetchMore).toHaveBeenCalledTimes(shouldFetch ? 1 : 0);
     subscription.unsubscribe();
   });
 
@@ -80,36 +95,6 @@ describe("ListQueryView manual fetchMore with page size 20", () => {
     expect(fetchMore).not.toHaveBeenCalled();
     expect(received).toHaveLength(2);
     expect(received[1]?.resolvedList).toHaveLength(40);
-    subscription.unsubscribe();
-  });
-
-  it("reuses cached entries when the server has no more pages", async () => {
-    const { firstPayload, received, fetchMore, subscription } = observeListView(
-      40,
-      40,
-      false,
-    );
-
-    await firstPayload.fetchMore();
-
-    expect(fetchMore).not.toHaveBeenCalled();
-    expect(received[1]?.resolvedList).toHaveLength(40);
-    expect(received[1]?.hasMore).toBe(false);
-    subscription.unsubscribe();
-  });
-
-  it("does not fetch when deleted entries leave a short final page", async () => {
-    const { firstPayload, received, fetchMore, subscription } = observeListView(
-      40,
-      39,
-      false,
-    );
-
-    await firstPayload.fetchMore();
-
-    expect(fetchMore).not.toHaveBeenCalled();
-    expect(received[1]?.resolvedList).toHaveLength(39);
-    expect(received[1]?.hasMore).toBe(false);
     subscription.unsubscribe();
   });
 
