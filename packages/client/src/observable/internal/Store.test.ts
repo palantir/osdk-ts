@@ -85,6 +85,7 @@ import {
   updateList,
   updateObject,
   waitForCall,
+  waitForPayload,
 } from "./testUtils.js";
 import { invalidateList } from "./testUtils/invalidateList.js";
 import { expectStandardObserveLink } from "./testUtils/observeLink/expectStandardObserveLink.js";
@@ -2219,7 +2220,7 @@ describe(Store, () => {
       store = new Store(client);
     });
 
-    it("properly fires error handler for a list", async () => {
+    it("reports a failed list fetch without ending the subscription", async () => {
       const sub = mockListSubCallback();
 
       // ignores unhandled rejection, like one we will get from fire-and-forget metadata call
@@ -2239,9 +2240,12 @@ describe(Store, () => {
       expect(sub.next).toHaveBeenCalledOnce();
       expectSingleListCallAndClear(sub, undefined, { status: "loading" });
 
-      await waitForCall(sub.error);
-      expect(sub.error).toHaveBeenCalledOnce();
-      expect(sub.next).not.toHaveBeenCalled();
+      const failed = await waitForPayload(
+        sub,
+        (payload) => payload?.status === "error",
+      );
+      expect(failed?.resolvedList).toEqual([]);
+      expect(sub.error).not.toHaveBeenCalled();
     });
 
     describe("batching", () => {
