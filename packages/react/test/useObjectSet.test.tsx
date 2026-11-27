@@ -278,6 +278,25 @@ describe(useObjectSet, () => {
       expect(result.current.error).toBe(testError);
     });
 
+    it("clears an observer error when a later payload succeeds", () => {
+      const wrapper = createWrapper();
+      const { result } = renderHook(() => useObjectSet(mockObjectSet), {
+        wrapper,
+      });
+
+      act(() => {
+        capturedObserver?.error(new Error("temporary failure"));
+      });
+      expect(result.current.error).toBeDefined();
+
+      const rows = [{ $primaryKey: "1", name: "Recovered" }];
+      act(() => {
+        capturedObserver?.next({ resolvedList: rows, status: "loaded" });
+      });
+      expect(result.current.error).toBeUndefined();
+      expect(result.current.data).toEqual(rows);
+    });
+
     it("should set isLoading to false on error", () => {
       const wrapper = createWrapper();
 
