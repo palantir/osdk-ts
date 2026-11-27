@@ -279,7 +279,6 @@ export class ObjectSetQuery extends BaseListQuery<
     batch: BatchContext,
   ): Entry<ObjectSetCacheKey> {
     this.logger?.error("error", error);
-    this.store.subjects.get(this.cacheKey).error(error);
 
     const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
     return this.writeToStore(

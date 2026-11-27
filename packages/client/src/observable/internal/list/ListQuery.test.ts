@@ -1354,6 +1354,72 @@ describe("ListQuery shared query tests", () => {
     ]);
   });
 
+  it("recovers a failed list fetch for current and new subscribers", async () => {
+    setupTodos(fauxFoundry, 5);
+    const first = mockListSubCallback();
+    const firstSubscription = store.lists.observe({ type: Todo }, first);
+    defer(firstSubscription);
+    await waitForPayload(first, (payload) => payload?.status === "loaded");
+
+    apiServer.use(
+      msw.http.post("*/loadObjects", () =>
+        msw.HttpResponse.json({}, { status: 500 }),
+      ),
+    );
+    await firstSubscription.query.revalidate(true);
+    await waitForPayload(first, (payload) => payload?.status === "error");
+    // A terminal error would close the shared stream and block later refetch results.
+    expect(first.error).not.toHaveBeenCalled();
+
+    apiServer.resetHandlers();
+    await firstSubscription.query.revalidate(true);
+    const recovered = await waitForPayload(
+      first,
+      (payload) => payload?.status === "loaded",
+    );
+    expect(recovered?.resolvedList).toHaveLength(5);
+
+    const second = mockListSubCallback();
+    defer(store.lists.observe({ type: Todo }, second));
+    const shared = await waitForPayload(
+      second,
+      (payload) => payload?.status === "loaded",
+    );
+    expect(shared?.resolvedList).toHaveLength(5);
+  });
+
+  it("recovers a failed list when a second subscriber mounts", async () => {
+    setupTodos(fauxFoundry, 5);
+    const options = { type: Todo, dedupeInterval: 0 };
+    const first = mockListSubCallback();
+    const firstSubscription = store.lists.observe(options, first);
+    defer(firstSubscription);
+    await waitForPayload(first, (payload) => payload?.status === "loaded");
+
+    apiServer.use(
+      msw.http.post("*/loadObjects", () =>
+        msw.HttpResponse.json({}, { status: 500 }),
+      ),
+    );
+    await firstSubscription.query.revalidate(true);
+    await waitForPayload(first, (payload) => payload?.status === "error");
+
+    apiServer.resetHandlers();
+    const second = mockListSubCallback();
+    defer(store.lists.observe(options, second));
+    const recovered = await waitForPayload(
+      second,
+      (payload) => payload?.status === "loaded",
+    );
+    expect(recovered?.resolvedList).toHaveLength(5);
+    expect(second.error).not.toHaveBeenCalled();
+    const secondPayload = await waitForPayload(
+      first,
+      (payload) => payload?.status === "loaded",
+    );
+    expect(secondPayload?.resolvedList).toHaveLength(5);
+  });
+
   it("shared query: plain subscriber first, autoFetchMore second", async () => {
     setupTodos(fauxFoundry, 100);
 

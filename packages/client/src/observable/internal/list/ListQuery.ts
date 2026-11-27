@@ -361,7 +361,6 @@ export abstract class ListQuery extends BaseListQuery<
     batch: BatchContext,
   ): Entry<ListCacheKey> {
     this.logger?.error("error", error);
-    this.store.subjects.get(this.cacheKey).error(error);
 
     // We don't call super.handleFetchError because ListQuery has special error handling
     // but we still use writeToStore to create a properly structured Entry

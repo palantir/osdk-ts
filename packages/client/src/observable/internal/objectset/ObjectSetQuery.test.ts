@@ -16,12 +16,19 @@
 
 import type { ObjectSet } from "@osdk/api";
 import { Employee, Office } from "@osdk/client.test.ontology";
-import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
+import type { SetupServer } from "@osdk/shared.test";
+import {
+  FauxFoundry,
+  msw,
+  ontologies,
+  startNodeApiServer,
+} from "@osdk/shared.test";
 import { beforeAll, beforeEach, describe, expect, it, vitest } from "vitest";
 
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import {
   createObservableClient,
   type ObservableClient,
@@ -33,9 +40,11 @@ import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { createOptimisticId } from "../OptimisticId.js";
 import { Store } from "../Store.js";
 import { createDefer, mockObserver, waitForPayload } from "../testUtils.js";
+import type { ObjectSetQueryOptions } from "./ObjectSetQueryOptions.js";
 
 describe("ObjectSetQuery cache reconciliation", () => {
   let client: Client;
+  let apiServer: SetupServer;
   let store: Store;
   let fauxFoundry: FauxFoundry;
   const defer = createDefer();
@@ -46,6 +55,7 @@ describe("ObjectSetQuery cache reconciliation", () => {
       createClient,
     );
     client = testSetup.client;
+    apiServer = testSetup.apiServer;
     fauxFoundry = testSetup.fauxFoundry;
 
     const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
@@ -57,6 +67,7 @@ describe("ObjectSetQuery cache reconciliation", () => {
   });
 
   beforeEach(() => {
+    apiServer.resetHandlers();
     store = new Store(client);
   });
 
@@ -387,6 +398,43 @@ describe("ObjectSetQuery cache reconciliation", () => {
       status: "loading",
       value: { data: [] },
     });
+  });
+
+  it("recovers a failed object set fetch for current and new subscribers", async () => {
+    setupEmployees();
+    const options: ObjectSetQueryOptions = { baseObjectSet: client(Employee) };
+
+    const first = mockObserver<ObjectSetPayload>();
+    const firstSubscription = store.objectSets.observe(options, first);
+    defer(firstSubscription);
+
+    await waitForPayload(first, (payload) => payload.status === "loaded");
+
+    apiServer.use(
+      msw.http.post("*/loadObjects", () =>
+        msw.HttpResponse.json({}, { status: 500 }),
+      ),
+    );
+    await firstSubscription.query.revalidate(true);
+    await waitForPayload(first, (payload) => payload.status === "error");
+    // A terminal error would close the shared stream and block later refetch results.
+    expect(first.error).not.toHaveBeenCalled();
+
+    apiServer.resetHandlers();
+    await firstSubscription.query.revalidate(true);
+    const recovered = await waitForPayload(
+      first,
+      (payload) => payload.status === "loaded",
+    );
+    expect(recovered.resolvedList).toHaveLength(3);
+
+    const second = mockObserver<ObjectSetPayload>();
+    defer(store.objectSets.observe(options, second));
+    const shared = await waitForPayload(
+      second,
+      (payload) => payload.status === "loaded",
+    );
+    expect(shared.resolvedList).toHaveLength(3);
   });
 });
 
