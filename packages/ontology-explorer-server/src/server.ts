@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { readFileSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -22,23 +21,8 @@ import express from "express";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export function createServer(filePath: string): express.Express {
+export function createServer(): express.Express {
   const app = express();
-  const resolvedPath = path.resolve(filePath);
-
-  // TODO: load once and have a file watcher to automatically resend new data when the file changes
-  app.get("/api/ontology", (_req, res) => {
-    try {
-      const raw = readFileSync(resolvedPath, "utf-8");
-      res.type("text/plain").send(raw);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      res
-        .status(500)
-        .type("text/plain")
-        .send(`Failed to read ontology file: ${message}`);
-    }
-  });
 
   app.all("/api/*", (_req, res) => {
     res.status(404).json({ error: "Not found" });

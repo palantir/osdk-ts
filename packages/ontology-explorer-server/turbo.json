@@ -10,6 +10,9 @@
       ],
       "outputs": ["build/site/**"]
     },
+    "test": {
+      "dependsOn": ["build"]
+    },
     "transpileEsm": {
       "dependsOn": ["^transpileEsm"]
     }

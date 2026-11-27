@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fs from "fs";
+import { type AddressInfo, isIPv6 } from "net";
 
 import consola from "consola";
 import yargs from "yargs";
@@ -23,34 +23,35 @@ import { hideBin } from "yargs/helpers";
 import { createServer } from "./server.js";
 
 export async function cli(args: string[] = process.argv): Promise<void> {
+  // Not strict: a newer Foundry CLI may pass flags this version doesn't know,
+  // which it must ignore rather than fail on.
   const argv = await yargs(hideBin(args))
-    .option("ontology-file", {
-      alias: "f",
-      type: "string",
-      description: "Path to the ontology.json file",
-      demandOption: true,
-    })
     .option("port", {
       alias: "p",
       type: "number",
       description: "Port to listen on",
-      default: 3000,
+      default: 8083,
     })
-    .strict()
+    .option("host", {
+      type: "string",
+      description: "Address to listen on",
+      default: "127.0.0.1",
+    })
+    .option("project-root", {
+      type: "string",
+      description:
+        "Root of the SuperRepo, the directory holding foundry.yml. Not used yet",
+    })
     .parse();
 
-  if (!fs.existsSync(argv.ontologyFile)) {
-    consola.error(`File not found: ${argv.ontologyFile}`);
-    process.exit(1);
-  }
-
   try {
-    const app = createServer(argv.ontologyFile);
+    const app = createServer();
 
-    app
-      .listen(argv.port, () => {
+    const server = app
+      .listen(argv.port, argv.host, () => {
+        const { address, port } = server.address() as AddressInfo;
         consola.log(
-          `Ontology Explorer listening on http://localhost:${argv.port}`,
+          `Ontology Explorer listening on http://${urlHost(address)}:${port}`,
         );
       })
       .on("error", (err: NodeJS.ErrnoException) => {
@@ -68,4 +69,16 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     consola.error(err instanceof Error ? err.message : String(err));
     process.exit(1);
   }
+}
+
+/**
+ * The host to print in the startup URL for `address`: `localhost` for a
+ * loopback address, whether IPv4 or IPv6, and brackets around any other IPv6
+ * address.
+ */
+function urlHost(address: string): string {
+  if (address === "::1" || address.startsWith("127.")) {
+    return "localhost";
+  }
+  return isIPv6(address) ? `[${address}]` : address;
 }
