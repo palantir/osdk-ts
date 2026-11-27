@@ -21,6 +21,7 @@ import {
   customFetch,
   generateRandomCodeVerifier,
   generateRandomState,
+  isOAuth2Error,
   processAuthorizationCodeOAuth2Response,
   refreshTokenGrantRequest,
   validateAuthResponse,
@@ -262,46 +263,42 @@ export function createPublicOauthClient(
       return;
     }
 
-    try {
-      // note, we don't use processRefreshTokenResponse because the mp oauth implementation
-      // doesn't do refresh tokens quite right and this lets us skip the id check
-      const result = makeTokenAndSaveRefresh(
-        throwIfError(
-          await processAuthorizationCodeOAuth2Response(
-            authServer,
-            client,
-            await refreshTokenGrantRequest(
-              authServer,
-              client,
-              refresh_token,
-              oauthHttpOptions,
-            ),
-          ),
-        ),
-        "refresh",
-      );
+    // note, we don't use processRefreshTokenResponse because the mp oauth implementation
+    // doesn't do refresh tokens quite right and this lets us skip the id check
+    const response = await processAuthorizationCodeOAuth2Response(
+      authServer,
+      client,
+      await refreshTokenGrantRequest(
+        authServer,
+        client,
+        refresh_token,
+        oauthHttpOptions,
+      ),
+    );
 
-      if (
-        result &&
-        window.location.pathname === new URL(redirect_uri).pathname
-      ) {
-        const { oldUrl } = readSession(client);
-        // don't block on the redirect
-        void go(oldUrl ?? "/");
-      }
-      return result;
-    } catch (e) {
+    // Only an OAuth error response means the server refused the token; other failures throw above and leave it stored
+    if (isOAuth2Error(response)) {
       if (process.env.NODE_ENV !== "production") {
         logger?.warn(
           "Failed to get OAuth2 refresh token. Removing refresh token",
-          e,
+          response,
         );
       }
       removeLocal(client, storage);
       if (expectRefreshToken) {
         throw new Error("Could not refresh token");
       }
+      return;
     }
+
+    const result = makeTokenAndSaveRefresh(response, "refresh");
+
+    if (result && window.location.pathname === new URL(redirect_uri).pathname) {
+      const { oldUrl } = readSession(client);
+      // don't block on the redirect
+      void go(oldUrl ?? "/");
+    }
+    return result;
   }
 
   async function maybeHandleAuthReturn() {
