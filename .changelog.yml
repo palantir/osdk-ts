@@ -30,7 +30,7 @@ repo-type:
       - packages/maker-experimental
       - packages/maker-import
       - packages/oauth
-      - packages/ontology-explorer-server
+      - packages/ontology-explorer
       - packages/osdk-docs-context
       - packages/react
       - packages/react-components

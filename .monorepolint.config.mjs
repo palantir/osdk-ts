@@ -142,7 +142,7 @@ const archetypeRules = archetypes(standardPackageRules, {
       fixedDepsOnly: true,
     },
   )
-  .addArchetype("consumerCliWithSite", ["@osdk/ontology-explorer-server"], {
+  .addArchetype("consumerCliWithSite", ["@osdk/ontology-explorer"], {
     ...LIBRARY_RULES,
     output: {
       browser: undefined,

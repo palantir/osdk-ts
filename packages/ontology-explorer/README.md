@@ -1,4 +1,4 @@
-# ontology-explorer-server
+# @osdk/ontology-explorer
 
 > **Experimental.** This package is under active development and its behavior may change in any release.
 

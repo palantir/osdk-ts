@@ -18,7 +18,7 @@ import { defineConfig } from "oxlint";
 
 import root from "../../oxlint.config.ts";
 
-// Nested oxlint config for @osdk/ontology-explorer-server. It inherits the whole repo ruleset by
+// Nested oxlint config for @osdk/ontology-explorer. It inherits the whole repo ruleset by
 // `extends`-ing the root config, then turns off the error-level rules this
 // package's existing source first surfaces so the ESLint -> oxlint migration is a
 // reformat, not a rewrite (`oxlint --fix` applies no source rewrites).

@@ -98,8 +98,7 @@ const OXC_NESTED_CONFIG_PACKAGES = {
     "packages/vite-plugin-code-workspace-preview/oxlint.config.ts",
   "widget.vite-plugin": "packages/widget.vite-plugin/oxlint.config.ts",
   "ontology-explorer-app": "packages/ontology-explorer-app/oxlint.config.ts",
-  "ontology-explorer-server":
-    "packages/ontology-explorer-server/oxlint.config.ts",
+  "ontology-explorer": "packages/ontology-explorer/oxlint.config.ts",
   "shared.test": "packages/shared.test/oxlint.config.ts",
   "shared.test.intellisense":
     "packages/shared.test.intellisense/oxlint.config.ts",
