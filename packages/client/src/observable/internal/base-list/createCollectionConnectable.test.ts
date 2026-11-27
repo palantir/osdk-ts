@@ -746,10 +746,76 @@ describe("createCollectionConnectable", () => {
       // Should handle undefined object entry gracefully
       expect(observer.next).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: [undefined],
+          data: [],
           status: "loaded",
-          count: 1,
+          count: 0,
         }),
+      );
+
+      subscription.unsubscribe();
+    });
+
+    it("omits unresolved and deleted entries as an object loads and is deleted", async () => {
+      const objectKey1: ObjectCacheKey = {
+        type: "object",
+        otherKeys: ["Employee", 1, undefined],
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
+      const subject = new BehaviorSubject<
+        SubjectPayload<typeof mockListCacheKey>
+      >({
+        cacheKey: mockListCacheKey,
+        value: { data: [objectKey1] },
+        status: "loading",
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      });
+
+      // Init entry: the cache key has no resolved object yet.
+      const objectSubject = new BehaviorSubject<SubjectPayload<ObjectCacheKey>>(
+        {
+          cacheKey: objectKey1,
+          value: undefined,
+          status: "init",
+          lastUpdated: 0,
+          isOptimistic: false,
+        },
+      );
+      vi.mocked(mockSubjects.get).mockReturnValue(
+        objectSubject as ReturnType<Subjects["get"]>,
+      );
+
+      const connectable = actualCreateCollectionConnectable(
+        subject,
+        mockSubjects,
+        createPayload,
+      );
+      const subscription = connectable.connect();
+      const observer = mockObserver<TestPayload>();
+      connectable.subscribe(observer);
+      await waitForCall(observer);
+      expect(observer.next).toHaveBeenCalledWith(
+        expect.objectContaining({ data: [], count: 0 }),
+      );
+
+      // Loaded entry: the object takes its place in the list.
+      observer.next.mockClear();
+      objectSubject.next({
+        ...objectSubject.value,
+        value: mockEmployee1,
+        status: "loaded",
+      });
+      await waitForCall(observer);
+      expect(observer.next).toHaveBeenCalledWith(
+        expect.objectContaining({ data: [mockEmployee1], count: 1 }),
+      );
+
+      // Deleted entry: the list must not retain an undefined slot.
+      observer.next.mockClear();
+      objectSubject.next({ ...objectSubject.value, value: undefined });
+      await waitForCall(observer);
+      expect(observer.next).toHaveBeenCalledWith(
+        expect.objectContaining({ data: [], count: 0 }),
       );
 
       subscription.unsubscribe();

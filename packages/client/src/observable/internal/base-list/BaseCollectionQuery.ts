@@ -17,7 +17,15 @@
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Status } from "../../ObservableClient/common.js";
+import type { SpecificLinkCacheKey } from "../links/SpecificLinkCacheKey.js";
+import type { ListCacheKey } from "../list/ListCacheKey.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import type { ObjectSetCacheKey } from "../objectset/ObjectSetCacheKey.js";
+
+export type CollectionCacheKey =
+  | ListCacheKey
+  | SpecificLinkCacheKey
+  | ObjectSetCacheKey;
 
 /**
  * Abstract base for ListQuery and SpecificLinkQuery.
@@ -75,7 +83,7 @@ export interface CollectionConnectableParams {
   /**
    * Array of resolved objects, or undefined if no data has been loaded yet
    */
-  resolvedData: any[] | undefined;
+  resolvedData: ObjectHolder[] | undefined;
 
   /**
    * Whether the data is from an optimistic update

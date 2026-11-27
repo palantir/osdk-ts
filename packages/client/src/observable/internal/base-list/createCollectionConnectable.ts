@@ -28,11 +28,13 @@ import {
   switchMap,
 } from "rxjs";
 
-import type { CacheKey } from "../CacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import type { Subjects } from "../Subjects.js";
-import type { CollectionConnectableParams } from "./BaseCollectionQuery.js";
+import type {
+  CollectionCacheKey,
+  CollectionConnectableParams,
+} from "./BaseCollectionQuery.js";
 
 /**
  * Creates a connectable observable for a collection of objects
@@ -42,10 +44,7 @@ import type { CollectionConnectableParams } from "./BaseCollectionQuery.js";
  * @param createPayload A function that creates the payload from common parameters
  * @returns A connectable observable of the payload type
  */
-export function createCollectionConnectable<
-  K extends CacheKey<any, any, any, any>,
-  P,
->(
+export function createCollectionConnectable<K extends CollectionCacheKey, P>(
   subject: Observable<SubjectPayload<K>>,
   subjects: Subjects,
   createPayload: (params: CollectionConnectableParams) => P,
@@ -61,7 +60,7 @@ export function createCollectionConnectable<
               : combineLatest(
                   listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
                     subjects.get(cacheKey).pipe(
-                      map((objectEntry) => objectEntry?.value!),
+                      map((objectEntry) => objectEntry?.value),
                       distinctUntilChanged(),
                     ),
                   ),
@@ -77,12 +76,9 @@ export function createCollectionConnectable<
           }).pipe(
             map((params) =>
               createPayload({
-                resolvedData:
-                  params.resolvedData === undefined
-                    ? undefined
-                    : Array.isArray(params.resolvedData)
-                      ? params.resolvedData
-                      : [],
+                resolvedData: params.resolvedData?.filter(
+                  (object) => object !== undefined,
+                ),
                 isOptimistic: params.isOptimistic,
                 status: params.status,
                 lastUpdated: params.lastUpdated,

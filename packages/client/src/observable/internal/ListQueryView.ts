@@ -162,7 +162,8 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
 
       this.#viewLimit += this.#pageSize;
 
-      const loadedCount = this.#query.getLoadedCount();
+      const loadedCount =
+        this.#lastPayload?.resolvedList?.length ?? this.#query.getLoadedCount();
       const hasMoreOnServer = this.#query.hasMorePages();
 
       if (this.#viewLimit > loadedCount && hasMoreOnServer) {
