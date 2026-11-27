@@ -408,8 +408,10 @@ describe("ObjectSetQuery cache reconciliation", () => {
     const firstSubscription = store.objectSets.observe(options, first);
     defer(firstSubscription);
 
+    // First fetch loaded successfully
     await waitForPayload(first, (payload) => payload.status === "loaded");
 
+    // Second fetch errors
     apiServer.use(
       msw.http.post("*/loadObjects", () =>
         msw.HttpResponse.json({}, { status: 500 }),
@@ -420,6 +422,7 @@ describe("ObjectSetQuery cache reconciliation", () => {
     // A terminal error would close the shared stream and block later refetch results.
     expect(first.error).not.toHaveBeenCalled();
 
+    // Third fetch should be successful and the query should recover
     apiServer.resetHandlers();
     await firstSubscription.query.revalidate(true);
     const recovered = await waitForPayload(

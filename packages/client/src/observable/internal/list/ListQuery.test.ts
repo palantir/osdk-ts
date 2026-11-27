@@ -1359,8 +1359,10 @@ describe("ListQuery shared query tests", () => {
     const first = mockListSubCallback();
     const firstSubscription = store.lists.observe({ type: Todo }, first);
     defer(firstSubscription);
+    // First fetch loaded successfully
     await waitForPayload(first, (payload) => payload?.status === "loaded");
 
+    // Second fetch errors
     apiServer.use(
       msw.http.post("*/loadObjects", () =>
         msw.HttpResponse.json({}, { status: 500 }),
@@ -1371,6 +1373,7 @@ describe("ListQuery shared query tests", () => {
     // A terminal error would close the shared stream and block later refetch results.
     expect(first.error).not.toHaveBeenCalled();
 
+    // Third fetch should be successful and the query should recover
     apiServer.resetHandlers();
     await firstSubscription.query.revalidate(true);
     const recovered = await waitForPayload(
@@ -1379,6 +1382,7 @@ describe("ListQuery shared query tests", () => {
     );
     expect(recovered?.resolvedList).toHaveLength(5);
 
+    // A second subscriber should see successful results
     const second = mockListSubCallback();
     defer(store.lists.observe({ type: Todo }, second));
     const shared = await waitForPayload(
@@ -1404,6 +1408,7 @@ describe("ListQuery shared query tests", () => {
     await firstSubscription.query.revalidate(true);
     await waitForPayload(first, (payload) => payload?.status === "error");
 
+    // Second subscriber mounts successfully
     apiServer.resetHandlers();
     const second = mockListSubCallback();
     defer(store.lists.observe(options, second));
