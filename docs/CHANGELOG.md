@@ -1,5 +1,11 @@
 # @osdk/docs
 
+## 0.4.0
+
+### Minor Changes
+
+- 718be7c: Rebuild the docs site with Markdown versions of every page for AI tools, correct hook and OAuth doc comments, and ship the rewritten React guides in the @osdk/react package
+
 ## 0.3.0
 
 ### Minor Changes

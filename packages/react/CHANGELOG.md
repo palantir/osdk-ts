@@ -1,5 +1,21 @@
 # @osdkkit/react
 
+## 2.95.0
+
+### Minor Changes
+
+- 718be7c: Rebuild the docs site with Markdown versions of every page for AI tools, correct hook and OAuth doc comments, and ship the rewritten React guides in the @osdk/react package
+- 7a3917d: Allow OsdkProvider's client prop to accept an existing ObservableClient so React and non-React consumers can share a cache. Allow creation options only with a plain client. Add ObservableClient.getClient() to access the store's underlying client and registerUserAgent() to preserve request attribution.
+
+### Patch Changes
+
+- Updated dependencies [a5bdff2]
+- Updated dependencies [9a1c66b]
+- Updated dependencies [7a3917d]
+  - @osdk/api@2.95.0
+  - @osdk/client@2.95.0
+  - @osdk/aip-core@0.13.0
+
 ## 2.94.0
 
 ### Patch Changes

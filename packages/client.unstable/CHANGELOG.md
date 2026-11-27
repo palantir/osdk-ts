@@ -1,5 +1,12 @@
 # @osdk/client.unstable
 
+## 2.95.0
+
+### Minor Changes
+
+- 0f1892a: Update the interface schema migration API bindings.
+- 5c5709f: Map struct fields in `replace` interface schema migrations.
+
 ## 2.94.0
 
 ## 2.93.0

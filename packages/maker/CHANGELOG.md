@@ -1,5 +1,28 @@
 # @osdk/maker
 
+## 0.94.0
+
+### Minor Changes
+
+- f7e7797: Move interface edit validation and action type implementation reference checks into `validateOntology`.
+- 6df3a72: Generate Zod schemas for every component from the declarative IR.
+- 2a61bb4: Clean ups to the interface schema migration code paths.
+- cf66559: Add the `addRequiredActionTypeConstraint` and `replace` interface schema migration instruction types to the DSL
+- c0c2712: Convert `addRequiredActionTypeConstraint` interface schema migrations to Marketplace block data.
+- 2e9c64b: Add validation for the `addRequiredActionTypeConstraint` interface schema migration.
+- 8e0c9b1: Lock an interface's directly-declared action type constraints in the ontology lockfile.
+- 1cb70cb: Record addRequiredActionTypeConstraint transitions in the ontology schema lockfile and classify their finalization or deletion
+- cb205d9: Record replace transitions in the ontology schema lockfile.
+- 5c5709f: Map struct fields in `replace` interface schema migrations.
+- e2ed62d: Validate `replace` interface schema migrations.
+- 468e9ad: Support parameterConfiguration, nonParameterMappings, sections, parameterOrdering, actionLevelValidation and tableConfiguration on function-backed actions
+
+### Patch Changes
+
+- Updated dependencies [a5bdff2]
+  - @osdk/api@2.95.0
+  - @osdk/generator-converters.ontologyir@2.95.0
+
 ## 0.93.0
 
 ### Minor Changes

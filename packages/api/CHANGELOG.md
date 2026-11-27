@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.95.0
+
+### Minor Changes
+
+- a5bdff2: Add primitive type helpers for agent parameters and results.
+
 ## 2.94.0
 
 ## 2.93.0
