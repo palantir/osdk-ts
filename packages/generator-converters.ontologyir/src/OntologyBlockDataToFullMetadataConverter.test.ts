@@ -1007,4 +1007,108 @@ describe(OntologyBlockDataToFullMetadataConverter, () => {
       },
     });
   });
+
+  it("converts decimal and time series action parameters and omits geotime series ones", () => {
+    const parameters: Record<string, Parameter["type"]> = {
+      amount: { type: "decimal", decimal: { precision: 10, scale: 2 } },
+      amounts: { type: "decimalList", decimalList: {} },
+      series: { type: "timeSeriesReference", timeSeriesReference: {} },
+      track: { type: "geotimeSeriesReference", geotimeSeriesReference: {} },
+      tracks: {
+        type: "geotimeSeriesReferenceList",
+        geotimeSeriesReferenceList: {},
+      },
+    };
+    const action: ActionTypeBlockDataV2 = {
+      parameterIds: Object.fromEntries(
+        Object.keys(parameters).map((id) => [id, id]),
+      ),
+      actionType: {
+        metadata: {
+          rid: "action-rid",
+          apiName: "recordReading",
+          version: "1.0.0",
+          displayMetadata: {
+            displayName: "Record reading",
+            description: "",
+            applyingMessage: [],
+            successMessage: [],
+            typeClasses: [],
+          },
+          status: { type: "active", active: {} },
+          parameters: Object.fromEntries(
+            Object.entries(parameters).map(([id, type]) => [id, {
+              id,
+              rid: `${id}-rid`,
+              displayMetadata: {
+                displayName: id,
+                description: "",
+                structFields: {},
+                structFieldsV2: [],
+                typeClasses: [],
+              },
+              type,
+            }]),
+          ),
+          parameterOrdering: Object.keys(parameters),
+          formContentOrdering: [],
+          sections: {},
+        },
+        actionTypeLogic: {
+          logic: { rules: [] },
+          notifications: [],
+          validation: {
+            actionTypeLevelValidation: { ordering: [], rules: {} },
+            parameterValidations: Object.fromEntries(
+              Object.keys(parameters).map((id) => [id, {
+                conditionalOverrides: [],
+                structFieldValidations: {},
+                defaultValidation: {
+                  display: {
+                    renderHint: { type: "dropdown", dropdown: {} },
+                    visibility: { type: "editable", editable: {} },
+                  },
+                  validation: {
+                    required: { type: "required", required: {} },
+                    allowedValues: {
+                      type: "redacted",
+                      redacted: {},
+                    },
+                  },
+                },
+              }]),
+            ),
+            sectionValidations: {},
+          },
+        },
+      },
+    };
+
+    const result = OntologyBlockDataToFullMetadataConverter
+      .getOsdkActionParametersFromBlockData(action, undefined, undefined);
+
+    expect(result).toEqual({
+      amount: {
+        displayName: "amount",
+        description: "",
+        required: true,
+        dataType: { type: "decimal", precision: 10, scale: 2 },
+        typeClasses: [],
+      },
+      amounts: {
+        displayName: "amounts",
+        description: "",
+        required: true,
+        dataType: { type: "array", subType: { type: "decimal" } },
+        typeClasses: [],
+      },
+      series: {
+        displayName: "series",
+        description: "",
+        required: true,
+        dataType: { type: "timeSeriesReference" },
+        typeClasses: [],
+      },
+    });
+  });
 });
