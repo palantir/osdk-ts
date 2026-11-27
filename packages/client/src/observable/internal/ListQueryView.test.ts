@@ -20,10 +20,16 @@ import { describe, expect, it, vi } from "vitest";
 import type { BaseListPayloadShape } from "./base-list/BaseListQuery.js";
 import { ListQueryView, type ListQueryViewTarget } from "./ListQueryView.js";
 
-function observeListView(cachedCount: number, resolvedCount: number) {
+const PAGE_SIZE = 20;
+
+function observeListView(
+  cachedCount: number,
+  resolvedCount: number,
+  hasMorePages = true,
+) {
   const payload: BaseListPayloadShape = {
     resolvedList: Array.from({ length: resolvedCount }, (_, index) => index),
-    hasMore: true,
+    hasMore: hasMorePages,
     fetchMore: async () => {},
     status: "loaded",
   };
@@ -34,11 +40,11 @@ function observeListView(cachedCount: number, resolvedCount: number) {
     registerFetchPageSize: vi.fn(),
     unregisterFetchPageSize: vi.fn(),
     getLoadedCount: () => cachedCount,
-    hasMorePages: () => true,
+    hasMorePages: () => hasMorePages,
     notifySubscribers: vi.fn(),
     fetchMore,
   };
-  const view = new ListQueryView(query, 20);
+  const view = new ListQueryView(query, PAGE_SIZE);
   const received: BaseListPayloadShape[] = [];
   const subscription = view.subscribe({
     next: (value) => received.push(value),
@@ -53,7 +59,7 @@ function observeListView(cachedCount: number, resolvedCount: number) {
   return { firstPayload, received, fetchMore, subscription };
 }
 
-describe("ListQueryView manual fetchMore", () => {
+describe("ListQueryView manual fetchMore with page size 20", () => {
   it("fetches when the cache has only the first page", async () => {
     const { firstPayload, fetchMore, subscription } = observeListView(20, 20);
 
@@ -74,6 +80,36 @@ describe("ListQueryView manual fetchMore", () => {
     expect(fetchMore).not.toHaveBeenCalled();
     expect(received).toHaveLength(2);
     expect(received[1]?.resolvedList).toHaveLength(40);
+    subscription.unsubscribe();
+  });
+
+  it("reuses cached entries when the server has no more pages", async () => {
+    const { firstPayload, received, fetchMore, subscription } = observeListView(
+      40,
+      40,
+      false,
+    );
+
+    await firstPayload.fetchMore();
+
+    expect(fetchMore).not.toHaveBeenCalled();
+    expect(received[1]?.resolvedList).toHaveLength(40);
+    expect(received[1]?.hasMore).toBe(false);
+    subscription.unsubscribe();
+  });
+
+  it("does not fetch when deleted entries leave a short final page", async () => {
+    const { firstPayload, received, fetchMore, subscription } = observeListView(
+      40,
+      39,
+      false,
+    );
+
+    await firstPayload.fetchMore();
+
+    expect(fetchMore).not.toHaveBeenCalled();
+    expect(received[1]?.resolvedList).toHaveLength(39);
+    expect(received[1]?.hasMore).toBe(false);
     subscription.unsubscribe();
   });
 
