@@ -1,0 +1,58 @@
+# TiffViewer
+
+Source: https://palantir.github.io/osdk-ts/components/tiff-viewer
+
+> TiffViewer renders a TIFF image from an OSDK Media object, and BaseTiffViewer renders one from raw bytes.
+
+## Import
+
+```tsx
+import { BaseTiffViewer, TiffViewer } from "@osdk/react-components/tiff-viewer";
+```
+
+- **`TiffViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the TIFF contents, and renders via `BaseTiffViewer`.
+- **`BaseTiffViewer`** — Lower-level component that accepts raw `Uint8Array` bytes directly.
+
+## Usage
+
+### With OSDK Media
+
+```tsx
+import { TiffViewer } from "@osdk/react-components/tiff-viewer";
+
+<TiffViewer media={scan.tiffImage} />;
+```
+
+### With raw bytes
+
+```tsx
+import { BaseTiffViewer } from "@osdk/react-components/tiff-viewer";
+
+<BaseTiffViewer src={tiffBytes} />;
+```
+
+## Props
+
+### `BaseTiffViewerProps`
+
+| Prop        | Type         | Default     | Description                           |
+| ----------- | ------------ | ----------- | ------------------------------------- |
+| `src`       | `Uint8Array` | `undefined` | TIFF bytes to render                  |
+| `content`   | `Uint8Array` | `undefined` | **Deprecated** — rename to `src`      |
+| `className` | `string`     | `undefined` | CSS class applied to the root element |
+| `onError`   | `() => void` | `undefined` | Callback fired when rendering fails   |
+
+### `TiffViewerProps`
+
+| Prop        | Type         | Default     | Description                              |
+| ----------- | ------------ | ----------- | ---------------------------------------- |
+| `media`     | `Media`      | (required)  | The OSDK Media object to fetch TIFF from |
+| `className` | `string`     | `undefined` | CSS class applied to the root element    |
+| `onError`   | `() => void` | `undefined` | Callback fired when rendering fails      |
+
+## Features
+
+- Decodes and renders TIFF images onto a `<canvas>` element using the `utif` library
+- Handles multi-page TIFF files (renders the first page)
+- Size validation — rejects images exceeding 25 MB
+- Error handling with user-friendly messages for corrupted or oversized files

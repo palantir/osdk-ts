@@ -1,0 +1,105 @@
+# ObjectSet
+
+Source: https://palantir.github.io/osdk-ts/reference/client/object-set
+
+> Methods of an OSDK ObjectSet for filtering, set operations, pivots, aggregation, paging, and subscriptions.
+
+```ts
+import type { ObjectSet } from "@osdk/client";
+
+interface ObjectSet<
+  Q extends ObjectOrInterfaceDefinition = any,
+  UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> = never,
+> { /* methods below */ }
+```
+
+An `ObjectSet` describes a set of objects without loading them. `client(Employee)` returns the set of all employees; methods such as `where` and `pivotTo` return new sets, and methods such as `fetchPage` and `aggregate` send a request. `RDPs` holds the derived properties added with `withProperties`.
+
+## Methods
+
+`ObjectSet` is composed of many generic signatures that a generated table cannot render, so this table is written by hand.
+
+### Build a set
+
+These methods return a new set and do not send a request.
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `where(clause)` | `this` | Keeps objects that match a [`WhereClause`](https://palantir.github.io/osdk-ts/reference/client/where-clause.md). Chained calls combine with AND. |
+| `union(...sets)` | `this` | Objects in this set or any of `sets`. |
+| `intersect(...sets)` | `this` | Objects in this set and every one of `sets`. |
+| `subtract(...sets)` | `this` | Objects in this set and in none of `sets`. |
+| `pivotTo(linkName)` | `ObjectSet<LinkedType<Q, L>>` | The objects linked from this set through `linkName`. |
+| `withProperties(definitions)` | `ObjectSet<Q, RDPs & NEW>` | Adds derived properties computed on the server. Each value is a function of a builder, such as `(base) => base.pivotTo("reports").aggregate("$count")`. |
+| `nearestNeighbors(query, numNeighbors, property)` | `this` | The `numNeighbors` objects (1 to 500) closest to `query`, a string or a vector, on a vector `property`. Order by `"relevance"` to get each object's `$score`. |
+| `narrowToType(type)` | `ObjectSet<T>` | Casts to an interface this type implements, or to an object type that implements this interface. Objects that do not match are dropped. |
+
+### Load objects
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `fetchPage(args?)` | `Promise<PageResult<Osdk.Instance<Q>>>` | One page of objects. Continue with `$nextPageToken`. |
+| `fetchPageWithErrors(args?)` | `Promise<Result<PageResult<Osdk.Instance<Q>>>>` | Like `fetchPage`, but returns `{ value }` or `{ error }` instead of throwing. |
+| `asyncIter(args?)` | `AsyncIterableIterator<Osdk.Instance<Q>>` | Every object, page by page, against a consistent snapshot. Takes the `fetchPage` arguments except `$pageSize`, `$nextPageToken`, `$snapshot`, and `$EXPERIMENTAL_defaultLoadLevel`. |
+| `fetchOne(primaryKey, options?)` | `Promise<Osdk.Instance<Q>>` | One object by primary key. Throws if it does not exist. Object types only. Takes `$select`, `$includeRid`, and `$loadPropertySecurityMetadata`. |
+| `fetchOneWithErrors(primaryKey, options?)` | `Promise<Result<Osdk.Instance<Q>>>` | Like `fetchOne`, but returns `{ value }` or `{ error }`. Object types only. |
+| `aggregate(request)` | `Promise<AggregationsResults<Q, A>>` | Runs `$select` metrics, optionally grouped by `$groupBy`. |
+
+`PageResult<T>` is `{ data: T[]; nextPageToken: string | undefined; totalCount: string }`.
+
+### Watch for changes
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `subscribe(listener, options?)` | `{ unsubscribe: () => void }` | Opens a WebSocket subscription. `listener` takes `onChange`, `onSuccessfulSubscription`, `onOutOfDate`, and `onError`; `options` takes `properties` and `includeRid`. |
+| `experimental_asyncIterLinks(linkNames)` | `AsyncIterableIterator<{ source, target, linkType }>` | Beta. Yields every link of the given types from objects in this set. `source` and `target` hold `$apiName` and `$primaryKey`. |
+
+## `fetchPage` arguments
+
+### FetchPageArgs
+
+| Prop                                              | Type                                                                                                                                                                                                                             | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$nextPageToken?`                                 | `string`                                                                                                                                                                                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `$pageSize?`                                      | `number`                                                                                                                                                                                                                         | The number of objects in one page. This does not limit the total number of objects: continue with `nextPageToken` to load further pages.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `$applyModifiers?`                                | `({ [P in Exclude<PropsWithMainValue<Q>, PropsWithReducers<Q>>]?: "applyMainValue" \| undefined; } & { [P in Exclude<PropsWithReducers<Q>, PropsWithMainValue<...>>]?: "applyReducers" \| undefined; } & ... & MODIFIERS & ...)` | Applies ontology-configured reducers or struct main values to properties by API name. Only properties with the corresponding configuration in the generated SDK accept a modifier: - `"applyReducers"`: reduces an array to a single element using its configured reducers. - `"applyMainValue"`: extracts a struct's configured main value. One main-value field returns that field's value; multiple fields return a struct containing only those fields. - `"applyReducersAndExtractMainValue"`: reduces a struct array, then extracts its main value. Requires both reducers and a main value. When passing `$select`, include every modified property using its plain API name, along with any other properties you need. Unlisted properties are not modified by this option. The returned property types reflect the modifiers, preserving property nullability. For an explicit `Osdk.Instance` type, use `"propertyApiName:modifier"` in its property keys. |
+| `$EXPERIMENTAL_defaultLoadLevel?`                 | `DEFAULT_LOAD_LEVEL`                                                                                                                                                                                                             | Best-effort load level applied to every property without listing them: reducers and struct main values where defined, other properties unchanged. A per-property `$applyModifiers` entry wins.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `$snapshot?`                                      | `boolean`                                                                                                                                                                                                                        | Ensures paging consistency by freezing the view at the time of query to prevent duplicate or missing items. Setting $snapshot to false ensures that you will always get the latest results. Without a snapshot, if objects are added, removed, or edited between requests, later pages may repeat or skip objects. A snapshot configured for a function run still applies even when this is `false`. With a snapshot, pass `$snapshot: true` on every page request; paging fails if the snapshot expires or the backend detects a paging inconsistency (`PagingInconsistencyDetected`). Stream-backed object types do not provide this snapshot guarantee across pages. `asyncIter()` always requests a snapshot. Default: `false`                                                                                                                                                                                                                                   |
+| `$orderBy?`                                       | `(ORDER_BY_OPTIONS & (ORDER_BY_OPTIONS \| ObjectSetArgs.OrderByOptions<RDP_KEYS \| PropertyKeys<Q>>))`                                                                                                                           |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `$select?`                                        | `readonly K[]`                                                                                                                                                                                                                   | The properties to load for each object. If omitted, the API loads its default property set (vector properties, for example, are not included). The primary key is always returned, even when it is not selected. Select only the properties your code needs. Loading unused properties wastes bandwidth and compute and can slow down retrieval, and reading fewer properties afterwards does not avoid the cost of fetching them. Ontology-defined derived properties are not returned by default and must be included in `$select`. Include any other properties you need in the same selection. Runtime-defined derived properties added via `.withProperties(...)` are returned by default only when `$select` is omitted. If you pass `$select`, include them in the selection as well.                                                                                                                                                                         |
+| `$includeRid?`                                    | `R`                                                                                                                                                                                                                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `$loadPropertySecurityMetadata?`                  | `PROPERTY_SECURITIES`                                                                                                                                                                                                            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `$UNSTABLE_loadOntologyDefinedDerivedProperties?` | `boolean`                                                                                                                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `$includeAllBaseObjectProperties?`                | `(PropertyKeys<Q> extends K ? T : never)`                                                                                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+
+`$orderBy` takes `{ [property]: "asc" | "desc" }`, or `"relevance"` after `nearestNeighbors`. `$includeRid: true` adds `$rid` to each object. `$includeAllBaseObjectProperties: true` loads every property of the underlying object type for interface sets.
+
+## Example
+
+```ts title="src/topEarners.ts"
+import { Employee } from "@my-app/sdk";
+import type { Client } from "@osdk/client";
+
+export async function topEarners(client: Client, city: string) {
+  const inCity = client(Employee)
+    .where({ salary: { $gt: 100_000 } })
+    .intersect(client(Employee).pivotTo("office").where({ city }).pivotTo("occupants"));
+
+  const page = await inCity.fetchPage({
+    $select: ["fullName", "salary"],
+    $orderBy: { salary: "desc" },
+    $pageSize: 20,
+  });
+
+  return page.data.map((e) => `${e.fullName}: ${e.salary}`);
+}
+```
+
+## See also
+
+- [Load objects](https://palantir.github.io/osdk-ts/sdk/objects.md)
+- [Filtering](https://palantir.github.io/osdk-ts/sdk/filtering.md)
+- [Links](https://palantir.github.io/osdk-ts/sdk/links.md)
+- [Aggregations](https://palantir.github.io/osdk-ts/sdk/aggregations.md)
+- [Derived properties](https://palantir.github.io/osdk-ts/sdk/derived-properties.md)
+- [Subscriptions](https://palantir.github.io/osdk-ts/sdk/subscriptions.md)

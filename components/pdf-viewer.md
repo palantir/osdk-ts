@@ -1,0 +1,341 @@
+# PdfViewer
+
+Source: https://palantir.github.io/osdk-ts/components/pdf-viewer
+
+> PdfViewer renders a PDF from an OSDK Media object with text selection, custom annotations, sidebar navigation, and in-document search.
+
+## Import
+
+```tsx
+import { BasePdfViewer, PdfViewer } from "@osdk/react-components/pdf-viewer";
+```
+
+- **`PdfViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.
+- **`BasePdfViewer`** — Lower-level component that accepts the PDF source directly as a URL string, `ArrayBuffer`, `Uint8Array`, or `Blob`. Use this when you already have the PDF source.
+
+`src` follows the convention shared by every viewer in this package: it names the
+binary source to render from, in whatever forms that renderer supports.
+`BasePdfViewer` supports all of them, so it is the reference for `src`. Viewers
+whose input is already-decoded text or a parsed object take `content` instead.
+
+## Usage
+
+### With OSDK Media
+
+```tsx
+import { PdfViewer } from "@osdk/react-components/pdf-viewer";
+
+<PdfViewer media={employee.employeeDocuments} />;
+```
+
+### With a URL, ArrayBuffer, Uint8Array, or Blob
+
+```tsx
+import { BasePdfViewer } from "@osdk/react-components/pdf-viewer";
+
+// From a URL
+<BasePdfViewer src="https://example.com/document.pdf" />
+
+// From an ArrayBuffer or Uint8Array (e.g. file input or fetch)
+<BasePdfViewer src={arrayBuffer} />
+
+// From a Blob (e.g. a fetched response or a File from an <input type="file">)
+<BasePdfViewer src={blob} />
+```
+
+### With annotations and sidebar
+
+```tsx
+<PdfViewer
+  media={myMedia}
+  defaultPage={3}
+  defaultScale={1.5}
+  defaultSidebarOpen
+  sidebarMode="outline"
+  enableDownload
+  annotations={[
+    {
+      id: "finding-1",
+      type: "highlight",
+      page: 1,
+      rect: { x: 72, y: 500, width: 200, height: 16 },
+      label: "Key finding",
+      color: "rgba(255, 200, 0, 0.4)",
+    },
+  ]}
+  onAnnotationClick={(annotation) => console.log("Clicked:", annotation.id)}
+/>
+```
+
+## Props
+
+### PdfViewerProps
+
+| Prop    | Type    | Required | Description                                  |
+| ------- | ------- | -------- | -------------------------------------------- |
+| `media` | `Media` | Yes      | OSDK Media object to fetch PDF contents from |
+
+Plus all props from `BasePdfViewerProps` except `src`.
+
+### BasePdfViewerProps
+
+| Prop                 | Type                                                    | Default        | Description                                                                                                           |
+| -------------------- | ------------------------------------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `src`                | `string \| ArrayBuffer \| Uint8Array \| Blob`           | —              | PDF source: URL string or in-memory bytes (required)                                                                  |
+| `annotations`        | `PdfAnnotation[]`                                       | `[]`           | Annotations to overlay on the PDF. Each annotation carries its own 1-indexed `page`                                   |
+| `onAnnotationClick`  | `(annotation: PdfAnnotation) => void`                   | —              | Callback when an annotation is clicked                                                                                |
+| `onDownload`         | `(result: PdfDownloadResult) => void`                   | —              | Callback fired when a download completes or fails                                                                     |
+| `enableHighlight`    | `boolean`                                               | `false`        | Whether the highlight toggle button is shown in the toolbar                                                           |
+| `onTextHighlight`    | `(event: PdfTextHighlightEvent) => void`                | —              | Callback fired when the user creates a text highlight. Only fires while highlight mode is active                      |
+| `onHighlightDelete`  | `(event: PdfTextHighlightEvent) => void`                | —              | Callback fired when the user deletes a highlight via the PDF.js editor UI                                             |
+| `defaultPage`        | `number`                                                | `1`            | Initial uncontrolled page                                                                                             |
+| `defaultScale`       | `number`                                                | `1.0`          | Initial uncontrolled zoom level                                                                                       |
+| `defaultAutoSize`    | `boolean`                                               | `false`        | Initial uncontrolled auto-size state. Takes precedence over `defaultScale`                                            |
+| `defaultSidebarOpen` | `boolean`                                               | `false`        | Initial uncontrolled sidebar state                                                                                    |
+| `enableDownload`     | `boolean`                                               | `false`        | Whether the download button is shown in the toolbar                                                                   |
+| `downloadFileName`   | `string`                                                | —              | Filename used by the toolbar download button. Derived from the `src` URL when omitted, falling back to `document.pdf` |
+| `sidebarMode`        | `SidebarMode`                                           | `"thumbnails"` | Which sidebar panel to show: `"thumbnails"` or `"outline"`                                                            |
+| `outlineIcons`       | `Partial<Record<number, React.ComponentType>>`          | —              | Custom icon components for each outline depth level (0-indexed). No icons are rendered when omitted                   |
+| `formData`           | `Record<string, PdfFormFieldValue>`                     | —              | Initial form field values keyed by field name, applied when the document loads                                        |
+| `onFormSubmit`       | `(data: Record<string, PdfFormFieldValue>) => void`     | —              | Callback fired when the user clicks the toolbar save button, with all current field values                            |
+| `onFormChange`       | `(fieldName: string, value: PdfFormFieldValue) => void` | —              | Callback fired when any form field value changes                                                                      |
+| `className`          | `string`                                                | —              | CSS class applied to the root element                                                                                 |
+
+## Features
+
+### Text selection and copy
+
+The component renders an invisible text layer on top of each PDF page using the pdf.js `TextLayer` API. This enables native browser text selection — users can click and drag to select text, then copy it with Ctrl+C / Cmd+C.
+
+### Sidebar
+
+The sidebar supports two modes controlled by the `sidebarMode` prop:
+
+- **Thumbnails** (`"thumbnails"`) — Renders page thumbnails. Click a thumbnail to jump to that page.
+- **Outline** (`"outline"`) — Shows the document's table of contents. If the PDF has embedded bookmarks, those are displayed with their original nesting and bold/italic styling. If no bookmarks exist, headings are automatically extracted from the text content based on font size.
+
+### Annotations
+
+Annotations are positioned using PDF coordinate space (origin at bottom-left of the page). The component transforms these to CSS positioning automatically. Four built-in annotation types are supported:
+
+| Type        | Visual                             |
+| ----------- | ---------------------------------- |
+| `highlight` | Semi-transparent colored rectangle |
+| `underline` | Colored bottom border              |
+| `comment`   | Small circular marker              |
+| `pin`       | Rotated teardrop marker            |
+
+A fifth type, `custom`, renders whatever its `render` callback returns instead of a built-in visual. See `PdfCustomAnnotation` and `PdfAnnotationRenderProps`.
+
+Each annotation accepts an optional `color` CSS value to override the default theme color, and a `label` string shown as a tooltip on hover. Annotations are keyboard-accessible (focusable and activatable with Enter/Space).
+
+### Search (Ctrl+F / Cmd+F)
+
+Pressing Ctrl+F (or Cmd+F on macOS) opens a search bar that finds text across all pages. Matches are highlighted in the text layer, and the current match is visually distinguished. Navigation between matches:
+
+- **Enter** — next match
+- **Shift+Enter** — previous match
+- **Escape** — close search bar
+
+The search bar shows a match counter (e.g. "3 of 12"). The toolbar includes a search button as an alternative to the keyboard shortcut.
+
+### Toolbar
+
+The built-in toolbar provides:
+
+- **Page navigation** — previous/next buttons and a page number input
+- **Zoom controls** — zoom in/out in 25% steps (range: 25%–500%)
+- **Rotate controls** — rotate all pages left (counter-clockwise) or right (clockwise) in 90° increments
+- **Sidebar toggle** — open/close the sidebar panel
+- **Search button** — opens the search bar
+- **Download button** — downloads the PDF (hidden by default, enable with `enableDownload`)
+
+### Lazy page rendering
+
+Pages are rendered lazily by the pdf.js `PDFViewer` — only pages in or near the viewport are mounted. This keeps memory usage and render cost low for large documents.
+
+### High-DPI rendering
+
+The canvas renderer accounts for `window.devicePixelRatio` to produce sharp text on Retina and other high-DPI displays.
+
+## Architecture: three tiers
+
+The PDF viewer is designed as a three-tier API so you can choose the right level of abstraction:
+
+1. **Components** (`PdfViewer` / `BasePdfViewer`) — Drop-in viewers with full UI out of the box.
+2. **Building block components** — Assemble a custom layout using `PdfViewerContent`, `PdfViewerToolbar`, etc.
+3. **Hooks** — Build entirely custom components. The hooks do all the heavy lifting.
+
+```
+Tier 1: PdfViewer / BasePdfViewer          ← full viewer, zero assembly
+Tier 2: Building block components               ← custom layout, standard parts
+Tier 3: usePdfViewerState / usePdfViewerCore    ← custom everything
+         └── Primitive hooks                    ← maximum control
+```
+
+## Building blocks
+
+All building blocks are exported from `@osdk/react-components/pdf-viewer` for composing custom PDF viewer layouts. Use `PdfViewerContent` as the foundation and add whichever chrome you need.
+
+| Component                  | Description                                                        |
+| -------------------------- | ------------------------------------------------------------------ |
+| `PdfViewerContent`         | Core PDF renderer (scroll area + annotations). No toolbar/sidebar. |
+| `PdfViewerToolbar`         | Page navigation, zoom, rotation, search, and download controls     |
+| `PdfViewerSearchBar`       | Search input with match count and prev/next navigation             |
+| `PdfViewerSidebar`         | Thumbnail sidebar showing page previews                            |
+| `PdfViewerOutlineSidebar`  | Document outline sidebar (bookmarks or extracted headings)         |
+| `PdfViewerAnnotationLayer` | Annotation overlay for a single PDF page                           |
+
+### Example: content-only viewer
+
+```tsx
+import { PdfViewerContent } from "@osdk/react-components/pdf-viewer";
+
+<PdfViewerContent
+  src="https://example.com/document.pdf"
+  defaultScale={1.5}
+  onPageChange={(page) => console.log("Page:", page)}
+  onScaleChange={(scale) => console.log("Scale:", scale)}
+/>;
+```
+
+## Hooks
+
+The hooks are the backbone of the PDF viewer. They handle all state management, pdfjs initialization, event synchronization, and feature logic — so you can build custom components without re-implementing any of it.
+
+### Composition hooks
+
+These compose the primitive hooks and manage all UI state for you.
+
+| Hook                | Description                                                                                                                                              |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `usePdfViewerState` | Full-featured hook. Includes everything from `usePdfViewerCore` plus zoom helpers, rotation, sidebar, search, outline, download, and keyboard shortcuts. |
+| `usePdfViewerCore`  | Minimal hook to render and navigate a PDF. Handles document loading, pdfjs viewer init, scale/page sync, and annotation portals.                         |
+
+### Primitive hooks
+
+For maximum control, use the primitive hooks directly.
+
+| Hook                      | Description                                                                                                                   |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `usePdfDocument`          | Loads a `PDFDocumentProxy` from a URL, `ArrayBuffer`, `Uint8Array`, or `Blob` using pdf.js. Manages the web worker lifecycle. |
+| `usePdfViewer`            | Initializes the pdfjs `PDFViewer`, `EventBus`, `PDFLinkService`, and `PDFFindController`.                                     |
+| `usePdfViewerSync`        | Bidirectional sync between React state and the pdfjs viewer (scale + page). Returns `scrollToPage`.                           |
+| `usePdfViewerSearch`      | Full-text search across the PDF. Manages query, match count, navigation, and the search open/close state.                     |
+| `usePdfAnnotationPortals` | Listens for page render events and provides portal targets for overlaying React annotation components on each page.           |
+| `usePdfOutline`           | Extracts outline items from a PDF document. Uses embedded bookmarks when available, falls back to heading extraction.         |
+
+### Example: custom viewer with `usePdfViewerState`
+
+```tsx
+import {
+  PdfViewerAnnotationLayer,
+  PdfViewerSearchBar,
+  PdfViewerToolbar,
+  usePdfViewerState,
+} from "@osdk/react-components/pdf-viewer";
+import { createPortal } from "react-dom";
+
+function MyCustomViewer({ src }: { src: string }) {
+  const viewer = usePdfViewerState({ src, defaultScale: 1.0 });
+
+  if (viewer.loading) return <div>Loading...</div>;
+  if (viewer.error) return <div>Error: {viewer.error.message}</div>;
+
+  return (
+    <div>
+      <PdfViewerToolbar
+        currentPage={viewer.currentPage}
+        numPages={viewer.numPages}
+        scale={viewer.scale}
+        sidebarOpen={viewer.sidebarOpen}
+        onPageChange={viewer.scrollToPage}
+        onScaleChange={viewer.setScale}
+        onSearchOpen={viewer.search.openSearch}
+        onSidebarToggle={viewer.toggleSidebar}
+        onRotateLeft={viewer.rotateLeft}
+        onRotateRight={viewer.rotateRight}
+      />
+      {viewer.search.isSearchOpen && (
+        <PdfViewerSearchBar
+          query={viewer.search.query}
+          totalMatches={viewer.search.totalMatches}
+          currentMatchIndex={viewer.search.currentMatchIndex}
+          onQueryChange={viewer.search.setQuery}
+          onNext={viewer.search.nextMatch}
+          onPrev={viewer.search.prevMatch}
+          onClose={viewer.search.closeSearch}
+        />
+      )}
+      <div ref={viewer.containerRef}>
+        <div ref={viewer.viewerRef} className="pdfViewer" />
+      </div>
+    </div>
+  );
+}
+```
+
+### Example: minimal viewer with `usePdfViewerCore`
+
+```tsx
+import { usePdfViewerCore } from "@osdk/react-components/pdf-viewer";
+
+function MinimalViewer({ src }: { src: string }) {
+  const { containerRef, viewerRef, loading, error, currentPage, numPages } =
+    usePdfViewerCore({ src });
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <span>
+        Page {currentPage} of {numPages}
+      </span>
+      <div ref={containerRef} style={{ height: "80vh", overflow: "auto" }}>
+        <div ref={viewerRef} className="pdfViewer" />
+      </div>
+    </div>
+  );
+}
+```
+
+## Types
+
+| Type                       | Description                                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `BasePdfViewerProps`       | Props for `BasePdfViewer`                                                                                    |
+| `PdfViewerProps`           | Props for `PdfViewer` (extends `BasePdfViewerProps`, replaces `src` with `media`)                            |
+| `PdfViewerContentProps`    | Props for `PdfViewerContent`                                                                                 |
+| `UsePdfViewerStateOptions` | Options for `usePdfViewerState`                                                                              |
+| `UsePdfViewerStateResult`  | Return type of `usePdfViewerState`                                                                           |
+| `UsePdfViewerCoreOptions`  | Options for `usePdfViewerCore`                                                                               |
+| `UsePdfViewerCoreResult`   | Return type of `usePdfViewerCore`                                                                            |
+| `UsePdfViewerResult`       | Return type of `usePdfViewer`                                                                                |
+| `UsePdfViewerSearchResult` | Return type of `usePdfViewerSearch`                                                                          |
+| `AnnotationPortalTarget`   | Portal target info returned by `usePdfAnnotationPortals`                                                     |
+| `PdfAnnotation`            | Annotation with `id`, `type`, `page`, `rect`, optional `label` and `color`                                   |
+| `AnnotationType`           | `"highlight" \| "underline" \| "comment" \| "pin" \| "custom"`                                               |
+| `PdfCustomAnnotation`      | Annotation with `type: "custom"` and a `render` callback supplying its content                               |
+| `PdfAnnotationRenderProps` | Argument passed to a `PdfCustomAnnotation`'s `render`: `annotation`, `scale`, `pageHeight`, `transform`      |
+| `SidebarMode`              | `"thumbnails" \| "outline"`                                                                                  |
+| `OutlineItem`              | Outline entry with `title`, `depth`, `pageNumber`, `bold`, `italic`                                          |
+| `PdfDownloadResult`        | Argument passed to `onDownload`: `{ success: true; filename }` or `{ success: false; error }`                |
+| `PdfTextHighlightEvent`    | Argument passed to `onTextHighlight` / `onHighlightDelete`, with `editorId`, `page`, `rects`, `selectedText` |
+| `PdfFormFieldValue`        | Value type used by `formData`, `onFormSubmit`, and `onFormChange`: `string \| boolean \| string[]`           |
+
+## Theming
+
+All colors and sizes are driven by CSS custom properties included in `@osdk/react-components/styles.css`. Override them to match your application theme:
+
+```css
+:root {
+  --osdk-pdf-viewer-toolbar-bg: #f5f5f5;
+  --osdk-pdf-viewer-toolbar-border: #e0e0e0;
+  --osdk-pdf-viewer-search-highlight: rgba(255, 200, 0, 0.4);
+  --osdk-pdf-viewer-search-active: rgba(255, 150, 0, 0.6);
+  --osdk-pdf-viewer-annotation-highlight: rgba(255, 235, 59, 0.4);
+  --osdk-pdf-viewer-annotation-underline: #1976d2;
+  --osdk-pdf-viewer-annotation-comment: rgba(76, 175, 80, 0.6);
+  --osdk-pdf-viewer-annotation-pin: #e53935;
+}
+```

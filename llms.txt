@@ -1,0 +1,238 @@
+# Palantir Foundry OSDK for TypeScript
+
+> Build applications on Palantir Foundry with type-safe TypeScript and React SDKs for the Ontology, Platform APIs, and AIP.
+
+Every link below points to the Markdown version of a page. Append `.md` to any docs URL to get the same. The complete documentation in one file is at [llms-full.txt](https://palantir.github.io/osdk-ts/llms-full.txt).
+
+## Guides
+
+### Get started
+
+- [What is OSDK](https://palantir.github.io/osdk-ts/overview.md): The Ontology SDK gives TypeScript apps a typed client for your Foundry Ontology's objects, links, actions, functions, and interfaces.
+- [Quickstart](https://palantir.github.io/osdk-ts/quickstart.md): Scaffold a React app with @osdk/create-app, sign in to Foundry, and run your first OSDK query and action.
+- [Installation](https://palantir.github.io/osdk-ts/installation.md): Add @osdk/client, @osdk/oauth, @osdk/react, and your generated SDK to an existing app, with the npm registry setup and version rules they need.
+- [Authentication](https://palantir.github.io/osdk-ts/authentication.md): Sign users in with @osdk/oauth, handle the OAuth redirect, authenticate servers with client credentials, and pass the token provider to createClient.
+- [Create a client](https://palantir.github.io/osdk-ts/client.md): Configure createClient with your Foundry URL, Ontology RID, and token provider, share it through OsdkProvider, and query without React.
+
+### Concepts
+
+- [The Ontology and your SDK](https://palantir.github.io/osdk-ts/concepts/ontology.md): How object types, links, actions, functions, interfaces, and object sets map to the generated SDK and to Osdk.Instance values in TypeScript.
+- [Caching and reactivity](https://palantir.github.io/osdk-ts/concepts/caching.md): How @osdk/react stores objects once, shares them across hooks, deduplicates requests, and updates every view after an action.
+- [Loading and errors](https://palantir.github.io/osdk-ts/concepts/loading-and-errors.md): Render @osdk/react hooks correctly while data loads, refreshes, or fails, and narrow errors to PalantirApiError and ActionValidationError.
+
+### Frameworks
+
+- [Vue](https://palantir.github.io/osdk-ts/frameworks/vue.md): Build a Vue app on OSDK with the create-app Vue template, set up sign-in, and query objects and apply actions from components with @osdk/client.
+- [Expo and React Native](https://palantir.github.io/osdk-ts/frameworks/expo.md): Build an iOS, Android, and web app on OSDK with the create-app Expo template, sign in with expo-auth-session, and query objects from React Native screens.
+- [Node.js](https://palantir.github.io/osdk-ts/frameworks/node.md): Use @osdk/client in Node.js scripts, servers, and serverless functions, with service-user or token auth, custom fetch, and a bulk-edit example.
+- [TypeScript library](https://palantir.github.io/osdk-ts/frameworks/typescript-library.md): Scaffold a standalone TypeScript package with the create-app typescript-library template, and add OSDK code that apps can share.
+
+### Custom widgets
+
+- [Custom widgets](https://palantir.github.io/osdk-ts/widgets.md): Build React or plain TypeScript widgets that run inside Foundry UIs such as Workshop, exchange parameters and events with the host, and call the OSDK.
+- [Parameters and events](https://palantir.github.io/osdk-ts/widgets/parameters-and-events.md): Declare a widget's parameters, events, and browser permissions with defineConfig, and see how each field maps to the widgets.config.json manifest.
+- [React widgets](https://palantir.github.io/osdk-ts/widgets/react.md): Render a widget with FoundryWidget, read typed parameters and loading states with useFoundryWidgetContext, and emit events back to the host.
+- [Build and publish](https://palantir.github.io/osdk-ts/widgets/publish.md): Configure @osdk/widget.vite-plugin, build a widget set and its manifest, deploy versions with osdk widgetset deploy, and manage them.
+
+### Ontology as code
+
+- [Ontology as code](https://palantir.github.io/osdk-ts/ontology-as-code.md): Define object types, links, actions, and interfaces in TypeScript with @osdk/maker, compile them to Ontology IR, and develop against them locally.
+- [Object types](https://palantir.github.io/osdk-ts/ontology-as-code/object-types.md): Define object types with defineObject from @osdk/maker, including property types, primary keys, titles, value types, and datasources.
+- [Links and actions](https://palantir.github.io/osdk-ts/ontology-as-code/links-and-actions.md): Relate object types with defineLink and define action types with the create, modify, and delete helpers from @osdk/maker.
+- [Interfaces and shared properties](https://palantir.github.io/osdk-ts/ontology-as-code/interfaces.md): Define shared property types and interfaces with @osdk/maker, implement them on object types, and add interface links, actions, and schema migrations.
+- [Local development](https://palantir.github.io/osdk-ts/ontology-as-code/local-development.md): Use @osdk/vite-plugin-oac to compile your ontology, generate an SDK, and serve a seeded mock Foundry API from the Vite dev server.
+- [Import existing types](https://palantir.github.io/osdk-ts/ontology-as-code/import.md): Convert an existing Foundry ontology's metadata into TypeScript with @osdk/maker-import, and reference those types from your ontology-as-code definitions.
+
+### Deploy
+
+- [Host on Foundry](https://palantir.github.io/osdk-ts/deploy/hosting.md): Build your OSDK app with Vite and deploy it to Foundry website hosting with osdk site deploy, foundry.config.json, versions, previews, and rollbacks.
+- [CLI reference](https://palantir.github.io/osdk-ts/deploy/cli.md): Every @osdk/cli command and flag for deploying sites and widget sets, managing versions, syncing branched SDKs, and generating SDKs locally.
+- [Develop on Foundry branches](https://palantir.github.io/osdk-ts/deploy/branches.md): Point your OSDK app at a Foundry global branch with osdk branch sync, @osdk/vite-plugin-branch, and the beta UNSTABLE_DO_NOT_USE_BRANCH client option.
+- [Generate an SDK](https://palantir.github.io/osdk-ts/deploy/generate-sdk.md): Generate your Ontology SDK in Developer Console or locally with osdk unstable typescript generate or @osdk/foundry-sdk-generator, and update it when the Ontology changes.
+- [Integration testing](https://palantir.github.io/osdk-ts/deploy/integration-testing.md): Run OSDK code against a local Ontology server with @osdk/integration-testing, seed it with objects and links, and stub functions in Vitest.
+
+### Tools
+
+- [Use OSDK with Vite](https://palantir.github.io/osdk-ts/guides/vite.md): Configure Vite for OSDK apps, including the process.env fix, a local CORS proxy to Foundry, and the OSDK Devtools plugin.
+
+### Help
+
+- [Troubleshooting](https://palantir.github.io/osdk-ts/troubleshooting.md): Fixes for common OSDK errors, including a missing OsdkProvider, mismatched package versions, CORS, auth failures, and Vite build issues.
+- [FAQ](https://palantir.github.io/osdk-ts/faq.md): Short answers about @osdk/react versus React Query, using OSDK without React or on a server, package versions, dates, templates, and changelogs.
+
+## TypeScript SDK
+
+- [TypeScript SDK overview](https://palantir.github.io/osdk-ts/sdk.md): Query objects, apply actions, and run functions from any TypeScript runtime with @osdk/client, in Node.js scripts, servers, Vue, or any framework.
+
+### Read data
+
+- [Load objects](https://palantir.github.io/osdk-ts/sdk/objects.md): Load one object by primary key, page through object sets, iterate over every object, select properties, sort, and read the Osdk.Instance shape.
+- [Filter objects](https://palantir.github.io/osdk-ts/sdk/filtering.md): Reference for where clauses in @osdk/client, covering comparison, set, null, text, array, date, geospatial, and logical operators, with examples.
+- [Links and object sets](https://palantir.github.io/osdk-ts/sdk/links.md): Traverse links from an object with $link, pivot whole object sets with pivotTo, and combine object sets with union, intersect, and subtract.
+- [Interfaces](https://palantir.github.io/osdk-ts/sdk/interfaces.md): Query objects of every type that implements an interface, convert between interface and object views with $as, and narrow object sets with narrowToType.
+- [Aggregations](https://palantir.github.io/osdk-ts/sdk/aggregations.md): Count, sum, average, and find the min, max, or distinct values of object sets on the server, grouped by exact values, ranges, fixed widths, or durations.
+- [Derived properties](https://palantir.github.io/osdk-ts/sdk/derived-properties.md): Add computed properties to an object set with withProperties, from linked objects, link aggregations, and expressions, then filter and sort on them.
+
+### Write data
+
+- [Actions](https://palantir.github.io/osdk-ts/sdk/actions.md): Apply Ontology actions with applyAction and batchApplyAction, validate parameters first, read returned edits, and handle ActionValidationError.
+
+### Logic
+
+- [Functions](https://palantir.github.io/osdk-ts/sdk/functions.md): Execute Foundry functions (queries) with executeFunction, pass objects and object sets as parameters, and read struct, object, and object set results.
+
+### More
+
+- [Attachments and media](https://palantir.github.io/osdk-ts/sdk/media.md): Read attachment and media reference properties with fetchContents and fetchMetadata, and upload files by passing them to action parameters.
+- [Subscriptions](https://palantir.github.io/osdk-ts/sdk/subscriptions.md): Receive live updates when objects in an object set are added, changed, or removed, with subscribe, its four callbacks, and unsubscribe.
+- [Errors](https://palantir.github.io/osdk-ts/sdk/errors.md): The errors @osdk/client throws, the fields of PalantirApiError and ActionValidationError, Result-returning methods, retries, and patterns for handling them.
+
+## React
+
+- [React SDK](https://palantir.github.io/osdk-ts/react.md): Build reactive Foundry apps with @osdk/react hooks backed by one shared, normalized cache.
+
+### Read data
+
+- [Query objects](https://palantir.github.io/osdk-ts/react/objects.md): Load, filter, sort, paginate, and stream lists of objects with useOsdkObjects, and load a single object with useOsdkObject.
+- [Follow links](https://palantir.github.io/osdk-ts/react/links.md): Load the objects linked to one or more source objects with useLinks, or pivot a whole query to a linked type with pivotTo.
+- [Work with object sets](https://palantir.github.io/osdk-ts/react/object-sets.md): Observe composed object sets with useObjectSet, combine them with union, intersect, and subtract, and compute derived properties on the server.
+- [Aggregate objects](https://palantir.github.io/osdk-ts/react/aggregations.md): Count, sum, average, and group objects on the server with useOsdkAggregation, without loading the objects into the browser.
+
+### Write data
+
+- [Apply actions](https://palantir.github.io/osdk-ts/react/actions.md): Apply and validate ontology actions from React with useOsdkAction, including error handling, debounced validation, and batch application.
+- [Optimistic updates](https://palantir.github.io/osdk-ts/react/optimistic-updates.md): Show an action's result before the server responds by layering optimistic edits on the cache, with automatic rollback when the action fails.
+- [Call functions](https://palantir.github.io/osdk-ts/react/functions.md): Run Foundry functions from React with useOsdkFunction and useOsdkFunctions, with caching, dependency-based refetching, and error handling.
+
+### Cache
+
+- [Invalidate the cache](https://palantir.github.io/osdk-ts/react/cache-invalidation.md): Refetch cached objects, lists, and function results with useObservableClient when data changes outside OSDK actions.
+
+### Platform
+
+- [Users and markings](https://palantir.github.io/osdk-ts/react/platform-apis.md): Load Foundry users, markings, and CBAC classification banners in React with the hooks in @osdk/react/platform-apis.
+
+### Quality
+
+- [Test your app](https://palantir.github.io/osdk-ts/react/testing.md): Unit test OSDK React components with Vitest and Testing Library, using @osdk/react/testing and the mocks in @osdk/unit-testing.
+
+### Devtools
+
+- [OSDK Devtools](https://palantir.github.io/osdk-ts/devtools.md): Add an in-app panel that shows Ontology usage, hook owners, console output, and the observable cache of a running OSDK React app.
+- [Overview](https://palantir.github.io/osdk-ts/devtools/overview.md): Read the Overview tab in OSDK Devtools to check Ontology usage, cache hit rate, optimistic coverage, errors, overfetching, and recommendations.
+- [Components](https://palantir.github.io/osdk-ts/devtools/components.md): Use the Components tab in OSDK Devtools to find which React components call OSDK hooks and what objects, actions, and properties they use.
+- [Console](https://palantir.github.io/osdk-ts/devtools/console.md): Use the Console tab in OSDK Devtools to search and filter browser console output captured while your OSDK React app runs.
+- [Cache](https://palantir.github.io/osdk-ts/devtools/cache.md): Use the Cache tab in OSDK Devtools to inspect and invalidate observable cache entries and review recent cache hits and misses.
+
+## Components
+
+### Get started
+
+- [OSDK React Components](https://palantir.github.io/osdk-ts/components.md): @osdk/react-components provides Ontology-aware React components that take OSDK types and handle data loading, caching, and state for you.
+- [Prerequisites](https://palantir.github.io/osdk-ts/components/prerequisites.md): Install the dependencies, create an OSDK client, and import the styles that @osdk/react-components needs before you render a component.
+
+### Data
+
+- [ObjectTable](https://palantir.github.io/osdk-ts/components/object-table.md): ObjectTable renders OSDK objects from an object type, object set, or interface as a table with sorting, selection, pinning, resizing, and inline editing.
+- [FilterList](https://palantir.github.io/osdk-ts/components/filter-list.md): FilterList renders filter controls for an OSDK object type, optionally scoped to an object set, backed by aggregations. It reports the combined where clause, and the filtered object set when you pass objectSet.
+- [ActionForm](https://palantir.github.io/osdk-ts/components/action-form.md): ActionForm renders form fields from an OSDK action definition, validates input in the browser, and applies the action on submit.
+
+### Media
+
+- [DocumentViewer](https://palantir.github.io/osdk-ts/components/document-viewer.md): DocumentViewer renders an OSDK Media object with the viewer that matches its MIME type: PDF, TIFF, image, video, Markdown, spreadsheet, email, or XML.
+- [PdfViewer](https://palantir.github.io/osdk-ts/components/pdf-viewer.md): PdfViewer renders a PDF from an OSDK Media object with text selection, custom annotations, sidebar navigation, and in-document search.
+- [ImageViewer](https://palantir.github.io/osdk-ts/components/image-viewer.md): ImageViewer renders an image from an OSDK Media object, and BaseImageViewer renders an image from a URL you provide.
+- [VideoViewer](https://palantir.github.io/osdk-ts/components/video-viewer.md): VideoViewer plays video from an OSDK Media object in the browser's native <video> element with standard playback controls.
+- [TiffViewer](https://palantir.github.io/osdk-ts/components/tiff-viewer.md): TiffViewer renders a TIFF image from an OSDK Media object, and BaseTiffViewer renders one from raw bytes.
+- [MarkdownViewer](https://palantir.github.io/osdk-ts/components/markdown-viewer.md): MarkdownViewer renders Markdown from an OSDK Media object, and BaseMarkdownViewer renders a Markdown string you provide.
+- [SpreadsheetViewer](https://palantir.github.io/osdk-ts/components/spreadsheet-viewer.md): SpreadsheetViewer renders an .xlsx spreadsheet as styled HTML tables with a tab for each sheet.
+- [EmailViewer](https://palantir.github.io/osdk-ts/components/email-viewer.md): EmailViewer renders the headers and body of an email (.eml) file, with HTML bodies shown in a sandboxed frame.
+- [XmlViewer](https://palantir.github.io/osdk-ts/components/xml-viewer.md): XmlViewer displays XML from an OSDK Media object, or a string you provide, in a styled monospace <pre><code> block.
+
+### Experimental
+
+- [AipAgentChat](https://palantir.github.io/osdk-ts/components/aip-agent-chat.md): AipAgentChat renders an AI chat interface backed by a Foundry language model through useChat from @osdk/react/experimental/aip.
+- [CbacPicker](https://palantir.github.io/osdk-ts/components/cbac-picker.md): CbacPicker lets users select classification-based access control (CBAC) markings grouped by category, while the server decides which combinations are valid.
+- [WorkshopModule](https://palantir.github.io/osdk-ts/components/workshop-module.md): Renders a Workshop module in an iframe using the Foundry URL from your OsdkProvider client. This experimental component accepts a module RID and version and uses Workshop's embedded view.
+
+### Theming
+
+- [Styling Overview](https://palantir.github.io/osdk-ts/components/styling-overview.md): @osdk/react-components styles every component through three layers of CSS custom properties that you can override to theme your app.
+- [OsdkThemeProvider](https://palantir.github.io/osdk-ts/components/osdk-theme-provider.md): OsdkThemeProvider manages light and dark theme state and sets the data-bp-color-scheme attribute that switches the OSDK and Blueprint design tokens.
+- [CSS Variables API Reference](https://palantir.github.io/osdk-ts/components/css-variables.md): Reference for the CSS custom properties in @osdk/react-components, from Blueprint token mappings to per-component tokens.
+
+## Platform SDK
+
+- [Platform SDK overview](https://palantir.github.io/osdk-ts/platform.md): The @osdk/foundry packages wrap Foundry platform REST APIs for users, datasets, media sets, builds, and more, alongside the Ontology SDK.
+- [Set up the Platform SDK](https://palantir.github.io/osdk-ts/platform/setup.md): Install @osdk/foundry packages, create a client with createPlatformClient or reuse an OSDK client, and request the OAuth scopes each API needs.
+- [Call platform APIs](https://palantir.github.io/osdk-ts/platform/calling-apis.md): The calling convention for @osdk/foundry functions, including argument order, pagination, errors, binary responses, and preview endpoints.
+
+### Recipes
+
+- [Users and groups](https://palantir.github.io/osdk-ts/platform/users-and-groups.md): Look up users, search and list them, read group memberships, manage group members, and read markings with @osdk/foundry.admin.
+- [Datasets](https://palantir.github.io/osdk-ts/platform/datasets.md): Read dataset files and tables, upload files in transactions, and manage branches with @osdk/foundry.datasets.
+- [Media sets](https://palantir.github.io/osdk-ts/platform/media-sets.md): Upload media items, read their content and metadata, and run transformations with @osdk/foundry.mediasets.
+- [Ontology metadata](https://palantir.github.io/osdk-ts/platform/ontology-metadata.md): List ontologies, object types, link types, action types, and query types at runtime with @osdk/foundry.ontologies, and know when the OSDK is the better fit.
+
+## AI
+
+### Build with AI
+
+- [AI overview](https://palantir.github.io/osdk-ts/ai.md): Packages for adding LLM features to OSDK apps with Foundry's Language Model Service, what each one does, and what you need before you start.
+- [Generate and stream text](https://palantir.github.io/osdk-ts/ai/chat.md): Call Foundry-hosted language models with generateText and streamText from @osdk/aip-core, in Node.js or the browser.
+- [Tool calling](https://palantir.github.io/osdk-ts/ai/tools.md): Let a Foundry-hosted model call your code to query the Ontology and propose actions, with JSON Schema tools and a confirm-before-apply loop.
+- [React chat UIs](https://palantir.github.io/osdk-ts/ai/react.md): Build streaming chat interfaces with useChat from @osdk/react/experimental/aip, custom chat transports, or the prebuilt AipAgentChat component.
+- [Agents](https://palantir.github.io/osdk-ts/ai/agents.md): Converse with AIP Agents through the Platform SDK, start sessions for agents in your generated SDK, and read injected clients with @osdk/agents.
+
+### AI-assisted development
+
+- [Use these docs with AI](https://palantir.github.io/osdk-ts/ai/llms.md): Give coding assistants accurate OSDK context with llms.txt, per-page Markdown, and the package AGENTS.md files.
+
+## Reference
+
+- [API reference](https://palantir.github.io/osdk-ts/reference.md): Signatures, options, and return types for the public APIs of @osdk/react, @osdk/client, @osdk/oauth, and @osdk/aip-core.
+
+### @osdk/react
+
+- [OsdkProvider](https://palantir.github.io/osdk-ts/reference/react/osdk-provider.md): React context provider that shares an OSDK client and its normalized cache with every hook below it.
+- [useOsdkObjects](https://palantir.github.io/osdk-ts/reference/react/use-osdk-objects.md): Load a live, cached list of objects of one type or interface.
+- [useOsdkObject](https://palantir.github.io/osdk-ts/reference/react/use-osdk-object.md): Load one object by primary key, or observe an object instance you already have, from the shared cache.
+- [useLinks](https://palantir.github.io/osdk-ts/reference/react/use-links.md): Load the objects linked from one or more source objects through a named link.
+- [useObjectSet](https://palantir.github.io/osdk-ts/reference/react/use-object-set.md): Load a live, paged list from an ObjectSet, with filters, set operations, pivots, and derived properties applied on top.
+- [useStableObjectSet](https://palantir.github.io/osdk-ts/reference/react/use-stable-object-set.md): Return a referentially stable ObjectSet that changes only when its definition changes.
+- [useOsdkAggregation](https://palantir.github.io/osdk-ts/reference/react/use-osdk-aggregation.md): Run a server-side aggregation, such as counts or averages grouped by a property, and keep the result cached.
+- [useOsdkFunction](https://palantir.github.io/osdk-ts/reference/react/use-osdk-function.md): Execute a Foundry function and cache its result, refetching when the objects it depends on change.
+- [useOsdkFunctions](https://palantir.github.io/osdk-ts/reference/react/use-osdk-functions.md): Execute several Foundry functions from one hook and get their results in input order.
+- [useOsdkAction](https://palantir.github.io/osdk-ts/reference/react/use-osdk-action.md): Apply or validate an action from a component, with pending state, errors, and optional optimistic updates.
+- [useDebouncedCallback](https://palantir.github.io/osdk-ts/reference/react/use-debounced-callback.md): Debounce a callback, such as an action call from a text input, with cancel and flush controls.
+- [useOsdkMetadata](https://palantir.github.io/osdk-ts/reference/react/use-osdk-metadata.md): Fetch the runtime metadata of an object type, interface, or action, such as display names and property descriptions.
+- [useOsdkClient](https://palantir.github.io/osdk-ts/reference/react/use-osdk-client.md): Return the OSDK Client passed to the nearest OsdkProvider.
+- [useObservableClient](https://palantir.github.io/osdk-ts/reference/react/use-observable-client.md): Return the ObservableClient that backs the shared cache of the nearest OsdkProvider.
+- [@osdk/react/testing](https://palantir.github.io/osdk-ts/reference/react/testing.md): TestOsdkProvider and fakeObservableClient for rendering @osdk/react components in unit tests.
+
+### @osdk/react/platform-apis
+
+- [@osdk/react/platform-apis](https://palantir.github.io/osdk-ts/reference/react/platform-apis.md): Hooks for Foundry users, markings, and CBAC banners and restrictions, built on @osdk/foundry.admin.
+
+### @osdk/client
+
+- [createClient](https://palantir.github.io/osdk-ts/reference/client/create-client.md): Create the OSDK Client that queries objects, applies actions, and executes functions against one Ontology.
+- [createPlatformClient](https://palantir.github.io/osdk-ts/reference/client/create-platform-client.md): Create a client for Foundry platform APIs only, without binding it to an Ontology.
+- [ObjectSet](https://palantir.github.io/osdk-ts/reference/client/object-set.md): Methods of an OSDK ObjectSet for filtering, set operations, pivots, aggregation, paging, and subscriptions.
+- [Osdk.Instance](https://palantir.github.io/osdk-ts/reference/client/osdk-instance.md): The type of a loaded object, with its properties plus $-prefixed fields for identity, links, and conversion.
+- [WhereClause](https://palantir.github.io/osdk-ts/reference/client/where-clause.md): Filter operators accepted by ObjectSet.where and the where option of @osdk/react hooks, by property type.
+- [Errors](https://palantir.github.io/osdk-ts/reference/client/errors.md): PalantirApiError and ActionValidationError, the error classes thrown by @osdk/client.
+
+### @osdk/oauth
+
+- [createPublicOauthClient](https://palantir.github.io/osdk-ts/reference/oauth/create-public-oauth-client.md): Create a browser token provider that signs users in with the OAuth authorization code flow and PKCE.
+- [createConfidentialOauthClient](https://palantir.github.io/osdk-ts/reference/oauth/create-confidential-oauth-client.md): Create a server-side token provider that authenticates with a client ID and secret using the client credentials grant.
+- [createAuthlessClient](https://palantir.github.io/osdk-ts/reference/oauth/create-authless-client.md): Create a token provider that always returns the public token, for Foundry resources that need no sign-in.
+
+### @osdk/aip-core
+
+- [foundryModel](https://palantir.github.io/osdk-ts/reference/aip-core/foundry-model.md): Create a language model handle backed by the Foundry Language Model Service for generateText, streamText, and LmsChatTransport.
+- [generateText](https://palantir.github.io/osdk-ts/reference/aip-core/generate-text.md): Generate a complete text response from a Foundry language model in one request.
+- [streamText](https://palantir.github.io/osdk-ts/reference/aip-core/stream-text.md): Stream a text response from a Foundry language model as it is generated.
+- [LmsChatTransport](https://palantir.github.io/osdk-ts/reference/aip-core/lms-chat-transport.md): A ChatTransport that streams chat replies from the Foundry Language Model Service as UI message chunks.
+- [Utilities](https://palantir.github.io/osdk-ts/reference/aip-core/utilities.md): generateMessageId and getUIMessageText, helpers for working with UIMessage conversations in @osdk/aip-core.

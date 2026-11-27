@@ -1,0 +1,7 @@
+:HL["/osdk-ts/_next/static/media/2bcd4b1f8f3a3e9f.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/osdk-ts/_next/static/media/cf72403939ff961f-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/osdk-ts/_next/static/css/480b5645ca63b053.css","style"]
+3:[["children",{"s":"__PAGE__","h":160}]]
+2:[["children",{"s":{"n":"slug","t":"c","k":"devtools/overview","s":["_not-found","_global-error","api","icon.svg","llms-full.txt","llms.mdx","llms.txt","og.png","og","sitemap.xml"]},"h":64,"c":"$Q3"}]]
+1:[["children",{"s":"(docs)","h":32,"c":"$Q2"}]]
+0:{"b":"mt9qTaXjecsWzgBnbJr-c","t":{"t":{"s":"","h":80,"c":"$Q1"}}}

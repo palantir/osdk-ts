@@ -1,0 +1,1 @@
+import{R as n,U as o}from"./iframe-BKkgtFSo.js";function c(e){const t=n.useContext(o);n.useEffect(()=>t(e),[t,e])}const i="osdk-react-components/0.74.0";function u(e){return`${i}/${e}`}function d(e,t){const r=s=>(c(u(t)),n.createElement(e,s));return r.displayName=`withOsdkMetrics(${t})`,r}export{d as w};
