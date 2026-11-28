@@ -49,18 +49,18 @@ export interface ScenarioEditedEntityTypes {
 
 /**
  * A page of edited object identifiers within a scenario for a given object type. Returned by
- * {@link EXPERIMENTAL_ScenarioClient.getEditedEntities}. To load full property values, pass the primary keys back
+ * {@link ScenarioClient.getEditedObjects}. To load full property values, pass the primary keys back
  * through the scenario client, e.g.
  * `scenario(MyObject).where({ $primaryKey: { $in: keys } }).fetchPage()`.
  */
-export interface EditedEntitiesPage<Q extends ObjectTypeDefinition> {
+export interface EditedObjectsPage<Q extends ObjectTypeDefinition> {
   data: ObjectIdentifiers<Q>[];
   nextPageToken?: string;
 }
 
 /**
  * A page of directed link instances edited within a scenario for a given source object type and link api name.
- * Returned by {@link EXPERIMENTAL_ScenarioClient.getEditedLinks}. Source and target carry only `$primaryKey` + `$apiName`.
+ * Returned by {@link ScenarioClient.getEditedLinks}. Source and target carry only `$primaryKey` + `$apiName`.
  */
 export interface EditedLinksPage<
   Q extends ObjectOrInterfaceDefinition,
@@ -72,20 +72,22 @@ export interface EditedLinksPage<
 
 /**
  * A page of object identifiers whose edits within a scenario conflict with edits to the scenario's base. Returned by
- * {@link EXPERIMENTAL_ScenarioClient.getConflictingObjects}. Results contain only `$primaryKey` + `$apiName`.
+ * {@link ScenarioClient.EXPERIMENTAL_DO_NOT_USE_getConflictingObjects}. Results contain only `$primaryKey` + `$apiName`.
+ *
+ * @beta This is an experimental feature subject to change.
  */
-export interface ConflictingObjectsPage<Q extends ObjectTypeDefinition> {
+export interface EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<
+  Q extends ObjectTypeDefinition,
+> {
   data: ObjectIdentifiers<Q>[];
   nextPageToken?: string;
 }
 
 /**
  * A {@link Client} attached to an ontology scenario. All read and write operations performed via this client are
- * scoped to that scenario. `EXPERIMENTAL_ScenarioClient` is a superset of {@link Client}.
- *
- * @beta This is an experimental, unstable feature subject to change.
+ * scoped to that scenario. `ScenarioClient` is a superset of {@link Client}.
  */
-export interface EXPERIMENTAL_ScenarioClient extends Client {
+export interface ScenarioClient extends Client {
   /**
    * The scenario RID this client is scoped to.
    */
@@ -93,8 +95,10 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
 
   /**
    * Rebase this scenario onto the latest data from its base
+   *
+   * @beta This is an experimental feature subject to change.
    */
-  rebase(): Promise<void>;
+  EXPERIMENTAL_DO_NOT_USE_rebase(): Promise<void>;
 
   /**
    * List the object types and many-to-many link types that have been modified within this scenario. Useful as a
@@ -112,16 +116,16 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
    * let pageToken: string | undefined;
    * const keys: string[] = [];
    * do {
-   *   const page = await scenario.getEditedEntities(Doctor, { pageSize: 500, pageToken });
+   *   const page = await scenario.getEditedObjects(Doctor, { pageSize: 500, pageToken });
    *   keys.push(...page.data.map(o => o.$primaryKey));
    *   pageToken = page.nextPageToken;
    * } while (pageToken);
    * ```
    */
-  getEditedEntities<Q extends ObjectTypeDefinition>(
+  getEditedObjects<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number; pageToken?: string },
-  ): Promise<EditedEntitiesPage<Q>>;
+  ): Promise<EditedObjectsPage<Q>>;
 
   /**
    * Stream object identifiers for the objects edited within this scenario for the
@@ -130,24 +134,15 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
    *
    * @example
    * ```ts
-   * for await (const obj of scenario.editedEntitiesAsyncIter(Doctor, { pageSize: 500 })) {
+   * for await (const obj of scenario.editedObjectsAsyncIter(Doctor, { pageSize: 500 })) {
    *   // obj.$primaryKey is the unique key for this edited object
    * }
    * ```
    */
-  editedEntitiesAsyncIter<Q extends ObjectTypeDefinition>(
+  editedObjectsAsyncIter<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number },
   ): AsyncIterableIterator<ObjectIdentifiers<Q>>;
-
-  /**
-   * List the outgoing many-to-many link API names that have been modified within this scenario for the given
-   * source object type. One-to-many link edits surface as object edits on the FK-owning side and are not returned
-   * here.
-   */
-  getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(
-    sourceObjectType: Q,
-  ): Promise<LinkTypeApiNamesFor<Q>[]>;
 
   /**
    * Get a page of directed link instances edited within this scenario for a given source object type and link
@@ -194,32 +189,36 @@ export interface EXPERIMENTAL_ScenarioClient extends Client {
    *
    * `pageSize` bounds the number of objects examined, not the number of conflicts returned, so a page may contain fewer
    * results than requested while still returning `nextPageToken`.
+   *
+   * @beta This is an experimental feature subject to change.
    */
-  getConflictingObjects<Q extends ObjectTypeDefinition>(
+  EXPERIMENTAL_DO_NOT_USE_getConflictingObjects<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number; pageToken?: string },
-  ): Promise<ConflictingObjectsPage<Q>>;
+  ): Promise<EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q>>;
 
   /**
    * Stream object identifiers for the objects whose scenario edits conflict with edits to the scenario's base for the
    * given object type. Pages are fetched lazily.
    *
+   * @beta This is an experimental feature subject to change.
+   *
    * @example
    * ```ts
-   * for await (const obj of scenario.conflictingObjectsAsyncIter(Doctor, { pageSize: 500 })) {
+   * for await (const obj of scenario.EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter(Doctor, { pageSize: 500 })) {
    *   // obj.$primaryKey identifies an object with a conflicting scenario edit
    * }
    * ```
    */
-  conflictingObjectsAsyncIter<Q extends ObjectTypeDefinition>(
+  EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter<
+    Q extends ObjectTypeDefinition,
+  >(
     objectType: Q,
     options?: { pageSize?: number },
   ): AsyncIterableIterator<ObjectIdentifiers<Q>>;
 }
 
-export function isScenarioClient(
-  value: unknown,
-): value is EXPERIMENTAL_ScenarioClient {
+export function isScenarioClient(value: unknown): value is ScenarioClient {
   return (
     value != null &&
     (typeof value === "object" || typeof value === "function") &&
@@ -232,14 +231,14 @@ export function isScenarioClient(
  * Shared internal builder used by both {@link withScenario} and {@link createScenario}. Throws if the parent client
  * is already inside a scenario. If the parent client has an active transaction, the transaction is ignored (a warning
  * is logged) and the client is scoped to the scenario instead. Derives a {@link Client} from the parent's context via
- * `createClientFromContext` and decorates it with {@link EXPERIMENTAL_ScenarioClient}-only methods.
+ * `createClientFromContext` and decorates it with {@link ScenarioClient}-only methods.
  *
  * @internal
  */
 export function buildScenarioClient(
   parent: Client,
   scenarioRid: string,
-): EXPERIMENTAL_ScenarioClient {
+): ScenarioClient {
   const ctx: MinimalClient = parent[additionalContext];
 
   if (ctx.transactionId != null) {
@@ -285,10 +284,10 @@ export function buildScenarioClient(
     };
   }
 
-  async function getEditedEntities<Q extends ObjectTypeDefinition>(
+  async function getEditedObjects<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number; pageToken?: string },
-  ): Promise<EditedEntitiesPage<Q>> {
+  ): Promise<EditedObjectsPage<Q>> {
     const ontologyRid = await innerCtx.ontologyRid;
     const response = await OntologyScenarios.listScenarioEditedObjects(
       innerCtx,
@@ -314,14 +313,14 @@ export function buildScenarioClient(
     };
   }
 
-  async function* editedEntitiesAsyncIter<Q extends ObjectTypeDefinition>(
+  async function* editedObjectsAsyncIter<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number },
   ): AsyncIterableIterator<ObjectIdentifiers<Q>> {
     const seen = new Set<unknown>();
     let pageToken: string | undefined;
     do {
-      const page = await getEditedEntities(objectType, {
+      const page = await getEditedObjects(objectType, {
         pageSize: options?.pageSize,
         pageToken,
       });
@@ -333,20 +332,6 @@ export function buildScenarioClient(
       }
       pageToken = page.nextPageToken;
     } while (pageToken != null);
-  }
-
-  async function getEditedLinkTypes<Q extends ObjectOrInterfaceDefinition>(
-    sourceObjectType: Q,
-  ): Promise<LinkTypeApiNamesFor<Q>[]> {
-    const ontologyRid = await innerCtx.ontologyRid;
-    const response = await OntologyScenarios.listScenarioEditedLinkTypes(
-      innerCtx,
-      ontologyRid,
-      scenarioRid,
-      sourceObjectType.apiName,
-      { preview: true },
-    );
-    return response.data as LinkTypeApiNamesFor<Q>[];
   }
 
   async function getEditedLinks<
@@ -434,7 +419,7 @@ export function buildScenarioClient(
   async function getConflictingObjects<Q extends ObjectTypeDefinition>(
     objectType: Q,
     options?: { pageSize?: number; pageToken?: string },
-  ): Promise<ConflictingObjectsPage<Q>> {
+  ): Promise<EXPERIMENTAL_DO_NOT_USE_ConflictingObjectsPage<Q>> {
     const ontologyRid = await innerCtx.ontologyRid;
     const response = await OntologyScenarios.listScenarioConflictingObjects(
       innerCtx,
@@ -478,20 +463,17 @@ export function buildScenarioClient(
     getScenarioReference: {
       value: () => scenarioRid,
     },
-    rebase: {
+    EXPERIMENTAL_DO_NOT_USE_rebase: {
       value: rebase,
     },
     getEditedEntityTypes: {
       value: getEditedEntityTypes,
     },
-    getEditedEntities: {
-      value: getEditedEntities,
+    getEditedObjects: {
+      value: getEditedObjects,
     },
-    editedEntitiesAsyncIter: {
-      value: editedEntitiesAsyncIter,
-    },
-    getEditedLinkTypes: {
-      value: getEditedLinkTypes,
+    editedObjectsAsyncIter: {
+      value: editedObjectsAsyncIter,
     },
     getEditedLinks: {
       value: getEditedLinks,
@@ -499,11 +481,11 @@ export function buildScenarioClient(
     editedLinksAsyncIter: {
       value: editedLinksAsyncIter,
     },
-    getConflictingObjects: {
+    EXPERIMENTAL_DO_NOT_USE_getConflictingObjects: {
       value: getConflictingObjects,
     },
-    conflictingObjectsAsyncIter: {
+    EXPERIMENTAL_DO_NOT_USE_conflictingObjectsAsyncIter: {
       value: conflictingObjectsAsyncIter,
     },
-  }) as EXPERIMENTAL_ScenarioClient;
+  }) as ScenarioClient;
 }
