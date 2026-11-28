@@ -57,7 +57,17 @@ async function ciPublish(): Promise<void> {
     });
     await execa(
       "pnpm",
-      ["publish", "--no-git-checks", "-r", "--report-summary", "--tag", tag],
+      [
+        "publish",
+        "--no-git-checks",
+        "-r",
+        "--report-summary",
+        "--tag",
+        tag,
+        // --force as GHA has normally already published these, and pnpm would
+        // skip them
+        ...(process.argv.includes("--dry-run") ? ["--dry-run", "--force"] : []),
+      ],
       {
         stdio: "inherit",
         cwd: repoRoot,
