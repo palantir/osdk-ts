@@ -524,23 +524,40 @@ jobs:
       - store_artifacts:
           path: pnpm-publish-summary.json
 
-  # `changeset publish` has no dry run, so we use `pnpm publish -r`. Same flags
-  # here as every publishable package sets `publishConfig.access`
-  snapshot-dry-run:
+  # Publishes with npm trusted publishing
+  snapshot:
     executor:
       name: node
       resource-class: xlarge
-    environment:
-      npm_config_dry_run: "true"
     steps:
       - prepare
       - restore-turbo-cache:
           scope: apps
-      # `circleci-` so GHA hasn't already published these versions, otherwise
-      # pnpm skips them. Remove once we publish from CircleCI
       - run:
           name: Update versions for snapshots
-          command: pnpm exec changeset version --snapshot "circleci-${CIRCLE_BRANCH//\//-}"
+          command: pnpm exec changeset version --snapshot "${CIRCLE_BRANCH//\//-}"
+      - run:
+          # Stands in for `needs: release` until release moves to CircleCI.
+          # `changeset publish` publishes any version missing from npm, so without
+          # this a Version Packages merge could put the release under next-<branch>
+          name: Skip unless release has published this commit
+          command: |
+            unreleased="$(pnpm m ls --depth -1 --json \
+              | jq -r --arg snapshot "-${CIRCLE_BRANCH//\//-}-$CIRCLE_SHA1" \
+                '.[] | select(.private != true and (.version | endswith($snapshot) | not))
+                  | "\(.name)@\(.version)"' \
+              | xargs -n 1 -P 8 sh -c '
+                  err="$(npm view "$1" version 2>&1 >/dev/null)" && exit 0
+                  case "$err" in
+                    *"code E404"*) echo "$1" ;;
+                    # 255 makes xargs stop, so a registry error fails the job
+                    *) echo "$err" >&2; exit 255 ;;
+                  esac' _)"
+            if [ -n "$unreleased" ]; then
+              echo "Not on npm yet, so release has not published this commit:"
+              echo "$unreleased"
+              circleci-agent step halt
+            fi
       - run:
           name: Make sure code is up to date
           command: pnpm exec turbo run postVersioning
@@ -551,12 +568,22 @@ jobs:
               | jq -r '.[] | select(.private != true) | "--filter=\(.name)"')"
             pnpm exec turbo run build $filters
       - run:
-          name: Publish snapshots (dry run)
+          # serial-group only skips older jobs while a newer one is queued or
+          # running, so a slower or rerun older pipeline could move the dist-tag back
+          name: Skip if a newer commit has landed
           command: |
-            pnpm publish -r --dry-run --no-git-checks --report-summary \
-              --tag "next-${CIRCLE_BRANCH//\//__}"
-      - store_artifacts:
-          path: pnpm-publish-summary.json
+            tip="$(git ls-remote origin "refs/heads/$CIRCLE_BRANCH" | cut -f1)"
+            if [ "$tip" != "$CIRCLE_SHA1" ]; then
+              echo "$CIRCLE_BRANCH has moved on to $tip, skipping publish."
+              circleci-agent step halt
+            fi
+      - run:
+          name: Publish snapshots
+          command: |
+            # Separate from `export` so a failure fails the step
+            NPM_ID_TOKEN="$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')"
+            export NPM_ID_TOKEN
+            pnpm exec changeset publish --no-git-tag --tag "next-${CIRCLE_BRANCH//\//__}"
 
   ci-all:
     executor:
@@ -620,12 +647,12 @@ workflows:
               only:
                 - main
                 - /release\/.*/
-      - snapshot-dry-run:
+      - snapshot:
           requires: [ci-all]
+          context: npm-publish
           serial-group: << pipeline.project.slug >>/snapshot-<< pipeline.git.branch >>
           filters:
             branches:
               only:
                 - main
-                - next
                 - /release\/.*/
