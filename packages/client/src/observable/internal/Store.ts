@@ -397,7 +397,12 @@ export class Store {
       if (!query) {
         continue;
       }
-      promises.push(query.invalidateObjectType(apiName, undefined));
+      promises.push(
+        query.invalidateObjectOrInterfaceType(
+          { type: "object", apiName },
+          undefined,
+        ),
+      );
     }
     return Promise.allSettled(promises).then(() => void 0);
   }
@@ -636,20 +641,17 @@ export class Store {
    * 2. All lists of the specified type
    * 3. All links where the source object is of the specified type
    *
-   * @param apiName - The API name of the object type to invalidate
+   * @param objectOrInterfaceDef - The object or interface type to invalidate
    * @param changes - Optional changes object to track what has been modified
    * @returns Promise that resolves when all invalidations are complete
    */
-  public invalidateObjectType<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
+  public invalidateObjectOrInterfaceType(
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
     if (process.env.NODE_ENV !== "production") {
       this.logger
-        ?.child({ methodName: "invalidateObjectType" })
+        ?.child({ methodName: "invalidateObjectOrInterfaceType" })
         .info(changes ? DEBUG_ONLY__changesToString(changes) : void 0);
     }
 
@@ -664,10 +666,12 @@ export class Store {
     return this.#revalidateWithLists(
       cacheKeys,
       (cacheKey) =>
-        this.queries.peek(cacheKey)?.invalidateObjectType(apiName, changes) ??
+        this.queries
+          .peek(cacheKey)
+          ?.invalidateObjectOrInterfaceType(objectOrInterfaceDef, changes) ??
         Promise.resolve(),
       changes,
-      apiName,
+      objectOrInterfaceDef.apiName,
     );
   }
 

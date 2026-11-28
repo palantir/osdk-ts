@@ -15,6 +15,7 @@
  */
 
 import {
+  BarInterface,
   Employee,
   FooInterface,
   Office,
@@ -32,7 +33,12 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import { Store } from "./Store.js";
-import { createDefer, mockListSubCallback, updateList } from "./testUtils.js";
+import {
+  createDefer,
+  mockListSubCallback,
+  mockSingleSubCallback,
+  updateList,
+} from "./testUtils.js";
 import { expectStandardObserveLink } from "./testUtils/observeLink/expectStandardObserveLink.js";
 import { expectStandardObserveObject } from "./testUtils/observeObject/expectStandardObserveObject.js";
 
@@ -63,6 +69,7 @@ describe("Store Invalidation Type Isolation", () => {
   function setupOntology(fauxFoundry: FauxFoundry) {
     const fauxOntology = fauxFoundry.getDefaultOntology();
     ontologies.addEmployeeOntology(fauxOntology);
+    fauxOntology.registerInterfaceType(stubData.BarInterface);
 
     fauxFoundry
       .getDefaultOntology()
@@ -174,7 +181,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeSubFn.next.mockClear();
 
       // Invalidate only the Employee type
-      await cache.invalidateObjectType(Employee, undefined);
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -211,7 +218,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeSubFn.next.mockClear();
 
       // Invalidate only the Office type
-      await cache.invalidateObjectType(Office, undefined);
+      await cache.invalidateObjectOrInterfaceType(Office, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -258,7 +265,7 @@ describe("Store Invalidation Type Isolation", () => {
       todoSubFn.next.mockClear();
 
       // Invalidate only the Todo type
-      await cache.invalidateObjectType(Todo, undefined);
+      await cache.invalidateObjectOrInterfaceType(Todo, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -322,7 +329,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeListSubFn.next.mockClear();
 
       // Invalidate only the Employee type
-      await cache.invalidateObjectType(Employee, undefined);
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -372,7 +379,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeLinkSubFn.next.mockClear();
 
       // Invalidate the Employee type
-      await cache.invalidateObjectType(Employee, undefined);
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -487,7 +494,7 @@ describe("Store Invalidation Type Isolation", () => {
       officeOccupantsLinkSubFn.next.mockClear();
 
       // Invalidate only the Todo type
-      await cache.invalidateObjectType(Todo, undefined);
+      await cache.invalidateObjectOrInterfaceType(Todo, undefined);
 
       // Allow time for any potential updates
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -802,6 +809,95 @@ describe("Store Invalidation Type Isolation", () => {
 
       await new Promise((resolve) => setTimeout(resolve, 500));
       expect(officeLinkSubFn.next).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("invalidateObjectOrInterfaceType with an interface definition", () => {
+    it("refreshes object queries observed through that interface", async () => {
+      const subFn = mockSingleSubCallback();
+      defer(
+        cache.objects.observe(
+          { apiName: FooInterface, pk: EMPLOYEE_1_ID },
+          subFn,
+        ),
+      );
+      await vi.waitFor(() => {
+        expect(subFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({ status: "loaded" }),
+        );
+      });
+      subFn.next.mockClear();
+
+      await cache.invalidateObjectOrInterfaceType(FooInterface, undefined);
+
+      await vi.waitFor(() => {
+        expect(subFn.next).toHaveBeenCalled();
+      });
+    });
+
+    it("does not refresh link queries unrelated to that interface", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const { linkSubFn: officeLinkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "officeLink",
+        targetType: Office,
+        expected: [expect.objectContaining({ $primaryKey: OFFICE_1_ID })],
+      });
+      officeLinkSubFn.next.mockClear();
+
+      await cache.invalidateObjectOrInterfaceType(FooInterface, undefined);
+
+      expect(officeLinkSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("does not refresh interface lists for an unrelated interface", async () => {
+      const listSubFn = mockListSubCallback();
+      defer(
+        cache.lists.observe(
+          { type: FooInterface, where: {}, orderBy: {} },
+          listSubFn,
+        ),
+      );
+      await vi.waitFor(() => {
+        expect(listSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({ status: "loaded" }),
+        );
+      });
+      listSubFn.next.mockClear();
+
+      await cache.invalidateObjectOrInterfaceType(BarInterface, undefined);
+
+      expect(listSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("refreshes interface lists when an implementing object type is invalidated", async () => {
+      const listSubFn = mockListSubCallback();
+      defer(
+        cache.lists.observe(
+          { type: FooInterface, where: {}, orderBy: {} },
+          listSubFn,
+        ),
+      );
+      await vi.waitFor(() => {
+        expect(listSubFn.next).toHaveBeenCalledWith(
+          expect.objectContaining({ status: "loaded" }),
+        );
+      });
+      listSubFn.next.mockClear();
+
+      await cache.invalidateObjectOrInterfaceType(Employee, undefined);
+
+      await vi.waitFor(() => {
+        expect(listSubFn.next).toHaveBeenCalled();
+      });
     });
   });
 });

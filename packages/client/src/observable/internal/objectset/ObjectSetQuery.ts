@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
+  Osdk,
+  PageResult,
+} from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 
@@ -34,7 +39,7 @@ import type { BatchContext } from "../BatchContext.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
-import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
+import { getInvalidationSet } from "../getInvalidationSet.js";
 import type { Entry } from "../Layer.js";
 import { API_NAME_IDX as OBJECT_API_NAME_IDX } from "../object/ObjectCacheKey.js";
 import type { OptimisticId } from "../OptimisticId.js";
@@ -221,11 +226,10 @@ export class ObjectSetQuery extends BaseListQuery<
       !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType, invalidationSet } =
-        await getObjectTypesThatInvalidate(
-          this.store.client[additionalContext],
-          wireObjectSet,
-        );
+      const { resultType, objectInvalidationSet } = await getInvalidationSet(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
       this.sortingStrategy = new OrderBySortingStrategy(
         resultType.apiName,
         this.#operations.orderBy,
@@ -234,7 +238,7 @@ export class ObjectSetQuery extends BaseListQuery<
           wireObjectSet,
         ),
       );
-      this.#rdpInvalidationSet = invalidationSet;
+      this.#rdpInvalidationSet = objectInvalidationSet;
     }
 
     if (
@@ -453,11 +457,11 @@ export class ObjectSetQuery extends BaseListQuery<
     wireObjectSet: WireObjectSet,
   ): Promise<Set<string>> {
     try {
-      const { invalidationSet } = await getObjectTypesThatInvalidate(
+      const { objectInvalidationSet } = await getInvalidationSet(
         this.store.client[additionalContext],
         wireObjectSet,
       );
-      return invalidationSet;
+      return objectInvalidationSet;
     } catch (error) {
       this.store.logger?.error(
         "Failed to compute invalidation types for object set query, falling back to empty set",
@@ -469,13 +473,14 @@ export class ObjectSetQuery extends BaseListQuery<
 
   // TODO(oxc type-aware): the type-aware typescript/require-await rule does not flag this (it returns a Promise); remove this disable once type-aware linting is enabled.
   // oxlint-disable-next-line require-await -- intentionally async: returns a Promise to satisfy its declared/contract type; no await needed
-  invalidateObjectType = async (
-    objectType: string,
+  invalidateObjectOrInterfaceType = async (
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> => {
+    const { apiName } = objectOrInterfaceDef;
     if (
-      this.#objectTypes.has(objectType) ||
-      (this.#rdpInvalidationSet?.has(objectType) ?? false)
+      this.#objectTypes.has(apiName) ||
+      (this.#rdpInvalidationSet?.has(apiName) ?? false)
     ) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);

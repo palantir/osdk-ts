@@ -179,7 +179,12 @@ export class ActionApplication {
         ) {
           continue;
         }
-        promises.push(query.invalidateObjectType(apiName, undefined));
+        promises.push(
+          query.invalidateObjectOrInterfaceType(
+            { type: "object", apiName },
+            undefined,
+          ),
+        );
       }
     }
     await Promise.allSettled(promises);

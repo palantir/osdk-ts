@@ -60,7 +60,7 @@ export function RefreshEmployee({ employee }: { employee: Employee.OsdkInstance 
 | Method | Refetches | Use it when |
 | --- | --- | --- |
 | `invalidateObjects(objects)` | The given object or array of objects, in every variant cached for them. Also reruns functions that list one of them in `dependsOnObjects`, and refreshes links from or to their type. An object that is not cached yet is fetched. | You know exactly which objects changed. |
-| `invalidateObjectType(type)` | Every cached query that reads the type: its objects, lists and object sets over it, aggregations over it, links from or to it, and functions that declare it in `dependsOn`. Takes the type from your SDK or its API name. | Many objects of one type changed, or you do not know which. |
+| `invalidateObjectOrInterfaceType(type)` | Every cached query that reads the object or interface type: its objects, lists and object sets over it, aggregations over it, links from or to it, and functions that declare it in `dependsOn`. An object type also refreshes queries over the interfaces it implements. Takes the type definition from your SDK. Replaces the deprecated `invalidateObjectType`. | Many objects of one type changed, or you do not know which. |
 | `invalidateFunction(fn, params?)` | With `params`, the one cached call with exactly those parameters. Without, every cached call of that function. Takes the function from your SDK or its API name. | A function's inputs changed outside the cache. |
 | `invalidateFunctionsByObject(apiName, primaryKey)` | Functions that list that object in `dependsOnObjects`. | One object changed and you only want its functions to rerun. |
 | `invalidateAll()` | Everything in the cache. | Last resort, when you cannot tell what changed. |
@@ -87,7 +87,7 @@ export function ImportEmployeesButton() {
     setStatus("running");
     try {
       await runEmployeeImport();
-      await observableClient.invalidateObjectType(Employee);
+      await observableClient.invalidateObjectOrInterfaceType(Employee);
       setStatus("idle");
     } catch (e) {
       console.error("Import failed", e);
@@ -126,8 +126,11 @@ export function useUpdateJobTitle() {
         { $returnEdits: true },
       );
       await Promise.all(
-        edits.editedObjectTypes.map((type) =>
-          observableClient.invalidateObjectType(String(type)),
+        edits.editedObjectTypes.map((apiName) =>
+          observableClient.invalidateObjectOrInterfaceType({
+            type: "object",
+            apiName: String(apiName),
+          }),
         ),
       );
     },
@@ -183,7 +186,7 @@ export function useEmployeeChangeFeed(url: string) {
     socket.addEventListener("message", (event) => {
       const { employeeId } = JSON.parse(String(event.data)) as { employeeId: number };
       void observableClient.invalidateFunctionsByObject(Employee.apiName, employeeId);
-      void observableClient.invalidateObjectType(Employee);
+      void observableClient.invalidateObjectOrInterfaceType(Employee);
     });
     return () => socket.close();
   }, [observableClient, url]);
@@ -193,9 +196,9 @@ export function useEmployeeChangeFeed(url: string) {
 ## Best practices
 
 1. **Let actions drive updates.** If a change comes from `useOsdkAction`, do not invalidate afterward. It refetches data that is already fresh.
-2. **Invalidate the narrowest thing you can.** `invalidateObjects` is cheaper than `invalidateObjectType`, which is cheaper than `invalidateAll`.
+2. **Invalidate the narrowest thing you can.** `invalidateObjects` is cheaper than `invalidateObjectOrInterfaceType`, which is cheaper than `invalidateAll`.
 3. **Declare function dependencies.** `dependsOn` and `dependsOnObjects` let the cache rerun functions after actions, so you do not invalidate them by hand.
-4. **Do not invalidate on mount.** Calling `invalidateAll` or `invalidateObjectType` in a mount effect refetches on every navigation and defeats the cache.
+4. **Do not invalidate on mount.** Calling `invalidateAll` or `invalidateObjectOrInterfaceType` in a mount effect refetches on every navigation and defeats the cache.
 5. **Keep OSDK data in the cache.** Copying it into component state, Redux, or another query library creates a second copy that invalidation and optimistic updates do not reach.
 
 ## Debug the cache

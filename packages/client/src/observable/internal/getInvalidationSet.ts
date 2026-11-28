@@ -39,43 +39,39 @@ import type {
 //
 // For now we are keeping things conservative and just invalidating A either way,
 // but we can make this better.
+//
+// Each interface dependency adds its API name to interfaceInvalidationSet and
+// all implementing object type API names to objectInvalidationSet.
 
-export async function getObjectTypesThatInvalidate(
+export async function getInvalidationSet(
   mc: MinimalClient,
   objectSet: WireObjectSet,
 ): Promise<{
   resultType: FetchedObjectTypeDefinition | InterfaceMetadata;
-  counts: Record<string, number>;
-  invalidationSet: Set<string>;
+  objectInvalidationSet: Set<string>;
+  interfaceInvalidationSet: Set<string>;
 }> {
-  const counts: Record<string, number> = {};
+  const objectInvalidationSet = new Set<string>();
+  const interfaceInvalidationSet = new Set<string>();
 
   const resultType = await calcObjectSet(objectSet, {
-    counts,
+    objectInvalidationSet,
+    interfaceInvalidationSet,
     methodInput: undefined,
     ontologyProvider: mc.ontologyProvider,
     narrowTypeInterfaceOrObjectMapping: mc.narrowTypeInterfaceOrObjectMapping,
   });
 
-  // we need to uncount the final result type
-  const tweaked = {
-    ...counts,
-    [resultType.apiName]: counts[resultType.apiName] - 1,
-  };
-
   return {
     resultType,
-    counts,
-    invalidationSet: new Set(
-      Object.entries(tweaked)
-        .filter(([, v]) => v > 0)
-        .map(([k]) => k),
-    ),
+    objectInvalidationSet,
+    interfaceInvalidationSet,
   };
 }
 
 interface Ctx {
-  counts: Record<string, number>;
+  objectInvalidationSet: Set<string>;
+  interfaceInvalidationSet: Set<string>;
   methodInput: WireObjectSet | undefined;
   ontologyProvider: OntologyProvider;
   narrowTypeInterfaceOrObjectMapping: MinimalClient["narrowTypeInterfaceOrObjectMapping"];
@@ -87,27 +83,28 @@ async function calcObjectSet(
 ): Promise<FetchedObjectTypeDefinition | InterfaceMetadata> {
   const op = ctx.ontologyProvider;
 
-  async function bumpObject(apiName: string) {
+  async function addObjectType(apiName: string) {
     const objectType = await op.getObjectDefinition(apiName);
-    ctx.counts[apiName] = (ctx.counts[apiName] ?? 0) + 1;
+    ctx.objectInvalidationSet.add(apiName);
 
     return objectType;
   }
 
-  async function bumpInterface(apiName: string) {
+  async function addInterfaceType(apiName: string) {
     const interfaceDef = await op.getInterfaceDefinition(apiName);
+    ctx.interfaceInvalidationSet.add(apiName);
     for (const s of interfaceDef.implementedBy ?? []) {
-      ctx.counts[s] = (ctx.counts[s] ?? 0) + 1;
+      ctx.objectInvalidationSet.add(s);
     }
     return interfaceDef;
   }
 
   switch (os.type) {
     case "base":
-      return await bumpObject(os.objectType);
+      return await addObjectType(os.objectType);
 
     case "interfaceBase":
-      return await bumpInterface(os.interfaceType);
+      return await addInterfaceType(os.interfaceType);
 
     case "asType": {
       await calcObjectSet(os.objectSet, ctx);
@@ -117,8 +114,8 @@ async function calcObjectSet(
         `Missing type kind for narrowed type ${os.entityType}`,
       );
       return targetKind === "interface"
-        ? await bumpInterface(os.entityType)
-        : await bumpObject(os.entityType);
+        ? await addInterfaceType(os.entityType)
+        : await addObjectType(os.entityType);
     }
 
     case "interfaceLinkSearchAround": {
@@ -128,9 +125,9 @@ async function calcObjectSet(
       for (const [k, v] of Object.entries(srcDef.links)) {
         if (k === os.interfaceLink) {
           if (v.targetType === "object") {
-            return await bumpObject(v.targetTypeApiName);
+            return await addObjectType(v.targetTypeApiName);
           }
-          return await bumpInterface(v.targetTypeApiName);
+          return await addInterfaceType(v.targetTypeApiName);
         }
       }
 
@@ -148,7 +145,7 @@ async function calcObjectSet(
 
       for (const [k, v] of Object.entries(contextDef.links)) {
         if (k === os.link) {
-          return await bumpObject(v.targetType);
+          return await addObjectType(v.targetType);
         }
       }
 
@@ -168,17 +165,6 @@ async function calcObjectSet(
     case "union":
     case "subtract":
     case "intersect":
-      // all of these entries need their counts to be merged as the max of each
-
-      // suppose you have a simple `Union(A, A)`. We would end up with A:2
-      // but we only need A:1.
-
-      // suppose you have `Union(A->B, A->B)`. Now you end up with A:2, B:2,
-      // but we only want A:1, B:1.
-
-      // suppose you have `Union(A->B->A->B, A->B)`. Now you end up with A:3, B:2,
-      // but we only want A:2, B:2.
-
       // Filter out object set types that cannot be resolved to a concrete type
       // (e.g., reference, static). In set operations, we can determine the
       // result type from the remaining resolvable operands.
@@ -187,32 +173,22 @@ async function calcObjectSet(
       );
 
       const returnTypes = await Promise.all(
-        resolvableSets.map(async (os) => {
-          const counts: Record<string, number> = {};
-          const r = await calcObjectSet(os, { ...ctx, counts });
-          return { r, counts };
-        }),
+        resolvableSets.map((objectSet) => calcObjectSet(objectSet, ctx)),
       );
-
-      for (const { counts } of returnTypes) {
-        for (const [k, v] of Object.entries(counts)) {
-          ctx.counts[k] = Math.max(ctx.counts[k] ?? 0, v);
-        }
-      }
 
       if (returnTypes.length === 0) {
         throw new Error(`Could not find any context types for set operation`);
       }
 
       const allMatch = returnTypes.every(
-        ({ r }) => r.apiName === returnTypes[0].r.apiName,
+        (resultType) => resultType.apiName === returnTypes[0].apiName,
       );
 
       if (!allMatch) {
         throw new Error(`Incompatible context types found for set operation`);
       }
 
-      return returnTypes[0].r;
+      return returnTypes[0];
 
     case "withProperties":
       // Everything in an RDP chain needs to invalidate us for now
@@ -225,9 +201,7 @@ async function calcObjectSet(
     case "methodInput":
       invariant(ctx.methodInput, "methodInput must be provided");
 
-      // we only call this to get the context type, so we give it a new ctx
-      // otherwise it will double count everything
-      return await calcObjectSet(ctx.methodInput, { ...ctx, counts: {} });
+      return await calcObjectSet(ctx.methodInput, ctx);
 
     case "asBaseObjectTypes":
     // We don't currently support this because it could return multiple object types conceptually

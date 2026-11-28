@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, QueryDefinition } from "@osdk/api";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 
@@ -195,12 +195,12 @@ export class FunctionQuery extends Query<
     return batch.read(this.cacheKey)!;
   }
 
-  invalidateObjectType = (
-    objectType: string,
+  invalidateObjectOrInterfaceType = (
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> => {
-    // Check if this function depends on the given object type
-    if (this.#dependsOn?.includes(objectType)) {
+    // Check if this function depends on the given object or interface type
+    if (this.#dependsOn?.includes(objectOrInterfaceDef.apiName)) {
       changes?.registerFunction(this.cacheKey);
       return this.revalidate(true);
     }

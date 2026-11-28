@@ -29,6 +29,7 @@ import {
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
+import defer from "p-defer";
 import {
   afterEach,
   beforeAll,
@@ -177,7 +178,7 @@ describe("aggregation ObjectSet support", () => {
       .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
-    await query.invalidateObjectType("Employee", undefined);
+    await query.invalidateObjectOrInterfaceType(Employee, undefined);
     expect(revalidateSpy).toHaveBeenCalledWith(true);
   });
 
@@ -192,8 +193,31 @@ describe("aggregation ObjectSet support", () => {
       .spyOn(query, "revalidate")
       .mockResolvedValue(undefined);
 
-    await query.invalidateObjectType("Employee", undefined);
+    await query.invalidateObjectOrInterfaceType(Employee, undefined);
     expect(revalidateSpy).not.toHaveBeenCalled();
+  });
+
+  it("matches interface definitions only against interface dependencies", async () => {
+    const query = store.aggregations.getQuery({
+      type: FooInterface,
+      where: {},
+      aggregate: { $select: { $count: "unordered" } },
+    });
+
+    await query.ensureInvalidationTypesReady();
+
+    const revalidateSpy = vi
+      .spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectOrInterfaceType(
+      { type: "object", apiName: FooInterface.apiName },
+      undefined,
+    );
+    expect(revalidateSpy).not.toHaveBeenCalled();
+
+    await query.invalidateObjectOrInterfaceType(FooInterface, undefined);
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
   });
 
   describe("errors", () => {
@@ -287,15 +311,25 @@ describe("aggregation ObjectSet support", () => {
   });
 
   describe("interfaces", () => {
-    it("observes narrowed interface sets and refreshes after invalidation", async () => {
+    it("refreshes narrowed interface aggregations invalidated during a fetch", async () => {
       let count = 1;
+      const firstRequest = defer<void>();
+      const firstResponse = defer<void>();
       apiServer.use(
         msw.http.post(
           "https://stack.palantir.com/api/v2/ontologies/:ontology/objectSets/aggregate",
-          () =>
-            msw.HttpResponse.json({
-              data: [{ group: {}, metrics: [{ name: "count", value: count }] }],
-            }),
+          async () => {
+            const result = count;
+            if (result === 1) {
+              firstRequest.resolve();
+              await firstResponse.promise;
+            }
+            return msw.HttpResponse.json({
+              data: [
+                { group: {}, metrics: [{ name: "count", value: result }] },
+              ],
+            });
+          },
         ),
       );
       const observableClient = new ObservableClientImpl(store);
@@ -319,11 +353,16 @@ describe("aggregation ObjectSet support", () => {
       );
 
       try {
-        await vi.waitFor(() => expect(payload?.result).toEqual({ $count: 1 }));
+        await firstRequest.promise;
         count = 2;
-        await observableClient.invalidateObjectType(Employee);
+        const invalidation =
+          observableClient.invalidateObjectOrInterfaceType(FooInterface);
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        firstResponse.resolve();
+        await invalidation;
         expect(payload?.result).toEqual({ $count: 2 });
       } finally {
+        firstResponse.resolve();
         subscription.unsubscribe();
       }
     });
@@ -417,6 +456,43 @@ describe("aggregation ObjectSet support", () => {
         });
         await observableClient.invalidateObjectType(Employee);
         expect(payload?.result).toEqual({ $count: 0 });
+        dataStore.replaceObjectOrThrow({
+          ...dataStore.getObjectOrThrow("Employee", 1),
+          office: "NYC",
+        });
+        await observableClient.invalidateObjectOrInterfaceType(FooInterface);
+        expect(payload?.result).toEqual({ $count: 1 });
+      } finally {
+        subscription.unsubscribe();
+      }
+    });
+
+    it("refreshes interface aggregations when the deprecated API gets the interface name", async () => {
+      const observableClient = new ObservableClientImpl(store);
+      let payload: AggregationState | undefined;
+      const subscription = observableClient.observeAggregation(
+        {
+          type: FooInterface,
+          aggregate: { $select: { $count: "unordered" } },
+        },
+        {
+          next: (value) => {
+            payload = value;
+          },
+          error: (error) => {
+            throw error;
+          },
+          complete: () => {},
+        },
+      );
+
+      try {
+        await vi.waitFor(() => expect(payload?.result).toEqual({ $count: 3 }));
+        fauxFoundry
+          .getDefaultDataStore()
+          .registerObject(Person, { id: 4, name: "Carol" });
+        await observableClient.invalidateObjectType(FooInterface.apiName);
+        expect(payload?.result).toEqual({ $count: 4 });
       } finally {
         subscription.unsubscribe();
       }

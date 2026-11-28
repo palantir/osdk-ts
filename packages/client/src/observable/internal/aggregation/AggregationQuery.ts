@@ -17,11 +17,8 @@
 import type {
   AggregateOpts,
   AggregationsResults,
-  DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Connectable, Observable, Subject } from "rxjs";
@@ -39,7 +36,7 @@ import type {
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
-import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
+import { getInvalidationSet } from "../getInvalidationSet.js";
 import type { Entry } from "../Layer.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
@@ -57,27 +54,6 @@ import {
   WIRE_OBJECT_SET_IDX,
 } from "./AggregationCacheKey.js";
 
-export interface AggregationPayload<
-  Q extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<Q>,
-> {
-  result: AggregationsResults<Q, A> | undefined;
-  status: Status;
-  lastUpdated: number;
-  error?: Error;
-}
-
-export interface AggregationQueryOptions<
-  Q extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<Q>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> extends CommonObserveOptions {
-  type: Q;
-  where?: WhereClause<Q, RDPs>;
-  withProperties?: DerivedProperty.Clause<Q>;
-  aggregate: A;
-}
-
 export interface AggregationPayloadBase {
   result:
     | AggregationsResults<
@@ -90,6 +66,11 @@ export interface AggregationPayloadBase {
   error?: Error;
 }
 
+type InvalidationTypes = Record<
+  ObjectOrInterfaceDefinition["type"],
+  Set<string>
+>;
+
 export class AggregationQuery extends Query<
   AggregationCacheKey,
   AggregationPayloadBase,
@@ -100,8 +81,8 @@ export class AggregationQuery extends Query<
   #canonicalAggregate: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>;
   #rdpConfig: Canonical<Rdp> | undefined;
   #parsedWireObjectSet: WireObjectSet | undefined;
-  #invalidationTypes: Set<string> | undefined;
-  #invalidationTypesPromise: Promise<Set<string>> | undefined;
+  #invalidationTypes: InvalidationTypes | undefined;
+  #invalidationTypesPromise: Promise<InvalidationTypes> | undefined;
   #error: Error | undefined;
 
   constructor(
@@ -142,13 +123,16 @@ export class AggregationQuery extends Query<
       !this.#parsedWireObjectSet &&
       !this.#rdpConfig
     ) {
-      this.#invalidationTypes = new Set([this.#apiName]);
+      this.#invalidationTypes = {
+        object: new Set([this.#apiName]),
+        interface: new Set(),
+      };
     } else {
       void this.ensureInvalidationTypesReady().catch(() => undefined);
     }
   }
 
-  ensureInvalidationTypesReady(): Promise<Set<string>> {
+  ensureInvalidationTypesReady(): Promise<InvalidationTypes> {
     if (this.#invalidationTypes) {
       return Promise.resolve(this.#invalidationTypes);
     }
@@ -160,13 +144,17 @@ export class AggregationQuery extends Query<
     return this.#invalidationTypesPromise;
   }
 
-  async #computeInvalidationTypes(): Promise<Set<string>> {
+  async #computeInvalidationTypes(): Promise<InvalidationTypes> {
     try {
-      const { counts } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        getWireObjectSet(this.#createObjectSet()),
-      );
-      this.#invalidationTypes = new Set(Object.keys(counts));
+      const { objectInvalidationSet, interfaceInvalidationSet } =
+        await getInvalidationSet(
+          this.store.client[additionalContext],
+          getWireObjectSet(this.#createObjectSet()),
+        );
+      this.#invalidationTypes = {
+        object: objectInvalidationSet,
+        interface: interfaceInvalidationSet,
+      };
       return this.#invalidationTypes;
     } catch (cause) {
       throw new Error(
@@ -284,11 +272,11 @@ export class AggregationQuery extends Query<
     return batch.read(this.cacheKey)!;
   }
 
-  invalidateObjectType = async (
-    objectType: string,
+  invalidateObjectOrInterfaceType = async (
+    objectOrInterfaceDef: ObjectOrInterfaceDefinition,
     changes: Changes | undefined,
   ): Promise<void> => {
-    let invalidationTypes: Set<string>;
+    let invalidationTypes: InvalidationTypes;
     try {
       invalidationTypes = await this.ensureInvalidationTypesReady();
     } catch (error) {
@@ -297,8 +285,15 @@ export class AggregationQuery extends Query<
       return;
     }
 
-    if (invalidationTypes.has(objectType)) {
+    if (
+      invalidationTypes[objectOrInterfaceDef.type].has(
+        objectOrInterfaceDef.apiName,
+      )
+    ) {
       changes?.modified.add(this.cacheKey);
+      if (this.pendingFetch) {
+        await this.pendingFetch;
+      }
       return this.revalidate(true);
     }
   };
