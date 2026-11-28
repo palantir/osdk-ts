@@ -36,11 +36,10 @@ import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type { AggregationCacheKey } from "./AggregationCacheKey.js";
-import type {
-  AggregationPayloadBase,
+import {
+  type AggregationPayloadBase,
   AggregationQuery,
 } from "./AggregationQuery.js";
-import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
 
 type AggregationOptions =
   | ObserveAggregationOptions<
@@ -79,43 +78,26 @@ export class AggregationsHelper extends AbstractHelper<
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options:
+      | ObserveAggregationOptions<T, A, RDPs>
+      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
     subFn: Observer<AggregationPayloadBase>,
   ): QuerySubscription<AggregationQuery> {
-    return super.observe(options, subFn);
-  }
-
-  async observeAsync<
-    T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
-    RDPs extends Record<string, SimplePropertyDef> = {},
-  >(
-    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
-    subFn: Observer<AggregationPayloadBase>,
-  ): Promise<QuerySubscription<AggregationQuery>> {
-    const query = this.getQueryWithObjectSet(options);
-    await query.ensureInvalidationTypesReady();
-    return this._subscribe(query, options as AggregationOptions, subFn);
+    return super.observe(options as AggregationOptions, subFn);
   }
 
   getQuery<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
-  >(options: ObserveAggregationOptions<T, A, RDPs>): AggregationQuery {
-    return this.getOrCreateQuery(options as AggregationOptions, undefined);
-  }
-
-  getQueryWithObjectSet<
-    T extends ObjectOrInterfaceDefinition,
-    A extends AggregateOpts<T>,
-    RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    options:
+      | ObserveAggregationOptions<T, A, RDPs>
+      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
   ): AggregationQuery {
-    const serializedObjectSet = JSON.stringify(
-      getWireObjectSet(options.objectSet),
-    );
+    const serializedObjectSet = options.objectSet
+      ? JSON.stringify(getWireObjectSet(options.objectSet))
+      : undefined;
     return this.getOrCreateQuery(
       options as AggregationOptions,
       serializedObjectSet,
@@ -153,12 +135,7 @@ export class AggregationsHelper extends AbstractHelper<
     );
 
     return this.store.queries.get(aggregationCacheKey, () => {
-      if (typeKind !== "object") {
-        throw new Error(
-          "Only ObjectTypeDefinition is currently supported for aggregations",
-        );
-      }
-      return new ObjectAggregationQuery(
+      return new AggregationQuery(
         this.store,
         this.store.subjects.get(aggregationCacheKey),
         aggregationCacheKey,

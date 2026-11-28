@@ -238,6 +238,27 @@ describe(getObjectTypesThatInvalidate, () => {
     expect(Object.keys(counts).length).toBeGreaterThan(0);
   });
 
+  it("preserves source dependencies when narrowing to objects and interfaces", async () => {
+    const narrowedInterface = client(Employee)
+      .pivotTo("officeLink")
+      .pivotTo("occupants")
+      .narrowToType(FooInterface);
+    const interfaceResult = await helper(narrowedInterface);
+    expect(interfaceResult.resultType).toBe("FooInterface");
+    expect(Object.keys(interfaceResult.counts).sort()).toEqual([
+      "Employee",
+      "Office",
+      "Person",
+    ]);
+
+    const narrowedObject = narrowedInterface.narrowToType(Employee);
+    const objectResult = await helper(narrowedObject);
+    expect(objectResult.resultType).toBe("Employee");
+    expect(objectResult.invalidationSet).toEqual(
+      new Set(["Employee", "Office", "Person"]),
+    );
+  });
+
   it.skip("supports interface link search around", async () => {
     // FIXME, we don't have a good interface link example right now
     // Assuming FooInterface has links - skip if not available

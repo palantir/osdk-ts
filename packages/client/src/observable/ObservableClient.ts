@@ -478,8 +478,7 @@ export interface ObservableClient extends ObserveLinks {
    * Observe an aggregation query on a custom ObjectSet with automatic updates.
    *
    * This overload accepts an ObjectSet parameter, enabling aggregation on pivoted,
-   * filtered, or composed ObjectSets. Returns a Promise because invalidation type
-   * computation is async (requires lookups for link targets).
+   * filtered, or composed ObjectSets. Returns a Promise resolving to the subscription.
    *
    * @param options - Aggregation configuration including objectSet, where, aggregate spec
    * @param subFn - Observer that receives aggregation result updates
